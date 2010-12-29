@@ -1,0 +1,4 @@
+{% autoescape off %}HTTP Status {{ status }}
+{% for key, val in headers.items %}{{ key }}: {{ val }}
+{% endfor %}
+{{ content }}{% endautoescape %}
