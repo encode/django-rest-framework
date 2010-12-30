@@ -3,3 +3,5 @@ syntax: glob
 *.pyc
 *.db
 env
+.project
+.pydevproject

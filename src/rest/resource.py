@@ -4,6 +4,14 @@ from rest import emitters, parsers
 
 class Resource(object):
 
+    class HTTPException(Exception):
+        def __init__(self, status, content, headers):
+            self.status = status
+            self.content = content
+            self.headers = headers
+
+    allowed_methods = ('GET',)
+
     callmap = { 'GET': 'read', 'POST': 'create', 
                 'PUT': 'update', 'DELETE': 'delete' }
 
@@ -17,6 +25,7 @@ class Resource(object):
                 'application/xml': parsers.XMLParser,
                 'application/x-www-form-urlencoded': parsers.FormParser }
 
+
     def __new__(cls, request, *args, **kwargs):
         self = object.__new__(cls)
         self.__init__()
@@ -28,7 +37,6 @@ class Resource(object):
     def _determine_parser(self, request):
         """Return the appropriate parser for the input, given the client's 'Content-Type' header,
         and the content types that this Resource knows how to parse."""
-        print request.META
         return self.parsers.values()[0]
     
         # TODO: Raise 415 Unsupported media type
@@ -79,25 +87,40 @@ class Resource(object):
                         (accept_mimetype == mimetype)):
                             return (mimetype, emitter)      
 
-        # TODO: Raise 406, Not Acceptable
+        raise self.HTTPException(406, {'status': 'Not Acceptable',
+                                       'accepts': ','.join(item[0] for item in self.emitters)}, {})
+
 
     def _handle_request(self, request, *args, **kwargs):
-        meth = request.method
+        method = request.method
+
+        try:
+            if not method in self.allowed_methods:
+                raise self.HTTPException(405, {'status': 'Method Not Allowed'}, {})
+    
+            # Parse the HTTP Request content
+            func = getattr(self, self.callmap.get(method, ''))
+    
+            if method in ('PUT', 'POST'):
+                parser = self._determine_parser(request)
+                data = parser(self, request).parse(request.raw_post_data)
+                (status, ret, headers) = func(data, request.META, *args, **kwargs)
+    
+            else:
+                (status, ret, headers) = func(request.META, *args, **kwargs)
+        except self.HTTPException, exc:
+            (status, ret, headers) = (exc.status, exc.content, exc.headers)
+
+        headers['Allow'] = ', '.join(self.allowed_methods)
         
-        # Parse the HTTP Request content
-        if meth in ('PUT', 'POST'):
-            parser = self._determine_parser(request)
-            data = parser(self, request).parse(request.raw_post_data)
-
-        if meth == "POST":
-            (status, ret, headers) = self.handle_post(data, request.META, *args, **kwargs)
-        else:
-            (status, ret, headers) = self.handle_get(request.META, *args, **kwargs)
-
         # Serialize the HTTP Response content
-        mimetype, emitter = self._determine_emitter(request)
+        try:        
+            mimetype, emitter = self._determine_emitter(request)
+        except self.HTTPException, exc:
+            (status, ret, headers) = (exc.status, exc.content, exc.headers)
+            mimetype, emitter = self.emitters[0]
+            
         content = emitter(self, status, headers).emit(ret)
-        print mimetype, emitter, content
 
         # Build the HTTP Response
         resp = HttpResponse(content, mimetype=mimetype, status=status)
@@ -106,8 +129,19 @@ class Resource(object):
 
         return resp
 
-    def handle_get(self):
-        raise NotImplementedError(self.handle_get)
+    def _not_implemented(self, operation):
+        resource_name = self.__class__.__name__
+        return (500, {'status': 'Internal Server Error',
+                          'detail': '%s %s operation is permitted but has not been implemented' % (resource_name, operation)}, {})
 
-    def handle_post(self):
-        raise NotImplementedError(self.handle_post)
+    def read(self, headers={}, *args, **kwargs):
+        return self._not_implemented('read')
+
+    def create(self, data=None, headers={}, *args, **kwargs):
+        return self._not_implemented('create')
+    
+    def update(self, data=None, headers={}, *args, **kwargs):
+        return self._not_implemented('update')
+
+    def delete(self, headers={}, *args, **kwargs):
+        return self._not_implemented('delete')
