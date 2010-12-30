@@ -1,5 +1,14 @@
-from decimal import Decimal
 from rest.resource import Resource
+
+class RootResource(Resource):
+    """This is my docstring
+    """
+    allowed_methods = ('GET',)
+
+    def read(self, headers={}, *args, **kwargs):
+        return (200, {'read-only-api': self.reverse(ReadOnlyResource),
+                      'write-only-api': self.reverse(MirroringWriteResource)}, {})
+
 
 class ReadOnlyResource(Resource):
     """This is my docstring

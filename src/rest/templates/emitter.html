@@ -1,11 +1,18 @@
-<?xml version="1.0" encoding="UTF-8"?>
+{% load urlize_quoted_links %}<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <style>
+      pre {border: 1px solid black; padding: 1em; background: #ffd}
+    </style>
+  </head>
   <body>
     <h1>{{ resource_name }}</h1>
     <p>{{ resource_doc }}</p>
-    <pre>
-{% include 'emitter.txt' %}    </pre>
+    <pre>{% autoescape off %}HTTP Status {{ status }}
+{% for key, val in headers.items %}{{ key }}: {{ val }}
+{% endfor %}
+{{ content|urlize_quoted_links }}{% endautoescape %}    </pre>
   </body>
 </html>

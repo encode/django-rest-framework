@@ -1,6 +1,8 @@
 from django.http import HttpResponse
-from decimal import Decimal
+from django.core.urlresolvers import reverse
 from rest import emitters, parsers
+from decimal import Decimal
+
 
 class Resource(object):
 
@@ -29,6 +31,7 @@ class Resource(object):
     def __new__(cls, request, *args, **kwargs):
         self = object.__new__(cls)
         self.__init__()
+        self._request = request
         return self._handle_request(request, *args, **kwargs)
 
     def __init__(self):
@@ -145,3 +148,8 @@ class Resource(object):
 
     def delete(self, headers={}, *args, **kwargs):
         return self._not_implemented('delete')
+
+    def reverse(self, view, *args, **kwargs):
+        """Return a fully qualified URI for a view, using the current request as the base URI.
+        """
+        return self._request.build_absolute_uri(reverse(view, *args, **kwargs))
