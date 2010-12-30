@@ -1,4 +1,5 @@
 from django.template import Context, loader
+from django.core.handlers.wsgi import STATUS_CODE_TEXT
 import json
 
 class BaseEmitter(object):
@@ -17,6 +18,7 @@ class TemplatedEmitter(BaseEmitter):
         context = Context({
             'content': content,
             'status': self.status,
+            'reason': STATUS_CODE_TEXT.get(self.status, ''),
             'headers': self.headers,
             'resource_name': self.resource.__class__.__name__,
             'resource_doc': self.resource.__doc__
