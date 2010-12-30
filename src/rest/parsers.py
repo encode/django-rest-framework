@@ -1,3 +1,5 @@
+import json
+
 class BaseParser(object):
     def __init__(self, resource, request):
         self.resource = resource
@@ -8,11 +10,13 @@ class BaseParser(object):
 
 
 class JSONParser(BaseParser):
-    pass
+    def parse(self, input):
+        return json.loads(input)
 
 class XMLParser(BaseParser):
     pass
 
 class FormParser(BaseParser):
-    pass
+    def parse(self, input):
+        return self.request.POST
 

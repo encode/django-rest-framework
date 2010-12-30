@@ -5,6 +5,7 @@
   <head>
     <style>
       pre {border: 1px solid black; padding: 1em; background: #ffd}
+      div.action {padding: 0.5em 1em; margin-bottom: 0.5em; background: #ddf}
     </style>
   </head>
   <body>
@@ -14,5 +15,43 @@
 {% for key, val in headers.items %}<b>{{ key }}:</b> {{ val }}
 {% endfor %}
 {{ content|urlize_quoted_links }}{% endautoescape %}    </pre>
+
+{% if 'GET' in allowed_methods %}
+	<div class='action'>
+		<a href='{{ request.path }}'>Read</a>
+	</div>
+{% endif %}
+
+{% if 'POST' in resource.allowed_methods %}
+	<div class='action'>
+		<form action="{{ request.path }}" method="POST">
+		    {% csrf_token %}
+			{{ create_form.as_p }}
+			<input type="submit" value="Create" />
+		</form>
+	</div>
+{% endif %}
+
+{% if 'PUT' in resource.allowed_methods %}
+	<div class='action'>
+		<form action="{{ request.path }}" method="POST">
+			<input type="hidden" name="{{ resource.METHOD_PARAM}}" value="PUT" />
+			{% csrf_token %}
+			{{ create_form.as_p }}
+			<input type="submit" value="Update" />
+		</form>
+	</div>
+{% endif %}
+
+{% if 'DELETE' in resource.allowed_methods %}
+	<div class='action'>
+		<form action="{{ request.path }}" method="POST">
+		    {% csrf_token %}
+			<input type="hidden" name="{{ resource.METHOD_PARAM}}" value="DELETE" />
+			<input type="submit" value="Delete" />
+		</form>
+	</div>
+{% endif %}
+
   </body>
 </html>

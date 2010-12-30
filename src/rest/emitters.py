@@ -1,9 +1,10 @@
-from django.template import Context, loader
+from django.template import RequestContext, loader
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
 import json
 
 class BaseEmitter(object):
-    def __init__(self, resource, status, headers):
+    def __init__(self, resource, request, status, headers):
+        self.request = request
         self.resource = resource
         self.status = status
         self.headers = headers
@@ -12,16 +13,23 @@ class BaseEmitter(object):
         return output
 
 class TemplatedEmitter(BaseEmitter):
+    template = None
+
     def emit(self, output):
         content = json.dumps(output, indent=4)
         template = loader.get_template(self.template)
-        context = Context({
+        context = RequestContext(self.request, {
             'content': content,
             'status': self.status,
             'reason': STATUS_CODE_TEXT.get(self.status, ''),
             'headers': self.headers,
             'resource_name': self.resource.__class__.__name__,
-            'resource_doc': self.resource.__doc__
+            'resource_doc': self.resource.__doc__,
+            'create_form': self.resource.create_form and self.resource.create_form() or None,
+            'update_form': self.resource.update_form and self.resource.update_form() or None,
+            'allowed_methods': self.resource.allowed_methods,
+            'request': self.request,
+            'resource': self.resource,
         })
         return template.render(context)
     

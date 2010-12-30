@@ -1,16 +1,21 @@
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse
-from rest import emitters, parsers
+from django.core.handlers.wsgi import STATUS_CODE_TEXT
+from rest import emitters, parsers, utils
 from decimal import Decimal
+
+for (key, val) in STATUS_CODE_TEXT.items():
+    locals()["STATUS_%d_%s" % (key, val.replace(' ', '_'))] = key
+
+
+class ResourceException(Exception):
+    def __init__(self, status, content='', headers={}):
+        self.status = status
+        self.content = content
+        self.headers = headers
 
 
 class Resource(object):
-
-    class HTTPException(Exception):
-        def __init__(self, status, content, headers):
-            self.status = status
-            self.content = content
-            self.headers = headers
 
     allowed_methods = ('GET',)
 
@@ -27,6 +32,12 @@ class Resource(object):
                 'application/xml': parsers.XMLParser,
                 'application/x-www-form-urlencoded': parsers.FormParser }
 
+    create_form = None
+    update_form = None
+
+    METHOD_PARAM = '_method'
+    ACCEPT_PARAM = '_accept'
+
 
     def __new__(cls, request, *args, **kwargs):
         self = object.__new__(cls)
@@ -34,15 +45,40 @@ class Resource(object):
         self._request = request
         return self._handle_request(request, *args, **kwargs)
 
+
     def __init__(self):
         pass
+
+
+    def _determine_method(self, request):
+        """Determine the HTTP method that this request should be treated as,
+        allowing for PUT and DELETE tunneling via the _method parameter."""
+        method = request.method
+        
+        if method == 'POST' and request.POST.has_key(self.METHOD_PARAM):
+            method = request.POST[self.METHOD_PARAM].upper()
+        
+        return method
+
+
+    def _check_method_allowed(self, method):
+        if not method in self.allowed_methods:
+            raise ResourceException(STATUS_405_METHOD_NOT_ALLOWED,
+                                    {'detail': 'Method \'%s\' not allowed on this resource.' % method})
+        
+        if not method in self.callmap.keys():
+            raise ResourceException(STATUS_501_NOT_IMPLEMENTED,
+                                    {'detail': 'Unknown or unsupported method \'%s\'' % method})
+
 
     def _determine_parser(self, request):
         """Return the appropriate parser for the input, given the client's 'Content-Type' header,
         and the content types that this Resource knows how to parse."""
-        return self.parsers.values()[0]
-    
-        # TODO: Raise 415 Unsupported media type
+        try:
+            return self.parsers[request.META['CONTENT_TYPE']]
+        except:
+            raise ResourceException(STATUS_415_UNSUPPORTED_MEDIA_TYPE,
+                                    {'detail': 'Unsupported media type'})
     
     def _determine_emitter(self, request):
         """Return the appropriate emitter for the output, given the client's 'Accept' header,
@@ -90,16 +126,40 @@ class Resource(object):
                         (accept_mimetype == mimetype)):
                             return (mimetype, emitter)      
 
-        raise self.HTTPException(406, {'status': 'Not Acceptable',
-                                       'accepts': ','.join(item[0] for item in self.emitters)}, {})
+        raise ResourceException(STATUS_406_NOT_ACCEPTABLE,
+                                {'detail': 'Could not statisfy the client\'s accepted content type',
+                                 'accepted_types': [item[0] for item in self.emitters]})
+
+    
+    def _validate_data(self, method, data):
+        """If there is an appropriate form to deal with this operation,
+        then validate the data and return the resulting dictionary.
+        """
+        if method == 'PUT' and self.update_form:
+            form = self.update_form(data)
+        elif method == 'POST' and self.create_form:
+            form = self.create_form(data)
+        else:
+            return data
+
+        if not form.is_valid():
+            raise ResourceException(STATUS_400_BAD_REQUEST,
+                                    {'detail': dict((k, map(unicode, v))
+                                                    for (k,v) in form.errors.iteritems())})
+
+        return form.cleaned_data
 
 
     def _handle_request(self, request, *args, **kwargs):
-        method = request.method
+
+        # Hack to ensure PUT requests get the same form treatment as POST requests
+        utils.coerce_put_post(request)
+
+        # Get the request method, allowing for PUT and DELETE tunneling
+        method = self._determine_method(request)
 
         try:
-            if not method in self.allowed_methods:
-                raise self.HTTPException(405, {'status': 'Method Not Allowed'}, {})
+            self._check_method_allowed(method)
     
             # Parse the HTTP Request content
             func = getattr(self, self.callmap.get(method, ''))
@@ -107,11 +167,12 @@ class Resource(object):
             if method in ('PUT', 'POST'):
                 parser = self._determine_parser(request)
                 data = parser(self, request).parse(request.raw_post_data)
+                data = self._validate_data(method, data)
                 (status, ret, headers) = func(data, request.META, *args, **kwargs)
-    
+
             else:
                 (status, ret, headers) = func(request.META, *args, **kwargs)
-        except self.HTTPException, exc:
+        except ResourceException, exc:
             (status, ret, headers) = (exc.status, exc.content, exc.headers)
 
         headers['Allow'] = ', '.join(self.allowed_methods)
@@ -119,11 +180,11 @@ class Resource(object):
         # Serialize the HTTP Response content
         try:        
             mimetype, emitter = self._determine_emitter(request)
-        except self.HTTPException, exc:
+        except ResourceException, exc:
             (status, ret, headers) = (exc.status, exc.content, exc.headers)
             mimetype, emitter = self.emitters[0]
             
-        content = emitter(self, status, headers).emit(ret)
+        content = emitter(self, request, status, headers).emit(ret)
 
         # Build the HTTP Response
         resp = HttpResponse(content, mimetype=mimetype, status=status)
@@ -134,20 +195,20 @@ class Resource(object):
 
     def _not_implemented(self, operation):
         resource_name = self.__class__.__name__
-        return (500, {'status': 'Internal Server Error',
-                          'detail': '%s %s operation is permitted but has not been implemented' % (resource_name, operation)}, {})
+        raise ResourceException(STATUS_500_INTERNAL_SERVER_ERROR,
+                                {'detail': '%s operation on this resource has not been implemented' % (operation, )})
 
     def read(self, headers={}, *args, **kwargs):
-        return self._not_implemented('read')
+        self._not_implemented('read')
 
     def create(self, data=None, headers={}, *args, **kwargs):
-        return self._not_implemented('create')
+        self._not_implemented('create')
     
     def update(self, data=None, headers={}, *args, **kwargs):
-        return self._not_implemented('update')
+        self._not_implemented('update')
 
     def delete(self, headers={}, *args, **kwargs):
-        return self._not_implemented('delete')
+        self._not_implemented('delete')
 
     def reverse(self, view, *args, **kwargs):
         """Return a fully qualified URI for a view, using the current request as the base URI.
