@@ -1,6 +1,7 @@
 from django.template import RequestContext, loader
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
 import json
+from utils import dict2xml
 
 class BaseEmitter(object):
     def __init__(self, resource, request, status, headers):
@@ -38,7 +39,8 @@ class JSONEmitter(BaseEmitter):
         return json.dumps(output)
 
 class XMLEmitter(BaseEmitter):
-    pass
+    def emit(self, output):
+        return dict2xml(output)
 
 class HTMLEmitter(TemplatedEmitter):
     template = 'emitter.html'

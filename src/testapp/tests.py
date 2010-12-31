@@ -7,7 +7,9 @@ Replace these with more appropriate tests for your application.
 
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from testapp.views import ReadOnlyResource, MirroringWriteResource
+from testapp import views
+import json
+from rest.utils import xml2dict, dict2xml
 
 class AcceptHeaderTests(TestCase):
     def assert_accept_mimetype(self, mimetype, expect=None, expect_match=True):
@@ -18,7 +20,7 @@ class AcceptHeaderTests(TestCase):
         if expect is None:
             expect = mimetype
 
-        resp = self.client.get(reverse(ReadOnlyResource), HTTP_ACCEPT=mimetype)
+        resp = self.client.get(reverse(views.ReadOnlyResource), HTTP_ACCEPT=mimetype)
 
         if expect_match:
             self.assertEquals(resp['content-type'], expect)
@@ -41,14 +43,63 @@ class AcceptHeaderTests(TestCase):
         self.assert_accept_mimetype('application/invalid', expect_match=False)
 
     def test_invalid_accept_header_returns_406(self):
-        resp = self.client.get(reverse(ReadOnlyResource), HTTP_ACCEPT='invalid/invalid')
+        resp = self.client.get(reverse(views.ReadOnlyResource), HTTP_ACCEPT='invalid/invalid')
         self.assertEquals(resp.status_code, 406)
 
 class AllowedMethodsTests(TestCase):
-    def test_write_on_read_only_resource_returns_405(self):
-        resp = self.client.put(reverse(ReadOnlyResource), {})
+    def test_reading_read_only_allowed(self):
+        resp = self.client.get(reverse(views.ReadOnlyResource))
+        self.assertEquals(resp.status_code, 200)
+        
+    def test_writing_read_only_not_allowed(self):
+        resp = self.client.put(reverse(views.ReadOnlyResource), {})
         self.assertEquals(resp.status_code, 405)
 
-    def test_read_on_write_only_resource_returns_405(self):
-        resp = self.client.get(reverse(MirroringWriteResource))
+    def test_reading_write_only_not_allowed(self):
+        resp = self.client.get(reverse(views.WriteOnlyResource))
         self.assertEquals(resp.status_code, 405)
+
+    def test_writing_write_only_allowed(self):
+        resp = self.client.put(reverse(views.WriteOnlyResource), {})
+        self.assertEquals(resp.status_code, 200)
+
+class EncodeDecodeTests(TestCase):
+    def setUp(self):
+        super(self.__class__, self).setUp()
+        self.input = {'a': 1, 'b': 'example'}
+
+    def test_encode_form_decode_json(self):
+        content = self.input
+        resp = self.client.put(reverse(views.WriteOnlyResource), content, HTTP_ACCEPT='application/json')
+        output = json.loads(resp.content)
+        self.assertEquals(self.input, output)
+
+    def test_encode_json_decode_json(self):
+        content = json.dumps(self.input)
+        resp = self.client.put(reverse(views.WriteOnlyResource), content, 'application/json', HTTP_ACCEPT='application/json')
+        output = json.loads(resp.content)
+        self.assertEquals(self.input, output)
+
+    def test_encode_xml_decode_json(self):
+        content = dict2xml(self.input)
+        resp = self.client.put(reverse(views.WriteOnlyResource), content, 'application/json', HTTP_ACCEPT='application/json')
+        output = json.loads(resp.content)
+        self.assertEquals(self.input, output)
+
+    def test_encode_form_decode_xml(self):
+        content = self.input
+        resp = self.client.put(reverse(views.WriteOnlyResource), content, HTTP_ACCEPT='application/xml')
+        output = xml2dict(resp.content)
+        self.assertEquals(self.input, output)
+
+    def test_encode_json_decode_xml(self):
+        content = json.dumps(self.input)
+        resp = self.client.put(reverse(views.WriteOnlyResource), content, 'application/json', HTTP_ACCEPT='application/xml')
+        output = xml2dict(resp.content)
+        self.assertEquals(self.input, output)
+
+    def test_encode_xml_decode_xml(self):
+        content = dict2xml(self.input)
+        resp = self.client.put(reverse(views.WriteOnlyResource), content, 'application/json', HTTP_ACCEPT='application/xml')
+        output = xml2dict(resp.content)
+        self.assertEquals(self.input, output)

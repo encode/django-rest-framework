@@ -8,7 +8,7 @@ class RootResource(Resource):
 
     def read(self, headers={}, *args, **kwargs):
         return (200, {'read-only-api': self.reverse(ReadOnlyResource),
-                      'write-only-api': self.reverse(MirroringWriteResource),
+                      'write-only-api': self.reverse(WriteOnlyResource),
                       'read-write-api': self.reverse(ReadWriteResource)}, {})
 
 
@@ -23,12 +23,12 @@ class ReadOnlyResource(Resource):
                       'ExampleDecimal': 1.0}, {})
 
 
-class MirroringWriteResource(Resource):
+class WriteOnlyResource(Resource):
     """This is my docstring
     """
     allowed_methods = ('PUT',)
 
-    def create(self, data, headers={}, *args, **kwargs):
+    def update(self, data, headers={}, *args, **kwargs):
         return (200, data, {})
 
 

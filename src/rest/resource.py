@@ -1,11 +1,15 @@
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse
-from django.core.handlers.wsgi import STATUS_CODE_TEXT
 from rest import emitters, parsers, utils
 from decimal import Decimal
 
-for (key, val) in STATUS_CODE_TEXT.items():
-    locals()["STATUS_%d_%s" % (key, val.replace(' ', '_'))] = key
+# 
+STATUS_400_BAD_REQUEST = 400
+STATUS_405_METHOD_NOT_ALLOWED = 405
+STATUS_406_NOT_ACCEPTABLE = 406
+STATUS_415_UNSUPPORTED_MEDIA_TYPE = 415
+STATUS_500_INTERNAL_SERVER_ERROR = 500
+STATUS_501_NOT_IMPLEMENTED = 501
 
 
 class ResourceException(Exception):
@@ -30,7 +34,8 @@ class Resource(object):
 
     parsers = { 'application/json': parsers.JSONParser,
                 'application/xml': parsers.XMLParser,
-                'application/x-www-form-urlencoded': parsers.FormParser }
+                'application/x-www-form-urlencoded': parsers.FormParser,
+                'multipart/form-data': parsers.FormParser }
 
     create_form = None
     update_form = None
@@ -74,11 +79,17 @@ class Resource(object):
     def _determine_parser(self, request):
         """Return the appropriate parser for the input, given the client's 'Content-Type' header,
         and the content types that this Resource knows how to parse."""
+        content_type = request.META.get('CONTENT_TYPE', 'application/x-www-form-urlencoded')
+        split = content_type.split(';', 1)
+        if len(split) > 1:
+            content_type = split[0]
+        content_type = content_type.strip()
+
         try:
-            return self.parsers[request.META['CONTENT_TYPE']]
-        except:
+            return self.parsers[content_type]
+        except KeyError:
             raise ResourceException(STATUS_415_UNSUPPORTED_MEDIA_TYPE,
-                                    {'detail': 'Unsupported media type'})
+                                    {'detail': 'Unsupported content type \'%s\'' % content_type})
     
     def _determine_emitter(self, request):
         """Return the appropriate emitter for the output, given the client's 'Accept' header,
