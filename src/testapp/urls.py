@@ -5,4 +5,7 @@ urlpatterns = patterns('testapp.views',
     (r'^read-only$', 'ReadOnlyResource'),
     (r'^write-only$', 'WriteOnlyResource'),
     (r'^read-write$', 'ReadWriteResource'),
+    (r'^model$', 'ModelFormResource'),
+    (r'^container$', 'ContainerFactory'),
+    (r'^container/((?P<key>[^/]+))$', 'ContainerInstance'),
 )

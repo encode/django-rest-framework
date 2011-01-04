@@ -12,17 +12,17 @@
     <h1>{{ resource_name }}</h1>
     <p>{{ resource_doc }}</p>
     <pre>{% autoescape off %}<b>{{ status }} {{ reason }}</b>
-{% for key, val in headers.items %}<b>{{ key }}:</b> {{ val }}
+{% for key, val in headers.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
 {% endfor %}
 {{ content|urlize_quoted_links }}{% endautoescape %}    </pre>
 
-{% if 'GET' in allowed_methods %}
+{% if 'read' in resource.allowed_operations %}
 	<div class='action'>
 		<a href='{{ request.path }}'>Read</a>
 	</div>
 {% endif %}
 
-{% if 'POST' in resource.allowed_methods %}
+{% if 'create' in resource.allowed_operations %}
 	<div class='action'>
 		<form action="{{ request.path }}" method="POST">
 		    {% csrf_token %}
@@ -32,7 +32,7 @@
 	</div>
 {% endif %}
 
-{% if 'PUT' in resource.allowed_methods %}
+{% if 'update' in resource.allowed_operations %}
 	<div class='action'>
 		<form action="{{ request.path }}" method="POST">
 			<input type="hidden" name="{{ resource.METHOD_PARAM}}" value="PUT" />
@@ -43,7 +43,7 @@
 	</div>
 {% endif %}
 
-{% if 'DELETE' in resource.allowed_methods %}
+{% if 'delete' in resource.allowed_operations %}
 	<div class='action'>
 		<form action="{{ request.path }}" method="POST">
 		    {% csrf_token %}

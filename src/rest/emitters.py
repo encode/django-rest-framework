@@ -4,12 +4,13 @@ import json
 from utils import dict2xml
 
 class BaseEmitter(object):
-    def __init__(self, resource, request, status, headers):
+    def __init__(self, resource, request, status, headers, form):
         self.request = request
         self.resource = resource
         self.status = status
         self.headers = headers
-    
+        self.form = form
+
     def emit(self, output):
         return output
 
@@ -26,14 +27,13 @@ class TemplatedEmitter(BaseEmitter):
             'headers': self.headers,
             'resource_name': self.resource.__class__.__name__,
             'resource_doc': self.resource.__doc__,
-            'create_form': self.resource.create_form and self.resource.create_form() or None,
-            'update_form': self.resource.update_form and self.resource.update_form() or None,
-            'allowed_methods': self.resource.allowed_methods,
+            'create_form': self.form,
+            'update_form': self.form,
             'request': self.request,
             'resource': self.resource,
         })
         return template.render(context)
-    
+
 class JSONEmitter(BaseEmitter):
     def emit(self, output):
         return json.dumps(output)

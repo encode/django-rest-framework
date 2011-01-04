@@ -9,7 +9,8 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from testapp import views
 import json
-from rest.utils import xml2dict, dict2xml
+#from rest.utils import xml2dict, dict2xml
+
 
 class AcceptHeaderTests(TestCase):
     def assert_accept_mimetype(self, mimetype, expect=None, expect_match=True):
@@ -45,6 +46,10 @@ class AcceptHeaderTests(TestCase):
     def test_invalid_accept_header_returns_406(self):
         resp = self.client.get(reverse(views.ReadOnlyResource), HTTP_ACCEPT='invalid/invalid')
         self.assertEquals(resp.status_code, 406)
+    
+    def test_prefer_specific(self):
+        self.fail("Test not implemented")
+
 
 class AllowedMethodsTests(TestCase):
     def test_reading_read_only_allowed(self):
@@ -63,6 +68,7 @@ class AllowedMethodsTests(TestCase):
         resp = self.client.put(reverse(views.WriteOnlyResource), {})
         self.assertEquals(resp.status_code, 200)
 
+
 class EncodeDecodeTests(TestCase):
     def setUp(self):
         super(self.__class__, self).setUp()
@@ -70,36 +76,71 @@ class EncodeDecodeTests(TestCase):
 
     def test_encode_form_decode_json(self):
         content = self.input
-        resp = self.client.put(reverse(views.WriteOnlyResource), content, HTTP_ACCEPT='application/json')
+        resp = self.client.put(reverse(views.WriteOnlyResource), content)
         output = json.loads(resp.content)
         self.assertEquals(self.input, output)
 
     def test_encode_json_decode_json(self):
         content = json.dumps(self.input)
-        resp = self.client.put(reverse(views.WriteOnlyResource), content, 'application/json', HTTP_ACCEPT='application/json')
+        resp = self.client.put(reverse(views.WriteOnlyResource), content, 'application/json')
         output = json.loads(resp.content)
         self.assertEquals(self.input, output)
 
-    def test_encode_xml_decode_json(self):
-        content = dict2xml(self.input)
-        resp = self.client.put(reverse(views.WriteOnlyResource), content, 'application/json', HTTP_ACCEPT='application/json')
+    #def test_encode_xml_decode_json(self):
+    #    content = dict2xml(self.input)
+    #    resp = self.client.put(reverse(views.WriteOnlyResource), content, 'application/json', HTTP_ACCEPT='application/json')
+    #    output = json.loads(resp.content)
+    #    self.assertEquals(self.input, output)
+
+    #def test_encode_form_decode_xml(self):
+    #    content = self.input
+    #    resp = self.client.put(reverse(views.WriteOnlyResource), content, HTTP_ACCEPT='application/xml')
+    #    output = xml2dict(resp.content)
+    #    self.assertEquals(self.input, output)
+
+    #def test_encode_json_decode_xml(self):
+    #    content = json.dumps(self.input)
+    #    resp = self.client.put(reverse(views.WriteOnlyResource), content, 'application/json', HTTP_ACCEPT='application/xml')
+    #    output = xml2dict(resp.content)
+    #    self.assertEquals(self.input, output)
+
+    #def test_encode_xml_decode_xml(self):
+    #    content = dict2xml(self.input)
+    #    resp = self.client.put(reverse(views.WriteOnlyResource), content, 'application/json', HTTP_ACCEPT='application/xml')
+    #    output = xml2dict(resp.content)
+    #    self.assertEquals(self.input, output)
+
+class ModelTests(TestCase):
+    def test_create_container(self):
+        content = json.dumps({'name': 'example'})
+        resp = self.client.post(reverse(views.ContainerFactory), content, 'application/json')
         output = json.loads(resp.content)
-        self.assertEquals(self.input, output)
+        self.assertEquals(resp.status_code, 201)
+        self.assertEquals(output['name'], 'example')
+        self.assertEquals(set(output.keys()), set(('absolute_uri', 'name', 'key')))
 
-    def test_encode_form_decode_xml(self):
-        content = self.input
-        resp = self.client.put(reverse(views.WriteOnlyResource), content, HTTP_ACCEPT='application/xml')
-        output = xml2dict(resp.content)
-        self.assertEquals(self.input, output)
+class CreatedModelTests(TestCase):
+    def setUp(self):
+        content = json.dumps({'name': 'example'})
+        resp = self.client.post(reverse(views.ContainerFactory), content, 'application/json', HTTP_ACCEPT='application/json')
+        self.container = json.loads(resp.content)
 
-    def test_encode_json_decode_xml(self):
-        content = json.dumps(self.input)
-        resp = self.client.put(reverse(views.WriteOnlyResource), content, 'application/json', HTTP_ACCEPT='application/xml')
-        output = xml2dict(resp.content)
-        self.assertEquals(self.input, output)
+    def test_read_container(self):
+        resp = self.client.get(self.container["absolute_uri"])
+        self.assertEquals(resp.status_code, 200)
+        container = json.loads(resp.content)
+        self.assertEquals(container, self.container)
 
-    def test_encode_xml_decode_xml(self):
-        content = dict2xml(self.input)
-        resp = self.client.put(reverse(views.WriteOnlyResource), content, 'application/json', HTTP_ACCEPT='application/xml')
-        output = xml2dict(resp.content)
-        self.assertEquals(self.input, output)
+    def test_delete_container(self):
+        resp = self.client.delete(self.container["absolute_uri"])
+        self.assertEquals(resp.status_code, 204)
+        self.assertEquals(resp.content, '')
+
+    def test_update_container(self):
+        self.container['name'] = 'new'
+        content = json.dumps(self.container)
+        resp = self.client.put(self.container["absolute_uri"], content, 'application/json')
+        self.assertEquals(resp.status_code, 200)
+        container = json.loads(resp.content)
+        self.assertEquals(container, self.container)
+        
