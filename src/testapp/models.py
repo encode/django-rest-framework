@@ -1,4 +1,6 @@
 from django.db import models
+from django.template.defaultfilters import slugify
+from datetime import datetime
 import uuid
 
 def uuid_str():
@@ -29,3 +31,33 @@ class ExampleItem(models.Model):
     index = models.IntegerField()
     note = models.CharField(max_length=1024)
     unique_together = (container, index)
+
+
+class BlogPost(models.Model):
+    slug = models.SlugField(editable=False, primary_key=True, default='blah')
+    title = models.CharField(max_length=128)
+    content = models.TextField()
+    when = models.DateTimeField(editable=False)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('testapp.views.BlogPostInstance', (self.slug,))
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.title)
+        self.when = datetime.now()
+        super(self.__class__, self).save(*args, **kwargs)
+
+
+class Comment(models.Model):
+    blogpost = models.ForeignKey(BlogPost, related_name='comments')
+    name = models.CharField(max_length=128)
+    content = models.TextField()
+    when = models.DateTimeField(auto_now_add=True)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('testapp.views.CommentInstance', (self.blogpost.slug, self.id))
+   
+    def save(self):
+        self.index = self.blogpost.comments.count()

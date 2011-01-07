@@ -284,6 +284,7 @@ class Resource(object):
         # Serialize the response content
         ret = self.cleanup_response(ret)
         content = emitter(self, request, status, headers, form).emit(ret)
+        print content
 
         # Build the HTTP Response
         resp = HttpResponse(content, mimetype=mimetype, status=status)

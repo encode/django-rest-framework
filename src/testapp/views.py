@@ -1,6 +1,6 @@
 from rest.resource import Resource, ModelResource
 from testapp.forms import ExampleForm
-from testapp.models import ExampleModel, ExampleContainer
+from testapp.models import ExampleModel, ExampleContainer, BlogPost, Comment
  
 class RootResource(Resource):
     """This is my docstring
@@ -12,7 +12,8 @@ class RootResource(Resource):
                       'write-only-api': self.reverse(WriteOnlyResource),
                       'read-write-api': self.reverse(ReadWriteResource),
                       'model-api': self.reverse(ModelFormResource),
-                      'create-container': self.reverse(ContainerFactory)}, {})
+                      'create-container': self.reverse(ContainerFactory),
+                      'blog-post-creator': self.reverse(BlogPostCreator)}, {})
 
 
 class ReadOnlyResource(Resource):
@@ -61,3 +62,17 @@ class ContainerInstance(ModelResource):
     fields = ('absolute_uri', 'name', 'key')
     form_fields = ('name',)
 
+#######################
+
+    
+class BlogPostCreator(ModelResource):
+    """A Resource with which blog posts may be created.
+    This is distinct from blog post instance so that it is discoverable by the client.
+    (ie the client doens't need to know how to form a blog post url in order to create a blog post)"""
+    allowed_operations = ('create',)
+    model = BlogPost
+    
+class BlogPostInstance(ModelResource):
+    """Represents a single Blog Post."""
+    allowed_operations = ('read', 'update', 'delete')
+    model = BlogPost

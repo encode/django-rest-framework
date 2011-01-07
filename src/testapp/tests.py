@@ -143,4 +143,4 @@ class CreatedModelTests(TestCase):
         self.assertEquals(resp.status_code, 200)
         container = json.loads(resp.content)
         self.assertEquals(container, self.container)
-        
+

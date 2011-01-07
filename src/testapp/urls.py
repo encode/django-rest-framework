@@ -8,4 +8,7 @@ urlpatterns = patterns('testapp.views',
     (r'^model$', 'ModelFormResource'),
     (r'^container$', 'ContainerFactory'),
     (r'^container/((?P<key>[^/]+))$', 'ContainerInstance'),
+    
+    (r'^blogpost/create$', 'BlogPostCreator'),
+    (r'^blogposts/(?P<slug>[^/]+)', 'BlogPostInstance'),
 )
