@@ -11,10 +11,10 @@
   <body>
     <h1>{{ resource_name }}</h1>
     <p>{{ resource_doc }}</p>
-    <pre>{% autoescape off %}<b>{{ status }} {{ reason }}</b>
+    <pre><b>{{ status }} {{ reason }}</b>{% autoescape off %}
 {% for key, val in headers.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
 {% endfor %}
-{{ content|urlize_quoted_links }}{% endautoescape %}    </pre>
+{{ content|urlize_quoted_links }}    </pre>{% endautoescape %}
 
 {% if 'read' in resource.allowed_operations %}
 	<div class='action'>

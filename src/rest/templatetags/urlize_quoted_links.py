@@ -33,7 +33,7 @@ html_gunk_re = re.compile(r'(?:<br clear="all">|<i><\/i>|<b><\/b>|<em><\/em>|<st
 hard_coded_bullets_re = re.compile(r'((?:<p>(?:%s).*?[a-zA-Z].*?</p>\s*)+)' % '|'.join([re.escape(x) for x in DOTS]), re.DOTALL)
 trailing_empty_content_re = re.compile(r'(?:<p>(?:&nbsp;|\s|<br \/>)*?</p>\s*)+\Z')
 
-def urlize_quoted_links(text, trim_url_limit=None, nofollow=False, autoescape=False):
+def urlize_quoted_links(text, trim_url_limit=None, nofollow=False, autoescape=True):
     """
     Converts any URLs in text into clickable links.
 
@@ -89,6 +89,10 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=False, autoescape=Fa
         elif autoescape:
             words[i] = escape(word)
     return u''.join(words)
+
+
+#urlize_quoted_links.needs_autoescape = True
+urlize_quoted_links.is_safe = True
 
 # Register urlize_quoted_links as a custom filter
 # http://docs.djangoproject.com/en/dev/howto/custom-template-tags/

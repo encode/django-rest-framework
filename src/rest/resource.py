@@ -137,15 +137,20 @@ class Resource(object):
 
 
 
-    def determine_form(self, data=None):
+    def determine_form(self, input_data=None, return_data=None):
         """Optionally return a Django Form instance, which may be used for validation
         and/or rendered by an HTML/XHTML emitter.
         
-        The data argument will be non Null if the form is required to be bound to some deserialized
-        input data, or Null if the form is required to be unbound. 
+        The input_data or return_data arguments can be used to bind the form either to the deserialized input,
+        or to a return object. 
         """
         if self.form:
-            return self.form(data)
+            if input_data:
+                return self.form(input_data)
+            elif return_data:
+                return self.form(return_data)
+            else:
+                return self.form()
         return None
   
   
@@ -259,12 +264,13 @@ class Resource(object):
             if method in ('PUT', 'POST'):
                 parser = self.determine_parser(request)
                 data = parser(self, request).parse(request.raw_post_data)
-                form = self.determine_form(data)
+                form = self.determine_form(input_data=data)
                 data = self.cleanup_request(data, form)
                 (status, ret, headers) = func(data, request.META, *args, **kwargs)
 
             else:
                 (status, ret, headers) = func(request.META, *args, **kwargs)
+                form = self.determine_form(return_data=ret)
 
 
         except ResourceException, exc:
@@ -274,7 +280,7 @@ class Resource(object):
         if emitter is None:
             mimetype, emitter = self.emitters[0]
         
-        # Use a form unbound to any data if one has not yet been created
+        # Create an unbound form if one has not yet been created
         if form is None:
             form = self.determine_form()
         
@@ -284,7 +290,6 @@ class Resource(object):
         # Serialize the response content
         ret = self.cleanup_response(ret)
         content = emitter(self, request, status, headers, form).emit(ret)
-        print content
 
         # Build the HTTP Response
         resp = HttpResponse(content, mimetype=mimetype, status=status)
@@ -308,7 +313,7 @@ class ModelResource(Resource):
     fields = None
     form_fields = None
 
-    def determine_form(self, data=None):
+    def determine_form(self, input_data=None, return_data=None):
         """Return a form that may be used in validation and/or rendering an html emitter"""
         if self.form:
             return self.form
@@ -317,12 +322,14 @@ class ModelResource(Resource):
             class NewModelForm(ModelForm):
                 class Meta:
                     model = self.model
-                    fields = self.form_fields if self.form_fields else self.fields
+                    fields = self.form_fields if self.form_fields else None #self.fields
                     
-            if data is None:
-                return NewModelForm()
+            if input_data:
+                return NewModelForm(input_data)
+            elif return_data:
+                return NewModelForm(instance=return_data)
             else:
-                return NewModelForm(data)
+                return NewModelForm()
         
         else:
             return None
@@ -359,6 +366,12 @@ class ModelResource(Resource):
                 ret = _list(thing)
             elif isinstance(thing, dict):
                 ret = _dict(thing)
+            elif isinstance(thing, int):
+                ret = thing
+            elif isinstance(thing, bool):
+                ret = thing
+            elif isinstance(thing, type(None)):
+                ret = thing
             elif isinstance(thing, decimal.Decimal):
                 ret = str(thing)
             elif isinstance(thing, Model):
@@ -417,7 +430,7 @@ class ModelResource(Resource):
             ret = { }
             #handler = self.in_typemapper(type(data), self.anonymous)  # TRC
             handler = None                                             # TRC
-            get_absolute_uri = False
+            get_absolute_url = False
             
             if handler or fields:
                 v = lambda f: getattr(data, f.attname)
@@ -444,12 +457,13 @@ class ModelResource(Resource):
                             for field in get_fields.copy():
                                 if exclude.match(field):
                                     get_fields.discard(field)
-                                    
+                    
+                    get_absolute_url = True
+
                 else:
                     get_fields = set(fields)
-
-                if 'absolute_uri' in get_fields:   # MOVED (TRC)
-                    get_absolute_uri = True
+                    if 'absolute_url' in get_fields:   # MOVED (TRC)
+                        get_absolute_url = True
 
                 met_fields = _method_fields(handler, get_fields)  # TRC
 
@@ -508,14 +522,37 @@ class ModelResource(Resource):
                             #    ret[maybe_field] = _any(handler_f(data))
 
             else:
+                # Add absolute_url if it exists
+                get_absolute_url = True
+                
+                # Add all the fields
                 for f in data._meta.fields:
-                    ret[f.attname] = _any(getattr(data, f.attname))
+                    if f.attname != 'id':
+                        ret[f.attname] = _any(getattr(data, f.attname))
                 
-                fields = dir(data.__class__) + ret.keys()
-                add_ons = [k for k in dir(data) if k not in fields]
+                # Add all the propertiess
+                klass = data.__class__
+                for attr in dir(klass):
+                    if not attr.startswith('_') and not attr in ('pk','id') and isinstance(getattr(klass, attr, None), property):
+                        #if attr.endswith('_url') or attr.endswith('_uri'):
+                        #    ret[attr] = self.make_absolute(_any(getattr(data, attr)))
+                        #else:
+                        ret[attr] = _any(getattr(data, attr))
+                #fields = dir(data.__class__) + ret.keys()
+                #add_ons = [k for k in dir(data) if k not in fields and not k.startswith('_')]
+                #print add_ons
+                ###print dir(data.__class__)
+                #from django.db.models import Model
+                #model_fields = dir(Model)
+
+                #for attr in dir(data):
+                ##    #if attr.startswith('_'):
+                ##    #    continue
+                #    if (attr in fields) and not (attr in model_fields) and not attr.startswith('_'):
+                #        print attr, type(getattr(data, attr, None)), attr in fields, attr in model_fields
                 
-                for k in add_ons:
-                    ret[k] = _any(getattr(data, k))
+                #for k in add_ons:
+                #    ret[k] = _any(getattr(data, k))
             
             # TRC
             # resouce uri
@@ -532,9 +569,13 @@ class ModelResource(Resource):
             #    except: pass
             
             # absolute uri
-            if hasattr(data, 'get_absolute_url') and get_absolute_uri:
-                try: ret['absolute_uri'] = self.make_absolute(data.get_absolute_url())
+            if hasattr(data, 'get_absolute_url') and get_absolute_url:
+                try: ret['absolute_url'] = self.make_absolute(data.get_absolute_url())
                 except: pass
+            
+            for key, val in ret.items():
+                if key.endswith('_url') or key.endswith('_uri'):
+                    ret[key] = self.make_absolute(val)
 
             return ret
         
@@ -560,8 +601,9 @@ class ModelResource(Resource):
         return _any(data, self.fields)
 
 
-    def create(self, data, headers={}):
-        instance = self.model(**data)
+    def create(self, data, headers={}, *args, **kwargs):
+        all_kw_args = dict(data.items() + kwargs.items())
+        instance = self.model(**all_kw_args)
         instance.save()
         headers = {}
         if hasattr(instance, 'get_absolute_url'):
@@ -569,13 +611,22 @@ class ModelResource(Resource):
         return (201, instance, headers)
 
     def read(self, headers={}, *args, **kwargs):
-        instance = self.model.objects.get(**kwargs)
+        try:
+            instance = self.model.objects.get(**kwargs)
+        except self.model.DoesNotExist:
+            return (404, '', {})
+
         return (200, instance, {})
 
     def update(self, data, headers={}, *args, **kwargs):
-        instance = self.model.objects.get(**kwargs)    
-        for (key, val) in data.items():
-            setattr(instance, key, val)
+        try:
+            instance = self.model.objects.get(**kwargs)    
+            for (key, val) in data.items():
+                setattr(instance, key, val)
+        except self.model.DoesNotExist:
+            instance = self.model(**data)
+            instance.save()
+
         instance.save()
         return (200, instance, {})
 
@@ -583,3 +634,14 @@ class ModelResource(Resource):
         instance = self.model.objects.get(**kwargs)
         instance.delete()
         return (204, '', {})
+
+
+class QueryModelResource(ModelResource):
+    allowed_methods = ('read',)
+
+    def determine_form(self, input_data=None, return_data=None):
+        return None
+
+    def read(self, headers={}, *args, **kwargs):
+        query = self.model.objects.all()
+        return (200, query, {})

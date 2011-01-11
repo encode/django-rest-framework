@@ -18,7 +18,7 @@ class TemplatedEmitter(BaseEmitter):
     template = None
 
     def emit(self, output):
-        content = json.dumps(output, indent=4)
+        content = json.dumps(output, indent=4, sort_keys=True)
         template = loader.get_template(self.template)
         context = RequestContext(self.request, {
             'content': content,
