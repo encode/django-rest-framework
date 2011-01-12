@@ -1,9 +1,8 @@
 import json
 
 class BaseParser(object):
-    def __init__(self, resource, request):
+    def __init__(self, resource):
         self.resource = resource
-        self.request = request
     
     def parse(self, input):
         return {}
@@ -20,9 +19,9 @@ class FormParser(BaseParser):
     """The default parser for form data.
     Return a dict containing a single value for each non-reserved parameter
     """
-    def __init__(self, resource, request):
+    def __init__(self, resource):
 
-        if request.method == 'PUT':
+        if resource.request.method == 'PUT':
             # Fix from piston to force Django to give PUT requests the same
             # form processing that POST requests get...
             #
@@ -36,22 +35,22 @@ class FormParser(BaseParser):
             # the first time _load_post_and_files is called (both by wsgi.py and 
             # modpython.py). If it's set, the request has to be 'reset' to redo
             # the query value parsing in POST mode.
-            if hasattr(request, '_post'):
+            if hasattr(resource.request, '_post'):
                 del request._post
                 del request._files
             
             try:
-                request.method = "POST"
-                request._load_post_and_files()
-                request.method = "PUT"
+                resource.request.method = "POST"
+                resource.request._load_post_and_files()
+                resource.request.method = "PUT"
             except AttributeError:
-                request.META['REQUEST_METHOD'] = 'POST'
-                request._load_post_and_files()
-                request.META['REQUEST_METHOD'] = 'PUT'
+                resource.request.META['REQUEST_METHOD'] = 'POST'
+                resource.request._load_post_and_files()
+                resource.request.META['REQUEST_METHOD'] = 'PUT'
 
         # 
         self.data = {}
-        for (key, val) in request.POST.items():
+        for (key, val) in resource.request.POST.items():
             if key not in resource.RESERVED_PARAMS:
                 self.data[key] = val
 

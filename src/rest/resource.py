@@ -57,7 +57,7 @@ class Resource(object):
         """Make the class callable so it can be used as a Django view."""
         self = object.__new__(cls)
         self.__init__()
-        self._request = request
+        self.request = request
         try:
             return self._handle_request(request, *args, **kwargs)
         except:
@@ -76,7 +76,7 @@ class Resource(object):
         TODO: Add SITEMAP option.
         
         Provided for convienience."""
-        return self._request.build_absolute_uri(reverse(view, *args, **kwargs))
+        return self.request.build_absolute_uri(reverse(view, *args, **kwargs))
 
 
     def make_absolute(self, uri):
@@ -84,7 +84,7 @@ class Resource(object):
         TODO: Add SITEMAP option.
 
         Provided for convienience."""
-        return self._request.build_absolute_uri(uri)
+        return self.request.build_absolute_uri(uri)
 
 
     def read(self, headers={}, *args, **kwargs):
@@ -137,36 +137,41 @@ class Resource(object):
 
 
 
-    def determine_form(self, input_data=None, return_data=None):
+    def determine_form(self, data=None, is_response=False):
         """Optionally return a Django Form instance, which may be used for validation
         and/or rendered by an HTML/XHTML emitter.
         
-        The input_data or return_data arguments can be used to bind the form either to the deserialized input,
-        or to a return object. 
+        If data is not None the form will be bound to data.  is_response indicates if data should be
+        treated as the input data (bind to client input) or the response data (bind to an existing object).
         """
         if self.form:
-            if input_data:
-                return self.form(input_data)
-            elif return_data:
-                return self.form(return_data)
+            if data:
+                return self.form(data)
             else:
                 return self.form()
         return None
   
   
-    def cleanup_request(self, data, form=None):
+    def cleanup_request(self, data):
         """Perform any resource-specific data deserialization and/or validation
         after the initial HTTP content-type deserialization has taken place.
         
-        Optionally this may use a Django Form which will have been bound to the data,
-        rather than using the data directly.
-        """
-        return data
+        By default this uses form validation to filter the basic input into the required types."""
+        if self.form is None:
+            return data
+
+        if not self.form.is_valid():
+            details = dict((key, map(unicode, val)) for (key, val) in self.form.errors.iteritems())
+            raise ResourceException(STATUS_400_BAD_REQUEST, {'detail': details})
+
+        return self.form.cleaned_data
 
 
     def cleanup_response(self, data):
         """Perform any resource-specific data filtering prior to the standard HTTP
-        content-type serialization."""
+        content-type serialization.
+
+        Eg filter complex objects that cannot be serialized by json/xml/etc into basic objects that can."""
         return data
 
 
@@ -247,53 +252,57 @@ class Resource(object):
         4. cleanup the response data
         5. serialize response data into response content, using standard HTTP content negotiation
         """
-        method = self.determine_method(request)
         emitter = None
-        form = None
+
+        # We make these attributes to allow for a certain amount of munging,
+        # eg The HTML emitter needs to render this information
+        self.method = self.determine_method(request)
+        self.form = None
+        self.resp_status = None
+        self.resp_content = None
+        self.resp_headers = {}
+
         try:
             # Before we attempt anything else determine what format to emit our response data with.
             mimetype, emitter = self.determine_emitter(request)
 
             # Ensure the requested operation is permitted on this resource
-            self.check_method_allowed(method)
+            self.check_method_allowed(self.method)
 
             # Get the appropriate create/read/update/delete function
-            func = getattr(self, self.CALLMAP.get(method, ''))
+            func = getattr(self, self.CALLMAP.get(self.method, ''))
     
             # Either generate the response data, deserializing and validating any request data
-            if method in ('PUT', 'POST'):
+            if self.method in ('PUT', 'POST'):
                 parser = self.determine_parser(request)
-                data = parser(self, request).parse(request.raw_post_data)
-                form = self.determine_form(input_data=data)
-                data = self.cleanup_request(data, form)
-                (status, ret, headers) = func(data, request.META, *args, **kwargs)
+                data = parser(self).parse(request.raw_post_data)
+                self.form = self.determine_form(data)
+                data = self.cleanup_request(data)
+                (self.resp_status, ret, self.resp_headers) = func(data, request.META, *args, **kwargs)
 
             else:
-                (status, ret, headers) = func(request.META, *args, **kwargs)
-                form = self.determine_form(return_data=ret)
+                (self.resp_status, ret, self.resp_headers) = func(request.META, *args, **kwargs)
+                self.form = self.determine_form(ret, is_response=True)
 
 
         except ResourceException, exc:
-            (status, ret, headers) = (exc.status, exc.content, exc.headers)
+            (self.resp_status, ret, self.resp_headers) = (exc.status, exc.content, exc.headers)
+            if emitter is None:
+                mimetype, emitter = self.emitters[0] 
+            if self.form is None:
+                self.form = self.determine_form()
 
-        # Use a default emitter if request failed without being able to determine an acceptable emitter 
-        if emitter is None:
-            mimetype, emitter = self.emitters[0]
-        
-        # Create an unbound form if one has not yet been created
-        if form is None:
-            form = self.determine_form()
         
         # Always add the allow header
-        headers['Allow'] = ', '.join([self.REVERSE_CALLMAP[operation] for operation in self.allowed_operations])
+        self.resp_headers['Allow'] = ', '.join([self.REVERSE_CALLMAP[operation] for operation in self.allowed_operations])
             
         # Serialize the response content
         ret = self.cleanup_response(ret)
-        content = emitter(self, request, status, headers, form).emit(ret)
+        content = emitter(self).emit(ret)
 
         # Build the HTTP Response
-        resp = HttpResponse(content, mimetype=mimetype, status=status)
-        for (key, val) in headers.items():
+        resp = HttpResponse(content, mimetype=mimetype, status=self.resp_status)
+        for (key, val) in self.resp_headers.items():
             resp[key] = val
 
         return resp
@@ -313,10 +322,10 @@ class ModelResource(Resource):
     fields = None
     form_fields = None
 
-    def determine_form(self, input_data=None, return_data=None):
+    def determine_form(self, data=None, is_response=False):
         """Return a form that may be used in validation and/or rendering an html emitter"""
         if self.form:
-            return self.form
+            return super(self.__class__, self).determine_form(data, is_response=is_response)
 
         elif self.model:
             class NewModelForm(ModelForm):
@@ -324,26 +333,17 @@ class ModelResource(Resource):
                     model = self.model
                     fields = self.form_fields if self.form_fields else None #self.fields
                     
-            if input_data:
-                return NewModelForm(input_data)
-            elif return_data:
-                return NewModelForm(instance=return_data)
+            if data and not is_response:
+                return NewModelForm(data)
+            elif data and is_response:
+                return NewModelForm(instance=data)
             else:
                 return NewModelForm()
         
         else:
             return None
     
-    def cleanup_request(self, data, form=None):
-        """Filter data into form-cleaned data, performing validation and type coercion."""
-        if form is None:
-            return data
 
-        if not form.is_valid():
-            details = dict((key, map(unicode, val)) for (key, val) in form.errors.iteritems())
-            raise ResourceException(STATUS_400_BAD_REQUEST, {'detail': details})
-
-        return form.cleaned_data       
 
     def cleanup_response(self, data):
         """
@@ -614,7 +614,7 @@ class ModelResource(Resource):
         try:
             instance = self.model.objects.get(**kwargs)
         except self.model.DoesNotExist:
-            return (404, '', {})
+            return (404, None, {})
 
         return (200, instance, {})
 
@@ -633,13 +633,14 @@ class ModelResource(Resource):
     def delete(self, headers={}, *args, **kwargs):
         instance = self.model.objects.get(**kwargs)
         instance.delete()
-        return (204, '', {})
+        return (204, None, {})
+        
 
 
 class QueryModelResource(ModelResource):
     allowed_methods = ('read',)
 
-    def determine_form(self, input_data=None, return_data=None):
+    def determine_form(self, data=None, is_response=False):
         return None
 
     def read(self, headers={}, *args, **kwargs):
