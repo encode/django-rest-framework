@@ -7,26 +7,27 @@
       pre {border: 1px solid black; padding: 1em; background: #ffd}
       div.action {padding: 0.5em 1em; margin-bottom: 0.5em; background: #ddf}
     </style>
+    <title>API - {{ resource.name }}</title>
   </head>
   <body>
-    <h1>{{ resource_name }}</h1>
-    <p>{{ resource_doc }}</p>
-    <pre><b>{{ status }} {{ reason }}</b>{% autoescape off %}
-{% for key, val in headers.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
+    <h1>{{ resource.name }}</h1>
+    <p>{{ resource.description }}</p>
+    <pre><b>{{ resource.resp_status }} {{ resource.resp_status_text }}</b>{% autoescape off %}
+{% for key, val in resource.resp_headers.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
 {% endfor %}
 {{ content|urlize_quoted_links }}    </pre>{% endautoescape %}
 
 {% if 'read' in resource.allowed_operations %}
 	<div class='action'>
-		<a href='{{ request.path }}'>Read</a>
+		<a href='{{ resource.request.path }}'>Read</a>
 	</div>
 {% endif %}
 
 {% if 'create' in resource.allowed_operations %}
 	<div class='action'>
-		<form action="{{ request.path }}" method="POST">
+		<form action="{{ resource.request.path }}" method="POST">
 		    {% csrf_token %}
-			{{ create_form.as_p }}
+			{{ resource.form_instance.as_p }}
 			<input type="submit" value="Create" />
 		</form>
 	</div>
@@ -34,10 +35,10 @@
 
 {% if 'update' in resource.allowed_operations %}
 	<div class='action'>
-		<form action="{{ request.path }}" method="POST">
+		<form action="{{ resource.request.path }}" method="POST">
 			<input type="hidden" name="{{ resource.METHOD_PARAM}}" value="PUT" />
 			{% csrf_token %}
-			{{ create_form.as_p }}
+			{{ resource.form_instance.as_p }}
 			<input type="submit" value="Update" />
 		</form>
 	</div>
@@ -45,7 +46,7 @@
 
 {% if 'delete' in resource.allowed_operations %}
 	<div class='action'>
-		<form action="{{ request.path }}" method="POST">
+		<form action="{{ resource.request.path }}" method="POST">
 		    {% csrf_token %}
 			<input type="hidden" name="{{ resource.METHOD_PARAM}}" value="DELETE" />
 			<input type="submit" value="Delete" />

@@ -1,7 +1,9 @@
 from django.http import HttpResponse
 from django.core.urlresolvers import reverse
+from django.core.handlers.wsgi import STATUS_CODE_TEXT
 from rest import emitters, parsers
 from decimal import Decimal
+import re
 
 # 
 STATUS_400_BAD_REQUEST = 400
@@ -22,6 +24,10 @@ class ResourceException(Exception):
 class Resource(object):
     # List of RESTful operations which may be performed on this resource.
     allowed_operations = ('read',)
+    anon_allowed_operations = ()
+
+    # Optional form for input validation and presentation of HTML formatted responses. 
+    form = None
 
     # List of content-types the resource can respond with, ordered by preference
     emitters = ( ('application/json', emitters.JSONEmitter),
@@ -35,9 +41,6 @@ class Resource(object):
                 'application/xml': parsers.XMLParser,
                 'application/x-www-form-urlencoded': parsers.FormParser,
                 'multipart/form-data': parsers.FormParser }
-
-    # Optional form for input validation and presentation of HTML formatted responses. 
-    form = None
 
     # Map standard HTTP methods to RESTful operations
     CALLMAP = { 'GET': 'read', 'POST': 'create', 
@@ -57,18 +60,32 @@ class Resource(object):
         """Make the class callable so it can be used as a Django view."""
         self = object.__new__(cls)
         self.__init__()
-        self.request = request
-        try:
-            return self._handle_request(request, *args, **kwargs)
-        except:
-            import traceback
-            traceback.print_exc()
-            raise
-        
+        return self._handle_request(request, *args, **kwargs)
 
 
     def __init__(self):
         pass
+
+
+    def name(self):
+        """Provide a name for the resource.
+        By default this is the class name, with 'CamelCaseNames' converted to 'Camel Case Names',
+        although this behaviour may be overridden."""
+        class_name = self.__class__.__name__
+        return re.sub('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', ' \\1', class_name).strip()
+
+
+    def description(self):
+        """Provide a description for the resource.
+        By default this is the class's docstring,
+        although this behaviour may be overridden."""
+        return "%s" % self.__doc__
+   
+ 
+    def resp_status_text(self):
+        """Return reason text corrosponding to our HTTP response status code.
+        Provided for convienience."""
+        return STATUS_CODE_TEXT.get(self.resp_status, '')
 
 
     def reverse(self, view, *args, **kwargs):
@@ -125,8 +142,14 @@ class Resource(object):
         return method
 
 
+    def authenticate(self):
+        """..."""
+        # user = ...
+        # if anon_user and not anon_allowed_operations raise PermissionDenied
+        # return 
+
     def check_method_allowed(self, method):
-        """Ensure the request method is acceptable fot this resource."""
+        """Ensure the request method is acceptable for this resource."""
         if not method in self.CALLMAP.keys():
             raise ResourceException(STATUS_501_NOT_IMPLEMENTED,
                                     {'detail': 'Unknown or unsupported method \'%s\'' % method})
@@ -137,13 +160,12 @@ class Resource(object):
 
 
 
-    def determine_form(self, data=None, is_response=False):
+    def get_bound_form(self, data=None, is_response=False):
         """Optionally return a Django Form instance, which may be used for validation
         and/or rendered by an HTML/XHTML emitter.
         
         If data is not None the form will be bound to data.  is_response indicates if data should be
-        treated as the input data (bind to client input) or the response data (bind to an existing object).
-        """
+        treated as the input data (bind to client input) or the response data (bind to an existing object)."""
         if self.form:
             if data:
                 return self.form(data)
@@ -156,15 +178,25 @@ class Resource(object):
         """Perform any resource-specific data deserialization and/or validation
         after the initial HTTP content-type deserialization has taken place.
         
+        Returns a tuple containing the cleaned up data, and optionally a form bound to that data.
+        
         By default this uses form validation to filter the basic input into the required types."""
         if self.form is None:
-            return data
+            return (data, None)
 
-        if not self.form.is_valid():
-            details = dict((key, map(unicode, val)) for (key, val) in self.form.errors.iteritems())
+        form_instance = self.get_bound_form(data)
+
+        if not form_instance.is_valid():
+            if not form_instance.errors:
+                details = 'No content was supplied'
+            else:
+                details = dict((key, map(unicode, val)) for (key, val) in form_instance.errors.iteritems())
+                if form_instance.non_field_errors():
+                    details['_extra'] = self.form.non_field_errors()
+
             raise ResourceException(STATUS_400_BAD_REQUEST, {'detail': details})
 
-        return self.form.cleaned_data
+        return (form_instance.cleaned_data, form_instance)
 
 
     def cleanup_response(self, data):
@@ -188,7 +220,7 @@ class Resource(object):
             return self.parsers[content_type]
         except KeyError:
             raise ResourceException(STATUS_415_UNSUPPORTED_MEDIA_TYPE,
-                                    {'detail': 'Unsupported content type \'%s\'' % content_type})
+                                    {'detail': 'Unsupported media type \'%s\'' % content_type})
 
 
     def determine_emitter(self, request):
@@ -253,13 +285,13 @@ class Resource(object):
         5. serialize response data into response content, using standard HTTP content negotiation
         """
         emitter = None
+        method = self.determine_method(request)
 
         # We make these attributes to allow for a certain amount of munging,
         # eg The HTML emitter needs to render this information
-        self.method = self.determine_method(request)
-        self.form = None
+        self.request = request
+        self.form_instance = None
         self.resp_status = None
-        self.resp_content = None
         self.resp_headers = {}
 
         try:
@@ -267,32 +299,31 @@ class Resource(object):
             mimetype, emitter = self.determine_emitter(request)
 
             # Ensure the requested operation is permitted on this resource
-            self.check_method_allowed(self.method)
+            self.check_method_allowed(method)
 
             # Get the appropriate create/read/update/delete function
-            func = getattr(self, self.CALLMAP.get(self.method, ''))
+            func = getattr(self, self.CALLMAP.get(method, ''))
     
             # Either generate the response data, deserializing and validating any request data
-            if self.method in ('PUT', 'POST'):
+            if method in ('PUT', 'POST'):
                 parser = self.determine_parser(request)
                 data = parser(self).parse(request.raw_post_data)
-                self.form = self.determine_form(data)
-                data = self.cleanup_request(data)
+                (data, self.form_instance) = self.cleanup_request(data)
                 (self.resp_status, ret, self.resp_headers) = func(data, request.META, *args, **kwargs)
 
             else:
                 (self.resp_status, ret, self.resp_headers) = func(request.META, *args, **kwargs)
-                self.form = self.determine_form(ret, is_response=True)
+                self.form_instance = self.get_bound_form(ret, is_response=True)
 
 
         except ResourceException, exc:
             (self.resp_status, ret, self.resp_headers) = (exc.status, exc.content, exc.headers)
             if emitter is None:
                 mimetype, emitter = self.emitters[0] 
-            if self.form is None:
-                self.form = self.determine_form()
+            if self.form_instance is None:
+                self.form_instance = self.get_bound_form()
 
-        
+
         # Always add the allow header
         self.resp_headers['Allow'] = ', '.join([self.REVERSE_CALLMAP[operation] for operation in self.allowed_operations])
             
@@ -315,17 +346,16 @@ from django.db.models.query import QuerySet
 from django.db.models import Model
 import decimal
 import inspect
-import re
 
 class ModelResource(Resource):
     model = None
     fields = None
     form_fields = None
 
-    def determine_form(self, data=None, is_response=False):
+    def get_bound_form(self, data=None, is_response=False):
         """Return a form that may be used in validation and/or rendering an html emitter"""
         if self.form:
-            return super(self.__class__, self).determine_form(data, is_response=is_response)
+            return super(self.__class__, self).get_bound_form(data, is_response=is_response)
 
         elif self.model:
             class NewModelForm(ModelForm):
@@ -640,7 +670,7 @@ class ModelResource(Resource):
 class QueryModelResource(ModelResource):
     allowed_methods = ('read',)
 
-    def determine_form(self, data=None, is_response=False):
+    def get_bound_form(self, data=None, is_response=False):
         return None
 
     def read(self, headers={}, *args, **kwargs):

@@ -1,5 +1,4 @@
 from django.template import RequestContext, loader
-from django.core.handlers.wsgi import STATUS_CODE_TEXT
 import json
 from utils import dict2xml
 
@@ -22,14 +21,6 @@ class TemplatedEmitter(BaseEmitter):
         template = loader.get_template(self.template)
         context = RequestContext(self.resource.request, {
             'content': content,
-            'status': self.resource.resp_status,
-            'reason': STATUS_CODE_TEXT.get(self.resource.resp_status, ''),
-            'headers': self.resource.resp_headers,
-            'resource_name': self.resource.__class__.__name__,
-            'resource_doc': self.resource.__doc__,
-            'create_form': self.resource.form,
-            'update_form': self.resource.form,
-            'request': self.resource.request,
             'resource': self.resource,
         })
         

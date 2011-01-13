@@ -1,6 +1,8 @@
 from rest.resource import Resource, ModelResource, QueryModelResource
 from testapp.models import BlogPost, Comment
- 
+
+##### Root Resource #####
+
 class RootResource(Resource):
     """This is the top level resource for the API.
     All the sub-resources are discoverable from here."""
@@ -11,49 +13,53 @@ class RootResource(Resource):
                       'blog-post': self.reverse(BlogPostCreator)}, {})
 
 
-# Blog Post Resources
+##### Blog Post Resources #####
+
+BLOG_POST_FIELDS = ('created', 'title', 'slug', 'content', 'absolute_url', 'comment_url', 'comments_url')
 
 class BlogPostList(QueryModelResource):
     """A resource which lists all existing blog posts."""
     allowed_operations = ('read', )
     model = BlogPost
-
+    fields = BLOG_POST_FIELDS
 
 class BlogPostCreator(ModelResource):
     """A resource with which blog posts may be created."""
     allowed_operations = ('create',)
     model = BlogPost
-    fields = ('created', 'title', 'slug', 'content', 'absolute_url', 'comment_url', 'comments_url')
-
+    fields = BLOG_POST_FIELDS
 
 class BlogPostInstance(ModelResource):
     """A resource which represents a single blog post."""
     allowed_operations = ('read', 'update', 'delete')
     model = BlogPost
-    fields = ('created', 'title', 'slug', 'content', 'absolute_url', 'comment_url', 'comments_url')
+    fields = BLOG_POST_FIELDS
 
 
-# Comment Resources
+##### Comment Resources #####
+
+COMMENT_FIELDS = ('username', 'comment', 'created', 'rating', 'absolute_url', 'blogpost_url')
 
 class CommentList(QueryModelResource):
     """A resource which lists all existing comments for a given blog post."""
     allowed_operations = ('read', )
     model = Comment
-
+    fields = COMMENT_FIELDS
 
 class CommentCreator(ModelResource):
     """A resource with which blog comments may be created for a given blog post."""
     allowed_operations = ('create',)
     model = Comment
-    fields = ('username', 'comment', 'created', 'rating', 'absolute_url', 'blogpost_url')
-
+    fields = COMMENT_FIELDS
 
 class CommentInstance(ModelResource):
     """A resource which represents a single comment."""
     allowed_operations = ('read', 'update', 'delete')
     model = Comment
-    fields = ('username', 'comment', 'created', 'rating', 'absolute_url', 'blogpost_url')
-    
+    fields = COMMENT_FIELDS
+  
+
+  
 #
 #'read-only-api': self.reverse(ReadOnlyResource),
 #                      'write-only-api': self.reverse(WriteOnlyResource),
