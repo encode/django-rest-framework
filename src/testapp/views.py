@@ -1,4 +1,5 @@
-from rest.resource import Resource, ModelResource, QueryModelResource
+from rest.resource import Resource
+from rest.modelresource import ModelResource, QueryModelResource
 from testapp.models import BlogPost, Comment
 
 ##### Root Resource #####

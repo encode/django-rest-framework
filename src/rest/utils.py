@@ -140,9 +140,9 @@ class XMLEmitter():
     def _to_xml(self, xml, data):
         if isinstance(data, (list, tuple)):
             for item in data:
-                xml.startElement("resource", {})
+                xml.startElement("list-item", {})
                 self._to_xml(xml, item)
-                xml.endElement("resource")
+                xml.endElement("list-item")
 
         elif isinstance(data, dict):
             for key, value in data.iteritems():
@@ -158,11 +158,11 @@ class XMLEmitter():
 
         xml = SimplerXMLGenerator(stream, "utf-8")
         xml.startDocument()
-        xml.startElement("content", {})
+        xml.startElement("root", {})
 
         self._to_xml(xml, data)
 
-        xml.endElement("content")
+        xml.endElement("root")
         xml.endDocument()
         return stream.getvalue()
 

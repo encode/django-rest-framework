@@ -40,8 +40,8 @@ RATING_CHOICES = ((0, 'Awful'),
 
 class BlogPost(models.Model):
     key = models.CharField(primary_key=True, max_length=64, default=uuid_str, editable=False)
-    title = models.CharField(max_length=128, help_text='The article title (Required)')
-    content = models.TextField(help_text='The article body (Required)')
+    title = models.CharField(max_length=128)
+    content = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
     slug = models.SlugField(editable=False, default='')
 
@@ -74,10 +74,13 @@ class BlogPost(models.Model):
 
 class Comment(models.Model):
     blogpost = models.ForeignKey(BlogPost, editable=False, related_name='comments')
-    username = models.CharField(max_length=128, help_text='Please enter a username (Required)')
-    comment = models.TextField(help_text='Enter your comment here (Required)')
-    rating = models.IntegerField(blank=True, null=True, choices=RATING_CHOICES, help_text='Please rate the blog post (Optional)')
+    username = models.CharField(max_length=128)
+    comment = models.TextField()
+    rating = models.IntegerField(blank=True, null=True, choices=RATING_CHOICES, help_text='How did you rate this post?')
     created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('created',)
 
     @models.permalink
     def get_absolute_url(self):
@@ -86,5 +89,6 @@ class Comment(models.Model):
     @property
     @models.permalink
     def blogpost_url(self):
+        """Link to the blog post resource which this comment corresponds to."""
         return ('testapp.views.BlogPostInstance', (self.blogpost.key,))
         
