@@ -11,3 +11,7 @@ source ./env/bin/activate
 pip install -r ./requirements.txt
 python ./src/manage.py test
 
+# To build the documentation...
+
+sphinx-build -c docs -b html -d cache docs html
+

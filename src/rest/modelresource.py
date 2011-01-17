@@ -12,9 +12,37 @@ import re
 
 
 class ModelResource(Resource):
+    """A specialized type of Resource, for RESTful resources that map directly to a Django Model.
+    Useful things this provides:
+
+    0. Default input validation based on ModelForms.
+    1. Nice serialization of returned Models and QuerySets.
+    2. A default set of create/read/update/delete operations."""
+    
+    # The model attribute refers to the Django Model which this Resource maps to.
+    # (The Model's class, rather than an instance of the Model)
     model = None
+    
+    # By default the set of returned fields will be the set of:
+    #
+    # 0. All the fields on the model, excluding 'id'.
+    # 1. All the properties on the model.
+    # 2. The absolute_url of the model, if a get_absolute_url method exists for the model.
+    #
+    # If you wish to override this behaviour,
+    # you should explicitly set the fields attribute on your class.
     fields = None
+    
+    # By default the form used with be a ModelForm for self.model
+    # If you wish to override this behaviour or provide a sub-classed ModelForm
+    # you should explicitly set the form attribute on your class.
+    form = None
+    
+    # By default the set of input fields will be the same as the set of output fields
+    # If you wish to override this behaviour you should explicitly set the
+    # form_fields attribute on your class. 
     form_fields = None
+
 
     def get_bound_form(self, data=None, is_response=False):
         """Return a form that may be used in validation and/or rendering an html emitter"""
@@ -25,7 +53,7 @@ class ModelResource(Resource):
             class NewModelForm(ModelForm):
                 class Meta:
                     model = self.model
-                    fields = self.form_fields if self.form_fields else None #self.fields
+                    fields = self.form_fields if self.form_fields else None
                     
             if data and not is_response:
                 return NewModelForm(data)
@@ -36,7 +64,27 @@ class ModelResource(Resource):
         
         else:
             return None
-    
+
+
+    def cleanup_request(self, data, form_instance):
+        """Override cleanup_request to drop read-only fields from the input prior to validation.
+        This ensures that we don't error out with 'non-existent field' when these fields are supplied,
+        and allows for a pragmatic approach to resources which include read-only elements.
+
+        I would actually like to be strict and verify the value of correctness of the values in these fields,
+        although that gets tricky as it involves validating at the point that we get the model instance.
+        
+        See here for another example of this approach:
+        http://fedoraproject.org/wiki/Cloud_APIs_REST_Style_Guide
+        https://www.redhat.com/archives/rest-practices/2010-April/thread.html#00041"""
+        read_only_fields = set(self.fields) - set(self.form_instance.fields)
+        input_fields = set(data.keys())
+
+        clean_data = {}
+        for key in input_fields - read_only_fields:
+            clean_data[key] = data[key]
+
+        return super(ModelResource, self).cleanup_request(clean_data, form_instance)
 
 
     def cleanup_response(self, data):

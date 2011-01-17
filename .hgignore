@@ -3,5 +3,8 @@ syntax: glob
 *.pyc
 *.db
 env
+cache
+html
 .project
 .pydevproject
+.settings

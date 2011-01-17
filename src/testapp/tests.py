@@ -4,7 +4,7 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from testapp import views
-import json
+#import json
 #from rest.utils import xml2dict, dict2xml
 
 

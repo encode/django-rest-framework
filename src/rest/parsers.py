@@ -1,4 +1,5 @@
 import json
+from rest.status import ResourceException, Status
 
 class BaseParser(object):
     def __init__(self, resource):
@@ -10,7 +11,10 @@ class BaseParser(object):
 
 class JSONParser(BaseParser):
     def parse(self, input):
-        return json.loads(input)
+        try:
+            return json.loads(input)
+        except ValueError, exc:
+            raise ResourceException(Status.HTTP_400_BAD_REQUEST, {'detail': 'JSON parse error - %s' % str(exc)})
 
 class XMLParser(BaseParser):
     pass

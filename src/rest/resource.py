@@ -1,39 +1,29 @@
-from django.http import HttpResponse
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
+from django.http import HttpResponse
 from rest import emitters, parsers
+from rest.status import Status, ResourceException
 from decimal import Decimal
 import re
 
+# TODO: Authentication
 # TODO: Display user login in top panel: http://stackoverflow.com/questions/806835/django-redirect-to-previous-page-after-login
-# TODO: Return basic object, not tuple
+# TODO: Return basic object, not tuple of status code, content, headers
 # TODO: Take request, not headers
-# TODO: Remove self.blah munging  (Add a ResponseContext object)
-# TODO: Erroring on non-existent fields
-# TODO: Standard exception classes and module for status codes
+# TODO: Standard exception classes
 # TODO: Figure how out references and named urls need to work nicely
 # TODO: POST on existing 404 URL, PUT on existing 404 URL
-# TODO: Authentication
+#
+# NEXT: Generic content form
+# NEXT: Remove self.blah munging  (Add a ResponseContext object?)
+# NEXT: Caching cleverness
+# NEXT: Test non-existent fields on ModelResources
 #
 # FUTURE: Erroring on read-only fields
 
 # Documentation, Release
 
-# 
-STATUS_400_BAD_REQUEST = 400
-STATUS_405_METHOD_NOT_ALLOWED = 405
-STATUS_406_NOT_ACCEPTABLE = 406
-STATUS_415_UNSUPPORTED_MEDIA_TYPE = 415
-STATUS_500_INTERNAL_SERVER_ERROR = 500
-STATUS_501_NOT_IMPLEMENTED = 501
-
-
-class ResourceException(Exception):
-    def __init__(self, status, content='', headers={}):
-        self.status = status
-        self.content = content
-        self.headers = headers
 
 
 class Resource(object):
@@ -110,13 +100,16 @@ class Resource(object):
 
     def reverse(self, view, *args, **kwargs):
         """Return a fully qualified URI for a given view or resource.
-        Use the Sites framework if possible, otherwise fallback to using the current request."""
+        Add the domain using the Sites framework if possible, otherwise fallback to using the current request."""
         return self.add_domain(reverse(view, *args, **kwargs))
 
 
     def add_domain(self, path):
         """Given a path, return an fully qualified URI.
         Use the Sites framework if possible, otherwise fallback to using the domain from the current request."""
+
+        # Note that out-of-the-box the Sites framework uses the reserved domain 'example.com'
+        # See RFC 2606 - http://www.faqs.org/rfcs/rfc2606.html
         try:
             site = Site.objects.get_current()
             if site.domain and site.domain != 'example.com':
@@ -150,7 +143,7 @@ class Resource(object):
     def not_implemented(self, operation):
         """Return an HTTP 500 server error if an operation is called which has been allowed by
         allowed_operations, but which has not been implemented."""
-        raise ResourceException(STATUS_500_INTERNAL_SERVER_ERROR,
+        raise ResourceException(Status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 {'detail': '%s operation on this resource has not been implemented' % (operation, )})
 
 
@@ -172,16 +165,16 @@ class Resource(object):
         # if anon_user and not anon_allowed_operations raise PermissionDenied
         # return 
 
+
     def check_method_allowed(self, method):
         """Ensure the request method is acceptable for this resource."""
         if not method in self.CALLMAP.keys():
-            raise ResourceException(STATUS_501_NOT_IMPLEMENTED,
+            raise ResourceException(Status.HTTP_501_NOT_IMPLEMENTED,
                                     {'detail': 'Unknown or unsupported method \'%s\'' % method})
             
         if not self.CALLMAP[method] in self.allowed_operations:
-            raise ResourceException(STATUS_405_METHOD_NOT_ALLOWED,
+            raise ResourceException(Status.HTTP_405_METHOD_NOT_ALLOWED,
                                     {'detail': 'Method \'%s\' not allowed on this resource.' % method})
-
 
 
     def get_bound_form(self, data=None, is_response=False):
@@ -207,16 +200,31 @@ class Resource(object):
         By default this uses form validation to filter the basic input into the required types."""
         if form_instance is None:
             return data
+        
+        # Default form validation does not check for additional invalid fields
+        non_existent_fields = []
+        for key in set(data.keys()) - set(form_instance.fields.keys()):
+            non_existent_fields.append(key)
 
-        if not form_instance.is_valid():
-            if not form_instance.errors:
+        if not form_instance.is_valid() or non_existent_fields:
+            if not form_instance.errors and not non_existent_fields:
+                # If no data was supplied the errors property will be None
                 details = 'No content was supplied'
+                
             else:
+                # Add standard field errors
                 details = dict((key, map(unicode, val)) for (key, val) in form_instance.errors.iteritems())
-                if form_instance.non_field_errors():
-                    details['_extra'] = self.form.non_field_errors()
 
-            raise ResourceException(STATUS_400_BAD_REQUEST, {'detail': details})
+                # Add any non-field errors
+                if form_instance.non_field_errors():
+                    details['errors'] = self.form.non_field_errors()
+
+                # Add any non-existent field errors
+                for key in non_existent_fields:
+                    details[key] = ['This field does not exist']
+
+            # Bail.  Note that we will still serialize this response with the appropriate content type 
+            raise ResourceException(Status.HTTP_400_BAD_REQUEST, {'detail': details})
 
         return form_instance.cleaned_data
 
@@ -241,7 +249,7 @@ class Resource(object):
         try:
             return self.parsers[content_type]
         except KeyError:
-            raise ResourceException(STATUS_415_UNSUPPORTED_MEDIA_TYPE,
+            raise ResourceException(Status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
                                     {'detail': 'Unsupported media type \'%s\'' % content_type})
 
 
@@ -295,14 +303,13 @@ class Resource(object):
                         (accept_mimetype == mimetype)):
                             return (mimetype, emitter)      
 
-        raise ResourceException(STATUS_406_NOT_ACCEPTABLE,
+        raise ResourceException(Status.HTTP_406_NOT_ACCEPTABLE,
                                 {'detail': 'Could not statisfy the client\'s accepted content type',
                                  'accepted_types': [item[0] for item in self.emitters]})
 
 
     def _handle_request(self, request, *args, **kwargs):
         """
-        
         Broadly this consists of the following procedure:
 
         0. ensure the operation is permitted
@@ -347,9 +354,14 @@ class Resource(object):
 
 
         except ResourceException, exc:
+            # On exceptions we still serialize the response appropriately
             (self.resp_status, ret, self.resp_headers) = (exc.status, exc.content, exc.headers)
+
+            # Fall back to the default emitter if we failed to perform content negotiation
             if emitter is None:
-                mimetype, emitter = self.emitters[0] 
+                mimetype, emitter = self.emitters[0]
+
+            # Provide an empty bound form if we do not have an existing form and if one is required
             if self.form_instance is None and emitter.uses_forms:
                 self.form_instance = self.get_bound_form()
 
