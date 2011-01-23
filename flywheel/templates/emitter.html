@@ -1,0 +1,96 @@
+{% load urlize_quoted_links %}{% load add_query_param %}<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <style>
+      pre {border: 1px solid black; padding: 1em; background: #ffd}
+      div.action {border: 1px solid black; padding: 0.5em 1em; margin-bottom: 0.5em; background: #ddf}
+      ul.accepttypes {float: right; list-style-type: none; margin: 0; padding: 0}
+      ul.accepttypes li {display: inline;}
+      form div {margin: 0.5em 0}
+	  form div * {vertical-align: top}
+	  form ul.errorlist {display: inline; margin: 0; padding: 0}
+	  form ul.errorlist li {display: inline; color: red;}
+	  .clearing {display: block; margin: 0; padding: 0; clear: both;}
+    </style>
+    <title>API - {{ resource.name }}</title>
+  </head>
+  <body>
+    <h1>{{ resource.name }}</h1>
+    <p>{{ resource.description|linebreaksbr }}</p>
+    <pre><b>{{ response.status }} {{ response.status_text }}</b>{% autoescape off %}
+{% for key, val in response.headers.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
+{% endfor %}
+{{ content|urlize_quoted_links }}    </pre>{% endautoescape %}
+
+{% if 'GET' in resource.allowed_methods %}
+	<div class='action'>
+		<a href='{{ request.path }}'>GET</a>
+		<ul class="accepttypes">
+		{% for media_type in resource.emitted_media_types %}
+		  {% with resource.ACCEPT_QUERY_PARAM|add:"="|add:media_type as param %}
+		    <li>[<a href='{{ request.path|add_query_param:param }}'>{{ media_type }}</a>]</li>
+		  {% endwith %}
+		{% endfor %}
+		</ul>
+		<div class="clearing"></div>
+	</div>
+{% endif %}
+
+{% comment %} *** Only display the POST/PUT/DELETE forms if we have a bound form, and if method     ***
+              *** tunneling via POST forms is enabled.                                              ***
+              *** (We could display only the POST form if method tunneling is disabled, but I think ***
+              ***  the user experience would be confusing, so we simply turn all forms off.         *** {% endcomment %}
+
+{% if resource.METHOD_PARAM and form %}
+	{% if 'POST' in resource.allowed_methods %}
+		<div class='action'>
+			<form action="{{ request.path }}" method="post">
+			    {% csrf_token %}
+				{% for field in form %}
+				<div>
+				    {{ field.label_tag }}:
+				    {{ field }}
+				    {{ field.help_text }}
+				    {{ field.errors }}
+				</div>
+				{% endfor %}
+				<div class="clearing"></div>	
+				<input type="submit" value="POST" />
+			</form>
+		</div>
+	{% endif %}
+	
+	{% if 'PUT' in resource.allowed_methods %}
+		<div class='action'>
+			<form action="{{ request.path }}" method="post">
+				<input type="hidden" name="{{ resource.METHOD_PARAM }}" value="PUT" />
+				{% csrf_token %}
+				{% for field in form %}
+				<div>
+				    {{ field.label_tag }}:
+				    {{ field }}
+				    {{ field.help_text }}
+				    {{ field.errors }}			    
+				</div>
+				{% endfor %}
+				<div class="clearing"></div>	
+				<input type="submit" value="PUT" />
+			</form>
+		</div>
+	{% endif %}
+	
+	{% if 'DELETE' in resource.allowed_methods %}
+		<div class='action'>
+			<form action="{{ request.path }}" method="post">
+			    {% csrf_token %}
+				<input type="hidden" name="{{ resource.METHOD_PARAM }}" value="DELETE" />
+				<input type="submit" value="DELETE" />
+			</form>
+		</div>
+	{% endif %}
+{% endif %}
+
+  </body>
+</html>

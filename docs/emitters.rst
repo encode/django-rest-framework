@@ -1,0 +1,5 @@
+Emitters
+========
+
+.. automodule:: emitters
+   :members:

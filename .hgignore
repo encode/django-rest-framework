@@ -3,7 +3,7 @@ syntax: glob
 *.pyc
 *.db
 env
-cache
+docs-build
 html
 .project
 .pydevproject
