@@ -2,7 +2,7 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 
-from flywheel import emitters, parsers
+from flywheel import emitters, parsers, authenticators
 from flywheel.response import status, Response, ResponseException
 
 from decimal import Decimal
@@ -48,6 +48,10 @@ class Resource(object):
     parsers = ( parsers.JSONParser,
                 parsers.XMLParser,
                 parsers.FormParser )
+    
+    # List of all authenticating methods to attempt
+    authenticators = ( authenticators.UserLoggedInAuthenticator,
+                       authenticators.BasicAuthenticator )
 
     # Optional form for input validation and presentation of HTML formatted responses.
     form = None
@@ -81,7 +85,6 @@ class Resource(object):
         """"""
         # Setup the resource context
         self.request = request
-        self.auth_context = None
         self.response = None
         self.form_instance = None
 
@@ -123,7 +126,7 @@ class Resource(object):
     #    """Return an list of all the media types that this resource can emit."""
     #    return [parser.media_type for parser in self.parsers]
     
-    #def deafult_parser(self):
+    #def default_parser(self):
     #    return self.parsers[0]
 
 
@@ -133,31 +136,22 @@ class Resource(object):
         return self.add_domain(reverse(view, args=args, kwargs=kwargs))
 
 
-    def authenticate(self, request):
-        """TODO"""
-        return None
-        # user = ...
-        # if DEBUG and request is from localhost
-        # if anon_user and not anon_allowed_methods raise PermissionDenied
-        # return auth_context
-
-
-    def get(self, request, *args, **kwargs):
+    def get(self, request, auth, *args, **kwargs):
         """Must be subclassed to be implemented."""
         self.not_implemented('GET')
 
 
-    def post(self, request, content, *args, **kwargs):
+    def post(self, request, auth, content, *args, **kwargs):
         """Must be subclassed to be implemented."""
         self.not_implemented('POST')
 
 
-    def put(self, request, content, *args, **kwargs):
+    def put(self, request, auth, content, *args, **kwargs):
         """Must be subclassed to be implemented."""
         self.not_implemented('PUT')
 
 
-    def delete(self, request, *args, **kwargs):
+    def delete(self, request, auth, *args, **kwargs):
         """Must be subclassed to be implemented."""
         self.not_implemented('DELETE')
 
@@ -196,12 +190,28 @@ class Resource(object):
         return method
 
 
-    def check_method_allowed(self, method):
+    def authenticate(self, request):
+        """Attempt to authenticate the request, returning an authentication context or None"""
+        for authenticator in self.authenticators:
+            auth_context = authenticator(self).authenticate(request)
+            if auth_context:
+                return auth_context
+        return None
+
+
+    def check_method_allowed(self, method, auth):
         """Ensure the request method is acceptable for this resource."""
+
+        # If anonoymous check permissions and bail with no further info if disallowed
+        if auth is None and not method in self.anon_allowed_methods:
+            raise ResponseException(status.HTTP_403_FORBIDDEN,
+                                    {'detail': 'You do not have permission to access this resource. ' +
+                                     'You may need to login or otherwise authenticate the request.'})
+
         if not method in self.callmap.keys():
             raise ResponseException(status.HTTP_501_NOT_IMPLEMENTED,
                                     {'detail': 'Unknown or unsupported method \'%s\'' % method})
-            
+
         if not method in self.allowed_methods:
             raise ResponseException(status.HTTP_405_METHOD_NOT_ALLOWED,
                                     {'detail': 'Method \'%s\' not allowed on this resource.' % method})
@@ -376,10 +386,10 @@ class Resource(object):
             # Typically the context will be a user, or None if this is an anonymous request,
             # but it could potentially be more complex (eg the context of a request key which
             # has been signed against a particular set of permissions)
-            self.auth_context = self.authenticate(request)
+            auth_context = self.authenticate(request)
 
             # Ensure the requested operation is permitted on this resource
-            self.check_method_allowed(method)
+            self.check_method_allowed(method, auth_context)
 
             # Get the appropriate create/read/update/delete function
             func = getattr(self, self.callmap.get(method, None))
@@ -391,10 +401,10 @@ class Resource(object):
                 data = parser(self).parse(request.raw_post_data)
                 self.form_instance = self.get_form(data)
                 data = self.cleanup_request(data, self.form_instance)
-                response = func(request, data, *args, **kwargs)
+                response = func(request, auth_context, data, *args, **kwargs)
 
             else:
-                response = func(request, *args, **kwargs)
+                response = func(request, auth_context, *args, **kwargs)
 
             # Allow return value to be either Response, or an object, or None
             if isinstance(response, Response):
