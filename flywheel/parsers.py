@@ -11,7 +11,7 @@ class BaseParser(object):
     """All parsers should extend BaseParser, specifing a media_type attribute,
     and overriding the parse() method."""
 
-    media_types = ()
+    media_type = None
 
     def __init__(self, resource):
         """Initialise the parser with the Resource instance as state,
@@ -26,7 +26,7 @@ class BaseParser(object):
 
 
 class JSONParser(BaseParser):
-    media_types = ('application/xml',)
+    media_type = 'application/json'
 
     def parse(self, input):
         try:
@@ -36,7 +36,7 @@ class JSONParser(BaseParser):
 
 
 class XMLParser(BaseParser):
-    media_types = ('application/xml',)
+    media_type = 'application/xml'
 
 
 class FormParser(BaseParser):
@@ -44,7 +44,7 @@ class FormParser(BaseParser):
     Return a dict containing a single value for each non-reserved parameter.
     """
     
-    media_types = ('application/x-www-form-urlencoded',)
+    media_type = 'application/x-www-form-urlencoded'
 
     def parse(self, input):
         # The FormParser doesn't parse the input as other parsers would, since Django's already done the
