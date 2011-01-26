@@ -8,13 +8,21 @@ except ImportError:
 # TODO: Make all parsers only list a single media_type, rather than a list
 
 class BaseParser(object):
+    """All parsers should extend BaseParser, specifing a media_type attribute,
+    and overriding the parse() method."""
+
     media_types = ()
 
     def __init__(self, resource):
+        """Initialise the parser with the Resource instance as state,
+        in case the parser needs to access any metadata on the Resource object."""
         self.resource = resource
     
     def parse(self, input):
-        return {}
+        """Given some serialized input, return the deserialized output.
+        The input will be the raw request content body.  The return value may be of
+        any type, but for many parsers/inputs it might typically be a dict."""
+        return input
 
 
 class JSONParser(BaseParser):
@@ -25,6 +33,7 @@ class JSONParser(BaseParser):
             return json.loads(input)
         except ValueError, exc:
             raise ResponseException(status.HTTP_400_BAD_REQUEST, {'detail': 'JSON parse error - %s' % str(exc)})
+
 
 class XMLParser(BaseParser):
     media_types = ('application/xml',)

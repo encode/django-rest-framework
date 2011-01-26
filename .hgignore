@@ -8,3 +8,4 @@ html
 .project
 .pydevproject
 .settings
+.cache

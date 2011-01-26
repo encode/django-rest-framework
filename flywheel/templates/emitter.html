@@ -48,6 +48,7 @@
 		<div class='action'>
 			<form action="{{ request.path }}" method="post">
 			    {% csrf_token %}
+			    {{ form.non_field_errors }}
 				{% for field in form %}
 				<div>
 				    {{ field.label_tag }}:
@@ -67,6 +68,7 @@
 			<form action="{{ request.path }}" method="post">
 				<input type="hidden" name="{{ resource.METHOD_PARAM }}" value="PUT" />
 				{% csrf_token %}
+				{{ form.non_field_errors }}
 				{% for field in form %}
 				<div>
 				    {{ field.label_tag }}:

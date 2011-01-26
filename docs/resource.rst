@@ -1,9 +1,13 @@
 :mod:`resource` 
 ===============
 
-The :mod:`resource` module is the core of FlyWheel.  It provides the :class:`Resource` base class which handles incoming HTTP requests and maps them to method calls, performing authentication, input deserialization, input validation, output serialization.
+.. module:: resource
+
+The :mod:`resource` module is the core of FlyWheel.  It provides the :class:`Resource` base class which handles incoming HTTP requests and maps them to method calls, performing authentication, input deserialization, input validation and output serialization.
 
 Resources are created by sublassing :class:`Resource`, setting a number of class attributes, and overriding one or more methods.
+
+.. class:: Resource
 
 :class:`Resource` class attributes
 ----------------------------------
@@ -26,7 +30,7 @@ The following class attributes determine the behavior of the Resource and are in
 
 .. attribute:: Resource.emitters
 
-  Lists the set of emitters that the Resource supports.  This determines which media types the resource can serialize it's output to.  Clients can specify which media types they accept using standard HTTP content negotiation via the Accept header.  (See `RFC 2616 - Sec 14.1 <http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html>`_)  Clients can also override this standard content negotiation by specifying a `_format` ...
+  The list of emitters that the Resource supports.  This determines which media types the resource can serialize it's output to.  Clients can specify which media types they accept using standard HTTP content negotiation via the Accept header.  (See `RFC 2616 - Sec 14.1 <http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html>`_)  Clients can also override this standard content negotiation by specifying a `_format` ...
 
   The :mod:`emitters` module provides the :class:`BaseEmitter` class and a set of default emitters, including emitters for JSON and XML, as well as emitters for HTML and Plain Text which provide for a self documenting API.
 
@@ -36,11 +40,17 @@ The following class attributes determine the behavior of the Resource and are in
 
 .. attribute:: Resource.parsers
 
-  Lists the set of parsers that the Resource supports. This determines which media types the resource can accept as input for incoming HTTP requests.  (Typically PUT and POST requests).
+  The list of parsers that the Resource supports. This determines which media types the resource can accept as input for incoming HTTP requests.  (Typically PUT and POST requests).
 
   The ordering of the Parsers may be considered informative of preference but is not used ...
 
   Default: ``(parsers.JSONParser, parsers.XMLParser, parsers.FormParser)``
+
+.. attribute:: Resource.authenticators
+
+  The list of authenticators that the Resource supports.  This determines which authentication methods (eg Basic, Digest, OAuth) are used to authenticate requests.
+
+  Default: ``(authenticators.UserLoggedInAuthenticator, authenticators.BasicAuthenticator)`` 
 
 .. attribute:: Resource.form
 
@@ -76,8 +86,8 @@ The following class attributes determine the behavior of the Resource and are in
 .. method:: Resource.emitted_media_types
 .. method:: Resource.parsed_media_types
 
-:class:`Resource` reserved parameters
--------------------------------------
+:class:`Resource` reserved form and query parameters
+----------------------------------------------------
 
 .. attribute:: Resource.ACCEPT_QUERY_PARAM
 
@@ -85,7 +95,7 @@ The following class attributes determine the behavior of the Resource and are in
 
   Set to None to disable, or to another string value to use another name for the reserved URL query parameter.
 
-  Default: ``_accept``
+  Default: ``"_accept"``
 
 .. attribute:: Resource.METHOD_PARAM
 
@@ -93,7 +103,7 @@ The following class attributes determine the behavior of the Resource and are in
 
   Set to None to disable, or to another string value to use another name for the reserved form field.
 
-  Default: ``_method``
+  Default: ``"_method"``
 
 .. attribute:: Resource.CONTENTTYPE_PARAM
 
@@ -103,7 +113,7 @@ The following class attributes determine the behavior of the Resource and are in
   
   Set to None to disable, or to another string value to use another name for the reserved form field.
 
-  Default: ``_contenttype``
+  Default: ``"_contenttype"``
 
 .. attribute:: Resource.CONTENT_PARAM
 
@@ -111,7 +121,7 @@ The following class attributes determine the behavior of the Resource and are in
 
   Set to None to disable, or to another string value to use another name for the reserved form field.
 
-  Default: ``_content``
+  Default: ``"_content"``
 
 .. attribute:: Resource.CSRF_PARAM
 
@@ -119,7 +129,8 @@ The following class attributes determine the behavior of the Resource and are in
 
   Setting to None does not disable Django's CSRF middleware, but it does mean that the field name will not be treated as reserved by FlyWheel, so for example the default :class:`FormParser` will return fields with this as part of the request content, rather than ignoring them.
 
-  Default:: ``csrfmiddlewaretoken``
+  Default:: ``"csrfmiddlewaretoken"``
 
 reserved params
 internal methods
+

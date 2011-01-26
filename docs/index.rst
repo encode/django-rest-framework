@@ -18,8 +18,9 @@ Some of FlyWheel's features:
 
   resource
   modelresource
-  parsers
   emitters
+  parsers
+  authenticators
   response
 
 

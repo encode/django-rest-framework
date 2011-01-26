@@ -17,8 +17,21 @@ class BaseEmitter(object):
         self.resource = resource
 
     def emit(self, output=NoContent, verbose=False):
-        raise Exception('emit() function on a subclass of BaseEmitter must be implemented')
+        if output is NoContent:
+            return ''
+        
+        return output
 
+class TemplateEmitter(BaseEmitter):
+    media_type = None
+    template = None
+
+    def emit(self, output=NoContent, verbose=False):
+        if output is NoContent:
+            return ''
+
+        return self.template.render(Context(output))
+        
 
 from django import forms
 class JSONForm(forms.Form):

@@ -9,7 +9,6 @@ from decimal import Decimal
 import re
 from itertools import chain
 
-# TODO: Authentication
 # TODO: Display user login in top panel: http://stackoverflow.com/questions/806835/django-redirect-to-previous-page-after-login
 # TODO: Figure how out references and named urls need to work nicely
 # TODO: POST on existing 404 URL, PUT on existing 404 URL
@@ -73,6 +72,7 @@ class Resource(object):
         """Make the class callable so it can be used as a Django view."""
         self = object.__new__(cls)
         self.__init__(request)
+        # TODO: Remove this debugging code
         try:
             return self._handle_request(request, *args, **kwargs)
         except:
@@ -120,20 +120,14 @@ class Resource(object):
         (This emitter is used if the client does not send and Accept: header, or sends Accept: */*)"""
         return self.emitters[0]
 
-    # TODO:
-    
+    #@property
     #def parsed_media_types(self):
     #    """Return an list of all the media types that this resource can emit."""
     #    return [parser.media_type for parser in self.parsers]
-    
+    #
+    #@property
     #def default_parser(self):
     #    return self.parsers[0]
-
-
-    def reverse(self, view, *args, **kwargs):
-        """Return a fully qualified URI for a given view or resource.
-        Add the domain using the Sites framework if possible, otherwise fallback to using the current request."""
-        return self.add_domain(reverse(view, args=args, kwargs=kwargs))
 
 
     def get(self, request, auth, *args, **kwargs):
@@ -154,6 +148,12 @@ class Resource(object):
     def delete(self, request, auth, *args, **kwargs):
         """Must be subclassed to be implemented."""
         self.not_implemented('DELETE')
+
+
+    def reverse(self, view, *args, **kwargs):
+        """Return a fully qualified URI for a given view or resource.
+        Add the domain using the Sites framework if possible, otherwise fallback to using the current request."""
+        return self.add_domain(reverse(view, args=args, kwargs=kwargs))
 
 
     def not_implemented(self, operation):
@@ -191,22 +191,21 @@ class Resource(object):
 
 
     def authenticate(self, request):
-        """Attempt to authenticate the request, returning an authentication context or None"""
+        """Attempt to authenticate the request, returning an authentication context or None.
+        An authentication context may be any object, although in many cases it will be a User instance."""
+        
+        # Attempt authentication against each authenticator in turn,
+        # and return None if no authenticators succeed in authenticating the request.
         for authenticator in self.authenticators:
             auth_context = authenticator(self).authenticate(request)
             if auth_context:
                 return auth_context
+
         return None
 
 
     def check_method_allowed(self, method, auth):
-        """Ensure the request method is acceptable for this resource."""
-
-        # If anonoymous check permissions and bail with no further info if disallowed
-        if auth is None and not method in self.anon_allowed_methods:
-            raise ResponseException(status.HTTP_403_FORBIDDEN,
-                                    {'detail': 'You do not have permission to access this resource. ' +
-                                     'You may need to login or otherwise authenticate the request.'})
+        """Ensure the request method is permitted for this resource, raising a ResourceException if it is not."""
 
         if not method in self.callmap.keys():
             raise ResponseException(status.HTTP_501_NOT_IMPLEMENTED,
@@ -216,13 +215,17 @@ class Resource(object):
             raise ResponseException(status.HTTP_405_METHOD_NOT_ALLOWED,
                                     {'detail': 'Method \'%s\' not allowed on this resource.' % method})
 
+        if auth is None and not method in self.anon_allowed_methods:
+            raise ResponseException(status.HTTP_403_FORBIDDEN,
+                                    {'detail': 'You do not have permission to access this resource. ' +
+                                     'You may need to login or otherwise authenticate the request.'})
 
     def get_form(self, data=None):
         """Optionally return a Django Form instance, which may be used for validation
         and/or rendered by an HTML/XHTML emitter.
         
-        If data is not None the form will be bound to data.  is_response indicates if data should be
-        treated as the input data (bind to client input) or the response data (bind to an existing object)."""
+        If data is not None the form will be bound to data."""
+
         if self.form:
             if data:
                 return self.form(data)
@@ -238,6 +241,7 @@ class Resource(object):
         Returns a tuple containing the cleaned up data, and optionally a form bound to that data.
         
         By default this uses form validation to filter the basic input into the required types."""
+
         if form_instance is None:
             return data
         
@@ -253,7 +257,7 @@ class Resource(object):
                 
             else:
                 # Add standard field errors
-                details = dict((key, map(unicode, val)) for (key, val) in form_instance.errors.iteritems())
+                details = dict((key, map(unicode, val)) for (key, val) in form_instance.errors.iteritems() if key != '__all__')
 
                 # Add any non-field errors
                 if form_instance.non_field_errors():
@@ -363,7 +367,8 @@ class Resource(object):
 
 
     def _handle_request(self, request, *args, **kwargs):
-        """
+        """This method is the core of Resource, through which all requests are passed.
+
         Broadly this consists of the following procedure:
 
         0. ensure the operation is permitted

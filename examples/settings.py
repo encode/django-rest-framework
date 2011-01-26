@@ -92,5 +92,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'flywheel',
     'blogpost',
-    'objectstore'
+    'objectstore',
+    'pygments_api'
 )
