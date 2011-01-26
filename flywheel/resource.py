@@ -120,14 +120,16 @@ class Resource(object):
         (This emitter is used if the client does not send and Accept: header, or sends Accept: */*)"""
         return self.emitters[0]
 
-    # TODO:
+    @property
+    def parsed_media_types(self):
+        """Return an list of all the media types that this resource can emit."""
+        return [parser.media_type for parser in self.parsers]
     
-    #def parsed_media_types(self):
-    #    """Return an list of all the media types that this resource can emit."""
-    #    return [parser.media_type for parser in self.parsers]
-    
-    #def default_parser(self):
-    #    return self.parsers[0]
+    @property
+    def default_parser(self):
+        """Return the resource's most prefered emitter.
+        (This has no behavioural effect, but is may be used by documenting emitters)"""        
+        return self.parsers[0]
 
 
     def reverse(self, view, *args, **kwargs):
@@ -281,19 +283,28 @@ class Resource(object):
         """Return the appropriate parser for the input, given the client's 'Content-Type' header,
         and the content types that this Resource knows how to parse."""
         content_type = request.META.get('CONTENT_TYPE', 'application/x-www-form-urlencoded')
+        raw_content = request.raw_post_data
+    
         split = content_type.split(';', 1)
         if len(split) > 1:
             content_type = split[0]
         content_type = content_type.strip()
         
+        # If CONTENTTYPE_PARAM is turned on, and this is a standard POST form then allow the content type to be overridden
+        if (content_type == 'application/x-www-form-urlencoded' and
+            request.method == 'POST' and
+            self.CONTENTTYPE_PARAM and
+            self.CONTENT_PARAM and
+            request.POST.get(self.CONTENTTYPE_PARAM, None) and
+            request.POST.get(self.CONTENT_PARAM, None)):
+            raw_content = request.POST[self.CONTENT_PARAM]
+            content_type = request.POST[self.CONTENTTYPE_PARAM]
+
         # Create a list of list of (media_type, Parser) tuples
-        media_type_parser_tuples = [[(media_type, parser) for media_type in parser.media_types] for parser in self.parsers]
-        
-        # Flatten the list and turn it into a media_type -> Parser dict
-        media_type_to_parser = dict(chain.from_iterable(media_type_parser_tuples))
+        media_type_to_parser = dict([(parser.media_type, parser) for parser in self.parsers])
 
         try:
-            return media_type_to_parser[content_type]
+            return (media_type_to_parser[content_type], raw_content)
         except KeyError:
             raise ResponseException(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
                                     {'detail': 'Unsupported media type \'%s\'' % content_type})
@@ -397,8 +408,8 @@ class Resource(object):
             # Either generate the response data, deserializing and validating any request data
             # TODO: Add support for message bodys on other HTTP methods, as it is valid.
             if method in ('PUT', 'POST'):
-                parser = self.determine_parser(request)
-                data = parser(self).parse(request.raw_post_data)
+                (parser, raw_content) = self.determine_parser(request)
+                data = parser(self).parse(raw_content)
                 self.form_instance = self.get_form(data)
                 data = self.cleanup_request(data, self.form_instance)
                 response = func(request, auth_context, data, *args, **kwargs)

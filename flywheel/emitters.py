@@ -1,8 +1,10 @@
 from django.template import RequestContext, loader
+from django import forms
 
 from flywheel.response import NoContent
 
 from utils import dict2xml
+import string
 try:
     import json
 except ImportError:
@@ -20,25 +22,31 @@ class BaseEmitter(object):
         raise Exception('emit() function on a subclass of BaseEmitter must be implemented')
 
 
-from django import forms
-class JSONForm(forms.Form):
-    _contenttype = forms.CharField(max_length=256, initial='application/json', label='Content Type')
-    _content = forms.CharField(label='Content', widget=forms.Textarea)
+
 
 class DocumentingTemplateEmitter(BaseEmitter):
     """Emitter used to self-document the API"""
     template = None
 
-    def emit(self, output=NoContent):
-        resource = self.resource
+    def _get_content(self, resource, output):
+        """Get the content as if it had been emitted by a non-documenting emitter.
 
-        # Find the first valid emitter and emit the content. (Don't another documenting emitter.)
+        (Typically this will be the content as it would have been if the Resource had been
+        requested with an 'Accept: */*' header, although with verbose style formatting if appropriate.)"""
+
+        # Find the first valid emitter and emit the content. (Don't use another documenting emitter.)
         emitters = [emitter for emitter in resource.emitters if not isinstance(emitter, DocumentingTemplateEmitter)]
         if not emitters:
-            content = 'No emitters were found'
-        else:
-            content = emitters[0](resource).emit(output, verbose=True)
+            return '[No emitters were found]'
+        
+        content = emitters[0](resource).emit(output, verbose=True)
+        if not all(char in string.printable for char in content):
+            return '[%d bytes of binary content]'
+            
+        return content
+            
 
+    def _get_form_instance(self, resource):
         # Get the form instance if we have one bound to the input
         form_instance = resource.form_instance
         
@@ -57,8 +65,45 @@ class DocumentingTemplateEmitter(BaseEmitter):
             except:
                 pass
 
+        # If we still don't have a form instance then try to get an unbound form which can tunnel arbitrary content types
         if not form_instance:
-            form_instance = JSONForm()
+            form_instance = self._get_generic_content_form(resource)
+        
+        return form_instance
+
+
+    def _get_generic_content_form(self, resource):
+        """Returns a form that allows for arbitrary content types to be tunneled via standard HTML forms
+        (Which are typically application/x-www-form-urlencoded)"""
+
+        # NB. http://jacobian.org/writing/dynamic-form-generation/
+        class GenericContentForm(forms.Form):
+            def __init__(self, resource):
+                """We don't know the names of the fields we want to set until the point the form is instantiated,
+                as they are determined by the Resource the form is being created against.
+                Add the fields dynamically."""
+                super(GenericContentForm, self).__init__()
+
+                contenttype_choices = [(media_type, media_type) for media_type in resource.parsed_media_types]
+                initial_contenttype = resource.default_parser.media_type
+
+                self.fields[resource.CONTENTTYPE_PARAM] = forms.ChoiceField(label='Content Type',
+                                                                            choices=contenttype_choices,
+                                                                            initial=initial_contenttype)
+                self.fields[resource.CONTENT_PARAM] = forms.CharField(label='Content',
+                                                                      widget=forms.Textarea)
+
+        # If either of these reserved parameters are turned off then content tunneling is not possible
+        if self.resource.CONTENTTYPE_PARAM is None or self.resource.CONTENT_PARAM is None:
+            return None
+
+        # Okey doke, let's do it
+        return GenericContentForm(resource)
+
+
+    def emit(self, output=NoContent):
+        content = self._get_content(self.resource, output)
+        form_instance = self._get_form_instance(self.resource)
 
         template = loader.get_template(self.template)
         context = RequestContext(self.resource.request, {

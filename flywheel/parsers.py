@@ -8,7 +8,7 @@ except ImportError:
 # TODO: Make all parsers only list a single media_type, rather than a list
 
 class BaseParser(object):
-    media_types = ()
+    media_type = None
 
     def __init__(self, resource):
         self.resource = resource
@@ -18,7 +18,7 @@ class BaseParser(object):
 
 
 class JSONParser(BaseParser):
-    media_types = ('application/xml',)
+    media_type = 'application/json'
 
     def parse(self, input):
         try:
@@ -27,7 +27,7 @@ class JSONParser(BaseParser):
             raise ResponseException(status.HTTP_400_BAD_REQUEST, {'detail': 'JSON parse error - %s' % str(exc)})
 
 class XMLParser(BaseParser):
-    media_types = ('application/xml',)
+    media_type = 'application/xml'
 
 
 class FormParser(BaseParser):
@@ -35,7 +35,7 @@ class FormParser(BaseParser):
     Return a dict containing a single value for each non-reserved parameter.
     """
     
-    media_types = ('application/x-www-form-urlencoded',)
+    media_type = 'application/x-www-form-urlencoded'
 
     def parse(self, input):
         # The FormParser doesn't parse the input as other parsers would, since Django's already done the
