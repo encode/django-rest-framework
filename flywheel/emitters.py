@@ -1,3 +1,8 @@
+"""Emitters are used to serialize a Resource's output into specific media types.
+FlyWheel also provides HTML and PlainText emitters that help self-document the API,
+by serializing the output along with documentation regarding the Resource, output status and headers,
+and providing forms and links depending on the allowed methods, emitters and parsers on the Resource. 
+"""
 from django.conf import settings
 from django.template import RequestContext, loader
 from django import forms
@@ -14,8 +19,13 @@ except ImportError:
 
 
 
+# TODO: Rename verbose to something more appropriate
+# TODO: NoContent could be handled more cleanly.  It'd be nice if it was handled by default,
+#       and only have an emitter output anything if it explicitly provides support for that.
 
 class BaseEmitter(object):
+    """All emitters must extend this class, set the media_type attribute, and
+    override the emit() function."""
     media_type = None
 
     def __init__(self, resource):
@@ -27,7 +37,10 @@ class BaseEmitter(object):
         
         return output
 
+
 class TemplateEmitter(BaseEmitter):
+    """Provided for convienience.
+    Emit the output by simply rendering it with the given template."""
     media_type = None
     template = None
 
@@ -35,13 +48,13 @@ class TemplateEmitter(BaseEmitter):
         if output is NoContent:
             return ''
 
-        return self.template.render(Context(output))
-        
-
+        context = RequestContext(self.resource.request, output)
+        return self.template.render(context)
 
 
 class DocumentingTemplateEmitter(BaseEmitter):
-    """Emitter used to self-document the API"""
+    """Base class for emitters used to self-document the API.
+    Implementing classes should extend this class and set the template attribute."""
     template = None
 
     def _get_content(self, resource, output):
@@ -63,6 +76,9 @@ class DocumentingTemplateEmitter(BaseEmitter):
             
 
     def _get_form_instance(self, resource):
+        """Get a form, possibly bound to either the input or output data.
+        In the absence on of the Resource having an associated form then
+        provide a form that can be used to submit arbitrary content."""
         # Get the form instance if we have one bound to the input
         form_instance = resource.form_instance
         
@@ -150,6 +166,7 @@ class DocumentingTemplateEmitter(BaseEmitter):
 
 
 class JSONEmitter(BaseEmitter):
+    """Emitter which serializes to JSON"""
     media_type = 'application/json'
 
     def emit(self, output=NoContent, verbose=False):
@@ -161,6 +178,7 @@ class JSONEmitter(BaseEmitter):
 
 
 class XMLEmitter(BaseEmitter):
+    """Emitter which serializes to XML."""
     media_type = 'application/xml'
 
     def emit(self, output=NoContent, verbose=False):
@@ -170,16 +188,24 @@ class XMLEmitter(BaseEmitter):
 
 
 class DocumentingHTMLEmitter(DocumentingTemplateEmitter):
+    """Emitter which provides a browsable HTML interface for an API.
+    See the examples listed in the FlyWheel documentation to see this in actions."""
     media_type = 'text/html'
     template = 'emitter.html'
 
 
 class DocumentingXHTMLEmitter(DocumentingTemplateEmitter):
+    """Identical to DocumentingHTMLEmitter, except with an xhtml media type.
+    We need this to be listed in preference to xml in order to return HTML to WebKit based browsers,
+    given their Accept headers."""
     media_type = 'application/xhtml+xml'
     template = 'emitter.html'
 
 
 class DocumentingPlainTextEmitter(DocumentingTemplateEmitter):
+    """Emitter that serializes the output with the default emitter, but also provides plain-text
+    doumentation of the returned status and headers, and of the resource's name and description.
+    Useful for browsing an API with command line tools."""
     media_type = 'text/plain'
     template = 'emitter.txt'
 
