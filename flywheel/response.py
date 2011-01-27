@@ -106,13 +106,12 @@ class NoContent(object):
 
 
 class Response(object):
-    def __init__(self, status, content=NoContent, headers={}, is_error=False):
+    def __init__(self, status, content=NoContent, headers={}):
         self.status = status
         self.has_content_body = not content is NoContent
         self.raw_content = content      # content prior to filtering
         self.cleaned_content = content  # content after filtering
         self.headers = headers
-        self.is_error = is_error
  
     @property
     def status_text(self):
@@ -123,4 +122,4 @@ class Response(object):
 
 class ResponseException(BaseException):
     def __init__(self, status, content=NoContent, headers={}):
-        self.response = Response(status, content=content, headers=headers, is_error=True)
+        self.response = Response(status, content=content, headers=headers)

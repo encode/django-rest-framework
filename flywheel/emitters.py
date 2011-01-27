@@ -65,7 +65,7 @@ class DocumentingTemplateEmitter(BaseEmitter):
         
         # Otherwise if this isn't an error response
         # then attempt to get a form bound to the response object
-        if not form_instance and not resource.response.is_error and resource.response.has_content_body:
+        if not form_instance and resource.response.has_content_body:
             try:
                 form_instance = resource.get_form(resource.response.raw_content)
             except:

@@ -12,11 +12,10 @@ from itertools import chain
 # TODO: Display user login in top panel: http://stackoverflow.com/questions/806835/django-redirect-to-previous-page-after-login
 # TODO: Figure how out references and named urls need to work nicely
 # TODO: POST on existing 404 URL, PUT on existing 404 URL
-# TODO: Remove is_error throughout
 #
+# NEXT: Validators to become generic, forms to move out of Resource into FormValidator
+# NEXT: Permissions to become generic, UserAllowed, Throttling
 # NEXT: Exceptions on func() -> 500, tracebacks emitted if settings.DEBUG
-# NEXT: Generic content form
-# NEXT: Remove self.blah munging  (Add a ResponseContext object?)
 # NEXT: Caching cleverness
 # NEXT: Test non-existent fields on ModelResources
 #
