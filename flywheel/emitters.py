@@ -171,13 +171,11 @@ class XMLEmitter(BaseEmitter):
 
 class DocumentingHTMLEmitter(DocumentingTemplateEmitter):
     media_type = 'text/html'
-    uses_forms = True
     template = 'emitter.html'
 
 
 class DocumentingXHTMLEmitter(DocumentingTemplateEmitter):
     media_type = 'application/xhtml+xml'
-    uses_forms = True
     template = 'emitter.html'
 
 

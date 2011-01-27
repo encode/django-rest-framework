@@ -3,7 +3,7 @@
 
 .. module:: authenticators
 
-The authenticators module provides a standard set of authentication methods that can be plugged in to a :class:`Resource`, as well as providing a template by which to write custom authentication methods.
+The authenticators module provides a standard set of authentication methods that can be plugged in to a :class:`.Resource`, as well as providing a template by which to write custom authentication methods.
 
 The base class
 --------------
@@ -18,7 +18,7 @@ All authenticators must subclass the :class:`BaseAuthenticator` class and overri
 
       The default permission checking on :class:`.Resource` will use the allowed_methods attribute for permissions if the authentication context is not None, and use anon_allowed_methods otherwise.
 
-      The authentication context is passed to the method calls (eg :meth:`.Resource.get`, :meth:`.Resource.post` etc...) in order to allow them to apply any more fine grained permission checking at the point the response is being generated.
+      The authentication context is passed to the handler calls (eg :meth:`.Resource.get`, :meth:`.Resource.post` etc...) in order to allow them to apply any more fine grained permission checking at the point the response is being generated.
 
       This function must be overridden to be implemented.
 
