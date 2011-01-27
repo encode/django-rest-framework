@@ -2,10 +2,20 @@ import re
 import xml.etree.ElementTree as ET
 from django.utils.encoding import smart_unicode
 from django.utils.xmlutils import SimplerXMLGenerator
+from django.core.urlresolvers import resolve
 try:
     import cStringIO as StringIO
 except ImportError:
     import StringIO
+
+
+def url_resolves(url):
+    """Return True if the given URL is mapped to a view in the urlconf, False otherwise."""
+    try:
+        resolve(url)
+    except:
+        return False
+    return True
 
 # From piston
 def coerce_put_post(request):

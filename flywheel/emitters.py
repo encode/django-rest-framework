@@ -1,14 +1,16 @@
+from django.conf import settings
 from django.template import RequestContext, loader
 from django import forms
 
 from flywheel.response import NoContent
 
-from utils import dict2xml
+from utils import dict2xml, url_resolves
 import string
 try:
     import json
 except ImportError:
     import simplejson as json
+
 
 
 
@@ -118,13 +120,22 @@ class DocumentingTemplateEmitter(BaseEmitter):
         content = self._get_content(self.resource, output)
         form_instance = self._get_form_instance(self.resource)
 
+        if url_resolves(settings.LOGIN_URL) and url_resolves(settings.LOGOUT_URL):
+            login_url = "%s?next=%s" % (settings.LOGIN_URL, self.resource.request.path)
+            logout_url = "%s?next=%s" % (settings.LOGOUT_URL, self.resource.request.path)
+        else:
+            login_url = None
+            logout_url = None
+
         template = loader.get_template(self.template)
         context = RequestContext(self.resource.request, {
             'content': content,
             'resource': self.resource,
             'request': self.resource.request,
             'response': self.resource.response,
-            'form': form_instance
+            'form': form_instance,
+            'login_url': login_url,
+            'logout_url': logout_url,
         })
         
         ret = template.render(context)

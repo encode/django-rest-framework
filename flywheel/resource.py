@@ -7,9 +7,7 @@ from flywheel.response import status, Response, ResponseException
 
 from decimal import Decimal
 import re
-from itertools import chain
 
-# TODO: Display user login in top panel: http://stackoverflow.com/questions/806835/django-redirect-to-previous-page-after-login
 # TODO: Figure how out references and named urls need to work nicely
 # TODO: POST on existing 404 URL, PUT on existing 404 URL
 #
