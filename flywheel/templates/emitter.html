@@ -36,11 +36,11 @@
 	
 	{% if 'GET' in resource.allowed_methods %}
 		<div class='action'>
-			<a href='{{ request.path }}'>GET</a>
+			<a href='{{ request.path }}' rel="nofollow">GET</a>
 			<ul class="accepttypes">
 			{% for media_type in resource.emitted_media_types %}
 			  {% with resource.ACCEPT_QUERY_PARAM|add:"="|add:media_type as param %}
-			    <li>[<a href='{{ request.path|add_query_param:param }}'>{{ media_type }}</a>]</li>
+			    <li>[<a href='{{ request.path|add_query_param:param }} rel="nofollow"'>{{ media_type }}</a>]</li>
 			  {% endwith %}
 			{% endfor %}
 			</ul>

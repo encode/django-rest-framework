@@ -3,8 +3,9 @@ from django.template import RequestContext, loader
 from django import forms
 
 from flywheel.response import NoContent
+from flywheel.utils import dict2xml, url_resolves
 
-from utils import dict2xml, url_resolves
+from urllib import quote_plus
 import string
 try:
     import json
@@ -121,8 +122,8 @@ class DocumentingTemplateEmitter(BaseEmitter):
         form_instance = self._get_form_instance(self.resource)
 
         if url_resolves(settings.LOGIN_URL) and url_resolves(settings.LOGOUT_URL):
-            login_url = "%s?next=%s" % (settings.LOGIN_URL, self.resource.request.path)
-            logout_url = "%s?next=%s" % (settings.LOGOUT_URL, self.resource.request.path)
+            login_url = "%s?next=%s" % (settings.LOGIN_URL, quote_plus(self.resource.request.path))
+            logout_url = "%s?next=%s" % (settings.LOGOUT_URL, quote_plus(self.resource.request.path))
         else:
             login_url = None
             logout_url = None
