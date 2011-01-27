@@ -11,15 +11,8 @@ import re
 # TODO: Figure how out references and named urls need to work nicely
 # TODO: POST on existing 404 URL, PUT on existing 404 URL
 #
-# NEXT: Validators to become generic, forms to move out of Resource into FormValidator
-# NEXT: Permissions to become generic, UserAllowed, Throttling
 # NEXT: Exceptions on func() -> 500, tracebacks emitted if settings.DEBUG
-# NEXT: Caching cleverness
-# NEXT: Test non-existent fields on ModelResources
 #
-# FUTURE: Erroring on read-only fields
-
-# Documentation, Release
 
 __all__ = ['Resource']
 
@@ -69,13 +62,7 @@ class Resource(object):
         """Make the class callable so it can be used as a Django view."""
         self = object.__new__(cls)
         self.__init__(request)
-        # TODO: Remove this debugging code
-        try:
-            return self._handle_request(request, *args, **kwargs)
-        except:
-            import traceback
-            traceback.print_exc()
-            raise
+        return self._handle_request(request, *args, **kwargs)
 
 
     def __init__(self, request):
