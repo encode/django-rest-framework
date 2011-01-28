@@ -4,7 +4,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'pygments-example/', include('pygments_api.urls')),
+    (r'^pygments-example/', include('pygments_api.urls')),
     (r'^blog-post-example/', include('blogpost.urls')),
     (r'^object-store-example/', include('objectstore.urls')),
     (r'^accounts/login/$', 'django.contrib.auth.views.login'),

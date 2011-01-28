@@ -2,9 +2,12 @@ syntax: glob
 
 *.pyc
 *.db
+*~
 env
 docs-build
 html
+examples/media/pygments/*
+examples/media/objectstore/*
 .project
 .pydevproject
 .settings

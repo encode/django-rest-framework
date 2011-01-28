@@ -38,15 +38,15 @@ class PygmentsRoot(Resource):
 
         if not os.path.exists(pathname):
             # We only need to generate the file if it doesn't already exist.
-            title = content['title'] if content['title'] else None
+            options = {'title': content['title']} if content['title'] else {}
             linenos = 'table' if content['linenos'] else False
             lexer = get_lexer_by_name(content['lexer'])
-            formatter = HtmlFormatter(style=content['style'], linenos=linenos, full=True, title=title)
+            formatter = HtmlFormatter(style=content['style'], linenos=linenos, full=True, **options)
             
             with open(pathname, 'w') as outfile:
                 highlight(content['code'], lexer, formatter, outfile)
             
-        return Response(status.HTTP_303_SEE_OTHER, headers={'Location': self.reverse(PygmentsInstance, unique_id)})
+        return Response(status.HTTP_201_CREATED, headers={'Location': self.reverse(PygmentsInstance, unique_id)})
 
 
 class PygmentsInstance(Resource):
