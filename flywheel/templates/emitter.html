@@ -30,9 +30,9 @@
 	    <h1>{{ resource.name }}</h1>
 	    <p>{{ resource.description|linebreaksbr }}</p>
 	    <pre><b>{{ response.status }} {{ response.status_text }}</b>{% autoescape off %}
-	{% for key, val in response.headers.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
-	{% endfor %}
-	{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
+{% for key, val in response.headers.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
+{% endfor %}
+{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
 	
 	{% if 'GET' in resource.allowed_methods %}
 		<div class='action'>
@@ -40,7 +40,7 @@
 			<ul class="accepttypes">
 			{% for media_type in resource.emitted_media_types %}
 			  {% with resource.ACCEPT_QUERY_PARAM|add:"="|add:media_type as param %}
-			    <li>[<a href='{{ request.path|add_query_param:param }} rel="nofollow"'>{{ media_type }}</a>]</li>
+			    <li>[<a href='{{ request.path|add_query_param:param }}' rel="nofollow">{{ media_type }}</a>]</li>
 			  {% endwith %}
 			{% endfor %}
 			</ul>

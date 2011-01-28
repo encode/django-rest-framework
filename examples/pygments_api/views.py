@@ -24,7 +24,7 @@ class HTMLEmitter(BaseEmitter):
 
 class PygmentsRoot(Resource):
     """This example demonstrates a simple RESTful Web API aound the awesome pygments library.
-    This top level resource is used to create  """
+    This top level resource is used to create highlighted code snippets."""
     form = PygmentsForm
     allowed_methods = anon_allowed_methods = ('POST',)
 

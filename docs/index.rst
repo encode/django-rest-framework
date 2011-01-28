@@ -13,8 +13,30 @@ Some of FlyWheel's features:
 * Optional support for forms as input validation.
 * Modular architecture - Easy to extend and modify.
 
+Installation & Setup
+--------------------
+
+blah di blah
+
+Getting Started
+---------------
+
+Blah di blah
+
+
+Examples
+--------
+
+Blah blah blah, examples here.
+
+Add a toctree for examples
+
+
+Library Reference
+-----------------
+
 .. toctree::
-  :maxdepth: 1
+  :maxdepth: 2
 
   resource
   modelresource

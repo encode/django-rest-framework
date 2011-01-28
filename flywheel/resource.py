@@ -58,14 +58,19 @@ class Resource(object):
     CSRF_PARAM = 'csrfmiddlewaretoken'    # Django's CSRF token used in form params
 
 
-    def __new__(cls, request, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
         """Make the class callable so it can be used as a Django view."""
         self = object.__new__(cls)
-        self.__init__(request)
-        return self._handle_request(request, *args, **kwargs)
+        if args:
+            request = args[0]
+            self.__init__(request)
+            return self._handle_request(request, *args[1:], **kwargs)
+        else:
+            self.__init__()
+            return self
 
 
-    def __init__(self, request):
+    def __init__(self, request=None):
         """"""
         # Setup the resource context
         self.request = request
