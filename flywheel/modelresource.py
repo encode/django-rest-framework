@@ -1,5 +1,3 @@
-"""TODO: docs
-"""
 from django.forms import ModelForm
 from django.db.models.query import QuerySet
 from django.db.models import Model
@@ -379,9 +377,20 @@ class ModelResource(Resource):
         return
         
 
+class RootModelResource(ModelResource):
+    """A Resource which provides default operations for list and create."""
+    allowed_methods = ('GET', 'POST')
+    queryset = None
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.queryset if self.queryset else self.model.objects.all()
+        return queryset
+
 
 class QueryModelResource(ModelResource):
-    allowed_methods = ('read',)
+    """Resource with default operations for list.
+    TODO: provide filter/order/num_results/paging, and a create operation to create queries."""
+    allowed_methods = ('GET',)
     queryset = None
 
     def get_form(self, data=None):

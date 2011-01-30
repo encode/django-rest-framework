@@ -11,10 +11,19 @@ from pygments import highlight
 from forms import PygmentsForm
 
 import os
-import hashlib
+import uuid
+import operator
 
 # We need somewhere to store the code that we highlight
 HIGHLIGHTED_CODE_DIR = os.path.join(settings.MEDIA_ROOT, 'pygments')
+MAX_FILES = 5
+
+def remove_oldest_files(dir, max_files):
+    """Remove the oldest files in a directory 'dir', leaving at most 'max_files' remaining"""
+    filepaths = [os.path.join(dir, file) for file in os.listdir(dir)]
+    ctime_sorted_paths = [item[0] for item in sorted([(path, os.path.getctime(path)) for path in filepaths],
+                                                     key=operator.itemgetter(1), reverse=True)]
+    [os.remove(path) for path in ctime_sorted_paths[max_files:]]
 
 
 class HTMLEmitter(BaseEmitter):
@@ -24,38 +33,42 @@ class HTMLEmitter(BaseEmitter):
 
 class PygmentsRoot(Resource):
     """This example demonstrates a simple RESTful Web API aound the awesome pygments library.
-    This top level resource is used to create highlighted code snippets."""
+    This top level resource is used to create highlighted code snippets, and to list all the existing code snippets."""
     form = PygmentsForm
-    allowed_methods = anon_allowed_methods = ('POST',)
+    allowed_methods = anon_allowed_methods = ('GET', 'POST',)
+
+    def get(self, request, auth):
+        """Return a list of all currently existing snippets."""
+        unique_ids = sorted(os.listdir(HIGHLIGHTED_CODE_DIR))
+        return [self.reverse(PygmentsInstance, unique_id) for unique_id in unique_ids]
 
     def post(self, request, auth, content):
-        # Generate a unique id by hashing the input
-        input_str = ''.join(['%s%s' % (key, content[key]) for key in sorted(content.keys())])
-        hash = hashlib.md5()
-        hash.update(input_str)
-        unique_id = hash.hexdigest()
+        """Create a new highlighed snippet and return it's location.
+        For the purposes of the sandbox example, also ensure we delete the oldest snippets if we have > MAX_FILES."""
+        unique_id = str(uuid.uuid1())
         pathname = os.path.join(HIGHLIGHTED_CODE_DIR, unique_id)
 
-        if not os.path.exists(pathname):
-            # We only need to generate the file if it doesn't already exist.
-            options = {'title': content['title']} if content['title'] else {}
-            linenos = 'table' if content['linenos'] else False
-            lexer = get_lexer_by_name(content['lexer'])
-            formatter = HtmlFormatter(style=content['style'], linenos=linenos, full=True, **options)
-            
-            with open(pathname, 'w') as outfile:
-                highlight(content['code'], lexer, formatter, outfile)
-            
+        lexer = get_lexer_by_name(content['lexer'])
+        linenos = 'table' if content['linenos'] else False
+        options = {'title': content['title']} if content['title'] else {}
+        formatter = HtmlFormatter(style=content['style'], linenos=linenos, full=True, **options)
+        
+        with open(pathname, 'w') as outfile:
+            highlight(content['code'], lexer, formatter, outfile)
+        
+        remove_oldest_files(HIGHLIGHTED_CODE_DIR, MAX_FILES)
+
         return Response(status.HTTP_201_CREATED, headers={'Location': self.reverse(PygmentsInstance, unique_id)})
 
 
 class PygmentsInstance(Resource):
     """Simply return the stored highlighted HTML file with the correct mime type.
-    This Resource only emits HTML and uses a standard HTML emitter rather than FlyWheel's DocumentingHTMLEmitter class."""
+    This Resource only emits HTML and uses a standard HTML emitter rather than the emitters.DocumentingHTMLEmitter class."""
     allowed_methods = anon_allowed_methods = ('GET',)
     emitters = (HTMLEmitter,)
 
     def get(self, request, auth, unique_id):
+        """Return the highlighted snippet."""
         pathname = os.path.join(HIGHLIGHTED_CODE_DIR, unique_id)
         if not os.path.exists(pathname):
             return Resource(status.HTTP_404_NOT_FOUND)

@@ -30,13 +30,7 @@ class BlogPost(models.Model):
     @models.permalink
     def comments_url(self):
         """Link to a resource which lists all comments for this blog post."""
-        return ('blogpost.views.CommentList', (), {'blogpost_id': self.key})
-
-    @property
-    @models.permalink
-    def comment_url(self):
-        """Link to a resource which can create a comment for this blog post."""
-        return ('blogpost.views.CommentCreator', (), {'blogpost_id': self.key})
+        return ('blogpost.views.CommentRoot', (), {'blogpost_id': self.key})
 
     def __unicode__(self):
         return self.title

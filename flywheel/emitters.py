@@ -83,16 +83,15 @@ class DocumentingTemplateEmitter(BaseEmitter):
         provide a form that can be used to submit arbitrary content."""
         # Get the form instance if we have one bound to the input
         form_instance = resource.form_instance
-        print form_instance
 
         # Otherwise if this isn't an error response
         # then attempt to get a form bound to the response object
         if not form_instance and resource.response.has_content_body:
             try:
                 form_instance = resource.get_form(resource.response.raw_content)
+                if form_instance:
+                    form_instance.is_valid()
             except:
-                pass
-            if form_instance and not form_instance.is_valid():
                 form_instance = None
         
         # If we still don't have a form instance then try to get an unbound form

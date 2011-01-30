@@ -47,7 +47,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'FlyWheel'
+project = u'django-rest-framework'
 copyright = u'2011, Tom Christie'
 
 # The version info for the project you're documenting, acts as replacement for
