@@ -1,7 +1,7 @@
 from django.conf import settings
 
-from flywheel.resource import Resource
-from flywheel.response import Response, status
+from djangorestframework.resource import Resource
+from djangorestframework.response import Response, status
 
 import pickle
 import os

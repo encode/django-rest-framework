@@ -93,9 +93,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
-    'django.contrib.admin',
-    'flywheel',
-    'blogpost',
+    #'django.contrib.admin',
+    'djangorestframework',
+    'simpleexample',
     'objectstore',
-    'pygments_api'
+    'pygments_api',
+    'blogpost',
 )

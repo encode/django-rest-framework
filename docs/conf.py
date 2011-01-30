@@ -14,7 +14,7 @@
 import sys, os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'flywheel'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'djangorestframework'))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'examples'))
 import settings
 from django.core.management import setup_environ

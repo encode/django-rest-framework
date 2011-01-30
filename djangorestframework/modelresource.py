@@ -2,8 +2,8 @@ from django.forms import ModelForm
 from django.db.models.query import QuerySet
 from django.db.models import Model
 
-from flywheel.response import status, Response, ResponseException
-from flywheel.resource import Resource
+from djangorestframework.response import status, Response, ResponseException
+from djangorestframework.resource import Resource
 
 import decimal
 import inspect
@@ -336,28 +336,41 @@ class ModelResource(Resource):
         return _any(data, self.fields)
 
 
-    def post(self, request, content, *args, **kwargs):
+    def post(self, request, auth, content, *args, **kwargs):
         # TODO: test creation on a non-existing resource url
         all_kw_args = dict(content.items() + kwargs.items())
-        instance = self.model(**all_kw_args)
+        if args:
+            instance = self.model(pk=args[-1], **all_kw_args)
+        else:
+            instance = self.model(**all_kw_args)
         instance.save()
         headers = {}
         if hasattr(instance, 'get_absolute_url'):
             headers['Location'] = self.add_domain(instance.get_absolute_url())
         return Response(status.HTTP_201_CREATED, instance, headers)
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, auth, *args, **kwargs):
         try:
-            instance = self.model.objects.get(**kwargs)
+            if args:
+                # If we have any none kwargs then assume the last represents the primrary key
+                instance = self.model.objects.get(pk=args[-1], **kwargs)
+            else:
+                # Otherwise assume the kwargs uniquely identify the model
+                instance = self.model.objects.get(**kwargs)
         except self.model.DoesNotExist:
             raise ResponseException(status.HTTP_404_NOT_FOUND)
 
         return instance
 
-    def put(self, request, content, *args, **kwargs):
+    def put(self, request, auth, content, *args, **kwargs):
         # TODO: update on the url of a non-existing resource url doesn't work correctly at the moment - will end up with a new url 
         try:
-            instance = self.model.objects.get(**kwargs)    
+            if args:
+                # If we have any none kwargs then assume the last represents the primrary key
+                instance = self.model.objects.get(pk=args[-1], **kwargs)
+            else:
+                # Otherwise assume the kwargs uniquely identify the model
+                instance = self.model.objects.get(**kwargs)
             for (key, val) in content.items():
                 setattr(instance, key, val)
         except self.model.DoesNotExist:
@@ -367,9 +380,14 @@ class ModelResource(Resource):
         instance.save()
         return instance
 
-    def delete(self, request, *args, **kwargs):
+    def delete(self, request, auth, *args, **kwargs):
         try:
-            instance = self.model.objects.get(**kwargs)
+            if args:
+                # If we have any none kwargs then assume the last represents the primrary key
+                instance = self.model.objects.get(pk=args[-1], **kwargs)
+            else:
+                # Otherwise assume the kwargs uniquely identify the model
+                instance = self.model.objects.get(**kwargs)
         except self.model.DoesNotExist:
             raise ResponseException(status.HTTP_404_NOT_FOUND, None, {})
 
@@ -382,7 +400,7 @@ class RootModelResource(ModelResource):
     allowed_methods = ('GET', 'POST')
     queryset = None
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, auth, *args, **kwargs):
         queryset = self.queryset if self.queryset else self.model.objects.all()
         return queryset
 
@@ -396,7 +414,7 @@ class QueryModelResource(ModelResource):
     def get_form(self, data=None):
         return None
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, auth, *args, **kwargs):
         queryset = self.queryset if self.queryset else self.model.objects.all()
         return queryset
 

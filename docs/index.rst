@@ -26,10 +26,10 @@ Requirements
 Installation & Setup
 --------------------
 
-The django-rest-framework project is hosted as a `mercurial repository on bitbucket <https://bitbucket.org/tomchristie/flywheel>`_.
+The django-rest-framework project is hosted as a `mercurial repository on bitbucket <https://bitbucket.org/tomchristie/django-rest-framework>`_.
 To get a local copy of the repository use mercurial::
 
-    hg clone https://tomchristie@bitbucket.org/tomchristie/flywheel
+    hg clone https://tomchristie@bitbucket.org/tomchristie/django-rest-framework
 
 To add django-rest-framework to a django project:
 
@@ -43,27 +43,15 @@ Getting Started
 Often you'll want parts of your API to directly map to existing Models.
 At it's simplest this looks something like this...
 
-``views.py``::
+``urls.py``
 
-    from djangorestframework.modelresource import ModelResource, ModelRootResource
-    from models import MyModel
+.. include:: ../examples/simpleexample/urls.py
+    :literal:
 
-    class MyModelRootResource(ModelRootResource):
-	"""A create/list resource for MyModel."""
-        allowed_methods = ('GET', 'POST')
-        model = MyModel
+``views.py``
 
-    class MyModelResource(ModelResource):
-	"""A read/update/delete resource for MyModel."""
-        allowed_methods = ('GET', 'PUT', 'DELETE')
-        model = MyModel
-
-``urls.py``::
-
-    urlpatterns += patterns('myapp.views',
-        url(r'^mymodel/$',         'MyModelRootResource'), 
-        url(r'^mymodel/([^/]+)/$', 'MyModelResource'), 
-    )
+.. include:: ../examples/simpleexample/views.py
+    :literal:
 
 
 Examples

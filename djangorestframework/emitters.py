@@ -1,5 +1,5 @@
 """Emitters are used to serialize a Resource's output into specific media types.
-FlyWheel also provides HTML and PlainText emitters that help self-document the API,
+django-rest-framework also provides HTML and PlainText emitters that help self-document the API,
 by serializing the output along with documentation regarding the Resource, output status and headers,
 and providing forms and links depending on the allowed methods, emitters and parsers on the Resource. 
 """
@@ -7,8 +7,8 @@ from django.conf import settings
 from django.template import RequestContext, loader
 from django import forms
 
-from flywheel.response import NoContent
-from flywheel.utils import dict2xml, url_resolves
+from djangorestframework.response import NoContent
+from djangorestframework.utils import dict2xml, url_resolves
 
 from urllib import quote_plus
 import string
@@ -193,7 +193,7 @@ class XMLEmitter(BaseEmitter):
 
 class DocumentingHTMLEmitter(DocumentingTemplateEmitter):
     """Emitter which provides a browsable HTML interface for an API.
-    See the examples listed in the FlyWheel documentation to see this in actions."""
+    See the examples listed in the django-rest-framework documentation to see this in actions."""
     media_type = 'text/html'
     template = 'emitter.html'
 

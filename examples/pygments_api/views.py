@@ -1,8 +1,8 @@
 from django.conf import settings
 
-from flywheel.resource import Resource
-from flywheel.response import Response, status
-from flywheel.emitters import BaseEmitter
+from djangorestframework.resource import Resource
+from djangorestframework.response import Response, status
+from djangorestframework.emitters import BaseEmitter
 
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import get_lexer_by_name

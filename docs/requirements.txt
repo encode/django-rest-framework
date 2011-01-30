@@ -1,0 +1,8 @@
+# Documentation requires Django & Sphinx, and their dependencies...
+
+Django==1.2.4
+Jinja2==2.5.5
+Pygments==1.4
+Sphinx==1.0.7
+docutils==0.7
+wsgiref==0.1.2

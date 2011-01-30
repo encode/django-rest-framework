@@ -1,6 +1,6 @@
-from flywheel.response import Response, status
-from flywheel.resource import Resource
-from flywheel.modelresource import ModelResource, RootModelResource
+from djangorestframework.response import Response, status
+from djangorestframework.resource import Resource
+from djangorestframework.modelresource import ModelResource, RootModelResource
 from blogpost.models import BlogPost, Comment
 
 BLOG_POST_FIELDS = ('created', 'title', 'slug', 'content', 'absolute_url', 'comment_url', 'comments_url')

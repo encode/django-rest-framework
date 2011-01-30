@@ -2,8 +2,8 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 
-from flywheel import emitters, parsers, authenticators
-from flywheel.response import status, Response, ResponseException
+from djangorestframework import emitters, parsers, authenticators
+from djangorestframework.response import status, Response, ResponseException
 
 from decimal import Decimal
 import re

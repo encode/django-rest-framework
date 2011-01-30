@@ -1,4 +1,4 @@
-from flywheel.response import status, ResponseException
+from djangorestframework.response import status, ResponseException
 
 try:
     import json
