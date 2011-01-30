@@ -13,6 +13,16 @@ Features:
 * Optional support for forms as input validation.
 * Modular architecture - Easy to extend and modify.
 
+Requirements
+------------
+
+* Python 2.6
+* Django 1.2
+
+.. note::
+
+    Support for a wider range of Python & Django versions is planned, but right now django-rest-framework is only tested against these versions.
+
 Installation & Setup
 --------------------
 

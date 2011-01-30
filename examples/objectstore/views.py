@@ -8,6 +8,16 @@ import os
 import uuid
 
 OBJECT_STORE_DIR = os.path.join(settings.MEDIA_ROOT, 'objectstore')
+MAX_FILES = 20
+
+
+def remove_oldest_files(dir, max_files):
+    """Remove the oldest files in a directory 'dir', leaving at most 'max_files' remaining.
+    We use this to limit the number of resources in the sandbox."""
+    filepaths = [os.path.join(dir, file) for file in os.listdir(dir)]
+    ctime_sorted_paths = [item[0] for item in sorted([(path, os.path.getctime(path)) for path in filepaths],
+                                                     key=operator.itemgetter(1), reverse=True)]
+    [os.remove(path) for path in ctime_sorted_paths[max_files:]]
 
 
 class ObjectStoreRoot(Resource):
@@ -25,6 +35,7 @@ class ObjectStoreRoot(Resource):
         key = str(uuid.uuid1())
         pathname = os.path.join(OBJECT_STORE_DIR, key)
         pickle.dump(content, open(pathname, 'wb'))
+        remove_oldest_files(OBJECT_STORE_DIR, MAX_FILES)
         return Response(status.HTTP_201_CREATED, content, {'Location': self.reverse(StoredObject, key=key)})
  
         

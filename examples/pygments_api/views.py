@@ -16,10 +16,11 @@ import operator
 
 # We need somewhere to store the code that we highlight
 HIGHLIGHTED_CODE_DIR = os.path.join(settings.MEDIA_ROOT, 'pygments')
-MAX_FILES = 5
+MAX_FILES = 20
 
 def remove_oldest_files(dir, max_files):
-    """Remove the oldest files in a directory 'dir', leaving at most 'max_files' remaining"""
+    """Remove the oldest files in a directory 'dir', leaving at most 'max_files' remaining.
+    We use this to limit the number of resources in the sandbox."""
     filepaths = [os.path.join(dir, file) for file in os.listdir(dir)]
     ctime_sorted_paths = [item[0] for item in sorted([(path, os.path.getctime(path)) for path in filepaths],
                                                      key=operator.itemgetter(1), reverse=True)]
@@ -74,4 +75,10 @@ class PygmentsInstance(Resource):
             return Resource(status.HTTP_404_NOT_FOUND)
         return open(pathname, 'r').read()
 
+    def delete(self, request, auth, unique_id):
+        """Delete the highlighted snippet."""
+        pathname = os.path.join(HIGHLIGHTED_CODE_DIR, unique_id)
+        if not os.path.exists(pathname):
+            return Resource(status.HTTP_404_NOT_FOUND)
+        return os.remove(pathname)
 
