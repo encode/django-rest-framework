@@ -1,5 +1,0 @@
-Parsers
-=======
-
-.. automodule:: parsers
-   :members:

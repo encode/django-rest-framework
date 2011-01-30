@@ -1,5 +1,0 @@
-Response
-========
-
-.. automodule:: response
-   :members:

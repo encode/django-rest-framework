@@ -1,5 +1,0 @@
-ModelResource
-=============
-
-.. automodule:: modelresource
-   :members:
