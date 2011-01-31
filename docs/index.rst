@@ -82,8 +82,11 @@ Or access it from the command line using curl:
 
 .. code-block:: bash
 
-    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' --data 'foo=bar' http://api.django-rest-framework.org/simple-example/
+    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' --data 'foo=testing' http://api.django-rest-framework.org/simple-example/
     {"detail": {"bar": ["This field is required."], "baz": ["This field is required."]}}
+
+    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' -H 'Content-Type: application/json' --data-binary '{"foo":"testing"}' http://api.django-rest-framework.org/simple-example/
+   {"detail": {"bar": ["This field is required."], "baz": ["This field is required."]}}
 
 .. note::
 
