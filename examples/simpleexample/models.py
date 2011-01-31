@@ -1,6 +1,6 @@
 from django.db import models
 
-MAX_INSTANCES = 20
+MAX_INSTANCES = 10
 
 class MyModel(models.Model):
     foo = models.BooleanField()
@@ -13,9 +13,9 @@ class MyModel(models.Model):
 
     def save(self, *args, **kwargs):
         """For the purposes of the sandbox, limit the maximum number of stored models."""
+        super(MyModel, self).save(*args, **kwargs)
         while MyModel.objects.all().count() > MAX_INSTANCES:
             MyModel.objects.all()[0].delete()
-        super(MyModel, self).save(*args, **kwargs)
     
     @models.permalink
     def get_absolute_url(self):

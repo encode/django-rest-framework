@@ -41,7 +41,26 @@ Getting Started
 ---------------
 
 Often you'll want parts of your API to directly map to existing Models.
-At it's simplest this looks something like this...
+Typically that might look this looks something like this...
+
+``models.py``
+
+.. code-block:: python
+
+    from django.db import models
+
+    class MyModel(models.Model):
+        foo = models.BooleanField()
+        bar = models.IntegerField(help_text='Must be an integer.')
+        baz = models.CharField(max_length=32, help_text='Free text.  Max length 32 chars.')
+        created = models.DateTimeField(auto_now_add=True)
+    
+        class Meta:
+            ordering = ('created',)
+    
+        @models.permalink
+        def get_absolute_url(self):
+            return ('simpleexample.views.MyModelResource', (self.pk,))
 
 ``urls.py``
 
@@ -53,6 +72,22 @@ At it's simplest this looks something like this...
 .. include:: ../examples/simpleexample/views.py
     :literal:
 
+And we're done.  We've now got a fully browseable API, which supports multiple input and output media types, and has all the nice automatic field validation that Django gives us for free.
+
+We can visit the API in our browser:
+
+* http://api.django-rest-framework.org/simple-example/
+
+Or access it from the command line using curl:
+
+.. code-block:: bash
+
+    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' --data 'foo=bar' http://api.django-rest-framework.org/simple-example/
+    {"detail": {"bar": ["This field is required."], "baz": ["This field is required."]}}
+
+.. note::
+
+  TODO: Mention adding custom handler methods, but that the defaults will often do what we want already.  Document a Resource example, not tied to models.  
 
 Examples
 --------
