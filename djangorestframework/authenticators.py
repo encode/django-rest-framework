@@ -38,7 +38,7 @@ class BasicAuthenticator(BaseAuthenticator):
 class UserLoggedInAuthenticator(BaseAuthenticator):
     """Use Djagno's built-in request session for authentication."""
     def authenticate(self, request):
-        if request.user and request.user.is_active:
+        if getattr(request, 'user', None) and request.user.is_active:
             return request.user
         return None
     
