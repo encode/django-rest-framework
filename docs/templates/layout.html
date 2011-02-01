@@ -1,0 +1,13 @@
+{% extends "!layout.html" %}
+
+{%- if not embedded and docstitle %}
+  {%- set titleprefix = docstitle|e + " - "|safe %}
+{%- else %}
+  {%- set titleprefix = "" %}
+{%- endif %}
+
+{% block htmltitle %}<title>{% if pagename == 'index' %}Django REST Framework{% else %}{{ titleprefix }}{{ title|striptags|e }}{% endif %}</title>{% endblock %}
+{% block extrahead %}
+{{ super() }}
+{% endblock %}
+

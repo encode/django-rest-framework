@@ -9,7 +9,7 @@ pip install -r requirements.txt
 # To build the documentation...
 
 pip install -r docs/requirements.txt
-sphinx-build -c docs -b html -d docs-build docs html
+sphinx-build -c docs -b html -d docs/build docs html
 
 # To run the examples...
 

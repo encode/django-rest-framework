@@ -35,7 +35,7 @@ setup_environ(settings)
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.viewcode']
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = []
+templates_path = ['templates']
 
 # The suffix of source filenames.
 source_suffix = '.rst'
@@ -111,7 +111,7 @@ html_theme = 'default'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+html_title = "Django REST Framework"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 #html_short_title = None
@@ -172,7 +172,7 @@ html_static_path = []
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'restfulloggingdoc'
+#htmlhelp_basename = ''
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -185,10 +185,9 @@ htmlhelp_basename = 'restfulloggingdoc'
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
-latex_documents = [
-  ('index', 'restfullogging.tex', u'restful logging Documentation',
-   u'tom c', 'manual'),
-]
+#latex_documents = [
+#  (),
+#]
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
@@ -217,7 +216,6 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ('index', 'restfullogging', u'restful logging Documentation',
-     [u'tom c'], 1)
-]
+#man_pages = [
+#    ()
+#]

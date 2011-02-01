@@ -4,7 +4,7 @@ syntax: glob
 *.db
 *~
 env
-docs-build
+docs/build
 html
 examples/media/pygments/*
 examples/media/objectstore/*

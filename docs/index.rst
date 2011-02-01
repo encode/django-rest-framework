@@ -1,3 +1,8 @@
+.. meta::
+   :description: A lightweight REST framework for Django.
+   :keywords: django, python, REST, RESTful
+
+
 Django REST framework
 =====================
 
@@ -29,7 +34,7 @@ Installation & Setup
 The django-rest-framework project is hosted as a `mercurial repository on bitbucket <https://bitbucket.org/tomchristie/django-rest-framework>`_.
 To get a local copy of the repository use mercurial::
 
-    hg clone https://tomchristie@bitbucket.org/tomchristie/django-rest-framework
+    hg clone https://bitbucket.org/tomchristie/django-rest-framework
 
 To add django-rest-framework to a django project:
 
