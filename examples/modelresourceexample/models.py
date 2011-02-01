@@ -19,5 +19,5 @@ class MyModel(models.Model):
     
     @models.permalink
     def get_absolute_url(self):
-        return ('simpleexample.views.MyModelResource', (self.pk,))
+        return ('modelresourceexample.views.MyModelResource', (self.pk,))
 

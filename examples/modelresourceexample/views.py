@@ -1,5 +1,5 @@
 from djangorestframework.modelresource import ModelResource, RootModelResource
-from simpleexample.models import MyModel
+from modelresourceexample.models import MyModel
 
 FIELDS = ('foo', 'bar', 'baz', 'absolute_url')
 

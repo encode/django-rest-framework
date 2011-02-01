@@ -95,7 +95,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     #'django.contrib.admin',
     'djangorestframework',
-    'simpleexample',
+
+    'resourceexample',
+    'modelresourceexample',
     'objectstore',
     'pygments_api',
     'blogpost',
