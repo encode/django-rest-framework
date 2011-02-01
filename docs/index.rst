@@ -6,6 +6,9 @@
 Django REST framework
 =====================
 
+Introduction
+------------
+
 A lightweight REST framework for Django.
 
 Features:
@@ -42,60 +45,81 @@ To add django-rest-framework to a django project:
 * Add ``djangorestframework`` to your ``INSTALLED_APPS``.
 * Ensure the ``TEMPLATE_LOADERS`` setting contains the item ``'django.template.loaders.app_directories.Loader'``. (It will do by default, so you shouldn't normally need to do anything here.)
 
-Getting Started
----------------
+Getting Started - Resource
+--------------------------
 
-Often you'll want parts of your API to directly map to existing Models.
-Typically that might look this looks something like this...
+We're going to start off with a simple example, that demonstrates
+a few things:
 
-``models.py``
+* Creating resources
+* Linking resources
+* Writing method handlers on resources
+* Adding form validation to resources
 
-.. code-block:: python
-
-    from django.db import models
-
-    class MyModel(models.Model):
-        foo = models.BooleanField()
-        bar = models.IntegerField(help_text='Must be an integer.')
-        baz = models.CharField(max_length=32, help_text='Free text.  Max length 32 chars.')
-        created = models.DateTimeField(auto_now_add=True)
-    
-        class Meta:
-            ordering = ('created',)
-    
-        @models.permalink
-        def get_absolute_url(self):
-            return ('simpleexample.views.MyModelResource', (self.pk,))
+First we'll define two resources in our urlconf.
 
 ``urls.py``
 
-.. include:: ../examples/simpleexample/urls.py
+.. include:: ../examples/resourceexample/urls.py
+    :literal:
+
+Now we'll add a form that we'll use for input validation.  This is completely optional, but it's often useful.
+
+``forms.py``
+
+.. include:: ../examples/resourceexample/forms.py
+    :literal:
+
+Now we'll write our resources.  The first is a read only resource that links to three instances of the second.  The second resource just has some stub handler methods to help us see that our example is working.
+
+``views.py``
+
+.. include:: ../examples/resourceexample/views.py
+    :literal:
+
+That's us done.
+
+TODO
+
+
+Getting Started - ModelResource
+-------------------------------
+
+Often you'll want parts of your API to directly map to existing django models.
+Typically that might look this looks something like this...
+
+``urls.py``
+
+.. include:: ../examples/modelresourceexample/urls.py
+    :literal:
+
+``models.py``
+
+.. include:: ../examples/modelresourceexample/models.py
     :literal:
 
 ``views.py``
 
-.. include:: ../examples/simpleexample/views.py
+.. include:: ../examples/modelresourceexample/views.py
     :literal:
 
 And we're done.  We've now got a fully browseable API, which supports multiple input and output media types, and has all the nice automatic field validation that Django gives us for free.
 
 We can visit the API in our browser:
 
-* http://api.django-rest-framework.org/simple-example/
+* http://api.django-rest-framework.org/model-resource-example/
 
 Or access it from the command line using curl:
 
 .. code-block:: bash
 
-    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' --data 'foo=testing' http://api.django-rest-framework.org/simple-example/
+    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' --data 'foo=true' http://api.django-rest-framework.org/simple-example/
     {"detail": {"bar": ["This field is required."], "baz": ["This field is required."]}}
 
-    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' -H 'Content-Type: application/json' --data-binary '{"foo":"testing"}' http://api.django-rest-framework.org/simple-example/
+    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' -H 'Content-Type: application/json' --data-binary '{"foo":true}' http://api.django-rest-framework.org/simple-example/
    {"detail": {"bar": ["This field is required."], "baz": ["This field is required."]}}
 
-.. note::
-
-  TODO: Mention adding custom handler methods, but that the defaults will often do what we want already.  Document a Resource example, not tied to models.  
+We could also have added the handler methods get(), post() etc... seen in the last example, but Django REST framework provides nice default implementations for us that do exactly what we'd expect them to. 
 
 Examples
 --------
