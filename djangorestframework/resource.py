@@ -17,6 +17,8 @@ import re
 __all__ = ['Resource']
 
 
+_MSIE_USER_AGENT = re.compile(r'^Mozilla/[0-9]+\.[0-9]+ \([^)]*; MSIE [0-9]+\.[0-9]+[a-z]?;[^)]*\)(?!.* Opera )')
+
 
 class Resource(object):
     """Handles incoming requests and maps them to REST operations,
@@ -57,6 +59,7 @@ class Resource(object):
     CONTENT_PARAM = '_content'            # Allow override of body content in form params (allows sending arbitrary content with standard forms) 
     CSRF_PARAM = 'csrfmiddlewaretoken'    # Django's CSRF token used in form params
 
+    _MUNGE_IE_ACCEPT_HEADER = True
 
     def __new__(cls, *args, **kwargs):
         """Make the class callable so it can be used as a Django view."""
@@ -312,6 +315,8 @@ class Resource(object):
         if self.ACCEPT_QUERY_PARAM and request.GET.get(self.ACCEPT_QUERY_PARAM, None):
             # Use _accept parameter override
             accept_list = [request.GET.get(self.ACCEPT_QUERY_PARAM)]
+        elif self._MUNGE_IE_ACCEPT_HEADER and request.META.has_key('HTTP_USER_AGENT') and _MSIE_USER_AGENT.match(request.META['HTTP_USER_AGENT']):
+            accept_list = ['text/html', '*/*']
         elif request.META.has_key('HTTP_ACCEPT'):
             # Use standard HTTP Accept negotiation
             accept_list = request.META["HTTP_ACCEPT"].split(',')

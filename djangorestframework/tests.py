@@ -50,27 +50,40 @@ OPERA_11_0_MSIE_USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 8.0; X11; Linux x86_
 OPERA_11_0_OPERA_USER_AGENT = 'Opera/9.80 (X11; Linux x86_64; U; pl) Presto/2.7.62 Version/11.00'
 
 class UserAgentMungingTest(TestCase):
-    """"""
-
-    class MockResource(Resource):
-        anon_allowed_methods = allowed_methods = ('GET',)
-        def get(self, request, auth):
-            return {'a':1, 'b':2, 'c':3}
+    """We need to fake up the accept headers when we deal with MSIE.  Blergh.
+    http://www.gethifi.com/blog/browser-rest-http-accept-headers"""
 
     def setUp(self):
+        class MockResource(Resource):
+            anon_allowed_methods = allowed_methods = ('GET',)
+            def get(self, request, auth):
+                return {'a':1, 'b':2, 'c':3}
         self.rf = RequestFactory()
+        self.MockResource = MockResource
 
-    def test_msie8_ua_munge_accept(self):
+    def test_munge_msie_accept_header(self):
         """Send MSIE user agent strings and ensure that we get an HTML response,
-        even if we set a */* accept header.  (Which MSIE annoyingly does)"""
+        even if we set a */* accept header."""
         for user_agent in (MSIE_9_USER_AGENT,
                            MSIE_8_USER_AGENT,
                            MSIE_7_USER_AGENT):
             req = self.rf.get('/', HTTP_ACCEPT='*/*', HTTP_USER_AGENT=user_agent)
             resp = self.MockResource(req)
             self.assertEqual(resp['Content-Type'], 'text/html')
+
+    def test_dont_munge_msie_accept_header(self):
+        """Turn off _MUNGE_IE_ACCEPT_HEADER, send MSIE user agent strings and ensure
+        that we get a JSON response if we set a */* accept header."""
+        self.MockResource._MUNGE_IE_ACCEPT_HEADER = False
+
+        for user_agent in (MSIE_9_USER_AGENT,
+                           MSIE_8_USER_AGENT,
+                           MSIE_7_USER_AGENT):
+            req = self.rf.get('/', HTTP_ACCEPT='*/*', HTTP_USER_AGENT=user_agent)
+            resp = self.MockResource(req)
+            self.assertEqual(resp['Content-Type'], 'application/json')
     
-    def test_other_ua_dont_munge_accept(self):
+    def test_dont_munge_nice_browsers_accept_header(self):
         """Send Non-MSIE user agent strings and ensure that we get a JSON response,
         if we set a */* Accept header.  (Other browsers will correctly set the Accept header)"""
         for user_agent in (FIREFOX_4_0_USER_AGENT,
