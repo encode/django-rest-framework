@@ -7,7 +7,5 @@
 {%- endif %}
 
 {% block htmltitle %}<title>{% if pagename == 'index' %}Django REST Framework{% else %}{{ titleprefix }}{{ title|striptags|e }}{% endif %}</title>{% endblock %}
-{% block extrahead %}
-{{ super() }}
-{% endblock %}
+
 
