@@ -79,9 +79,11 @@ Now we'll write our resources.  The first is a read only resource that links to 
 .. include:: ../examples/resourceexample/views.py
     :literal:
 
-That's us done.  Our API now provides both programmatic access using JSON and XML, as well a nice browseable HTML view:
+That's us done.  Our API now provides both programmatic access using JSON and XML, as well a nice browseable HTML view, so we can now access it both from the browser:
 
 * http://api.django-rest-framework.org/resource-example/
+
+And from the command line:
 
 .. code-block:: bash
 
