@@ -9,7 +9,9 @@ Django REST framework
 Introduction
 ------------
 
-A lightweight REST framework for Django.
+Django REST framework is a lightweight REST framework for Django.
+
+It aims to make it easy to build well-connected, self-describing Web APIs with a minimum of fuss.
 
 Features:
 
@@ -45,16 +47,16 @@ To add django-rest-framework to a django project:
 * Add ``djangorestframework`` to your ``INSTALLED_APPS``.
 * Ensure the ``TEMPLATE_LOADERS`` setting contains the item ``'django.template.loaders.app_directories.Loader'``. (It will do by default, so you shouldn't normally need to do anything here.)
 
-Getting Started - Resource
---------------------------
+Getting Started - Resources
+---------------------------
 
 We're going to start off with a simple example, that demonstrates
 a few things:
 
-* Creating resources
-* Linking resources
-* Writing method handlers on resources
-* Adding form validation to resources
+#. Creating resources.
+#. Linking resources.
+#. Writing method handlers on resources.
+#. Adding form validation to resources.
 
 First we'll define two resources in our urlconf.
 
@@ -77,26 +79,43 @@ Now we'll write our resources.  The first is a read only resource that links to 
 .. include:: ../examples/resourceexample/views.py
     :literal:
 
-That's us done.
+That's us done.  Our API now provides both programmatic access using JSON and XML, as well a nice browseable HTML view:
 
-TODO
+* http://api.django-rest-framework.org/resource-example/
 
+.. code-block:: bash
 
-Getting Started - ModelResource
--------------------------------
+    # Demonstrates API's input validation using form input
+    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' --data 'foo=true' http://api.django-rest-framework.org/resource-example/1/
+    {"detail": {"bar": ["This field is required."], "baz": ["This field is required."]}}
 
-Often you'll want parts of your API to directly map to existing django models.
-Typically that might look this looks something like this...
+    #  Demonstrates API's input validation using JSON input
+    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' -H 'Content-Type: application/json' --data-binary '{"foo":true}' http://api.django-rest-framework.org/resource-example/1/
+   {"detail": {"bar": ["This field is required."], "baz": ["This field is required."]}}
+
+Getting Started - Model Resources
+---------------------------------
+
+Often you'll want parts of your API to directly map to existing django models.  Django REST framework handles this nicely for you in a couple of ways:
+
+#. It automatically provides suitable create/read/update/delete methods for your resources.
+#. Input validation occurs automatically, by using appropriate `ModelForms <http://docs.djangoproject.com/en/dev/topics/forms/modelforms/>`_.
+
+We'll start of defining two resources in our urlconf again.
 
 ``urls.py``
 
 .. include:: ../examples/modelresourceexample/urls.py
     :literal:
 
+Here's the models we're working from in this example.  It's usually a good idea to make sure you provide the :func:`get_absolute_url()` `permalink <http://docs.djangoproject.com/en/dev/ref/models/instances/#get-absolute-url>`_ for all models you want to expose via the API.
+
 ``models.py``
 
 .. include:: ../examples/modelresourceexample/models.py
     :literal:
+
+Now that we've got some models and a urlconf, there's very little code to write.  We'll create a :class:`.ModelResource` to map to instances of our models, and a top level :class:`.RootModelResource` to list the existing instance and to create new instances.
 
 ``views.py``
 
@@ -113,13 +132,15 @@ Or access it from the command line using curl:
 
 .. code-block:: bash
 
-    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' --data 'foo=true' http://api.django-rest-framework.org/simple-example/
+    #  Demonstrates API's input validation using form input
+    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' --data 'foo=true' http://api.django-rest-framework.org/model-resource-example/
     {"detail": {"bar": ["This field is required."], "baz": ["This field is required."]}}
 
-    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' -H 'Content-Type: application/json' --data-binary '{"foo":true}' http://api.django-rest-framework.org/simple-example/
+    #  Demonstrates API's input validation using JSON input
+    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' -H 'Content-Type: application/json' --data-binary '{"foo":true}' http://api.django-rest-framework.org/model-resource-example/
    {"detail": {"bar": ["This field is required."], "baz": ["This field is required."]}}
 
-We could also have added the handler methods get(), post() etc... seen in the last example, but Django REST framework provides nice default implementations for us that do exactly what we'd expect them to. 
+We could also have added the handler methods :meth:`.Resource.get()`, :meth:`.Resource.post()` etc... seen in the last example, but Django REST framework provides nice default implementations for us that do exactly what we'd expect them to. 
 
 Examples
 --------
@@ -140,17 +161,14 @@ All the examples are freely available for testing in the sandbox here: http://ap
   examples/pygments
   examples/blogpost
 
-How Tos
--------
+How Tos, FAQs & Notes
+---------------------
 
 .. toctree::
   :maxdepth: 2
 
   howto/usingcurl
-
-.. note::
-
-    TODO
+  howto/alternativeframeworks
 
 Library Reference
 -----------------
