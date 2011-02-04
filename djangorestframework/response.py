@@ -106,7 +106,7 @@ class NoContent(object):
 
 
 class Response(object):
-    def __init__(self, status, content=NoContent, headers={}):
+    def __init__(self, status=200, content=NoContent, headers={}):
         self.status = status
         self.has_content_body = not content is NoContent
         self.raw_content = content      # content prior to filtering

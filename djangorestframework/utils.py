@@ -9,6 +9,17 @@ except ImportError:
     import StringIO
 
 
+def as_tuple(obj):
+    """Given obj return a tuple"""
+    if obj is None:
+        return ()
+    elif isinstance(obj, list):
+        return tuple(obj)
+    elif isinstance(obj, tuple):
+        return obj
+    return (obj,)
+
+  
 def url_resolves(url):
     """Return True if the given URL is mapped to a view in the urlconf, False otherwise."""
     try:
