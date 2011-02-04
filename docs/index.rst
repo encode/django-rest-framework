@@ -117,7 +117,7 @@ Here's the models we're working from in this example.  It's usually a good idea 
 .. include:: ../examples/modelresourceexample/models.py
     :literal:
 
-Now that we've got some models and a urlconf, there's very little code to write.  We'll create a :class:`.ModelResource` to map to instances of our models, and a top level :class:`.RootModelResource` to list the existing instance and to create new instances.
+Now that we've got some models and a urlconf, there's very little code to write.  We'll create a :class:`.ModelResource` to map to instances of our models, and a top level :class:`.RootModelResource` to list the existing instances and to create new instances.
 
 ``views.py``
 
