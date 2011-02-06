@@ -6,6 +6,7 @@ from djangorestframework.response import Response, status
 import pickle
 import os
 import uuid
+import operator
 
 OBJECT_STORE_DIR = os.path.join(settings.MEDIA_ROOT, 'objectstore')
 MAX_FILES = 20
