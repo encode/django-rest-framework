@@ -29,10 +29,10 @@ class OverloadedContentMixin(ContentMixin):
     """HTTP request content behaviour that also allows arbitrary content to be tunneled in form data."""
     
     """The name to use for the content override field in the POST form."""
-    FORM_PARAM_CONTENT = '_content'
+    CONTENT_PARAM = '_content'
 
     """The name to use for the content-type override field in the POST form."""
-    FORM_PARAM_CONTENTTYPE = '_contenttype'
+    CONTENTTYPE_PARAM = '_contenttype'
 
     def determine_content(self, request):
         """If the request contains content return a tuple of (content_type, content) otherwise return None.
@@ -42,14 +42,14 @@ class OverloadedContentMixin(ContentMixin):
         
         content_type = request.META.get('CONTENT_TYPE', None)
 
-        if (request.method == 'POST' and self.FORM_PARAM_CONTENT and
-            request.POST.get(self.FORM_PARAM_CONTENT, None) is not None):
+        if (request.method == 'POST' and self.CONTENT_PARAM and
+            request.POST.get(self.CONTENT_PARAM, None) is not None):
 
             # Set content type if form contains a none empty FORM_PARAM_CONTENTTYPE field
             content_type = None
-            if self.FORM_PARAM_CONTENTTYPE and request.POST.get(self.FORM_PARAM_CONTENTTYPE, None):
-                content_type = request.POST.get(self.FORM_PARAM_CONTENTTYPE, None)
+            if self.CONTENTTYPE_PARAM and request.POST.get(self.CONTENTTYPE_PARAM, None):
+                content_type = request.POST.get(self.CONTENTTYPE_PARAM, None)
 
-            return (content_type, request.POST[self.FORM_PARAM_CONTENT])
+            return (content_type, request.POST[self.CONTENT_PARAM])
 
         return (content_type, request.raw_post_data)

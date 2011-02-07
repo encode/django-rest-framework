@@ -2,6 +2,10 @@ from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 
+from djangorestframework.parsers import ParserMixin
+from djangorestframework.validators import FormValidatorMixin
+from djangorestframework.content import OverloadedContentMixin
+from djangorestframework.methods import OverloadedPOSTMethodMixin 
 from djangorestframework import emitters, parsers, authenticators
 from djangorestframework.response import status, Response, ResponseException
 
@@ -20,7 +24,7 @@ __all__ = ['Resource']
 _MSIE_USER_AGENT = re.compile(r'^Mozilla/[0-9]+\.[0-9]+ \([^)]*; MSIE [0-9]+\.[0-9]+[a-z]?;[^)]*\)(?!.* Opera )')
 
 
-class Resource(object):
+class Resource(ParserMixin, FormValidatorMixin, OverloadedContentMixin, OverloadedPOSTMethodMixin):
     """Handles incoming requests and maps them to REST operations,
     performing authentication, input deserialization, input validation, output serialization."""
 
@@ -53,10 +57,7 @@ class Resource(object):
 
     # Some reserved parameters to allow us to use standard HTML forms with our resource
     # Override any/all of these with None to disable them, or override them with another value to rename them.
-    ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
-    METHOD_PARAM = '_method'              # Allow POST overloading in form params
-    CONTENTTYPE_PARAM = '_contenttype'    # Allow override of Content-Type header in form params (allows sending arbitrary content with standard forms)
-    CONTENT_PARAM = '_content'            # Allow override of body content in form params (allows sending arbitrary content with standard forms) 
+    ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params    CONTENTTYPE_PARAM = '_contenttype'    # Allow override of Content-Type header in form params (allows sending arbitrary content with standard forms)
     CSRF_PARAM = 'csrfmiddlewaretoken'    # Django's CSRF token used in form params
 
     _MUNGE_IE_ACCEPT_HEADER = True
@@ -112,18 +113,6 @@ class Resource(object):
         (This emitter is used if the client does not send and Accept: header, or sends Accept: */*)"""
         return self.emitters[0]
 
-    @property
-    def parsed_media_types(self):
-        """Return an list of all the media types that this resource can emit."""
-        return [parser.media_type for parser in self.parsers]
-    
-    @property
-    def default_parser(self):
-        """Return the resource's most prefered emitter.
-        (This has no behavioural effect, but is may be used by documenting emitters)"""        
-        return self.parsers[0]
-
-
     def get(self, request, auth, *args, **kwargs):
         """Must be subclassed to be implemented."""
         self.not_implemented('GET')
@@ -171,17 +160,6 @@ class Resource(object):
             pass
 
         return self.request.build_absolute_uri(path)
-    
-    
-    def determine_method(self, request):
-        """Determine the HTTP method that this request should be treated as.
-        Allows PUT and DELETE tunneling via the _method parameter if METHOD_PARAM is set."""
-        method = request.method.upper()
-
-        if method == 'POST' and self.METHOD_PARAM and request.POST.has_key(self.METHOD_PARAM):
-            method = request.POST[self.METHOD_PARAM].upper()
-        
-        return method
 
 
     def authenticate(self, request):
@@ -214,58 +192,6 @@ class Resource(object):
                                     {'detail': 'You do not have permission to access this resource. ' +
                                      'You may need to login or otherwise authenticate the request.'})
 
-    def get_form(self, data=None):
-        """Optionally return a Django Form instance, which may be used for validation
-        and/or rendered by an HTML/XHTML emitter.
-        
-        If data is not None the form will be bound to data."""
-
-        if self.form:
-            if data:
-                return self.form(data)
-            else:
-                return self.form()
-        return None
-  
-  
-    def cleanup_request(self, data, form_instance):
-        """Perform any resource-specific data deserialization and/or validation
-        after the initial HTTP content-type deserialization has taken place.
-        
-        Returns a tuple containing the cleaned up data, and optionally a form bound to that data.
-        
-        By default this uses form validation to filter the basic input into the required types."""
-
-        if form_instance is None:
-            return data
-        
-        # Default form validation does not check for additional invalid fields
-        non_existent_fields = []
-        for key in set(data.keys()) - set(form_instance.fields.keys()):
-            non_existent_fields.append(key)
-
-        if not form_instance.is_valid() or non_existent_fields:
-            if not form_instance.errors and not non_existent_fields:
-                # If no data was supplied the errors property will be None
-                details = 'No content was supplied'
-                
-            else:
-                # Add standard field errors
-                details = dict((key, map(unicode, val)) for (key, val) in form_instance.errors.iteritems() if key != '__all__')
-
-                # Add any non-field errors
-                if form_instance.non_field_errors():
-                    details['errors'] = form_instance.non_field_errors()
-
-                # Add any non-existent field errors
-                for key in non_existent_fields:
-                    details[key] = ['This field does not exist']
-
-            # Bail.  Note that we will still serialize this response with the appropriate content type 
-            raise ResponseException(status.HTTP_400_BAD_REQUEST, {'detail': details})
-
-        return form_instance.cleaned_data
-
 
     def cleanup_response(self, data):
         """Perform any resource-specific data filtering prior to the standard HTTP
@@ -273,37 +199,6 @@ class Resource(object):
 
         Eg filter complex objects that cannot be serialized by json/xml/etc into basic objects that can."""
         return data
-
-
-    def determine_parser(self, request):
-        """Return the appropriate parser for the input, given the client's 'Content-Type' header,
-        and the content types that this Resource knows how to parse."""
-        content_type = request.META.get('CONTENT_TYPE', 'application/x-www-form-urlencoded')
-        raw_content = request.raw_post_data
-    
-        split = content_type.split(';', 1)
-        if len(split) > 1:
-            content_type = split[0]
-        content_type = content_type.strip()
-        
-        # If CONTENTTYPE_PARAM is turned on, and this is a standard POST form then allow the content type to be overridden
-        if (content_type == 'application/x-www-form-urlencoded' and
-            request.method == 'POST' and
-            self.CONTENTTYPE_PARAM and
-            self.CONTENT_PARAM and
-            request.POST.get(self.CONTENTTYPE_PARAM, None) and
-            request.POST.get(self.CONTENT_PARAM, None)):
-            raw_content = request.POST[self.CONTENT_PARAM]
-            content_type = request.POST[self.CONTENTTYPE_PARAM]
-
-        # Create a list of list of (media_type, Parser) tuples
-        media_type_to_parser = dict([(parser.media_type, parser) for parser in self.parsers])
-
-        try:
-            return (media_type_to_parser[content_type], raw_content)
-        except KeyError:
-            raise ResponseException(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                                    {'detail': 'Unsupported media type \'%s\'' % content_type})
 
 
     def determine_emitter(self, request):
@@ -407,11 +302,10 @@ class Resource(object):
             # Either generate the response data, deserializing and validating any request data
             # TODO: Add support for message bodys on other HTTP methods, as it is valid.
             if method in ('PUT', 'POST'):
-                (parser, raw_content) = self.determine_parser(request)
-                data = parser(self).parse(raw_content)
-                self.form_instance = self.get_form(data)
-                data = self.cleanup_request(data, self.form_instance)
-                response = func(request, auth_context, data, *args, **kwargs)
+                (content_type, content) = self.determine_content(request)
+                parser_content = self.parse(content_type, content)
+                cleaned_content = self.validate(parser_content)
+                response = func(request, auth_context, cleaned_content, *args, **kwargs)
 
             else:
                 response = func(request, auth_context, *args, **kwargs)

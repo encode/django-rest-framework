@@ -21,7 +21,7 @@ class TestMethodMixins(TestCase):
     def test_overloaded_method_mixin_interface(self):
         """Ensure the OverloadedPOSTMethodMixin interface is as expected."""
         self.assertTrue(issubclass(OverloadedPOSTMethodMixin, MethodMixin))
-        getattr(OverloadedPOSTMethodMixin, 'FORM_PARAM_METHOD')
+        getattr(OverloadedPOSTMethodMixin, 'METHOD_PARAM')
         getattr(OverloadedPOSTMethodMixin, 'determine_method')
 
     # Behavioural tests
@@ -48,5 +48,5 @@ class TestMethodMixins(TestCase):
     
     def test_overloaded_POST_behaviour_determines_overloaded_method(self):
         """POST requests can be overloaded to another method by setting a reserved form field with OverloadedPOSTMethodMixin"""
-        request = self.req.post('/', {OverloadedPOSTMethodMixin.FORM_PARAM_METHOD: 'DELETE'})
+        request = self.req.post('/', {OverloadedPOSTMethodMixin.METHOD_PARAM: 'DELETE'})
         self.assertEqual(OverloadedPOSTMethodMixin().determine_method(request), 'DELETE')

@@ -21,8 +21,8 @@ class TestContentMixins(TestCase):
     def test_overloaded_content_mixin_interface(self):
         """Ensure the OverloadedContentMixin interface is as expected."""
         self.assertTrue(issubclass(OverloadedContentMixin, ContentMixin))
-        getattr(OverloadedContentMixin, 'FORM_PARAM_CONTENT')
-        getattr(OverloadedContentMixin, 'FORM_PARAM_CONTENTTYPE')
+        getattr(OverloadedContentMixin, 'CONTENT_PARAM')
+        getattr(OverloadedContentMixin, 'CONTENTTYPE_PARAM')
         getattr(OverloadedContentMixin, 'determine_content')
 
   
@@ -107,14 +107,14 @@ class TestContentMixins(TestCase):
         """Ensure determine_content(request) returns (content type, content) for overloaded POST request"""
         content = 'qwerty'
         content_type = 'text/plain'
-        form_data = {OverloadedContentMixin.FORM_PARAM_CONTENT: content,
-                     OverloadedContentMixin.FORM_PARAM_CONTENTTYPE: content_type}
+        form_data = {OverloadedContentMixin.CONTENT_PARAM: content,
+                     OverloadedContentMixin.CONTENTTYPE_PARAM: content_type}
         request = self.req.post('/', form_data)
         self.assertEqual(OverloadedContentMixin().determine_content(request), (content_type, content))
  
     def test_overloaded_behaviour_allows_content_tunnelling_content_type_not_set(self):
         """Ensure determine_content(request) returns (None, content) for overloaded POST request with content type not set"""
         content = 'qwerty'
-        request = self.req.post('/', {OverloadedContentMixin.FORM_PARAM_CONTENT: content})
+        request = self.req.post('/', {OverloadedContentMixin.CONTENT_PARAM: content})
         self.assertEqual(OverloadedContentMixin().determine_content(request), (None, content))
 

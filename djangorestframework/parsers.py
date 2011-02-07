@@ -5,7 +5,38 @@ try:
 except ImportError:
     import simplejson as json
 
-# TODO: Make all parsers only list a single media_type, rather than a list
+
+class ParserMixin(object):
+    parsers = ()
+
+    def parse(self, content_type, content):
+        # See RFC 2616 sec 3 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7
+        split = content_type.split(';', 1)
+        if len(split) > 1:
+            content_type = split[0]
+        content_type = content_type.strip()
+
+        media_type_to_parser = dict([(parser.media_type, parser) for parser in self.parsers])
+
+        try:
+            parser = media_type_to_parser[content_type]
+        except KeyError:
+            raise ResponseException(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+                                    {'error': 'Unsupported media type in request \'%s\'.' % content_type})
+        
+        return parser(self).parse(content)
+
+    @property
+    def parsed_media_types(self):
+        """Return an list of all the media types that this ParserMixin can parse."""
+        return [parser.media_type for parser in self.parsers]
+    
+    @property
+    def default_parser(self):
+        """Return the ParerMixin's most prefered emitter.
+        (This has no behavioural effect, but is may be used by documenting emitters)"""        
+        return self.parsers[0]
+
 
 class BaseParser(object):
     """All parsers should extend BaseParser, specifing a media_type attribute,

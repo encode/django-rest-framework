@@ -8,6 +8,7 @@ from django.template import RequestContext, loader
 from django import forms
 
 from djangorestframework.response import NoContent
+from djangorestframework.validators import FormValidatorMixin
 from djangorestframework.utils import dict2xml, url_resolves
 
 from urllib import quote_plus
@@ -82,24 +83,28 @@ class DocumentingTemplateEmitter(BaseEmitter):
         In the absence on of the Resource having an associated form then
         provide a form that can be used to submit arbitrary content."""
         # Get the form instance if we have one bound to the input
-        form_instance = resource.form_instance
+        #form_instance = resource.form_instance
+        # TODO! Reinstate this
 
-        # Otherwise if this isn't an error response
-        # then attempt to get a form bound to the response object
-        if not form_instance and resource.response.has_content_body:
-            try:
-                form_instance = resource.get_form(resource.response.raw_content)
-                if form_instance:
-                    form_instance.is_valid()
-            except:
-                form_instance = None
-        
-        # If we still don't have a form instance then try to get an unbound form
-        if not form_instance:
-            try:
-                form_instance = self.resource.get_form()
-            except:
-                pass
+        form_instance = None
+
+        if isinstance(self, FormValidatorMixin):
+            # Otherwise if this isn't an error response
+            # then attempt to get a form bound to the response object
+            if not form_instance and resource.response.has_content_body:
+                try:
+                    form_instance = resource.get_bound_form(resource.response.raw_content)
+                    if form_instance:
+                        form_instance.is_valid()
+                except:
+                    form_instance = None
+            
+            # If we still don't have a form instance then try to get an unbound form
+            if not form_instance:
+                try:
+                    form_instance = self.resource.get_bound_form()
+                except:
+                    pass
 
         # If we still don't have a form instance then try to get an unbound form which can tunnel arbitrary content types
         if not form_instance:
