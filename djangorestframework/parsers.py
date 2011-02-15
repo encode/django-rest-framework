@@ -118,3 +118,12 @@ class FormParser(BaseParser):
         return data
 
 
+# TODO: Allow parsers to specify multiple media types
+class MultipartParser(FormParser):
+    """The default parser for multipart form data.
+    Return a dict containing a single value for each non-reserved parameter.
+    """
+    
+    media_type = 'multipart/form-data'
+
+

@@ -121,7 +121,7 @@ class ModelResource(Resource):
                 if inspect.ismethod(f) and len(inspect.getargspec(f)[0]) == 1:
                     ret = _any(f())
             else:
-                ret = str(thing)  # TRC  TODO: Change this back!
+                ret = unicode(thing)  # TRC  TODO: Change this back!
 
             return ret
 

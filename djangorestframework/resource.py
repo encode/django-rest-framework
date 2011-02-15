@@ -42,7 +42,8 @@ class Resource(ParserMixin, FormValidatorMixin, OverloadedContentMixin, Overload
     # List of content-types the resource can read from
     parsers = ( parsers.JSONParser,
                 parsers.XMLParser,
-                parsers.FormParser )
+                parsers.FormParser,
+                parsers.MultipartParser )
     
     # List of all authenticating methods to attempt
     authenticators = ( authenticators.UserLoggedInAuthenticator,
