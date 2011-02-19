@@ -3,7 +3,7 @@
 
 .. module:: resource
 
-The :mod:`resource` module is the core of FlyWheel.  It provides the :class:`Resource` base class which handles incoming HTTP requests and maps them to method calls, performing authentication, input deserialization, input validation and output serialization.
+The :mod:`resource` module is the core of Django REST framework.  It provides the :class:`Resource` base class which handles incoming HTTP requests and maps them to method calls, performing authentication, input deserialization, input validation and output serialization.
 
 Resources are created by sublassing :class:`Resource`, setting a number of class attributes, and overriding one or more methods.
 

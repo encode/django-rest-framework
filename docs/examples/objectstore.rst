@@ -1,5 +1,7 @@
-Resource example - An object store
-==================================
+.. _objectstore:
+
+Object Store API
+================
 
 * http://api.django-rest-framework.org/object-store/
 

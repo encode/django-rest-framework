@@ -9,29 +9,28 @@ Django REST framework
 Introduction
 ------------
 
-Django REST framework is a lightweight REST framework for Django.
-
-It aims to make it easy to build well-connected, self-describing Web APIs with a minimum of fuss.
+Django REST framework aims to make it easy to build well-connected, self-describing Web APIs with a minimum of fuss.
 
 Features:
 
-* Clean, simple, class-based views for Resources.
-* Support for ModelResources with nice default implementations and input validation.
-* Automatically provides a browse-able self-documenting API.
-* Pluggable Emitters, Parsers and Authenticators - Easy to customise.
-* Content type negotiation using Accept headers.
+* Automatically provides a Django Admin style `browse-able self-documenting API <http://api.django-rest-framework.org>`_.
+* Clean, simple, views for Resources, using Django's new `class based views <http://docs.djangoproject.com/en/dev/topics/class-based-views/>`_.
+* Support for ModelResources with out-of-the-box default implementations and input validation.
+* Pluggable :mod:`.emitters`, :mod:`parsers`, :mod:`validators` and :mod:`authenticators` - Easy to customise.
+* Content type negotiation using HTTP Accept headers.
 * Optional support for forms as input validation.
-* Modular architecture - Easy to extend and modify.
+* Modular architecture - The MixIn classes can even be used without using the core :class:`.Resource` or :class:`.ModelResource` classes.
+
+For more information please head on over to the `discussion group <http://groups.google.com/group/django-rest-framework>`_.
+
+Bug reports and feature suggestions are greatful received on the `issue tracker <https://bitbucket.org/tomchristie/django-rest-framework/issues?sort=version>`_.
 
 Requirements
 ------------
 
-* Python 2.6
-* Django 1.2
+* Python (2.5, 2.6, 2.7 supported)
+* Django (1.2, 1.3 supported)
 
-.. note::
-
-    Support for a wider range of Python & Django versions is planned, but right now django-rest-framework is only tested against these versions.
 
 Installation & Setup
 --------------------
@@ -43,148 +42,88 @@ To get a local copy of the repository use mercurial::
 
 To add django-rest-framework to a django project:
 
-* Copy or symlink the ``djangorestframework`` directory into python's ``site-packages`` directory, or otherwise ensure that the ``djangorestframework`` directory is on your ``PYTHONPATH``.
+* Ensure that the ``djangorestframework`` directory is on your ``PYTHONPATH``.
 * Add ``djangorestframework`` to your ``INSTALLED_APPS``.
-* Ensure the ``TEMPLATE_LOADERS`` setting contains the item ``'django.template.loaders.app_directories.Loader'``. (It will do by default, so you shouldn't normally need to do anything here.)
 
-Getting Started - Resources
----------------------------
+That's normally all you'll need to do to get Django REST framework set up on a standard installation using the testserver.
 
-We're going to start off with a simple example, that demonstrates
-a few things:
+For more information take a look at the :ref:`setup` section.
 
-#. Creating resources.
-#. Linking resources.
-#. Writing method handlers on resources.
-#. Adding form validation to resources.
+Getting Started
+---------------
 
-First we'll define two resources in our urlconf.
+Using Django REST framework can be as simple as adding a few lines to your urlconf::
 
-``urls.py``
+    from django.conf.urls.defaults import patterns, url
+    from djangorestframework import ModelResource, RootModelResource
+    from models import MyModel
 
-.. include:: ../examples/resourceexample/urls.py
-    :literal:
+    urlpatterns = patterns('',
+        url(r'^$', RootModelResource.as_view(model=MyModel)),
+        url(r'^(?P<pk>[^/]+)/$', ModelResource.as_view(model=MyModel)),
+     )
 
-Now we'll add a form that we'll use for input validation.  This is completely optional, but it's often useful.
+Django REST framework comes with two "getting started" examples.
 
-``forms.py``
-
-.. include:: ../examples/resourceexample/forms.py
-    :literal:
-
-Now we'll write our resources.  The first is a read only resource that links to three instances of the second.  The second resource just has some stub handler methods to help us see that our example is working.
-
-``views.py``
-
-.. include:: ../examples/resourceexample/views.py
-    :literal:
-
-That's us done.  Our API now provides both programmatic access using JSON and XML, as well a nice browseable HTML view, so we can now access it both from the browser:
-
-* http://api.django-rest-framework.org/resource-example/
-
-And from the command line:
-
-.. code-block:: bash
-
-    # Demonstrates API's input validation using form input
-    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' --data 'foo=true' http://api.django-rest-framework.org/resource-example/1/
-    {"detail": {"bar": ["This field is required."], "baz": ["This field is required."]}}
-
-    #  Demonstrates API's input validation using JSON input
-    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' -H 'Content-Type: application/json' --data-binary '{"foo":true}' http://api.django-rest-framework.org/resource-example/1/
-   {"detail": {"bar": ["This field is required."], "baz": ["This field is required."]}}
-
-Getting Started - Model Resources
----------------------------------
-
-Often you'll want parts of your API to directly map to existing django models.  Django REST framework handles this nicely for you in a couple of ways:
-
-#. It automatically provides suitable create/read/update/delete methods for your resources.
-#. Input validation occurs automatically, by using appropriate `ModelForms <http://docs.djangoproject.com/en/dev/topics/forms/modelforms/>`_.
-
-We'll start of defining two resources in our urlconf again.
-
-``urls.py``
-
-.. include:: ../examples/modelresourceexample/urls.py
-    :literal:
-
-Here's the models we're working from in this example.  It's usually a good idea to make sure you provide the :func:`get_absolute_url()` `permalink <http://docs.djangoproject.com/en/dev/ref/models/instances/#get-absolute-url>`_ for all models you want to expose via the API.
-
-``models.py``
-
-.. include:: ../examples/modelresourceexample/models.py
-    :literal:
-
-Now that we've got some models and a urlconf, there's very little code to write.  We'll create a :class:`.ModelResource` to map to instances of our models, and a top level :class:`.RootModelResource` to list the existing instances and to create new instances.
-
-``views.py``
-
-.. include:: ../examples/modelresourceexample/views.py
-    :literal:
-
-And we're done.  We've now got a fully browseable API, which supports multiple input and output media types, and has all the nice automatic field validation that Django gives us for free.
-
-We can visit the API in our browser:
-
-* http://api.django-rest-framework.org/model-resource-example/
-
-Or access it from the command line using curl:
-
-.. code-block:: bash
-
-    #  Demonstrates API's input validation using form input
-    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' --data 'foo=true' http://api.django-rest-framework.org/model-resource-example/
-    {"detail": {"bar": ["This field is required."], "baz": ["This field is required."]}}
-
-    #  Demonstrates API's input validation using JSON input
-    bash: curl -X POST -H 'X-Requested-With: XMLHttpRequest' -H 'Content-Type: application/json' --data-binary '{"foo":true}' http://api.django-rest-framework.org/model-resource-example/
-   {"detail": {"bar": ["This field is required."], "baz": ["This field is required."]}}
-
-We could also have added the handler methods :meth:`.Resource.get()`, :meth:`.Resource.post()` etc... seen in the last example, but Django REST framework provides nice default implementations for us that do exactly what we'd expect them to. 
-
+#. :ref:`resources`
+#. :ref:`modelresources`
+	
 Examples
 --------
 
-There's a few real world examples included with django-rest-framework.
-These demonstrate the following use cases:
+There are a few real world web API examples included with Django REST framework.
 
-#. Using :class:`.Resource` for resources that do not map to models.
-#. Using :class:`.Resource` with forms for input validation.
-#. Using :class:`.ModelResource` for resources that map directly to models.
+#. :ref:`objectstore` - Using :class:`.Resource` for resources that do not map to models.
+#. :ref:`codehighlighting` - Using :class:`.Resource` with forms for input validation.
+#. :ref:`blogposts` - Using :class:`.ModelResource` for resources that map directly to models.
 
-All the examples are freely available for testing in the sandbox here: http://api.django-rest-framework.org
+All the examples are freely available for testing in the sandbox:
 
-.. toctree::
-  :maxdepth: 1
+* http://api.django-rest-framework.org
 
-  examples/objectstore
-  examples/pygments
-  examples/blogpost
+(The :ref:`sandbox` resource is also documented.)
+
+
 
 How Tos, FAQs & Notes
 ---------------------
 
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 1
 
+  howto/setup
   howto/usingcurl
   howto/alternativeframeworks
+  howto/mixin
 
 Library Reference
 -----------------
 
 .. toctree::
-  :maxdepth: 2
+  :maxdepth: 1
 
   library/resource
   library/modelresource
   library/emitters
   library/parsers
   library/authenticators
+  library/validators
   library/response
+  library/status
 
+Examples Reference
+------------------
+
+.. toctree::
+  :maxdepth: 1
+  
+  examples/resources
+  examples/modelresources
+  examples/objectstore
+  examples/pygments
+  examples/blogpost
+  examples/sandbox
+  howto/mixin
 
 Indices and tables
 ------------------

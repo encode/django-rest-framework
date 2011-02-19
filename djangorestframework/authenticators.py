@@ -1,3 +1,9 @@
+"""The :mod:`authenticators` modules provides for pluggable authentication behaviour.
+
+Authentication behaviour is provided by adding the mixin class :class:`AuthenticatorMixin` to a :class:`.Resource` or Django :class:`View` class.
+
+The set of authenticators which are use is then specified by setting the :attr:`authenticators` attribute on the class, and listing a set of authenticator classes.
+"""
 from django.contrib.auth import authenticate
 from django.middleware.csrf import CsrfViewMiddleware
 from djangorestframework.utils import as_tuple
@@ -5,11 +11,14 @@ import base64
 
 
 class AuthenticatorMixin(object):
+    """Adds pluggable authentication behaviour."""
+    
+    """The set of authenticators to use."""
     authenticators = None
 
     def authenticate(self, request):
         """Attempt to authenticate the request, returning an authentication context or None.
-        An authentication context may be any object, although in many cases it will be a User instance."""
+        An authentication context may be any object, although in many cases it will simply be a :class:`User` instance."""
         
         # Attempt authentication against each authenticator in turn,
         # and return None if no authenticators succeed in authenticating the request.

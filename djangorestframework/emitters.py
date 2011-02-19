@@ -32,6 +32,12 @@ _MSIE_USER_AGENT = re.compile(r'^Mozilla/[0-9]+\.[0-9]+ \([^)]*; MSIE [0-9]+\.[0
 
 
 class EmitterMixin(object):
+    """Adds behaviour for pluggable Emitters to a :class:`.Resource` or Django :class:`View`. class.
+    
+    Default behaviour is to use standard HTTP Accept header content negotiation.
+    Also supports overidding the content type by specifying an _accept= parameter in the URL.
+    Ignores Accept headers from Internet Explorer user agents and uses a sensible browser Accept header instead."""
+
     ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
     REWRITE_IE_ACCEPT_HEADER = True
 
@@ -40,6 +46,7 @@ class EmitterMixin(object):
     emitters = ()
 
     def emit(self, response):
+        """Takes a :class:`Response` object and returns a Django :class:`HttpResponse`."""
         self.response = response
 
         try:

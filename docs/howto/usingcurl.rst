@@ -17,11 +17,7 @@ There are a few things that can be helpful to remember when using CURL with djan
 
     curl -X GET -H 'Accept: text/plain' http://example.com/my-api/
 
-#. All POST requests should include an ```X-Requested-With: XMLHttpRequest`` header <http://docs.djangoproject.com/en/dev/ref/contrib/csrf/#how-it-works>`_::
-
-    curl -X POST -H 'X-Requested-With: XMLHttpRequest' --data 'foo=bar' http://example.com/my-api/
-
-#. ``POST`` and ``PUT`` requests can contain form data (ie ``Content-Type:: application/x-www-form-urlencoded``)::
+#. ``POST`` and ``PUT`` requests can contain form data (ie ``Content-Type: application/x-www-form-urlencoded``)::
 
     curl -X PUT --data 'foo=bar' http://example.com/my-api/some-resource/
 

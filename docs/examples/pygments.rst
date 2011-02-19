@@ -1,5 +1,7 @@
-Resource with form validation - A pygments pastebin
-===================================================
+.. _codehighlighting:
+
+Code Highlighting API
+=====================
 
 This example demonstrates creating a REST API using a :class:`.Resource` with some form validation on the input.
 We're going to provide a simple wrapper around the awesome `pygments <http://pygments.org/>`_ library, to create the Web API for a simple pastebin.
@@ -8,12 +10,10 @@ We're going to provide a simple wrapper around the awesome `pygments <http://pyg
 
     A live sandbox instance of this API is available at http://api.django-rest-framework.org/pygments/
 
-    You can browse the API using a web browser(1), or from the command line(2)::
+    You can browse the API using a web browser, or from the command line::
 
         curl -X GET http://api.django-rest-framework.org/pygments/ -H 'Accept: text/plain'
 
-    #. Except for Internet Explorer.  Because it's `dumb <http://www.gethifi.com/blog/browser-rest-http-accept-headers>`_.
-    #. See `using CURL with django-rest-framework <http://django-rest-framework.org/howto/usingcurl.html>`_ for more details.
 
 URL configuration
 -----------------

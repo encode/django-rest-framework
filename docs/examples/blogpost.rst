@@ -1,5 +1,7 @@
-ModelResource example - Blog posts
-==================================
+.. _blogposts:
+
+Blog Posts API
+==============
 
 * http://api.django-rest-framework.org/blog-post/
 
