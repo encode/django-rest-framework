@@ -1,6 +1,7 @@
 from django.forms import ModelForm
-from django.db.models.query import QuerySet
 from django.db.models import Model
+from django.db.models.query import QuerySet
+from django.db.models.fields.related import RelatedField
 
 from djangorestframework.response import Response, ResponseException
 from djangorestframework.resource import Resource
@@ -340,6 +341,13 @@ class ModelResource(Resource, ModelFormValidatorMixin):
 
     def post(self, request, auth, content, *args, **kwargs):
         # TODO: test creation on a non-existing resource url
+        
+        # translated related_field into related_field_id
+        for related_name in [field.name for field in self.model._meta.fields if isinstance(field, RelatedField)]:
+            if kwargs.has_key(related_name):
+                kwargs[related_name + '_id'] = kwargs[related_name]
+                del kwargs[related_name]
+
         all_kw_args = dict(content.items() + kwargs.items())
         if args:
             instance = self.model(pk=args[-1], **all_kw_args)
@@ -373,6 +381,7 @@ class ModelResource(Resource, ModelFormValidatorMixin):
             else:
                 # Otherwise assume the kwargs uniquely identify the model
                 instance = self.model.objects.get(**kwargs)
+
             for (key, val) in content.items():
                 setattr(instance, key, val)
         except self.model.DoesNotExist:
@@ -404,7 +413,7 @@ class RootModelResource(ModelResource):
 
     def get(self, request, auth, *args, **kwargs):
         queryset = self.queryset if self.queryset else self.model.objects.all()
-        return queryset
+        return queryset.filter(**kwargs)
 
 
 class QueryModelResource(ModelResource):
@@ -418,5 +427,5 @@ class QueryModelResource(ModelResource):
 
     def get(self, request, auth, *args, **kwargs):
         queryset = self.queryset if self.queryset else self.model.objects.all()
-        return queryset
+        return queryset.filer(**kwargs)
 
