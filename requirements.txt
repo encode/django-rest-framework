@@ -1,5 +1,5 @@
-# Django and pip are required if installing into a virtualenv environment...
+# We need Django.  Duh.
 
 Django==1.2.4
-distribute==0.6.14
 wsgiref==0.1.2
+

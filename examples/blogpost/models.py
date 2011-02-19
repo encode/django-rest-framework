@@ -24,13 +24,13 @@ class BlogPost(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('blogpost.views.BlogPostInstance', (), {'key': self.key})
+        return ('blog-post', (), {'key': self.key})
 
     @property
     @models.permalink
     def comments_url(self):
         """Link to a resource which lists all comments for this blog post."""
-        return ('blogpost.views.CommentRoot', (), {'blogpost_id': self.key})
+        return ('comments', (), {'blogpost_id': self.key})
 
     def __unicode__(self):
         return self.title
@@ -52,11 +52,11 @@ class Comment(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('blogpost.views.CommentInstance', (), {'blogpost': self.blogpost.key, 'id': self.id})
+        return ('comment', (), {'blogpost': self.blogpost.key, 'id': self.id})
     
     @property
     @models.permalink
     def blogpost_url(self):
         """Link to the blog post resource which this comment corresponds to."""
-        return ('blogpost.views.BlogPostInstance', (), {'key': self.blogpost.key})
+        return ('blog-post', (), {'key': self.blogpost.key})
         

@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.urlresolvers import reverse
 
 from djangorestframework.resource import Resource
 from djangorestframework.response import Response, status
@@ -29,7 +30,7 @@ class ObjectStoreRoot(Resource):
     def get(self, request, auth):
         """Return a list of all the stored object URLs."""
         keys = sorted(os.listdir(OBJECT_STORE_DIR))
-        return [self.reverse(StoredObject, key=key) for key in keys]
+        return [reverse('stored-object', kwargs={'key':key}) for key in keys]
     
     def post(self, request, auth, content):
         """Create a new stored object, with a unique key."""
@@ -37,9 +38,9 @@ class ObjectStoreRoot(Resource):
         pathname = os.path.join(OBJECT_STORE_DIR, key)
         pickle.dump(content, open(pathname, 'wb'))
         remove_oldest_files(OBJECT_STORE_DIR, MAX_FILES)
-        return Response(status.HTTP_201_CREATED, content, {'Location': self.reverse(StoredObject, key=key)})
- 
-        
+        return Response(status.HTTP_201_CREATED, content, {'Location': reverse('stored-object', kwargs={'key':key})})
+
+
 class StoredObject(Resource):
     """Represents a stored object.
     The object may be any picklable content."""

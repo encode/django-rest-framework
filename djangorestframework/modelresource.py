@@ -4,13 +4,14 @@ from django.db.models import Model
 
 from djangorestframework.response import status, Response, ResponseException
 from djangorestframework.resource import Resource
+from djangorestframework.validators import ModelFormValidatorMixin
 
 import decimal
 import inspect
 import re
 
 
-class ModelResource(Resource):
+class ModelResource(Resource, ModelFormValidatorMixin):
     """A specialized type of Resource, for resources that map directly to a Django Model.
     Useful things this provides:
 
@@ -40,50 +41,50 @@ class ModelResource(Resource):
     # By default the set of input fields will be the same as the set of output fields
     # If you wish to override this behaviour you should explicitly set the
     # form_fields attribute on your class. 
-    form_fields = None
+    #form_fields = None
 
 
-    def get_form(self, content=None):
-        """Return a form that may be used in validation and/or rendering an html emitter"""
-        if self.form:
-            return super(self.__class__, self).get_form(content)
+    #def get_form(self, content=None):
+    #    """Return a form that may be used in validation and/or rendering an html emitter"""
+    #    if self.form:
+    #        return super(self.__class__, self).get_form(content)
+    #
+    #    elif self.model:
+    #
+    #        class NewModelForm(ModelForm):
+    #            class Meta:
+    #                model = self.model
+    #                fields = self.form_fields if self.form_fields else None
+    #
+    #        if content and isinstance(content, Model):
+    #            return NewModelForm(instance=content)
+    #        elif content:
+    #            return NewModelForm(content)
+    #        
+    #        return NewModelForm()
+    #
+    #    return None
 
-        elif self.model:
 
-            class NewModelForm(ModelForm):
-                class Meta:
-                    model = self.model
-                    fields = self.form_fields if self.form_fields else None
-
-            if content and isinstance(content, Model):
-                return NewModelForm(instance=content)
-            elif content:
-                return NewModelForm(content)
-            
-            return NewModelForm()
-
-        return None
-
-
-    def cleanup_request(self, data, form_instance):
-        """Override cleanup_request to drop read-only fields from the input prior to validation.
-        This ensures that we don't error out with 'non-existent field' when these fields are supplied,
-        and allows for a pragmatic approach to resources which include read-only elements.
-
-        I would actually like to be strict and verify the value of correctness of the values in these fields,
-        although that gets tricky as it involves validating at the point that we get the model instance.
-        
-        See here for another example of this approach:
-        http://fedoraproject.org/wiki/Cloud_APIs_REST_Style_Guide
-        https://www.redhat.com/archives/rest-practices/2010-April/thread.html#00041"""
-        read_only_fields = set(self.fields) - set(self.form_instance.fields)
-        input_fields = set(data.keys())
-
-        clean_data = {}
-        for key in input_fields - read_only_fields:
-            clean_data[key] = data[key]
-
-        return super(ModelResource, self).cleanup_request(clean_data, form_instance)
+    #def cleanup_request(self, data, form_instance):
+    #    """Override cleanup_request to drop read-only fields from the input prior to validation.
+    #    This ensures that we don't error out with 'non-existent field' when these fields are supplied,
+    #    and allows for a pragmatic approach to resources which include read-only elements.
+    #
+    #    I would actually like to be strict and verify the value of correctness of the values in these fields,
+    #    although that gets tricky as it involves validating at the point that we get the model instance.
+    #    
+    #    See here for another example of this approach:
+    #    http://fedoraproject.org/wiki/Cloud_APIs_REST_Style_Guide
+    #    https://www.redhat.com/archives/rest-practices/2010-April/thread.html#00041"""
+    #    read_only_fields = set(self.fields) - set(self.form_instance.fields)
+    #    input_fields = set(data.keys())
+    #
+    #    clean_data = {}
+    #    for key in input_fields - read_only_fields:
+    #        clean_data[key] = data[key]
+    #
+    #    return super(ModelResource, self).cleanup_request(clean_data, form_instance)
 
 
     def cleanup_response(self, data):
@@ -121,7 +122,7 @@ class ModelResource(Resource):
                 if inspect.ismethod(f) and len(inspect.getargspec(f)[0]) == 1:
                     ret = _any(f())
             else:
-                ret = unicode(thing)  # TRC  TODO: Change this back!
+                ret = str(thing)  # TRC  TODO: Change this back!
 
             return ret
 
@@ -308,9 +309,9 @@ class ModelResource(Resource):
                 try: ret['absolute_url'] = data.get_absolute_url()
                 except: pass
             
-            for key, val in ret.items():
-                if key.endswith('_url') or key.endswith('_uri'):
-                    ret[key] = self.add_domain(val)
+            #for key, val in ret.items():
+            #    if key.endswith('_url') or key.endswith('_uri'):
+            #        ret[key] = self.add_domain(val)
 
             return ret
         
@@ -346,7 +347,7 @@ class ModelResource(Resource):
         instance.save()
         headers = {}
         if hasattr(instance, 'get_absolute_url'):
-            headers['Location'] = self.add_domain(instance.get_absolute_url())
+            headers['Location'] = instance.get_absolute_url()
         return Response(status.HTTP_201_CREATED, instance, headers)
 
     def get(self, request, auth, *args, **kwargs):

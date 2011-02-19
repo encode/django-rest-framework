@@ -1,15 +1,16 @@
-from django.contrib.sites.models import Site
-from django.core.urlresolvers import reverse
-from django.http import HttpResponse
+from django.core.urlresolvers import set_script_prefix
+from django.views.decorators.csrf import csrf_exempt
 
+from djangorestframework.compat import View
+from djangorestframework.emitters import EmitterMixin
 from djangorestframework.parsers import ParserMixin
+from djangorestframework.authenticators import AuthenticatorMixin
 from djangorestframework.validators import FormValidatorMixin
 from djangorestframework.content import OverloadedContentMixin
 from djangorestframework.methods import OverloadedPOSTMethodMixin 
 from djangorestframework import emitters, parsers, authenticators
 from djangorestframework.response import status, Response, ResponseException
 
-from decimal import Decimal
 import re
 
 # TODO: Figure how out references and named urls need to work nicely
@@ -21,10 +22,10 @@ import re
 __all__ = ['Resource']
 
 
-_MSIE_USER_AGENT = re.compile(r'^Mozilla/[0-9]+\.[0-9]+ \([^)]*; MSIE [0-9]+\.[0-9]+[a-z]?;[^)]*\)(?!.* Opera )')
 
 
-class Resource(ParserMixin, FormValidatorMixin, OverloadedContentMixin, OverloadedPOSTMethodMixin):
+class Resource(EmitterMixin, ParserMixin, AuthenticatorMixin, FormValidatorMixin,
+               OverloadedContentMixin, OverloadedPOSTMethodMixin, View):
     """Handles incoming requests and maps them to REST operations,
     performing authentication, input deserialization, input validation, output serialization."""
 
@@ -52,67 +53,21 @@ class Resource(ParserMixin, FormValidatorMixin, OverloadedContentMixin, Overload
     # Optional form for input validation and presentation of HTML formatted responses.
     form = None
 
+    # Allow name and description for the Resource to be set explicitly,
+    # overiding the default classname/docstring behaviour.
+    # These are used for documentation in the standard html and text emitters.
+    name = None
+    description = None
+
     # Map standard HTTP methods to function calls
     callmap = { 'GET': 'get', 'POST': 'post', 
                 'PUT': 'put', 'DELETE': 'delete' }
 
+
     # Some reserved parameters to allow us to use standard HTML forms with our resource
     # Override any/all of these with None to disable them, or override them with another value to rename them.
-    ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params    CONTENTTYPE_PARAM = '_contenttype'    # Allow override of Content-Type header in form params (allows sending arbitrary content with standard forms)
     CSRF_PARAM = 'csrfmiddlewaretoken'    # Django's CSRF token used in form params
 
-    _MUNGE_IE_ACCEPT_HEADER = True
-
-    def __new__(cls, *args, **kwargs):
-        """Make the class callable so it can be used as a Django view."""
-        self = object.__new__(cls)
-        if args:
-            request = args[0]
-            self.__init__(request)
-            return self._handle_request(request, *args[1:], **kwargs)
-        else:
-            self.__init__()
-            return self
-
-
-    def __init__(self, request=None):
-        """"""
-        # Setup the resource context
-        self.request = request
-        self.response = None
-        self.form_instance = None
-
-        # These sets are determined now so that overridding classes can modify the various parameter names,
-        # or set them to None to disable them. 
-        self.RESERVED_FORM_PARAMS = set((self.METHOD_PARAM, self.CONTENTTYPE_PARAM, self.CONTENT_PARAM, self.CSRF_PARAM))
-        self.RESERVED_QUERY_PARAMS = set((self.ACCEPT_QUERY_PARAM))
-        self.RESERVED_FORM_PARAMS.discard(None)
-        self.RESERVED_QUERY_PARAMS.discard(None)
-
-
-    @property
-    def name(self):
-        """Provide a name for the resource.
-        By default this is the class name, with 'CamelCaseNames' converted to 'Camel Case Names'."""
-        class_name = self.__class__.__name__
-        return re.sub('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', ' \\1', class_name).strip()
-
-    @property
-    def description(self):
-        """Provide a description for the resource.
-        By default this is the class's docstring with leading line spaces stripped."""
-        return re.sub(re.compile('^ +', re.MULTILINE), '', self.__doc__)
-
-    @property
-    def emitted_media_types(self):
-        """Return an list of all the media types that this resource can emit."""
-        return [emitter.media_type for emitter in self.emitters]
-
-    @property
-    def default_emitter(self):
-        """Return the resource's most prefered emitter.
-        (This emitter is used if the client does not send and Accept: header, or sends Accept: */*)"""
-        return self.emitters[0]
 
     def get(self, request, auth, *args, **kwargs):
         """Must be subclassed to be implemented."""
@@ -134,47 +89,11 @@ class Resource(ParserMixin, FormValidatorMixin, OverloadedContentMixin, Overload
         self.not_implemented('DELETE')
 
 
-    def reverse(self, view, *args, **kwargs):
-        """Return a fully qualified URI for a given view or resource.
-        Add the domain using the Sites framework if possible, otherwise fallback to using the current request."""
-        return self.add_domain(reverse(view, args=args, kwargs=kwargs))
-
-
     def not_implemented(self, operation):
         """Return an HTTP 500 server error if an operation is called which has been allowed by
         allowed_methods, but which has not been implemented."""
         raise ResponseException(status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 {'detail': '%s operation on this resource has not been implemented' % (operation, )})
-
-
-    def add_domain(self, path):
-        """Given a path, return an fully qualified URI.
-        Use the Sites framework if possible, otherwise fallback to using the domain from the current request."""
-
-        # Note that out-of-the-box the Sites framework uses the reserved domain 'example.com'
-        # See RFC 2606 - http://www.faqs.org/rfcs/rfc2606.html
-        try:
-            site = Site.objects.get_current()
-            if site.domain and site.domain != 'example.com':
-                return 'http://%s%s' % (site.domain, path)
-        except:
-            pass
-
-        return self.request.build_absolute_uri(path)
-
-
-    def authenticate(self, request):
-        """Attempt to authenticate the request, returning an authentication context or None.
-        An authentication context may be any object, although in many cases it will be a User instance."""
-        
-        # Attempt authentication against each authenticator in turn,
-        # and return None if no authenticators succeed in authenticating the request.
-        for authenticator in self.authenticators:
-            auth_context = authenticator(self).authenticate(request)
-            if auth_context:
-                return auth_context
-
-        return None
 
 
     def check_method_allowed(self, method, auth):
@@ -198,76 +117,16 @@ class Resource(ParserMixin, FormValidatorMixin, OverloadedContentMixin, Overload
         """Perform any resource-specific data filtering prior to the standard HTTP
         content-type serialization.
 
-        Eg filter complex objects that cannot be serialized by json/xml/etc into basic objects that can."""
+        Eg filter complex objects that cannot be serialized by json/xml/etc into basic objects that can.
+        
+        TODO: This is going to be removed.  I think that the 'fields' behaviour is going to move into
+        the EmitterMixin and Emitter classes."""
         return data
 
+    # Session based authentication is explicitly CSRF validated, all other authentication is CSRF exempt.
 
-    def determine_emitter(self, request):
-        """Return the appropriate emitter for the output, given the client's 'Accept' header,
-        and the content types that this Resource knows how to serve.
-        
-        See: RFC 2616, Section 14 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html"""
-
-        if self.ACCEPT_QUERY_PARAM and request.GET.get(self.ACCEPT_QUERY_PARAM, None):
-            # Use _accept parameter override
-            accept_list = [request.GET.get(self.ACCEPT_QUERY_PARAM)]
-        elif self._MUNGE_IE_ACCEPT_HEADER and request.META.has_key('HTTP_USER_AGENT') and _MSIE_USER_AGENT.match(request.META['HTTP_USER_AGENT']):
-            accept_list = ['text/html', '*/*']
-        elif request.META.has_key('HTTP_ACCEPT'):
-            # Use standard HTTP Accept negotiation
-            accept_list = request.META["HTTP_ACCEPT"].split(',')
-        else:
-            # No accept header specified
-            return self.default_emitter
-        
-        # Parse the accept header into a dict of {qvalue: set of media types}
-        # We ignore mietype parameters
-        accept_dict = {}    
-        for token in accept_list:
-            components = token.split(';')
-            mimetype = components[0].strip()
-            qvalue = Decimal('1.0')
-            
-            if len(components) > 1:
-                # Parse items that have a qvalue eg text/html;q=0.9
-                try:
-                    (q, num) = components[-1].split('=')
-                    if q == 'q':
-                        qvalue = Decimal(num)
-                except:
-                    # Skip malformed entries
-                    continue
-
-            if accept_dict.has_key(qvalue):
-                accept_dict[qvalue].add(mimetype)
-            else:
-                accept_dict[qvalue] = set((mimetype,))
-        
-        # Convert to a list of sets ordered by qvalue (highest first)
-        accept_sets = [accept_dict[qvalue] for qvalue in sorted(accept_dict.keys(), reverse=True)]
-       
-        for accept_set in accept_sets:
-            # Return any exact match
-            for emitter in self.emitters:
-                if emitter.media_type in accept_set:
-                    return emitter
-
-            # Return any subtype match
-            for emitter in self.emitters:
-                if emitter.media_type.split('/')[0] + '/*' in accept_set:
-                    return emitter
-
-            # Return default
-            if '*/*' in accept_set:
-                return self.default_emitter
-      
-
-        raise ResponseException(status.HTTP_406_NOT_ACCEPTABLE,
-                                {'detail': 'Could not statisfy the client\'s Accept header',
-                                 'available_types': self.emitted_media_types})
-
-
-    def _handle_request(self, request, *args, **kwargs):
+    @csrf_exempt
+    def dispatch(self, request, *args, **kwargs):
         """This method is the core of Resource, through which all requests are passed.
 
         Broadly this consists of the following procedure:
@@ -279,12 +138,23 @@ class Resource(ParserMixin, FormValidatorMixin, OverloadedContentMixin, Overload
         4. cleanup the response data
         5. serialize response data into response content, using standard HTTP content negotiation
         """
-        emitter = None
+        
+        self.request = request
+
+        # Calls to 'reverse' will not be fully qualified unless we set the scheme/host/port here.
+        prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
+        set_script_prefix(prefix)
+
+        # These sets are determined now so that overridding classes can modify the various parameter names,
+        # or set them to None to disable them. 
+        self.RESERVED_FORM_PARAMS = set((self.METHOD_PARAM, self.CONTENTTYPE_PARAM, self.CONTENT_PARAM, self.CSRF_PARAM))
+        self.RESERVED_QUERY_PARAMS = set((self.ACCEPT_QUERY_PARAM))
+        self.RESERVED_FORM_PARAMS.discard(None)
+        self.RESERVED_QUERY_PARAMS.discard(None)
+        
         method = self.determine_method(request)
 
         try:
-            # Before we attempt anything else determine what format to emit our response data with.
-            emitter = self.determine_emitter(request)
 
             # Authenticate the request, and store any context so that the resource operations can
             # do more fine grained authentication if required.
@@ -301,51 +171,34 @@ class Resource(ParserMixin, FormValidatorMixin, OverloadedContentMixin, Overload
             func = getattr(self, self.callmap.get(method, None))
     
             # Either generate the response data, deserializing and validating any request data
-            # TODO: Add support for message bodys on other HTTP methods, as it is valid.
+            # TODO: Add support for message bodys on other HTTP methods, as it is valid (although non-conventional).
             if method in ('PUT', 'POST'):
                 (content_type, content) = self.determine_content(request)
                 parser_content = self.parse(content_type, content)
                 cleaned_content = self.validate(parser_content)
-                response = func(request, auth_context, cleaned_content, *args, **kwargs)
+                response_obj = func(request, auth_context, cleaned_content, *args, **kwargs)
 
             else:
-                response = func(request, auth_context, *args, **kwargs)
+                response_obj = func(request, auth_context, *args, **kwargs)
 
             # Allow return value to be either Response, or an object, or None
-            if isinstance(response, Response):
-                self.response = response
-            elif response is not None:
-                self.response = Response(status.HTTP_200_OK, response)
+            if isinstance(response_obj, Response):
+                response = response_obj
+            elif response_obj is not None:
+                response = Response(status.HTTP_200_OK, response_obj)
             else:
-                self.response = Response(status.HTTP_204_NO_CONTENT)
+                response = Response(status.HTTP_204_NO_CONTENT)
 
             # Pre-serialize filtering (eg filter complex objects into natively serializable types)
-            self.response.cleaned_content = self.cleanup_response(self.response.raw_content)
+            response.cleaned_content = self.cleanup_response(response.raw_content)
 
 
         except ResponseException, exc:
-            self.response = exc.response
-
-            # Fall back to the default emitter if we failed to perform content negotiation
-            if emitter is None:
-                emitter = self.default_emitter
-
+            response = exc.response
 
         # Always add these headers
-        self.response.headers['Allow'] = ', '.join(self.allowed_methods)
-        self.response.headers['Vary'] = 'Authenticate, Allow'
+        response.headers['Allow'] = ', '.join(self.allowed_methods)
+        response.headers['Vary'] = 'Authenticate, Allow'
 
-        # Serialize the response content
-        if self.response.has_content_body:
-            content = emitter(self).emit(output=self.response.cleaned_content)
-        else:
-            content = emitter(self).emit()
-
-        # Build the HTTP Response
-        # TODO: Check if emitter.mimetype is underspecified, or if a content-type header has been set
-        resp = HttpResponse(content, mimetype=emitter.media_type, status=self.response.status)
-        for (key, val) in self.response.headers.items():
-            resp[key] = val
-
-        return resp
+        return self.emit(response)
 

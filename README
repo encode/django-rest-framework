@@ -4,18 +4,23 @@ hg clone https://tomchristie@bitbucket.org/tomchristie/django-rest-framework
 cd django-rest-framework/
 virtualenv --no-site-packages --distribute --python=python2.6 env
 source ./env/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt # django, pip
 
-# To build the documentation...
+# To run the tests...
 
-pip install -r docs/requirements.txt
-sphinx-build -c docs -b html -d docs/build docs html
+cd testproject
+export PYTHONPATH=..
+python manage.py test djangorestframework
 
 # To run the examples...
 
-pip install -r examples/requirements.txt
+pip install -r examples/requirements.txt # pygments, httplib2, markdown
 cd examples
 export PYTHONPATH=..
 python manage.py syncdb
 python manage.py runserver
 
+# To build the documentation...
+
+pip install -r docs/requirements.txt   # sphinx
+sphinx-build -c docs -b html -d docs/build docs html

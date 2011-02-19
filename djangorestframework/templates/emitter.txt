@@ -1,6 +1,6 @@
-{{ resource.name }}
+{{ name }}
 
-{{ resource.description }}
+{{ description }}
 
 {% autoescape off %}HTTP/1.0 {{ response.status }} {{ response.status_text }}
 {% for key, val in response.headers.items %}{{ key }}: {{ val }}

@@ -3,10 +3,16 @@ import xml.etree.ElementTree as ET
 from django.utils.encoding import smart_unicode
 from django.utils.xmlutils import SimplerXMLGenerator
 from django.core.urlresolvers import resolve
+from django.conf import settings
 try:
     import cStringIO as StringIO
 except ImportError:
     import StringIO
+
+
+#def admin_media_prefix(request):
+#    """Adds the ADMIN_MEDIA_PREFIX to the request context."""
+#    return {'ADMIN_MEDIA_PREFIX': settings.ADMIN_MEDIA_PREFIX}
 
 
 def as_tuple(obj):

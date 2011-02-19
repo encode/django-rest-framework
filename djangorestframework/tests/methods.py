@@ -1,5 +1,5 @@
 from django.test import TestCase
-from djangorestframework.tests.utils import RequestFactory
+from djangorestframework.compat import RequestFactory
 from djangorestframework.methods import MethodMixin, StandardMethodMixin, OverloadedPOSTMethodMixin
 
 

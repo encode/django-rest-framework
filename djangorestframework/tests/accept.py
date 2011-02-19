@@ -1,5 +1,5 @@
 from django.test import TestCase
-from djangorestframework.tests.utils import RequestFactory
+from djangorestframework.compat import RequestFactory
 from djangorestframework.resource import Resource
 
 
@@ -24,6 +24,7 @@ class UserAgentMungingTest(TestCase):
                 return {'a':1, 'b':2, 'c':3}
         self.req = RequestFactory()
         self.MockResource = MockResource
+        self.view = MockResource.as_view()
 
     def test_munge_msie_accept_header(self):
         """Send MSIE user agent strings and ensure that we get an HTML response,
@@ -32,19 +33,19 @@ class UserAgentMungingTest(TestCase):
                            MSIE_8_USER_AGENT,
                            MSIE_7_USER_AGENT):
             req = self.req.get('/', HTTP_ACCEPT='*/*', HTTP_USER_AGENT=user_agent)
-            resp = self.MockResource(req)
+            resp = self.view(req)
             self.assertEqual(resp['Content-Type'], 'text/html')
 
-    def test_dont_munge_msie_accept_header(self):
-        """Turn off _MUNGE_IE_ACCEPT_HEADER, send MSIE user agent strings and ensure
+    def test_dont_rewrite_msie_accept_header(self):
+        """Turn off REWRITE_IE_ACCEPT_HEADER, send MSIE user agent strings and ensure
         that we get a JSON response if we set a */* accept header."""
-        self.MockResource._MUNGE_IE_ACCEPT_HEADER = False
+        view = self.MockResource.as_view(REWRITE_IE_ACCEPT_HEADER=False)
 
         for user_agent in (MSIE_9_USER_AGENT,
                            MSIE_8_USER_AGENT,
                            MSIE_7_USER_AGENT):
             req = self.req.get('/', HTTP_ACCEPT='*/*', HTTP_USER_AGENT=user_agent)
-            resp = self.MockResource(req)
+            resp = view(req)
             self.assertEqual(resp['Content-Type'], 'application/json')
     
     def test_dont_munge_nice_browsers_accept_header(self):
@@ -56,7 +57,7 @@ class UserAgentMungingTest(TestCase):
                            OPERA_11_0_MSIE_USER_AGENT,
                            OPERA_11_0_OPERA_USER_AGENT):
             req = self.req.get('/', HTTP_ACCEPT='*/*', HTTP_USER_AGENT=user_agent)
-            resp = self.MockResource(req)
+            resp = self.view(req)
             self.assertEqual(resp['Content-Type'], 'application/json')
 
 

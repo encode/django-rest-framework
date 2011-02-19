@@ -1,4 +1,0 @@
-Thanks to...
-
-Jesper Noehr & the django-piston contributors for providing the starting point for this project.
-Paul Bagwell - Suggestions & bugfixes.

@@ -1,13 +1,14 @@
+from django.core.urlresolvers import reverse
 from djangorestframework.resource import Resource
 from djangorestframework.response import Response, status
 from resourceexample.forms import MyForm
 
 class ExampleResource(Resource):
-    """A basic read only resource that points to 3 other resources."""
+    """A basic read-only resource that points to 3 other resources."""
     allowed_methods = anon_allowed_methods = ('GET',)
 
     def get(self, request, auth):
-        return {"Some other resources": [self.reverse(AnotherExampleResource, num=num) for num in range(3)]}
+        return {"Some other resources": [reverse('another-example-resource', kwargs={'num':num}) for num in range(3)]}
 
 class AnotherExampleResource(Resource):
     """A basic GET-able/POST-able resource."""
