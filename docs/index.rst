@@ -1,6 +1,6 @@
 .. meta::
    :description: A lightweight REST framework for Django.
-   :keywords: django, python, REST, RESTful
+   :keywords: django, python, REST, RESTful, API, interface, framework
 
 
 Django REST framework
@@ -9,7 +9,7 @@ Django REST framework
 Introduction
 ------------
 
-Django REST framework aims to make it easy to build well-connected, self-describing Web APIs with a minimum of fuss.
+Django REST framework aims to make it easy to build well-connected, self-describing Web APIs.
 
 Features:
 
@@ -19,7 +19,7 @@ Features:
 * Pluggable :mod:`.emitters`, :mod:`parsers`, :mod:`validators` and :mod:`authenticators` - Easy to customise.
 * Content type negotiation using HTTP Accept headers.
 * Optional support for forms as input validation.
-* Modular architecture - The MixIn classes can even be used without using the core :class:`.Resource` or :class:`.ModelResource` classes.
+* Modular architecture - MixIn classes can be used without requiring the :class:`.Resource` or :class:`.ModelResource` classes.
 
 For more information please head on over to the `discussion group <http://groups.google.com/group/django-rest-framework>`_.
 
@@ -52,7 +52,9 @@ For more information take a look at the :ref:`setup` section.
 Getting Started
 ---------------
 
-Using Django REST framework can be as simple as adding a few lines to your urlconf::
+Using Django REST framework can be as simple as adding a few lines to your urlconf and adding a `permalink <http://docs.djangoproject.com/en/dev/ref/models/instances/#get-absolute-url>`_ to your model.
+
+`urls.py`::
 
     from django.conf.urls.defaults import patterns, url
     from djangorestframework import ModelResource, RootModelResource
@@ -60,8 +62,18 @@ Using Django REST framework can be as simple as adding a few lines to your urlco
 
     urlpatterns = patterns('',
         url(r'^$', RootModelResource.as_view(model=MyModel)),
-        url(r'^(?P<pk>[^/]+)/$', ModelResource.as_view(model=MyModel)),
+        url(r'^(?P<pk>[^/]+)/$', ModelResource.as_view(model=MyModel), name='my-model'),
      )
+
+`models.py`::
+
+    class MyModel(models.Model):
+
+        # (Rest of model definition...)
+
+        @models.permalink
+        def get_absolute_url(self):
+            return ('my-model', (self.pk,))
 
 Django REST framework comes with two "getting started" examples.
 
