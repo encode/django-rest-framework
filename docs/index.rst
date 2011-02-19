@@ -13,7 +13,7 @@ Django REST framework aims to make it easy to build well-connected, self-describ
 
 Features:
 
-* Automatically provides a Django Admin style `browse-able self-documenting API <http://api.django-rest-framework.org>`_.
+* Automatically provides a Django admin style `browse-able self-documenting API <http://api.django-rest-framework.org>`_.
 * Clean, simple, views for Resources, using Django's new `class based views <http://docs.djangoproject.com/en/dev/topics/class-based-views/>`_.
 * Support for ModelResources with out-of-the-box default implementations and input validation.
 * Pluggable :mod:`.emitters`, :mod:`parsers`, :mod:`validators` and :mod:`authenticators` - Easy to customise.
