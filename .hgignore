@@ -8,6 +8,7 @@ docs/build
 html
 examples/media/pygments/*
 examples/media/objectstore/*
+build/*
 .project
 .pydevproject
 .settings

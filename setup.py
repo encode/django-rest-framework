@@ -12,9 +12,11 @@ setup(
     description = "A lightweight REST framework for Django.",
     author = 'Tom Christie',
     author_email = 'tom@tomchristie.com',
-    packages = ['djangorestframework'],
-    include_package_data = True,
-    zip_safe = False,
+    packages = ['djangorestframework',
+                'djangorestframework.templatetags',
+                'djangorestframework.tests'],
+    package_dir={'djangorestframework': 'djangorestframework'},
+    package_data = {'djangorestframework': ['templates/*', 'static/*']},
     classifiers = [
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
@@ -26,3 +28,4 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
     ]
 )
+
