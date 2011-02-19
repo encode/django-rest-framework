@@ -1,6 +1,8 @@
-from djangorestframework.response import Response, status
+from djangorestframework.response import Response
 from djangorestframework.resource import Resource
 from djangorestframework.modelresource import ModelResource, RootModelResource
+from djangorestframework import status
+
 from blogpost import models
 
 BLOG_POST_FIELDS = ('created', 'title', 'slug', 'content', 'absolute_url', 'comment_url', 'comments_url')

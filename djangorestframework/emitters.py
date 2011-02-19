@@ -8,13 +8,14 @@ from django.http import HttpResponse
 from django.template import RequestContext, loader
 from django import forms
 
-from djangorestframework.response import NoContent, ResponseException, status
+from djangorestframework.response import NoContent, ResponseException
 from djangorestframework.validators import FormValidatorMixin
 from djangorestframework.utils import dict2xml, url_resolves
 from djangorestframework.markdownwrapper import apply_markdown
 from djangorestframework.breadcrumbs import get_breadcrumbs
 from djangorestframework.content import OverloadedContentMixin
 from djangorestframework.description import get_name, get_description
+from djangorestframework import status
 
 from urllib import quote_plus
 import string

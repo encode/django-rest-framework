@@ -1,6 +1,9 @@
 from django.core.urlresolvers import reverse
+
 from djangorestframework.resource import Resource
-from djangorestframework.response import Response, status
+from djangorestframework.response import Response
+from djangorestframework import status
+
 from resourceexample.forms import MyForm
 
 class ExampleResource(Resource):

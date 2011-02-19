@@ -2,7 +2,8 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from djangorestframework.resource import Resource
-from djangorestframework.response import Response, status
+from djangorestframework.response import Response
+from djangorestframework import status
 
 import pickle
 import os
@@ -19,7 +20,7 @@ def remove_oldest_files(dir, max_files):
     filepaths = [os.path.join(dir, file) for file in os.listdir(dir)]
     ctime_sorted_paths = [item[0] for item in sorted([(path, os.path.getctime(path)) for path in filepaths],
                                                      key=operator.itemgetter(1), reverse=True)]
-    [os.remove(path) for path in ctime_sorted_paths[max_files:]]
+    [os.remove(path) for path in ctime_sorted_paths[max_file:]]
 
 
 class ObjectStoreRoot(Resource):
