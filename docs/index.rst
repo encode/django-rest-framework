@@ -37,7 +37,7 @@ Installation & Setup
 
 The django-rest-framework project is hosted as a `mercurial repository on bitbucket <https://bitbucket.org/tomchristie/django-rest-framework>`_.
 
-To get a local copy of the repository either download the 0.1 release:
+To get a local copy of the repository either download the current release:
 
     `django-rest-framework-0.1.tar.gz <https://bitbucket.org/tomchristie/django-rest-framework/downloads/django-rest-framework-0.1.tar.gz>`_
 
