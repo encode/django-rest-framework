@@ -3,6 +3,16 @@
 Getting Started - Model Resources
 ---------------------------------
 
+.. note::
+
+    A live sandbox instance of this API is available:
+    
+    http://api.django-rest-framework.org/model-resource-example/
+
+    You can browse the API using a web browser, or from the command line::
+
+        curl -X GET http://api.django-rest-framework.org/resource-example/ -H 'Accept: text/plain'
+
 Often you'll want parts of your API to directly map to existing django models.  Django REST framework handles this nicely for you in a couple of ways:
 
 #. It automatically provides suitable create/read/update/delete methods for your resources.

@@ -3,6 +3,16 @@
 Getting Started - Resources
 ---------------------------
 
+.. note::
+
+    A live sandbox instance of this API is available:
+    
+    http://api.django-rest-framework.org/resource-example/
+
+    You can browse the API using a web browser, or from the command line::
+
+        curl -X GET http://api.django-rest-framework.org/resource-example/ -H 'Accept: text/plain'
+
 We're going to start off with a simple example, that demonstrates a few things:
 
 #. Creating resources.
