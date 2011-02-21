@@ -104,7 +104,7 @@ There are a few real world web API examples included with Django REST framework.
 
 All the examples are freely available for testing in the sandbox:
 
-* http://api.django-rest-framework.org
+    http://api.django-rest-framework.org
 
 (The :ref:`sandbox` resource is also documented.)
 
