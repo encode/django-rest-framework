@@ -9,6 +9,8 @@ html
 examples/media/pygments/*
 examples/media/objectstore/*
 build/*
+dist/*
+MANIFEST
 .project
 .pydevproject
 .settings
