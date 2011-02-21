@@ -21,9 +21,12 @@ Features:
 * Optional support for forms as input validation.
 * Modular architecture - MixIn classes can be used without requiring the :class:`.Resource` or :class:`.ModelResource` classes.
 
-For more information please head on over to the `discussion group <http://groups.google.com/group/django-rest-framework>`_.
+The django-rest-framework project is hosted as a `mercurial repository on bitbucket <https://bitbucket.org/tomchristie/django-rest-framework>`_.
 
 Bug reports and feature suggestions are greatful received on the `issue tracker <https://bitbucket.org/tomchristie/django-rest-framework/issues?sort=version>`_.
+
+For more information please head on over to the `discussion group <http://groups.google.com/group/django-rest-framework>`_.
+
 
 Requirements
 ------------
@@ -35,21 +38,24 @@ Requirements
 Installation & Setup
 --------------------
 
-The django-rest-framework project is hosted as a `mercurial repository on bitbucket <https://bitbucket.org/tomchristie/django-rest-framework>`_.
 
-To get a local copy of the repository either download the current release:
+You can install Django REST framework using ``pip`` or ``easy_install``::
+
+	pip install djangorestframework
+
+Or download the current release from BitBucket:
 
     `django-rest-framework-0.1.tar.gz <https://bitbucket.org/tomchristie/django-rest-framework/downloads/django-rest-framework-0.1.tar.gz>`_
 
-Or get the development source using mercurial::
+Or get the latest development version using mercurial::
 
     hg clone https://bitbucket.org/tomchristie/django-rest-framework
 
-To install Django REST framework to your ``site-packages`` directory run the ``setup.py`` script::
+To install Django REST framework to your ``site-packages`` directory, run the ``setup.py`` script::
 
     python setup.py install
 
-To add django-rest-framework to a django project:
+To add django-rest-framework to a Django project:
 
     * Ensure that the ``djangorestframework`` directory is on your ``PYTHONPATH``.
     * Add ``djangorestframework`` to your ``INSTALLED_APPS``.
