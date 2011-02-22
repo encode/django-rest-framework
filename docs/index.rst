@@ -41,11 +41,12 @@ Installation & Setup
 
 You can install Django REST framework using ``pip`` or ``easy_install``::
 
-	pip install djangorestframework
+    pip install djangorestframework
 
 Or download the current release from BitBucket:
 
-    `django-rest-framework-0.1.tar.gz <https://bitbucket.org/tomchristie/django-rest-framework/downloads/django-rest-framework-0.1.tar.gz>`_
+* `django-rest-framework-0.1.tar.gz <https://bitbucket.org/tomchristie/django-rest-framework/downloads/django-rest-framework-0.1.tar.gz>`_
+* `django-rest-framework-0.1.zip <https://bitbucket.org/tomchristie/django-rest-framework/downloads/django-rest-framework-0.1.zip>`_
 
 Or get the latest development version using mercurial::
 
