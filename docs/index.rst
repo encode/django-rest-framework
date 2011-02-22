@@ -23,10 +23,11 @@ Features:
 
 The django-rest-framework project is hosted as a `mercurial repository on bitbucket <https://bitbucket.org/tomchristie/django-rest-framework>`_.
 
-Bug reports and feature suggestions are greatful received on the `issue tracker <https://bitbucket.org/tomchristie/django-rest-framework/issues?sort=version>`_.
+For questions, thoughts and feedback please head on over to the `discussion group <http://groups.google.com/group/django-rest-framework>`_.
 
-For more information please head on over to the `discussion group <http://groups.google.com/group/django-rest-framework>`_.
+Bug reports are greatful received on the `issue tracker <https://bitbucket.org/tomchristie/django-rest-framework/issues?sort=version>`_.
 
+If you're feeling particularly enthusiastic there's even a `blog <http://blog.django-rest-framework.org>`_ which I might post useful stuff to now and then.
 
 Requirements
 ------------
