@@ -197,7 +197,7 @@ class Resource(EmitterMixin, ParserMixin, AuthenticatorMixin, FormValidatorMixin
 
         # Always add these headers
         response.headers['Allow'] = ', '.join(self.allowed_methods)
-        response.headers['Vary'] = 'Authenticate, Allow'
+        response.headers['Vary'] = 'Authenticate, Accept'
 
         return self.emit(response)
 
