@@ -9,7 +9,7 @@ Django REST framework
 Introduction
 ------------
 
-Django REST framework aims to make it easy to build well-connected, self-describing Web APIs.
+Django REST framework aims to make it easy to build well-connected, self-describing RESTful Web APIs.
 
 Features:
 
