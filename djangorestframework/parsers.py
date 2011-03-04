@@ -78,12 +78,36 @@ class JSONParser(BaseParser):
 class XMLParser(BaseParser):
     media_type = 'application/xml'
 
+class DataFlatener(object):
 
-class FormParser(BaseParser):
+    def flatten_data(self, data):
+        """Given a data dictionary ``{<attr_name>: <value_list>}``, returns a flattened dictionary according to :meth:`FormParser.is_a_list`.
+        """
+        #TODO : document + test
+        flatdata = dict()
+        for attr_name, attr_value in data.items():
+            if self.is_a_list(attr_name):
+                if isinstance(attr_value, list):
+                    flatdata[attr_name] = attr_value
+                else:
+                    flatdata[attr_name] = [attr_value]
+            else:
+                if isinstance(attr_value, list):
+                    flatdata[attr_name] = attr_value[0]
+                else:
+                    flatdata[attr_name] = attr_value 
+        return flatdata
+
+    def is_a_list(self, attr_name):
+        """ """
+        #TODO: document
+        return False
+
+class FormParser(BaseParser, DataFlatener):
     """The default parser for form data.
     Return a dict containing a single value for each non-reserved parameter.
     """
-    # TODO: not good, because posted/put lists are flattened !!!
+    # TODO: writing tests for PUT files + normal data
     media_type = 'application/x-www-form-urlencoded'
 
     def parse(self, input):
@@ -91,13 +115,12 @@ class FormParser(BaseParser):
 
         if request.method == 'PUT':
             data = parse_qs(input)
-            # Flattening the parsed query data
-            for key, val in data.items():
-                data[key] = val[0]
 
         if request.method == 'POST':
             # Django has already done the form parsing for us.
-            data = dict(request.POST.items())
+            data = request.POST
+
+        data = self.flatten_data(data)
 
         # Strip any parameters that we are treating as reserved
         for key in data:
@@ -106,7 +129,7 @@ class FormParser(BaseParser):
         return data
 
 # TODO: Allow parsers to specify multiple media_types
-class MultipartParser(FormParser):
+class MultipartParser(BaseParser, DataFlatener):
     media_type = 'multipart/form-data'
 
     def parse(self, input):
@@ -116,19 +139,14 @@ class MultipartParser(FormParser):
             upload_handlers = request._get_upload_handlers()
             django_mpp = DjangoMPParser(request.META, StringIO(input), upload_handlers)
             data, files = django_mpp.parse()
-            data = dict(data)
-            files = dict(files)
 
-        if request.method == 'POST':
+        elif request.method == 'POST':
             # Django has already done the form parsing for us.
-            data = dict(request.POST)
-            files = dict(request.FILES)
+            data = request.POST
+            files = request.FILES
 
-        # Flattening, then merging the POSTED/PUT data/files
-        for key, val in dict(data).items():
-            data[key] = val[0]
-        for key, val in dict(files).items():
-            files[key] = val[0].read()
+        data = self.flatten_data(data)
+        files = self.flatten_data(files)
         data.update(files)
         
         # Strip any parameters that we are treating as reserved
@@ -136,4 +154,3 @@ class MultipartParser(FormParser):
             if key in self.resource.RESERVED_FORM_PARAMS:
                 data.pop(key)
         return data
-

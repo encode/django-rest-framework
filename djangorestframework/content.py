@@ -60,7 +60,6 @@ class OverloadedContentMixin(ContentMixin):
         Note that content_type may be None if it is unset."""
         if not request.META.get('CONTENT_LENGTH', None) and not request.META.get('TRANSFER_ENCODING', None):
             return None
-            
         content_type = request.META.get('CONTENT_TYPE', None)
 
         if (request.method == 'POST' and self.CONTENT_PARAM and
@@ -74,11 +73,6 @@ class OverloadedContentMixin(ContentMixin):
             return (content_type, request.POST[self.CONTENT_PARAM])
         elif request.method == 'PUT':
             f = SocketFile(request.environ['wsgi.input'], request.META['CONTENT_LENGTH'])
-            returned = (content_type, f.read())
-            return returned
-            #try:
-            #    f.close()
-            #except Exception as e:
-            #    print 'exception', e
+            return (content_type, f.read())
         else:
             return (content_type, request.raw_post_data)
