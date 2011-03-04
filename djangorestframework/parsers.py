@@ -79,11 +79,11 @@ class XMLParser(BaseParser):
     media_type = 'application/xml'
 
 class DataFlatener(object):
+#TODO : document + test
 
     def flatten_data(self, data):
         """Given a data dictionary ``{<attr_name>: <value_list>}``, returns a flattened dictionary according to :meth:`FormParser.is_a_list`.
         """
-        #TODO : document + test
         flatdata = dict()
         for attr_name, attr_value in data.items():
             if self.is_a_list(attr_name):
@@ -100,33 +100,48 @@ class DataFlatener(object):
 
     def is_a_list(self, attr_name):
         """ """
-        #TODO: document
         return False
 
 class FormParser(BaseParser, DataFlatener):
     """The default parser for form data.
     Return a dict containing a single value for each non-reserved parameter.
     """
+    # TODO: document flatening
     # TODO: writing tests for PUT files + normal data
+    # TODO: document EMPTY workaround
     media_type = 'application/x-www-form-urlencoded'
+
+    EMPTY_VALUE = 'EMPTY'
 
     def parse(self, input):
         request = self.resource.request
 
         if request.method == 'PUT':
             data = parse_qs(input)
-
-        if request.method == 'POST':
+        elif request.method == 'POST':
             # Django has already done the form parsing for us.
             data = request.POST
 
+        # Flatening data and removing EMPTY_VALUEs from the lists
         data = self.flatten_data(data)
+        for key in filter(lambda k: self.is_a_list(k), data):
+            self.remove_empty_val(data[key])
 
         # Strip any parameters that we are treating as reserved
         for key in data:
             if key in self.resource.RESERVED_FORM_PARAMS:
                 data.pop(key)
         return data
+
+    def remove_empty_val(self, val_list):
+        """ """
+        while(1): # Because there might be several times EMPTY_VALUE in the list
+            try: 
+                ind = val_list.index(self.EMPTY_VALUE)
+            except ValueError:
+                break
+            else:
+                val_list.pop(ind) 
 
 # TODO: Allow parsers to specify multiple media_types
 class MultipartParser(BaseParser, DataFlatener):
@@ -139,12 +154,12 @@ class MultipartParser(BaseParser, DataFlatener):
             upload_handlers = request._get_upload_handlers()
             django_mpp = DjangoMPParser(request.META, StringIO(input), upload_handlers)
             data, files = django_mpp.parse()
-
         elif request.method == 'POST':
             # Django has already done the form parsing for us.
             data = request.POST
             files = request.FILES
 
+        # Flatening data, files and combining them
         data = self.flatten_data(data)
         files = self.flatten_data(files)
         data.update(files)

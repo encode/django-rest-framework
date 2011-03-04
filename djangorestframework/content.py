@@ -49,6 +49,9 @@ class SocketFile(File):
 class OverloadedContentMixin(ContentMixin):
     """HTTP request content behaviour that also allows arbitrary content to be tunneled in form data."""
     
+    #TODO: test PUT
+    #TODO: rewrite cleaner
+
     """The name to use for the content override field in the POST form."""
     CONTENT_PARAM = '_content'
 
@@ -59,7 +62,7 @@ class OverloadedContentMixin(ContentMixin):
         """If the request contains content return a tuple of (content_type, content) otherwise return None.
         Note that content_type may be None if it is unset."""
         if not request.META.get('CONTENT_LENGTH', None) and not request.META.get('TRANSFER_ENCODING', None):
-            return None
+            return None # TODO : Breaks, because determine_content should return a tuple.
         content_type = request.META.get('CONTENT_TYPE', None)
 
         if (request.method == 'POST' and self.CONTENT_PARAM and
