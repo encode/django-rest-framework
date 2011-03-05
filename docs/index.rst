@@ -9,7 +9,9 @@ Django REST framework
 Introduction
 ------------
 
-Django REST framework aims to make it easy to build well-connected, self-describing RESTful Web APIs.
+Django REST framework is a lightweight REST framework for Django, that aims to make it easy to build well-connected, self-describing RESTful Web APIs.
+
+**Browse example APIs created with Django REST framework:** `the sandbox <http://api.django-rest-framework.org/>`_ 
 
 Features:
 
@@ -21,13 +23,13 @@ Features:
 * Optional support for forms as input validation.
 * Modular architecture - MixIn classes can be used without requiring the :class:`.Resource` or :class:`.ModelResource` classes.
 
-The django-rest-framework project is hosted as a `mercurial repository on bitbucket <https://bitbucket.org/tomchristie/django-rest-framework>`_.
+The django-rest-framework project is hosted as a `mercurial repository on bitbucket <https://bitbucket.org/tomchristie/django-rest-framework>`_ and is `available on PyPI <http://pypi.python.org/pypi/djangorestframework>`_.
 
 For questions, thoughts and feedback please head on over to the `discussion group <http://groups.google.com/group/django-rest-framework>`_.
 
 Bug reports are greatful received on the `issue tracker <https://bitbucket.org/tomchristie/django-rest-framework/issues?sort=version>`_.
 
-If you're feeling particularly enthusiastic there's even a `blog <http://blog.django-rest-framework.org>`_ which I might post useful stuff to now and then.
+If you're feeling particularly enthusiastic there's even a `blog <http://blog.django-rest-framework.org>`_.
 
 Requirements
 ------------
