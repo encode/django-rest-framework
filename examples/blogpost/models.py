@@ -38,6 +38,9 @@ class BlogPost(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super(self.__class__, self).save(*args, **kwargs)
+        for obj in self.__class__.objects.order_by('-pk')[10:]:
+            obj.delete()
+
 
 
 class Comment(models.Model):
