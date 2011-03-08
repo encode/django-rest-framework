@@ -41,8 +41,6 @@ class BlogPost(models.Model):
         for obj in self.__class__.objects.order_by('-pk')[10:]:
             obj.delete()
 
-
-
 class Comment(models.Model):
     blogpost = models.ForeignKey(BlogPost, editable=False, related_name='comments')
     username = models.CharField(max_length=128)
