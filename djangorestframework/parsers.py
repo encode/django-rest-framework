@@ -128,7 +128,7 @@ class FormParser(BaseParser, DataFlatener):
             self.remove_empty_val(data[key])
 
         # Strip any parameters that we are treating as reserved
-        for key in data:
+        for key in data.keys():
             if key in self.resource.RESERVED_FORM_PARAMS:
                 data.pop(key)
         return data
@@ -165,7 +165,7 @@ class MultipartParser(BaseParser, DataFlatener):
         data.update(files)
         
         # Strip any parameters that we are treating as reserved
-        for key in data:
+        for key in data.keys():
             if key in self.resource.RESERVED_FORM_PARAMS:
                 data.pop(key)
         return data
