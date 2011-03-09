@@ -1,8 +1,10 @@
-Project Owner...
+AUTHOR:
+Tom Christie <tomchristie> - tom@tomchristie.com, @thisneonsoul
 
-Tom Christie <tomchristie> - tom@tomchristie.com
-
-Thanks to...
-
-Jesper Noehr <jespern> & the django-piston contributors for providing the starting point for this project.
+CONTRIBUTORS:
 Paul Bagwell <pbgwl> - Suggestions & bugfixes.
+Marko Tibold <markotibold> - Contributions.
+<sebpiq> - Contributions.
+
+THANKS TO:
+Jesper Noehr <jespern> & the django-piston contributors for providing the starting point for this project.
