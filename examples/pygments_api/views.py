@@ -21,13 +21,15 @@ import operator
 HIGHLIGHTED_CODE_DIR = os.path.join(settings.MEDIA_ROOT, 'pygments')
 MAX_FILES = 20
 
+def list_dir_sorted_by_ctime(dir):
+    """Return a list of files sorted by creation time"""
+    filepaths = [os.path.join(dir, file) for file in os.listdir(dir)]
+    return [item[0] for item in sorted([(path, os.path.getctime(path)) for path in filepaths],
+                                                     key=operator.itemgetter(1), reverse=True)]
 def remove_oldest_files(dir, max_files):
     """Remove the oldest files in a directory 'dir', leaving at most 'max_files' remaining.
     We use this to limit the number of resources in the sandbox."""
-    filepaths = [os.path.join(dir, file) for file in os.listdir(dir)]
-    ctime_sorted_paths = [item[0] for item in sorted([(path, os.path.getctime(path)) for path in filepaths],
-                                                     key=operator.itemgetter(1), reverse=True)]
-    [os.remove(path) for path in ctime_sorted_paths[max_files:]]
+    [os.remove(path) for path in list_dir_sorted_by_ctime(dir)[max_files:]]
 
 
 class HTMLEmitter(BaseEmitter):
@@ -43,7 +45,8 @@ class PygmentsRoot(Resource):
 
     def get(self, request, auth):
         """Return a list of all currently existing snippets."""
-        unique_ids = sorted(os.listdir(HIGHLIGHTED_CODE_DIR))
+        unique_ids = [os.path.split(f)[1] for f in list_dir_sorted_by_ctime(HIGHLIGHTED_CODE_DIR)]
+        unique_ids.reverse()
         return [reverse('pygments-instance', args=[unique_id]) for unique_id in unique_ids]
 
     def post(self, request, auth, content):
