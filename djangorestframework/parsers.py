@@ -82,23 +82,23 @@ class DataFlatener(object):
 #TODO : document + test
 
     def flatten_data(self, data):
-        """Given a data dictionary ``{<attr_name>: <value_list>}``, returns a flattened dictionary according to :meth:`FormParser.is_a_list`.
+        """Given a data dictionary ``{<key>: <value_list>}``, returns a flattened dictionary according to :meth:`FormParser.is_a_list`.
         """
         flatdata = dict()
-        for attr_name, attr_value in data.items():
-            if self.is_a_list(attr_name):
+        for key, attr_value in data.items():
+            if self.is_a_list(key):
                 if isinstance(attr_value, list):
-                    flatdata[attr_name] = attr_value
+                    flatdata[key] = attr_value
                 else:
-                    flatdata[attr_name] = [attr_value]
+                    flatdata[key] = [attr_value]
             else:
                 if isinstance(attr_value, list):
-                    flatdata[attr_name] = attr_value[0]
+                    flatdata[key] = attr_value[0]
                 else:
-                    flatdata[attr_name] = attr_value 
+                    flatdata[key] = attr_value 
         return flatdata
 
-    def is_a_list(self, attr_name):
+    def is_a_list(self, key):
         """ """
         return False
 
@@ -120,7 +120,7 @@ class FormParser(BaseParser, DataFlatener):
             data = parse_qs(input)
         elif request.method == 'POST':
             # Django has already done the form parsing for us.
-            data = request.POST
+            data = dict(request.POST.iterlists())
 
         # Flatening data and removing EMPTY_VALUEs from the lists
         data = self.flatten_data(data)
