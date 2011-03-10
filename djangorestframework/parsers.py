@@ -114,13 +114,7 @@ class FormParser(BaseParser, DataFlatener):
     EMPTY_VALUE = 'EMPTY'
 
     def parse(self, input):
-        request = self.resource.request
-
-        if request.method == 'PUT':
-            data = parse_qs(input)
-        elif request.method == 'POST':
-            # Django has already done the form parsing for us.
-            data = dict(request.POST.iterlists())
+        data = parse_qs(input)
 
         # Flatening data and removing EMPTY_VALUEs from the lists
         data = self.flatten_data(data)
@@ -150,14 +144,9 @@ class MultipartParser(BaseParser, DataFlatener):
     def parse(self, input):
         request = self.resource.request
 
-        if request.method == 'PUT':
-            upload_handlers = request._get_upload_handlers()
-            django_mpp = DjangoMPParser(request.META, StringIO(input), upload_handlers)
-            data, files = django_mpp.parse()
-        elif request.method == 'POST':
-            # Django has already done the form parsing for us.
-            data = request.POST
-            files = request.FILES
+        upload_handlers = request._get_upload_handlers()
+        django_mpp = DjangoMPParser(request.META, StringIO(input), upload_handlers)
+        data, files = django_mpp.parse()
 
         # Flatening data, files and combining them
         data = self.flatten_data(data)

@@ -24,42 +24,18 @@ class StandardContentMixin(ContentMixin):
             return None
         return (request.META.get('CONTENT_TYPE', None), request.raw_post_data)
 
-from django.core.files.base import File
-class SocketFile(File):
-    # Only forward access is allowed
-    def __init__(self, socket, size):
-        super(SocketFile, self).__init__(socket)
-        self._size = int(size)
-        self._pos = 0
-
-    def read(self, num_bytes=None):
-        if num_bytes is None:
-            num_bytes = self._size - self._pos
-        else:
-            num_bytes = min(num_bytes, self._size - self._pos)
-        self._pos += num_bytes
-        return self.file.read(num_bytes)
-
-    def tell(self):
-        return self._pos
-
-    def seek(self, position):
-        pass
 
 class OverloadedContentMixin(ContentMixin):
     """HTTP request content behaviour that also allows arbitrary content to be tunneled in form data."""
-    
-    #TODO: test PUT
-    #TODO: rewrite cleaner
 
-    """The name to use for the content override field in the POST form."""
+    """The name to use for the content override field in the POST form. Set this to *None* to desactivate content overloading."""
     CONTENT_PARAM = '_content'
 
-    """The name to use for the content-type override field in the POST form."""
+    """The name to use for the content-type override field in the POST form. Taken into account only if content overloading is activated."""
     CONTENTTYPE_PARAM = '_contenttype'
 
     def determine_content(self, request):
-        """If the request contains content return a tuple of (content_type, content) otherwise return None.
+        """If the request contains content, returns a tuple of (content_type, content) otherwise returns None.
         Note that content_type may be None if it is unset."""
         if not request.META.get('CONTENT_LENGTH', None) and not request.META.get('TRANSFER_ENCODING', None):
             return None # TODO : Breaks, because determine_content should return a tuple.
@@ -68,14 +44,11 @@ class OverloadedContentMixin(ContentMixin):
         if (request.method == 'POST' and self.CONTENT_PARAM and
             request.POST.get(self.CONTENT_PARAM, None) is not None):
 
-            # Set content type if form contains a none empty FORM_PARAM_CONTENTTYPE field
+            # Set content type if form contains a non-empty CONTENTTYPE_PARAM field
             content_type = None
             if self.CONTENTTYPE_PARAM and request.POST.get(self.CONTENTTYPE_PARAM, None):
                 content_type = request.POST.get(self.CONTENTTYPE_PARAM, None)
 
             return (content_type, request.POST[self.CONTENT_PARAM])
-        elif request.method == 'PUT':
-            f = SocketFile(request.environ['wsgi.input'], request.META['CONTENT_LENGTH'])
-            return (content_type, f.read())
         else:
             return (content_type, request.raw_post_data)
