@@ -1,7 +1,7 @@
 from django.test import TestCase
 from djangorestframework.compat import RequestFactory
 from pygments_api import views
-import os, tempfile, shutil
+import os, tempfile, shutil, time, json
 
 class TestPygmentsExample(TestCase):
 
@@ -35,7 +35,8 @@ class TestPygmentsExample(TestCase):
         request = self.factory.get('/pygments')
         view = views.PygmentsRoot.as_view()
         response = view(request)
-        self.assertEquals(locations, response.content)
+        response_locations = json.loads(response.content)
+        self.assertEquals(locations, response_locations)
         
         
         
