@@ -40,7 +40,7 @@ class OverloadedContentMixin(ContentMixin):
         """If the request contains content, returns a tuple of (content_type, content) otherwise returns None.
         Note that content_type may be None if it is unset."""
         if not request.META.get('CONTENT_LENGTH', None) and not request.META.get('TRANSFER_ENCODING', None):
-            return None # TODO : Breaks, because determine_content should return a tuple.
+            return None
         content_type = request.META.get('CONTENT_TYPE', None)
 
         if (request.method == 'POST' and self.CONTENT_PARAM and

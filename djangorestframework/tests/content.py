@@ -111,6 +111,7 @@ class TestContentMixins(TestCase):
                      OverloadedContentMixin.CONTENTTYPE_PARAM: content_type}
         request = self.req.post('/', form_data)
         self.assertEqual(OverloadedContentMixin().determine_content(request), (content_type, content))
+        self.assertEqual(request.META['CONTENT_TYPE'], content_type)
  
     def test_overloaded_behaviour_allows_content_tunnelling_content_type_not_set(self):
         """Ensure determine_content(request) returns (None, content) for overloaded POST request with content type not set"""
