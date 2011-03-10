@@ -79,11 +79,11 @@ class XMLParser(BaseParser):
     media_type = 'application/xml'
 
 class DataFlatener(object):
-#TODO : document + test
+    """Utility object for flatening dictionaries of lists. Useful for "urlencoded" decoded data."""
 
     def flatten_data(self, data):
-        """Given a data dictionary ``{<key>: <value_list>}``, returns a flattened dictionary according to :meth:`FormParser.is_a_list`.
-        """
+        """Given a data dictionary {<key>: <value_list>}, returns a flattened dictionary
+        with information provided by the method "is_a_list"."""
         flatdata = dict()
         for key, attr_value in data.items():
             if self.is_a_list(key):
@@ -98,20 +98,27 @@ class DataFlatener(object):
                     flatdata[key] = attr_value 
         return flatdata
 
-    def is_a_list(self, key):
-        """ """
+    def is_a_list(self, key, val):
+        """Returns True if the parameter with name *key* is expected to be a list, or False otherwise.
+        *val* which is the received value for parameter *key* can be used to guess the answer."""
         return False
 
 class FormParser(BaseParser, DataFlatener):
     """The default parser for form data.
     Return a dict containing a single value for each non-reserved parameter.
+
+    In order to handle select multiple (and having possibly more than a single value for each parameter),
+    you can customize the output by subclassing the method 'is_a_list'.
+
     """
-    # TODO: document flatening
     # TODO: writing tests for PUT files + normal data
-    # TODO: document EMPTY workaround
     media_type = 'application/x-www-form-urlencoded'
 
-    EMPTY_VALUE = 'EMPTY'
+    """The value of the parameter when the select multiple is empty.
+    Browsers are usually stripping the select multiple that have no option selected from the parameters sent.
+    A common hack to avoid this is to send the parameter with a value specifying that the list is empty.
+    This value will always be stripped before the data is returned."""
+    EMPTY_VALUE = '_empty'
 
     def parse(self, input):
         data = parse_qs(input)
@@ -142,8 +149,11 @@ class MultipartParser(BaseParser, DataFlatener):
     media_type = 'multipart/form-data'
 
     def parse(self, input):
-        request = self.resource.request
 
+        request = self.resource.request
+        #TODO : that's pretty dumb : files are loaded with
+        #upload_handlers, but as we read the request body completely (input),
+        #then it kind of misses the point. Why not input as a stream ?
         upload_handlers = request._get_upload_handlers()
         django_mpp = DjangoMPParser(request.META, StringIO(input), upload_handlers)
         data, files = django_mpp.parse()

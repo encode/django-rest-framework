@@ -28,10 +28,12 @@ class StandardContentMixin(ContentMixin):
 class OverloadedContentMixin(ContentMixin):
     """HTTP request content behaviour that also allows arbitrary content to be tunneled in form data."""
 
-    """The name to use for the content override field in the POST form. Set this to *None* to desactivate content overloading."""
+    """The name to use for the content override field in the POST form.
+    Set this to *None* to desactivate content overloading."""
     CONTENT_PARAM = '_content'
 
-    """The name to use for the content-type override field in the POST form. Taken into account only if content overloading is activated."""
+    """The name to use for the content-type override field in the POST form.
+    Taken into account only if content overloading is activated."""
     CONTENTTYPE_PARAM = '_contenttype'
 
     def determine_content(self, request):
@@ -48,6 +50,7 @@ class OverloadedContentMixin(ContentMixin):
             content_type = None
             if self.CONTENTTYPE_PARAM and request.POST.get(self.CONTENTTYPE_PARAM, None):
                 content_type = request.POST.get(self.CONTENTTYPE_PARAM, None)
+                request.META['CONTENT_TYPE'] = content_type
 
             return (content_type, request.POST[self.CONTENT_PARAM])
         else:
