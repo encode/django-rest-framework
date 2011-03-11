@@ -8,6 +8,9 @@
     >>> some_resource = Resource()
     >>> trash = some_resource.dispatch(req)# Some variables are set only when calling dispatch
 
+FormParser
+============
+
 Data flatening
 ----------------
 
@@ -34,6 +37,8 @@ This new parser only flattens the lists of parameters that contain a single valu
 
     >>> MyFormParser(some_resource).parse(inpt) == {'key1': 'bla1', 'key2': ['blo1', 'blo2']}
     True
+
+.. note:: The same functionality is available for :class:`parsers.MultipartParser`.
 
 Submitting an empty list
 --------------------------
@@ -68,5 +73,55 @@ Oh ... but wait a second, the parameter ``key2`` isn't even supposed to be a lis
     >>> MyFormParser(some_resource).parse(inpt) == {'key1': 'blo1', 'key2': []}
     True
 
-Better like that. Note also that you can configure something else than ``_empty`` for the empty value by setting :class:`parsers.FormParser.EMPTY_VALUE`.
+Better like that. Note that you can configure something else than ``_empty`` for the empty value by setting :attr:`parsers.FormParser.EMPTY_VALUE`.
 """
+import httplib, mimetypes
+from tempfile import TemporaryFile
+from django.test import TestCase
+from djangorestframework.compat import RequestFactory
+from djangorestframework.parsers import MultipartParser
+from djangorestframework.resource import Resource
+
+def encode_multipart_formdata(fields, files):
+    """For testing multipart parser.
+    fields is a sequence of (name, value) elements for regular form fields.
+    files is a sequence of (name, filename, value) elements for data to be uploaded as files
+    Return (content_type, body)."""
+    BOUNDARY = '----------ThIs_Is_tHe_bouNdaRY_$'
+    CRLF = '\r\n'
+    L = []
+    for (key, value) in fields:
+        L.append('--' + BOUNDARY)
+        L.append('Content-Disposition: form-data; name="%s"' % key)
+        L.append('')
+        L.append(value)
+    for (key, filename, value) in files:
+        L.append('--' + BOUNDARY)
+        L.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, filename))
+        L.append('Content-Type: %s' % get_content_type(filename))
+        L.append('')
+        L.append(value)
+    L.append('--' + BOUNDARY + '--')
+    L.append('')
+    body = CRLF.join(L)
+    content_type = 'multipart/form-data; boundary=%s' % BOUNDARY
+    return content_type, body
+
+def get_content_type(filename):
+    return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
+
+class TestMultipartParser(TestCase):
+    def setUp(self):
+        self.req = RequestFactory()
+        self.content_type, self.body = encode_multipart_formdata([('key1', 'val1'), ('key1', 'val2')],
+        [('file1', 'pic.jpg', 'blablabla'), ('file1', 't.txt', 'blobloblo')])
+
+    def test_multipartparser(self):
+        """Ensure that MultipartParser can parse multipart/form-data that contains a mix of several files and parameters."""
+        post_req = RequestFactory().post('/', self.body, content_type=self.content_type)
+        some_resource = Resource()
+        some_resource.dispatch(post_req)
+        parsed = MultipartParser(some_resource).parse(self.body)
+        self.assertEqual(parsed['key1'], 'val1')
+        self.assertEqual(parsed['file1'].read(), 'blablabla')
+

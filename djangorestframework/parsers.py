@@ -84,7 +84,6 @@ class DataFlatener(object):
     def flatten_data(self, data):
         """Given a data dictionary {<key>: <value_list>}, returns a flattened dictionary
         with information provided by the method "is_a_list"."""
-        data = data.copy()
         flatdata = dict()
         for key, val_list in data.items():
             if self.is_a_list(key, val_list):
@@ -108,10 +107,8 @@ class FormParser(BaseParser, DataFlatener):
     Return a dict containing a single value for each non-reserved parameter.
 
     In order to handle select multiple (and having possibly more than a single value for each parameter),
-    you can customize the output by subclassing the method 'is_a_list'.
+    you can customize the output by subclassing the method 'is_a_list'."""
 
-    """
-    # TODO: writing tests for PUT files + normal data
     media_type = 'application/x-www-form-urlencoded'
 
     """The value of the parameter when the select multiple is empty.
@@ -159,8 +156,8 @@ class MultipartParser(BaseParser, DataFlatener):
         data, files = django_mpp.parse()
 
         # Flatening data, files and combining them
-        data = self.flatten_data(data)
-        files = self.flatten_data(files)
+        data = self.flatten_data(dict(data.iterlists()))
+        files = self.flatten_data(dict(files.iterlists()))
         data.update(files)
         
         # Strip any parameters that we are treating as reserved
