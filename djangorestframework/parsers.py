@@ -84,23 +84,23 @@ class DataFlatener(object):
     def flatten_data(self, data):
         """Given a data dictionary {<key>: <value_list>}, returns a flattened dictionary
         with information provided by the method "is_a_list"."""
+        data = data.copy()
         flatdata = dict()
-        for key, attr_value in data.items():
-            if self.is_a_list(key):
-                if isinstance(attr_value, list):
-                    flatdata[key] = attr_value
-                else:
-                    flatdata[key] = [attr_value]
+        for key, val_list in data.items():
+            if self.is_a_list(key, val_list):
+                flatdata[key] = val_list
             else:
-                if isinstance(attr_value, list):
-                    flatdata[key] = attr_value[0]
+                if val_list:
+                    flatdata[key] = val_list[0]
                 else:
-                    flatdata[key] = attr_value 
+                    # If the list is empty, but the parameter is not a list,
+                    # we strip this parameter.
+                    data.pop(key)
         return flatdata
 
-    def is_a_list(self, key, val):
+    def is_a_list(self, key, val_list):
         """Returns True if the parameter with name *key* is expected to be a list, or False otherwise.
-        *val* which is the received value for parameter *key* can be used to guess the answer."""
+        *val_list* which is the received value for parameter *key* can be used to guess the answer."""
         return False
 
 class FormParser(BaseParser, DataFlatener):
@@ -121,12 +121,12 @@ class FormParser(BaseParser, DataFlatener):
     EMPTY_VALUE = '_empty'
 
     def parse(self, input):
-        data = parse_qs(input)
+        data = parse_qs(input, keep_blank_values=True)
 
-        # Flatening data and removing EMPTY_VALUEs from the lists
+        # removing EMPTY_VALUEs from the lists and flatening the data 
+        for key, val_list in data.items():
+            self.remove_empty_val(val_list)
         data = self.flatten_data(data)
-        for key in filter(lambda k: self.is_a_list(k), data):
-            self.remove_empty_val(data[key])
 
         # Strip any parameters that we are treating as reserved
         for key in data.keys():

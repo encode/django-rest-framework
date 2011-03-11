@@ -50,7 +50,7 @@ class OverloadedContentMixin(ContentMixin):
             content_type = None
             if self.CONTENTTYPE_PARAM and request.POST.get(self.CONTENTTYPE_PARAM, None):
                 content_type = request.POST.get(self.CONTENTTYPE_PARAM, None)
-                request.META['CONTENT_TYPE'] = content_type
+                request.META['CONTENT_TYPE'] = content_type # TODO : VERY BAD, avoid modifying original request.
 
             return (content_type, request.POST[self.CONTENT_PARAM])
         else:
