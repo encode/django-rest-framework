@@ -4,6 +4,7 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from blogpost import views, models
+import blogpost
 
 #import json
 #from rest.utils import xml2dict, dict2xml
@@ -164,14 +165,16 @@ class AllowedMethodsTests(TestCase):
 
 #above testcases need to probably moved to the core
 from djangorestframework.compat import RequestFactory
+import json
 
 class TestRotation(TestCase):
-    """For the example the maximum amount of Blogposts is capped off at 10. 
+    """For the example the maximum amount of Blogposts is capped off at views.MAX_POSTS. 
     Whenever a new Blogpost is posted the oldest one should be popped."""
 
     def setUp(self):
         self.factory = RequestFactory()
-        
+        models.BlogPost.objects.all().delete()
+
     def test_get_to_root(self):
         '''Simple test to demonstrate how the requestfactory needs to be used'''
         request = self.factory.get('/blog-post')
@@ -179,13 +182,26 @@ class TestRotation(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 200)
 
-    def test_blogposts_not_exceed_10(self):
-        '''Posting blogposts should not result in more than 10 items stored.'''
-        models.BlogPost.objects.all().delete()
-        for post in range(15):
+    def test_blogposts_not_exceed_MAX_POSTS(self):
+        '''Posting blog-posts should not result in more than MAX_POSTS items stored.'''
+        for post in range(views.MAX_POSTS + 5):
             form_data = {'title': 'This is post #%s' % post, 'content': 'This is the content of post #%s' % post}
             request = self.factory.post('/blog-post', data=form_data)
             view = views.BlogPosts.as_view()
-            response = view(request)
-        self.assertEquals(len(models.BlogPost.objects.all()),10)
+            view(request)
+        self.assertEquals(len(models.BlogPost.objects.all()),views.MAX_POSTS)
+        
+    def test_fifo_behaviour(self):
+        '''It's fine that the Blogposts are capped off at MAX_POSTS. But we want to make sure we see FIFO behaviour.'''
+        for post in range(15):
+            form_data = {'title': '%s' % post, 'content': 'This is the content of post #%s' % post}
+            request = self.factory.post('/blog-post', data=form_data)
+            view = views.BlogPosts.as_view()
+            view(request)
+        request = self.factory.get('/blog-post')    
+        view = views.BlogPosts.as_view()
+        response = view(request)
+        response_posts = json.loads(response.content)
+        response_titles = [d['title'] for d in response_posts]
+        self.assertEquals(response_titles, ['%s' % i for i in range(views.MAX_POSTS - 5, views.MAX_POSTS + 5)])
         

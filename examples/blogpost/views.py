@@ -1,13 +1,10 @@
-from djangorestframework.response import Response
-from djangorestframework.resource import Resource
 from djangorestframework.modelresource import ModelResource, RootModelResource
-from djangorestframework import status
 
 from blogpost import models
 
 BLOG_POST_FIELDS = ('created', 'title', 'slug', 'content', 'absolute_url', 'comment_url', 'comments_url')
 COMMENT_FIELDS = ('username', 'comment', 'created', 'rating', 'absolute_url', 'blogpost_url')
-
+MAX_POSTS = 10
 
 class BlogPosts(RootModelResource):
     """A resource with which lists all existing blog posts and creates new blog posts."""
