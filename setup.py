@@ -1,7 +1,7 @@
 #!/usr/bin/env/python
 # -*- coding: utf-8 -*-
 
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name = "djangorestframework",
@@ -14,9 +14,11 @@ setup(
     author_email = 'tom@tomchristie.com',
     packages = ['djangorestframework',
                 'djangorestframework.templatetags',
-                'djangorestframework.tests'],
+                'djangorestframework.tests',
+                'djangorestframework.runtests'],
     package_dir={'djangorestframework': 'djangorestframework'},
     package_data = {'djangorestframework': ['templates/*', 'static/*']},
+    test_suite = 'djangorestframework.runtests.runtests.main',
     classifiers = [
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
@@ -28,4 +30,8 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
     ]
 )
+
+import os, shutil
+shutil.rmtree(os.path.join(os.path.dirname(__file__), 'djangorestframework.egg-info'), True)
+
 

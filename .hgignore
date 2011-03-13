@@ -6,12 +6,16 @@ syntax: glob
 env
 docs/build
 html
+htmlcov
 examples/media/pygments/*
 examples/media/objectstore/*
 build/*
 dist/*
+djangorestframework.egg-info/*
 MANIFEST
 .project
 .pydevproject
 .settings
 .cache
+.coverage
+.tox
