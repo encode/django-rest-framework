@@ -1,3 +1,7 @@
+from StringIO import StringIO
+
+from django.http.multipartparser import MultiPartParser as DjangoMPParser
+
 from djangorestframework.response import ResponseException
 from djangorestframework import status
 
@@ -6,6 +10,10 @@ try:
 except ImportError:
     import simplejson as json
 
+try:
+    from urlparse import parse_qs
+except ImportError:
+    from cgi import parse_qs
 
 class ParserMixin(object):
     parsers = ()
@@ -70,55 +78,90 @@ class JSONParser(BaseParser):
 class XMLParser(BaseParser):
     media_type = 'application/xml'
 
+class DataFlatener(object):
+    """Utility object for flatening dictionaries of lists. Useful for "urlencoded" decoded data."""
 
-class FormParser(BaseParser):
+    def flatten_data(self, data):
+        """Given a data dictionary {<key>: <value_list>}, returns a flattened dictionary
+        with information provided by the method "is_a_list"."""
+        flatdata = dict()
+        for key, val_list in data.items():
+            if self.is_a_list(key, val_list):
+                flatdata[key] = val_list
+            else:
+                if val_list:
+                    flatdata[key] = val_list[0]
+                else:
+                    # If the list is empty, but the parameter is not a list,
+                    # we strip this parameter.
+                    data.pop(key)
+        return flatdata
+
+    def is_a_list(self, key, val_list):
+        """Returns True if the parameter with name *key* is expected to be a list, or False otherwise.
+        *val_list* which is the received value for parameter *key* can be used to guess the answer."""
+        return False
+
+class FormParser(BaseParser, DataFlatener):
     """The default parser for form data.
     Return a dict containing a single value for each non-reserved parameter.
-    """
-    
+
+    In order to handle select multiple (and having possibly more than a single value for each parameter),
+    you can customize the output by subclassing the method 'is_a_list'."""
+
     media_type = 'application/x-www-form-urlencoded'
 
-    def parse(self, input):
-        # The FormParser doesn't parse the input as other parsers would, since Django's already done the
-        # form parsing for us.  We build the content object from the request directly.
-        request = self.resource.request
+    """The value of the parameter when the select multiple is empty.
+    Browsers are usually stripping the select multiple that have no option selected from the parameters sent.
+    A common hack to avoid this is to send the parameter with a value specifying that the list is empty.
+    This value will always be stripped before the data is returned."""
+    EMPTY_VALUE = '_empty'
 
-        if request.method == 'PUT':
-            # Fix from piston to force Django to give PUT requests the same
-            # form processing that POST requests get...
-            #
-            # Bug fix: if _load_post_and_files has already been called, for
-            # example by middleware accessing request.POST, the below code to
-            # pretend the request is a POST instead of a PUT will be too late
-            # to make a difference. Also calling _load_post_and_files will result 
-            # in the following exception:
-            #   AttributeError: You cannot set the upload handlers after the upload has been processed.
-            # The fix is to check for the presence of the _post field which is set 
-            # the first time _load_post_and_files is called (both by wsgi.py and 
-            # modpython.py). If it's set, the request has to be 'reset' to redo
-            # the query value parsing in POST mode.
-            if hasattr(request, '_post'):
-                del request._post
-                del request._files
-            
-            try:
-                request.method = "POST"
-                request._load_post_and_files()
-                request.method = "PUT"
-            except AttributeError:
-                request.META['REQUEST_METHOD'] = 'POST'
-                request._load_post_and_files()
-                request.META['REQUEST_METHOD'] = 'PUT'
+    def parse(self, input):
+        data = parse_qs(input, keep_blank_values=True)
+
+        # removing EMPTY_VALUEs from the lists and flatening the data 
+        for key, val_list in data.items():
+            self.remove_empty_val(val_list)
+        data = self.flatten_data(data)
 
         # Strip any parameters that we are treating as reserved
-        data = {}
-        for (key, val) in request.POST.items():
-            if key not in self.resource.RESERVED_FORM_PARAMS:
-                data[key] = val
-        
+        for key in data.keys():
+            if key in self.resource.RESERVED_FORM_PARAMS:
+                data.pop(key)
         return data
 
+    def remove_empty_val(self, val_list):
+        """ """
+        while(1): # Because there might be several times EMPTY_VALUE in the list
+            try: 
+                ind = val_list.index(self.EMPTY_VALUE)
+            except ValueError:
+                break
+            else:
+                val_list.pop(ind) 
+
 # TODO: Allow parsers to specify multiple media_types
-class MultipartParser(FormParser):
+class MultipartParser(BaseParser, DataFlatener):
     media_type = 'multipart/form-data'
 
+    def parse(self, input):
+
+        request = self.resource.request
+        #TODO : that's pretty dumb : files are loaded with
+        #upload_handlers, but as we read the request body completely (input),
+        #then it kind of misses the point. Why not input as a stream ?
+        upload_handlers = request._get_upload_handlers()
+        django_mpp = DjangoMPParser(request.META, StringIO(input), upload_handlers)
+        data, files = django_mpp.parse()
+
+        # Flatening data, files and combining them
+        data = self.flatten_data(dict(data.iterlists()))
+        files = self.flatten_data(dict(files.iterlists()))
+        data.update(files)
+        
+        # Strip any parameters that we are treating as reserved
+        for key in data.keys():
+            if key in self.resource.RESERVED_FORM_PARAMS:
+                data.pop(key)
+        return data

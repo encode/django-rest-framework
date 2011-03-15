@@ -27,29 +27,31 @@ class StandardContentMixin(ContentMixin):
 
 class OverloadedContentMixin(ContentMixin):
     """HTTP request content behaviour that also allows arbitrary content to be tunneled in form data."""
-    
-    """The name to use for the content override field in the POST form."""
+
+    """The name to use for the content override field in the POST form.
+    Set this to *None* to desactivate content overloading."""
     CONTENT_PARAM = '_content'
 
-    """The name to use for the content-type override field in the POST form."""
+    """The name to use for the content-type override field in the POST form.
+    Taken into account only if content overloading is activated."""
     CONTENTTYPE_PARAM = '_contenttype'
 
     def determine_content(self, request):
-        """If the request contains content return a tuple of (content_type, content) otherwise return None.
+        """If the request contains content, returns a tuple of (content_type, content) otherwise returns None.
         Note that content_type may be None if it is unset."""
         if not request.META.get('CONTENT_LENGTH', None) and not request.META.get('TRANSFER_ENCODING', None):
             return None
-        
         content_type = request.META.get('CONTENT_TYPE', None)
 
         if (request.method == 'POST' and self.CONTENT_PARAM and
             request.POST.get(self.CONTENT_PARAM, None) is not None):
 
-            # Set content type if form contains a none empty FORM_PARAM_CONTENTTYPE field
+            # Set content type if form contains a non-empty CONTENTTYPE_PARAM field
             content_type = None
             if self.CONTENTTYPE_PARAM and request.POST.get(self.CONTENTTYPE_PARAM, None):
                 content_type = request.POST.get(self.CONTENTTYPE_PARAM, None)
+                request.META['CONTENT_TYPE'] = content_type # TODO : VERY BAD, avoid modifying original request.
 
             return (content_type, request.POST[self.CONTENT_PARAM])
-
-        return (content_type, request.raw_post_data)
+        else:
+            return (content_type, request.raw_post_data)
