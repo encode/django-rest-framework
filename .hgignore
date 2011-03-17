@@ -11,6 +11,7 @@ examples/media/pygments/*
 examples/media/objectstore/*
 build/*
 dist/*
+xmlrunner/*
 djangorestframework.egg-info/*
 MANIFEST
 .project
