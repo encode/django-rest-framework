@@ -2,4 +2,5 @@
 
 Django==1.2.4
 wsgiref==0.1.2
+coverage==3.4
 
