@@ -47,6 +47,7 @@ def main():
 
     cov.stop()
     cov.report(cov_files)
+    cov.xml_report(cov_files)
     sys.exit(failures)
 
 if __name__ == '__main__':

@@ -18,7 +18,7 @@ setup(
                 'djangorestframework.runtests'],
     package_dir={'djangorestframework': 'djangorestframework'},
     package_data = {'djangorestframework': ['templates/*', 'static/*']},
-    test_suite = 'djangorestframework.runtests.runtests.main',
+    test_suite = 'djangorestframework.runtests.runcoverage.main',
     classifiers = [
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',

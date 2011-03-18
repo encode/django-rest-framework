@@ -3,6 +3,7 @@ syntax: glob
 *.pyc
 *.db
 *~
+coverage.xml
 env
 docs/build
 html
