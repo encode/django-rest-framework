@@ -165,7 +165,10 @@ class AllowedMethodsTests(TestCase):
 
 #above testcases need to probably moved to the core
 from djangorestframework.compat import RequestFactory
-import json
+try:
+    import json
+except ImportError:
+    import simplejson as json
 
 class TestRotation(TestCase):
     """For the example the maximum amount of Blogposts is capped off at views.MAX_POSTS. 
