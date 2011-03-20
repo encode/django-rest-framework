@@ -1,6 +1,6 @@
 import os
 import sys
-os.environ['DJANGO_SETTINGS_MODULE'] = 'examples.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 
 from django.conf import settings
 from django.test.utils import get_runner
