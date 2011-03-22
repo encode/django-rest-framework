@@ -11,16 +11,16 @@ import uuid
 import operator
 
 OBJECT_STORE_DIR = os.path.join(settings.MEDIA_ROOT, 'objectstore')
-MAX_FILES = 20
+MAX_FILES = 10
 
 
 def remove_oldest_files(dir, max_files):
     """Remove the oldest files in a directory 'dir', leaving at most 'max_files' remaining.
     We use this to limit the number of resources in the sandbox."""
-    filepaths = [os.path.join(dir, file) for file in os.listdir(dir)]
+    filepaths = [os.path.join(dir, file) for file in os.listdir(dir) if not file.startswith('.')]
     ctime_sorted_paths = [item[0] for item in sorted([(path, os.path.getctime(path)) for path in filepaths],
                                                      key=operator.itemgetter(1), reverse=True)]
-    [os.remove(path) for path in ctime_sorted_paths[max_file:]]
+    [os.remove(path) for path in ctime_sorted_paths[max_files:]]
 
 
 class ObjectStoreRoot(Resource):
@@ -29,9 +29,11 @@ class ObjectStoreRoot(Resource):
     allowed_methods = anon_allowed_methods = ('GET', 'POST')
 
     def get(self, request, auth):
-        """Return a list of all the stored object URLs."""
-        keys = sorted(os.listdir(OBJECT_STORE_DIR))
-        return [reverse('stored-object', kwargs={'key':key}) for key in keys]
+        """Return a list of all the stored object URLs. (Ordered by creation time, newest first)"""
+        filepaths = [os.path.join(OBJECT_STORE_DIR, file) for file in os.listdir(OBJECT_STORE_DIR) if not file.startswith('.')]
+        ctime_sorted_basenames = [item[0] for item in sorted([(os.path.basename(path), os.path.getctime(path)) for path in filepaths],
+                                                             key=operator.itemgetter(1), reverse=True)]
+        return [reverse('stored-object', kwargs={'key':key}) for key in ctime_sorted_basenames]
     
     def post(self, request, auth, content):
         """Create a new stored object, with a unique key."""
