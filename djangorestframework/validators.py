@@ -58,6 +58,8 @@ class FormValidatorMixin(ValidatorMixin):
             # Validation succeeded...
             cleaned_data = bound_form.cleaned_data
 
+            cleaned_data.update(bound_form.files)
+
             # Add in any extra fields to the cleaned content...
             for key in (allowed_extra_fields_set & seen_fields_set) - set(cleaned_data.keys()):
                 cleaned_data[key] = content[key]
@@ -95,7 +97,9 @@ class FormValidatorMixin(ValidatorMixin):
         if not self.form:
             return None
 
-        if content:
+        if not content is None:
+            if hasattr(content, 'FILES'):
+                return self.form(content, content.FILES)
             return self.form(content)
         return self.form()
 
@@ -157,8 +161,11 @@ class ModelFormValidatorMixin(FormValidatorMixin):
 
             # Instantiate the ModelForm as appropriate
             if content and isinstance(content, models.Model):
+                # Bound to an existing model instance
                 return OnTheFlyModelForm(instance=content)
-            elif content:
+            elif not content is None:
+                if hasattr(content, 'FILES'):
+                    return OnTheFlyModelForm(content, content.FILES)
                 return OnTheFlyModelForm(content)
             return OnTheFlyModelForm()
 

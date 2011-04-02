@@ -13,7 +13,6 @@ from djangorestframework.validators import FormValidatorMixin
 from djangorestframework.utils import dict2xml, url_resolves
 from djangorestframework.markdownwrapper import apply_markdown
 from djangorestframework.breadcrumbs import get_breadcrumbs
-from djangorestframework.content import OverloadedContentMixin
 from djangorestframework.description import get_name, get_description
 from djangorestframework import status
 
@@ -254,7 +253,7 @@ class DocumentingTemplateEmitter(BaseEmitter):
 
         # If we're not using content overloading there's no point in supplying a generic form,
         # as the resource won't treat the form's value as the content of the request.
-        if not isinstance(resource, OverloadedContentMixin):
+        if not getattr(resource, 'USE_FORM_OVERLOADING', False):
             return None
 
         # NB. http://jacobian.org/writing/dynamic-form-generation/

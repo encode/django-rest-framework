@@ -21,3 +21,4 @@ MANIFEST
 .cache
 .coverage
 .tox
+.DS_Store

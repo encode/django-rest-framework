@@ -143,7 +143,7 @@ class TestFormValidation(TestCase):
         try:
             validator.validate(content)
         except ResponseException, exc:
-            self.assertEqual(exc.response.raw_content, {'errors': ['No content was supplied.']})
+            self.assertEqual(exc.response.raw_content, {'field-errors': {'qwerty': ['This field is required.']}})
         else:
             self.fail('ResourceException was not raised')  #pragma: no cover
 

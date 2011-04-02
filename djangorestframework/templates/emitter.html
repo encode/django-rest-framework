@@ -65,7 +65,7 @@
 	
 	{% if resource.METHOD_PARAM and form %}
 		{% if 'POST' in resource.allowed_methods %}
-				<form action="{{ request.path }}" method="post">
+				<form action="{{ request.path }}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
 				<fieldset class='module aligned'>
 					<h2>POST {{ name }}</h2>
 				    {% csrf_token %}
@@ -86,7 +86,7 @@
 		{% endif %}
 		
 		{% if 'PUT' in resource.allowed_methods %}
-				<form action="{{ request.path }}" method="post">
+				<form action="{{ request.path }}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
 				<fieldset class='module aligned'>
 					<h2>PUT {{ name }}</h2>
 					<input type="hidden" name="{{ resource.METHOD_PARAM }}" value="PUT" />

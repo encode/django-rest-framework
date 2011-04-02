@@ -1,9 +1,18 @@
-from StringIO import StringIO
+"""Django supports parsing the content of an HTTP request, but only for form POST requests.
+That behaviour is sufficient for dealing with standard HTML forms, but it doesn't map well
+to general HTTP requests.
 
+We need a method to be able to:
+
+1) Determine the parsed content on a request for methods other than POST (eg typically also PUT)
+2) Determine the parsed content on a request for media types other than application/x-www-form-urlencoded
+   and multipart/form-data.  (eg also handle multipart/json)
+"""
 from django.http.multipartparser import MultiPartParser as DjangoMPParser
-
 from djangorestframework.response import ResponseException
 from djangorestframework import status
+from djangorestframework.utils import as_tuple
+from djangorestframework.mediatypes import MediaType
 
 try:
     import json
@@ -18,22 +27,27 @@ except ImportError:
 class ParserMixin(object):
     parsers = ()
 
-    def parse(self, content_type, content):
-        # See RFC 2616 sec 3 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7
-        split = content_type.split(';', 1)
-        if len(split) > 1:
-            content_type = split[0]
-        content_type = content_type.strip()
+    def parse(self, stream, content_type):
+        """
+        Parse the request content.
 
-        media_type_to_parser = dict([(parser.media_type, parser) for parser in self.parsers])
+        May raise a 415 ResponseException (Unsupported Media Type),
+        or a 400 ResponseException (Bad Request).
+        """
+        parsers = as_tuple(self.parsers)
 
-        try:
-            parser = media_type_to_parser[content_type]
-        except KeyError:
+        parser = None
+        for parser_cls in parsers:
+            if parser_cls.handles(content_type):
+                parser = parser_cls(self)
+                break
+
+        if parser is None:
             raise ResponseException(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                                    {'error': 'Unsupported media type in request \'%s\'.' % content_type})
-        
-        return parser(self).parse(content)
+                                    {'error': 'Unsupported media type in request \'%s\'.' %
+                                     content_type.media_type})
+
+        return parser.parse(stream)
 
     @property
     def parsed_media_types(self):
@@ -48,35 +62,40 @@ class ParserMixin(object):
 
 
 class BaseParser(object):
-    """All parsers should extend BaseParser, specifing a media_type attribute,
+    """All parsers should extend BaseParser, specifying a media_type attribute,
     and overriding the parse() method."""
-
     media_type = None
 
-    def __init__(self, resource):
-        """Initialise the parser with the Resource instance as state,
-        in case the parser needs to access any metadata on the Resource object."""
-        self.resource = resource
+    def __init__(self, view):
+        """
+        Initialise the parser with the View instance as state,
+        in case the parser needs to access any metadata on the View object.
+        
+        """
+        self.view = view
     
-    def parse(self, input):
-        """Given some serialized input, return the deserialized output.
-        The input will be the raw request content body.  The return value may be of
-        any type, but for many parsers/inputs it might typically be a dict."""
-        return input
+    @classmethod
+    def handles(self, media_type):
+        """
+        Returns `True` if this parser is able to deal with the given MediaType.
+        """
+        return media_type.match(self.media_type)
+
+    def parse(self, stream):
+        """Given a stream to read from, return the deserialized output.
+        The return value may be of any type, but for many parsers it might typically be a dict-like object."""
+        raise NotImplementedError("BaseParser.parse() Must be overridden to be implemented.")
 
 
 class JSONParser(BaseParser):
-    media_type = 'application/json'
+    media_type = MediaType('application/json')
 
-    def parse(self, input):
+    def parse(self, stream):
         try:
-            return json.loads(input)
+            return json.load(stream)
         except ValueError, exc:
             raise ResponseException(status.HTTP_400_BAD_REQUEST, {'detail': 'JSON parse error - %s' % str(exc)})
 
-
-class XMLParser(BaseParser):
-    media_type = 'application/xml'
 
 class DataFlatener(object):
     """Utility object for flatening dictionaries of lists. Useful for "urlencoded" decoded data."""
@@ -102,6 +121,7 @@ class DataFlatener(object):
         *val_list* which is the received value for parameter *key* can be used to guess the answer."""
         return False
 
+
 class FormParser(BaseParser, DataFlatener):
     """The default parser for form data.
     Return a dict containing a single value for each non-reserved parameter.
@@ -109,16 +129,17 @@ class FormParser(BaseParser, DataFlatener):
     In order to handle select multiple (and having possibly more than a single value for each parameter),
     you can customize the output by subclassing the method 'is_a_list'."""
 
-    media_type = 'application/x-www-form-urlencoded'
+    media_type = MediaType('application/x-www-form-urlencoded')
 
     """The value of the parameter when the select multiple is empty.
     Browsers are usually stripping the select multiple that have no option selected from the parameters sent.
     A common hack to avoid this is to send the parameter with a value specifying that the list is empty.
     This value will always be stripped before the data is returned."""
     EMPTY_VALUE = '_empty'
+    RESERVED_FORM_PARAMS = ('csrfmiddlewaretoken',)
 
-    def parse(self, input):
-        data = parse_qs(input, keep_blank_values=True)
+    def parse(self, stream):
+        data = parse_qs(stream.read(), keep_blank_values=True)
 
         # removing EMPTY_VALUEs from the lists and flatening the data 
         for key, val_list in data.items():
@@ -127,8 +148,9 @@ class FormParser(BaseParser, DataFlatener):
 
         # Strip any parameters that we are treating as reserved
         for key in data.keys():
-            if key in self.resource.RESERVED_FORM_PARAMS:
+            if key in self.RESERVED_FORM_PARAMS:
                 data.pop(key)
+
         return data
 
     def remove_empty_val(self, val_list):
@@ -141,27 +163,28 @@ class FormParser(BaseParser, DataFlatener):
             else:
                 val_list.pop(ind) 
 
-# TODO: Allow parsers to specify multiple media_types
+
+class MultipartData(dict):
+    def __init__(self, data, files):
+        dict.__init__(self, data)
+        self.FILES = files
+
 class MultipartParser(BaseParser, DataFlatener):
-    media_type = 'multipart/form-data'
+    media_type = MediaType('multipart/form-data')
+    RESERVED_FORM_PARAMS = ('csrfmiddlewaretoken',)
 
-    def parse(self, input):
-
-        request = self.resource.request
-        #TODO : that's pretty dumb : files are loaded with
-        #upload_handlers, but as we read the request body completely (input),
-        #then it kind of misses the point. Why not input as a stream ?
-        upload_handlers = request._get_upload_handlers()
-        django_mpp = DjangoMPParser(request.META, StringIO(input), upload_handlers)
+    def parse(self, stream):
+        upload_handlers = self.view.request._get_upload_handlers()
+        django_mpp = DjangoMPParser(self.view.request.META, stream, upload_handlers)
         data, files = django_mpp.parse()
 
         # Flatening data, files and combining them
         data = self.flatten_data(dict(data.iterlists()))
         files = self.flatten_data(dict(files.iterlists()))
-        data.update(files)
-        
+
         # Strip any parameters that we are treating as reserved
         for key in data.keys():
-            if key in self.resource.RESERVED_FORM_PARAMS:
+            if key in self.RESERVED_FORM_PARAMS:
                 data.pop(key)
-        return data
+        
+        return MultipartData(data, files)
