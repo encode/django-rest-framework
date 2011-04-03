@@ -1,5 +1,6 @@
 from djangorestframework.mediatypes import MediaType
 #from djangorestframework.requestparsing import parse, load_parser
+from django.http.multipartparser import LimitBytes
 from StringIO import StringIO
 
 class RequestMixin(object):
@@ -65,10 +66,17 @@ class RequestMixin(object):
         Returns an object that may be used to stream the request content.
         """
         if not hasattr(self, '_stream'):
-            if hasattr(self.request, 'read'):
-                self._stream = self.request
-            else:
-                self._stream = StringIO(self.request.raw_post_data)
+            request = self.request
+            # We ought to be able to return a stream rather than reading the stream.
+            # Not quite working just yet...
+            #if hasattr(request, 'read'):
+            #    try:
+            #        content_length = int(request.META.get('CONTENT_LENGTH',0))
+            #    except (ValueError, TypeError):
+            #        content_length = 0
+            #    self._stream = LimitBytes(request, content_length)
+            #else:
+            self._stream = StringIO(request.raw_post_data)
         return self._stream
 
 
