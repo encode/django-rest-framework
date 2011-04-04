@@ -68,6 +68,7 @@ class RequestMixin(object):
         if not hasattr(self, '_stream'):
             request = self.request
 
+            # Currently only supports parsing request body as a stream with 1.3
             if hasattr(request, 'read'):
                 # It's not at all clear if this needs to be byte limited or not.
                 # Maybe I'm just being dumb but it looks to me like there's some issues
