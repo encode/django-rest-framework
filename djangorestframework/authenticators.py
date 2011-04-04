@@ -71,8 +71,11 @@ class BasicAuthenticator(BaseAuthenticator):
 class UserLoggedInAuthenticator(BaseAuthenticator):
     """Use Djagno's built-in request session for authentication."""
     def authenticate(self, request):
-        if getattr(request, 'user', None) and request.user.is_active:                
+        if getattr(request, 'user', None) and request.user.is_active:
+            # Temporarily request.POST with .RAW_CONTENT, so that we use our more generic request parsing
+            request._post = self.mixin.RAW_CONTENT
             resp = CsrfViewMiddleware().process_view(request, None, (), {})
+            del(request._post)
             if resp is None:  # csrf passed
                 return request.user
         return None

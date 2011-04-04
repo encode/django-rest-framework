@@ -67,16 +67,35 @@ class RequestMixin(object):
         """
         if not hasattr(self, '_stream'):
             request = self.request
-            # We ought to be able to return a stream rather than reading the stream.
-            # Not quite working just yet...
-            #if hasattr(request, 'read'):
-            #    try:
-            #        content_length = int(request.META.get('CONTENT_LENGTH',0))
-            #    except (ValueError, TypeError):
-            #        content_length = 0
-            #    self._stream = LimitBytes(request, content_length)
-            #else:
-            self._stream = StringIO(request.raw_post_data)
+
+            if hasattr(request, 'read'):
+                # It's not at all clear if this needs to be byte limited or not.
+                # Maybe I'm just being dumb but it looks to me like there's some issues
+                # with that in Django.
+                #
+                # Either:
+                #   1. It *can't* be treated as a limited byte stream, and you _do_ need to
+                #      respect CONTENT_LENGTH, in which case that ought to be documented,
+                #      and there probably ought to be a feature request for it to be
+                #      treated as a limited byte stream.
+                #   2. It *can* be treated as a limited byte stream, in which case there's a
+                #      minor bug in the test client, and potentially some redundant
+                #      code in MultipartParser.
+                #
+                #   It's an issue because it affects if you can pass a request off to code that
+                #   does something like:
+                #
+                #   while stream.read(BUFFER_SIZE):
+                #       [do stuff]
+                #
+                #try:
+                #    content_length = int(request.META.get('CONTENT_LENGTH',0))
+                #except (ValueError, TypeError):
+                #    content_length = 0
+                # self._stream = LimitedStream(request, content_length)
+                self._stream = request
+            else:
+                self._stream = StringIO(request.raw_post_data)
         return self._stream
 
 
