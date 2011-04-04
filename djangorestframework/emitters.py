@@ -227,7 +227,7 @@ class DocumentingTemplateEmitter(BaseEmitter):
             # Otherwise if we have a response that is valid against the form then use that
             if not form_instance and resource.response.has_content_body:
                 try:
-                    form_instance = resource.get_bound_form(resource.response.raw_content)
+                    form_instance = resource.get_bound_form(resource.response.cleaned_content)
                     if form_instance and not form_instance.is_valid():
                         form_instance = None
                 except:
