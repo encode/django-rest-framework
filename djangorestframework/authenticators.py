@@ -58,10 +58,21 @@ class BaseAuthenticator(object):
 class BasicAuthenticator(BaseAuthenticator):
     """Use HTTP Basic authentication"""
     def authenticate(self, request):
+        from django.utils.encoding import smart_unicode, DjangoUnicodeDecodeError
+        
         if 'HTTP_AUTHORIZATION' in request.META:
             auth = request.META['HTTP_AUTHORIZATION'].split()
             if len(auth) == 2 and auth[0].lower() == "basic":
-                uname, passwd = base64.b64decode(auth[1]).split(':')
+                try:
+                    auth_parts = base64.b64decode(auth[1]).partition(':')
+                except TypeError:
+                    return None
+                
+                try:
+                    uname, passwd = smart_unicode(auth_parts[0]), smart_unicode(auth_parts[2])
+                except DjangoUnicodeDecodeError:
+                    return None
+                    
                 user = authenticate(username=uname, password=passwd)
                 if user is not None and user.is_active:
                     return user
