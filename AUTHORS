@@ -1,10 +1,10 @@
-AUTHOR:
 Tom Christie <tomchristie> - tom@tomchristie.com, @thisneonsoul
 
-CONTRIBUTORS:
 Paul Bagwell <pbgwl> - Suggestions & bugfixes.
-Marko Tibold <markotibold> - Contributions.
-<sebpiq> - Contributions.
+Marko Tibold <markotibold> - Contributions & Providing the Hudson CI Server.
+Sébastien Piquemal <sebpiq> - Contributions.
+Carmen Wick <cwick> - Bugfixes.
 
 THANKS TO:
 Jesper Noehr <jespern> & the django-piston contributors for providing the starting point for this project.
+And of course, to the Django core team and the Django community at large.
