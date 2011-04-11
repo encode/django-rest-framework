@@ -15,7 +15,7 @@ except ImportError:
 class MockResource(Resource):
     allowed_methods = ('POST',)
 
-    def post(self, request, auth, content):
+    def post(self, request):
         return {'a':1, 'b':2, 'c':3}
 
 urlpatterns = patterns('',

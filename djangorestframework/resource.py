@@ -57,22 +57,22 @@ class Resource(RequestMixin, ResponseMixin, AuthMixin, View):
     callmap = { 'GET': 'get', 'POST': 'post', 
                 'PUT': 'put', 'DELETE': 'delete' }
 
-    def get(self, request, auth, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         """Must be subclassed to be implemented."""
         self.not_implemented('GET')
 
 
-    def post(self, request, auth, content, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         """Must be subclassed to be implemented."""
         self.not_implemented('POST')
 
 
-    def put(self, request, auth, content, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         """Must be subclassed to be implemented."""
         self.not_implemented('PUT')
 
 
-    def delete(self, request, auth, *args, **kwargs):
+    def delete(self, request, *args, **kwargs):
         """Must be subclassed to be implemented."""
         self.not_implemented('DELETE')
 
@@ -154,11 +154,7 @@ class Resource(RequestMixin, ResponseMixin, AuthMixin, View):
             # Either generate the response data, deserializing and validating any request data
             # TODO: This is going to change to: func(request, *args, **kwargs)
             # That'll work out now that we have the lazily evaluated self.CONTENT property.
-            if self.method in ('PUT', 'POST'):
-                response_obj = func(request, auth_context, self.CONTENT, *args, **kwargs)
-
-            else:
-                response_obj = func(request, auth_context, *args, **kwargs)
+            response_obj = func(request, *args, **kwargs)
 
             # Allow return value to be either Response, or an object, or None
             if isinstance(response_obj, Response):

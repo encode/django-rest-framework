@@ -20,7 +20,7 @@ class UserAgentMungingTest(TestCase):
     def setUp(self):
         class MockResource(Resource):
             anon_allowed_methods = allowed_methods = ('GET',)
-            def get(self, request, auth):
+            def get(self, request):
                 return {'a':1, 'b':2, 'c':3}
         self.req = RequestFactory()
         self.MockResource = MockResource

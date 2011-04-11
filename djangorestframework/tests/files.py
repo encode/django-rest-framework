@@ -19,10 +19,9 @@ class UploadFilesTests(TestCase):
             allowed_methods = anon_allowed_methods = ('POST',)
             form = FileForm
 
-            def post(self, request, auth, content, *args, **kwargs):
-                #self.uploaded = content.file
-                return {'FILE_NAME': content['file'].name,
-                        'FILE_CONTENT': content['file'].read()}
+            def post(self, request, *args, **kwargs):
+                return {'FILE_NAME': self.CONTENT['file'].name,
+                        'FILE_CONTENT': self.CONTENT['file'].read()}
                 
         file = StringIO.StringIO('stuff')
         file.name = 'stuff.txt'

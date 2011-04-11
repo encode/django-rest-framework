@@ -14,7 +14,7 @@ class MockResource(Resource):
     """Mock resource which simply returns a URL, so that we can ensure that reversed URLs are fully qualified"""
     anon_allowed_methods = ('GET',)
 
-    def get(self, request, auth):
+    def get(self, request):
         return reverse('another')
 
 urlpatterns = patterns('',

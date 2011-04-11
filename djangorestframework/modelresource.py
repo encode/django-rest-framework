@@ -341,7 +341,7 @@ class ModelResource(Resource):
         return _any(data, self.fields)
 
 
-    def post(self, request, auth, content, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         # TODO: test creation on a non-existing resource url
         
         # translated related_field into related_field_id
@@ -350,7 +350,7 @@ class ModelResource(Resource):
                 kwargs[related_name + '_id'] = kwargs[related_name]
                 del kwargs[related_name]
 
-        all_kw_args = dict(content.items() + kwargs.items())
+        all_kw_args = dict(self.CONTENT.items() + kwargs.items())
         if args:
             instance = self.model(pk=args[-1], **all_kw_args)
         else:
@@ -361,7 +361,7 @@ class ModelResource(Resource):
             headers['Location'] = instance.get_absolute_url()
         return Response(status.HTTP_201_CREATED, instance, headers)
 
-    def get(self, request, auth, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         try:
             if args:
                 # If we have any none kwargs then assume the last represents the primrary key
@@ -374,7 +374,7 @@ class ModelResource(Resource):
 
         return instance
 
-    def put(self, request, auth, content, *args, **kwargs):
+    def put(self, request, *args, **kwargs):
         # TODO: update on the url of a non-existing resource url doesn't work correctly at the moment - will end up with a new url 
         try:
             if args:
@@ -384,16 +384,16 @@ class ModelResource(Resource):
                 # Otherwise assume the kwargs uniquely identify the model
                 instance = self.model.objects.get(**kwargs)
 
-            for (key, val) in content.items():
+            for (key, val) in self.CONTENT.items():
                 setattr(instance, key, val)
         except self.model.DoesNotExist:
-            instance = self.model(**content)
+            instance = self.model(**self.CONTENT)
             instance.save()
 
         instance.save()
         return instance
 
-    def delete(self, request, auth, *args, **kwargs):
+    def delete(self, request, *args, **kwargs):
         try:
             if args:
                 # If we have any none kwargs then assume the last represents the primrary key
@@ -413,7 +413,7 @@ class RootModelResource(ModelResource):
     allowed_methods = ('GET', 'POST')
     queryset = None
 
-    def get(self, request, auth, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         queryset = self.queryset if self.queryset else self.model.objects.all()
         return queryset.filter(**kwargs)
 
@@ -427,7 +427,7 @@ class QueryModelResource(ModelResource):
     def get_form(self, data=None):
         return None
 
-    def get(self, request, auth, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         queryset = self.queryset if self.queryset else self.model.objects.all()
         return queryset.filer(**kwargs)
 

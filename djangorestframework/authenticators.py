@@ -28,8 +28,9 @@ class BaseAuthenticator(object):
         The default permission checking on Resource will use the allowed_methods attribute
         for permissions if the authentication context is not None, and use anon_allowed_methods otherwise.
 
-        The authentication context is passed to the method calls eg Resource.get(request, auth) in order to
-        allow them to apply any more fine grained permission checking at the point the response is being generated.
+        The authentication context is available to the method calls eg Resource.get(request)
+        by accessing self.auth in order to allow them to apply any more fine grained permission
+        checking at the point the response is being generated.
         
         This function must be overridden to be implemented."""
         return None
