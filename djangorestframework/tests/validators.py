@@ -13,21 +13,6 @@ class TestValidatorMixinInterfaces(TestCase):
         """Ensure the ValidatorMixin base class interface is as expected."""
         self.assertRaises(NotImplementedError, BaseValidator(None).validate, None)
 
-    #def test_form_validator_mixin_interface(self):
-    #    """Ensure the FormValidatorMixin interface is as expected."""
-    #    self.assertTrue(issubclass(FormValidator, BaseValidator))
-    #    getattr(FormValidator, 'form')
-    #    getattr(FormValidator, 'validate')
-
-    #def test_model_form_validator_mixin_interface(self):
-    #    """Ensure the ModelFormValidatorMixin interface is as expected."""
-    #    self.assertTrue(issubclass(ModelFormValidator, FormValidator))
-    #    getattr(ModelFormValidator, 'model')
-    #    getattr(ModelFormValidator, 'form')
-    #    getattr(ModelFormValidator, 'fields')
-    #    getattr(ModelFormValidator, 'exclude_fields')
-    #    getattr(ModelFormValidator, 'validate')
-
 
 class TestDisabledValidations(TestCase):
     """Tests on FormValidator with validation disabled by setting form to None"""

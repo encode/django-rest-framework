@@ -39,7 +39,7 @@ class Resource(EmitterMixin, AuthMixin, RequestMixin, View):
                 parsers.MultipartParser )
 
     # List of validators to validate, cleanup and type-ify the request content    
-    validators = (validators.FormValidator,)
+    validators = ( validators.FormValidator, )
 
     # List of all authenticating methods to attempt.
     authenticators = ( authenticators.UserLoggedInAuthenticator,
