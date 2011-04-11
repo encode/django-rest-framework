@@ -1,4 +1,8 @@
 from djangorestframework.mediatypes import MediaType
+from djangorestframework.utils import as_tuple
+from djangorestframework.response import ResponseException
+from djangorestframework import status
+
 #from djangorestframework.requestparsing import parse, load_parser
 from django.http.multipartparser import LimitBytes
 from StringIO import StringIO
@@ -10,6 +14,8 @@ class RequestMixin(object):
     METHOD_PARAM = "_method"
     CONTENTTYPE_PARAM = "_content_type"
     CONTENT_PARAM = "_content"
+
+    parsers = ()
 
     def _get_method(self):
         """
@@ -33,7 +39,10 @@ class RequestMixin(object):
         """
         if not hasattr(self, '_content_type'):
             content_type = self.request.META.get('HTTP_CONTENT_TYPE', self.request.META.get('CONTENT_TYPE', ''))
-            self._content_type = MediaType(content_type)
+            if content_type:
+                self._content_type = MediaType(content_type)
+            else:
+                self._content_type = None
         return self._content_type
 
 
@@ -68,8 +77,15 @@ class RequestMixin(object):
         if not hasattr(self, '_stream'):
             request = self.request
 
+            try:
+                content_length = int(request.META.get('CONTENT_LENGTH', request.META.get('HTTP_CONTENT_LENGTH')))
+            except (ValueError, TypeError):
+                content_length = 0
+                
             # Currently only supports parsing request body as a stream with 1.3
-            if hasattr(request, 'read'):
+            if content_length == 0:
+                return None
+            elif hasattr(request, 'read'):
                 # It's not at all clear if this needs to be byte limited or not.
                 # Maybe I'm just being dumb but it looks to me like there's some issues
                 # with that in Django.
@@ -152,6 +168,9 @@ class RequestMixin(object):
         May raise a 415 ResponseException (Unsupported Media Type),
         or a 400 ResponseException (Bad Request).
         """
+        if stream is None or content_type is None:
+            return None
+
         parsers = as_tuple(self.parsers)
 
         parser = None

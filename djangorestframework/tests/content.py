@@ -2,6 +2,7 @@
 from django.test import TestCase
 from djangorestframework.compat import RequestFactory
 from djangorestframework.request import RequestMixin
+from djangorestframework.parsers import FormParser, MultipartParser
 #from djangorestframework.content import ContentMixin, StandardContentMixin, OverloadedContentMixin
 #
 #
@@ -31,16 +32,17 @@ class TestContentMixins(TestCase):
 #    # Common functionality to test with both StandardContentMixin and OverloadedContentMixin
 #
     def ensure_determines_no_content_GET(self, view):
-        """Ensure determine_content(request) returns None for GET request with no content."""
+        """Ensure view.RAW_CONTENT returns None for GET request with no content."""
         view.request = self.req.get('/')
         self.assertEqual(view.RAW_CONTENT, None)
-#
-#    def ensure_determines_form_content_POST(self, mixin):
-#        """Ensure determine_content(request) returns content for POST request with content."""
-#        form_data = {'qwerty': 'uiop'}
-#        request = self.req.post('/', data=form_data)
-#        self.assertEqual(mixin.determine_content(request), (request.META['CONTENT_TYPE'], request.raw_post_data))
-#
+
+    def ensure_determines_form_content_POST(self, view):
+        """Ensure determine_content(request) returns content for POST request with content."""
+        form_data = {'qwerty': 'uiop'}
+        view.parsers = (FormParser, MultipartParser)
+        view.request = self.req.post('/', data=form_data)
+        self.assertEqual(view.RAW_CONTENT, form_data)
+
 #    def ensure_determines_non_form_content_POST(self, mixin):
 #        """Ensure determine_content(request) returns (content type, content) for POST request with content."""
 #        content = 'qwerty'
@@ -64,12 +66,12 @@ class TestContentMixins(TestCase):
 #    # StandardContentMixin behavioural tests
 #
     def test_standard_behaviour_determines_no_content_GET(self):
-        """Ensure StandardContentMixin.determine_content(request) returns None for GET request with no content."""
+        """Ensure request.RAW_CONTENT returns None for GET request with no content."""
         self.ensure_determines_no_content_GET(RequestMixin())
-#
-#    def test_standard_behaviour_determines_form_content_POST(self):
-#        """Ensure StandardContentMixin.determine_content(request) returns content for POST request with content."""
-#        self.ensure_determines_form_content_POST(StandardContentMixin())
+
+    def test_standard_behaviour_determines_form_content_POST(self):
+        """Ensure request.RAW_CONTENT returns content for POST request with content."""
+        self.ensure_determines_form_content_POST(RequestMixin())
 #
 #    def test_standard_behaviour_determines_non_form_content_POST(self):
 #        """Ensure StandardContentMixin.determine_content(request) returns (content type, content) for POST request with content."""
