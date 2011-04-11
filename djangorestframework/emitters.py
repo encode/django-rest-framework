@@ -9,7 +9,6 @@ from django.template import RequestContext, loader
 from django import forms
 
 from djangorestframework.response import NoContent, ResponseException
-from djangorestframework.validators import FormValidatorMixin
 from djangorestframework.utils import dict2xml, url_resolves
 from djangorestframework.markdownwrapper import apply_markdown
 from djangorestframework.breadcrumbs import get_breadcrumbs
@@ -217,15 +216,11 @@ class DocumentingTemplateEmitter(BaseEmitter):
         #form_instance = resource.form_instance
         # TODO! Reinstate this
 
-        form_instance = None
+        form_instance = getattr(resource, 'bound_form_instance', None)
 
-        if isinstance(resource, FormValidatorMixin):
-            # If we already have a bound form instance (IE provided by the input parser, then use that)
-            if resource.bound_form_instance is not None:
-                form_instance = resource.bound_form_instance
-                
+        if not form_instance and hasattr(resource, 'get_bound_form'):
             # Otherwise if we have a response that is valid against the form then use that
-            if not form_instance and resource.response.has_content_body:
+            if resource.response.has_content_body:
                 try:
                     form_instance = resource.get_bound_form(resource.response.cleaned_content)
                     if form_instance and not form_instance.is_valid():
@@ -233,12 +228,12 @@ class DocumentingTemplateEmitter(BaseEmitter):
                 except:
                     form_instance = None
             
-            # If we still don't have a form instance then try to get an unbound form
-            if not form_instance:
-                try:
-                    form_instance = resource.get_bound_form()
-                except:
-                    pass
+        # If we still don't have a form instance then try to get an unbound form
+        if not form_instance:
+            try:
+                form_instance = resource.get_bound_form()
+            except:
+                pass
 
         # If we still don't have a form instance then try to get an unbound form which can tunnel arbitrary content types
         if not form_instance:

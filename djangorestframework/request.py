@@ -196,6 +196,29 @@ class RequestMixin(object):
 
         return parser.parse(stream)
 
+
+    def validate(self, content):
+        """
+        Validate, cleanup, and type-ify the request content.
+        """
+        for validator_cls in self.validators:
+            validator = validator_cls(self)
+            content = validator.validate(content)
+        return content
+
+
+    def get_bound_form(self, content=None):
+        """
+        Return a bound form instance for the given content,
+        if there is an appropriate form validator attached to the view.
+        """
+        for validator_cls in self.validators:
+            if hasattr(validator_cls, 'get_bound_form'):
+                validator = validator_cls(self)
+                return validator.get_bound_form(content)
+        return None
+    
+
     @property
     def parsed_media_types(self):
         """Return an list of all the media types that this view can parse."""

@@ -5,21 +5,23 @@ from django.db.models.fields.related import RelatedField
 
 from djangorestframework.response import Response, ResponseException
 from djangorestframework.resource import Resource
-from djangorestframework.validators import ModelFormValidatorMixin
-from djangorestframework import status
+from djangorestframework import status, validators
 
 import decimal
 import inspect
 import re
 
 
-class ModelResource(Resource, ModelFormValidatorMixin):
+class ModelResource(Resource):
     """A specialized type of Resource, for resources that map directly to a Django Model.
     Useful things this provides:
 
     0. Default input validation based on ModelForms.
     1. Nice serialization of returned Models and QuerySets.
     2. A default set of create/read/update/delete operations."""
+    
+    # List of validators to validate, cleanup and type-ify the request content    
+    validators = (validators.ModelFormValidator,)
     
     # The model attribute refers to the Django Model which this Resource maps to.
     # (The Model's class, rather than an instance of the Model)

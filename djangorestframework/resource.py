@@ -3,10 +3,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 from djangorestframework.compat import View
 from djangorestframework.emitters import EmitterMixin
-from djangorestframework.validators import FormValidatorMixin
 from djangorestframework.response import Response, ResponseException
 from djangorestframework.request import RequestMixin, AuthMixin
-from djangorestframework import emitters, parsers, authenticators, status
+from djangorestframework import emitters, parsers, authenticators, validators, status
 
 
 # TODO: Figure how out references and named urls need to work nicely
@@ -17,7 +16,7 @@ from djangorestframework import emitters, parsers, authenticators, status
 __all__ = ['Resource']
 
 
-class Resource(EmitterMixin, AuthMixin, FormValidatorMixin, RequestMixin, View):
+class Resource(EmitterMixin, AuthMixin, RequestMixin, View):
     """Handles incoming requests and maps them to REST operations,
     performing authentication, input deserialization, input validation, output serialization."""
 
@@ -38,7 +37,10 @@ class Resource(EmitterMixin, AuthMixin, FormValidatorMixin, RequestMixin, View):
     parsers = ( parsers.JSONParser,
                 parsers.FormParser,
                 parsers.MultipartParser )
-    
+
+    # List of validators to validate, cleanup and type-ify the request content    
+    validators = (validators.FormValidator,)
+
     # List of all authenticating methods to attempt.
     authenticators = ( authenticators.UserLoggedInAuthenticator,
                        authenticators.BasicAuthenticator )

@@ -4,25 +4,31 @@ from django.db import models
 from djangorestframework.response import ResponseException
 from djangorestframework.utils import as_tuple
 
-class ValidatorMixin(object):
-    """Base class for all ValidatorMixin classes, which simply defines the interface they provide."""
+
+class BaseValidator(object):
+    """Base class for all Validator classes, which simply defines the interface they provide."""
+
+    def __init__(self, view):
+        self.view = view
 
     def validate(self, content):
         """Given some content as input return some cleaned, validated content.
-        Raises a ResponseException with status code 400 (Bad Request) on failure.
-        
+        Typically raises a ResponseException with status code 400 (Bad Request) on failure.
+
         Must be overridden to be implemented."""
         raise NotImplementedError()
 
 
-class FormValidatorMixin(ValidatorMixin):
-    """Validator Mixin that uses forms for validation.
-    Extends the ValidatorMixin interface to also provide a get_bound_form() method.
-    (Which may be used by some emitters.)"""
+class FormValidator(BaseValidator):
+    """Validator class that uses forms for validation.
+    Also provides a get_bound_form() method which may be used by some renderers.
     
-    """The form class that should be used for validation, or None to turn off form validation."""
-    form = None
-    bound_form_instance = None
+    The view class should provide `.form` attribute which specifies the form classmethod
+    to be used for validation.
+    
+    On calling validate() this validator may set a `.bound_form_instance` attribute on the
+    view, which may be used by some renderers."""
+
 
     def validate(self, content):
         """Given some content as input return some cleaned, validated content.
@@ -44,7 +50,7 @@ class FormValidatorMixin(ValidatorMixin):
         if bound_form is None:
             return content
         
-        self.bound_form_instance = bound_form
+        self.view.bound_form_instance = bound_form
 
         seen_fields_set = set(content.keys())
         form_fields_set = set(bound_form.fields.keys())
@@ -78,7 +84,10 @@ class FormValidatorMixin(ValidatorMixin):
                 detail[u'errors'] = bound_form.non_field_errors()
 
             # Add standard field errors
-            field_errors = dict((key, map(unicode, val)) for (key, val) in bound_form.errors.iteritems() if not key.startswith('__'))
+            field_errors = dict((key, map(unicode, val))
+                for (key, val)
+                in bound_form.errors.iteritems()
+                if not key.startswith('__'))
 
             # Add any unknown field errors
             for key in unknown_fields:
@@ -94,20 +103,21 @@ class FormValidatorMixin(ValidatorMixin):
     def get_bound_form(self, content=None):
         """Given some content return a Django form bound to that content.
         If form validation is turned off (form class attribute is None) then returns None."""
-        if not self.form:
+        form_cls = getattr(self.view, 'form', None)
+
+        if not form_cls:
             return None
 
-        if not content is None:
+        if content is not None:
             if hasattr(content, 'FILES'):
-                return self.form(content, content.FILES)
-            return self.form(content)
-        return self.form()
+                return form_cls(content, content.FILES)
+            return form_cls(content)
+        return form_cls()
 
 
-class ModelFormValidatorMixin(FormValidatorMixin):
-    """Validator Mixin that uses forms for validation and falls back to a model form if no form is set.
-    Extends the ValidatorMixin interface to also provide a get_bound_form() method.
-    (Which may be used by some emitters.)"""
+class ModelFormValidator(FormValidator):
+    """Validator class that uses forms for validation and otherwise falls back to a model form if no form is set.
+    Also provides a get_bound_form() method which may be used by some renderers."""
  
     """The form class that should be used for validation, or None to use model form validation."""   
     form = None
@@ -148,15 +158,18 @@ class ModelFormValidatorMixin(FormValidatorMixin):
         If the form class attribute has been explicitly set then use that class to create a Form,
         otherwise if model is set use that class to create a ModelForm, otherwise return None."""
 
-        if self.form:
-            # Use explict Form
-            return super(ModelFormValidatorMixin, self).get_bound_form(content)
+        form_cls = getattr(self.view, 'form', None)
+        model_cls = getattr(self.view, 'model', None)
 
-        elif self.model:
+        if form_cls:
+            # Use explict Form
+            return super(ModelFormValidator, self).get_bound_form(content)
+
+        elif model_cls:
             # Fall back to ModelForm which we create on the fly
             class OnTheFlyModelForm(forms.ModelForm):
                 class Meta:
-                    model = self.model
+                    model = model_cls
                     #fields = tuple(self._model_fields_set)
 
             # Instantiate the ModelForm as appropriate
@@ -176,24 +189,32 @@ class ModelFormValidatorMixin(FormValidatorMixin):
     @property
     def _model_fields_set(self):
         """Return a set containing the names of validated fields on the model."""
-        model_fields = set(field.name for field in self.model._meta.fields)
+        model = getattr(self.view, 'model', None)
+        fields = getattr(self.view, 'fields', self.fields)
+        exclude_fields = getattr(self.view, 'exclude_fields', self.exclude_fields)
 
-        if self.fields:
-            return model_fields & set(as_tuple(self.fields))
+        model_fields = set(field.name for field in model._meta.fields)
 
-        return model_fields - set(as_tuple(self.exclude_fields))
+        if fields:
+            return model_fields & set(as_tuple(fields))
+
+        return model_fields - set(as_tuple(exclude_fields))
     
     @property
     def _property_fields_set(self):
         """Returns a set containing the names of validated properties on the model."""
-        property_fields = set(attr for attr in dir(self.model) if
-                              isinstance(getattr(self.model, attr, None), property)
+        model = getattr(self.view, 'model', None)
+        fields = getattr(self.view, 'fields', self.fields)
+        exclude_fields = getattr(self.view, 'exclude_fields', self.exclude_fields)
+
+        property_fields = set(attr for attr in dir(model) if
+                              isinstance(getattr(model, attr, None), property)
                               and not attr.startswith('_'))
 
-        if self.fields:
-            return property_fields & set(as_tuple(self.fields))
+        if fields:
+            return property_fields & set(as_tuple(fields))
 
-        return property_fields - set(as_tuple(self.exclude_fields))
+        return property_fields - set(as_tuple(exclude_fields))
     
 
     
