@@ -67,25 +67,25 @@ class TestContentMixins(TestCase):
         self.assertEqual(view.RAW_CONTENT, content)
 
     def test_standard_behaviour_determines_no_content_GET(self):
-        """Ensure request.RAW_CONTENT returns None for GET request with no content."""
+        """Ensure view.RAW_CONTENT returns None for GET request with no content."""
         self.ensure_determines_no_content_GET(RequestMixin())
 
     def test_standard_behaviour_determines_form_content_POST(self):
-        """Ensure request.RAW_CONTENT returns content for POST request with form content."""
+        """Ensure view.RAW_CONTENT returns content for POST request with form content."""
         self.ensure_determines_form_content_POST(RequestMixin())
 
     def test_standard_behaviour_determines_non_form_content_POST(self):
-        """Ensure StandardContentMixin.determine_content(request) returns (content type, content) for POST request with content."""
+        """Ensure view.RAW_CONTENT returns content for POST request with non-form content."""
         self.ensure_determines_non_form_content_POST(RequestMixin())
 
     def test_standard_behaviour_determines_form_content_PUT(self):
-        """Ensure StandardContentMixin.determine_content(request) returns content for PUT request with content."""
+        """Ensure view.RAW_CONTENT returns content for PUT request with form content."""
         self.ensure_determines_form_content_PUT(RequestMixin())
 
-#    def test_standard_behaviour_determines_non_form_content_PUT(self):
-#        """Ensure StandardContentMixin.determine_content(request) returns (content type, content) for PUT request with content."""
-#        self.ensure_determines_non_form_content_PUT(StandardContentMixin())
-#
+    def test_standard_behaviour_determines_non_form_content_PUT(self):
+        """Ensure view.RAW_CONTENT returns content for PUT request with non-form content."""
+        self.ensure_determines_non_form_content_PUT(RequestMixin())
+
 #    # OverloadedContentMixin behavioural tests
 #
 #    def test_overloaded_behaviour_determines_no_content_GET(self):
@@ -108,16 +108,18 @@ class TestContentMixins(TestCase):
 #        """Ensure StandardContentMixin.determine_content(request) returns (content type, content) for PUT request with content."""
 #        self.ensure_determines_non_form_content_PUT(OverloadedContentMixin())
 #
-#    def test_overloaded_behaviour_allows_content_tunnelling(self):
-#        """Ensure determine_content(request) returns (content type, content) for overloaded POST request"""
-#        content = 'qwerty'
-#        content_type = 'text/plain'
-#        form_data = {OverloadedContentMixin.CONTENT_PARAM: content,
-#                     OverloadedContentMixin.CONTENTTYPE_PARAM: content_type}
-#        request = self.req.post('/', form_data)
-#        self.assertEqual(OverloadedContentMixin().determine_content(request), (content_type, content))
-#        self.assertEqual(request.META['CONTENT_TYPE'], content_type)
-# 
+    def test_overloaded_behaviour_allows_content_tunnelling(self):
+        """Ensure request.RAW_CONTENT returns content for overloaded POST request"""
+        content = 'qwerty'
+        content_type = 'text/plain'
+        view = RequestMixin()
+        form_data = {view.CONTENT_PARAM: content,
+                     view.CONTENTTYPE_PARAM: content_type}
+        view.request = self.req.post('/', form_data)
+        view.parsers = (PlainTextParser,)
+        view.perform_form_overloading()
+        self.assertEqual(view.RAW_CONTENT, content)
+
 #    def test_overloaded_behaviour_allows_content_tunnelling_content_type_not_set(self):
 #        """Ensure determine_content(request) returns (None, content) for overloaded POST request with content type not set"""
 #        content = 'qwerty'

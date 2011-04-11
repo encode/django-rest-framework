@@ -1,6 +1,7 @@
 from djangorestframework.mediatypes import MediaType
 from djangorestframework.utils import as_tuple
 from djangorestframework.response import ResponseException
+from djangorestframework.parsers import FormParser, MultipartParser
 from djangorestframework import status
 
 #from djangorestframework.requestparsing import parse, load_parser
@@ -151,11 +152,18 @@ class RequestMixin(object):
         if not self.USE_FORM_OVERLOADING or self.method != 'POST' or not self.content_type.is_form():
             return
 
+        # Temporarily switch to using the form parsers, then parse the content
+        parsers = self.parsers
+        self.parsers = (FormParser, MultipartParser)
         content = self.RAW_CONTENT
+        self.parsers = parsers
+
+        # Method overloading - change the method and remove the param from the content
         if self.METHOD_PARAM in content:
             self.method = content[self.METHOD_PARAM].upper()
             del self._raw_content[self.METHOD_PARAM]
 
+        # Content overloading - rewind the stream and modify the content type
         if self.CONTENT_PARAM in content and self.CONTENTTYPE_PARAM in content:
             self._content_type = MediaType(content[self.CONTENTTYPE_PARAM])
             self._stream = StringIO(content[self.CONTENT_PARAM])

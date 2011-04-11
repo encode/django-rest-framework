@@ -63,7 +63,7 @@ class MediaType(object):
         """
         return self.media_type == 'application/x-www-form-urlencoded' or \
                self.media_type == 'multipart/form-data'
-
+    
     def as_tuple(self):
         return (self.main_type, self.sub_type, self.params)
 
