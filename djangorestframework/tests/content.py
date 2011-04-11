@@ -37,50 +37,51 @@ class TestContentMixins(TestCase):
         self.assertEqual(view.RAW_CONTENT, None)
 
     def ensure_determines_form_content_POST(self, view):
-        """Ensure determine_content(request) returns content for POST request with content."""
+        """Ensure view.RAW_CONTENT returns content for POST request with form content."""
         form_data = {'qwerty': 'uiop'}
         view.parsers = (FormParser, MultipartParser)
         view.request = self.req.post('/', data=form_data)
         self.assertEqual(view.RAW_CONTENT, form_data)
 
-#    def ensure_determines_non_form_content_POST(self, mixin):
-#        """Ensure determine_content(request) returns (content type, content) for POST request with content."""
-#        content = 'qwerty'
-#        content_type = 'text/plain'
-#        request = self.req.post('/', content, content_type=content_type)
-#        self.assertEqual(mixin.determine_content(request), (content_type, content))
-#
-#    def ensure_determines_form_content_PUT(self, mixin):
-#        """Ensure determine_content(request) returns content for PUT request with content."""
-#        form_data = {'qwerty': 'uiop'}
-#        request = self.req.put('/', data=form_data)
-#        self.assertEqual(mixin.determine_content(request), (request.META['CONTENT_TYPE'], request.raw_post_data))
-#
-#    def ensure_determines_non_form_content_PUT(self, mixin):
-#        """Ensure determine_content(request) returns (content type, content) for PUT request with content."""
-#        content = 'qwerty'
-#        content_type = 'text/plain'
-#        request = self.req.put('/', content, content_type=content_type)
-#        self.assertEqual(mixin.determine_content(request), (content_type, content))
-#
-#    # StandardContentMixin behavioural tests
-#
+    def ensure_determines_non_form_content_POST(self, mixin):
+        """Ensure view.RAW_CONTENT returns content for POST request with non-form content."""
+        content = 'qwerty'
+        content_type = 'text/plain'
+        view.parsers = (PlainTextParser,)
+        view.request = self.req.post('/', content, content_type=content_type)
+        self.assertEqual(view.RAW_CONTENT, form_data)
+
+    def ensure_determines_form_content_PUT(self, mixin):
+        """Ensure view.RAW_CONTENT returns content for PUT request with form content."""
+        form_data = {'qwerty': 'uiop'}
+        view.parsers = (FormParser, MultipartParser)
+        view.request = self.req.put('/', data=form_data)
+        self.assertEqual(view.RAW_CONTENT, form_data)
+
+    def ensure_determines_non_form_content_PUT(self, mixin):
+        """Ensure view.RAW_CONTENT returns content for PUT request with non-form content."""
+        content = 'qwerty'
+        content_type = 'text/plain'
+        view.parsers = (PlainTextParser,)
+        view.request = self.req.post('/', content, content_type=content_type)
+        self.assertEqual(view.RAW_CONTENT, form_data)#
+
     def test_standard_behaviour_determines_no_content_GET(self):
         """Ensure request.RAW_CONTENT returns None for GET request with no content."""
         self.ensure_determines_no_content_GET(RequestMixin())
 
     def test_standard_behaviour_determines_form_content_POST(self):
-        """Ensure request.RAW_CONTENT returns content for POST request with content."""
+        """Ensure request.RAW_CONTENT returns content for POST request with form content."""
         self.ensure_determines_form_content_POST(RequestMixin())
-#
-#    def test_standard_behaviour_determines_non_form_content_POST(self):
-#        """Ensure StandardContentMixin.determine_content(request) returns (content type, content) for POST request with content."""
-#        self.ensure_determines_non_form_content_POST(StandardContentMixin())
-#
-#    def test_standard_behaviour_determines_form_content_PUT(self):
-#        """Ensure StandardContentMixin.determine_content(request) returns content for PUT request with content."""
-#        self.ensure_determines_form_content_PUT(StandardContentMixin())
-#
+
+    def test_standard_behaviour_determines_non_form_content_POST(self):
+        """Ensure StandardContentMixin.determine_content(request) returns (content type, content) for POST request with content."""
+        self.ensure_determines_non_form_content_POST(RequestMixin())
+
+    def test_standard_behaviour_determines_form_content_PUT(self):
+        """Ensure StandardContentMixin.determine_content(request) returns content for PUT request with content."""
+        self.ensure_determines_form_content_PUT(RequestMixin())
+
 #    def test_standard_behaviour_determines_non_form_content_PUT(self):
 #        """Ensure StandardContentMixin.determine_content(request) returns (content type, content) for PUT request with content."""
 #        self.ensure_determines_non_form_content_PUT(StandardContentMixin())

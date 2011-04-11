@@ -27,38 +27,7 @@ except ImportError:
 class ParserMixin(object):
     parsers = ()
 
-    def parse(self, stream, content_type):
-        """
-        Parse the request content.
 
-        May raise a 415 ResponseException (Unsupported Media Type),
-        or a 400 ResponseException (Bad Request).
-        """
-        parsers = as_tuple(self.parsers)
-
-        parser = None
-        for parser_cls in parsers:
-            if parser_cls.handles(content_type):
-                parser = parser_cls(self)
-                break
-
-        if parser is None:
-            raise ResponseException(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                                    {'error': 'Unsupported media type in request \'%s\'.' %
-                                     content_type.media_type})
-
-        return parser.parse(stream)
-
-    @property
-    def parsed_media_types(self):
-        """Return an list of all the media types that this ParserMixin can parse."""
-        return [parser.media_type for parser in self.parsers]
-    
-    @property
-    def default_parser(self):
-        """Return the ParerMixin's most prefered emitter.
-        (This has no behavioural effect, but is may be used by documenting emitters)"""        
-        return self.parsers[0]
 
 
 class BaseParser(object):
@@ -120,6 +89,18 @@ class DataFlatener(object):
         """Returns True if the parameter with name *key* is expected to be a list, or False otherwise.
         *val_list* which is the received value for parameter *key* can be used to guess the answer."""
         return False
+
+
+class PlainTextParser(BaseParser):
+    """
+    Plain text parser.
+    
+    Simply returns the content of the stream
+    """
+    media_type = MediaType('text/plain')
+
+    def parse(self, stream):
+        return stream.read()
 
 
 class FormParser(BaseParser, DataFlatener):
