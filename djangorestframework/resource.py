@@ -3,7 +3,6 @@ from django.views.decorators.csrf import csrf_exempt
 
 from djangorestframework.compat import View
 from djangorestframework.emitters import EmitterMixin
-from djangorestframework.authenticators import AuthenticatorMixin
 from djangorestframework.validators import FormValidatorMixin
 from djangorestframework.response import Response, ResponseException
 from djangorestframework.request import RequestMixin, AuthMixin

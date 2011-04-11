@@ -17,6 +17,7 @@ class RequestMixin(object):
     CONTENT_PARAM = "_content"
 
     parsers = ()
+    validators = ()
 
     def _get_method(self):
         """
@@ -168,6 +169,7 @@ class RequestMixin(object):
             self._content_type = MediaType(content[self.CONTENTTYPE_PARAM])
             self._stream = StringIO(content[self.CONTENT_PARAM])
             del(self._raw_content)
+
 
     def parse(self, stream, content_type):
         """
