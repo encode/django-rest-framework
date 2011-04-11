@@ -169,21 +169,13 @@ class Resource(RequestMixin, ResponseMixin, AuthMixin, View):
 
         except ErrorResponse, exc:
             response = exc.response
-            
-        except:
-            import traceback
-            traceback.print_exc()
 
         # Always add these headers.
         #
         # TODO - this isn't actually the correct way to set the vary header,
         # also it's currently sub-obtimal for HTTP caching - need to sort that out. 
-        try:
-            response.headers['Allow'] = ', '.join(self.allowed_methods)
-            response.headers['Vary'] = 'Authenticate, Accept'
+        response.headers['Allow'] = ', '.join(self.allowed_methods)
+        response.headers['Vary'] = 'Authenticate, Accept'
 
-            return self.emit(response)
-        except:
-            import traceback
-            traceback.print_exc()
+        return self.emit(response)
 
