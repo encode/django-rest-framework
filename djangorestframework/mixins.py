@@ -1,12 +1,18 @@
 from djangorestframework.mediatypes import MediaType
-from djangorestframework.utils import as_tuple
-from djangorestframework.response import ResponseException
+from djangorestframework.utils import as_tuple, MSIE_USER_AGENT_REGEX
+from djangorestframework.response import ErrorResponse
 from djangorestframework.parsers import FormParser, MultipartParser
 from djangorestframework import status
 
-#from djangorestframework.requestparsing import parse, load_parser
-from django.http.multipartparser import LimitBytes
+from django.http import HttpResponse
+from django.http.multipartparser import LimitBytes  # TODO: Use LimitedStream in compat
 from StringIO import StringIO
+from decimal import Decimal
+import re
+
+
+
+########## Request Mixin ##########
 
 class RequestMixin(object):
     """Mixin class to provide request parsing behaviour."""
@@ -175,8 +181,8 @@ class RequestMixin(object):
         """
         Parse the request content.
 
-        May raise a 415 ResponseException (Unsupported Media Type),
-        or a 400 ResponseException (Bad Request).
+        May raise a 415 ErrorResponse (Unsupported Media Type),
+        or a 400 ErrorResponse (Bad Request).
         """
         if stream is None or content_type is None:
             return None
@@ -190,7 +196,7 @@ class RequestMixin(object):
                 break
 
         if parser is None:
-            raise ResponseException(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            raise ErrorResponse(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
                                     {'error': 'Unsupported media type in request \'%s\'.' %
                                      content_type.media_type})
 
@@ -217,18 +223,20 @@ class RequestMixin(object):
                 validator = validator_cls(self)
                 return validator.get_bound_form(content)
         return None
-    
+
 
     @property
     def parsed_media_types(self):
         """Return an list of all the media types that this view can parse."""
         return [parser.media_type for parser in self.parsers]
+
     
     @property
     def default_parser(self):
         """Return the view's most preffered emitter.
         (This has no behavioural effect, but is may be used by documenting emitters)"""        
         return self.parsers[0]
+
 
     method = property(_get_method, _set_method)
     content_type = property(_get_content_type, _set_content_type)
@@ -238,6 +246,154 @@ class RequestMixin(object):
     CONTENT = property(_get_content)
 
 
+########## ResponseMixin ##########
+
+class ResponseMixin(object):
+    """Adds behaviour for pluggable Emitters to a :class:`.Resource` or Django :class:`View`. class.
+    
+    Default behaviour is to use standard HTTP Accept header content negotiation.
+    Also supports overidding the content type by specifying an _accept= parameter in the URL.
+    Ignores Accept headers from Internet Explorer user agents and uses a sensible browser Accept header instead."""
+
+    ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
+    REWRITE_IE_ACCEPT_HEADER = True
+
+    #request = None
+    #response = None
+    emitters = ()
+
+    #def render_to_response(self, obj):
+    #    if isinstance(obj, Response):
+    #        response = obj
+    #    elif response_obj is not None:
+    #        response = Response(status.HTTP_200_OK, obj)
+    #    else:
+    #        response = Response(status.HTTP_204_NO_CONTENT)
+
+    #    response.cleaned_content = self._filter(response.raw_content)
+        
+    #    self._render(response)
+
+
+    #def filter(self, content):
+    #    """
+    #    Filter the response content.
+    #    """
+    #    for filterer_cls in self.filterers:
+    #        filterer = filterer_cls(self)
+    #        content = filterer.filter(content)
+    #    return content
+
+        
+    def emit(self, response):
+        """Takes a :class:`Response` object and returns a Django :class:`HttpResponse`."""
+        self.response = response
+
+        try:
+            emitter = self._determine_emitter(self.request)
+        except ErrorResponse, exc:
+            emitter = self.default_emitter
+            response = exc.response
+        
+        # Serialize the response content
+        if response.has_content_body:
+            content = emitter(self).emit(output=response.cleaned_content)
+        else:
+            content = emitter(self).emit()
+        
+        # Munge DELETE Response code to allow us to return content
+        # (Do this *after* we've rendered the template so that we include the normal deletion response code in the output)
+        if response.status == 204:
+            response.status = 200
+
+        # Build the HTTP Response
+        # TODO: Check if emitter.mimetype is underspecified, or if a content-type header has been set
+        resp = HttpResponse(content, mimetype=emitter.media_type, status=response.status)
+        for (key, val) in response.headers.items():
+            resp[key] = val
+
+        return resp
+
+
+    def _determine_emitter(self, request):
+        """Return the appropriate emitter for the output, given the client's 'Accept' header,
+        and the content types that this Resource knows how to serve.
+        
+        See: RFC 2616, Section 14 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html"""
+
+        if self.ACCEPT_QUERY_PARAM and request.GET.get(self.ACCEPT_QUERY_PARAM, None):
+            # Use _accept parameter override
+            accept_list = [request.GET.get(self.ACCEPT_QUERY_PARAM)]
+        elif (self.REWRITE_IE_ACCEPT_HEADER and
+              request.META.has_key('HTTP_USER_AGENT') and
+              MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT'])):
+            accept_list = ['text/html', '*/*']
+        elif request.META.has_key('HTTP_ACCEPT'):
+            # Use standard HTTP Accept negotiation
+            accept_list = request.META["HTTP_ACCEPT"].split(',')
+        else:
+            # No accept header specified
+            return self.default_emitter
+        
+        # Parse the accept header into a dict of {qvalue: set of media types}
+        # We ignore mietype parameters
+        accept_dict = {}    
+        for token in accept_list:
+            components = token.split(';')
+            mimetype = components[0].strip()
+            qvalue = Decimal('1.0')
+            
+            if len(components) > 1:
+                # Parse items that have a qvalue eg text/html;q=0.9
+                try:
+                    (q, num) = components[-1].split('=')
+                    if q == 'q':
+                        qvalue = Decimal(num)
+                except:
+                    # Skip malformed entries
+                    continue
+
+            if accept_dict.has_key(qvalue):
+                accept_dict[qvalue].add(mimetype)
+            else:
+                accept_dict[qvalue] = set((mimetype,))
+        
+        # Convert to a list of sets ordered by qvalue (highest first)
+        accept_sets = [accept_dict[qvalue] for qvalue in sorted(accept_dict.keys(), reverse=True)]
+       
+        for accept_set in accept_sets:
+            # Return any exact match
+            for emitter in self.emitters:
+                if emitter.media_type in accept_set:
+                    return emitter
+
+            # Return any subtype match
+            for emitter in self.emitters:
+                if emitter.media_type.split('/')[0] + '/*' in accept_set:
+                    return emitter
+
+            # Return default
+            if '*/*' in accept_set:
+                return self.default_emitter
+      
+
+        raise ErrorResponse(status.HTTP_406_NOT_ACCEPTABLE,
+                                {'detail': 'Could not satisfy the client\'s Accept header',
+                                 'available_types': self.emitted_media_types})
+
+    @property
+    def emitted_media_types(self):
+        """Return an list of all the media types that this resource can emit."""
+        return [emitter.media_type for emitter in self.emitters]
+
+    @property
+    def default_emitter(self):
+        """Return the resource's most prefered emitter.
+        (This emitter is used if the client does not send and Accept: header, or sends Accept: */*)"""
+        return self.emitters[0]
+
+
+########## Auth Mixin ##########
 
 class AuthMixin(object):
     """Mixin class to provide authentication and permissions."""
@@ -277,4 +433,3 @@ class AuthMixin(object):
             if auth:
                 return auth
         return None
-
