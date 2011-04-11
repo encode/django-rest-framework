@@ -145,6 +145,39 @@ class RequestMixin(object):
             self._stream = StringIO(content[self.CONTENT_PARAM])
             del(self._raw_content)
 
+    def parse(self, stream, content_type):
+        """
+        Parse the request content.
+
+        May raise a 415 ResponseException (Unsupported Media Type),
+        or a 400 ResponseException (Bad Request).
+        """
+        parsers = as_tuple(self.parsers)
+
+        parser = None
+        for parser_cls in parsers:
+            if parser_cls.handles(content_type):
+                parser = parser_cls(self)
+                break
+
+        if parser is None:
+            raise ResponseException(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+                                    {'error': 'Unsupported media type in request \'%s\'.' %
+                                     content_type.media_type})
+
+        return parser.parse(stream)
+
+    @property
+    def parsed_media_types(self):
+        """Return an list of all the media types that this view can parse."""
+        return [parser.media_type for parser in self.parsers]
+    
+    @property
+    def default_parser(self):
+        """Return the view's most preffered emitter.
+        (This has no behavioural effect, but is may be used by documenting emitters)"""        
+        return self.parsers[0]
+
     method = property(_get_method, _set_method)
     content_type = property(_get_content_type, _set_content_type)
     accept = property(_get_accept, _set_accept)
