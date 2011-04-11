@@ -1,12 +1,13 @@
 # TODO: Refactor these tests
-#from django.test import TestCase
-#from djangorestframework.compat import RequestFactory
+from django.test import TestCase
+from djangorestframework.compat import RequestFactory
+from djangorestframework.request import RequestMixin
 #from djangorestframework.methods import MethodMixin, StandardMethodMixin, OverloadedPOSTMethodMixin
 #
 #
-#class TestMethodMixins(TestCase): 
-#    def setUp(self):
-#        self.req = RequestFactory()
+class TestMethodOverloading(TestCase): 
+    def setUp(self):
+        self.req = RequestFactory()
 #
 #    # Interface tests
 #
@@ -27,27 +28,21 @@
 #
 #    # Behavioural tests
 #
-#    def test_standard_behaviour_determines_GET(self):
-#        """GET requests identified as GET method with StandardMethodMixin"""
-#        request = self.req.get('/')
-#        self.assertEqual(StandardMethodMixin().determine_method(request), 'GET')
-#
-#    def test_standard_behaviour_determines_POST(self):
-#        """POST requests identified as POST method with StandardMethodMixin"""
-#        request = self.req.post('/')
-#        self.assertEqual(StandardMethodMixin().determine_method(request), 'POST')
-#    
-#    def test_overloaded_POST_behaviour_determines_GET(self):
-#        """GET requests identified as GET method with OverloadedPOSTMethodMixin"""
-#        request = self.req.get('/')
-#        self.assertEqual(OverloadedPOSTMethodMixin().determine_method(request), 'GET')
-#
-#    def test_overloaded_POST_behaviour_determines_POST(self):
-#        """POST requests identified as POST method with OverloadedPOSTMethodMixin"""
-#        request = self.req.post('/')
-#        self.assertEqual(OverloadedPOSTMethodMixin().determine_method(request), 'POST')
-#    
-#    def test_overloaded_POST_behaviour_determines_overloaded_method(self):
-#        """POST requests can be overloaded to another method by setting a reserved form field with OverloadedPOSTMethodMixin"""
-#        request = self.req.post('/', {OverloadedPOSTMethodMixin.METHOD_PARAM: 'DELETE'})
-#        self.assertEqual(OverloadedPOSTMethodMixin().determine_method(request), 'DELETE')
+    def test_standard_behaviour_determines_GET(self):
+        """GET requests identified"""
+        view = RequestMixin()
+        view.request = self.req.get('/')
+        self.assertEqual(view.method, 'GET')
+
+    def test_standard_behaviour_determines_POST(self):
+        """POST requests identified"""
+        view = RequestMixin()
+        view.request = self.req.post('/')
+        self.assertEqual(view.method, 'POST')
+    
+    def test_overloaded_POST_behaviour_determines_overloaded_method(self):
+        """POST requests can be overloaded to another method by setting a reserved form field"""
+        view = RequestMixin()
+        view.request = self.req.post('/', {view.METHOD_PARAM: 'DELETE'})
+        view.perform_form_overloading()
+        self.assertEqual(view.method, 'DELETE')

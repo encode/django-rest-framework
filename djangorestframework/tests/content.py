@@ -1,12 +1,11 @@
-# TODO: refactor these tests
+# TODO: finish off the refactoring
 from django.test import TestCase
 from djangorestframework.compat import RequestFactory
 from djangorestframework.request import RequestMixin
 from djangorestframework.parsers import FormParser, MultipartParser, PlainTextParser
-#from djangorestframework.content import ContentMixin, StandardContentMixin, OverloadedContentMixin
-#
-#
-class TestContentMixins(TestCase):
+
+
+class TestContentParsing(TestCase):
     def setUp(self):
         self.req = RequestFactory()
 
@@ -125,4 +124,3 @@ class TestContentMixins(TestCase):
 #        content = 'qwerty'
 #        request = self.req.post('/', {OverloadedContentMixin.CONTENT_PARAM: content})
 #        self.assertEqual(OverloadedContentMixin().determine_content(request), (None, content))
-
