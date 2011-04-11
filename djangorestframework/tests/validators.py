@@ -267,55 +267,55 @@ class TestFormValidation(TestCase):
         self.validation_failed_due_to_multiple_errors_returns_appropriate_message(validator)
 
 
-# class TestModelFormValidator(TestCase):
-#     """Tests specific to ModelFormValidatorMixin"""
-#     
-#     def setUp(self):
-#         """Create a validator for a model with two fields and a property."""    
-#         class MockModel(models.Model):
-#             qwerty = models.CharField(max_length=256)
-#             uiop = models.CharField(max_length=256, blank=True)
-#             
-#             @property
-#             def readonly(self):
-#                 return 'read only'
-#             
-#         class MockValidator(ModelFormValidatorMixin):
-#             model = MockModel
-#        
-#         self.MockValidator = MockValidator
-# 
-# 
-#     def test_property_fields_are_allowed_on_model_forms(self):
-#         """Validation on ModelForms may include property fields that exist on the Model to be included in the input."""
-#         content = {'qwerty':'example', 'uiop': 'example', 'readonly': 'read only'}
-#         self.assertEqual(self.MockValidator().validate(content), content)
-# 
-#     def test_property_fields_are_not_required_on_model_forms(self):
-#         """Validation on ModelForms does not require property fields that exist on the Model to be included in the input."""
-#         content = {'qwerty':'example', 'uiop': 'example'}
-#         self.assertEqual(self.MockValidator().validate(content), content)
-# 
-#     def test_extra_fields_not_allowed_on_model_forms(self):
-#         """If some (otherwise valid) content includes fields that are not in the form then validation should fail.
-#         It might be okay on normal form submission, but for Web APIs we oughta get strict, as it'll help show up
-#         broken clients more easily (eg submitting content with a misnamed field)"""
-#         content = {'qwerty': 'example', 'uiop':'example', 'readonly': 'read only', 'extra': 'extra'} 
-#         self.assertRaises(ResponseException, self.MockValidator().validate, content)
-#     
-#     def test_validate_requires_fields_on_model_forms(self):
-#         """If some (otherwise valid) content includes fields that are not in the form then validation should fail.
-#         It might be okay on normal form submission, but for Web APIs we oughta get strict, as it'll help show up
-#         broken clients more easily (eg submitting content with a misnamed field)"""
-#         content = {'readonly': 'read only'} 
-#         self.assertRaises(ResponseException, self.MockValidator().validate, content)
-#     
-#     def test_validate_does_not_require_blankable_fields_on_model_forms(self):
-#         """Test standard ModelForm validation behaviour - fields with blank=True are not required."""
-#         content = {'qwerty':'example', 'readonly': 'read only'}
-#         self.MockValidator().validate(content)
-#     
-#     def test_model_form_validator_uses_model_forms(self):
-#         self.assertTrue(isinstance(self.MockValidator().get_bound_form(), forms.ModelForm))
+class TestModelFormValidator(TestCase):
+    """Tests specific to ModelFormValidatorMixin"""
+    
+    def setUp(self):
+        """Create a validator for a model with two fields and a property."""    
+        class MockModel(models.Model):
+            qwerty = models.CharField(max_length=256)
+            uiop = models.CharField(max_length=256, blank=True)
+            
+            @property
+            def readonly(self):
+                return 'read only'
+            
+        class MockView(object):
+            model = MockModel
+       
+        self.validator = ModelFormValidator(MockView)
+
+
+    def test_property_fields_are_allowed_on_model_forms(self):
+        """Validation on ModelForms may include property fields that exist on the Model to be included in the input."""
+        content = {'qwerty':'example', 'uiop': 'example', 'readonly': 'read only'}
+        self.assertEqual(self.validator.validate(content), content)
+
+    def test_property_fields_are_not_required_on_model_forms(self):
+        """Validation on ModelForms does not require property fields that exist on the Model to be included in the input."""
+        content = {'qwerty':'example', 'uiop': 'example'}
+        self.assertEqual(self.validator.validate(content), content)
+
+    def test_extra_fields_not_allowed_on_model_forms(self):
+        """If some (otherwise valid) content includes fields that are not in the form then validation should fail.
+        It might be okay on normal form submission, but for Web APIs we oughta get strict, as it'll help show up
+        broken clients more easily (eg submitting content with a misnamed field)"""
+        content = {'qwerty': 'example', 'uiop':'example', 'readonly': 'read only', 'extra': 'extra'} 
+        self.assertRaises(ResponseException, self.validator.validate, content)
+    
+    def test_validate_requires_fields_on_model_forms(self):
+        """If some (otherwise valid) content includes fields that are not in the form then validation should fail.
+        It might be okay on normal form submission, but for Web APIs we oughta get strict, as it'll help show up
+        broken clients more easily (eg submitting content with a misnamed field)"""
+        content = {'readonly': 'read only'} 
+        self.assertRaises(ResponseException, self.validator.validate, content)
+    
+    def test_validate_does_not_require_blankable_fields_on_model_forms(self):
+        """Test standard ModelForm validation behaviour - fields with blank=True are not required."""
+        content = {'qwerty':'example', 'readonly': 'read only'}
+        self.validator.validate(content)
+    
+    def test_model_form_validator_uses_model_forms(self):
+        self.assertTrue(isinstance(self.validator.get_bound_form(), forms.ModelForm))
 
 
