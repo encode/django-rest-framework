@@ -2,7 +2,8 @@ from django.conf.urls.defaults import patterns, url
 from django import http
 from django.test import TestCase
 from djangorestframework.compat import View
-from djangorestframework.emitters import EmitterMixin, BaseEmitter
+from djangorestframework.emitters import BaseEmitter
+from djangorestframework.mixins import ResponseMixin
 from djangorestframework.response import Response
 
 DUMMYSTATUS = 200
@@ -11,7 +12,7 @@ DUMMYCONTENT = 'dummycontent'
 EMITTER_A_SERIALIZER = lambda x: 'Emitter A: %s' % x
 EMITTER_B_SERIALIZER = lambda x: 'Emitter B: %s' % x
 
-class MockView(EmitterMixin, View):
+class MockView(ResponseMixin, View):
     def get(self, request):
         response = Response(DUMMYSTATUS, DUMMYCONTENT)
         return self.emit(response)

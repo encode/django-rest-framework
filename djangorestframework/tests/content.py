@@ -3,7 +3,7 @@ Tests for content parsing, and form-overloaded content parsing.
 """
 from django.test import TestCase
 from djangorestframework.compat import RequestFactory
-from djangorestframework.request import RequestMixin
+from djangorestframework.mixins import RequestMixin
 from djangorestframework.parsers import FormParser, MultipartParser, PlainTextParser
 
 

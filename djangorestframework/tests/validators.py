@@ -3,7 +3,7 @@ from django.db import models
 from django.test import TestCase
 from djangorestframework.compat import RequestFactory
 from djangorestframework.validators import BaseValidator, FormValidator, ModelFormValidator
-from djangorestframework.response import ResponseException
+from djangorestframework.response import ErrorResponse
 
 
 class TestValidatorMixinInterfaces(TestCase):
@@ -81,7 +81,7 @@ class TestNonFieldErrors(TestCase):
         content = {'field1': 'example1', 'field2': 'example2'}
         try:
             FormValidator(view).validate(content)
-        except ResponseException, exc:           
+        except ErrorResponse, exc:           
             self.assertEqual(exc.response.raw_content, {'errors': [MockForm.ERROR_TEXT]})
         else:
             self.fail('ResourceException was not raised')  #pragma: no cover
@@ -115,14 +115,14 @@ class TestFormValidation(TestCase):
     def validation_failure_raises_response_exception(self, validator):
         """If form validation fails a ResourceException 400 (Bad Request) should be raised."""
         content = {}       
-        self.assertRaises(ResponseException, validator.validate, content)
+        self.assertRaises(ErrorResponse, validator.validate, content)
 
     def validation_does_not_allow_extra_fields_by_default(self, validator):
         """If some (otherwise valid) content includes fields that are not in the form then validation should fail.
         It might be okay on normal form submission, but for Web APIs we oughta get strict, as it'll help show up
         broken clients more easily (eg submitting content with a misnamed field)"""
         content = {'qwerty': 'uiop', 'extra': 'extra'} 
-        self.assertRaises(ResponseException, validator.validate, content)
+        self.assertRaises(ErrorResponse, validator.validate, content)
 
     def validation_allows_extra_fields_if_explicitly_set(self, validator):
         """If we include an allowed_extra_fields paramater on _validate, then allow fields with those names."""
@@ -139,7 +139,7 @@ class TestFormValidation(TestCase):
         content = {}    
         try:
             validator.validate(content)
-        except ResponseException, exc:
+        except ErrorResponse, exc:
             self.assertEqual(exc.response.raw_content, {'field-errors': {'qwerty': ['This field is required.']}})
         else:
             self.fail('ResourceException was not raised')  #pragma: no cover
@@ -149,7 +149,7 @@ class TestFormValidation(TestCase):
         content = {'qwerty': ''}
         try:
             validator.validate(content)
-        except ResponseException, exc:           
+        except ErrorResponse, exc:           
             self.assertEqual(exc.response.raw_content, {'field-errors': {'qwerty': ['This field is required.']}})
         else:
             self.fail('ResourceException was not raised')  #pragma: no cover
@@ -159,7 +159,7 @@ class TestFormValidation(TestCase):
         content = {'qwerty': 'uiop', 'extra': 'extra'}
         try:
             validator.validate(content)
-        except ResponseException, exc:           
+        except ErrorResponse, exc:           
             self.assertEqual(exc.response.raw_content, {'field-errors': {'extra': ['This field does not exist.']}})
         else:
             self.fail('ResourceException was not raised')  #pragma: no cover
@@ -169,7 +169,7 @@ class TestFormValidation(TestCase):
         content = {'qwerty': '', 'extra': 'extra'}
         try:
             validator.validate(content)
-        except ResponseException, exc:           
+        except ErrorResponse, exc:           
             self.assertEqual(exc.response.raw_content, {'field-errors': {'qwerty': ['This field is required.'],
                                                                          'extra': ['This field does not exist.']}})
         else:
@@ -286,14 +286,14 @@ class TestModelFormValidator(TestCase):
         It might be okay on normal form submission, but for Web APIs we oughta get strict, as it'll help show up
         broken clients more easily (eg submitting content with a misnamed field)"""
         content = {'qwerty': 'example', 'uiop':'example', 'readonly': 'read only', 'extra': 'extra'} 
-        self.assertRaises(ResponseException, self.validator.validate, content)
+        self.assertRaises(ErrorResponse, self.validator.validate, content)
     
     def test_validate_requires_fields_on_model_forms(self):
         """If some (otherwise valid) content includes fields that are not in the form then validation should fail.
         It might be okay on normal form submission, but for Web APIs we oughta get strict, as it'll help show up
         broken clients more easily (eg submitting content with a misnamed field)"""
         content = {'readonly': 'read only'} 
-        self.assertRaises(ResponseException, self.validator.validate, content)
+        self.assertRaises(ErrorResponse, self.validator.validate, content)
     
     def test_validate_does_not_require_blankable_fields_on_model_forms(self):
         """Test standard ModelForm validation behaviour - fields with blank=True are not required."""

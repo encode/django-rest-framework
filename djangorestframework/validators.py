@@ -1,7 +1,7 @@
 """Mixin classes that provide a validate(content) function to validate and cleanup request content"""
 from django import forms
 from django.db import models
-from djangorestframework.response import ResponseException
+from djangorestframework.response import ErrorResponse
 from djangorestframework.utils import as_tuple
 
 
@@ -13,7 +13,7 @@ class BaseValidator(object):
 
     def validate(self, content):
         """Given some content as input return some cleaned, validated content.
-        Typically raises a ResponseException with status code 400 (Bad Request) on failure.
+        Typically raises a ErrorResponse with status code 400 (Bad Request) on failure.
 
         Must be overridden to be implemented."""
         raise NotImplementedError()
@@ -32,11 +32,11 @@ class FormValidator(BaseValidator):
 
     def validate(self, content):
         """Given some content as input return some cleaned, validated content.
-        Raises a ResponseException with status code 400 (Bad Request) on failure.
+        Raises a ErrorResponse with status code 400 (Bad Request) on failure.
         
         Validation is standard form validation, with an additional constraint that no extra unknown fields may be supplied.
 
-        On failure the ResponseException content is a dict which may contain 'errors' and 'field-errors' keys.
+        On failure the ErrorResponse content is a dict which may contain 'errors' and 'field-errors' keys.
         If the 'errors' key exists it is a list of strings of non-field errors.
         If the 'field-errors' key exists it is a dict of {field name as string: list of errors as strings}."""
         return self._validate(content)
@@ -97,7 +97,7 @@ class FormValidator(BaseValidator):
                 detail[u'field-errors'] = field_errors
 
         # Return HTTP 400 response (BAD REQUEST)
-        raise ResponseException(400, detail)
+        raise ErrorResponse(400, detail)
   
 
     def get_bound_form(self, content=None):
@@ -139,14 +139,14 @@ class ModelFormValidator(FormValidator):
     # TODO: be really strict on fields - check they match in the handler methods. (this isn't a validator thing tho.)
     def validate(self, content):
         """Given some content as input return some cleaned, validated content.
-        Raises a ResponseException with status code 400 (Bad Request) on failure.
+        Raises a ErrorResponse with status code 400 (Bad Request) on failure.
         
         Validation is standard form or model form validation,
         with an additional constraint that no extra unknown fields may be supplied,
         and that all fields specified by the fields class attribute must be supplied,
         even if they are not validated by the form/model form.
 
-        On failure the ResponseException content is a dict which may contain 'errors' and 'field-errors' keys.
+        On failure the ErrorResponse content is a dict which may contain 'errors' and 'field-errors' keys.
         If the 'errors' key exists it is a list of strings of non-field errors.
         If the 'field-errors' key exists it is a dict of {field name as string: list of errors as strings}."""
         return self._validate(content, allowed_extra_fields=self._property_fields_set)

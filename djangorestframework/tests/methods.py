@@ -1,6 +1,6 @@
 from django.test import TestCase
 from djangorestframework.compat import RequestFactory
-from djangorestframework.request import RequestMixin
+from djangorestframework.mixins import RequestMixin
 
 
 class TestMethodOverloading(TestCase): 

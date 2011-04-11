@@ -3,7 +3,7 @@ from django.db.models import Model
 from django.db.models.query import QuerySet
 from django.db.models.fields.related import RelatedField
 
-from djangorestframework.response import Response, ResponseException
+from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.resource import Resource
 from djangorestframework import status, validators
 
@@ -370,7 +370,7 @@ class ModelResource(Resource):
                 # Otherwise assume the kwargs uniquely identify the model
                 instance = self.model.objects.get(**kwargs)
         except self.model.DoesNotExist:
-            raise ResponseException(status.HTTP_404_NOT_FOUND)
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
 
         return instance
 
@@ -402,7 +402,7 @@ class ModelResource(Resource):
                 # Otherwise assume the kwargs uniquely identify the model
                 instance = self.model.objects.get(**kwargs)
         except self.model.DoesNotExist:
-            raise ResponseException(status.HTTP_404_NOT_FOUND, None, {})
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
 
         instance.delete()
         return

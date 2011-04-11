@@ -9,7 +9,7 @@ We need a method to be able to:
    and multipart/form-data.  (eg also handle multipart/json)
 """
 from django.http.multipartparser import MultiPartParser as DjangoMPParser
-from djangorestframework.response import ResponseException
+from djangorestframework.response import ErrorResponse
 from djangorestframework import status
 from djangorestframework.utils import as_tuple
 from djangorestframework.mediatypes import MediaType
@@ -59,7 +59,7 @@ class JSONParser(BaseParser):
         try:
             return json.load(stream)
         except ValueError, exc:
-            raise ResponseException(status.HTTP_400_BAD_REQUEST, {'detail': 'JSON parse error - %s' % str(exc)})
+            raise ErrorResponse(status.HTTP_400_BAD_REQUEST, {'detail': 'JSON parse error - %s' % str(exc)})
 
 
 class DataFlatener(object):

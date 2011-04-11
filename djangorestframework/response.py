@@ -1,24 +1,16 @@
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
 
-__all__ =['NoContent', 'Response', ]
+__all__ =['Response', 'ErrorResponse']
 
-
-
-class NoContent(object):
-    """Used to indicate no body in http response.
-    (We cannot just use None, as that is a valid, serializable response object.)
-    
-    TODO: On reflection I'm going to get rid of this and just not support serialized 'None' responses.
-    """
-    pass
-
+# TODO: remove raw_content/cleaned_content and just use content?
 
 class Response(object):
-    def __init__(self, status=200, content=NoContent, headers={}):
+    """An HttpResponse that may include content that hasn't yet been serialized."""
+    def __init__(self, status=200, content=None, headers={}):
         self.status = status
-        self.has_content_body = not content is NoContent             # TODO: remove and just use content
-        self.raw_content = content      # content prior to filtering - TODO: remove and just use content
-        self.cleaned_content = content  # content after filtering      TODO: remove and just use content
+        self.has_content_body = content is not None
+        self.raw_content = content      # content prior to filtering
+        self.cleaned_content = content  # content after filtering
         self.headers = headers
  
     @property
@@ -28,6 +20,7 @@ class Response(object):
         return STATUS_CODE_TEXT.get(self.status, '')
 
 
-class ResponseException(BaseException):
-    def __init__(self, status, content=NoContent, headers={}):
+class ErrorResponse(BaseException):
+    """An exception representing an HttpResponse that should be returned immediatley."""
+    def __init__(self, status, content=None, headers={}):
         self.response = Response(status, content=content, headers=headers)

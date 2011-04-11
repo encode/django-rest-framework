@@ -14,6 +14,7 @@ except ImportError:
 #    """Adds the ADMIN_MEDIA_PREFIX to the request context."""
 #    return {'ADMIN_MEDIA_PREFIX': settings.ADMIN_MEDIA_PREFIX}
 
+MSIE_USER_AGENT_REGEX = re.compile(r'^Mozilla/[0-9]+\.[0-9]+ \([^)]*; MSIE [0-9]+\.[0-9]+[a-z]?;[^)]*\)(?!.* Opera )')
 
 def as_tuple(obj):
     """Given obj return a tuple"""

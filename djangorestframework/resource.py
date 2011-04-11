@@ -2,9 +2,8 @@ from django.core.urlresolvers import set_script_prefix
 from django.views.decorators.csrf import csrf_exempt
 
 from djangorestframework.compat import View
-from djangorestframework.emitters import EmitterMixin
-from djangorestframework.response import Response, ResponseException
-from djangorestframework.request import RequestMixin, AuthMixin
+from djangorestframework.response import Response, ErrorResponse
+from djangorestframework.mixins import RequestMixin, ResponseMixin, AuthMixin
 from djangorestframework import emitters, parsers, authenticators, validators, status
 
 
@@ -16,7 +15,7 @@ from djangorestframework import emitters, parsers, authenticators, validators, s
 __all__ = ['Resource']
 
 
-class Resource(EmitterMixin, AuthMixin, RequestMixin, View):
+class Resource(RequestMixin, ResponseMixin, AuthMixin, View):
     """Handles incoming requests and maps them to REST operations,
     performing authentication, input deserialization, input validation, output serialization."""
 
@@ -81,7 +80,7 @@ class Resource(EmitterMixin, AuthMixin, RequestMixin, View):
     def not_implemented(self, operation):
         """Return an HTTP 500 server error if an operation is called which has been allowed by
         allowed_methods, but which has not been implemented."""
-        raise ResponseException(status.HTTP_500_INTERNAL_SERVER_ERROR,
+        raise ErrorResponse(status.HTTP_500_INTERNAL_SERVER_ERROR,
                                 {'detail': '%s operation on this resource has not been implemented' % (operation, )})
 
 
@@ -89,15 +88,15 @@ class Resource(EmitterMixin, AuthMixin, RequestMixin, View):
         """Ensure the request method is permitted for this resource, raising a ResourceException if it is not."""
 
         if not method in self.callmap.keys():
-            raise ResponseException(status.HTTP_501_NOT_IMPLEMENTED,
+            raise ErrorResponse(status.HTTP_501_NOT_IMPLEMENTED,
                                     {'detail': 'Unknown or unsupported method \'%s\'' % method})
 
         if not method in self.allowed_methods:
-            raise ResponseException(status.HTTP_405_METHOD_NOT_ALLOWED,
+            raise ErrorResponse(status.HTTP_405_METHOD_NOT_ALLOWED,
                                     {'detail': 'Method \'%s\' not allowed on this resource.' % method})
 
         if auth is None and not method in self.anon_allowed_methods:
-            raise ResponseException(status.HTTP_403_FORBIDDEN,
+            raise ErrorResponse(status.HTTP_403_FORBIDDEN,
                                     {'detail': 'You do not have permission to access this resource. ' +
                                      'You may need to login or otherwise authenticate the request.'})
 
@@ -172,7 +171,7 @@ class Resource(EmitterMixin, AuthMixin, RequestMixin, View):
             # Pre-serialize filtering (eg filter complex objects into natively serializable types)
             response.cleaned_content = self.cleanup_response(response.raw_content)
 
-        except ResponseException, exc:
+        except ErrorResponse, exc:
             response = exc.response
             
         except:
@@ -183,8 +182,12 @@ class Resource(EmitterMixin, AuthMixin, RequestMixin, View):
         #
         # TODO - this isn't actually the correct way to set the vary header,
         # also it's currently sub-obtimal for HTTP caching - need to sort that out. 
-        response.headers['Allow'] = ', '.join(self.allowed_methods)
-        response.headers['Vary'] = 'Authenticate, Accept'
+        try:
+            response.headers['Allow'] = ', '.join(self.allowed_methods)
+            response.headers['Vary'] = 'Authenticate, Accept'
 
-        return self.emit(response)
+            return self.emit(response)
+        except:
+            import traceback
+            traceback.print_exc()
 
