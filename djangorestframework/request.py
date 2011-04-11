@@ -9,7 +9,7 @@ from django.http.multipartparser import LimitBytes
 from StringIO import StringIO
 
 class RequestMixin(object):
-    """Delegate class that supplements an HttpRequest object with additional behaviour."""
+    """Mixin behaviour to deal with requests."""
 
     USE_FORM_OVERLOADING = True
     METHOD_PARAM = "_method"

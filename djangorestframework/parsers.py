@@ -24,10 +24,6 @@ try:
 except ImportError:
     from cgi import parse_qs
 
-class ParserMixin(object):
-    parsers = ()
-
-
 
 
 class BaseParser(object):

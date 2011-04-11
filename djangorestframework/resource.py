@@ -3,7 +3,6 @@ from django.views.decorators.csrf import csrf_exempt
 
 from djangorestframework.compat import View
 from djangorestframework.emitters import EmitterMixin
-from djangorestframework.parsers import ParserMixin
 from djangorestframework.authenticators import AuthenticatorMixin
 from djangorestframework.validators import FormValidatorMixin
 from djangorestframework.response import Response, ResponseException
@@ -19,7 +18,7 @@ from djangorestframework import emitters, parsers, authenticators, status
 __all__ = ['Resource']
 
 
-class Resource(EmitterMixin, ParserMixin, AuthenticatorMixin, FormValidatorMixin, RequestMixin, View):
+class Resource(EmitterMixin, AuthenticatorMixin, FormValidatorMixin, RequestMixin, View):
     """Handles incoming requests and maps them to REST operations,
     performing authentication, input deserialization, input validation, output serialization."""
 
