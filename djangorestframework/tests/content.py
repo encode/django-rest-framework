@@ -1,13 +1,14 @@
 # TODO: refactor these tests
-#from django.test import TestCase
-#from djangorestframework.compat import RequestFactory
+from django.test import TestCase
+from djangorestframework.compat import RequestFactory
+from djangorestframework.request import RequestMixin
 #from djangorestframework.content import ContentMixin, StandardContentMixin, OverloadedContentMixin
 #
 #
-#class TestContentMixins(TestCase):
-#    def setUp(self):
-#        self.req = RequestFactory()
-#
+class TestContentMixins(TestCase):
+    def setUp(self):
+        self.req = RequestFactory()
+
 #    # Interface tests
 #
 #    def test_content_mixin_interface(self):
@@ -29,10 +30,10 @@
 #  
 #    # Common functionality to test with both StandardContentMixin and OverloadedContentMixin
 #
-#    def ensure_determines_no_content_GET(self, mixin):
-#        """Ensure determine_content(request) returns None for GET request with no content."""
-#        request = self.req.get('/')
-#        self.assertEqual(mixin.determine_content(request), None)
+    def ensure_determines_no_content_GET(self, view):
+        """Ensure determine_content(request) returns None for GET request with no content."""
+        view.request = self.req.get('/')
+        self.assertEqual(view.RAW_CONTENT, None)
 #
 #    def ensure_determines_form_content_POST(self, mixin):
 #        """Ensure determine_content(request) returns content for POST request with content."""
@@ -62,9 +63,9 @@
 #
 #    # StandardContentMixin behavioural tests
 #
-#    def test_standard_behaviour_determines_no_content_GET(self):
-#        """Ensure StandardContentMixin.determine_content(request) returns None for GET request with no content."""
-#        self.ensure_determines_no_content_GET(StandardContentMixin())
+    def test_standard_behaviour_determines_no_content_GET(self):
+        """Ensure StandardContentMixin.determine_content(request) returns None for GET request with no content."""
+        self.ensure_determines_no_content_GET(RequestMixin())
 #
 #    def test_standard_behaviour_determines_form_content_POST(self):
 #        """Ensure StandardContentMixin.determine_content(request) returns content for POST request with content."""
