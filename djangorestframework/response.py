@@ -8,7 +8,7 @@ class NoContent(object):
     """Used to indicate no body in http response.
     (We cannot just use None, as that is a valid, serializable response object.)
     
-    TODO: On relflection I'm going to get rid of this and just not support serailized 'None' responses.
+    TODO: On reflection I'm going to get rid of this and just not support serialized 'None' responses.
     """
     pass
 
@@ -23,8 +23,8 @@ class Response(object):
  
     @property
     def status_text(self):
-        """Return reason text corrosponding to our HTTP response status code.
-        Provided for convienience."""
+        """Return reason text corresponding to our HTTP response status code.
+        Provided for convenience."""
         return STATUS_CODE_TEXT.get(self.status, '')
 
 

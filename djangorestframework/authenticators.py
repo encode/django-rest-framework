@@ -10,26 +10,6 @@ from djangorestframework.utils import as_tuple
 import base64
 
 
-class AuthenticatorMixin(object):
-    """Adds pluggable authentication behaviour."""
-    
-    """The set of authenticators to use."""
-    authenticators = None
-
-    def authenticate(self, request):
-        """Attempt to authenticate the request, returning an authentication context or None.
-        An authentication context may be any object, although in many cases it will simply be a :class:`User` instance."""
-        
-        # Attempt authentication against each authenticator in turn,
-        # and return None if no authenticators succeed in authenticating the request.
-        for authenticator in as_tuple(self.authenticators):
-            auth_context = authenticator(self).authenticate(request)
-            if auth_context:
-                return auth_context
-
-        return None
-
-
 class BaseAuthenticator(object):
     """All authenticators should extend BaseAuthenticator."""
 

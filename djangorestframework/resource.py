@@ -6,7 +6,7 @@ from djangorestframework.emitters import EmitterMixin
 from djangorestframework.authenticators import AuthenticatorMixin
 from djangorestframework.validators import FormValidatorMixin
 from djangorestframework.response import Response, ResponseException
-from djangorestframework.request import RequestMixin
+from djangorestframework.request import RequestMixin, AuthMixin
 from djangorestframework import emitters, parsers, authenticators, status
 
 
@@ -18,7 +18,7 @@ from djangorestframework import emitters, parsers, authenticators, status
 __all__ = ['Resource']
 
 
-class Resource(EmitterMixin, AuthenticatorMixin, FormValidatorMixin, RequestMixin, View):
+class Resource(EmitterMixin, AuthMixin, FormValidatorMixin, RequestMixin, View):
     """Handles incoming requests and maps them to REST operations,
     performing authentication, input deserialization, input validation, output serialization."""
 
@@ -139,7 +139,7 @@ class Resource(EmitterMixin, AuthenticatorMixin, FormValidatorMixin, RequestMixi
             # Typically the context will be a user, or None if this is an anonymous request,
             # but it could potentially be more complex (eg the context of a request key which
             # has been signed against a particular set of permissions)
-            auth_context = self.authenticate(request)
+            auth_context = self.auth
 
             # If using a form POST with '_method'/'_content'/'_content_type' overrides, then alter
             # self.method, self.content_type, self.CONTENT appropriately.
@@ -173,6 +173,10 @@ class Resource(EmitterMixin, AuthenticatorMixin, FormValidatorMixin, RequestMixi
 
         except ResponseException, exc:
             response = exc.response
+            
+        except:
+            import traceback
+            traceback.print_exc()
 
         # Always add these headers.
         #

@@ -9,7 +9,7 @@ from django.http.multipartparser import LimitBytes
 from StringIO import StringIO
 
 class RequestMixin(object):
-    """Mixin behaviour to deal with requests."""
+    """Mixin class to provide request parsing behaviour."""
 
     USE_FORM_OVERLOADING = True
     METHOD_PARAM = "_method"
@@ -213,4 +213,43 @@ class RequestMixin(object):
     CONTENT = property(_get_content)
 
 
+
+class AuthMixin(object):
+    """Mixin class to provide authentication and permissions."""
+    authenticators = ()
+    permitters = ()
+
+    @property
+    def auth(self):
+        if not hasattr(self, '_auth'):
+            self._auth = self._authenticate()
+        return self._auth
+
+    # TODO?
+    #@property
+    #def user(self):
+    #    if not has_attr(self, '_user'):
+    #        auth = self.auth
+    #        if isinstance(auth, User...):
+    #            self._user = auth
+    #        else:
+    #            self._user = getattr(auth, 'user', None)
+    #    return self._user
+
+    def check_permissions(self):
+        if not self.permissions:
+            return
+
+        auth = self.auth
+        for permitter_cls in self.permitters:
+            permitter = permission_cls(self)
+            permitter.permit(auth)
+
+    def _authenticate(self):
+        for authenticator_cls in self.authenticators:
+            authenticator = authenticator_cls(self)
+            auth = authenticator.authenticate(self.request)
+            if auth:
+                return auth
+        return None
 
