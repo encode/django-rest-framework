@@ -341,6 +341,19 @@ class ModelResource(Resource):
         return _any(data, self.fields)
 
 
+    def get(self, request, *args, **kwargs):
+        try:
+            if args:
+                # If we have any none kwargs then assume the last represents the primrary key
+                instance = self.model.objects.get(pk=args[-1], **kwargs)
+            else:
+                # Otherwise assume the kwargs uniquely identify the model
+                instance = self.model.objects.get(**kwargs)
+        except self.model.DoesNotExist:
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
+
+        return instance
+
     def post(self, request, *args, **kwargs):
         # TODO: test creation on a non-existing resource url
         
@@ -360,19 +373,6 @@ class ModelResource(Resource):
         if hasattr(instance, 'get_absolute_url'):
             headers['Location'] = instance.get_absolute_url()
         return Response(status.HTTP_201_CREATED, instance, headers)
-
-    def get(self, request, *args, **kwargs):
-        try:
-            if args:
-                # If we have any none kwargs then assume the last represents the primrary key
-                instance = self.model.objects.get(pk=args[-1], **kwargs)
-            else:
-                # Otherwise assume the kwargs uniquely identify the model
-                instance = self.model.objects.get(**kwargs)
-        except self.model.DoesNotExist:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
-
-        return instance
 
     def put(self, request, *args, **kwargs):
         # TODO: update on the url of a non-existing resource url doesn't work correctly at the moment - will end up with a new url 
