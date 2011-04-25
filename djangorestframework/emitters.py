@@ -5,6 +5,7 @@ and providing forms and links depending on the allowed methods, emitters and par
 """
 from django.conf import settings
 from django.template import RequestContext, loader
+from django.utils import simplejson as json
 from django import forms
 
 from djangorestframework.response import ErrorResponse
@@ -17,11 +18,6 @@ from djangorestframework import status
 from urllib import quote_plus
 import string
 import re
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
 
 
 

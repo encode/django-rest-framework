@@ -1,13 +1,15 @@
 """Test a range of REST API usage of the example application.
 """
 
-from django.test import TestCase
 from django.core.urlresolvers import reverse
+from django.test import TestCase
+from django.utils import simplejson as json
+
+from djangorestframework.compat import RequestFactory
+
 from blogpost import views, models
 import blogpost
 
-#import json
-#from rest.utils import xml2dict, dict2xml
 
 class AcceptHeaderTests(TestCase):
     """Test correct behaviour of the Accept header as specified by RFC 2616:
@@ -164,11 +166,6 @@ class AllowedMethodsTests(TestCase):
 
 
 #above testcases need to probably moved to the core
-from djangorestframework.compat import RequestFactory
-try:
-    import json
-except ImportError:
-    import simplejson as json
 
 class TestRotation(TestCase):
     """For the example the maximum amount of Blogposts is capped off at views.MAX_POSTS. 

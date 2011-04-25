@@ -126,3 +126,11 @@ except:
             #    }
             #)
             return http.HttpResponseNotAllowed(allowed_methods)
+
+# parse_qs 
+try:
+    # python >= ?
+    from urlparse import parse_qs
+except ImportError:
+    # python <= ?
+    from cgi import parse_qs

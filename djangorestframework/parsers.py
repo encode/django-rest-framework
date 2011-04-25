@@ -9,20 +9,13 @@ We need a method to be able to:
    and multipart/form-data.  (eg also handle multipart/json)
 """
 from django.http.multipartparser import MultiPartParser as DjangoMPParser
+from django.utils import simplejson as json
+
 from djangorestframework.response import ErrorResponse
 from djangorestframework import status
 from djangorestframework.utils import as_tuple
 from djangorestframework.mediatypes import MediaType
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
-
-try:
-    from urlparse import parse_qs
-except ImportError:
-    from cgi import parse_qs
+from djangorestframework.compat import parse_qs
 
 
 
