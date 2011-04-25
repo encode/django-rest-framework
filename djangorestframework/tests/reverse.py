@@ -12,7 +12,7 @@ except ImportError:
 
 class MockResource(Resource):
     """Mock resource which simply returns a URL, so that we can ensure that reversed URLs are fully qualified"""
-    anon_allowed_methods = ('GET',)
+    permissions = ()
 
     def get(self, request):
         return reverse('another')
@@ -28,5 +28,9 @@ class ReverseTests(TestCase):
     urls = 'djangorestframework.tests.reverse'
 
     def test_reversed_urls_are_fully_qualified(self):
-        response = self.client.get('/')
+        try:
+            response = self.client.get('/')
+        except:
+            import traceback
+            traceback.print_exc()
         self.assertEqual(json.loads(response.content), 'http://testserver/another')

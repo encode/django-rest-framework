@@ -13,10 +13,10 @@ import base64
 class BaseAuthenticator(object):
     """All authenticators should extend BaseAuthenticator."""
 
-    def __init__(self, mixin):
+    def __init__(self, view):
         """Initialise the authenticator with the mixin instance as state,
         in case the authenticator needs to access any metadata on the mixin object."""
-        self.mixin = mixin
+        self.view = view
 
     def authenticate(self, request):
         """Authenticate the request and return the authentication context or None.
@@ -61,11 +61,13 @@ class BasicAuthenticator(BaseAuthenticator):
                 
 
 class UserLoggedInAuthenticator(BaseAuthenticator):
-    """Use Djagno's built-in request session for authentication."""
+    """Use Django's built-in request session for authentication."""
     def authenticate(self, request):
         if getattr(request, 'user', None) and request.user.is_active:
-            # Temporarily request.POST with .RAW_CONTENT, so that we use our more generic request parsing
-            request._post = self.mixin.RAW_CONTENT
+            # Temporarily set request.POST to view.RAW_CONTENT,
+            # so that we use our more generic request parsing,
+            # in preference to Django's form-only request parsing.
+            request._post = self.view.RAW_CONTENT
             resp = CsrfViewMiddleware().process_view(request, None, (), {})
             del(request._post)
             if resp is None:  # csrf passed

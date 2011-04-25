@@ -18,10 +18,13 @@ class UserAgentMungingTest(TestCase):
     http://www.gethifi.com/blog/browser-rest-http-accept-headers"""
 
     def setUp(self):
+
         class MockResource(Resource):
-            anon_allowed_methods = allowed_methods = ('GET',)
+            permissions = ()
+
             def get(self, request):
                 return {'a':1, 'b':2, 'c':3}
+
         self.req = RequestFactory()
         self.MockResource = MockResource
         self.view = MockResource.as_view()

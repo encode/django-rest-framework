@@ -410,13 +410,13 @@ class ModelResource(Resource):
 
 class RootModelResource(ModelResource):
     """A Resource which provides default operations for list and create."""
-    allowed_methods = ('GET', 'POST')
     queryset = None
 
     def get(self, request, *args, **kwargs):
         queryset = self.queryset if self.queryset else self.model.objects.all()
         return queryset.filter(**kwargs)
 
+    put = delete = http_method_not_allowed
 
 class QueryModelResource(ModelResource):
     """Resource with default operations for list.
@@ -424,10 +424,8 @@ class QueryModelResource(ModelResource):
     allowed_methods = ('GET',)
     queryset = None
 
-    def get_form(self, data=None):
-        return None
-
     def get(self, request, *args, **kwargs):
         queryset = self.queryset if self.queryset else self.model.objects.all()
         return queryset.filer(**kwargs)
 
+    post = put = delete = http_method_not_allowed

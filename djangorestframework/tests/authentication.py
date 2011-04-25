@@ -13,8 +13,6 @@ except ImportError:
     import simplejson as json
 
 class MockResource(Resource):
-    allowed_methods = ('POST',)
-
     def post(self, request):
         return {'a':1, 'b':2, 'c':3}
 

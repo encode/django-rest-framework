@@ -16,7 +16,7 @@ class UploadFilesTests(TestCase):
             file = forms.FileField
 
         class MockResource(Resource):
-            allowed_methods = anon_allowed_methods = ('POST',)
+            permissions = ()
             form = FileForm
 
             def post(self, request, *args, **kwargs):

@@ -396,15 +396,23 @@ class ResponseMixin(object):
 ########## Auth Mixin ##########
 
 class AuthMixin(object):
-    """Mixin class to provide authentication and permissions."""
+    """Mixin class to provide authentication and permission checking."""
     authenticators = ()
-    permitters = ()
+    permissions = ()
 
     @property
     def auth(self):
         if not hasattr(self, '_auth'):
             self._auth = self._authenticate()
         return self._auth
+
+    def _authenticate(self):
+        for authenticator_cls in self.authenticators:
+            authenticator = authenticator_cls(self)
+            auth = authenticator.authenticate(self.request)
+            if auth:
+                return auth
+        return None
 
     # TODO?
     #@property
@@ -421,15 +429,11 @@ class AuthMixin(object):
         if not self.permissions:
             return
 
-        auth = self.auth
-        for permitter_cls in self.permitters:
-            permitter = permission_cls(self)
-            permitter.permit(auth)
+        for permission_cls in self.permissions:
+            permission = permission_cls(self)
+            if not permission.has_permission(self.auth):
+                raise ErrorResponse(status.HTTP_403_FORBIDDEN,
+                                   {'detail': 'You do not have permission to access this resource. ' +
+                                    'You may need to login or otherwise authenticate the request.'})                
 
-    def _authenticate(self):
-        for authenticator_cls in self.authenticators:
-            authenticator = authenticator_cls(self)
-            auth = authenticator.authenticate(self.request)
-            if auth:
-                return auth
-        return None
+
