@@ -3,10 +3,11 @@ django-rest-framework also provides HTML and PlainText emitters that help self-d
 by serializing the output along with documentation regarding the Resource, output status and headers,
 and providing forms and links depending on the allowed methods, emitters and parsers on the Resource. 
 """
+from django import forms
 from django.conf import settings
 from django.http import HttpResponse
 from django.template import RequestContext, loader
-from django import forms
+from django.utils import simplejson as json
 
 from djangorestframework.response import NoContent, ResponseException
 from djangorestframework.validators import FormValidatorMixin
@@ -20,11 +21,6 @@ from urllib import quote_plus
 import string
 import re
 from decimal import Decimal
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
 
 
 _MSIE_USER_AGENT = re.compile(r'^Mozilla/[0-9]+\.[0-9]+ \([^)]*; MSIE [0-9]+\.[0-9]+[a-z]?;[^)]*\)(?!.* Opera )')

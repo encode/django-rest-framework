@@ -1,13 +1,9 @@
 from django.conf.urls.defaults import patterns, url
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+from django.utils import simplejson as json
 
 from djangorestframework.resource import Resource
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
 
 
 class MockResource(Resource):

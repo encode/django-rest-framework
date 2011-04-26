@@ -1,16 +1,14 @@
 from django.conf.urls.defaults import patterns
-from django.test import TestCase
-from django.test import Client
+from django.test import Client, TestCase
+from django.utils import simplejson as json
+
 from djangorestframework.compat import RequestFactory
 from djangorestframework.resource import Resource
 from django.contrib.auth.models import User
 from django.contrib.auth import login
 
 import base64
-try:
-    import json
-except ImportError:
-    import simplejson as json
+
 
 class MockResource(Resource):
     allowed_methods = ('POST',)
