@@ -11,11 +11,11 @@ Introduction
 
 Django REST framework is a lightweight REST framework for Django, that aims to make it easy to build well-connected, self-describing RESTful Web APIs.
 
-**Browse example APIs created with Django REST framework:** `the sandbox <http://api.django-rest-framework.org/>`_ 
+**Browse example APIs created with Django REST framework:** `The Sandbox <http://api.django-rest-framework.org/>`_ 
 
 Features:
 
-* Automatically provides a Django admin style `browse-able self-documenting API <http://api.django-rest-framework.org>`_.
+* Automatically provides an awesome Django admin style `browse-able self-documenting API <http://api.django-rest-framework.org>`_.
 * Clean, simple, views for Resources, using Django's new `class based views <http://docs.djangoproject.com/en/dev/topics/class-based-views/>`_.
 * Support for ModelResources with out-of-the-box default implementations and input validation.
 * Pluggable :mod:`.emitters`, :mod:`parsers`, :mod:`validators` and :mod:`authenticators` - Easy to customise.
@@ -23,13 +23,20 @@ Features:
 * Optional support for forms as input validation.
 * Modular architecture - MixIn classes can be used without requiring the :class:`.Resource` or :class:`.ModelResource` classes.
 
-The django-rest-framework project is hosted as a `mercurial repository on bitbucket <https://bitbucket.org/tomchristie/django-rest-framework>`_ and is `available on PyPI <http://pypi.python.org/pypi/djangorestframework>`_.
+Resources
+---------
 
-For questions, thoughts and feedback please head on over to the `discussion group <http://groups.google.com/group/django-rest-framework>`_.
+**Project hosting:** `Bitbucket <https://bitbucket.org/tomchristie/django-rest-framework>`_ and `GitHub <https://github.com/tomchristie/django-rest-framework>`_.
 
-Bug reports are greatful received on the `issue tracker <https://bitbucket.org/tomchristie/django-rest-framework/issues?sort=version>`_.
+* The ``djangorestframework`` package is `available on PyPI <http://pypi.python.org/pypi/djangorestframework>`_.
+* We have an active `discussion group <http://groups.google.com/group/django-rest-framework>`_ and a `project blog <http://blog.django-rest-framework.org>`_. 
+* Bug reports are handled on the `issue tracker <https://bitbucket.org/tomchristie/django-rest-framework/issues?sort=version>`_.
+* There is a `Jenkins CI server <http://datacenter.tibold.nl/job/djangorestframework/>`_ which tracks test status and coverage reporting.  (Thanks Marko!)
+* Get with in touch with `@thisneonsoul <https://twitter.com/thisneonsoul>`_ on twitter.
 
-If you're feeling particularly enthusiastic there's even a `blog <http://blog.django-rest-framework.org>`_.
+Any and all questions, thoughts, bug reports and contributions are *hugely appreciated*.
+
+We'd like for this to be a real community driven effort, so come say hi, get involved, and get forking!  (See: `Bitbucket <http://confluence.atlassian.com/display/BITBUCKET/Forking+a+Bitbucket+Repository>`_, `GitHub <http://help.github.com/fork-a-repo/>`_)
 
 Requirements
 ------------
@@ -46,23 +53,24 @@ You can install Django REST framework using ``pip`` or ``easy_install``::
 
     pip install djangorestframework
 
-Or download the current release from BitBucket:
+Or get the latest development version using mercurial or git::
+
+    hg clone https://bitbucket.org/tomchristie/django-rest-framework
+    git clone git@github.com:tomchristie/django-rest-framework.git
+
+Or you can download the current release:
 
 * `django-rest-framework-0.1.tar.gz <https://bitbucket.org/tomchristie/django-rest-framework/downloads/django-rest-framework-0.1.tar.gz>`_
 * `django-rest-framework-0.1.zip <https://bitbucket.org/tomchristie/django-rest-framework/downloads/django-rest-framework-0.1.zip>`_
 
-Or get the latest development version using mercurial::
-
-    hg clone https://bitbucket.org/tomchristie/django-rest-framework
-
-To install Django REST framework to your ``site-packages`` directory, run the ``setup.py`` script::
+and then install Django REST framework to your ``site-packages`` directory, by running the ``setup.py`` script::
 
     python setup.py install
 
-To add django-rest-framework to a Django project:
+**To add django-rest-framework to a Django project:**
 
-    * Ensure that the ``djangorestframework`` directory is on your ``PYTHONPATH``.
-    * Add ``djangorestframework`` to your ``INSTALLED_APPS``.
+* Ensure that the ``djangorestframework`` directory is on your ``PYTHONPATH``.
+* Add ``djangorestframework`` to your ``INSTALLED_APPS``.
 
 For more information take a look at the :ref:`setup` section.
 
