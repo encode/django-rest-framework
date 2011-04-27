@@ -5,10 +5,6 @@ from django.utils import simplejson as json
 
 from djangorestframework.resource import Resource
 
-<<<<<<< local
-
-=======
->>>>>>> other
 
 class MockResource(Resource):
     """Mock resource which simply returns a URL, so that we can ensure that reversed URLs are fully qualified"""
