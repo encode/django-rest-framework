@@ -19,7 +19,7 @@ def main():
         failures = TestRunner(None)
     else:
         test_runner = TestRunner()
-        failures = test_runner.run_tests(None)
+        failures = test_runner.run_tests(['blogpost', 'pygments_api'])
 
     sys.exit(failures)
 
