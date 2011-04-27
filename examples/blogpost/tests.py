@@ -3,6 +3,10 @@
 
 from django.core.urlresolvers import reverse
 from django.test import TestCase
+<<<<<<< local
+=======
+from django.core.urlresolvers import reverse
+>>>>>>> other
 from django.utils import simplejson as json
 
 from djangorestframework.compat import RequestFactory
@@ -166,6 +170,10 @@ class AllowedMethodsTests(TestCase):
 
 
 #above testcases need to probably moved to the core
+<<<<<<< local
+=======
+
+>>>>>>> other
 
 class TestRotation(TestCase):
     """For the example the maximum amount of Blogposts is capped off at views.MAX_POSTS. 

@@ -64,14 +64,16 @@ class UserLoggedInAuthenticator(BaseAuthenticator):
     """Use Django's built-in request session for authentication."""
     def authenticate(self, request):
         if getattr(request, 'user', None) and request.user.is_active:
-            # Temporarily set request.POST to view.RAW_CONTENT,
-            # so that we use our more generic request parsing,
-            # in preference to Django's form-only request parsing.
-            request._post = self.view.RAW_CONTENT
-            resp = CsrfViewMiddleware().process_view(request, None, (), {})
-            del(request._post)
-            if resp is None:  # csrf passed
-                return request.user
+            # If this is a POST request we enforce CSRF validation.
+            if request.method.upper() == 'POST':
+                # Temporarily replace request.POST with .RAW_CONTENT,
+                # so that we use our more generic request parsing
+                request._post = self.mixin.RAW_CONTENT
+                resp = CsrfViewMiddleware().process_view(request, None, (), {})
+                del(request._post)
+                if resp is not None:  # csrf failed
+                    return None
+            return request.user
         return None
 
 

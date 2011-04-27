@@ -1,12 +1,18 @@
 from django.test import TestCase
 from django.utils import simplejson as json
+<<<<<<< local
 
+=======
+>>>>>>> other
 from djangorestframework.compat import RequestFactory
 
 from pygments_api import views
 import tempfile, shutil
 
+<<<<<<< local
 
+=======
+>>>>>>> other
 
 class TestPygmentsExample(TestCase):
 
