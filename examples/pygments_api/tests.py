@@ -37,12 +37,14 @@ class TestPygmentsExample(TestCase):
     def test_snippets_datetime_sorted(self):
         '''Pygments examples should be datetime sorted'''
         locations = []
-        for snippet in 'abcdefghijk':
+        for snippet in 'abcdefghij': # String length must not exceed views.MAX_FILES, otherwise test fails
             form_data = {'code': '%s' % snippet, 'style':'friendly', 'lexer':'python'}
             request = self.factory.post('/pygments', data=form_data)
             view = views.PygmentsRoot.as_view()
             response = view(request)
             locations.append(response.items()[2][1])
+            import time
+            time.sleep(.1)
         request = self.factory.get('/pygments')
         view = views.PygmentsRoot.as_view()
         response = view(request)
