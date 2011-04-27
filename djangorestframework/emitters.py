@@ -9,8 +9,14 @@ from django.template import RequestContext, loader
 from django.utils import simplejson as json
 from django import forms
 
-from decimal import Decimal
+from djangorestframework.utils import dict2xml, url_resolves
+from djangorestframework.markdownwrapper import apply_markdown
+from djangorestframework.breadcrumbs import get_breadcrumbs
+from djangorestframework.description import get_name, get_description
+from djangorestframework import status
 
+from decimal import Decimal
+import string
 
 # TODO: Rename verbose to something more appropriate
 # TODO: Maybe None could be handled more cleanly.  It'd be nice if it was handled by default,

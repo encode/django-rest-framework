@@ -68,7 +68,7 @@ class UserLoggedInAuthenticator(BaseAuthenticator):
             if request.method.upper() == 'POST':
                 # Temporarily replace request.POST with .RAW_CONTENT,
                 # so that we use our more generic request parsing
-                request._post = self.mixin.RAW_CONTENT
+                request._post = self.view.RAW_CONTENT
                 resp = CsrfViewMiddleware().process_view(request, None, (), {})
                 del(request._post)
                 if resp is not None:  # csrf failed
