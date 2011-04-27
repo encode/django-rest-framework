@@ -1,4 +1,4 @@
-from djangorestframework.modelresource import ModelResource, RootModelResource
+from djangorestframework.modelresource import InstanceModelResource, RootModelResource
 
 from blogpost import models
 
@@ -11,7 +11,7 @@ class BlogPosts(RootModelResource):
     model = models.BlogPost
     fields = BLOG_POST_FIELDS
 
-class BlogPostInstance(ModelResource):
+class BlogPostInstance(InstanceModelResource):
     """A resource which represents a single blog post."""
     model = models.BlogPost
     fields = BLOG_POST_FIELDS
@@ -21,7 +21,7 @@ class Comments(RootModelResource):
     model = models.Comment
     fields = COMMENT_FIELDS
 
-class CommentInstance(ModelResource):
+class CommentInstance(InstanceModelResource):
     """A resource which represents a single comment."""
     model = models.Comment
     fields = COMMENT_FIELDS

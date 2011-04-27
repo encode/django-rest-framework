@@ -408,6 +408,9 @@ class ModelResource(Resource):
         return
         
 
+class InstanceModelResource(ModelResource):
+    http_method_names = ['get', 'put', 'delete', 'head', 'options', 'trace', 'patch']  # Bit of a hack, these - needs fixing.
+
 class RootModelResource(ModelResource):
     """A Resource which provides default operations for list and create."""
     queryset = None
@@ -416,7 +419,7 @@ class RootModelResource(ModelResource):
         queryset = self.queryset if self.queryset else self.model.objects.all()
         return queryset.filter(**kwargs)
 
-    put = delete = None
+    http_method_names = ['get', 'post', 'head', 'options', 'trace', 'patch']
 
 class QueryModelResource(ModelResource):
     """Resource with default operations for list.
@@ -428,4 +431,4 @@ class QueryModelResource(ModelResource):
         queryset = self.queryset if self.queryset else self.model.objects.all()
         return queryset.filer(**kwargs)
 
-    post = put = delete = None
+    http_method_names = ['get', 'head', 'options', 'trace', 'patch']

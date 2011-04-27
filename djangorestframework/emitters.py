@@ -15,8 +15,10 @@ from djangorestframework.breadcrumbs import get_breadcrumbs
 from djangorestframework.description import get_name, get_description
 from djangorestframework import status
 
-from decimal import Decimal
+from urllib import quote_plus
 import string
+import re
+from decimal import Decimal
 
 # TODO: Rename verbose to something more appropriate
 # TODO: Maybe None could be handled more cleanly.  It'd be nice if it was handled by default,
