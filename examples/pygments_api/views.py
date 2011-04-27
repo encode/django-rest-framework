@@ -25,7 +25,7 @@ def list_dir_sorted_by_ctime(dir):
     """Return a list of files sorted by creation time"""
     filepaths = [os.path.join(dir, file) for file in os.listdir(dir) if not file.startswith('.')]
     return [item[0] for item in sorted([(path, os.path.getctime(path)) for path in filepaths],
-                                                     key=operator.itemgetter(1), reverse=True)]
+                                                     key=operator.itemgetter(1), reverse=False)]
 def remove_oldest_files(dir, max_files):
     """Remove the oldest files in a directory 'dir', leaving at most 'max_files' remaining.
     We use this to limit the number of resources in the sandbox."""
