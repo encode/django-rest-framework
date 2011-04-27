@@ -73,4 +73,10 @@ class UserLoggedInAuthenticator(BaseAuthenticator):
             if resp is None:  # csrf passed
                 return request.user
         return None
-    
+
+
+#class DigestAuthentication(BaseAuthentication):
+#    pass
+#
+#class OAuthAuthentication(BaseAuthentication):
+#    pass

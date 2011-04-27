@@ -24,9 +24,8 @@ class Sandbox(Resource):
     6. A blog posts and comments API.
 
     Please feel free to browse, create, edit and delete the resources in these examples."""
-    allowed_methods = anon_allowed_methods = ('GET',)
 
-    def get(self, request, auth):
+    def get(self, request):
         return [{'name': 'Simple Resource example', 'url': reverse('example-resource')},
                 {'name': 'Simple ModelResource example', 'url': reverse('my-model-root-resource')},
                 {'name': 'Simple Mixin-only example', 'url': reverse('mixin-view')},

@@ -41,7 +41,7 @@ class Resource(RequestMixin, ResponseMixin, AuthMixin, View):
                        authenticators.BasicAuthenticator )
     
     # List of all permissions required to access the resource
-    permissions = ( permissions.DeleteMePermission, )
+    permissions = ()
 
     # Optional form for input validation and presentation of HTML formatted responses.
     form = None
@@ -54,7 +54,7 @@ class Resource(RequestMixin, ResponseMixin, AuthMixin, View):
 
     @property
     def allowed_methods(self):
-        return [method.upper() for method in self.http_method_names if hasattr(self, method)]
+        return [method.upper() for method in self.http_method_names if getattr(self, method, None)]
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """Return an HTTP 405 error if an operation is called which does not have a handler method."""
@@ -96,6 +96,9 @@ class Resource(RequestMixin, ResponseMixin, AuthMixin, View):
             # Get the appropriate handler method
             if self.method.lower() in self.http_method_names:
                 handler = getattr(self, self.method.lower(), self.http_method_not_allowed)
+                # If a previously defined method has been disabled
+                if handler is None:
+                    handler = self.http_method_not_allowed
             else:
                 handler = self.http_method_not_allowed
 
@@ -123,5 +126,6 @@ class Resource(RequestMixin, ResponseMixin, AuthMixin, View):
         response.headers['Vary'] = 'Authenticate, Accept'
 
         return self.emit(response)
+
 
 

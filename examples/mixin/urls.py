@@ -1,12 +1,13 @@
 from djangorestframework.compat import View  # Use Django 1.3's django.views.generic.View, or fall back to a clone of that if Django < 1.3 
-from djangorestframework.emitters import EmitterMixin, DEFAULT_EMITTERS
+from djangorestframework.mixins import ResponseMixin
+from djangorestframework.emitters import DEFAULT_EMITTERS
 from djangorestframework.response import Response
 
 from django.conf.urls.defaults import patterns, url
 from django.core.urlresolvers import reverse
 
 
-class ExampleView(EmitterMixin, View):
+class ExampleView(ResponseMixin, View):
     """An example view using Django 1.3's class based views.
     Uses djangorestframework's EmitterMixin to provide support for multiple output formats."""
     emitters = DEFAULT_EMITTERS

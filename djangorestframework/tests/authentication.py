@@ -7,11 +7,13 @@ from django.utils import simplejson as json
 
 from djangorestframework.compat import RequestFactory
 from djangorestframework.resource import Resource
+from djangorestframework import permissions
 
 import base64
 
 
 class MockResource(Resource):
+    permissions = ( permissions.IsAuthenticated, )
     def post(self, request):
         return {'a':1, 'b':2, 'c':3}
 

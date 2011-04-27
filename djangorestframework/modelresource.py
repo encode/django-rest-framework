@@ -416,7 +416,7 @@ class RootModelResource(ModelResource):
         queryset = self.queryset if self.queryset else self.model.objects.all()
         return queryset.filter(**kwargs)
 
-    put = delete = http_method_not_allowed
+    put = delete = None
 
 class QueryModelResource(ModelResource):
     """Resource with default operations for list.
@@ -428,4 +428,4 @@ class QueryModelResource(ModelResource):
         queryset = self.queryset if self.queryset else self.model.objects.all()
         return queryset.filer(**kwargs)
 
-    post = put = delete = http_method_not_allowed
+    post = put = delete = None

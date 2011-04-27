@@ -41,26 +41,25 @@ class PygmentsRoot(Resource):
     """This example demonstrates a simple RESTful Web API aound the awesome pygments library.
     This top level resource is used to create highlighted code snippets, and to list all the existing code snippets."""
     form = PygmentsForm
-    allowed_methods = anon_allowed_methods = ('GET', 'POST',)
 
-    def get(self, request, auth):
+    def get(self, request):
         """Return a list of all currently existing snippets."""
         unique_ids = [os.path.split(f)[1] for f in list_dir_sorted_by_ctime(HIGHLIGHTED_CODE_DIR)]
         return [reverse('pygments-instance', args=[unique_id]) for unique_id in unique_ids]
 
-    def post(self, request, auth, content):
+    def post(self, request):
         """Create a new highlighed snippet and return it's location.
         For the purposes of the sandbox example, also ensure we delete the oldest snippets if we have > MAX_FILES."""
         unique_id = str(uuid.uuid1())
         pathname = os.path.join(HIGHLIGHTED_CODE_DIR, unique_id)
 
-        lexer = get_lexer_by_name(content['lexer'])
-        linenos = 'table' if content['linenos'] else False
-        options = {'title': content['title']} if content['title'] else {}
-        formatter = HtmlFormatter(style=content['style'], linenos=linenos, full=True, **options)
+        lexer = get_lexer_by_name(self.CONTENT['lexer'])
+        linenos = 'table' if self.CONTENT['linenos'] else False
+        options = {'title': self.CONTENT['title']} if self.CONTENT['title'] else {}
+        formatter = HtmlFormatter(style=self.CONTENT['style'], linenos=linenos, full=True, **options)
         
         with open(pathname, 'w') as outfile:
-            highlight(content['code'], lexer, formatter, outfile)
+            highlight(self.CONTENT['code'], lexer, formatter, outfile)
         
         remove_oldest_files(HIGHLIGHTED_CODE_DIR, MAX_FILES)
 
@@ -70,20 +69,19 @@ class PygmentsRoot(Resource):
 class PygmentsInstance(Resource):
     """Simply return the stored highlighted HTML file with the correct mime type.
     This Resource only emits HTML and uses a standard HTML emitter rather than the emitters.DocumentingHTMLEmitter class."""
-    allowed_methods = anon_allowed_methods = ('GET',)
     emitters = (HTMLEmitter,)
 
-    def get(self, request, auth, unique_id):
+    def get(self, request, unique_id):
         """Return the highlighted snippet."""
         pathname = os.path.join(HIGHLIGHTED_CODE_DIR, unique_id)
         if not os.path.exists(pathname):
-            return Resource(status.HTTP_404_NOT_FOUND)
+            return Response(status.HTTP_404_NOT_FOUND)
         return open(pathname, 'r').read()
 
-    def delete(self, request, auth, unique_id):
+    def delete(self, request, unique_id):
         """Delete the highlighted snippet."""
         pathname = os.path.join(HIGHLIGHTED_CODE_DIR, unique_id)
         if not os.path.exists(pathname):
-            return Resource(status.HTTP_404_NOT_FOUND)
+            return Response(status.HTTP_404_NOT_FOUND)
         return os.remove(pathname)
 
