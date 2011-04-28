@@ -4,13 +4,13 @@ from django.views.decorators.csrf import csrf_exempt
 from djangorestframework.compat import View
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.mixins import RequestMixin, ResponseMixin, AuthMixin
-from djangorestframework import emitters, parsers, authenticators, permissions, validators, status
+from djangorestframework import renderers, parsers, authenticators, permissions, validators, status
 
 
 # TODO: Figure how out references and named urls need to work nicely
 # TODO: POST on existing 404 URL, PUT on existing 404 URL
 #
-# NEXT: Exceptions on func() -> 500, tracebacks emitted if settings.DEBUG
+# NEXT: Exceptions on func() -> 500, tracebacks renderted if settings.DEBUG
 
 __all__ = ['Resource']
 
@@ -21,12 +21,12 @@ class Resource(RequestMixin, ResponseMixin, AuthMixin, View):
 
     http_method_names = ['get', 'post', 'put', 'delete', 'head', 'options', 'trace', 'patch']
 
-    # List of emitters the resource can serialize the response with, ordered by preference.
-    emitters = ( emitters.JSONEmitter,
-                 emitters.DocumentingHTMLEmitter,
-                 emitters.DocumentingXHTMLEmitter,
-                 emitters.DocumentingPlainTextEmitter,
-                 emitters.XMLEmitter )
+    # List of renderers the resource can serialize the response with, ordered by preference.
+    renderers = ( renderers.JSONRenderer,
+                 renderers.DocumentingHTMLRenderer,
+                 renderers.DocumentingXHTMLRenderer,
+                 renderers.DocumentingPlainTextRenderer,
+                 renderers.XMLRenderer )
 
     # List of parsers the resource can parse the request with.
     parsers = ( parsers.JSONParser,
@@ -48,7 +48,7 @@ class Resource(RequestMixin, ResponseMixin, AuthMixin, View):
 
     # Allow name and description for the Resource to be set explicitly,
     # overiding the default classname/docstring behaviour.
-    # These are used for documentation in the standard html and text emitters.
+    # These are used for documentation in the standard html and text renderers.
     name = None
     description = None
 
@@ -69,7 +69,7 @@ class Resource(RequestMixin, ResponseMixin, AuthMixin, View):
         Eg filter complex objects that cannot be serialized by json/xml/etc into basic objects that can.
         
         TODO: This is going to be removed.  I think that the 'fields' behaviour is going to move into
-        the EmitterMixin and Emitter classes."""
+        the RendererMixin and Renderer classes."""
         return data
 
 
@@ -123,7 +123,7 @@ class Resource(RequestMixin, ResponseMixin, AuthMixin, View):
             response.headers['Allow'] = ', '.join(self.allowed_methods)
             response.headers['Vary'] = 'Authenticate, Accept'
     
-            return self.emit(response)
+            return self.render(response)
         except:
             import traceback
             traceback.print_exc()

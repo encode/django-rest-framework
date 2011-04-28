@@ -11,14 +11,14 @@ class Sandbox(Resource):
 
     All the example APIs allow anonymous access, and can be navigated either through the browser or from the command line...
 
-        bash: curl -X GET http://api.django-rest-framework.org/                           # (Use default emitter)
-        bash: curl -X GET http://api.django-rest-framework.org/ -H 'Accept: text/plain'   # (Use plaintext documentation emitter)
+        bash: curl -X GET http://api.django-rest-framework.org/                           # (Use default renderer)
+        bash: curl -X GET http://api.django-rest-framework.org/ -H 'Accept: text/plain'   # (Use plaintext documentation renderer)
 
     The examples provided: 
    
     1. A basic example using the [Resource](http://django-rest-framework.org/library/resource.html) class.
     2. A basic example using the [ModelResource](http://django-rest-framework.org/library/modelresource.html) class.
-    3. An basic example using Django 1.3's [class based views](http://docs.djangoproject.com/en/dev/topics/class-based-views/) and djangorestframework's [EmitterMixin](http://django-rest-framework.org/library/emitters.html).
+    3. An basic example using Django 1.3's [class based views](http://docs.djangoproject.com/en/dev/topics/class-based-views/) and djangorestframework's [RendererMixin](http://django-rest-framework.org/library/renderers.html).
     4. A generic object store API.
     5. A code highlighting API.
     6. A blog posts and comments API.

@@ -28,7 +28,7 @@ urlpatterns = patterns('',
 
 
 class BreadcrumbTests(TestCase):
-    """Tests the breadcrumb functionality used by the HTML emitter."""
+    """Tests the breadcrumb functionality used by the HTML renderer."""
 
     urls = 'djangorestframework.tests.breadcrumbs'
 

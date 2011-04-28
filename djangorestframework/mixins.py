@@ -233,8 +233,8 @@ class RequestMixin(object):
     
     @property
     def default_parser(self):
-        """Return the view's most preffered emitter.
-        (This has no behavioural effect, but is may be used by documenting emitters)"""        
+        """Return the view's most preffered renderer.
+        (This has no behavioural effect, but is may be used by documenting renderers)"""        
         return self.parsers[0]
 
 
@@ -249,7 +249,7 @@ class RequestMixin(object):
 ########## ResponseMixin ##########
 
 class ResponseMixin(object):
-    """Adds behaviour for pluggable Emitters to a :class:`.Resource` or Django :class:`View`. class.
+    """Adds behaviour for pluggable Renderers to a :class:`.Resource` or Django :class:`View`. class.
     
     Default behaviour is to use standard HTTP Accept header content negotiation.
     Also supports overidding the content type by specifying an _accept= parameter in the URL.
@@ -260,7 +260,7 @@ class ResponseMixin(object):
 
     #request = None
     #response = None
-    emitters = ()
+    renderers = ()
 
     #def render_to_response(self, obj):
     #    if isinstance(obj, Response):
@@ -285,21 +285,21 @@ class ResponseMixin(object):
     #    return content
 
         
-    def emit(self, response):
+    def render(self, response):
         """Takes a :class:`Response` object and returns a Django :class:`HttpResponse`."""
         self.response = response
 
         try:
-            emitter = self._determine_emitter(self.request)
+            renderer = self._determine_renderer(self.request)
         except ErrorResponse, exc:
-            emitter = self.default_emitter
+            renderer = self.default_renderer
             response = exc.response
         
         # Serialize the response content
         if response.has_content_body:
-            content = emitter(self).emit(output=response.cleaned_content)
+            content = renderer(self).render(output=response.cleaned_content)
         else:
-            content = emitter(self).emit()
+            content = renderer(self).render()
         
         # Munge DELETE Response code to allow us to return content
         # (Do this *after* we've rendered the template so that we include the normal deletion response code in the output)
@@ -307,16 +307,16 @@ class ResponseMixin(object):
             response.status = 200
 
         # Build the HTTP Response
-        # TODO: Check if emitter.mimetype is underspecified, or if a content-type header has been set
-        resp = HttpResponse(content, mimetype=emitter.media_type, status=response.status)
+        # TODO: Check if renderer.mimetype is underspecified, or if a content-type header has been set
+        resp = HttpResponse(content, mimetype=renderer.media_type, status=response.status)
         for (key, val) in response.headers.items():
             resp[key] = val
 
         return resp
 
 
-    def _determine_emitter(self, request):
-        """Return the appropriate emitter for the output, given the client's 'Accept' header,
+    def _determine_renderer(self, request):
+        """Return the appropriate renderer for the output, given the client's 'Accept' header,
         and the content types that this Resource knows how to serve.
         
         See: RFC 2616, Section 14 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html"""
@@ -333,7 +333,7 @@ class ResponseMixin(object):
             accept_list = request.META["HTTP_ACCEPT"].split(',')
         else:
             # No accept header specified
-            return self.default_emitter
+            return self.default_renderer
         
         # Parse the accept header into a dict of {qvalue: set of media types}
         # We ignore mietype parameters
@@ -363,34 +363,34 @@ class ResponseMixin(object):
        
         for accept_set in accept_sets:
             # Return any exact match
-            for emitter in self.emitters:
-                if emitter.media_type in accept_set:
-                    return emitter
+            for renderer in self.renderers:
+                if renderer.media_type in accept_set:
+                    return renderer
 
             # Return any subtype match
-            for emitter in self.emitters:
-                if emitter.media_type.split('/')[0] + '/*' in accept_set:
-                    return emitter
+            for renderer in self.renderers:
+                if renderer.media_type.split('/')[0] + '/*' in accept_set:
+                    return renderer
 
             # Return default
             if '*/*' in accept_set:
-                return self.default_emitter
+                return self.default_renderer
       
 
         raise ErrorResponse(status.HTTP_406_NOT_ACCEPTABLE,
                                 {'detail': 'Could not satisfy the client\'s Accept header',
-                                 'available_types': self.emitted_media_types})
+                                 'available_types': self.renderted_media_types})
 
     @property
-    def emitted_media_types(self):
-        """Return an list of all the media types that this resource can emit."""
-        return [emitter.media_type for emitter in self.emitters]
+    def renderted_media_types(self):
+        """Return an list of all the media types that this resource can render."""
+        return [renderer.media_type for renderer in self.renderers]
 
     @property
-    def default_emitter(self):
-        """Return the resource's most prefered emitter.
-        (This emitter is used if the client does not send and Accept: header, or sends Accept: */*)"""
-        return self.emitters[0]
+    def default_renderer(self):
+        """Return the resource's most prefered renderer.
+        (This renderer is used if the client does not send and Accept: header, or sends Accept: */*)"""
+        return self.renderers[0]
 
 
 ########## Auth Mixin ##########

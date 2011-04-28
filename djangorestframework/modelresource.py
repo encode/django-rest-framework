@@ -49,7 +49,7 @@ class ModelResource(Resource):
 
 
     #def get_form(self, content=None):
-    #    """Return a form that may be used in validation and/or rendering an html emitter"""
+    #    """Return a form that may be used in validation and/or rendering an html renderer"""
     #    if self.form:
     #        return super(self.__class__, self).get_form(content)
     #
@@ -121,8 +121,8 @@ class ModelResource(Resource):
             elif inspect.isfunction(thing):
                 if not inspect.getargspec(thing)[0]:
                     ret = _any(thing())
-            elif hasattr(thing, '__emittable__'):
-                f = thing.__emittable__
+            elif hasattr(thing, '__rendertable__'):
+                f = thing.__rendertable__
                 if inspect.ismethod(f) and len(inspect.getargspec(f)[0]) == 1:
                     ret = _any(f())
             else:

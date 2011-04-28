@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 
 from djangorestframework.resource import Resource
 from djangorestframework.response import Response
-from djangorestframework.emitters import BaseEmitter
+from djangorestframework.renderers import BaseRenderer
 from djangorestframework import status
 
 from pygments.formatters import HtmlFormatter
@@ -32,8 +32,8 @@ def remove_oldest_files(dir, max_files):
     [os.remove(path) for path in list_dir_sorted_by_ctime(dir)[max_files:]]
 
 
-class HTMLEmitter(BaseEmitter):
-    """Basic emitter which just returns the content without any further serialization."""
+class HTMLRenderer(BaseRenderer):
+    """Basic renderer which just returns the content without any further serialization."""
     media_type = 'text/html'
 
 
@@ -68,8 +68,8 @@ class PygmentsRoot(Resource):
 
 class PygmentsInstance(Resource):
     """Simply return the stored highlighted HTML file with the correct mime type.
-    This Resource only emits HTML and uses a standard HTML emitter rather than the emitters.DocumentingHTMLEmitter class."""
-    emitters = (HTMLEmitter,)
+    This Resource only emits HTML and uses a standard HTML renderer rather than the renderers.DocumentingHTMLRenderer class."""
+    renderers = (HTMLRenderer,)
 
     def get(self, request, unique_id):
         """Return the highlighted snippet."""

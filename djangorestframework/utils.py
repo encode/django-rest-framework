@@ -125,7 +125,7 @@ def xml2dict(input):
 
 
 # Piston:
-class XMLEmitter():
+class XMLRenderer():
     def _to_xml(self, xml, data):
         if isinstance(data, (list, tuple)):
             for item in data:
@@ -156,4 +156,4 @@ class XMLEmitter():
         return stream.getvalue()
 
 def dict2xml(input):
-    return XMLEmitter().dict2xml(input)
+    return XMLRenderer().dict2xml(input)
