@@ -1,7 +1,7 @@
 from django.test import TestCase
 from djangorestframework.resource import Resource
-from djangorestframework.markdownwrapper import apply_markdown
-from djangorestframework.description import get_name, get_description
+from djangorestframework.compat import apply_markdown
+from djangorestframework.utils.description import get_name, get_description
 
 # We check that docstrings get nicely un-indented.
 DESCRIPTION = """an example docstring

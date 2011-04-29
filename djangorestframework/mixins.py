@@ -1,4 +1,4 @@
-from djangorestframework.mediatypes import MediaType
+from djangorestframework.utils.mediatypes import MediaType
 from djangorestframework.utils import as_tuple, MSIE_USER_AGENT_REGEX
 from djangorestframework.response import ErrorResponse
 from djangorestframework.parsers import FormParser, MultipartParser
@@ -397,7 +397,7 @@ class ResponseMixin(object):
 
 class AuthMixin(object):
     """Mixin class to provide authentication and permission checking."""
-    authenticators = ()
+    authentication = ()
     permissions = ()
 
     @property
@@ -407,9 +407,9 @@ class AuthMixin(object):
         return self._auth
 
     def _authenticate(self):
-        for authenticator_cls in self.authenticators:
-            authenticator = authenticator_cls(self)
-            auth = authenticator.authenticate(self.request)
+        for authentication_cls in self.authentication:
+            authentication = authentication_cls(self)
+            auth = authentication.authenticate(self.request)
             if auth:
                 return auth
         return None

@@ -1,7 +1,7 @@
-"""Emitters are used to serialize a Resource's output into specific media types.
-django-rest-framework also provides HTML and PlainText emitters that help self-document the API,
+"""Renderers are used to serialize a Resource's output into specific media types.
+django-rest-framework also provides HTML and PlainText renderers that help self-document the API,
 by serializing the output along with documentation regarding the Resource, output status and headers,
-and providing forms and links depending on the allowed methods, emitters and parsers on the Resource. 
+and providing forms and links depending on the allowed methods, renderers and parsers on the Resource. 
 """
 from django import forms
 from django.conf import settings
@@ -10,9 +10,9 @@ from django.utils import simplejson as json
 from django import forms
 
 from djangorestframework.utils import dict2xml, url_resolves
-from djangorestframework.markdownwrapper import apply_markdown
-from djangorestframework.breadcrumbs import get_breadcrumbs
-from djangorestframework.description import get_name, get_description
+from djangorestframework.compat import apply_markdown
+from djangorestframework.utils.breadcrumbs import get_breadcrumbs
+from djangorestframework.utils.description import get_name, get_description
 from djangorestframework import status
 
 from urllib import quote_plus
@@ -22,18 +22,18 @@ from decimal import Decimal
 
 # TODO: Rename verbose to something more appropriate
 # TODO: Maybe None could be handled more cleanly.  It'd be nice if it was handled by default,
-#       and only have an emitter output anything if it explicitly provides support for that.
+#       and only have an renderer output anything if it explicitly provides support for that.
 
-class BaseEmitter(object):
-    """All emitters must extend this class, set the media_type attribute, and
-    override the emit() function."""
+class BaseRenderer(object):
+    """All renderers must extend this class, set the media_type attribute, and
+    override the render() function."""
     media_type = None
 
     def __init__(self, resource):
         self.resource = resource
 
-    def emit(self, output=None, verbose=False):
-        """By default emit simply returns the ouput as-is.
+    def render(self, output=None, verbose=False):
+        """By default render simply returns the ouput as-is.
         Override this method to provide for other behaviour."""
         if output is None:
             return ''
@@ -41,13 +41,13 @@ class BaseEmitter(object):
         return output
 
 
-class TemplateEmitter(BaseEmitter):
+class TemplateRenderer(BaseRenderer):
     """Provided for convienience.
     Emit the output by simply rendering it with the given template."""
     media_type = None
     template = None
 
-    def emit(self, output=None, verbose=False):
+    def render(self, output=None, verbose=False):
         if output is None:
             return ''
 
@@ -55,23 +55,23 @@ class TemplateEmitter(BaseEmitter):
         return self.template.render(context)
 
 
-class DocumentingTemplateEmitter(BaseEmitter):
-    """Base class for emitters used to self-document the API.
+class DocumentingTemplateRenderer(BaseRenderer):
+    """Base class for renderers used to self-document the API.
     Implementing classes should extend this class and set the template attribute."""
     template = None
 
     def _get_content(self, resource, request, output):
-        """Get the content as if it had been emitted by a non-documenting emitter.
+        """Get the content as if it had been renderted by a non-documenting renderer.
 
         (Typically this will be the content as it would have been if the Resource had been
         requested with an 'Accept: */*' header, although with verbose style formatting if appropriate.)"""
 
-        # Find the first valid emitter and emit the content. (Don't use another documenting emitter.)
-        emitters = [emitter for emitter in resource.emitters if not isinstance(emitter, DocumentingTemplateEmitter)]
-        if not emitters:
-            return '[No emitters were found]'
+        # Find the first valid renderer and render the content. (Don't use another documenting renderer.)
+        renderers = [renderer for renderer in resource.renderers if not isinstance(renderer, DocumentingTemplateRenderer)]
+        if not renderers:
+            return '[No renderers were found]'
         
-        content = emitters[0](resource).emit(output, verbose=True)
+        content = renderers[0](resource).render(output, verbose=True)
         if not all(char in string.printable for char in content):
             return '[%d bytes of binary content]'
             
@@ -146,7 +146,7 @@ class DocumentingTemplateEmitter(BaseEmitter):
         return GenericContentForm(resource)
 
 
-    def emit(self, output=None):
+    def render(self, output=None):
         content = self._get_content(self.resource, self.resource.request, output)
         form_instance = self._get_form_instance(self.resource)
 
@@ -190,11 +190,11 @@ class DocumentingTemplateEmitter(BaseEmitter):
         return ret
 
 
-class JSONEmitter(BaseEmitter):
-    """Emitter which serializes to JSON"""
+class JSONRenderer(BaseRenderer):
+    """Renderer which serializes to JSON"""
     media_type = 'application/json'
 
-    def emit(self, output=None, verbose=False):
+    def render(self, output=None, verbose=False):
         if output is None:
             return ''
         if verbose:
@@ -202,42 +202,42 @@ class JSONEmitter(BaseEmitter):
         return json.dumps(output)
 
 
-class XMLEmitter(BaseEmitter):
-    """Emitter which serializes to XML."""
+class XMLRenderer(BaseRenderer):
+    """Renderer which serializes to XML."""
     media_type = 'application/xml'
 
-    def emit(self, output=None, verbose=False):
+    def render(self, output=None, verbose=False):
         if output is None:
             return ''
         return dict2xml(output)
 
 
-class DocumentingHTMLEmitter(DocumentingTemplateEmitter):
-    """Emitter which provides a browsable HTML interface for an API.
+class DocumentingHTMLRenderer(DocumentingTemplateRenderer):
+    """Renderer which provides a browsable HTML interface for an API.
     See the examples listed in the django-rest-framework documentation to see this in actions."""
     media_type = 'text/html'
-    template = 'emitter.html'
+    template = 'renderer.html'
 
 
-class DocumentingXHTMLEmitter(DocumentingTemplateEmitter):
-    """Identical to DocumentingHTMLEmitter, except with an xhtml media type.
+class DocumentingXHTMLRenderer(DocumentingTemplateRenderer):
+    """Identical to DocumentingHTMLRenderer, except with an xhtml media type.
     We need this to be listed in preference to xml in order to return HTML to WebKit based browsers,
     given their Accept headers."""
     media_type = 'application/xhtml+xml'
-    template = 'emitter.html'
+    template = 'renderer.html'
 
 
-class DocumentingPlainTextEmitter(DocumentingTemplateEmitter):
-    """Emitter that serializes the output with the default emitter, but also provides plain-text
+class DocumentingPlainTextRenderer(DocumentingTemplateRenderer):
+    """Renderer that serializes the output with the default renderer, but also provides plain-text
     doumentation of the returned status and headers, and of the resource's name and description.
     Useful for browsing an API with command line tools."""
     media_type = 'text/plain'
-    template = 'emitter.txt'
+    template = 'renderer.txt'
     
-DEFAULT_EMITTERS = ( JSONEmitter,
-                     DocumentingHTMLEmitter,
-                     DocumentingXHTMLEmitter,
-                     DocumentingPlainTextEmitter,
-                     XMLEmitter )
+DEFAULT_RENDERERS = ( JSONRenderer,
+                     DocumentingHTMLRenderer,
+                     DocumentingXHTMLRenderer,
+                     DocumentingPlainTextRenderer,
+                     XMLRenderer )
 
 

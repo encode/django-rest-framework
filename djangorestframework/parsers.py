@@ -14,7 +14,7 @@ from django.utils import simplejson as json
 from djangorestframework.response import ErrorResponse
 from djangorestframework import status
 from djangorestframework.utils import as_tuple
-from djangorestframework.mediatypes import MediaType
+from djangorestframework.utils.mediatypes import MediaType
 from djangorestframework.compat import parse_qs
 
 

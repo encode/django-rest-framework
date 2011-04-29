@@ -1,8 +1,8 @@
-"""The :mod:`authenticators` modules provides for pluggable authentication behaviour.
+"""The :mod:`authentication` modules provides for pluggable authentication behaviour.
 
 Authentication behaviour is provided by adding the mixin class :class:`AuthenticatorMixin` to a :class:`.Resource` or Django :class:`View` class.
 
-The set of authenticators which are use is then specified by setting the :attr:`authenticators` attribute on the class, and listing a set of authenticator classes.
+The set of authentication which are use is then specified by setting the :attr:`authentication` attribute on the class, and listing a set of authentication classes.
 """
 from django.contrib.auth import authenticate
 from django.middleware.csrf import CsrfViewMiddleware
@@ -11,11 +11,11 @@ import base64
 
 
 class BaseAuthenticator(object):
-    """All authenticators should extend BaseAuthenticator."""
+    """All authentication should extend BaseAuthenticator."""
 
     def __init__(self, view):
-        """Initialise the authenticator with the mixin instance as state,
-        in case the authenticator needs to access any metadata on the mixin object."""
+        """Initialise the authentication with the mixin instance as state,
+        in case the authentication needs to access any metadata on the mixin object."""
         self.view = view
 
     def authenticate(self, request):

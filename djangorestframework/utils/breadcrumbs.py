@@ -1,5 +1,5 @@
 from django.core.urlresolvers import resolve
-from djangorestframework.description import get_name
+from djangorestframework.utils.description import get_name
 
 def get_breadcrumbs(url):
     """Given a url returns a list of breadcrumbs, which are each a tuple of (name, url)."""
@@ -7,7 +7,6 @@ def get_breadcrumbs(url):
     def breadcrumbs_recursive(url, breadcrumbs_list):
         """Add tuples of (name, url) to the breadcrumbs list, progressively chomping off parts of the url."""
         
-        # This is just like compsci 101 all over again...
         try:
             (view, unused_args, unused_kwargs) = resolve(url)
         except:

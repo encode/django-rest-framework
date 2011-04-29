@@ -82,7 +82,7 @@ from django.test import TestCase
 from djangorestframework.compat import RequestFactory
 from djangorestframework.parsers import MultipartParser
 from djangorestframework.resource import Resource
-from djangorestframework.mediatypes import MediaType
+from djangorestframework.utils.mediatypes import MediaType
 from StringIO import StringIO
 
 def encode_multipart_formdata(fields, files):

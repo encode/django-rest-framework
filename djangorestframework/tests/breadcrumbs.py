@@ -1,6 +1,6 @@
 from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
-from djangorestframework.breadcrumbs import get_breadcrumbs
+from djangorestframework.utils.breadcrumbs import get_breadcrumbs
 from djangorestframework.resource import Resource
 
 class Root(Resource):

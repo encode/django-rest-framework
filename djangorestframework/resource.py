@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from djangorestframework.compat import View
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.mixins import RequestMixin, ResponseMixin, AuthMixin
-from djangorestframework import renderers, parsers, authenticators, permissions, validators, status
+from djangorestframework import renderers, parsers, authentication, permissions, validators, status
 
 
 # TODO: Figure how out references and named urls need to work nicely
@@ -37,8 +37,8 @@ class Resource(RequestMixin, ResponseMixin, AuthMixin, View):
     validators = ( validators.FormValidator, )
 
     # List of all authenticating methods to attempt.
-    authenticators = ( authenticators.UserLoggedInAuthenticator,
-                       authenticators.BasicAuthenticator )
+    authentication = ( authentication.UserLoggedInAuthenticator,
+                       authentication.BasicAuthenticator )
     
     # List of all permissions required to access the resource
     permissions = ()
