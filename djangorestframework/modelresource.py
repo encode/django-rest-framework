@@ -341,94 +341,16 @@ class ModelResource(Resource):
         return _any(data, self.fields)
 
 
-    def get(self, request, *args, **kwargs):
-        try:
-            if args:
-                # If we have any none kwargs then assume the last represents the primrary key
-                instance = self.model.objects.get(pk=args[-1], **kwargs)
-            else:
-                # Otherwise assume the kwargs uniquely identify the model
-                instance = self.model.objects.get(**kwargs)
-        except self.model.DoesNotExist:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
-
-        return instance
-
-    def post(self, request, *args, **kwargs):
-        # TODO: test creation on a non-existing resource url
-        
-        # translated related_field into related_field_id
-        for related_name in [field.name for field in self.model._meta.fields if isinstance(field, RelatedField)]:
-            if kwargs.has_key(related_name):
-                kwargs[related_name + '_id'] = kwargs[related_name]
-                del kwargs[related_name]
-
-        all_kw_args = dict(self.CONTENT.items() + kwargs.items())
-        if args:
-            instance = self.model(pk=args[-1], **all_kw_args)
-        else:
-            instance = self.model(**all_kw_args)
-        instance.save()
-        headers = {}
-        if hasattr(instance, 'get_absolute_url'):
-            headers['Location'] = instance.get_absolute_url()
-        return Response(status.HTTP_201_CREATED, instance, headers)
-
-    def put(self, request, *args, **kwargs):
-        # TODO: update on the url of a non-existing resource url doesn't work correctly at the moment - will end up with a new url 
-        try:
-            if args:
-                # If we have any none kwargs then assume the last represents the primrary key
-                instance = self.model.objects.get(pk=args[-1], **kwargs)
-            else:
-                # Otherwise assume the kwargs uniquely identify the model
-                instance = self.model.objects.get(**kwargs)
-
-            for (key, val) in self.CONTENT.items():
-                setattr(instance, key, val)
-        except self.model.DoesNotExist:
-            instance = self.model(**self.CONTENT)
-            instance.save()
-
-        instance.save()
-        return instance
-
-    def delete(self, request, *args, **kwargs):
-        try:
-            if args:
-                # If we have any none kwargs then assume the last represents the primrary key
-                instance = self.model.objects.get(pk=args[-1], **kwargs)
-            else:
-                # Otherwise assume the kwargs uniquely identify the model
-                instance = self.model.objects.get(**kwargs)
-        except self.model.DoesNotExist:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
-
-        instance.delete()
-        return
         
 
-class InstanceModelResource(ModelResource):
-    http_method_names = ['get', 'put', 'delete', 'head', 'options', 'trace', 'patch']  # Bit of a hack, these - needs fixing.
+class InstanceModelResource(ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelResource):
+    """A view which provides default operations for read/update/delete against a model instance."""
+    pass
 
-class RootModelResource(ModelResource):
+class ListOrCreateModelResource(CreateModelMixin, ListModelMixin, ModelResource):
     """A Resource which provides default operations for list and create."""
-    queryset = None
+    pass
 
-    def get(self, request, *args, **kwargs):
-        queryset = self.queryset if self.queryset else self.model.objects.all()
-        return queryset.filter(**kwargs)
-
-    http_method_names = ['get', 'post', 'head', 'options', 'trace', 'patch']
-
-class QueryModelResource(ModelResource):
-    """Resource with default operations for list.
-    TODO: provide filter/order/num_results/paging, and a create operation to create queries."""
-    allowed_methods = ('GET',)
-    queryset = None
-
-    def get(self, request, *args, **kwargs):
-        queryset = self.queryset if self.queryset else self.model.objects.all()
-        return queryset.filer(**kwargs)
-
-    http_method_names = ['get', 'head', 'options', 'trace', 'patch']
+class ListModelResource(ListModelMixin, ModelResource):
+    """Resource with default operations for list."""
+    pass

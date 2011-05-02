@@ -15,7 +15,7 @@ class ExampleView(ResponseMixin, View):
     def get(self, request):
         response = Response(200, {'description': 'Some example content',
                                   'url': reverse('mixin-view')})
-        return self.emit(response)
+        return self.render(response)
 
 
 urlpatterns = patterns('',

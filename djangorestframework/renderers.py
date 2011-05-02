@@ -43,7 +43,7 @@ class BaseRenderer(object):
 
 class TemplateRenderer(BaseRenderer):
     """Provided for convienience.
-    Emit the output by simply rendering it with the given template."""
+    Render the output by simply rendering it with the given template."""
     media_type = None
     template = None
 

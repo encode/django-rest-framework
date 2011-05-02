@@ -68,7 +68,7 @@ class PygmentsRoot(Resource):
 
 class PygmentsInstance(Resource):
     """Simply return the stored highlighted HTML file with the correct mime type.
-    This Resource only emits HTML and uses a standard HTML renderer rather than the renderers.DocumentingHTMLRenderer class."""
+    This Resource only renders HTML and uses a standard HTML renderer rather than the renderers.DocumentingHTMLRenderer class."""
     renderers = (HTMLRenderer,)
 
     def get(self, request, unique_id):

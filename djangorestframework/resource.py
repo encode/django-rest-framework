@@ -19,14 +19,12 @@ class Resource(RequestMixin, ResponseMixin, AuthMixin, View):
     """Handles incoming requests and maps them to REST operations.
     Performs request deserialization, response serialization, authentication and input validation."""
 
-    http_method_names = ['get', 'post', 'put', 'delete', 'head', 'options', 'trace', 'patch']
-
     # List of renderers the resource can serialize the response with, ordered by preference.
     renderers = ( renderers.JSONRenderer,
-                 renderers.DocumentingHTMLRenderer,
-                 renderers.DocumentingXHTMLRenderer,
-                 renderers.DocumentingPlainTextRenderer,
-                 renderers.XMLRenderer )
+                  renderers.DocumentingHTMLRenderer,
+                  renderers.DocumentingXHTMLRenderer,
+                  renderers.DocumentingPlainTextRenderer,
+                  renderers.XMLRenderer )
 
     # List of parsers the resource can parse the request with.
     parsers = ( parsers.JSONParser,

@@ -6,6 +6,7 @@ from djangorestframework import status
 
 from django.http import HttpResponse
 from django.http.multipartparser import LimitBytes  # TODO: Use LimitedStream in compat
+
 from StringIO import StringIO
 from decimal import Decimal
 import re
@@ -233,7 +234,7 @@ class RequestMixin(object):
     
     @property
     def default_parser(self):
-        """Return the view's most preffered renderer.
+        """Return the view's most preferred renderer.
         (This has no behavioural effect, but is may be used by documenting renderers)"""        
         return self.parsers[0]
 
@@ -435,5 +436,92 @@ class AuthMixin(object):
                 raise ErrorResponse(status.HTTP_403_FORBIDDEN,
                                    {'detail': 'You do not have permission to access this resource. ' +
                                     'You may need to login or otherwise authenticate the request.'})                
+
+
+########## Model Mixins ##########
+
+class ReadModelMixin(object):
+    """Behaviour to read a model instance on GET requests"""
+    def get(self, request, *args, **kwargs):
+        try:
+            if args:
+                # If we have any none kwargs then assume the last represents the primrary key
+                instance = self.model.objects.get(pk=args[-1], **kwargs)
+            else:
+                # Otherwise assume the kwargs uniquely identify the model
+                instance = self.model.objects.get(**kwargs)
+        except self.model.DoesNotExist:
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
+
+        return instance
+
+
+class CreateModelMixin(object):
+    """Behaviour to create a model instance on POST requests"""
+    def post(self, request, *args, **kwargs):        
+        # translated 'related_field' kwargs into 'related_field_id'
+        for related_name in [field.name for field in self.model._meta.fields if isinstance(field, RelatedField)]:
+            if kwargs.has_key(related_name):
+                kwargs[related_name + '_id'] = kwargs[related_name]
+                del kwargs[related_name]
+
+        all_kw_args = dict(self.CONTENT.items() + kwargs.items())
+        if args:
+            instance = self.model(pk=args[-1], **all_kw_args)
+        else:
+            instance = self.model(**all_kw_args)
+        instance.save()
+        headers = {}
+        if hasattr(instance, 'get_absolute_url'):
+            headers['Location'] = instance.get_absolute_url()
+        return Response(status.HTTP_201_CREATED, instance, headers)
+
+
+class UpdateModelMixin(object):
+    """Behaviour to update a model instance on PUT requests"""
+    def put(self, request, *args, **kwargs):
+        # TODO: update on the url of a non-existing resource url doesn't work correctly at the moment - will end up with a new url 
+        try:
+            if args:
+                # If we have any none kwargs then assume the last represents the primrary key
+                instance = self.model.objects.get(pk=args[-1], **kwargs)
+            else:
+                # Otherwise assume the kwargs uniquely identify the model
+                instance = self.model.objects.get(**kwargs)
+
+            for (key, val) in self.CONTENT.items():
+                setattr(instance, key, val)
+        except self.model.DoesNotExist:
+            instance = self.model(**self.CONTENT)
+            instance.save()
+
+        instance.save()
+        return instance
+
+
+class DeleteModelMixin(object):
+    """Behaviour to delete a model instance on DELETE requests"""
+    def delete(self, request, *args, **kwargs):
+        try:
+            if args:
+                # If we have any none kwargs then assume the last represents the primrary key
+                instance = self.model.objects.get(pk=args[-1], **kwargs)
+            else:
+                # Otherwise assume the kwargs uniquely identify the model
+                instance = self.model.objects.get(**kwargs)
+        except self.model.DoesNotExist:
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
+
+        instance.delete()
+        return
+
+
+class ListModelMixin(object):
+    """Behaviour to list a set of model instances on GET requests"""
+    queryset = None
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.queryset if self.queryset else self.model.objects.all()
+        return queryset.filter(**kwargs)
 
 

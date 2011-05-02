@@ -12,6 +12,8 @@ RATING_CHOICES = ((0, 'Awful'),
                   (3, 'Good'),
                   (4, 'Excellent'))
 
+MAX_POSTS = 10
+
 class BlogPost(models.Model):
     key = models.CharField(primary_key=True, max_length=64, default=uuid_str, editable=False)
     title = models.CharField(max_length=128)
@@ -38,8 +40,9 @@ class BlogPost(models.Model):
     def save(self, *args, **kwargs):
         self.slug = slugify(self.title)
         super(self.__class__, self).save(*args, **kwargs)
-        for obj in self.__class__.objects.order_by('-pk')[10:]:
+        for obj in self.__class__.objects.order_by('-pk')[MAX_POSTS:]:
             obj.delete()
+
 
 class Comment(models.Model):
     blogpost = models.ForeignKey(BlogPost, editable=False, related_name='comments')
