@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django import forms
 from djangorestframework.compat import RequestFactory
-from djangorestframework.resource import Resource
+from djangorestframework.views import BaseView
 import StringIO
 
 class UploadFilesTests(TestCase):
@@ -15,7 +15,7 @@ class UploadFilesTests(TestCase):
         class FileForm(forms.Form):
             file = forms.FileField
 
-        class MockResource(Resource):
+        class MockView(BaseView):
             permissions = ()
             form = FileForm
 
@@ -26,7 +26,7 @@ class UploadFilesTests(TestCase):
         file = StringIO.StringIO('stuff')
         file.name = 'stuff.txt'
         request = self.factory.post('/', {'file': file})
-        view = MockResource.as_view()
+        view = MockView.as_view()
         response = view(request)
         self.assertEquals(response.content, '{"FILE_CONTENT": "stuff", "FILE_NAME": "stuff.txt"}')
 

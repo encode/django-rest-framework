@@ -1,4 +1,4 @@
-"""Renderers are used to serialize a Resource's output into specific media types.
+"""Renderers are used to serialize a View's output into specific media types.
 django-rest-framework also provides HTML and PlainText renderers that help self-document the API,
 by serializing the output along with documentation regarding the Resource, output status and headers,
 and providing forms and links depending on the allowed methods, renderers and parsers on the Resource. 

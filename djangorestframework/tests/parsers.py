@@ -2,12 +2,12 @@
 ..
     >>> from djangorestframework.parsers import FormParser
     >>> from djangorestframework.compat import RequestFactory
-    >>> from djangorestframework.resource import Resource
+    >>> from djangorestframework.views import BaseView
     >>> from StringIO import StringIO
     >>> from urllib import urlencode
     >>> req = RequestFactory().get('/')
-    >>> some_resource = Resource()
-    >>> some_resource.request = req  # Make as if this request had been dispatched
+    >>> some_view = BaseView()
+    >>> some_view.request = req  # Make as if this request had been dispatched
 
 FormParser
 ============
@@ -24,7 +24,7 @@ Here is some example data, which would eventually be sent along with a post requ
 
 Default behaviour for :class:`parsers.FormParser`, is to return a single value for each parameter :
 
-    >>> FormParser(some_resource).parse(StringIO(inpt)) == {'key1': 'bla1', 'key2': 'blo1'}
+    >>> FormParser(some_view).parse(StringIO(inpt)) == {'key1': 'bla1', 'key2': 'blo1'}
     True
 
 However, you can customize this behaviour by subclassing :class:`parsers.FormParser`, and overriding :meth:`parsers.FormParser.is_a_list` :
@@ -36,7 +36,7 @@ However, you can customize this behaviour by subclassing :class:`parsers.FormPar
 
 This new parser only flattens the lists of parameters that contain a single value.
 
-    >>> MyFormParser(some_resource).parse(StringIO(inpt)) == {'key1': 'bla1', 'key2': ['blo1', 'blo2']}
+    >>> MyFormParser(some_view).parse(StringIO(inpt)) == {'key1': 'bla1', 'key2': ['blo1', 'blo2']}
     True
 
 .. note:: The same functionality is available for :class:`parsers.MultipartParser`.
@@ -61,7 +61,7 @@ The browsers usually strip the parameter completely. A hack to avoid this, and t
 
 :class:`parsers.FormParser` strips the values ``_empty`` from all the lists.
 
-    >>> MyFormParser(some_resource).parse(StringIO(inpt)) == {'key1': 'blo1'}
+    >>> MyFormParser(some_view).parse(StringIO(inpt)) == {'key1': 'blo1'}
     True
 
 Oh ... but wait a second, the parameter ``key2`` isn't even supposed to be a list, so the parser just stripped it.
@@ -71,7 +71,7 @@ Oh ... but wait a second, the parameter ``key2`` isn't even supposed to be a lis
     ...     def is_a_list(self, key, val_list):
     ...         return key == 'key2'
     ... 
-    >>> MyFormParser(some_resource).parse(StringIO(inpt)) == {'key1': 'blo1', 'key2': []}
+    >>> MyFormParser(some_view).parse(StringIO(inpt)) == {'key1': 'blo1', 'key2': []}
     True
 
 Better like that. Note that you can configure something else than ``_empty`` for the empty value by setting :attr:`parsers.FormParser.EMPTY_VALUE`.
@@ -81,7 +81,7 @@ from tempfile import TemporaryFile
 from django.test import TestCase
 from djangorestframework.compat import RequestFactory
 from djangorestframework.parsers import MultipartParser
-from djangorestframework.resource import Resource
+from djangorestframework.views import BaseView
 from djangorestframework.utils.mediatypes import MediaType
 from StringIO import StringIO
 
@@ -122,9 +122,9 @@ class TestMultipartParser(TestCase):
     def test_multipartparser(self):
         """Ensure that MultipartParser can parse multipart/form-data that contains a mix of several files and parameters."""
         post_req = RequestFactory().post('/', self.body, content_type=self.content_type)
-        resource = Resource()
-        resource.request = post_req
-        parsed = MultipartParser(resource).parse(StringIO(self.body))
+        view = BaseView()
+        view.request = post_req
+        parsed = MultipartParser(view).parse(StringIO(self.body))
         self.assertEqual(parsed['key1'], 'val1')
         self.assertEqual(parsed.FILES['file1'].read(), 'blablabla')
 

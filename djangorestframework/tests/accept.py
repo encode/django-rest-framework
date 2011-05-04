@@ -1,6 +1,6 @@
 from django.test import TestCase
 from djangorestframework.compat import RequestFactory
-from djangorestframework.resource import Resource
+from djangorestframework.views import BaseView
 
 
 # See: http://www.useragentstring.com/
@@ -19,15 +19,15 @@ class UserAgentMungingTest(TestCase):
 
     def setUp(self):
 
-        class MockResource(Resource):
+        class MockView(BaseView):
             permissions = ()
 
             def get(self, request):
                 return {'a':1, 'b':2, 'c':3}
 
         self.req = RequestFactory()
-        self.MockResource = MockResource
-        self.view = MockResource.as_view()
+        self.MockView = MockView
+        self.view = MockView.as_view()
 
     def test_munge_msie_accept_header(self):
         """Send MSIE user agent strings and ensure that we get an HTML response,
@@ -42,7 +42,7 @@ class UserAgentMungingTest(TestCase):
     def test_dont_rewrite_msie_accept_header(self):
         """Turn off REWRITE_IE_ACCEPT_HEADER, send MSIE user agent strings and ensure
         that we get a JSON response if we set a */* accept header."""
-        view = self.MockResource.as_view(REWRITE_IE_ACCEPT_HEADER=False)
+        view = self.MockView.as_view(REWRITE_IE_ACCEPT_HEADER=False)
 
         for user_agent in (MSIE_9_USER_AGENT,
                            MSIE_8_USER_AGENT,

@@ -6,19 +6,19 @@ from django.test import Client, TestCase
 from django.utils import simplejson as json
 
 from djangorestframework.compat import RequestFactory
-from djangorestframework.resource import Resource
+from djangorestframework.views import BaseView
 from djangorestframework import permissions
 
 import base64
 
 
-class MockResource(Resource):
+class MockView(BaseView):
     permissions = ( permissions.IsAuthenticated, )
     def post(self, request):
         return {'a':1, 'b':2, 'c':3}
 
 urlpatterns = patterns('',
-    (r'^$', MockResource.as_view()),
+    (r'^$', MockView.as_view()),
 )
 
 

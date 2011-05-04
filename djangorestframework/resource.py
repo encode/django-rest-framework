@@ -1,130 +1,251 @@
-from django.core.urlresolvers import set_script_prefix
-from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Model
+from django.db.models.query import QuerySet
+from django.db.models.fields.related import RelatedField
 
-from djangorestframework.compat import View
-from djangorestframework.response import Response, ErrorResponse
-from djangorestframework.mixins import RequestMixin, ResponseMixin, AuthMixin
-from djangorestframework import renderers, parsers, authentication, permissions, validators, status
-
-
-# TODO: Figure how out references and named urls need to work nicely
-# TODO: POST on existing 404 URL, PUT on existing 404 URL
-#
-# NEXT: Exceptions on func() -> 500, tracebacks renderted if settings.DEBUG
-
-__all__ = ['Resource']
+import decimal
+import inspect
+import re
 
 
-class Resource(RequestMixin, ResponseMixin, AuthMixin, View):
-    """Handles incoming requests and maps them to REST operations.
-    Performs request deserialization, response serialization, authentication and input validation."""
-
-    # List of renderers the resource can serialize the response with, ordered by preference.
-    renderers = ( renderers.JSONRenderer,
-                  renderers.DocumentingHTMLRenderer,
-                  renderers.DocumentingXHTMLRenderer,
-                  renderers.DocumentingPlainTextRenderer,
-                  renderers.XMLRenderer )
-
-    # List of parsers the resource can parse the request with.
-    parsers = ( parsers.JSONParser,
-                parsers.FormParser,
-                parsers.MultipartParser )
-
-    # List of validators to validate, cleanup and normalize the request content    
-    validators = ( validators.FormValidator, )
-
-    # List of all authenticating methods to attempt.
-    authentication = ( authentication.UserLoggedInAuthenticator,
-                       authentication.BasicAuthenticator )
+class Resource(object):
+    """A Resource determines how an object maps to a serializable entity.
+    Objects that a resource can act on include plain Python object instances, Django Models, and Django QuerySets."""
     
-    # List of all permissions required to access the resource
-    permissions = ()
+    # The model attribute refers to the Django Model which this Resource maps to.
+    # (The Model's class, rather than an instance of the Model)
+    model = None
+    
+    # By default the set of returned fields will be the set of:
+    #
+    # 0. All the fields on the model, excluding 'id'.
+    # 1. All the properties on the model.
+    # 2. The absolute_url of the model, if a get_absolute_url method exists for the model.
+    #
+    # If you wish to override this behaviour,
+    # you should explicitly set the fields attribute on your class.
+    fields = None
 
-    # Optional form for input validation and presentation of HTML formatted responses.
-    form = None
+    @classmethod
+    def object_to_serializable(self, data):
+        """A (horrible) munging of Piston's pre-serialization.  Returns a dict"""
 
-    # Allow name and description for the Resource to be set explicitly,
-    # overiding the default classname/docstring behaviour.
-    # These are used for documentation in the standard html and text renderers.
-    name = None
-    description = None
+        def _any(thing, fields=()):
+            """
+            Dispatch, all types are routed through here.
+            """
+            ret = None
+            
+            if isinstance(thing, QuerySet):
+                ret = _qs(thing, fields=fields)
+            elif isinstance(thing, (tuple, list)):
+                ret = _list(thing)
+            elif isinstance(thing, dict):
+                ret = _dict(thing)
+            elif isinstance(thing, int):
+                ret = thing
+            elif isinstance(thing, bool):
+                ret = thing
+            elif isinstance(thing, type(None)):
+                ret = thing
+            elif isinstance(thing, decimal.Decimal):
+                ret = str(thing)
+            elif isinstance(thing, Model):
+                ret = _model(thing, fields=fields)
+            #elif isinstance(thing, HttpResponse):    TRC
+            #    raise HttpStatusCode(thing)
+            elif inspect.isfunction(thing):
+                if not inspect.getargspec(thing)[0]:
+                    ret = _any(thing())
+            elif hasattr(thing, '__rendertable__'):
+                f = thing.__rendertable__
+                if inspect.ismethod(f) and len(inspect.getargspec(f)[0]) == 1:
+                    ret = _any(f())
+            else:
+                ret = unicode(thing)  # TRC  TODO: Change this back!
 
-    @property
-    def allowed_methods(self):
-        return [method.upper() for method in self.http_method_names if hasattr(self, method)]
+            return ret
 
-    def http_method_not_allowed(self, request, *args, **kwargs):
-        """Return an HTTP 405 error if an operation is called which does not have a handler method."""
-        raise ErrorResponse(status.HTTP_405_METHOD_NOT_ALLOWED,
-                                {'detail': 'Method \'%s\' not allowed on this resource.' % self.method})
-
-
-    def cleanup_response(self, data):
-        """Perform any resource-specific data filtering prior to the standard HTTP
-        content-type serialization.
-
-        Eg filter complex objects that cannot be serialized by json/xml/etc into basic objects that can.
+        def _fk(data, field):
+            """
+            Foreign keys.
+            """
+            return _any(getattr(data, field.name))
         
-        TODO: This is going to be removed.  I think that the 'fields' behaviour is going to move into
-        the RendererMixin and Renderer classes."""
-        return data
+        def _related(data, fields=()):
+            """
+            Foreign keys.
+            """
+            return [ _model(m, fields) for m in data.iterator() ]
+        
+        def _m2m(data, field, fields=()):
+            """
+            Many to many (re-route to `_model`.)
+            """
+            return [ _model(m, fields) for m in getattr(data, field.name).iterator() ]
+        
 
+        def _method_fields(data, fields):
+            if not data:
+                return { }
+    
+            has = dir(data)
+            ret = dict()
+                
+            for field in fields:
+                if field in has:
+                    ret[field] = getattr(data, field)
+            
+            return ret
 
-    # Note: session based authentication is explicitly CSRF validated,
-    # all other authentication is CSRF exempt.
-    @csrf_exempt
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            self.request = request
-            self.args = args
-            self.kwargs = kwargs
-    
-            # Calls to 'reverse' will not be fully qualified unless we set the scheme/host/port here.
-            prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
-            set_script_prefix(prefix)
-    
-            try:
-                # If using a form POST with '_method'/'_content'/'_content_type' overrides, then alter
-                # self.method, self.content_type, self.RAW_CONTENT & self.CONTENT appropriately.
-                self.perform_form_overloading()
-    
-                # Authenticate and check request is has the relevant permissions
-                self.check_permissions()
-    
-                # Get the appropriate handler method
-                if self.method.lower() in self.http_method_names:
-                    handler = getattr(self, self.method.lower(), self.http_method_not_allowed)
-                else:
-                    handler = self.http_method_not_allowed
-    
-                response_obj = handler(request, *args, **kwargs)
-    
-                # Allow return value to be either Response, or an object, or None
-                if isinstance(response_obj, Response):
-                    response = response_obj
-                elif response_obj is not None:
-                    response = Response(status.HTTP_200_OK, response_obj)
-                else:
-                    response = Response(status.HTTP_204_NO_CONTENT)
-    
-                # Pre-serialize filtering (eg filter complex objects into natively serializable types)
-                response.cleaned_content = self.cleanup_response(response.raw_content)
-    
-            except ErrorResponse, exc:
-                response = exc.response
-    
-            # Always add these headers.
-            #
-            # TODO - this isn't actually the correct way to set the vary header,
-            # also it's currently sub-obtimal for HTTP caching - need to sort that out. 
-            response.headers['Allow'] = ', '.join(self.allowed_methods)
-            response.headers['Vary'] = 'Authenticate, Accept'
-    
-            return self.render(response)
-        except:
-            import traceback
-            traceback.print_exc()
+        def _model(data, fields=()):
+            """
+            Models. Will respect the `fields` and/or
+            `exclude` on the handler (see `typemapper`.)
+            """
+            ret = { }
+            #handler = self.in_typemapper(type(data), self.anonymous)  # TRC
+            handler = None                                             # TRC
+            get_absolute_url = False
+            
+            if fields:
+                v = lambda f: getattr(data, f.attname)
 
+                get_fields = set(fields)
+                if 'absolute_url' in get_fields:   # MOVED (TRC)
+                    get_absolute_url = True
 
+                met_fields = _method_fields(handler, get_fields)  # TRC
+
+                for f in data._meta.local_fields:
+                    if f.serialize and not any([ p in met_fields for p in [ f.attname, f.name ]]):
+                        if not f.rel:
+                            if f.attname in get_fields:
+                                ret[f.attname] = _any(v(f))
+                                get_fields.remove(f.attname)
+                        else:
+                            if f.attname[:-3] in get_fields:
+                                ret[f.name] = _fk(data, f)
+                                get_fields.remove(f.name)
+                
+                for mf in data._meta.many_to_many:
+                    if mf.serialize and mf.attname not in met_fields:
+                        if mf.attname in get_fields:
+                            ret[mf.name] = _m2m(data, mf)
+                            get_fields.remove(mf.name)
+                
+                # try to get the remainder of fields
+                for maybe_field in get_fields:
+                    
+                    if isinstance(maybe_field, (list, tuple)):
+                        model, fields = maybe_field
+                        inst = getattr(data, model, None)
+
+                        if inst:
+                            if hasattr(inst, 'all'):
+                                ret[model] = _related(inst, fields)
+                            elif callable(inst):
+                                if len(inspect.getargspec(inst)[0]) == 1:
+                                    ret[model] = _any(inst(), fields)
+                            else:
+                                ret[model] = _model(inst, fields)
+
+                    elif maybe_field in met_fields:
+                        # Overriding normal field which has a "resource method"
+                        # so you can alter the contents of certain fields without
+                        # using different names.
+                        ret[maybe_field] = _any(met_fields[maybe_field](data))
+
+                    else:                    
+                        maybe = getattr(data, maybe_field, None)
+                        if maybe:
+                            if callable(maybe):
+                                if len(inspect.getargspec(maybe)[0]) == 1:
+                                    ret[maybe_field] = _any(maybe())
+                            else:
+                                ret[maybe_field] = _any(maybe)
+                        else:
+                            pass   # TRC
+                            #handler_f = getattr(handler or self.handler, maybe_field, None)
+                            #
+                            #if handler_f:
+                            #    ret[maybe_field] = _any(handler_f(data))
+
+            else:
+                # Add absolute_url if it exists
+                get_absolute_url = True
+                
+                # Add all the fields
+                for f in data._meta.fields:
+                    if f.attname != 'id':
+                        ret[f.attname] = _any(getattr(data, f.attname))
+                
+                # Add all the propertiess
+                klass = data.__class__
+                for attr in dir(klass):
+                    if not attr.startswith('_') and not attr in ('pk','id') and isinstance(getattr(klass, attr, None), property):
+                        #if attr.endswith('_url') or attr.endswith('_uri'):
+                        #    ret[attr] = self.make_absolute(_any(getattr(data, attr)))
+                        #else:
+                        ret[attr] = _any(getattr(data, attr))
+                #fields = dir(data.__class__) + ret.keys()
+                #add_ons = [k for k in dir(data) if k not in fields and not k.startswith('_')]
+                #print add_ons
+                ###print dir(data.__class__)
+                #from django.db.models import Model
+                #model_fields = dir(Model)
+
+                #for attr in dir(data):
+                ##    #if attr.startswith('_'):
+                ##    #    continue
+                #    if (attr in fields) and not (attr in model_fields) and not attr.startswith('_'):
+                #        print attr, type(getattr(data, attr, None)), attr in fields, attr in model_fields
+                
+                #for k in add_ons:
+                #    ret[k] = _any(getattr(data, k))
+            
+            # TRC
+            # resouce uri
+            #if self.in_typemapper(type(data), self.anonymous):
+            #    handler = self.in_typemapper(type(data), self.anonymous)
+            #    if hasattr(handler, 'resource_uri'):
+            #        url_id, fields = handler.resource_uri()
+            #        ret['resource_uri'] = permalink( lambda: (url_id, 
+            #            (getattr(data, f) for f in fields) ) )()
+            
+            # TRC
+            #if hasattr(data, 'get_api_url') and 'resource_uri' not in ret:
+            #    try: ret['resource_uri'] = data.get_api_url()
+            #    except: pass
+            
+            # absolute uri
+            if hasattr(data, 'get_absolute_url') and get_absolute_url:
+                try: ret['absolute_url'] = data.get_absolute_url()
+                except: pass
+            
+            #for key, val in ret.items():
+            #    if key.endswith('_url') or key.endswith('_uri'):
+            #        ret[key] = self.add_domain(val)
+
+            return ret
+        
+        def _qs(data, fields=()):
+            """
+            Querysets.
+            """
+            return [ _any(v, fields) for v in data ]
+                
+        def _list(data):
+            """
+            Lists.
+            """
+            return [ _any(v) for v in data ]
+            
+        def _dict(data):
+            """
+            Dictionaries.
+            """
+            return dict([ (k, _any(v)) for k, v in data.iteritems() ])
+            
+        # Kickstart the seralizin'.
+        return _any(data, self.fields)
 

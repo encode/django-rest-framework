@@ -3,10 +3,10 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import simplejson as json
 
-from djangorestframework.resource import Resource
+from djangorestframework.views import BaseView
 
 
-class MockResource(Resource):
+class MockView(BaseView):
     """Mock resource which simply returns a URL, so that we can ensure that reversed URLs are fully qualified"""
     permissions = ()
 
@@ -14,8 +14,8 @@ class MockResource(Resource):
         return reverse('another')
 
 urlpatterns = patterns('',
-    url(r'^$', MockResource.as_view()),
-    url(r'^another$', MockResource.as_view(), name='another'),
+    url(r'^$', MockView.as_view()),
+    url(r'^another$', MockView.as_view(), name='another'),
 )
 
 

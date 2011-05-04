@@ -1,66 +1,147 @@
-from django.contrib.auth.views import *
-#from django.contrib.sites.models import get_current_site
-from django.conf import settings
-from django.http import HttpResponse
-import base64
+from django.core.urlresolvers import set_script_prefix
+from django.views.decorators.csrf import csrf_exempt
 
-def deny_robots(request):
-    return HttpResponse('User-agent: *\nDisallow: /', mimetype='text/plain')
-
-def favicon(request):
-    data = 'AAABAAEAEREAAAEAIADwBAAAFgAAACgAAAARAAAAIgAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADLy8tLy8vL3svLy1QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAy8vLBsvLywkAAAAATkZFS1xUVPqhn57/y8vL0gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAJmVlQ/GxcXiy8vL88vLy4FdVlXzTkZF/2RdXP/Ly8vty8vLtMvLy5DLy8vty8vLxgAAAAAAAAAAAAAAAAAAAABORkUJTkZF4lNMS/+Lh4f/cWtq/05GRf9ORkX/Vk9O/3JtbP+Ef3//Vk9O/2ljYv/Ly8v5y8vLCQAAAAAAAAAAAAAAAE5GRQlORkX2TkZF/05GRf9ORkX/TkZF/05GRf9ORkX/TkZF/05GRf9ORkX/UElI/8PDw5cAAAAAAAAAAAAAAAAAAAAAAAAAAE5GRZZORkX/TkZF/05GRf9ORkX/TkZF/05GRf9ORkX/TkZF/05GRf+Cfn3/y8vLvQAAAAAAAAAAAAAAAAAAAADLy8tIaWNi805GRf9ORkX/YVpZ/396eV7Ly8t7qaen9lZOTu5ORkX/TkZF/25oZ//Ly8v/y8vLycvLy0gAAAAATkZFSGNcXPpORkX/TkZF/05GRf+ysLDzTkZFe1NLSv6Oior/raur805GRf9ORkX/TkZF/2hiYf+npaX/y8vL5wAAAABORkXnTkZF/05GRf9ORkX/VU1M/8vLy/9PR0b1TkZF/1VNTP/Ly8uQT0dG+E5GRf9ORkX/TkZF/1hRUP3Ly8tmAAAAAE5GRWBORkXkTkZF/05GRf9ORkX/t7a2/355eOpORkX/TkZFkISAf1BORkX/TkZF/05GRf9XT075TkZFZgAAAAAAAAAAAAAAAAAAAABORkXDTkZF/05GRf9lX17/ubi4/8vLy/+2tbT/Yltb/05GRf9ORkX/a2Vk/8vLy5MAAAAAAAAAAAAAAAAAAAAAAAAAAFNLSqNORkX/TkZF/05GRf9ORkX/TkZF/05GRf9ORkX/TkZF/05GRf+Cfn3/y8vL+cvLyw8AAAAAAAAAAAAAAABORkUSTkZF+U5GRf9ORkX/TkZF/05GRf9ORkX/TkZF/05GRf9ORkX/TkZF/1BJSP/CwsLmy8vLDwAAAAAAAAAAAAAAAE5GRRJORkXtTkZF9FFJSJ1ORkXJTkZF/05GRf9ORkX/ZF5d9k5GRZ9ORkXtTkZF5HFsaxUAAAAAAAAAAAAAAAAAAAAAAAAAAE5GRQxORkUJAAAAAAAAAABORkXhTkZF/2JbWv7Ly8tgAAAAAAAAAABORkUGAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAE5GRWBORkX2TkZFYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//+AAP9/gAD+P4AA4AOAAMADgADAA4AAwAOAAMMBgACCAIAAAAGAAIBDgADAA4AAwAOAAMADgADAB4AA/H+AAP7/gAA='
-    return HttpResponse(base64.b64decode(data), mimetype='image/vnd.microsoft.icon')
-
-# BLERGH
-# Replicate django.contrib.auth.views.login simply so we don't have get users to update TEMPLATE_CONTEXT_PROCESSORS
-# to add ADMIN_MEDIA_PREFIX to the RequestContext.  I don't like this but really really want users to not have to
-# be making settings changes in order to accomodate django-rest-framework
-@csrf_protect
-@never_cache
-def api_login(request, template_name='api_login.html',
-          redirect_field_name=REDIRECT_FIELD_NAME,
-          authentication_form=AuthenticationForm):
-    """Displays the login form and handles the login action."""
-
-    redirect_to = request.REQUEST.get(redirect_field_name, '')
-
-    if request.method == "POST":
-        form = authentication_form(data=request.POST)
-        if form.is_valid():
-            # Light security check -- make sure redirect_to isn't garbage.
-            if not redirect_to or ' ' in redirect_to:
-                redirect_to = settings.LOGIN_REDIRECT_URL
-
-            # Heavier security check -- redirects to http://example.com should
-            # not be allowed, but things like /view/?param=http://example.com
-            # should be allowed. This regex checks if there is a '//' *before* a
-            # question mark.
-            elif '//' in redirect_to and re.match(r'[^\?]*//', redirect_to):
-                    redirect_to = settings.LOGIN_REDIRECT_URL
-
-            # Okay, security checks complete. Log the user in.
-            auth_login(request, form.get_user())
-
-            if request.session.test_cookie_worked():
-                request.session.delete_test_cookie()
-
-            return HttpResponseRedirect(redirect_to)
-
-    else:
-        form = authentication_form(request)
-
-    request.session.set_test_cookie()
-
-    #current_site = get_current_site(request)
-
-    return render_to_response(template_name, {
-        'form': form,
-        redirect_field_name: redirect_to,
-        #'site': current_site,
-        #'site_name': current_site.name,
-        'ADMIN_MEDIA_PREFIX': settings.ADMIN_MEDIA_PREFIX,
-    }, context_instance=RequestContext(request))
+from djangorestframework.compat import View
+from djangorestframework.response import Response, ErrorResponse
+from djangorestframework.mixins import *
+from djangorestframework import resource, renderers, parsers, authentication, permissions, validators, status
 
 
-def api_logout(request, next_page=None, template_name='api_login.html', redirect_field_name=REDIRECT_FIELD_NAME):
-    return logout(request, next_page, template_name, redirect_field_name)
+__all__ = ['BaseView',
+           'ModelView',
+           'InstanceModelView',
+           'ListOrModelView',
+           'ListOrCreateModelView']
+
+
+
+class BaseView(RequestMixin, ResponseMixin, AuthMixin, View):
+    """Handles incoming requests and maps them to REST operations.
+    Performs request deserialization, response serialization, authentication and input validation."""
+
+    # Use the base resource by default
+    resource = resource.Resource
+
+    # List of renderers the resource can serialize the response with, ordered by preference.
+    renderers = ( renderers.JSONRenderer,
+                  renderers.DocumentingHTMLRenderer,
+                  renderers.DocumentingXHTMLRenderer,
+                  renderers.DocumentingPlainTextRenderer,
+                  renderers.XMLRenderer )
+
+    # List of parsers the resource can parse the request with.
+    parsers = ( parsers.JSONParser,
+                parsers.FormParser,
+                parsers.MultipartParser )
+
+    # List of validators to validate, cleanup and normalize the request content    
+    validators = ( validators.FormValidator, )
+
+    # List of all authenticating methods to attempt.
+    authentication = ( authentication.UserLoggedInAuthenticator,
+                       authentication.BasicAuthenticator )
+    
+    # List of all permissions that must be checked.
+    permissions = ( permissions.FullAnonAccess, )
+
+    # Optional form for input validation and presentation of HTML formatted responses.
+    form = None
+
+    # Allow name and description for the Resource to be set explicitly,
+    # overiding the default classname/docstring behaviour.
+    # These are used for documentation in the standard html and text renderers.
+    name = None
+    description = None
+
+    @property
+    def allowed_methods(self):
+        return [method.upper() for method in self.http_method_names if hasattr(self, method)]
+
+    def http_method_not_allowed(self, request, *args, **kwargs):
+        """Return an HTTP 405 error if an operation is called which does not have a handler method."""
+        raise ErrorResponse(status.HTTP_405_METHOD_NOT_ALLOWED,
+                                {'detail': 'Method \'%s\' not allowed on this resource.' % self.method})
+
+
+    def cleanup_response(self, data):
+        """Perform any resource-specific data filtering prior to the standard HTTP
+        content-type serialization.
+
+        Eg filter complex objects that cannot be serialized by json/xml/etc into basic objects that can.
+        
+        TODO: This is going to be removed.  I think that the 'fields' behaviour is going to move into
+        the RendererMixin and Renderer classes."""
+        return data
+
+
+    # Note: session based authentication is explicitly CSRF validated,
+    # all other authentication is CSRF exempt.
+    @csrf_exempt
+    def dispatch(self, request, *args, **kwargs):
+        self.request = request
+        self.args = args
+        self.kwargs = kwargs
+
+        # Calls to 'reverse' will not be fully qualified unless we set the scheme/host/port here.
+        prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
+        set_script_prefix(prefix)
+
+        try:
+            # If using a form POST with '_method'/'_content'/'_content_type' overrides, then alter
+            # self.method, self.content_type, self.RAW_CONTENT & self.CONTENT appropriately.
+            self.perform_form_overloading()
+
+            # Authenticate and check request is has the relevant permissions
+            self.check_permissions()
+
+            # Get the appropriate handler method
+            if self.method.lower() in self.http_method_names:
+                handler = getattr(self, self.method.lower(), self.http_method_not_allowed)
+            else:
+                handler = self.http_method_not_allowed
+
+            response_obj = handler(request, *args, **kwargs)
+
+            # Allow return value to be either Response, or an object, or None
+            if isinstance(response_obj, Response):
+                response = response_obj
+            elif response_obj is not None:
+                response = Response(status.HTTP_200_OK, response_obj)
+            else:
+                response = Response(status.HTTP_204_NO_CONTENT)
+
+            # Pre-serialize filtering (eg filter complex objects into natively serializable types)
+            response.cleaned_content = self.resource.object_to_serializable(response.raw_content)
+
+        except ErrorResponse, exc:
+            response = exc.response
+
+        # Always add these headers.
+        #
+        # TODO - this isn't actually the correct way to set the vary header,
+        # also it's currently sub-obtimal for HTTP caching - need to sort that out. 
+        response.headers['Allow'] = ', '.join(self.allowed_methods)
+        response.headers['Vary'] = 'Authenticate, Accept'
+
+        return self.render(response)
+
+
+class ModelView(BaseView):
+    """A RESTful view that maps to a model in the database."""
+    validators = (validators.ModelFormValidator,)
+
+class InstanceModelView(ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelView):
+    """A view which provides default operations for read/update/delete against a model instance."""
+    pass
+
+class ListModelResource(ListModelMixin, ModelView):
+    """A view which provides default operations for list, against a model in the database."""
+    pass
+
+class ListOrCreateModelResource(ListModelMixin, CreateModelMixin, ModelView):
+    """A view which provides default operations for list and create, against a model in the database."""
+    pass
+
+
+
+

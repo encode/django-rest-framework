@@ -1,6 +1,6 @@
 """The :mod:`authentication` modules provides for pluggable authentication behaviour.
 
-Authentication behaviour is provided by adding the mixin class :class:`AuthenticatorMixin` to a :class:`.Resource` or Django :class:`View` class.
+Authentication behaviour is provided by adding the mixin class :class:`AuthenticatorMixin` to a :class:`.BaseView` or Django :class:`View` class.
 
 The set of authentication which are use is then specified by setting the :attr:`authentication` attribute on the class, and listing a set of authentication classes.
 """
@@ -25,10 +25,10 @@ class BaseAuthenticator(object):
         be some more complicated token, for example authentication tokens which are signed
         against a particular set of permissions for a given user, over a given timeframe.
 
-        The default permission checking on Resource will use the allowed_methods attribute
+        The default permission checking on View will use the allowed_methods attribute
         for permissions if the authentication context is not None, and use anon_allowed_methods otherwise.
 
-        The authentication context is available to the method calls eg Resource.get(request)
+        The authentication context is available to the method calls eg View.get(request)
         by accessing self.auth in order to allow them to apply any more fine grained permission
         checking at the point the response is being generated.
         

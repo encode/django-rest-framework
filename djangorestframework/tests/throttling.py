@@ -3,11 +3,11 @@ from django.test import TestCase
 from django.utils import simplejson as json
 
 from djangorestframework.compat import RequestFactory
-from djangorestframework.resource import Resource
+from djangorestframework.views import BaseView
 from djangorestframework.permissions import Throttling
 
 
-class MockResource(Resource):
+class MockView(BaseView):
     permissions = ( Throttling, )
     throttle = (3, 1) # 3 requests per second
 
@@ -15,7 +15,7 @@ class MockResource(Resource):
         return 'foo'
 
 urlpatterns = patterns('',
-    (r'^$', MockResource.as_view()),
+    (r'^$', MockView.as_view()),
 )
 
 

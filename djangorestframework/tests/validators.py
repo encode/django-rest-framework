@@ -4,6 +4,8 @@ from django.test import TestCase
 from djangorestframework.compat import RequestFactory
 from djangorestframework.validators import BaseValidator, FormValidator, ModelFormValidator
 from djangorestframework.response import ErrorResponse
+from djangorestframework.views import BaseView
+from djangorestframework.resource import Resource
 
 
 class TestValidatorMixinInterfaces(TestCase):
@@ -20,7 +22,7 @@ class TestDisabledValidations(TestCase):
     def test_disabled_form_validator_returns_content_unchanged(self):
         """If the view's form attribute is None then FormValidator(view).validate(content)
         should just return the content unmodified."""
-        class DisabledFormView(object):
+        class DisabledFormView(BaseView):
             form = None
 
         view = DisabledFormView()
@@ -30,7 +32,7 @@ class TestDisabledValidations(TestCase):
     def test_disabled_form_validator_get_bound_form_returns_none(self):
         """If the view's form attribute is None on then
         FormValidator(view).get_bound_form(content) should just return None."""
-        class DisabledFormView(object):
+        class DisabledFormView(BaseView):
             form = None
 
         view = DisabledFormView()
@@ -39,11 +41,10 @@ class TestDisabledValidations(TestCase):
 
  
     def test_disabled_model_form_validator_returns_content_unchanged(self):
-        """If the view's form and model attributes are None then
+        """If the view's form is None and does not have a Resource with a model set then
         ModelFormValidator(view).validate(content) should just return the content unmodified."""
-        class DisabledModelFormView(object):
+        class DisabledModelFormView(BaseView):
             form = None
-            model = None
 
         view = DisabledModelFormView()
         content = {'qwerty':'uiop'}       
@@ -51,13 +52,12 @@ class TestDisabledValidations(TestCase):
 
     def test_disabled_model_form_validator_get_bound_form_returns_none(self):
         """If the form attribute is None on FormValidatorMixin then get_bound_form(content) should just return None."""
-        class DisabledModelFormView(object):
-            form = None
+        class DisabledModelFormView(BaseView):
             model = None
  
         view = DisabledModelFormView()
         content = {'qwerty':'uiop'}       
-        self.assertEqual(ModelFormValidator(view).get_bound_form(content), None)# 
+        self.assertEqual(ModelFormValidator(view).get_bound_form(content), None) 
 
 class TestNonFieldErrors(TestCase):
     """Tests against form validation errors caused by non-field errors.  (eg as might be caused by some custom form validation)"""
@@ -84,7 +84,7 @@ class TestNonFieldErrors(TestCase):
         except ErrorResponse, exc:           
             self.assertEqual(exc.response.raw_content, {'errors': [MockForm.ERROR_TEXT]})
         else:
-            self.fail('ResourceException was not raised')  #pragma: no cover
+            self.fail('ErrorResponse was not raised')  #pragma: no cover
 
 
 class TestFormValidation(TestCase):
@@ -95,11 +95,11 @@ class TestFormValidation(TestCase):
         class MockForm(forms.Form):
             qwerty = forms.CharField(required=True)
 
-        class MockFormView(object):
+        class MockFormView(BaseView):
             form = MockForm
             validators = (FormValidator,)
  
-        class MockModelFormView(object):
+        class MockModelFormView(BaseView):
             form = MockForm
             validators = (ModelFormValidator,)
          
@@ -264,9 +264,12 @@ class TestModelFormValidator(TestCase):
             @property
             def readonly(self):
                 return 'read only'
-            
-        class MockView(object):
+        
+        class MockResource(Resource):
             model = MockModel
+ 
+        class MockView(BaseView):
+            resource = MockResource
        
         self.validator = ModelFormValidator(MockView)
 

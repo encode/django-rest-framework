@@ -11,6 +11,12 @@ class BasePermission(object):
     def has_permission(self, auth):
         return True
 
+
+class FullAnonAccess(BasePermission):
+    """"""
+    def has_permission(self, auth):
+        return True
+
 class IsAuthenticated(BasePermission):
     """"""
     def has_permission(self, auth):

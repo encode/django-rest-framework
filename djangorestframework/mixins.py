@@ -1,3 +1,4 @@
+""""""
 from djangorestframework.utils.mediatypes import MediaType
 from djangorestframework.utils import as_tuple, MSIE_USER_AGENT_REGEX
 from djangorestframework.response import ErrorResponse
@@ -12,6 +13,14 @@ from decimal import Decimal
 import re
 
 
+__all__ = ['RequestMixin',
+           'ResponseMixin',
+           'AuthMixin',
+           'ReadModelMixin',
+           'CreateModelMixin',
+           'UpdateModelMixin',
+           'DeleteModelMixin',
+           'ListModelMixin']
 
 ########## Request Mixin ##########
 
@@ -250,7 +259,7 @@ class RequestMixin(object):
 ########## ResponseMixin ##########
 
 class ResponseMixin(object):
-    """Adds behaviour for pluggable Renderers to a :class:`.Resource` or Django :class:`View`. class.
+    """Adds behaviour for pluggable Renderers to a :class:`.BaseView` or Django :class:`View`. class.
     
     Default behaviour is to use standard HTTP Accept header content negotiation.
     Also supports overidding the content type by specifying an _accept= parameter in the URL.
@@ -259,31 +268,7 @@ class ResponseMixin(object):
     ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
     REWRITE_IE_ACCEPT_HEADER = True
 
-    #request = None
-    #response = None
     renderers = ()
-
-    #def render_to_response(self, obj):
-    #    if isinstance(obj, Response):
-    #        response = obj
-    #    elif response_obj is not None:
-    #        response = Response(status.HTTP_200_OK, obj)
-    #    else:
-    #        response = Response(status.HTTP_204_NO_CONTENT)
-
-    #    response.cleaned_content = self._filter(response.raw_content)
-        
-    #    self._render(response)
-
-
-    #def filter(self, content):
-    #    """
-    #    Filter the response content.
-    #    """
-    #    for filterer_cls in self.filterers:
-    #        filterer = filterer_cls(self)
-    #        content = filterer.filter(content)
-    #    return content
 
         
     def render(self, response):
@@ -318,7 +303,7 @@ class ResponseMixin(object):
 
     def _determine_renderer(self, request):
         """Return the appropriate renderer for the output, given the client's 'Accept' header,
-        and the content types that this Resource knows how to serve.
+        and the content types that this mixin knows how to serve.
         
         See: RFC 2616, Section 14 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html"""
 
@@ -415,17 +400,6 @@ class AuthMixin(object):
                 return auth
         return None
 
-    # TODO?
-    #@property
-    #def user(self):
-    #    if not has_attr(self, '_user'):
-    #        auth = self.auth
-    #        if isinstance(auth, User...):
-    #            self._user = auth
-    #        else:
-    #            self._user = getattr(auth, 'user', None)
-    #    return self._user
-
     def check_permissions(self):
         if not self.permissions:
             return
@@ -443,14 +417,15 @@ class AuthMixin(object):
 class ReadModelMixin(object):
     """Behaviour to read a model instance on GET requests"""
     def get(self, request, *args, **kwargs):
+        model = self.resource.model
         try:
             if args:
                 # If we have any none kwargs then assume the last represents the primrary key
-                instance = self.model.objects.get(pk=args[-1], **kwargs)
+                instance = model.objects.get(pk=args[-1], **kwargs)
             else:
                 # Otherwise assume the kwargs uniquely identify the model
-                instance = self.model.objects.get(**kwargs)
-        except self.model.DoesNotExist:
+                instance = model.objects.get(**kwargs)
+        except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
 
         return instance
@@ -459,17 +434,18 @@ class ReadModelMixin(object):
 class CreateModelMixin(object):
     """Behaviour to create a model instance on POST requests"""
     def post(self, request, *args, **kwargs):        
+        model = self.resource.model
         # translated 'related_field' kwargs into 'related_field_id'
-        for related_name in [field.name for field in self.model._meta.fields if isinstance(field, RelatedField)]:
+        for related_name in [field.name for field in model._meta.fields if isinstance(field, RelatedField)]:
             if kwargs.has_key(related_name):
                 kwargs[related_name + '_id'] = kwargs[related_name]
                 del kwargs[related_name]
 
         all_kw_args = dict(self.CONTENT.items() + kwargs.items())
         if args:
-            instance = self.model(pk=args[-1], **all_kw_args)
+            instance = model(pk=args[-1], **all_kw_args)
         else:
-            instance = self.model(**all_kw_args)
+            instance = model(**all_kw_args)
         instance.save()
         headers = {}
         if hasattr(instance, 'get_absolute_url'):
@@ -480,19 +456,20 @@ class CreateModelMixin(object):
 class UpdateModelMixin(object):
     """Behaviour to update a model instance on PUT requests"""
     def put(self, request, *args, **kwargs):
+        model = self.resource.model
         # TODO: update on the url of a non-existing resource url doesn't work correctly at the moment - will end up with a new url 
         try:
             if args:
                 # If we have any none kwargs then assume the last represents the primrary key
-                instance = self.model.objects.get(pk=args[-1], **kwargs)
+                instance = model.objects.get(pk=args[-1], **kwargs)
             else:
                 # Otherwise assume the kwargs uniquely identify the model
-                instance = self.model.objects.get(**kwargs)
+                instance = model.objects.get(**kwargs)
 
             for (key, val) in self.CONTENT.items():
                 setattr(instance, key, val)
-        except self.model.DoesNotExist:
-            instance = self.model(**self.CONTENT)
+        except model.DoesNotExist:
+            instance = model(**self.CONTENT)
             instance.save()
 
         instance.save()
@@ -502,14 +479,15 @@ class UpdateModelMixin(object):
 class DeleteModelMixin(object):
     """Behaviour to delete a model instance on DELETE requests"""
     def delete(self, request, *args, **kwargs):
+        model = self.resource.model
         try:
             if args:
                 # If we have any none kwargs then assume the last represents the primrary key
-                instance = self.model.objects.get(pk=args[-1], **kwargs)
+                instance = model.objects.get(pk=args[-1], **kwargs)
             else:
                 # Otherwise assume the kwargs uniquely identify the model
-                instance = self.model.objects.get(**kwargs)
-        except self.model.DoesNotExist:
+                instance = model.objects.get(**kwargs)
+        except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
 
         instance.delete()

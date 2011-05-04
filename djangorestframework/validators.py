@@ -159,7 +159,7 @@ class ModelFormValidator(FormValidator):
         otherwise if model is set use that class to create a ModelForm, otherwise return None."""
 
         form_cls = getattr(self.view, 'form', None)
-        model_cls = getattr(self.view, 'model', None)
+        model_cls = getattr(self.view.resource, 'model', None)
 
         if form_cls:
             # Use explict Form
@@ -189,9 +189,10 @@ class ModelFormValidator(FormValidator):
     @property
     def _model_fields_set(self):
         """Return a set containing the names of validated fields on the model."""
-        model = getattr(self.view, 'model', None)
-        fields = getattr(self.view, 'fields', self.fields)
-        exclude_fields = getattr(self.view, 'exclude_fields', self.exclude_fields)
+        resource = self.view.resource
+        model = getattr(resource, 'model', None)
+        fields = getattr(resource, 'fields', self.fields)
+        exclude_fields = getattr(resource, 'exclude_fields', self.exclude_fields)
 
         model_fields = set(field.name for field in model._meta.fields)
 
@@ -203,9 +204,10 @@ class ModelFormValidator(FormValidator):
     @property
     def _property_fields_set(self):
         """Returns a set containing the names of validated properties on the model."""
-        model = getattr(self.view, 'model', None)
-        fields = getattr(self.view, 'fields', self.fields)
-        exclude_fields = getattr(self.view, 'exclude_fields', self.exclude_fields)
+        resource = self.view.resource
+        model = getattr(resource, 'model', None)
+        fields = getattr(resource, 'fields', self.fields)
+        exclude_fields = getattr(resource, 'exclude_fields', self.exclude_fields)
 
         property_fields = set(attr for attr in dir(model) if
                               isinstance(getattr(model, attr, None), property)

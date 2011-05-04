@@ -21,6 +21,6 @@ class Response(object):
 
 
 class ErrorResponse(BaseException):
-    """An exception representing an HttpResponse that should be returned immediatley."""
+    """An exception representing an HttpResponse that should be returned immediately."""
     def __init__(self, status, content=None, headers={}):
         self.response = Response(status, content=content, headers=headers)
