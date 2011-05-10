@@ -150,7 +150,9 @@ class RequestMixin(object):
 
         return self._content
 
-
+    # TODO: Modify this so that it happens implictly, rather than being called explicitly
+    # ie accessing any of .DATA, .FILES, .content_type, .stream or .method will force
+    # form overloading.
     def perform_form_overloading(self):
         """
         Check the request to see if it is using form POST '_method'/'_content'/'_content_type' overrides.
@@ -199,6 +201,7 @@ class RequestMixin(object):
                             content_type})
 
 
+    # TODO: Acutally this needs to go into Resource
     def validate(self, content):
         """
         Validate, cleanup, and type-ify the request content.
@@ -209,6 +212,7 @@ class RequestMixin(object):
         return content
 
 
+    # TODO: Acutally this needs to go into Resource
     def get_bound_form(self, content=None):
         """
         Return a bound form instance for the given content,
@@ -229,7 +233,7 @@ class RequestMixin(object):
     
     @property
     def default_parser(self):
-        """Return the view's most preferred renderer.
+        """Return the view's most preferred parser.
         (This has no behavioral effect, but is may be used by documenting renderers)"""        
         return self.parsers[0]
 
@@ -256,8 +260,8 @@ class ResponseMixin(object):
 
     renderers = ()
      
-    # TODO: wrap this behavior around dispatch(), ensuring it works well with
-    # existing Django classes that use render_to_response.
+    # TODO: wrap this behavior around dispatch(), ensuring it works
+    # out of the box with existing Django classes that use render_to_response.
     def render(self, response):
         """
         Takes a ``Response`` object and returns an ``HttpResponse``.

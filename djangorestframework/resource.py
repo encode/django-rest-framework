@@ -6,6 +6,7 @@ import decimal
 import inspect
 import re
 
+# TODO: Replace this with new Serializer code based on Forms API.
 
 class Resource(object):
     """A Resource determines how an object maps to a serializable entity.
@@ -61,7 +62,7 @@ class Resource(object):
                 if inspect.ismethod(f) and len(inspect.getargspec(f)[0]) == 1:
                     ret = _any(f())
             else:
-                ret = unicode(thing)  # TRC  TODO: Change this back!
+                ret = unicode(thing)  # TRC
 
             return ret
 
