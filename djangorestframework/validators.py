@@ -31,20 +31,24 @@ class FormValidator(BaseValidator):
 
 
     def validate(self, content):
-        """Given some content as input return some cleaned, validated content.
+        """
+        Given some content as input return some cleaned, validated content.
         Raises a ErrorResponse with status code 400 (Bad Request) on failure.
         
         Validation is standard form validation, with an additional constraint that no extra unknown fields may be supplied.
 
         On failure the ErrorResponse content is a dict which may contain 'errors' and 'field-errors' keys.
         If the 'errors' key exists it is a list of strings of non-field errors.
-        If the 'field-errors' key exists it is a dict of {field name as string: list of errors as strings}."""
+        If the 'field-errors' key exists it is a dict of {field name as string: list of errors as strings}.
+        """
         return self._validate(content)
 
     def _validate(self, content, allowed_extra_fields=()):
-        """Wrapped by validate to hide the extra_fields option that the ModelValidatorMixin uses.
+        """
+        Wrapped by validate to hide the extra_fields option that the ModelValidatorMixin uses.
         extra_fields is a list of fields which are not defined by the form, but which we still
-        expect to see on the input."""
+        expect to see on the input.
+        """
         bound_form = self.get_bound_form(content)
 
         if bound_form is None:
@@ -138,7 +142,8 @@ class ModelFormValidator(FormValidator):
     # TODO: test the different validation here to allow for get get_absolute_url to be supplied on input and not bork out
     # TODO: be really strict on fields - check they match in the handler methods. (this isn't a validator thing tho.)
     def validate(self, content):
-        """Given some content as input return some cleaned, validated content.
+        """
+        Given some content as input return some cleaned, validated content.
         Raises a ErrorResponse with status code 400 (Bad Request) on failure.
         
         Validation is standard form or model form validation,
@@ -148,7 +153,8 @@ class ModelFormValidator(FormValidator):
 
         On failure the ErrorResponse content is a dict which may contain 'errors' and 'field-errors' keys.
         If the 'errors' key exists it is a list of strings of non-field errors.
-        If the 'field-errors' key exists it is a dict of {field name as string: list of errors as strings}."""
+        If the 'field-errors' key exists it is a dict of {field name as string: list of errors as strings}.
+        """
         return self._validate(content, allowed_extra_fields=self._property_fields_set)
 
 

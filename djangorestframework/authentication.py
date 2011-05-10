@@ -3,7 +3,7 @@ The ``authentication`` module provides a set of pluggable authentication classes
 
 Authentication behavior is provided by adding the ``AuthMixin`` class to a ``View`` .
 
-The set of authentication methods which are used is then specified by setting
+The set of authentication methods which are used is then specified by setting the
 ``authentication`` attribute on the ``View`` class, and listing a set of authentication classes.
 """
 
@@ -81,7 +81,7 @@ class UserLoggedInAuthenticaton(BaseAuthenticaton):
     """
 
     def authenticate(self, request):
-        # TODO: Switch this back to request.POST, and let MultiPartParser deal with the consequences.
+        # TODO: Switch this back to request.POST, and let FormParser/MultiPartParser deal with the consequences.
         if getattr(request, 'user', None) and request.user.is_active:
             # If this is a POST request we enforce CSRF validation.
             if request.method.upper() == 'POST':

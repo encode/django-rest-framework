@@ -24,6 +24,7 @@ from urllib import quote_plus
 
 __all__ = (
     'BaseRenderer',
+    'TemplateRenderer',
     'JSONRenderer',
     'DocumentingHTMLRenderer',
     'DocumentingXHTMLRenderer',
@@ -87,10 +88,12 @@ class DocumentingTemplateRenderer(BaseRenderer):
     template = None
 
     def _get_content(self, view, request, obj, media_type):
-        """Get the content as if it had been rendered by a non-documenting renderer.
+        """
+        Get the content as if it had been rendered by a non-documenting renderer.
 
         (Typically this will be the content as it would have been if the Resource had been
-        requested with an 'Accept: */*' header, although with verbose style formatting if appropriate.)"""
+        requested with an 'Accept: */*' header, although with verbose style formatting if appropriate.)
+        """
 
         # Find the first valid renderer and render the content. (Don't use another documenting renderer.)
         renderers = [renderer for renderer in view.renderers if not isinstance(renderer, DocumentingTemplateRenderer)]
@@ -103,12 +106,14 @@ class DocumentingTemplateRenderer(BaseRenderer):
             return '[%d bytes of binary content]'
             
         return content
-            
+
 
     def _get_form_instance(self, view):
-        """Get a form, possibly bound to either the input or output data.
+        """
+        Get a form, possibly bound to either the input or output data.
         In the absence on of the Resource having an associated form then
-        provide a form that can be used to submit arbitrary content."""
+        provide a form that can be used to submit arbitrary content.
+        """
 
         # Get the form instance if we have one bound to the input
         form_instance = getattr(view, 'bound_form_instance', None)
@@ -138,8 +143,10 @@ class DocumentingTemplateRenderer(BaseRenderer):
 
 
     def _get_generic_content_form(self, view):
-        """Returns a form that allows for arbitrary content types to be tunneled via standard HTML forms
-        (Which are typically application/x-www-form-urlencoded)"""
+        """
+        Returns a form that allows for arbitrary content types to be tunneled via standard HTML forms
+        (Which are typically application/x-www-form-urlencoded)
+        """
 
         # If we're not using content overloading there's no point in supplying a generic form,
         # as the view won't treat the form's value as the content of the request.
@@ -197,8 +204,8 @@ class DocumentingTemplateRenderer(BaseRenderer):
         template = loader.get_template(self.template)
         context = RequestContext(self.view.request, {
             'content': content,
-            'resource': self.view,
-            'request': self.view.request,
+            'resource': self.view,        # TODO: rename to view
+            'request': self.view.request, # TODO: remove
             'response': self.view.response,
             'description': description,
             'name': name,

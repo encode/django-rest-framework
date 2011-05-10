@@ -1,16 +1,89 @@
-from django.db.models import Model
+from django.db import models
 from django.db.models.query import QuerySet
 from django.db.models.fields.related import RelatedField
+from django.utils.encoding import smart_unicode
 
 import decimal
 import inspect
 import re
 
+
+
+def _model_to_dict(instance, fields=None, exclude=None):
+    """
+    This is a clone of Django's ``django.forms.model_to_dict`` except that it
+    doesn't coerce related objects into primary keys.
+    """
+    opts = instance._meta
+    data = {}
+    for f in opts.fields + opts.many_to_many:
+        if not f.editable:
+            continue
+        if fields and not f.name in fields:
+            continue
+        if exclude and f.name in exclude:
+            continue
+        if isinstance(f, models.ForeignKey):
+            data[f.name] = getattr(instance, f.name)
+        else:
+            data[f.name] = f.value_from_object(instance)
+    return data
+
+
+def _object_to_data(obj):
+    """
+    Convert an object into a serializable representation.
+    """
+    if isinstance(obj, dict):
+        # dictionaries
+        return dict([ (key, _object_to_data(val)) for key, val in obj.iteritems() ])    
+    if isinstance(obj, (tuple, list, set, QuerySet)):
+        # basic iterables
+        return [_object_to_data(item) for item in obj]
+    if isinstance(obj, models.Manager):
+        # Manager objects
+        ret = [_object_to_data(item) for item in obj.all()]
+    if isinstance(obj, models.Model):
+        # Model instances
+        return _object_to_data(_model_to_dict(obj))
+    if isinstance(obj, decimal.Decimal):
+        # Decimals (force to string representation)
+	    return str(obj)
+    if inspect.isfunction(obj) and not inspect.getargspec(obj)[0]:
+        # function with no args
+        return _object_to_data(obj())
+    if inspect.ismethod(obj) and len(inspect.getargspec(obj)[0]) == 1:
+        # method with only a 'self' args
+        return _object_to_data(obj())
+
+    # fallback
+    return smart_unicode(obj, strings_only=True)
+
+
 # TODO: Replace this with new Serializer code based on Forms API.
 
+#class Resource(object):
+#    def __init__(self, view):
+#        self.view = view
+#    
+#    def object_to_data(self, obj):
+#        pass
+#    
+#    def data_to_object(self, data, files):
+#        pass
+#
+#class FormResource(object):
+#    pass
+#
+#class ModelResource(object):
+#    pass
+
+
 class Resource(object):
-    """A Resource determines how an object maps to a serializable entity.
-    Objects that a resource can act on include plain Python object instances, Django Models, and Django QuerySets."""
+    """
+    A Resource determines how a python object maps to some serializable data.
+    Objects that a resource can act on include plain Python object instances, Django Models, and Django QuerySets.
+    """
     
     # The model attribute refers to the Django Model which this Resource maps to.
     # (The Model's class, rather than an instance of the Model)
@@ -50,7 +123,7 @@ class Resource(object):
                 ret = thing
             elif isinstance(thing, decimal.Decimal):
                 ret = str(thing)
-            elif isinstance(thing, Model):
+            elif isinstance(thing, models.Model):
                 ret = _model(thing, fields=fields)
             #elif isinstance(thing, HttpResponse):    TRC
             #    raise HttpStatusCode(thing)

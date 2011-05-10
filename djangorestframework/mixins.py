@@ -33,7 +33,7 @@ __all__ = (
 
 class RequestMixin(object):
     """
-    Mixin class to provide request parsing behaviour.
+    Mixin class to provide request parsing behavior.
     """
 
     USE_FORM_OVERLOADING = True
@@ -93,6 +93,13 @@ class RequestMixin(object):
             if content_length == 0:
                 return None
             elif hasattr(request, 'read'):
+                # UPDATE BASED ON COMMENT BELOW:
+                #
+                # Yup, this was a bug in Django - fixed and waiting check in - see ticket 15785.
+                # http://code.djangoproject.com/ticket/15785
+                #
+                # COMMENT:
+                #
                 # It's not at all clear if this needs to be byte limited or not.
                 # Maybe I'm just being dumb but it looks to me like there's some issues
                 # with that in Django.
@@ -117,8 +124,6 @@ class RequestMixin(object):
                 #except (ValueError, TypeError):
                 #    content_length = 0
                 # self._stream = LimitedStream(request, content_length)
-                #
-                # UPDATE: http://code.djangoproject.com/ticket/15785
                 self._stream = request
             else:
                 self._stream = StringIO(request.raw_post_data)
@@ -290,11 +295,15 @@ class ResponseMixin(object):
         return resp
 
 
+    # TODO: This should be simpler now.
+    #       Add a handles_response() to the renderer, then iterate through the
+    #       acceptable media types, ordered by how specific they are,
+    #       calling handles_response on each renderer.
     def _determine_renderer(self, request):
         """
         Return the appropriate renderer for the output, given the client's 'Accept' header,
         and the content types that this mixin knows how to serve.
-        
+
         See: RFC 2616, Section 14 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
         """
 
@@ -321,7 +330,7 @@ class ResponseMixin(object):
             qvalue = Decimal('1.0')
             
             if len(components) > 1:
-                # Parse items that have a qvalue eg text/html;q=0.9
+                # Parse items that have a qvalue eg 'text/html; q=0.9'
                 try:
                     (q, num) = components[-1].split('=')
                     if q == 'q':
@@ -356,10 +365,10 @@ class ResponseMixin(object):
 
         raise ErrorResponse(status.HTTP_406_NOT_ACCEPTABLE,
                                 {'detail': 'Could not satisfy the client\'s Accept header',
-                                 'available_types': self.renderted_media_types})
+                                 'available_types': self.rendered_media_types})
 
     @property
-    def renderted_media_types(self):
+    def rendered_media_types(self):
         """
         Return an list of all the media types that this resource can render.
         """
