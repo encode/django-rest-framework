@@ -15,7 +15,7 @@ def media_type_matches(lhs, rhs):
 
     Valid media type strings include:
 
-    'application/json indent=4'
+    'application/json; indent=4'
     'application/json'
     'text/*'
     '*/*'
@@ -33,10 +33,28 @@ def is_form_media_type(media_type):
     media_type = _MediaType(media_type)
     return media_type.full_type == 'application/x-www-form-urlencoded' or \
            media_type.full_type == 'multipart/form-data'
-  
-               
+
+
+def add_media_type_param(media_type, key, val):
+    """
+    Add a key, value parameter to a media type string, and return the new media type string.
+    """
+    media_type = _MediaType(media_type)
+    media_type.params[key] = val
+    return str(media_type)
+
+def get_media_type_params(media_type):
+    """
+    Return a dictionary of the parameters on the given media type.
+    """
+    return _MediaType(media_type).params
+
+
+
 class _MediaType(object):
     def __init__(self, media_type_str):
+        if media_type_str is None:
+            media_type_str = ''
         self.orig = media_type_str
         self.full_type, self.params = parse_header(media_type_str)
         self.main_type, sep, self.sub_type = self.full_type.partition('/')
@@ -94,5 +112,8 @@ class _MediaType(object):
         return unicode(self).encode('utf-8')
 
     def __unicode__(self):
-        return self.orig
+        ret = "%s/%s" % (self.main_type, self.sub_type)
+        for key, val in self.params.items():
+            ret += "; %s=%s" % (key, val)
+        return ret
 

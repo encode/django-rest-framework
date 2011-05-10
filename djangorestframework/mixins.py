@@ -17,14 +17,16 @@ import re
 from StringIO import StringIO
 
 
-__all__ = ('RequestMixin',
-           'ResponseMixin',
-           'AuthMixin',
-           'ReadModelMixin',
-           'CreateModelMixin',
-           'UpdateModelMixin',
-           'DeleteModelMixin',
-           'ListModelMixin')
+__all__ = (
+    'RequestMixin',
+    'ResponseMixin',
+    'AuthMixin',
+    'ReadModelMixin',
+    'CreateModelMixin',
+    'UpdateModelMixin',
+    'DeleteModelMixin',
+    'ListModelMixin'
+)
 
 
 ########## Request Mixin ##########
@@ -267,7 +269,7 @@ class ResponseMixin(object):
         
         # Serialize the response content
         if response.has_content_body:
-            content = renderer(self).render(output=response.cleaned_content)
+            content = renderer(self).render(response.cleaned_content, renderer.media_type)
         else:
             content = renderer(self).render()
         
