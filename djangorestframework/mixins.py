@@ -1,31 +1,38 @@
 """"""
-from djangorestframework.utils.mediatypes import MediaType
-from djangorestframework.utils import as_tuple, MSIE_USER_AGENT_REGEX
-from djangorestframework.response import ErrorResponse
-from djangorestframework.parsers import FormParser, MultipartParser
-from djangorestframework import status
 
+from django.contrib.auth.models import AnonymousUser
+from django.db.models.query import QuerySet
+from django.db.models.fields.related import RelatedField
 from django.http import HttpResponse
 from django.http.multipartparser import LimitBytes  # TODO: Use LimitedStream in compat
 
-from StringIO import StringIO
+from djangorestframework import status
+from djangorestframework.parsers import FormParser, MultiPartParser
+from djangorestframework.response import Response, ErrorResponse
+from djangorestframework.utils import as_tuple, MSIE_USER_AGENT_REGEX
+from djangorestframework.utils.mediatypes import is_form_media_type
+
 from decimal import Decimal
 import re
+from StringIO import StringIO
 
 
-__all__ = ['RequestMixin',
+__all__ = ('RequestMixin',
            'ResponseMixin',
            'AuthMixin',
            'ReadModelMixin',
            'CreateModelMixin',
            'UpdateModelMixin',
            'DeleteModelMixin',
-           'ListModelMixin']
+           'ListModelMixin')
+
 
 ########## Request Mixin ##########
 
 class RequestMixin(object):
-    """Mixin class to provide request parsing behaviour."""
+    """
+    Mixin class to provide request parsing behaviour.
+    """
 
     USE_FORM_OVERLOADING = True
     METHOD_PARAM = "_method"
@@ -53,39 +60,18 @@ class RequestMixin(object):
 
     def _get_content_type(self):
         """
-        Returns a MediaType object, representing the request's content type header.
+        Returns the content type header.
         """
         if not hasattr(self, '_content_type'):
-            content_type = self.request.META.get('HTTP_CONTENT_TYPE', self.request.META.get('CONTENT_TYPE', ''))
-            if content_type:
-                self._content_type = MediaType(content_type)
-            else:
-                self._content_type = None
+            self._content_type = self.request.META.get('HTTP_CONTENT_TYPE', self.request.META.get('CONTENT_TYPE', ''))
         return self._content_type
 
 
     def _set_content_type(self, content_type):
         """
-        Set the content type.  Should be a MediaType object.
+        Set the content type header.
         """
         self._content_type = content_type
-
-
-    def _get_accept(self):
-        """
-        Returns a list of MediaType objects, representing the request's accept header.
-        """
-        if not hasattr(self, '_accept'):
-            accept = self.request.META.get('HTTP_ACCEPT', '*/*')
-            self._accept = [MediaType(elem) for elem in accept.split(',')]
-        return self._accept
-
-
-    def _set_accept(self):
-        """
-        Set the acceptable media types.  Should be a list of MediaType objects.
-        """
-        self._accept = accept
 
 
     def _get_stream(self):
@@ -115,7 +101,7 @@ class RequestMixin(object):
                 #      treated as a limited byte stream.
                 #   2. It *can* be treated as a limited byte stream, in which case there's a
                 #      minor bug in the test client, and potentially some redundant
-                #      code in MultipartParser.
+                #      code in MultiPartParser.
                 #
                 #   It's an issue because it affects if you can pass a request off to code that
                 #   does something like:
@@ -166,12 +152,12 @@ class RequestMixin(object):
         If it is then alter self.method, self.content_type, self.CONTENT to reflect that rather than simply
         delegating them to the original request.
         """
-        if not self.USE_FORM_OVERLOADING or self.method != 'POST' or not self.content_type.is_form():
+        if not self.USE_FORM_OVERLOADING or self.method != 'POST' or not is_form_media_type(self.content_type):
             return
 
         # Temporarily switch to using the form parsers, then parse the content
         parsers = self.parsers
-        self.parsers = (FormParser, MultipartParser)
+        self.parsers = (FormParser, MultiPartParser)
         content = self.RAW_CONTENT
         self.parsers = parsers
 
@@ -182,7 +168,7 @@ class RequestMixin(object):
 
         # Content overloading - rewind the stream and modify the content type
         if self.CONTENT_PARAM in content and self.CONTENTTYPE_PARAM in content:
-            self._content_type = MediaType(content[self.CONTENTTYPE_PARAM])
+            self._content_type = content[self.CONTENTTYPE_PARAM]
             self._stream = StringIO(content[self.CONTENT_PARAM])
             del(self._raw_content)
 
@@ -191,26 +177,21 @@ class RequestMixin(object):
         """
         Parse the request content.
 
-        May raise a 415 ErrorResponse (Unsupported Media Type),
-        or a 400 ErrorResponse (Bad Request).
+        May raise a 415 ErrorResponse (Unsupported Media Type), or a 400 ErrorResponse (Bad Request).
         """
         if stream is None or content_type is None:
             return None
 
         parsers = as_tuple(self.parsers)
 
-        parser = None
         for parser_cls in parsers:
-            if parser_cls.handles(content_type):
-                parser = parser_cls(self)
-                break
+            parser = parser_cls(self)
+            if parser.can_handle_request(content_type):
+                return parser.parse(stream)
 
-        if parser is None:
-            raise ErrorResponse(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                                    {'error': 'Unsupported media type in request \'%s\'.' %
-                                     content_type.media_type})
-
-        return parser.parse(stream)
+        raise ErrorResponse(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+                            {'error': 'Unsupported media type in request \'%s\'.' %
+                            content_type})
 
 
     def validate(self, content):
@@ -250,7 +231,6 @@ class RequestMixin(object):
 
     method = property(_get_method, _set_method)
     content_type = property(_get_content_type, _set_content_type)
-    accept = property(_get_accept, _set_accept)
     stream = property(_get_stream, _set_stream)
     RAW_CONTENT = property(_get_raw_content)
     CONTENT = property(_get_content)
@@ -259,11 +239,13 @@ class RequestMixin(object):
 ########## ResponseMixin ##########
 
 class ResponseMixin(object):
-    """Adds behaviour for pluggable Renderers to a :class:`.BaseView` or Django :class:`View`. class.
+    """
+    Adds behavior for pluggable Renderers to a :class:`.BaseView` or Django :class:`View`. class.
     
     Default behaviour is to use standard HTTP Accept header content negotiation.
     Also supports overidding the content type by specifying an _accept= parameter in the URL.
-    Ignores Accept headers from Internet Explorer user agents and uses a sensible browser Accept header instead."""
+    Ignores Accept headers from Internet Explorer user agents and uses a sensible browser Accept header instead.
+    """
 
     ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
     REWRITE_IE_ACCEPT_HEADER = True
@@ -272,7 +254,9 @@ class ResponseMixin(object):
 
         
     def render(self, response):
-        """Takes a :class:`Response` object and returns a Django :class:`HttpResponse`."""
+        """
+        Takes a ``Response`` object and returns an ``HttpResponse``.
+        """
         self.response = response
 
         try:
@@ -374,7 +358,7 @@ class ResponseMixin(object):
 
     @property
     def default_renderer(self):
-        """Return the resource's most prefered renderer.
+        """Return the resource's most preferred renderer.
         (This renderer is used if the client does not send and Accept: header, or sends Accept: */*)"""
         return self.renderers[0]
 
@@ -382,40 +366,49 @@ class ResponseMixin(object):
 ########## Auth Mixin ##########
 
 class AuthMixin(object):
-    """Mixin class to provide authentication and permission checking."""
+    """
+    Simple mixin class to provide authentication and permission checking,
+    by adding a set of authentication and permission classes on a ``View``.
+    
+    TODO: wrap this behavior around dispatch()
+    """
     authentication = ()
     permissions = ()
 
     @property
-    def auth(self):
-        if not hasattr(self, '_auth'):
-            self._auth = self._authenticate()
-        return self._auth
-
+    def user(self):
+        if not hasattr(self, '_user'):
+            self._user = self._authenticate()
+        return self._user
+    
     def _authenticate(self):
+        """
+        Attempt to authenticate the request using each authentication class in turn.
+        Returns a ``User`` object, which may be ``AnonymousUser``.
+        """
         for authentication_cls in self.authentication:
             authentication = authentication_cls(self)
-            auth = authentication.authenticate(self.request)
-            if auth:
-                return auth
-        return None
+            user = authentication.authenticate(self.request)
+            if user:
+                return user
+        return AnonymousUser()
 
-    def check_permissions(self):
-        if not self.permissions:
-            return
-
+    def _check_permissions(self):
+        """
+        Check user permissions and either raise an ``ErrorResponse`` or return.
+        """
+        user = self.user
         for permission_cls in self.permissions:
             permission = permission_cls(self)
-            if not permission.has_permission(self.auth):
-                raise ErrorResponse(status.HTTP_403_FORBIDDEN,
-                                   {'detail': 'You do not have permission to access this resource. ' +
-                                    'You may need to login or otherwise authenticate the request.'})                
+            permission.check_permission(user)                
 
 
 ########## Model Mixins ##########
 
 class ReadModelMixin(object):
-    """Behaviour to read a model instance on GET requests"""
+    """
+    Behavior to read a model instance on GET requests
+    """
     def get(self, request, *args, **kwargs):
         model = self.resource.model
         try:
@@ -432,7 +425,9 @@ class ReadModelMixin(object):
 
 
 class CreateModelMixin(object):
-    """Behaviour to create a model instance on POST requests"""
+    """
+    Behavior to create a model instance on POST requests
+    """
     def post(self, request, *args, **kwargs):        
         model = self.resource.model
         # translated 'related_field' kwargs into 'related_field_id'
@@ -454,7 +449,9 @@ class CreateModelMixin(object):
 
 
 class UpdateModelMixin(object):
-    """Behaviour to update a model instance on PUT requests"""
+    """
+    Behavior to update a model instance on PUT requests
+    """
     def put(self, request, *args, **kwargs):
         model = self.resource.model
         # TODO: update on the url of a non-existing resource url doesn't work correctly at the moment - will end up with a new url 
@@ -477,7 +474,9 @@ class UpdateModelMixin(object):
 
 
 class DeleteModelMixin(object):
-    """Behaviour to delete a model instance on DELETE requests"""
+    """
+    Behavior to delete a model instance on DELETE requests
+    """
     def delete(self, request, *args, **kwargs):
         model = self.resource.model
         try:
@@ -495,11 +494,13 @@ class DeleteModelMixin(object):
 
 
 class ListModelMixin(object):
-    """Behaviour to list a set of model instances on GET requests"""
+    """
+    Behavior to list a set of model instances on GET requests
+    """
     queryset = None
 
     def get(self, request, *args, **kwargs):
-        queryset = self.queryset if self.queryset else self.model.objects.all()
+        queryset = self.queryset if self.queryset else self.resource.model.objects.all()
         return queryset.filter(**kwargs)
 
 

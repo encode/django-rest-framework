@@ -4,7 +4,7 @@ Tests for content parsing, and form-overloaded content parsing.
 from django.test import TestCase
 from djangorestframework.compat import RequestFactory
 from djangorestframework.mixins import RequestMixin
-from djangorestframework.parsers import FormParser, MultipartParser, PlainTextParser
+from djangorestframework.parsers import FormParser, MultiPartParser, PlainTextParser
 
 
 class TestContentParsing(TestCase):
@@ -19,7 +19,7 @@ class TestContentParsing(TestCase):
     def ensure_determines_form_content_POST(self, view):
         """Ensure view.RAW_CONTENT returns content for POST request with form content."""
         form_data = {'qwerty': 'uiop'}
-        view.parsers = (FormParser, MultipartParser)
+        view.parsers = (FormParser, MultiPartParser)
         view.request = self.req.post('/', data=form_data)
         self.assertEqual(view.RAW_CONTENT, form_data)
 
@@ -34,7 +34,7 @@ class TestContentParsing(TestCase):
     def ensure_determines_form_content_PUT(self, view):
         """Ensure view.RAW_CONTENT returns content for PUT request with form content."""
         form_data = {'qwerty': 'uiop'}
-        view.parsers = (FormParser, MultipartParser)
+        view.parsers = (FormParser, MultiPartParser)
         view.request = self.req.put('/', data=form_data)
         self.assertEqual(view.RAW_CONTENT, form_data)
 

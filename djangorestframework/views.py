@@ -7,11 +7,11 @@ from djangorestframework.mixins import *
 from djangorestframework import resource, renderers, parsers, authentication, permissions, validators, status
 
 
-__all__ = ['BaseView',
+__all__ = ('BaseView',
            'ModelView',
            'InstanceModelView',
            'ListOrModelView',
-           'ListOrCreateModelView']
+           'ListOrCreateModelView')
 
 
 
@@ -32,14 +32,14 @@ class BaseView(RequestMixin, ResponseMixin, AuthMixin, View):
     # List of parsers the resource can parse the request with.
     parsers = ( parsers.JSONParser,
                 parsers.FormParser,
-                parsers.MultipartParser )
+                parsers.MultiPartParser )
 
     # List of validators to validate, cleanup and normalize the request content    
     validators = ( validators.FormValidator, )
 
     # List of all authenticating methods to attempt.
-    authentication = ( authentication.UserLoggedInAuthenticator,
-                       authentication.BasicAuthenticator )
+    authentication = ( authentication.UserLoggedInAuthenticaton,
+                       authentication.BasicAuthenticaton )
     
     # List of all permissions that must be checked.
     permissions = ( permissions.FullAnonAccess, )
@@ -92,7 +92,7 @@ class BaseView(RequestMixin, ResponseMixin, AuthMixin, View):
             self.perform_form_overloading()
 
             # Authenticate and check request is has the relevant permissions
-            self.check_permissions()
+            self._check_permissions()
 
             # Get the appropriate handler method
             if self.method.lower() in self.http_method_names:
@@ -112,9 +112,12 @@ class BaseView(RequestMixin, ResponseMixin, AuthMixin, View):
 
             # Pre-serialize filtering (eg filter complex objects into natively serializable types)
             response.cleaned_content = self.resource.object_to_serializable(response.raw_content)
-
+    
         except ErrorResponse, exc:
             response = exc.response
+        except:
+            import traceback
+            traceback.print_exc()
 
         # Always add these headers.
         #
@@ -124,6 +127,7 @@ class BaseView(RequestMixin, ResponseMixin, AuthMixin, View):
         response.headers['Vary'] = 'Authenticate, Accept'
 
         return self.render(response)
+    
 
 
 class ModelView(BaseView):
@@ -134,11 +138,11 @@ class InstanceModelView(ReadModelMixin, UpdateModelMixin, DeleteModelMixin, Mode
     """A view which provides default operations for read/update/delete against a model instance."""
     pass
 
-class ListModelResource(ListModelMixin, ModelView):
+class ListModelView(ListModelMixin, ModelView):
     """A view which provides default operations for list, against a model in the database."""
     pass
 
-class ListOrCreateModelResource(ListModelMixin, CreateModelMixin, ModelView):
+class ListOrCreateModelView(ListModelMixin, CreateModelMixin, ModelView):
     """A view which provides default operations for list and create, against a model in the database."""
     pass
 

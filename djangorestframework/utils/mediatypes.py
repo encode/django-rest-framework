@@ -7,11 +7,39 @@ See http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7
 from django.http.multipartparser import parse_header
 
 
-class MediaType(object):
+def media_type_matches(lhs, rhs):
+    """
+    Returns ``True`` if the media type in the first argument <= the
+    media type in the second argument.  The media types are strings
+    as described by the HTTP spec.
+
+    Valid media type strings include:
+
+    'application/json indent=4'
+    'application/json'
+    'text/*'
+    '*/*'
+    """
+    lhs = _MediaType(lhs)
+    rhs = _MediaType(rhs)
+    return lhs.match(rhs)
+
+
+def is_form_media_type(media_type):
+    """
+    Return True if the media type is a valid form media type as defined by the HTML4 spec.
+    (NB. HTML5 also adds text/plain to the list of valid form media types, but we don't support this here)
+    """
+    media_type = _MediaType(media_type)
+    return media_type.full_type == 'application/x-www-form-urlencoded' or \
+           media_type.full_type == 'multipart/form-data'
+  
+               
+class _MediaType(object):
     def __init__(self, media_type_str):
         self.orig = media_type_str
-        self.media_type, self.params = parse_header(media_type_str)
-        self.main_type, sep, self.sub_type = self.media_type.partition('/')
+        self.full_type, self.params = parse_header(media_type_str)
+        self.main_type, sep, self.sub_type = self.full_type.partition('/')
 
     def match(self, other):
         """Return true if this MediaType satisfies the constraint of the given MediaType."""
@@ -55,14 +83,6 @@ class MediaType(object):
         # NB. quality values should only have up to 3 decimal points
         # http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.9
         return self.quality * 10000 + self.precedence
-
-    def is_form(self):
-        """
-        Return True if the MediaType is a valid form media type as defined by the HTML4 spec.
-        (NB. HTML5 also adds text/plain to the list of valid form media types, but we don't support this here)
-        """
-        return self.media_type == 'application/x-www-form-urlencoded' or \
-               self.media_type == 'multipart/form-data'
     
     def as_tuple(self):
         return (self.main_type, self.sub_type, self.params)

@@ -39,7 +39,7 @@ This new parser only flattens the lists of parameters that contain a single valu
     >>> MyFormParser(some_view).parse(StringIO(inpt)) == {'key1': 'bla1', 'key2': ['blo1', 'blo2']}
     True
 
-.. note:: The same functionality is available for :class:`parsers.MultipartParser`.
+.. note:: The same functionality is available for :class:`parsers.MultiPartParser`.
 
 Submitting an empty list
 --------------------------
@@ -80,9 +80,8 @@ import httplib, mimetypes
 from tempfile import TemporaryFile
 from django.test import TestCase
 from djangorestframework.compat import RequestFactory
-from djangorestframework.parsers import MultipartParser
+from djangorestframework.parsers import MultiPartParser
 from djangorestframework.views import BaseView
-from djangorestframework.utils.mediatypes import MediaType
 from StringIO import StringIO
 
 def encode_multipart_formdata(fields, files):
@@ -113,18 +112,18 @@ def encode_multipart_formdata(fields, files):
 def get_content_type(filename):
     return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
 
-class TestMultipartParser(TestCase):
+class TestMultiPartParser(TestCase):
     def setUp(self):
         self.req = RequestFactory()
         self.content_type, self.body = encode_multipart_formdata([('key1', 'val1'), ('key1', 'val2')],
         [('file1', 'pic.jpg', 'blablabla'), ('file1', 't.txt', 'blobloblo')])
 
     def test_multipartparser(self):
-        """Ensure that MultipartParser can parse multipart/form-data that contains a mix of several files and parameters."""
+        """Ensure that MultiPartParser can parse multipart/form-data that contains a mix of several files and parameters."""
         post_req = RequestFactory().post('/', self.body, content_type=self.content_type)
         view = BaseView()
         view.request = post_req
-        parsed = MultipartParser(view).parse(StringIO(self.body))
+        parsed = MultiPartParser(view).parse(StringIO(self.body))
         self.assertEqual(parsed['key1'], 'val1')
         self.assertEqual(parsed.FILES['file1'].read(), 'blablabla')
 

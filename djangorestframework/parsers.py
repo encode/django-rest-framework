@@ -1,5 +1,6 @@
-"""Django supports parsing the content of an HTTP request, but only for form POST requests.
-That behaviour is sufficient for dealing with standard HTML forms, but it doesn't map well
+"""
+Django supports parsing the content of an HTTP request, but only for form POST requests.
+That behavior is sufficient for dealing with standard HTML forms, but it doesn't map well
 to general HTTP requests.
 
 We need a method to be able to:
@@ -8,54 +9,72 @@ We need a method to be able to:
 2) Determine the parsed content on a request for media types other than application/x-www-form-urlencoded
    and multipart/form-data.  (eg also handle multipart/json)
 """
-from django.http.multipartparser import MultiPartParser as DjangoMPParser
-from django.utils import simplejson as json
 
-from djangorestframework.response import ErrorResponse
+from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
+from django.utils import simplejson as json
 from djangorestframework import status
-from djangorestframework.utils import as_tuple
-from djangorestframework.utils.mediatypes import MediaType
 from djangorestframework.compat import parse_qs
+from djangorestframework.response import ErrorResponse
+from djangorestframework.utils import as_tuple
+from djangorestframework.utils.mediatypes import media_type_matches
+
+__all__ = (
+    'BaseParser',
+    'JSONParser',
+    'PlainTextParser',
+    'FormParser',
+    'MultiPartParser'
+)
 
 
 class BaseParser(object):
-    """All parsers should extend BaseParser, specifying a media_type attribute,
-    and overriding the parse() method."""
+    """
+    All parsers should extend BaseParser, specifying a media_type attribute,
+    and overriding the parse() method.
+    """
     media_type = None
 
     def __init__(self, view):
         """
-        Initialise the parser with the View instance as state,
-        in case the parser needs to access any metadata on the View object.
-        
+        Initialize the parser with the ``View`` instance as state,
+        in case the parser needs to access any metadata on the ``View`` object.
         """
         self.view = view
     
-    @classmethod
-    def handles(self, media_type):
+    def can_handle_request(self, media_type):
         """
-        Returns `True` if this parser is able to deal with the given MediaType.
+        Returns `True` if this parser is able to deal with the given media type.
+        
+        The default implementation for this function is to check the ``media_type``
+        argument against the ``media_type`` attribute set on the class to see if
+        they match.
+        
+        This may be overridden to provide for other behavior, but typically you'll
+        instead want to just set the ``media_type`` attribute on the class.
         """
-        return media_type.match(self.media_type)
+        return media_type_matches(media_type, self.media_type)
 
     def parse(self, stream):
-        """Given a stream to read from, return the deserialized output.
-        The return value may be of any type, but for many parsers it might typically be a dict-like object."""
+        """
+        Given a stream to read from, return the deserialized output.
+        The return value may be of any type, but for many parsers it might typically be a dict-like object.
+        """
         raise NotImplementedError("BaseParser.parse() Must be overridden to be implemented.")
 
 
 class JSONParser(BaseParser):
-    media_type = MediaType('application/json')
+    media_type = 'application/json'
 
     def parse(self, stream):
         try:
             return json.load(stream)
         except ValueError, exc:
-            raise ErrorResponse(status.HTTP_400_BAD_REQUEST, {'detail': 'JSON parse error - %s' % str(exc)})
+            raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
+                                {'detail': 'JSON parse error - %s' % unicode(exc)})
 
 
 class DataFlatener(object):
-    """Utility object for flatening dictionaries of lists. Useful for "urlencoded" decoded data."""
+    """Utility object for flattening dictionaries of lists. Useful for "urlencoded" decoded data."""
 
     def flatten_data(self, data):
         """Given a data dictionary {<key>: <value_list>}, returns a flattened dictionary
@@ -83,9 +102,9 @@ class PlainTextParser(BaseParser):
     """
     Plain text parser.
     
-    Simply returns the content of the stream
+    Simply returns the content of the stream.
     """
-    media_type = MediaType('text/plain')
+    media_type = 'text/plain'
 
     def parse(self, stream):
         return stream.read()
@@ -98,7 +117,7 @@ class FormParser(BaseParser, DataFlatener):
     In order to handle select multiple (and having possibly more than a single value for each parameter),
     you can customize the output by subclassing the method 'is_a_list'."""
 
-    media_type = MediaType('application/x-www-form-urlencoded')
+    media_type = 'application/x-www-form-urlencoded'
 
     """The value of the parameter when the select multiple is empty.
     Browsers are usually stripping the select multiple that have no option selected from the parameters sent.
@@ -138,14 +157,14 @@ class MultipartData(dict):
         dict.__init__(self, data)
         self.FILES = files
 
-class MultipartParser(BaseParser, DataFlatener):
-    media_type = MediaType('multipart/form-data')
+class MultiPartParser(BaseParser, DataFlatener):
+    media_type = 'multipart/form-data'
     RESERVED_FORM_PARAMS = ('csrfmiddlewaretoken',)
 
     def parse(self, stream):
         upload_handlers = self.view.request._get_upload_handlers()
-        django_mpp = DjangoMPParser(self.view.request.META, stream, upload_handlers)
-        data, files = django_mpp.parse()
+        django_parser = DjangoMultiPartParser(self.view.request.META, stream, upload_handlers)
+        data, files = django_parser.parse()
 
         # Flatening data, files and combining them
         data = self.flatten_data(dict(data.iterlists()))

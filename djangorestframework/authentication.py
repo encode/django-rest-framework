@@ -1,43 +1,58 @@
-"""The :mod:`authentication` modules provides for pluggable authentication behaviour.
-
-Authentication behaviour is provided by adding the mixin class :class:`AuthenticatorMixin` to a :class:`.BaseView` or Django :class:`View` class.
-
-The set of authentication which are use is then specified by setting the :attr:`authentication` attribute on the class, and listing a set of authentication classes.
 """
+The ``authentication`` module provides a set of pluggable authentication classes.
+
+Authentication behavior is provided by adding the ``AuthMixin`` class to a ``View`` .
+
+The set of authentication methods which are used is then specified by setting
+``authentication`` attribute on the ``View`` class, and listing a set of authentication classes.
+"""
+
 from django.contrib.auth import authenticate
 from django.middleware.csrf import CsrfViewMiddleware
 from djangorestframework.utils import as_tuple
 import base64
 
+__all__ = (
+    'BaseAuthenticaton',
+    'BasicAuthenticaton',
+    'UserLoggedInAuthenticaton'
+)
 
-class BaseAuthenticator(object):
-    """All authentication should extend BaseAuthenticator."""
+
+class BaseAuthenticaton(object):
+    """
+    All authentication classes should extend BaseAuthentication.
+    """
 
     def __init__(self, view):
-        """Initialise the authentication with the mixin instance as state,
-        in case the authentication needs to access any metadata on the mixin object."""
+        """
+        Authentication classes are always passed the current view on creation.
+        """
         self.view = view
 
     def authenticate(self, request):
-        """Authenticate the request and return the authentication context or None.
+        """
+        Authenticate the request and return a ``User`` instance or None. (*)
 
-        An authentication context might be something as simple as a User object, or it might
-        be some more complicated token, for example authentication tokens which are signed
-        against a particular set of permissions for a given user, over a given timeframe.
-
-        The default permission checking on View will use the allowed_methods attribute
-        for permissions if the authentication context is not None, and use anon_allowed_methods otherwise.
-
-        The authentication context is available to the method calls eg View.get(request)
-        by accessing self.auth in order to allow them to apply any more fine grained permission
-        checking at the point the response is being generated.
+        This function must be overridden to be implemented.
         
-        This function must be overridden to be implemented."""
+        (*) The authentication context _will_ typically be a ``User`` object,
+        but it need not be.  It can be any user-like object so long as the
+        permissions classes on the view can handle the object and use
+        it to determine if the request has the required permissions or not. 
+
+        This can be an important distinction if you're implementing some token
+        based authentication mechanism, where the authentication context
+        may be more involved than simply mapping to a ``User``.
+        """
         return None
 
 
-class BasicAuthenticator(BaseAuthenticator):
-    """Use HTTP Basic authentication"""
+class BasicAuthenticaton(BaseAuthenticaton):
+    """
+    Use HTTP Basic authentication.
+    """
+
     def authenticate(self, request):
         from django.utils.encoding import smart_unicode, DjangoUnicodeDecodeError
         
@@ -60,9 +75,13 @@ class BasicAuthenticator(BaseAuthenticator):
         return None
                 
 
-class UserLoggedInAuthenticator(BaseAuthenticator):
-    """Use Django's built-in request session for authentication."""
+class UserLoggedInAuthenticaton(BaseAuthenticaton):
+    """
+    Use Django's session framework for authentication.
+    """
+
     def authenticate(self, request):
+        # TODO: Switch this back to request.POST, and let MultiPartParser deal with the consequences.
         if getattr(request, 'user', None) and request.user.is_active:
             # If this is a POST request we enforce CSRF validation.
             if request.method.upper() == 'POST':
@@ -77,8 +96,4 @@ class UserLoggedInAuthenticator(BaseAuthenticator):
         return None
 
 
-#class DigestAuthentication(BaseAuthentication):
-#    pass
-#
-#class OAuthAuthentication(BaseAuthentication):
-#    pass
+# TODO: TokenAuthentication, DigestAuthentication, OAuthAuthentication

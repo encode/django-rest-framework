@@ -29,8 +29,8 @@ class BaseRenderer(object):
     override the render() function."""
     media_type = None
 
-    def __init__(self, resource):
-        self.resource = resource
+    def __init__(self, view):
+        self.view = view
 
     def render(self, output=None, verbose=False):
         """By default render simply returns the ouput as-is.
@@ -42,8 +42,11 @@ class BaseRenderer(object):
 
 
 class TemplateRenderer(BaseRenderer):
-    """Provided for convienience.
-    Render the output by simply rendering it with the given template."""
+    """A Base class provided for convenience.
+
+    Render the output simply by using the given template.
+    To create a template renderer, subclass this, and set
+    the ``media_type`` and ``template`` attributes"""
     media_type = None
     template = None
 
@@ -139,7 +142,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
                                                                       widget=forms.Textarea)
 
         # If either of these reserved parameters are turned off then content tunneling is not possible
-        if self.resource.CONTENTTYPE_PARAM is None or self.resource.CONTENT_PARAM is None:
+        if self.view.CONTENTTYPE_PARAM is None or self.view.CONTENT_PARAM is None:
             return None
 
         # Okey doke, let's do it
@@ -147,18 +150,18 @@ class DocumentingTemplateRenderer(BaseRenderer):
 
 
     def render(self, output=None):
-        content = self._get_content(self.resource, self.resource.request, output)
-        form_instance = self._get_form_instance(self.resource)
+        content = self._get_content(self.view, self.view.request, output)
+        form_instance = self._get_form_instance(self.view)
 
         if url_resolves(settings.LOGIN_URL) and url_resolves(settings.LOGOUT_URL):
-            login_url = "%s?next=%s" % (settings.LOGIN_URL, quote_plus(self.resource.request.path))
-            logout_url = "%s?next=%s" % (settings.LOGOUT_URL, quote_plus(self.resource.request.path))
+            login_url = "%s?next=%s" % (settings.LOGIN_URL, quote_plus(self.view.request.path))
+            logout_url = "%s?next=%s" % (settings.LOGOUT_URL, quote_plus(self.view.request.path))
         else:
             login_url = None
             logout_url = None
 
-        name = get_name(self.resource)
-        description = get_description(self.resource)
+        name = get_name(self.view)
+        description = get_description(self.view)
 
         markeddown = None
         if apply_markdown:
@@ -167,14 +170,14 @@ class DocumentingTemplateRenderer(BaseRenderer):
             except AttributeError:  # TODO: possibly split the get_description / get_name into a mixin class
                 markeddown = None
 
-        breadcrumb_list = get_breadcrumbs(self.resource.request.path)
+        breadcrumb_list = get_breadcrumbs(self.view.request.path)
 
         template = loader.get_template(self.template)
-        context = RequestContext(self.resource.request, {
+        context = RequestContext(self.view.request, {
             'content': content,
-            'resource': self.resource,
-            'request': self.resource.request,
-            'response': self.resource.response,
+            'resource': self.view,
+            'request': self.view.request,
+            'response': self.view.response,
             'description': description,
             'name': name,
             'markeddown': markeddown,
@@ -233,11 +236,12 @@ class DocumentingPlainTextRenderer(DocumentingTemplateRenderer):
     Useful for browsing an API with command line tools."""
     media_type = 'text/plain'
     template = 'renderer.txt'
-    
+
+
 DEFAULT_RENDERERS = ( JSONRenderer,
-                     DocumentingHTMLRenderer,
-                     DocumentingXHTMLRenderer,
-                     DocumentingPlainTextRenderer,
-                     XMLRenderer )
+                      DocumentingHTMLRenderer,
+                      DocumentingXHTMLRenderer,
+                      DocumentingPlainTextRenderer,
+                      XMLRenderer )
 
 
