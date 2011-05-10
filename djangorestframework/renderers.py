@@ -78,26 +78,26 @@ class DocumentingTemplateRenderer(BaseRenderer):
     """
     template = None
 
-    def _get_content(self, resource, request, obj, media_type):
+    def _get_content(self, view, request, obj, media_type):
         """Get the content as if it had been rendered by a non-documenting renderer.
 
         (Typically this will be the content as it would have been if the Resource had been
         requested with an 'Accept: */*' header, although with verbose style formatting if appropriate.)"""
 
         # Find the first valid renderer and render the content. (Don't use another documenting renderer.)
-        renderers = [renderer for renderer in resource.renderers if not isinstance(renderer, DocumentingTemplateRenderer)]
+        renderers = [renderer for renderer in view.renderers if not isinstance(renderer, DocumentingTemplateRenderer)]
         if not renderers:
             return '[No renderers were found]'
 
         media_type = add_media_type_param(media_type, 'indent', '4')
-        content = renderers[0](resource).render(obj, media_type)
+        content = renderers[0](view).render(obj, media_type)
         if not all(char in string.printable for char in content):
             return '[%d bytes of binary content]'
             
         return content
             
 
-    def _get_form_instance(self, resource):
+    def _get_form_instance(self, view):
         """Get a form, possibly bound to either the input or output data.
         In the absence on of the Resource having an associated form then
         provide a form that can be used to submit arbitrary content."""
@@ -105,13 +105,13 @@ class DocumentingTemplateRenderer(BaseRenderer):
         #form_instance = resource.form_instance
         # TODO! Reinstate this
 
-        form_instance = getattr(resource, 'bound_form_instance', None)
+        form_instance = getattr(view, 'bound_form_instance', None)
 
-        if not form_instance and hasattr(resource, 'get_bound_form'):
+        if not form_instance and hasattr(view, 'get_bound_form'):
             # Otherwise if we have a response that is valid against the form then use that
-            if resource.response.has_content_body:
+            if view.response.has_content_body:
                 try:
-                    form_instance = resource.get_bound_form(resource.response.cleaned_content)
+                    form_instance = view.get_bound_form(view.response.cleaned_content)
                     if form_instance and not form_instance.is_valid():
                         form_instance = None
                 except:
@@ -120,41 +120,41 @@ class DocumentingTemplateRenderer(BaseRenderer):
         # If we still don't have a form instance then try to get an unbound form
         if not form_instance:
             try:
-                form_instance = resource.get_bound_form()
+                form_instance = view.get_bound_form()
             except:
                 pass
 
         # If we still don't have a form instance then try to get an unbound form which can tunnel arbitrary content types
         if not form_instance:
-            form_instance = self._get_generic_content_form(resource)
+            form_instance = self._get_generic_content_form(view)
         
         return form_instance
 
 
-    def _get_generic_content_form(self, resource):
+    def _get_generic_content_form(self, view):
         """Returns a form that allows for arbitrary content types to be tunneled via standard HTML forms
         (Which are typically application/x-www-form-urlencoded)"""
 
         # If we're not using content overloading there's no point in supplying a generic form,
-        # as the resource won't treat the form's value as the content of the request.
-        if not getattr(resource, 'USE_FORM_OVERLOADING', False):
+        # as the view won't treat the form's value as the content of the request.
+        if not getattr(view, 'USE_FORM_OVERLOADING', False):
             return None
 
         # NB. http://jacobian.org/writing/dynamic-form-generation/
         class GenericContentForm(forms.Form):
-            def __init__(self, resource):
+            def __init__(self, view):
                 """We don't know the names of the fields we want to set until the point the form is instantiated,
                 as they are determined by the Resource the form is being created against.
                 Add the fields dynamically."""
                 super(GenericContentForm, self).__init__()
 
-                contenttype_choices = [(media_type, media_type) for media_type in resource.parsed_media_types]
-                initial_contenttype = resource.default_parser.media_type
+                contenttype_choices = [(media_type, media_type) for media_type in view.parsed_media_types]
+                initial_contenttype = view.default_parser.media_type
 
-                self.fields[resource.CONTENTTYPE_PARAM] = forms.ChoiceField(label='Content Type',
+                self.fields[view.CONTENTTYPE_PARAM] = forms.ChoiceField(label='Content Type',
                                                                             choices=contenttype_choices,
                                                                             initial=initial_contenttype)
-                self.fields[resource.CONTENT_PARAM] = forms.CharField(label='Content',
+                self.fields[view.CONTENT_PARAM] = forms.CharField(label='Content',
                                                                       widget=forms.Textarea)
 
         # If either of these reserved parameters are turned off then content tunneling is not possible
@@ -162,7 +162,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
             return None
 
         # Okey doke, let's do it
-        return GenericContentForm(resource)
+        return GenericContentForm(view)
 
 
     def render(self, obj=None, media_type=None):
@@ -205,6 +205,12 @@ class DocumentingTemplateRenderer(BaseRenderer):
         })
         
         ret = template.render(context)
+
+        # Munge DELETE Response code to allow us to return content
+        # (Do this *after* we've rendered the template so that we include
+        # the normal deletion response code in the output)
+        if self.view.response.status == 204:
+            self.view.response.status = 200
 
         return ret
 

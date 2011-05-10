@@ -268,18 +268,14 @@ class ResponseMixin(object):
             response = exc.response
         
         # Serialize the response content
+        # TODO: renderer.media_type isn't the right thing to do here...
         if response.has_content_body:
             content = renderer(self).render(response.cleaned_content, renderer.media_type)
         else:
             content = renderer(self).render()
-        
-        # Munge DELETE Response code to allow us to return content
-        # (Do this *after* we've rendered the template so that we include the normal deletion response code in the output)
-        if response.status == 204:
-            response.status = 200
 
         # Build the HTTP Response
-        # TODO: Check if renderer.mimetype is underspecified, or if a content-type header has been set
+        # TODO: renderer.media_type isn't the right thing to do here...
         resp = HttpResponse(content, mimetype=renderer.media_type, status=response.status)
         for (key, val) in response.headers.items():
             resp[key] = val
