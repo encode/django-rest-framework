@@ -4,7 +4,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.db.models.query import QuerySet
 from django.db.models.fields.related import RelatedField
 from django.http import HttpResponse
-from django.http.multipartparser import LimitBytes  # TODO: Use LimitedStream in compat
+from django.http.multipartparser import LimitBytes
 
 from djangorestframework import status
 from djangorestframework.parsers import FormParser, MultiPartParser
@@ -87,7 +87,8 @@ class RequestMixin(object):
                 content_length = int(request.META.get('CONTENT_LENGTH', request.META.get('HTTP_CONTENT_LENGTH')))
             except (ValueError, TypeError):
                 content_length = 0
-                
+
+            # TODO: Add 1.3's LimitedStream to compat and use that.
             # Currently only supports parsing request body as a stream with 1.3
             if content_length == 0:
                 return None
@@ -116,6 +117,8 @@ class RequestMixin(object):
                 #except (ValueError, TypeError):
                 #    content_length = 0
                 # self._stream = LimitedStream(request, content_length)
+                #
+                # UPDATE: http://code.djangoproject.com/ticket/15785
                 self._stream = request
             else:
                 self._stream = StringIO(request.raw_post_data)
@@ -227,7 +230,7 @@ class RequestMixin(object):
     @property
     def default_parser(self):
         """Return the view's most preferred renderer.
-        (This has no behavioural effect, but is may be used by documenting renderers)"""        
+        (This has no behavioral effect, but is may be used by documenting renderers)"""        
         return self.parsers[0]
 
 
@@ -244,17 +247,17 @@ class ResponseMixin(object):
     """
     Adds behavior for pluggable Renderers to a :class:`.BaseView` or Django :class:`View`. class.
     
-    Default behaviour is to use standard HTTP Accept header content negotiation.
-    Also supports overidding the content type by specifying an _accept= parameter in the URL.
+    Default behavior is to use standard HTTP Accept header content negotiation.
+    Also supports overriding the content type by specifying an _accept= parameter in the URL.
     Ignores Accept headers from Internet Explorer user agents and uses a sensible browser Accept header instead.
     """
-
     ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
     REWRITE_IE_ACCEPT_HEADER = True
 
     renderers = ()
-
-        
+     
+    # TODO: wrap this behavior around dispatch(), ensuring it works well with
+    # existing Django classes that use render_to_response.
     def render(self, response):
         """
         Takes a ``Response`` object and returns an ``HttpResponse``.
@@ -284,10 +287,12 @@ class ResponseMixin(object):
 
 
     def _determine_renderer(self, request):
-        """Return the appropriate renderer for the output, given the client's 'Accept' header,
+        """
+        Return the appropriate renderer for the output, given the client's 'Accept' header,
         and the content types that this mixin knows how to serve.
         
-        See: RFC 2616, Section 14 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html"""
+        See: RFC 2616, Section 14 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+        """
 
         if self.ACCEPT_QUERY_PARAM and request.GET.get(self.ACCEPT_QUERY_PARAM, None):
             # Use _accept parameter override
@@ -351,13 +356,17 @@ class ResponseMixin(object):
 
     @property
     def renderted_media_types(self):
-        """Return an list of all the media types that this resource can render."""
+        """
+        Return an list of all the media types that this resource can render.
+        """
         return [renderer.media_type for renderer in self.renderers]
 
     @property
     def default_renderer(self):
-        """Return the resource's most preferred renderer.
-        (This renderer is used if the client does not send and Accept: header, or sends Accept: */*)"""
+        """
+        Return the resource's most preferred renderer.
+        (This renderer is used if the client does not send and Accept: header, or sends Accept: */*)
+        """
         return self.renderers[0]
 
 
@@ -367,8 +376,6 @@ class AuthMixin(object):
     """
     Simple mixin class to provide authentication and permission checking,
     by adding a set of authentication and permission classes on a ``View``.
-    
-    TODO: wrap this behavior around dispatch()
     """
     authentication = ()
     permissions = ()
@@ -391,6 +398,7 @@ class AuthMixin(object):
                 return user
         return AnonymousUser()
 
+    # TODO: wrap this behavior around dispatch()
     def _check_permissions(self):
         """
         Check user permissions and either raise an ``ErrorResponse`` or return.

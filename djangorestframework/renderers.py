@@ -1,8 +1,9 @@
 """
 Renderers are used to serialize a View's output into specific media types.
-django-rest-framework also provides HTML and PlainText renderers that help self-document the API,
-by serializing the output along with documentation regarding the Resource, output status and headers,
-and providing forms and links depending on the allowed methods, renderers and parsers on the Resource. 
+
+Django REST framework also provides HTML and PlainText renderers that help self-document the API,
+by serializing the output along with documentation regarding the View, output status and headers,
+and providing forms and links depending on the allowed methods, renderers and parsers on the View. 
 """
 from django import forms
 from django.conf import settings
@@ -33,8 +34,8 @@ __all__ = (
 
 class BaseRenderer(object):
     """
-    All renderers must extend this class, set the media_type attribute, and
-    override the render() function.
+    All renderers must extend this class, set the media_type attribute,
+    and override the render() function.
     """
     media_type = None
 
@@ -43,13 +44,20 @@ class BaseRenderer(object):
 
     def render(self, obj=None, media_type=None):
         """
+        Given an object render it into a string.
+
+        The requested media type is also passed to this method,
+        as it may contain parameters relevant to how the parser
+        should render the output.
+        EG: 'application/json; indent=4'
+
         By default render simply returns the ouput as-is.
         Override this method to provide for other behavior.
         """
         if obj is None:
             return ''
         
-        return obj
+        return str(obj)
 
 
 class TemplateRenderer(BaseRenderer):
@@ -101,10 +109,8 @@ class DocumentingTemplateRenderer(BaseRenderer):
         """Get a form, possibly bound to either the input or output data.
         In the absence on of the Resource having an associated form then
         provide a form that can be used to submit arbitrary content."""
-        # Get the form instance if we have one bound to the input
-        #form_instance = resource.form_instance
-        # TODO! Reinstate this
 
+        # Get the form instance if we have one bound to the input
         form_instance = getattr(view, 'bound_form_instance', None)
 
         if not form_instance and hasattr(view, 'get_bound_form'):
@@ -183,7 +189,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
         if apply_markdown:
             try:
                 markeddown = apply_markdown(description)
-            except AttributeError:  # TODO: possibly split the get_description / get_name into a mixin class
+            except AttributeError:
                 markeddown = None
 
         breadcrumb_list = get_breadcrumbs(self.view.request.path)
