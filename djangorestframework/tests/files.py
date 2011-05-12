@@ -2,7 +2,7 @@ from django.test import TestCase
 from django import forms
 from djangorestframework.compat import RequestFactory
 from djangorestframework.views import BaseView
-from djangorestframework.resource import FormResource
+from djangorestframework.resources import FormResource
 import StringIO
 
 class UploadFilesTests(TestCase):

@@ -5,7 +5,7 @@ from djangorestframework.compat import RequestFactory
 from djangorestframework.validators import BaseValidator, FormValidator, ModelFormValidator
 from djangorestframework.response import ErrorResponse
 from djangorestframework.views import BaseView
-from djangorestframework.resource import Resource
+from djangorestframework.resources import Resource
 
 
 class TestValidatorMixinInterfaces(TestCase):

@@ -48,23 +48,18 @@ class RequestMixin(object):
 
     parsers = ()
 
-    def _get_method(self):
+    @property
+    def method(self):
         """
-        Returns the HTTP method for the current view.
+        Returns the HTTP method.
         """
         if not hasattr(self, '_method'):
             self._method = self.request.method
         return self._method
 
 
-    def _set_method(self, method):
-        """
-        Set the method for the current view.
-        """
-        self._method = method
-
-
-    def _get_content_type(self):
+    @property
+    def content_type(self):
         """
         Returns the content type header.
         """
@@ -73,11 +68,32 @@ class RequestMixin(object):
         return self._content_type
 
 
-    def _set_content_type(self, content_type):
+    @property
+    def DATA(self):
         """
-        Set the content type header.
+        Returns the request data.
         """
-        self._content_type = content_type
+        if not hasattr(self, '_data'):
+            self._load_data_and_files()
+        return self._data
+
+
+    @property
+    def FILES(self):
+        """
+        Returns the request files.
+        """
+        if not hasattr(self, '_files'):
+            self._load_data_and_files()
+        return self._files
+
+
+    def _load_data_and_files(self):
+        """
+        Parse the request content into self.DATA and self.FILES.
+        """
+        stream = self._get_stream()
+        (self._data, self._files) = self._parse(stream, self.content_type)
 
 
     def _get_stream(self):
@@ -134,27 +150,6 @@ class RequestMixin(object):
         return self._stream
 
 
-    def _set_stream(self, stream):
-        """
-        Set the stream representing the request body.
-        """
-        self._stream = stream
-
-
-    def _load_data_and_files(self):
-        (self._data, self._files) = self._parse(self.stream, self.content_type)
-
-    def _get_data(self):
-        if not hasattr(self, '_data'):
-            self._load_data_and_files()
-        return self._data
-
-    def _get_files(self):
-        if not hasattr(self, '_files'):
-            self._load_data_and_files()
-        return self._files
-
-
     # TODO: Modify this so that it happens implictly, rather than being called explicitly
     # ie accessing any of .DATA, .FILES, .content_type, .method will force
     # form overloading.
@@ -164,7 +159,10 @@ class RequestMixin(object):
         If it is then alter self.method, self.content_type, self.CONTENT to reflect that rather than simply
         delegating them to the original request.
         """
-        if not self._USE_FORM_OVERLOADING or self.method != 'POST' or not is_form_media_type(self.content_type):
+
+        # We only need to use form overloading on form POST requests
+        content_type = self.request.META.get('HTTP_CONTENT_TYPE', self.request.META.get('CONTENT_TYPE', ''))
+        if not self._USE_FORM_OVERLOADING or self.request.method != 'POST' or not not is_form_media_type(content_type):
             return
 
         # Temporarily switch to using the form parsers, then parse the content
@@ -175,7 +173,7 @@ class RequestMixin(object):
 
         # Method overloading - change the method and remove the param from the content
         if self._METHOD_PARAM in content:
-            self.method = content[self._METHOD_PARAM].upper()
+            self._method = content[self._METHOD_PARAM].upper()
             del self._data[self._METHOD_PARAM]
 
         # Content overloading - rewind the stream and modify the content type
@@ -207,27 +205,20 @@ class RequestMixin(object):
 
 
     @property
-    def parsed_media_types(self):
+    def _parsed_media_types(self):
         """
-        Return an list of all the media types that this view can parse.
+        Return a list of all the media types that this view can parse.
         """
         return [parser.media_type for parser in self.parsers]
 
     
     @property
-    def default_parser(self):
+    def _default_parser(self):
         """
-        Return the view's most preferred parser.
-        (This has no behavioral effect, but is may be used by documenting renderers)
+        Return the view's default parser.
         """        
         return self.parsers[0]
 
-
-    method = property(_get_method, _set_method)
-    content_type = property(_get_content_type, _set_content_type)
-    stream = property(_get_stream, _set_stream)
-    DATA = property(_get_data)
-    FILES = property(_get_files)
 
 
 ########## ResponseMixin ##########
@@ -240,8 +231,9 @@ class ResponseMixin(object):
     Also supports overriding the content type by specifying an _accept= parameter in the URL.
     Ignores Accept headers from Internet Explorer user agents and uses a sensible browser Accept header instead.
     """
-    ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
-    REWRITE_IE_ACCEPT_HEADER = True
+
+    _ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
+    _IGNORE_IE_ACCEPT_HEADER = True
 
     renderers = ()
      
@@ -256,7 +248,7 @@ class ResponseMixin(object):
         try:
             renderer = self._determine_renderer(self.request)
         except ErrorResponse, exc:
-            renderer = self.default_renderer
+            renderer = self._default_renderer
             response = exc.response
         
         # Serialize the response content
@@ -287,10 +279,10 @@ class ResponseMixin(object):
         See: RFC 2616, Section 14 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
         """
 
-        if self.ACCEPT_QUERY_PARAM and request.GET.get(self.ACCEPT_QUERY_PARAM, None):
+        if self._ACCEPT_QUERY_PARAM and request.GET.get(self._ACCEPT_QUERY_PARAM, None):
             # Use _accept parameter override
-            accept_list = [request.GET.get(self.ACCEPT_QUERY_PARAM)]
-        elif (self.REWRITE_IE_ACCEPT_HEADER and
+            accept_list = [request.GET.get(self._ACCEPT_QUERY_PARAM)]
+        elif (self._IGNORE_IE_ACCEPT_HEADER and
               request.META.has_key('HTTP_USER_AGENT') and
               MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT'])):
             accept_list = ['text/html', '*/*']
@@ -299,7 +291,7 @@ class ResponseMixin(object):
             accept_list = request.META["HTTP_ACCEPT"].split(',')
         else:
             # No accept header specified
-            return self.default_renderer
+            return self._default_renderer
         
         # Parse the accept header into a dict of {qvalue: set of media types}
         # We ignore mietype parameters
@@ -340,25 +332,24 @@ class ResponseMixin(object):
 
             # Return default
             if '*/*' in accept_set:
-                return self.default_renderer
+                return self._default_renderer
       
 
         raise ErrorResponse(status.HTTP_406_NOT_ACCEPTABLE,
                                 {'detail': 'Could not satisfy the client\'s Accept header',
-                                 'available_types': self.rendered_media_types})
+                                 'available_types': self._rendered_media_types})
 
     @property
-    def rendered_media_types(self):
+    def _rendered_media_types(self):
         """
-        Return an list of all the media types that this resource can render.
+        Return an list of all the media types that this view can render.
         """
         return [renderer.media_type for renderer in self.renderers]
 
     @property
-    def default_renderer(self):
+    def _default_renderer(self):
         """
-        Return the resource's most preferred renderer.
-        (This renderer is used if the client does not send and Accept: header, or sends Accept: */*)
+        Return the view's default renderer.
         """
         return self.renderers[0]
 
@@ -367,8 +358,7 @@ class ResponseMixin(object):
 
 class AuthMixin(object):
     """
-    Simple mixin class to provide authentication and permission checking,
-    by adding a set of authentication and permission classes on a ``View``.
+    Simple mixin class to add authentication and permission checking to a ``View`` class.
     """
     authentication = ()
     permissions = ()
@@ -404,16 +394,16 @@ class AuthMixin(object):
 
 ########## Resource Mixin ##########
 
-class ResourceMixin(object):    
+class ResourceMixin(object):
     @property
     def CONTENT(self):
         if not hasattr(self, '_content'):
-            self._content = self._get_content(self.DATA, self.FILES)
+            self._content = self._get_content()
         return self._content
 
-    def _get_content(self, data, files):
+    def _get_content(self):
         resource = self.resource(self)
-        return resource.validate(data, files)
+        return resource.validate(self.DATA, self.FILES)
 
     def get_bound_form(self, content=None):
         resource = self.resource(self)

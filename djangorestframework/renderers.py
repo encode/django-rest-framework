@@ -52,13 +52,48 @@ class BaseRenderer(object):
         should render the output.
         EG: 'application/json; indent=4'
 
-        By default render simply returns the ouput as-is.
+        By default render simply returns the output as-is.
         Override this method to provide for other behavior.
         """
         if obj is None:
             return ''
         
         return str(obj)
+
+
+class JSONRenderer(BaseRenderer):
+    """
+    Renderer which serializes to JSON
+    """
+    media_type = 'application/json'
+
+    def render(self, obj=None, media_type=None):
+        if obj is None:
+            return ''
+
+        # If the media type looks like 'application/json; indent=4', then
+        # pretty print the result.
+        indent = get_media_type_params(media_type).get('indent', None)
+        sort_keys = False
+        try:
+            indent = max(min(int(indent), 8), 0)
+            sort_keys = True
+        except (ValueError, TypeError):
+            indent = None
+
+        return json.dumps(obj, indent=indent, sort_keys=sort_keys)
+
+
+class XMLRenderer(BaseRenderer):
+    """
+    Renderer which serializes to XML.
+    """
+    media_type = 'application/xml'
+
+    def render(self, obj=None, media_type=None):
+        if obj is None:
+            return ''
+        return dict2xml(obj)
 
 
 class TemplateRenderer(BaseRenderer):
@@ -161,8 +196,8 @@ class DocumentingTemplateRenderer(BaseRenderer):
                 Add the fields dynamically."""
                 super(GenericContentForm, self).__init__()
 
-                contenttype_choices = [(media_type, media_type) for media_type in view.parsed_media_types]
-                initial_contenttype = view.default_parser.media_type
+                contenttype_choices = [(media_type, media_type) for media_type in view._parsed_media_types]
+                initial_contenttype = view._default_parser.media_type
 
                 self.fields[view._CONTENTTYPE_PARAM] = forms.ChoiceField(label='Content Type',
                                                                          choices=contenttype_choices,
@@ -204,16 +239,19 @@ class DocumentingTemplateRenderer(BaseRenderer):
         template = loader.get_template(self.template)
         context = RequestContext(self.view.request, {
             'content': content,
-            'resource': self.view,        # TODO: rename to view
+            'view': self.view,
             'request': self.view.request, # TODO: remove
             'response': self.view.response,
             'description': description,
             'name': name,
             'markeddown': markeddown,
             'breadcrumblist': breadcrumb_list,
+            'available_media_types': self.view._rendered_media_types,
             'form': form_instance,
             'login_url': login_url,
             'logout_url': logout_url,
+            'ACCEPT_PARAM': self.view._ACCEPT_QUERY_PARAM,
+            'METHOD_PARAM': self.view._METHOD_PARAM,
             'ADMIN_MEDIA_PREFIX': settings.ADMIN_MEDIA_PREFIX
         })
         
@@ -226,39 +264,6 @@ class DocumentingTemplateRenderer(BaseRenderer):
             self.view.response.status = 200
 
         return ret
-
-
-class JSONRenderer(BaseRenderer):
-    """
-    Renderer which serializes to JSON
-    """
-    media_type = 'application/json'
-
-    def render(self, obj=None, media_type=None):
-        if obj is None:
-            return ''
-
-        indent = get_media_type_params(media_type).get('indent', None)
-        if indent is not None:
-            try:
-                indent = int(indent)
-            except ValueError:
-                indent = None
-
-        sort_keys = indent and True or False
-        return json.dumps(obj, indent=indent, sort_keys=sort_keys)
-
-
-class XMLRenderer(BaseRenderer):
-    """
-    Renderer which serializes to XML.
-    """
-    media_type = 'application/xml'
-
-    def render(self, obj=None, media_type=None):
-        if obj is None:
-            return ''
-        return dict2xml(obj)
 
 
 class DocumentingHTMLRenderer(DocumentingTemplateRenderer):

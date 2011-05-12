@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from djangorestframework.compat import View
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.mixins import *
-from djangorestframework import resource, renderers, parsers, authentication, permissions, validators, status
+from djangorestframework import resources, renderers, parsers, authentication, permissions, status
 
 
 __all__ = (
@@ -22,7 +22,7 @@ class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
     Performs request deserialization, response serialization, authentication and input validation."""
 
     # Use the base resource by default
-    resource = resource.Resource
+    resource = resources.Resource
 
     # List of renderers the resource can serialize the response with, ordered by preference.
     renderers = ( renderers.JSONRenderer,
@@ -35,9 +35,6 @@ class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
     parsers = ( parsers.JSONParser,
                 parsers.FormParser,
                 parsers.MultiPartParser )
-
-    # List of validators to validate, cleanup and normalize the request content    
-    validators = ( validators.FormValidator, )
 
     # List of all authenticating methods to attempt.
     authentication = ( authentication.UserLoggedInAuthenticaton,
@@ -54,6 +51,9 @@ class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
 
     @property
     def allowed_methods(self):
+        """
+        Return the list of allowed HTTP methods, uppercased.
+        """
         return [method.upper() for method in self.http_method_names if hasattr(self, method)]
 
     def http_method_not_allowed(self, request, *args, **kwargs):
@@ -61,7 +61,7 @@ class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
         Return an HTTP 405 error if an operation is called which does not have a handler method.
         """
         raise ErrorResponse(status.HTTP_405_METHOD_NOT_ALLOWED,
-                                {'detail': 'Method \'%s\' not allowed on this resource.' % self.method})
+                            {'detail': 'Method \'%s\' not allowed on this resource.' % self.method})
 
 
     # Note: session based authentication is explicitly CSRF validated,
@@ -127,7 +127,7 @@ class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
 
 class ModelView(BaseView):
     """A RESTful view that maps to a model in the database."""
-    validators = (validators.ModelFormValidator,)
+    resource = resources.ModelResource
 
 class InstanceModelView(ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelView):
     """A view which provides default operations for read/update/delete against a model instance."""
