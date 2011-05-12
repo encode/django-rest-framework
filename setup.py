@@ -31,7 +31,7 @@ setup(
     ]
 )
 
-import os, shutil
-shutil.rmtree(os.path.join(os.path.dirname(__file__), 'djangorestframework.egg-info'), True)
+#import os, shutil
+#shutil.rmtree(os.path.join(os.path.dirname(__file__), 'djangorestframework.egg-info'), True)
 
 
