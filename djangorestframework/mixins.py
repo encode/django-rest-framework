@@ -54,7 +54,7 @@ class RequestMixin(object):
         Returns the HTTP method.
         """
         if not hasattr(self, '_method'):
-            self._method = self.request.method
+            self._load_metadata()
         return self._method
 
 
@@ -64,7 +64,7 @@ class RequestMixin(object):
         Returns the content type header.
         """
         if not hasattr(self, '_content_type'):
-            self._content_type = self.request.META.get('HTTP_CONTENT_TYPE', self.request.META.get('CONTENT_TYPE', ''))
+            self._load_metadata()
         return self._content_type
 
 
@@ -94,6 +94,14 @@ class RequestMixin(object):
         """
         stream = self._get_stream()
         (self._data, self._files) = self._parse(stream, self.content_type)
+
+    def _load_metadata(self):
+        """
+        Set the method and content_type and then check if they've been overridden.
+        """
+        self._method = self.request.method
+        self._content_type = self.request.META.get('HTTP_CONTENT_TYPE', self.request.META.get('CONTENT_TYPE', ''))
+        self._perform_form_overloading()
 
 
     def _get_stream(self):
@@ -161,8 +169,7 @@ class RequestMixin(object):
         """
 
         # We only need to use form overloading on form POST requests
-        content_type = self.request.META.get('HTTP_CONTENT_TYPE', self.request.META.get('CONTENT_TYPE', ''))
-        if not self._USE_FORM_OVERLOADING or self.request.method != 'POST' or not not is_form_media_type(content_type):
+        if not self._USE_FORM_OVERLOADING or self._method != 'POST' or not not is_form_media_type(self._content_type):
             return
 
         # Temporarily switch to using the form parsers, then parse the content
