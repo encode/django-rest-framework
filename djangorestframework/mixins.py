@@ -1,4 +1,6 @@
-""""""
+"""
+The mixins module provides a set of reusable mixin classes that can be added to a ``View``.
+"""
 
 from django.contrib.auth.models import AnonymousUser
 from django.db.models.query import QuerySet
@@ -18,9 +20,12 @@ from StringIO import StringIO
 
 
 __all__ = (
+    # Base behavior mixins
     'RequestMixin',
     'ResponseMixin',
     'AuthMixin',
+    'ResourceMixin',
+    # Model behavior mixins
     'ReadModelMixin',
     'CreateModelMixin',
     'UpdateModelMixin',
@@ -36,13 +41,12 @@ class RequestMixin(object):
     Mixin class to provide request parsing behavior.
     """
 
-    USE_FORM_OVERLOADING = True
-    METHOD_PARAM = "_method"
-    CONTENTTYPE_PARAM = "_content_type"
-    CONTENT_PARAM = "_content"
+    _USE_FORM_OVERLOADING = True
+    _METHOD_PARAM = '_method'
+    _CONTENTTYPE_PARAM = '_content_type'
+    _CONTENT_PARAM = '_content'
 
     parsers = ()
-    validators = ()
 
     def _get_method(self):
         """
@@ -137,62 +141,58 @@ class RequestMixin(object):
         self._stream = stream
 
 
-    def _get_raw_content(self):
-        """
-        Returns the parsed content of the request
-        """
-        if not hasattr(self, '_raw_content'):
-            self._raw_content = self.parse(self.stream, self.content_type)
-        return self._raw_content
+    def _load_data_and_files(self):
+        (self._data, self._files) = self._parse(self.stream, self.content_type)
 
+    def _get_data(self):
+        if not hasattr(self, '_data'):
+            self._load_data_and_files()
+        return self._data
 
-    def _get_content(self):
-        """
-        Returns the parsed and validated content of the request
-        """
-        if not hasattr(self, '_content'):
-            self._content = self.validate(self.RAW_CONTENT)
+    def _get_files(self):
+        if not hasattr(self, '_files'):
+            self._load_data_and_files()
+        return self._files
 
-        return self._content
 
     # TODO: Modify this so that it happens implictly, rather than being called explicitly
-    # ie accessing any of .DATA, .FILES, .content_type, .stream or .method will force
+    # ie accessing any of .DATA, .FILES, .content_type, .method will force
     # form overloading.
-    def perform_form_overloading(self):
+    def _perform_form_overloading(self):
         """
         Check the request to see if it is using form POST '_method'/'_content'/'_content_type' overrides.
         If it is then alter self.method, self.content_type, self.CONTENT to reflect that rather than simply
         delegating them to the original request.
         """
-        if not self.USE_FORM_OVERLOADING or self.method != 'POST' or not is_form_media_type(self.content_type):
+        if not self._USE_FORM_OVERLOADING or self.method != 'POST' or not is_form_media_type(self.content_type):
             return
 
         # Temporarily switch to using the form parsers, then parse the content
         parsers = self.parsers
         self.parsers = (FormParser, MultiPartParser)
-        content = self.RAW_CONTENT
+        content = self.DATA
         self.parsers = parsers
 
         # Method overloading - change the method and remove the param from the content
-        if self.METHOD_PARAM in content:
-            self.method = content[self.METHOD_PARAM].upper()
-            del self._raw_content[self.METHOD_PARAM]
+        if self._METHOD_PARAM in content:
+            self.method = content[self._METHOD_PARAM].upper()
+            del self._data[self._METHOD_PARAM]
 
         # Content overloading - rewind the stream and modify the content type
-        if self.CONTENT_PARAM in content and self.CONTENTTYPE_PARAM in content:
-            self._content_type = content[self.CONTENTTYPE_PARAM]
-            self._stream = StringIO(content[self.CONTENT_PARAM])
-            del(self._raw_content)
+        if self._CONTENT_PARAM in content and self._CONTENTTYPE_PARAM in content:
+            self._content_type = content[self._CONTENTTYPE_PARAM]
+            self._stream = StringIO(content[self._CONTENT_PARAM])
+            del(self._data)
 
 
-    def parse(self, stream, content_type):
+    def _parse(self, stream, content_type):
         """
         Parse the request content.
 
         May raise a 415 ErrorResponse (Unsupported Media Type), or a 400 ErrorResponse (Bad Request).
         """
         if stream is None or content_type is None:
-            return None
+            return (None, None)
 
         parsers = as_tuple(self.parsers)
 
@@ -206,48 +206,28 @@ class RequestMixin(object):
                             content_type})
 
 
-    # TODO: Acutally this needs to go into Resource
-    def validate(self, content):
-        """
-        Validate, cleanup, and type-ify the request content.
-        """
-        for validator_cls in self.validators:
-            validator = validator_cls(self)
-            content = validator.validate(content)
-        return content
-
-
-    # TODO: Acutally this needs to go into Resource
-    def get_bound_form(self, content=None):
-        """
-        Return a bound form instance for the given content,
-        if there is an appropriate form validator attached to the view.
-        """
-        for validator_cls in self.validators:
-            if hasattr(validator_cls, 'get_bound_form'):
-                validator = validator_cls(self)
-                return validator.get_bound_form(content)
-        return None
-
-
     @property
     def parsed_media_types(self):
-        """Return an list of all the media types that this view can parse."""
+        """
+        Return an list of all the media types that this view can parse.
+        """
         return [parser.media_type for parser in self.parsers]
 
     
     @property
     def default_parser(self):
-        """Return the view's most preferred parser.
-        (This has no behavioral effect, but is may be used by documenting renderers)"""        
+        """
+        Return the view's most preferred parser.
+        (This has no behavioral effect, but is may be used by documenting renderers)
+        """        
         return self.parsers[0]
 
 
     method = property(_get_method, _set_method)
     content_type = property(_get_content_type, _set_content_type)
     stream = property(_get_stream, _set_stream)
-    RAW_CONTENT = property(_get_raw_content)
-    CONTENT = property(_get_content)
+    DATA = property(_get_data)
+    FILES = property(_get_files)
 
 
 ########## ResponseMixin ##########
@@ -420,6 +400,28 @@ class AuthMixin(object):
         for permission_cls in self.permissions:
             permission = permission_cls(self)
             permission.check_permission(user)                
+
+
+########## Resource Mixin ##########
+
+class ResourceMixin(object):    
+    @property
+    def CONTENT(self):
+        if not hasattr(self, '_content'):
+            self._content = self._get_content(self.DATA, self.FILES)
+        return self._content
+
+    def _get_content(self, data, files):
+        resource = self.resource(self)
+        return resource.validate(data, files)
+
+    def get_bound_form(self, content=None):
+        resource = self.resource(self)
+        return resource.get_bound_form(content)
+
+    def object_to_data(self, obj):
+        resource = self.resource(self)
+        return resource.object_to_data(obj)
 
 
 ########## Model Mixins ##########

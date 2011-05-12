@@ -150,7 +150,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
 
         # If we're not using content overloading there's no point in supplying a generic form,
         # as the view won't treat the form's value as the content of the request.
-        if not getattr(view, 'USE_FORM_OVERLOADING', False):
+        if not getattr(view, '_USE_FORM_OVERLOADING', False):
             return None
 
         # NB. http://jacobian.org/writing/dynamic-form-generation/
@@ -164,14 +164,14 @@ class DocumentingTemplateRenderer(BaseRenderer):
                 contenttype_choices = [(media_type, media_type) for media_type in view.parsed_media_types]
                 initial_contenttype = view.default_parser.media_type
 
-                self.fields[view.CONTENTTYPE_PARAM] = forms.ChoiceField(label='Content Type',
-                                                                            choices=contenttype_choices,
-                                                                            initial=initial_contenttype)
-                self.fields[view.CONTENT_PARAM] = forms.CharField(label='Content',
-                                                                      widget=forms.Textarea)
+                self.fields[view._CONTENTTYPE_PARAM] = forms.ChoiceField(label='Content Type',
+                                                                         choices=contenttype_choices,
+                                                                         initial=initial_contenttype)
+                self.fields[view._CONTENT_PARAM] = forms.CharField(label='Content',
+                                                                   widget=forms.Textarea)
 
         # If either of these reserved parameters are turned off then content tunneling is not possible
-        if self.view.CONTENTTYPE_PARAM is None or self.view.CONTENT_PARAM is None:
+        if self.view._CONTENTTYPE_PARAM is None or self.view._CONTENT_PARAM is None:
             return None
 
         # Okey doke, let's do it

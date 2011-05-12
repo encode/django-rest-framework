@@ -2,6 +2,7 @@ from django.test import TestCase
 from django import forms
 from djangorestframework.compat import RequestFactory
 from djangorestframework.views import BaseView
+from djangorestframework.resource import FormResource
 import StringIO
 
 class UploadFilesTests(TestCase):
@@ -15,9 +16,12 @@ class UploadFilesTests(TestCase):
         class FileForm(forms.Form):
             file = forms.FileField
 
+        class MockResource(FormResource):
+            form = FileForm
+
         class MockView(BaseView):
             permissions = ()
-            form = FileForm
+            resource = MockResource
 
             def post(self, request, *args, **kwargs):
                 return {'FILE_NAME': self.CONTENT['file'].name,

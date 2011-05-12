@@ -17,7 +17,7 @@ __all__ = (
 
 
 
-class BaseView(RequestMixin, ResponseMixin, AuthMixin, View):
+class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
     """Handles incoming requests and maps them to REST operations.
     Performs request deserialization, response serialization, authentication and input validation."""
 
@@ -46,9 +46,6 @@ class BaseView(RequestMixin, ResponseMixin, AuthMixin, View):
     # List of all permissions that must be checked.
     permissions = ( permissions.FullAnonAccess, )
 
-    # Optional form for input validation and presentation of HTML formatted responses.
-    form = None
-
     # Allow name and description for the Resource to be set explicitly,
     # overiding the default classname/docstring behaviour.
     # These are used for documentation in the standard html and text renderers.
@@ -60,20 +57,11 @@ class BaseView(RequestMixin, ResponseMixin, AuthMixin, View):
         return [method.upper() for method in self.http_method_names if hasattr(self, method)]
 
     def http_method_not_allowed(self, request, *args, **kwargs):
-        """Return an HTTP 405 error if an operation is called which does not have a handler method."""
+        """
+        Return an HTTP 405 error if an operation is called which does not have a handler method.
+        """
         raise ErrorResponse(status.HTTP_405_METHOD_NOT_ALLOWED,
                                 {'detail': 'Method \'%s\' not allowed on this resource.' % self.method})
-
-
-    def cleanup_response(self, data):
-        """Perform any resource-specific data filtering prior to the standard HTTP
-        content-type serialization.
-
-        Eg filter complex objects that cannot be serialized by json/xml/etc into basic objects that can.
-        
-        TODO: This is going to be removed.  I think that the 'fields' behaviour is going to move into
-        the RendererMixin and Renderer classes."""
-        return data
 
 
     # Note: session based authentication is explicitly CSRF validated,
@@ -92,7 +80,7 @@ class BaseView(RequestMixin, ResponseMixin, AuthMixin, View):
             try:
                 # If using a form POST with '_method'/'_content'/'_content_type' overrides, then alter
                 # self.method, self.content_type, self.RAW_CONTENT & self.CONTENT appropriately.
-                self.perform_form_overloading()
+                self._perform_form_overloading()
     
                 # Authenticate and check request is has the relevant permissions
                 self._check_permissions()
@@ -114,13 +102,14 @@ class BaseView(RequestMixin, ResponseMixin, AuthMixin, View):
                     response = Response(status.HTTP_204_NO_CONTENT)
     
                 # Pre-serialize filtering (eg filter complex objects into natively serializable types)
-                response.cleaned_content = self.resource.object_to_serializable(response.raw_content)
+                response.cleaned_content = self.object_to_data(response.raw_content)
         
             except ErrorResponse, exc:
                 response = exc.response
             except:
                 import traceback
                 traceback.print_exc()
+                raise
     
             # Always add these headers.
             #

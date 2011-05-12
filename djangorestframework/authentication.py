@@ -85,9 +85,9 @@ class UserLoggedInAuthenticaton(BaseAuthenticaton):
         if getattr(request, 'user', None) and request.user.is_active:
             # If this is a POST request we enforce CSRF validation.
             if request.method.upper() == 'POST':
-                # Temporarily replace request.POST with .RAW_CONTENT,
+                # Temporarily replace request.POST with .DATA,
                 # so that we use our more generic request parsing
-                request._post = self.view.RAW_CONTENT
+                request._post = self.view.DATA
                 resp = CsrfViewMiddleware().process_view(request, None, (), {})
                 del(request._post)
                 if resp is not None:  # csrf failed

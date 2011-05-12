@@ -24,7 +24,8 @@ Here is some example data, which would eventually be sent along with a post requ
 
 Default behaviour for :class:`parsers.FormParser`, is to return a single value for each parameter :
 
-    >>> FormParser(some_view).parse(StringIO(inpt)) == {'key1': 'bla1', 'key2': 'blo1'}
+    >>> (data, files) = FormParser(some_view).parse(StringIO(inpt))
+    >>> data == {'key1': 'bla1', 'key2': 'blo1'}
     True
 
 However, you can customize this behaviour by subclassing :class:`parsers.FormParser`, and overriding :meth:`parsers.FormParser.is_a_list` :
@@ -36,7 +37,8 @@ However, you can customize this behaviour by subclassing :class:`parsers.FormPar
 
 This new parser only flattens the lists of parameters that contain a single value.
 
-    >>> MyFormParser(some_view).parse(StringIO(inpt)) == {'key1': 'bla1', 'key2': ['blo1', 'blo2']}
+    >>> (data, files) = MyFormParser(some_view).parse(StringIO(inpt))
+    >>> data == {'key1': 'bla1', 'key2': ['blo1', 'blo2']}
     True
 
 .. note:: The same functionality is available for :class:`parsers.MultiPartParser`.
@@ -61,7 +63,8 @@ The browsers usually strip the parameter completely. A hack to avoid this, and t
 
 :class:`parsers.FormParser` strips the values ``_empty`` from all the lists.
 
-    >>> MyFormParser(some_view).parse(StringIO(inpt)) == {'key1': 'blo1'}
+    >>> (data, files) = MyFormParser(some_view).parse(StringIO(inpt))
+    >>> data == {'key1': 'blo1'}
     True
 
 Oh ... but wait a second, the parameter ``key2`` isn't even supposed to be a list, so the parser just stripped it.
@@ -71,7 +74,8 @@ Oh ... but wait a second, the parameter ``key2`` isn't even supposed to be a lis
     ...     def is_a_list(self, key, val_list):
     ...         return key == 'key2'
     ... 
-    >>> MyFormParser(some_view).parse(StringIO(inpt)) == {'key1': 'blo1', 'key2': []}
+    >>> (data, files) = MyFormParser(some_view).parse(StringIO(inpt))
+    >>> data == {'key1': 'blo1', 'key2': []}
     True
 
 Better like that. Note that you can configure something else than ``_empty`` for the empty value by setting :attr:`parsers.FormParser.EMPTY_VALUE`.
@@ -123,7 +127,7 @@ class TestMultiPartParser(TestCase):
         post_req = RequestFactory().post('/', self.body, content_type=self.content_type)
         view = BaseView()
         view.request = post_req
-        parsed = MultiPartParser(view).parse(StringIO(self.body))
-        self.assertEqual(parsed['key1'], 'val1')
-        self.assertEqual(parsed.FILES['file1'].read(), 'blablabla')
+        (data, files) = MultiPartParser(view).parse(StringIO(self.body))
+        self.assertEqual(data['key1'], 'val1')
+        self.assertEqual(files['file1'].read(), 'blablabla')
 

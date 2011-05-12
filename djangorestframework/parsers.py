@@ -41,7 +41,7 @@ class BaseParser(object):
         """
         self.view = view
     
-    def can_handle_request(self, media_type):
+    def can_handle_request(self, content_type):
         """
         Returns `True` if this parser is able to deal with the given media type.
         
@@ -52,12 +52,12 @@ class BaseParser(object):
         This may be overridden to provide for other behavior, but typically you'll
         instead want to just set the ``media_type`` attribute on the class.
         """
-        return media_type_matches(media_type, self.media_type)
+        return media_type_matches(content_type, self.media_type)
 
     def parse(self, stream):
         """
         Given a stream to read from, return the deserialized output.
-        The return value may be of any type, but for many parsers it might typically be a dict-like object.
+        Should return a 2-tuple of (data, files).
         """
         raise NotImplementedError("BaseParser.parse() Must be overridden to be implemented.")
 
@@ -67,7 +67,7 @@ class JSONParser(BaseParser):
 
     def parse(self, stream):
         try:
-            return json.load(stream)
+            return (json.load(stream), None)
         except ValueError, exc:
             raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
                                 {'detail': 'JSON parse error - %s' % unicode(exc)})
@@ -107,7 +107,7 @@ class PlainTextParser(BaseParser):
     media_type = 'text/plain'
 
     def parse(self, stream):
-        return stream.read()
+        return (stream.read(), None)
 
 
 class FormParser(BaseParser, DataFlatener):
@@ -139,7 +139,7 @@ class FormParser(BaseParser, DataFlatener):
             if key in self.RESERVED_FORM_PARAMS:
                 data.pop(key)
 
-        return data
+        return (data, None)
 
     def remove_empty_val(self, val_list):
         """ """
@@ -151,11 +151,6 @@ class FormParser(BaseParser, DataFlatener):
             else:
                 val_list.pop(ind) 
 
-
-class MultipartData(dict):
-    def __init__(self, data, files):
-        dict.__init__(self, data)
-        self.FILES = files
 
 class MultiPartParser(BaseParser, DataFlatener):
     media_type = 'multipart/form-data'
@@ -175,4 +170,4 @@ class MultiPartParser(BaseParser, DataFlatener):
             if key in self.RESERVED_FORM_PARAMS:
                 data.pop(key)
         
-        return MultipartData(data, files)
+        return (data, files)
