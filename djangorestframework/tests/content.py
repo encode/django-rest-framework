@@ -12,16 +12,16 @@ class TestContentParsing(TestCase):
         self.req = RequestFactory()
 
     def ensure_determines_no_content_GET(self, view):
-        """Ensure view.RAW_CONTENT returns None for GET request with no content."""
+        """Ensure view.DATA returns None for GET request with no content."""
         view.request = self.req.get('/')
         self.assertEqual(view.DATA, None)
 
     def ensure_determines_form_content_POST(self, view):
-        """Ensure view.RAW_CONTENT returns content for POST request with form content."""
+        """Ensure view.DATA returns content for POST request with form content."""
         form_data = {'qwerty': 'uiop'}
         view.parsers = (FormParser, MultiPartParser)
         view.request = self.req.post('/', data=form_data)
-        self.assertEqual(view.DATA, form_data)
+        self.assertEqual(view.DATA.items(), form_data.items())
 
     def ensure_determines_non_form_content_POST(self, view):
         """Ensure view.RAW_CONTENT returns content for POST request with non-form content."""
@@ -75,5 +75,4 @@ class TestContentParsing(TestCase):
                      view._CONTENTTYPE_PARAM: content_type}
         view.request = self.req.post('/', form_data)
         view.parsers = (PlainTextParser,)
-        view._perform_form_overloading()
         self.assertEqual(view.DATA, content)

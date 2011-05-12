@@ -54,7 +54,7 @@ class RequestMixin(object):
         Returns the HTTP method.
         """
         if not hasattr(self, '_method'):
-            self._load_metadata()
+            self._load_method_and_content_type()
         return self._method
 
 
@@ -64,7 +64,7 @@ class RequestMixin(object):
         Returns the content type header.
         """
         if not hasattr(self, '_content_type'):
-            self._load_metadata()
+            self._load_method_and_content_type()
         return self._content_type
 
 
@@ -92,12 +92,16 @@ class RequestMixin(object):
         """
         Parse the request content into self.DATA and self.FILES.
         """
-        stream = self._get_stream()
-        (self._data, self._files) = self._parse(stream, self.content_type)
+        if not hasattr(self, '_content_type'):
+            self._load_method_and_content_type()
 
-    def _load_metadata(self):
+        if not hasattr(self, '_data'):
+            (self._data, self._files) = self._parse(self._get_stream(), self._content_type)
+
+
+    def _load_method_and_content_type(self):
         """
-        Set the method and content_type and then check if they've been overridden.
+        Set the method and content_type, and then check if they've been overridden.
         """
         self._method = self.request.method
         self._content_type = self.request.META.get('HTTP_CONTENT_TYPE', self.request.META.get('CONTENT_TYPE', ''))
@@ -108,86 +112,45 @@ class RequestMixin(object):
         """
         Returns an object that may be used to stream the request content.
         """
-        if not hasattr(self, '_stream'):
-            request = self.request
+        request = self.request
 
-            try:
-                content_length = int(request.META.get('CONTENT_LENGTH', request.META.get('HTTP_CONTENT_LENGTH')))
-            except (ValueError, TypeError):
-                content_length = 0
+        try:
+            content_length = int(request.META.get('CONTENT_LENGTH', request.META.get('HTTP_CONTENT_LENGTH')))
+        except (ValueError, TypeError):
+            content_length = 0
 
-            # TODO: Add 1.3's LimitedStream to compat and use that.
-            # Currently only supports parsing request body as a stream with 1.3
-            if content_length == 0:
-                return None
-            elif hasattr(request, 'read'):
-                # UPDATE BASED ON COMMENT BELOW:
-                #
-                # Yup, this was a bug in Django - fixed and waiting check in - see ticket 15785.
-                # http://code.djangoproject.com/ticket/15785
-                #
-                # COMMENT:
-                #
-                # It's not at all clear if this needs to be byte limited or not.
-                # Maybe I'm just being dumb but it looks to me like there's some issues
-                # with that in Django.
-                #
-                # Either:
-                #   1. It *can't* be treated as a limited byte stream, and you _do_ need to
-                #      respect CONTENT_LENGTH, in which case that ought to be documented,
-                #      and there probably ought to be a feature request for it to be
-                #      treated as a limited byte stream.
-                #   2. It *can* be treated as a limited byte stream, in which case there's a
-                #      minor bug in the test client, and potentially some redundant
-                #      code in MultiPartParser.
-                #
-                #   It's an issue because it affects if you can pass a request off to code that
-                #   does something like:
-                #
-                #   while stream.read(BUFFER_SIZE):
-                #       [do stuff]
-                #
-                #try:
-                #    content_length = int(request.META.get('CONTENT_LENGTH',0))
-                #except (ValueError, TypeError):
-                #    content_length = 0
-                # self._stream = LimitedStream(request, content_length)
-                self._stream = request
-            else:
-                self._stream = StringIO(request.raw_post_data)
-        return self._stream
+        # TODO: Add 1.3's LimitedStream to compat and use that.
+        # Currently only supports parsing request body as a stream with 1.3
+        if content_length == 0:
+            return None
+        elif hasattr(request, 'read'):
+             return request
+        return StringIO(request.raw_post_data)
 
 
-    # TODO: Modify this so that it happens implictly, rather than being called explicitly
-    # ie accessing any of .DATA, .FILES, .content_type, .method will force
-    # form overloading.
     def _perform_form_overloading(self):
         """
-        Check the request to see if it is using form POST '_method'/'_content'/'_content_type' overrides.
-        If it is then alter self.method, self.content_type, self.CONTENT to reflect that rather than simply
-        delegating them to the original request.
+        If this is a form POST request, then we need to check if the method and content/content_type have been
+        overridden by setting them in hidden form fields or not.
         """
 
-        # We only need to use form overloading on form POST requests
-        if not self._USE_FORM_OVERLOADING or self._method != 'POST' or not not is_form_media_type(self._content_type):
+        # We only need to use form overloading on form POST requests.
+        if not self._USE_FORM_OVERLOADING or self._method != 'POST' or not is_form_media_type(self._content_type):
             return
+        
+        # At this point we're committed to parsing the request as form data.
+        self._data = data = self.request.POST
+        self._files = self.request.FILES
 
-        # Temporarily switch to using the form parsers, then parse the content
-        parsers = self.parsers
-        self.parsers = (FormParser, MultiPartParser)
-        content = self.DATA
-        self.parsers = parsers
+        # Method overloading - change the method and remove the param from the content.
+        if self._METHOD_PARAM in data:
+            self._method = data[self._METHOD_PARAM].upper()
 
-        # Method overloading - change the method and remove the param from the content
-        if self._METHOD_PARAM in content:
-            self._method = content[self._METHOD_PARAM].upper()
-            del self._data[self._METHOD_PARAM]
-
-        # Content overloading - rewind the stream and modify the content type
-        if self._CONTENT_PARAM in content and self._CONTENTTYPE_PARAM in content:
-            self._content_type = content[self._CONTENTTYPE_PARAM]
-            self._stream = StringIO(content[self._CONTENT_PARAM])
-            del(self._data)
+        # Content overloading - modify the content type, and re-parse.
+        if self._CONTENT_PARAM in data and self._CONTENTTYPE_PARAM in data:
+            self._content_type = data[self._CONTENTTYPE_PARAM]
+            stream = StringIO(data[self._CONTENT_PARAM])
+            (self._data, self._files) = self._parse(stream, self._content_type)
 
 
     def _parse(self, stream, content_type):

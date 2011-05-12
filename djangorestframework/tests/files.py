@@ -24,8 +24,8 @@ class UploadFilesTests(TestCase):
             resource = MockResource
 
             def post(self, request, *args, **kwargs):
-                return {'FILE_NAME': self.CONTENT['file'].name,
-                        'FILE_CONTENT': self.CONTENT['file'].read()}
+                return {'FILE_NAME': self.CONTENT['file'][0].name,
+                        'FILE_CONTENT': self.CONTENT['file'][0].read()}
                 
         file = StringIO.StringIO('stuff')
         file.name = 'stuff.txt'

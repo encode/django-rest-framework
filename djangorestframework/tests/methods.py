@@ -23,5 +23,4 @@ class TestMethodOverloading(TestCase):
         """POST requests can be overloaded to another method by setting a reserved form field"""
         view = RequestMixin()
         view.request = self.req.post('/', {view._METHOD_PARAM: 'DELETE'})
-        view._perform_form_overloading()
         self.assertEqual(view.method, 'DELETE')

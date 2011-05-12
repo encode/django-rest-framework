@@ -77,11 +77,7 @@ class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
             prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
             set_script_prefix(prefix)
     
-            try:
-                # If using a form POST with '_method'/'_content'/'_content_type' overrides, then alter
-                # self.method, self.content_type, self.RAW_CONTENT & self.CONTENT appropriately.
-                self._perform_form_overloading()
-    
+            try:   
                 # Authenticate and check request is has the relevant permissions
                 self._check_permissions()
     
