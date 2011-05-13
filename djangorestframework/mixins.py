@@ -10,6 +10,7 @@ from django.http.multipartparser import LimitBytes
 
 from djangorestframework import status
 from djangorestframework.parsers import FormParser, MultiPartParser
+from djangorestframework.resources import Resource
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.utils import as_tuple, MSIE_USER_AGENT_REGEX
 from djangorestframework.utils.mediatypes import is_form_media_type
@@ -444,7 +445,7 @@ class ResourceMixin(object):
     It provides validation on the content of incoming requests,
     and filters the object representation into a serializable object for the response.
     """
-    resource = None
+    resource = Resource
 
     @property
     def CONTENT(self):
