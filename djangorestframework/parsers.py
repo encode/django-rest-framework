@@ -111,7 +111,8 @@ class PlainTextParser(BaseParser):
 
 
 class FormParser(BaseParser, DataFlatener):
-    """The default parser for form data.
+    """
+    The default parser for form data.
     Return a dict containing a single value for each non-reserved parameter.
 
     In order to handle select multiple (and having possibly more than a single value for each parameter),
@@ -122,7 +123,8 @@ class FormParser(BaseParser, DataFlatener):
     """The value of the parameter when the select multiple is empty.
     Browsers are usually stripping the select multiple that have no option selected from the parameters sent.
     A common hack to avoid this is to send the parameter with a value specifying that the list is empty.
-    This value will always be stripped before the data is returned."""
+    This value will always be stripped before the data is returned.
+    """
     EMPTY_VALUE = '_empty'
     RESERVED_FORM_PARAMS = ('csrfmiddlewaretoken',)
 

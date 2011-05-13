@@ -1,6 +1,6 @@
 """Tests for the resource module"""
 from django.test import TestCase
-from djangorestframework.resource import _object_to_data
+from djangorestframework.resources import _object_to_data
 
 import datetime
 import decimal

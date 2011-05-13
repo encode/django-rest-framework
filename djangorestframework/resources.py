@@ -16,9 +16,14 @@ def _model_to_dict(instance, fields=None, exclude=None):
     """
     opts = instance._meta
     data = {}
+
+    #print [rel.name for rel in opts.get_all_related_objects()]
+    #related = [rel.get_accessor_name() for rel in opts.get_all_related_objects()]
+    #print [getattr(instance, rel) for rel in related]
+
     for f in opts.fields + opts.many_to_many:
-        if not f.editable:
-            continue
+        #if not f.editable:
+        #    continue
         if fields and not f.name in fields:
             continue
         if exclude and f.name in exclude:
@@ -27,6 +32,15 @@ def _model_to_dict(instance, fields=None, exclude=None):
             data[f.name] = getattr(instance, f.name)
         else:
             data[f.name] = f.value_from_object(instance)
+
+    #print fields - (opts.fields + opts.many_to_many) 
+    #for related in [rel.get_accessor_name() for rel in opts.get_all_related_objects()]:
+    #    if fields and not related in fields:
+    #        continue
+    #    if exclude and related in exclude:
+    #        continue
+    #    data[related] = getattr(instance, related)
+    
     return data
 
 
@@ -126,6 +140,8 @@ class Resource(BaseResource):
         """
         A (horrible) munging of Piston's pre-serialization.  Returns a dict.
         """
+
+        return _object_to_data(obj)
 
         def _any(thing, fields=()):
             """

@@ -46,12 +46,20 @@ class RequestMixin(object):
     _CONTENTTYPE_PARAM = '_content_type'
     _CONTENT_PARAM = '_content'
 
+    """
+    The set of request parsers that the view can handle.
+    
+    Should be a tuple/list of classes as described in the ``parsers`` module.
+    """
     parsers = ()
 
     @property
     def method(self):
         """
         Returns the HTTP method.
+
+        This should be used instead of ``request.method``, as it allows the method
+        to be overridden by using a hidden form field on a form POST request.
         """
         if not hasattr(self, '_method'):
             self._load_method_and_content_type()
@@ -62,6 +70,10 @@ class RequestMixin(object):
     def content_type(self):
         """
         Returns the content type header.
+
+        This should be used instead of ``request.META.get('HTTP_CONTENT_TYPE')``,
+        as it allows the content type to be overridden by using a hidden form
+        field on a form POST request.
         """
         if not hasattr(self, '_content_type'):
             self._load_method_and_content_type()
@@ -71,7 +83,10 @@ class RequestMixin(object):
     @property
     def DATA(self):
         """
-        Returns the request data.
+        Parses the request body and returns the data.
+
+        Similar to ``request.POST``, except that it handles arbitrary parsers,
+        and also works on methods other than POST (eg PUT).
         """
         if not hasattr(self, '_data'):
             self._load_data_and_files()
@@ -81,7 +96,9 @@ class RequestMixin(object):
     @property
     def FILES(self):
         """
-        Returns the request files.
+        Parses the request body and returns the files.
+        Similar to request.FILES, except that it handles arbitrary parsers,
+        and also works on methods other than POST (eg PUT).
         """
         if not hasattr(self, '_files'):
             self._load_data_and_files()
@@ -205,8 +222,14 @@ class ResponseMixin(object):
     _ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
     _IGNORE_IE_ACCEPT_HEADER = True
 
+    """
+    The set of response renderers that the view can handle.
+    
+    Should be a tuple/list of classes as described in the ``renderers`` module.    
+    """
     renderers = ()
-     
+
+
     # TODO: wrap this behavior around dispatch(), ensuring it works
     # out of the box with existing Django classes that use render_to_response.
     def render(self, response):
@@ -330,14 +353,33 @@ class AuthMixin(object):
     """
     Simple mixin class to add authentication and permission checking to a ``View`` class.
     """
+    
+    """
+    The set of authentication types that this view can handle.
+    
+    
+    Should be a tuple/list of classes as described in the ``authentication`` module.    
+    """
     authentication = ()
+
+    """
+    The set of permissions that will be enforced on this view.
+    
+    Should be a tuple/list of classes as described in the ``permissions`` module.    
+    """
     permissions = ()
+
 
     @property
     def user(self):
+        """
+        Returns the user for the current request, as determined by the set of
+        authentication classes applied to the ``View``.  
+        """
         if not hasattr(self, '_user'):
             self._user = self._authenticate()
         return self._user
+ 
     
     def _authenticate(self):
         """
@@ -351,6 +393,7 @@ class AuthMixin(object):
                 return user
         return AnonymousUser()
 
+
     # TODO: wrap this behavior around dispatch()
     def _check_permissions(self):
         """
@@ -359,7 +402,7 @@ class AuthMixin(object):
         user = self.user
         for permission_cls in self.permissions:
             permission = permission_cls(self)
-            permission.check_permission(user)                
+            permission.check_permission(user)
 
 
 ########## Resource Mixin ##########

@@ -7,6 +7,7 @@ and providing forms and links depending on the allowed methods, renderers and pa
 """
 from django import forms
 from django.conf import settings
+from django.core.serializers.json import DateTimeAwareJSONEncoder
 from django.template import RequestContext, loader
 from django.utils import simplejson as json
 
@@ -81,7 +82,7 @@ class JSONRenderer(BaseRenderer):
         except (ValueError, TypeError):
             indent = None
 
-        return json.dumps(obj, indent=indent, sort_keys=sort_keys)
+        return json.dumps(obj, cls=DateTimeAwareJSONEncoder, indent=indent, sort_keys=sort_keys)
 
 
 class XMLRenderer(BaseRenderer):
