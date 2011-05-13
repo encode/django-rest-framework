@@ -18,8 +18,10 @@ __all__ = (
 
 
 class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
-    """Handles incoming requests and maps them to REST operations.
-    Performs request deserialization, response serialization, authentication and input validation."""
+    """
+    Handles incoming requests and maps them to REST operations.
+    Performs request deserialization, response serialization, authentication and input validation.
+    """
 
     # Use the base resource by default
     resource = resources.Resource
@@ -77,8 +79,8 @@ class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
         prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
         set_script_prefix(prefix)
 
-        try:   
-            # Authenticate and check request is has the relevant permissions
+        try:
+            # Authenticate and check request has the relevant permissions
             self._check_permissions()
 
             # Get the appropriate handler method
@@ -98,7 +100,7 @@ class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
                 response = Response(status.HTTP_204_NO_CONTENT)
 
             # Pre-serialize filtering (eg filter complex objects into natively serializable types)
-            response.cleaned_content = self.object_to_data(response.raw_content)
+            response.cleaned_content = self.filter_response(response.raw_content)
     
         except ErrorResponse, exc:
             response = exc.response
@@ -118,7 +120,7 @@ class ModelView(BaseView):
     """A RESTful view that maps to a model in the database."""
     resource = resources.ModelResource
 
-class InstanceModelView(ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelView):
+class InstanceModelView(InstanceMixin, ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelView):
     """A view which provides default operations for read/update/delete against a model instance."""
     pass
 

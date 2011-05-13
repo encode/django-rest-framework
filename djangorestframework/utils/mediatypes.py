@@ -43,6 +43,7 @@ def add_media_type_param(media_type, key, val):
     media_type.params[key] = val
     return str(media_type)
 
+
 def get_media_type_params(media_type):
     """
     Return a dictionary of the parameters on the given media type.

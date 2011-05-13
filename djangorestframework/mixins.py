@@ -25,6 +25,8 @@ __all__ = (
     'ResponseMixin',
     'AuthMixin',
     'ResourceMixin',
+    #
+    'InstanceMixin',
     # Model behavior mixins
     'ReadModelMixin',
     'CreateModelMixin',
@@ -137,7 +139,7 @@ class RequestMixin(object):
             content_length = 0
 
         # TODO: Add 1.3's LimitedStream to compat and use that.
-        # Currently only supports parsing request body as a stream with 1.3
+        # NOTE: Currently only supports parsing request body as a stream with 1.3
         if content_length == 0:
             return None
         elif hasattr(request, 'read'):
@@ -379,8 +381,8 @@ class AuthMixin(object):
         if not hasattr(self, '_user'):
             self._user = self._authenticate()
         return self._user
- 
-    
+
+
     def _authenticate(self):
         """
         Attempt to authenticate the request using each authentication class in turn.
@@ -405,26 +407,71 @@ class AuthMixin(object):
             permission.check_permission(user)
 
 
+##########
+
+class InstanceMixin(object):
+    """
+    Mixin class that is used to identify a view class as being the canonical identifier
+    for the resources it is mapped too.
+    """
+
+    @classmethod
+    def as_view(cls, **initkwargs):
+        """
+        Store the callable object on the resource class that has been associated with this view.
+        """
+        view = super(InstanceMixin, cls).as_view(**initkwargs)
+        if 'resource' in initkwargs:
+            # We do a little dance when we store the view callable...
+            # we need to store it wrapped in a 1-tuple, so that inspect will treat it
+            # as a function when we later look it up (rather than turning it into a method).
+            # This makes sure our URL reversing works ok.      
+            initkwargs['resource'].view_callable = (view,)
+        return view
+
 ########## Resource Mixin ##########
 
 class ResourceMixin(object):
+    """
+    Provides request validation and response filtering behavior.
+    """
+
+    """
+    Should be a class as described in the ``resources`` module.
+
+    The ``resource`` is an object that maps a view onto it's representation on the server.
+
+    It provides validation on the content of incoming requests,
+    and filters the object representation into a serializable object for the response.
+    """
+    resource = None
+
     @property
     def CONTENT(self):
         if not hasattr(self, '_content'):
-            self._content = self._get_content()
+            self._content = self.validate_request(self.DATA, self.FILES)
         return self._content
 
-    def _get_content(self):
+    def validate_request(self, data, files):
+        """
+        Given the request data return the cleaned, validated content.
+        Typically raises a ErrorResponse with status code 400 (Bad Request) on failure.
+        """
         resource = self.resource(self)
-        return resource.validate(self.DATA, self.FILES)
+        return resource.validate_request(data, files)
+
+    def filter_response(self, obj):
+        """
+        Given the response content, filter it into a serializable object.
+        """
+        resource = self.resource(self)
+        return resource.filter_response(obj)
 
     def get_bound_form(self, content=None):
         resource = self.resource(self)
         return resource.get_bound_form(content)
 
-    def object_to_data(self, obj):
-        resource = self.resource(self)
-        return resource.object_to_data(obj)
+
 
 
 ########## Model Mixins ##########
