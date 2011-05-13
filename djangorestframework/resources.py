@@ -256,24 +256,41 @@ class ModelResource(FormResource):
     Also provides a get_bound_form() method which may be used by some renderers.
     """
  
-    """The form class that should be used for validation, or None to use model form validation."""   
+    """
+    The form class that should be used for request validation.
+    If set to ``None`` then the default model form validation will be used.
+    """
     form = None
     
-    """The model class from which the model form should be constructed if no form is set."""
+    """
+    The model class which this resource maps to.
+    """
     model = None
     
-    """The list of fields we expect to receive as input.  Fields in this list will may be received with
-    raising non-existent field errors, even if they do not exist as fields on the ModelForm.
-
-    Setting the fields class attribute causes the exclude class attribute to be disregarded."""
+    """
+    The list of fields to use on the output.
+    
+    May be any of:
+    
+    The name of a model field.
+    The name of an attribute on the model.
+    The name of an attribute on the resource.
+    The name of an method on the model, with a signature like ``func(self)``.
+    The name of an method on the resource, with a signature like ``func(self, instance)``.
+    """
     fields = None
     
-    """The list of fields to exclude from the Model.  This is only used if the fields class attribute is not set."""
+    """
+    The list of fields to exclude.  This is only used if ``fields`` is not set.
+    """
     exclude = ('id', 'pk')
     
+    """
+    The list of fields to include.  This is only used if ``fields`` is not set.
+    """
+    include = ('url',)
 
-    # TODO: test the different validation here to allow for get get_absolute_url to be supplied on input and not bork out
-    # TODO: be really strict on fields - check they match in the handler methods. (this isn't a validator thing tho.)
+
     def validate_request(self, data, files):
         """
         Given some content as input return some cleaned, validated content.
@@ -292,10 +309,12 @@ class ModelResource(FormResource):
 
 
     def get_bound_form(self, content=None):
-        """Given some content return a Django form bound to that content.
+        """
+        Given some content return a ``Form`` instance bound to that content.
 
-        If the form class attribute has been explicitly set then use that class to create a Form,
-        otherwise if model is set use that class to create a ModelForm, otherwise return None."""
+        If the form class attribute has been explicitly set then that class will be used
+        to create the Form, otherwise the model will be used to create a ModelForm.
+        """
 
         if self.form:
             # Use explict Form
@@ -323,6 +342,10 @@ class ModelResource(FormResource):
     def url(self, instance):
         """
         Attempts to reverse resolve the url of the given model instance for this resource.
+        
+        Requires a ``View`` with ``InstanceMixin`` to have been created for this resource.
+        
+        This method can be overridden if you need to set the resource url reversing explicitly.
         """
 
         # dis does teh magicks...
