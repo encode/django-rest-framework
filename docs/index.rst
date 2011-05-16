@@ -36,7 +36,8 @@ Resources
 
 Any and all questions, thoughts, bug reports and contributions are *hugely appreciated*.
 
-We'd like for this to be a real community driven effort, so come say hi, get involved, and get forking!  (See: `Bitbucket <http://confluence.atlassian.com/display/BITBUCKET/Forking+a+Bitbucket+Repository>`_, `GitHub <http://help.github.com/fork-a-repo/>`_)
+We'd like for this to be a real community driven effort, so come say hi, get involved, and get forking!  (See: `Forking a Bitbucket Repository 
+<http://confluence.atlassian.com/display/BITBUCKET/Forking+a+Bitbucket+Repository>`_, or `Fork A GitHub Repo <http://help.github.com/fork-a-repo/>`_)
 
 Requirements
 ------------
@@ -140,10 +141,9 @@ Library Reference
   :maxdepth: 1
 
   library/resource
-  library/modelresource
-  library/emitters
+  library/renderers
   library/parsers
-  library/authenticators
+  library/authentication
   library/validators
   library/response
   library/status
