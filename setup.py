@@ -15,7 +15,8 @@ setup(
     packages = ['djangorestframework',
                 'djangorestframework.templatetags',
                 'djangorestframework.tests',
-                'djangorestframework.runtests'],
+                'djangorestframework.runtests',
+                'djangorestframework.utils'],
     package_dir={'djangorestframework': 'djangorestframework'},
     package_data = {'djangorestframework': ['templates/*', 'static/*']},
     test_suite = 'djangorestframework.runtests.runcoverage.main',
@@ -30,8 +31,5 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
     ]
 )
-
-import os, shutil
-shutil.rmtree(os.path.join(os.path.dirname(__file__), 'djangorestframework.egg-info'), True)
 
 
