@@ -188,9 +188,13 @@ class FormResource(Resource):
 
     def _validate(self, data, files, allowed_extra_fields=(), fake_data=None):
         """
-        Wrapped by validate to hide the extra_fields option that the ModelValidatorMixin uses.
-        extra_fields is a list of fields which are not defined by the form, but which we still
+        Wrapped by validate to hide the extra flags that are used in the implementation.
+
+        allowed_extra_fields is a list of fields which are not defined by the form, but which we still
         expect to see on the input.
+        
+        fake_data is a string that should be used as an extra key, as a kludge to force .errors
+        to be populated when an empty dict is supplied in `data`
         """
         
         # We'd like nice error messages even if no content is supplied.
@@ -369,7 +373,7 @@ class ModelResource(FormResource):
 
         if self.form:
             # Use explict Form
-            return super(ModelFormValidator, self).get_bound_form(data, files)
+            return super(ModelResource, self).get_bound_form(data, files)
 
         elif self.model:
             # Fall back to ModelForm which we create on the fly
