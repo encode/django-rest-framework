@@ -11,7 +11,7 @@ __all__ = (
     'BaseView',
     'ModelView',
     'InstanceModelView',
-    'ListOrModelView',
+    'ListModelView',
     'ListOrCreateModelView'
 )
 
@@ -131,7 +131,3 @@ class ListModelView(ListModelMixin, ModelView):
 class ListOrCreateModelView(ListModelMixin, CreateModelMixin, ModelView):
     """A view which provides default operations for list and create, against a model in the database."""
     pass
-
-
-
-

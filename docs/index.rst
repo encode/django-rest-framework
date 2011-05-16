@@ -140,13 +140,17 @@ Library Reference
 .. toctree::
   :maxdepth: 1
 
-  library/resource
-  library/renderers
-  library/parsers
   library/authentication
-  library/validators
+  library/compat
+  library/mixins
+  library/parsers
+  library/permissions
+  library/renderers
+  library/resource
   library/response
   library/status
+  library/validators
+  library/views
 
 Examples Reference
 ------------------
