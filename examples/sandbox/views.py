@@ -27,8 +27,8 @@ class Sandbox(BaseView):
 
     def get(self, request):
         return [{'name': 'Simple Resource example', 'url': reverse('example-resource')},
-                {'name': 'Simple ModelResource example', 'url': reverse('my-model-root-resource')},
+                {'name': 'Simple ModelResource example', 'url': reverse('model-resource-root')},
                 {'name': 'Simple Mixin-only example', 'url': reverse('mixin-view')},
                 {'name': 'Object store API', 'url': reverse('object-store-root')},
                 {'name': 'Code highlighting API', 'url': reverse('pygments-root')},
-                {'name': 'Blog posts API', 'url': reverse('blog-posts')}]
+                {'name': 'Blog posts API', 'url': reverse('blog-posts-root')}]

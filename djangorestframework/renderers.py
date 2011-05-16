@@ -251,8 +251,8 @@ class DocumentingTemplateRenderer(BaseRenderer):
             'form': form_instance,
             'login_url': login_url,
             'logout_url': logout_url,
-            'ACCEPT_PARAM': self.view._ACCEPT_QUERY_PARAM,
-            'METHOD_PARAM': self.view._METHOD_PARAM,
+            'ACCEPT_PARAM': getattr(self.view, '_ACCEPT_QUERY_PARAM', None),
+            'METHOD_PARAM': getattr(self.view, '_METHOD_PARAM', None),
             'ADMIN_MEDIA_PREFIX': settings.ADMIN_MEDIA_PREFIX
         })
         

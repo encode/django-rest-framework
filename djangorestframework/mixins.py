@@ -516,7 +516,7 @@ class CreateModelMixin(object):
         instance.save()
         headers = {}
         if hasattr(instance, 'get_absolute_url'):
-            headers['Location'] = instance.get_absolute_url()
+            headers['Location'] = self.resource(self).url(instance)
         return Response(status.HTTP_201_CREATED, instance, headers)
 
 
@@ -569,10 +569,27 @@ class ListModelMixin(object):
     """
     Behavior to list a set of model instances on GET requests
     """
+
+    # NB. Not obvious to me if it would be better to set this on the resource?
+    #
+    # Presumably it's more useful to have on the view, because that way you can
+    # have multiple views across different querysets mapping to the same resource.
+    #
+    # Perhaps it ought to be:
+    #
+    # 1) View.queryset
+    # 2) if None fall back to Resource.queryset
+    # 3) if None fall back to Resource.model.objects.all()
+    #
+    # Any feedback welcomed.
     queryset = None
 
     def get(self, request, *args, **kwargs):
         queryset = self.queryset if self.queryset else self.resource.model.objects.all()
+        ordering = getattr(self.resource, 'ordering', None)
+        if ordering:
+            args = as_tuple(ordering)
+            queryset = queryset.order_by(*args)
         return queryset.filter(**kwargs)
 
 

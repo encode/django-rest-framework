@@ -5,12 +5,19 @@ from django.db.models.query import QuerySet
 from django.db.models.fields.related import RelatedField
 from django.utils.encoding import smart_unicode
 
+from djangorestframework.response import ErrorResponse
+from djangorestframework.utils import as_tuple
+
 import decimal
 import inspect
 import re
 
 
 # TODO: _IgnoreFieldException
+
+# Map model classes to resource classes
+#_model_to_resource = {}
+
 
 def _model_to_dict(instance, resource=None):
     """
@@ -179,18 +186,31 @@ class FormResource(Resource):
         return self._validate(data, files)
 
 
-    def _validate(self, data, files, allowed_extra_fields=()):
+    def _validate(self, data, files, allowed_extra_fields=(), fake_data=None):
         """
         Wrapped by validate to hide the extra_fields option that the ModelValidatorMixin uses.
         extra_fields is a list of fields which are not defined by the form, but which we still
         expect to see on the input.
         """
+        
+        # We'd like nice error messages even if no content is supplied.
+        # Typically if an empty dict is given to a form Django will
+        # return .is_valid() == False, but .errors == {}
+        #
+        # To get around this case we revalidate with some fake data. 
+        if fake_data:
+            data[fake_data] = '_fake_data'
+            allowed_extra_fields = allowed_extra_fields + ('_fake_data',)
+        
         bound_form = self.get_bound_form(data, files)
 
         if bound_form is None:
             return data
         
         self.view.bound_form_instance = bound_form
+        
+        data = data and data or {}
+        files = files and files or {}
 
         seen_fields_set = set(data.keys())
         form_fields_set = set(bound_form.fields.keys())
@@ -198,6 +218,7 @@ class FormResource(Resource):
 
         # In addition to regular validation we also ensure no additional fields are being passed in...
         unknown_fields = seen_fields_set - (form_fields_set | allowed_extra_fields_set)
+        unknown_fields = unknown_fields - set(('csrfmiddlewaretoken',))
 
         # Check using both regular validation, and our stricter no additional fields rule
         if bound_form.is_valid() and not unknown_fields:
@@ -216,6 +237,13 @@ class FormResource(Resource):
         detail = {}
 
         if not bound_form.errors and not unknown_fields:
+            # is_valid() was False, but errors was empty.
+            # If we havn't already done so attempt revalidation with some fake data
+            # to force django to give us an errors dict.
+            if fake_data is None:
+                return self._validate(data, files, allowed_extra_fields, '_fake_data')
+
+            # If we've already set fake_dict and we're still here, fallback gracefully.
             detail = {u'errors': [u'No content was supplied.']}
 
         else:       
@@ -256,12 +284,29 @@ class FormResource(Resource):
         return self.form()
 
 
+
+#class _RegisterModelResource(type):
+#    """
+#    Auto register new ModelResource classes into ``_model_to_resource``
+#    """
+#    def __new__(cls, name, bases, dct):
+#        resource_cls = type.__new__(cls, name, bases, dct)
+#        model_cls = dct.get('model', None)
+#        if model_cls:
+#            _model_to_resource[model_cls] = resource_cls
+#        return resource_cls
+
+
+
 class ModelResource(FormResource):
     """
     Resource class that uses forms for validation and otherwise falls back to a model form if no form is set.
     Also provides a get_bound_form() method which may be used by some renderers.
     """
- 
+
+    # Auto-register new ModelResource classes into _model_to_resource 
+    #__metaclass__ = _RegisterModelResource
+
     """
     The form class that should be used for request validation.
     If set to ``None`` then the default model form validation will be used.
@@ -314,7 +359,7 @@ class ModelResource(FormResource):
         return self._validate(data, files, allowed_extra_fields=self._property_fields_set)
 
 
-    def get_bound_form(self, content=None):
+    def get_bound_form(self, data=None, files=None):
         """
         Given some content return a ``Form`` instance bound to that content.
 
@@ -334,11 +379,11 @@ class ModelResource(FormResource):
                     #fields = tuple(self._model_fields_set)
 
             # Instantiate the ModelForm as appropriate
-            if content and isinstance(content, models.Model):
+            if data and isinstance(data, models.Model):
                 # Bound to an existing model instance
                 return OnTheFlyModelForm(instance=content)
-            elif content is not None:
-                return OnTheFlyModelForm(content)
+            elif data is not None:
+                return OnTheFlyModelForm(data, files)
             return OnTheFlyModelForm()
 
         # Both form and model not set?  Okay bruv, whatevs...
@@ -364,7 +409,19 @@ class ModelResource(FormResource):
             # pattern = tuple_item[1]
             # Note: defaults = tuple_item[2] for django >= 1.3
             for result, params in possibility:
-                instance_attrs = dict([ (param, getattr(instance, param)) for param in params if hasattr(instance, param) ])
+
+                #instance_attrs = dict([ (param, getattr(instance, param)) for param in params if hasattr(instance, param) ])
+
+                instance_attrs = {}
+                for param in params:
+                    if not hasattr(instance, param):
+                        continue
+                    attr = getattr(instance, param)
+                    if isinstance(attr, models.Model):
+                        instance_attrs[param] = attr.pk
+                    else:
+                        instance_attrs[param] = attr    
+
                 try:
                     return reverse(self.view_callable[0], kwargs=instance_attrs)
                 except NoReverseMatch:
@@ -393,7 +450,7 @@ class ModelResource(FormResource):
                               isinstance(getattr(self.model, attr, None), property)
                               and not attr.startswith('_'))
 
-        if fields:
+        if self.fields:
             return property_fields & set(as_tuple(self.fields))
 
-        return property_fields - set(as_tuple(self.exclude))
+        return property_fields.union(set(as_tuple(self.include))) - set(as_tuple(self.exclude))
