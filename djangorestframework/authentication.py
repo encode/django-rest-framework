@@ -1,10 +1,10 @@
 """
-The ``authentication`` module provides a set of pluggable authentication classes.
+The :mod:`authentication` module provides a set of pluggable authentication classes.
 
-Authentication behavior is provided by adding the ``AuthMixin`` class to a ``View`` .
+Authentication behavior is provided by mixing the :class:`mixins.AuthMixin` class into a :class:`View` class.
 
 The set of authentication methods which are used is then specified by setting the
-``authentication`` attribute on the ``View`` class, and listing a set of authentication classes.
+:attr:`authentication` attribute on the :class:`View` class, and listing a set of authentication classes.
 """
 
 from django.contrib.auth import authenticate
@@ -22,28 +22,31 @@ __all__ = (
 class BaseAuthenticaton(object):
     """
     All authentication classes should extend BaseAuthentication.
+    
+    :param view: :class:`Authentication` classes are always passed the current view on creation.
     """
 
     def __init__(self, view):
         """
-        Authentication classes are always passed the current view on creation.
         """
         self.view = view
 
     def authenticate(self, request):
         """
-        Authenticate the request and return a ``User`` instance or None. (*)
+        :param request: Request to be authenticated
+        :rtype: :obj:`User` object or None [*]_
 
-        This function must be overridden to be implemented.
+        .. Note::
+            This function must be overridden to be implemented.
         
-        (*) The authentication context _will_ typically be a ``User`` object,
-        but it need not be.  It can be any user-like object so long as the
-        permissions classes on the view can handle the object and use
-        it to determine if the request has the required permissions or not. 
-
-        This can be an important distinction if you're implementing some token
-        based authentication mechanism, where the authentication context
-        may be more involved than simply mapping to a ``User``.
+        .. [*] The authentication context *will* typically be a :obj:`User` object,
+            but it need not be.  It can be any user-like object so long as the
+            permissions classes on the view can handle the object and use
+            it to determine if the request has the required permissions or not. 
+    
+            This can be an important distinction if you're implementing some token
+            based authentication mechanism, where the authentication context
+            may be more involved than simply mapping to a :obj:`User`.
         """
         return None
 
