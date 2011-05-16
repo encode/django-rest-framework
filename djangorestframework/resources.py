@@ -10,6 +10,7 @@ import inspect
 import re
 
 
+# TODO: _IgnoreFieldException
 
 def _model_to_dict(instance, resource=None):
     """
@@ -32,9 +33,9 @@ def _model_to_dict(instance, resource=None):
     #else:
     #    fields = set(opts.fields + opts.many_to_many)
     
-    fields = resource.fields
-    include = resource.include
-    exclude = resource.exclude
+    fields = resource and resource.fields or ()
+    include = resource and resource.include or ()
+    exclude = resource and resource.exclude or ()
 
     extra_fields = fields and list(resource.fields) or []
 
@@ -157,7 +158,12 @@ class FormResource(Resource):
     On calling validate() this validator may set a `.bound_form_instance` attribute on the
     view, which may be used by some renderers.
     """
+
+    """
+    The form class that should be used for request validation.
+    """
     form = None
+
 
     def validate_request(self, data, files):
         """
@@ -261,12 +267,12 @@ class ModelResource(FormResource):
     If set to ``None`` then the default model form validation will be used.
     """
     form = None
-    
+
     """
     The model class which this resource maps to.
     """
     model = None
-    
+
     """
     The list of fields to use on the output.
     
@@ -286,7 +292,7 @@ class ModelResource(FormResource):
     exclude = ('id', 'pk')
     
     """
-    The list of fields to include.  This is only used if ``fields`` is not set.
+    The list of extra fields to include.  This is only used if ``fields`` is not set.
     """
     include = ('url',)
 
@@ -342,7 +348,7 @@ class ModelResource(FormResource):
     def url(self, instance):
         """
         Attempts to reverse resolve the url of the given model instance for this resource.
-        
+
         Requires a ``View`` with ``InstanceMixin`` to have been created for this resource.
         
         This method can be overridden if you need to set the resource url reversing explicitly.
