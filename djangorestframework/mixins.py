@@ -408,28 +408,6 @@ class AuthMixin(object):
             permission.check_permission(user)
 
 
-##########
-
-class InstanceMixin(object):
-    """
-    Mixin class that is used to identify a view class as being the canonical identifier
-    for the resources it is mapped too.
-    """
-
-    @classmethod
-    def as_view(cls, **initkwargs):
-        """
-        Store the callable object on the resource class that has been associated with this view.
-        """
-        view = super(InstanceMixin, cls).as_view(**initkwargs)
-        if 'resource' in initkwargs:
-            # We do a little dance when we store the view callable...
-            # we need to store it wrapped in a 1-tuple, so that inspect will treat it
-            # as a function when we later look it up (rather than turning it into a method).
-            # This makes sure our URL reversing works ok.      
-            initkwargs['resource'].view_callable = (view,)
-        return view
-
 ########## Resource Mixin ##########
 
 class ResourceMixin(object):
@@ -449,6 +427,9 @@ class ResourceMixin(object):
 
     @property
     def CONTENT(self):
+        """
+        Returns the cleaned, validated request content.
+        """
         if not hasattr(self, '_content'):
             self._content = self.validate_request(self.DATA, self.FILES)
         return self._content
@@ -473,6 +454,28 @@ class ResourceMixin(object):
         return resource.get_bound_form(content)
 
 
+
+##########
+
+class InstanceMixin(object):
+    """
+    Mixin class that is used to identify a view class as being the canonical identifier
+    for the resources it is mapped too.
+    """
+
+    @classmethod
+    def as_view(cls, **initkwargs):
+        """
+        Store the callable object on the resource class that has been associated with this view.
+        """
+        view = super(InstanceMixin, cls).as_view(**initkwargs)
+        if 'resource' in initkwargs:
+            # We do a little dance when we store the view callable...
+            # we need to store it wrapped in a 1-tuple, so that inspect will treat it
+            # as a function when we later look it up (rather than turning it into a method).
+            # This makes sure our URL reversing works ok.      
+            initkwargs['resource'].view_callable = (view,)
+        return view
 
 
 ########## Model Mixins ##########

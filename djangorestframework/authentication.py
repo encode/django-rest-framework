@@ -1,10 +1,10 @@
 """
-The ``authentication`` module provides a set of pluggable authentication classes.
+The :mod:`authentication` module provides a set of pluggable authentication classes.
 
-Authentication behavior is provided by adding the ``AuthMixin`` class to a ``View`` .
+Authentication behavior is provided by mixing the :class:`mixins.AuthMixin` class into a :class:`View` class.
 
 The set of authentication methods which are used is then specified by setting the
-``authentication`` attribute on the ``View`` class, and listing a set of authentication classes.
+:attr:`authentication` attribute on the :class:`View` class, and listing a set of authentication classes.
 """
 
 from django.contrib.auth import authenticate
@@ -26,24 +26,23 @@ class BaseAuthenticaton(object):
 
     def __init__(self, view):
         """
-        Authentication classes are always passed the current view on creation.
+        :param view: :class:`Authentication` classes are always passed the current view on creation.
         """
         self.view = view
 
     def authenticate(self, request):
         """
-        Authenticate the request and return a ``User`` instance or None. (*)
-
-        This function must be overridden to be implemented.
-        
-        (*) The authentication context _will_ typically be a ``User`` object,
-        but it need not be.  It can be any user-like object so long as the
-        permissions classes on the view can handle the object and use
-        it to determine if the request has the required permissions or not. 
-
-        This can be an important distinction if you're implementing some token
-        based authentication mechanism, where the authentication context
-        may be more involved than simply mapping to a ``User``.
+        :param request: Request to be authenticated
+        :rtype: :obj:`User` or None [*]_
+       
+        .. [*] The authentication context *will* typically be a :obj:`User`,
+            but it need not be.  It can be any user-like object so long as the
+            permissions classes on the view can handle the object and use
+            it to determine if the request has the required permissions or not. 
+    
+            This can be an important distinction if you're implementing some token
+            based authentication mechanism, where the authentication context
+            may be more involved than simply mapping to a :obj:`User`.
         """
         return None
 
@@ -54,6 +53,10 @@ class BasicAuthenticaton(BaseAuthenticaton):
     """
 
     def authenticate(self, request):
+        """
+        Returns a :obj:`User` if a correct username and password have been supplied
+        using HTTP Basic authentication.  Otherwise returns `None`.  
+        """
         from django.utils.encoding import smart_unicode, DjangoUnicodeDecodeError
         
         if 'HTTP_AUTHORIZATION' in request.META:
@@ -81,6 +84,9 @@ class UserLoggedInAuthenticaton(BaseAuthenticaton):
     """
 
     def authenticate(self, request):
+        """
+        Returns a :obj:`User` if the request session currently has a logged in user, otherwise `None`.
+        """
         # TODO: Switch this back to request.POST, and let FormParser/MultiPartParser deal with the consequences.
         if getattr(request, 'user', None) and request.user.is_active:
             # If this is a POST request we enforce CSRF validation.
