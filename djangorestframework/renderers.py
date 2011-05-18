@@ -36,8 +36,8 @@ __all__ = (
 
 class BaseRenderer(object):
     """
-    All renderers must extend this class, set the media_type attribute,
-    and override the render() function.
+    All renderers must extend this class, set the :attr:`media_type` attribute,
+    and override the :meth:`render` method.
     """
     media_type = None
 
@@ -51,7 +51,7 @@ class BaseRenderer(object):
         The requested media type is also passed to this method,
         as it may contain parameters relevant to how the parser
         should render the output.
-        EG: 'application/json; indent=4'
+        EG: ``application/json; indent=4``
 
         By default render simply returns the output as-is.
         Override this method to provide for other behavior.
@@ -102,8 +102,8 @@ class TemplateRenderer(BaseRenderer):
     A Base class provided for convenience.
 
     Render the object simply by using the given template.
-    To create a template renderer, subclass this, and set
-    the ``media_type`` and ``template`` attributes
+    To create a template renderer, subclass this class, and set
+    the :attr:`media_type` and `:attr:template` attributes.
     """
     media_type = None
     template = None

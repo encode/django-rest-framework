@@ -36,7 +36,7 @@ class BasePermission(object):
     
     def check_permission(self, auth):
         """
-        Should simply return, or raise an ErrorResponse.
+        Should simply return, or raise an :class:`response.ErrorResponse`.
         """
         pass
 
@@ -59,7 +59,7 @@ class IsAuthenticated(BasePermission):
         if not user.is_authenticated():
             raise _403_FORBIDDEN_RESPONSE 
 
-class IsAdminUser():
+class IsAdminUser(BasePermission):
     """
     Allows access only to admin users.
     """
@@ -85,7 +85,7 @@ class PerUserThrottling(BasePermission):
     """
     Rate throttling of requests on a per-user basis.
 
-    The rate is set by a 'throttle' attribute on the ``View`` class.
+    The rate (requests / seconds) is set by a :attr:`throttle` attribute on the ``View`` class.
     The attribute is a two tuple of the form (number of requests, duration in seconds).
 
     The user id will be used as a unique identifier if the user is authenticated.

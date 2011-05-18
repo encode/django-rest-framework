@@ -1,5 +1,6 @@
 """
-The mixins module provides a set of reusable mixin classes that can be added to a ``View``.
+The :mod:`mixins` module provides a set of reusable `mixin` 
+classes that can be added to a `View`.
 """
 
 from django.contrib.auth.models import AnonymousUser
@@ -41,7 +42,7 @@ __all__ = (
 
 class RequestMixin(object):
     """
-    Mixin class to provide request parsing behavior.
+    `Mixin` class to provide request parsing behavior.
     """
 
     _USE_FORM_OVERLOADING = True
@@ -52,7 +53,7 @@ class RequestMixin(object):
     """
     The set of request parsers that the view can handle.
     
-    Should be a tuple/list of classes as described in the ``parsers`` module.
+    Should be a tuple/list of classes as described in the :mod:`parsers` module.
     """
     parsers = ()
 
@@ -61,8 +62,8 @@ class RequestMixin(object):
         """
         Returns the HTTP method.
 
-        This should be used instead of ``request.method``, as it allows the method
-        to be overridden by using a hidden form field on a form POST request.
+        This should be used instead of just reading :const:`request.method`, as it allows the `method`
+        to be overridden by using a hidden `form` field on a form POST request.
         """
         if not hasattr(self, '_method'):
             self._load_method_and_content_type()
@@ -100,7 +101,7 @@ class RequestMixin(object):
     def FILES(self):
         """
         Parses the request body and returns the files.
-        Similar to request.FILES, except that it handles arbitrary parsers,
+        Similar to ``request.FILES``, except that it handles arbitrary parsers,
         and also works on methods other than POST (eg PUT).
         """
         if not hasattr(self, '_files'):
@@ -215,10 +216,10 @@ class RequestMixin(object):
 
 class ResponseMixin(object):
     """
-    Adds behavior for pluggable Renderers to a :class:`.BaseView` or Django :class:`View`. class.
+    Adds behavior for pluggable `Renderers` to a :class:`views.BaseView` or Django :class:`View` class.
     
     Default behavior is to use standard HTTP Accept header content negotiation.
-    Also supports overriding the content type by specifying an _accept= parameter in the URL.
+    Also supports overriding the content type by specifying an ``_accept=`` parameter in the URL.
     Ignores Accept headers from Internet Explorer user agents and uses a sensible browser Accept header instead.
     """
 
@@ -228,7 +229,7 @@ class ResponseMixin(object):
     """
     The set of response renderers that the view can handle.
     
-    Should be a tuple/list of classes as described in the ``renderers`` module.    
+    Should be a tuple/list of classes as described in the :mod:`renderers` module.    
     """
     renderers = ()
 
@@ -237,7 +238,7 @@ class ResponseMixin(object):
     # out of the box with existing Django classes that use render_to_response.
     def render(self, response):
         """
-        Takes a ``Response`` object and returns an ``HttpResponse``.
+        Takes a :obj:`Response` object and returns an :obj:`HttpResponse`.
         """
         self.response = response
 
@@ -354,21 +355,21 @@ class ResponseMixin(object):
 
 class AuthMixin(object):
     """
-    Simple mixin class to add authentication and permission checking to a ``View`` class.
+    Simple :class:`mixin` class to add authentication and permission checking to a :class:`View` class.
     """
     
     """
     The set of authentication types that this view can handle.
     
     
-    Should be a tuple/list of classes as described in the ``authentication`` module.    
+    Should be a tuple/list of classes as described in the :mod:`authentication` module.    
     """
     authentication = ()
 
     """
     The set of permissions that will be enforced on this view.
     
-    Should be a tuple/list of classes as described in the ``permissions`` module.    
+    Should be a tuple/list of classes as described in the :mod:`permissions` module.    
     """
     permissions = ()
 
@@ -376,8 +377,8 @@ class AuthMixin(object):
     @property
     def user(self):
         """
-        Returns the user for the current request, as determined by the set of
-        authentication classes applied to the ``View``.  
+        Returns the :obj:`user` for the current request, as determined by the set of
+        :class:`authentication` classes applied to the :class:`View`.  
         """
         if not hasattr(self, '_user'):
             self._user = self._authenticate()
@@ -413,12 +414,10 @@ class AuthMixin(object):
 class ResourceMixin(object):
     """
     Provides request validation and response filtering behavior.
-    """
 
-    """
-    Should be a class as described in the ``resources`` module.
+    Should be a class as described in the :mod:`resources` module.
 
-    The ``resource`` is an object that maps a view onto it's representation on the server.
+    The :obj:`resource` is an object that maps a view onto it's representation on the server.
 
     It provides validation on the content of incoming requests,
     and filters the object representation into a serializable object for the response.
@@ -436,8 +435,8 @@ class ResourceMixin(object):
 
     def validate_request(self, data, files):
         """
-        Given the request data return the cleaned, validated content.
-        Typically raises a ErrorResponse with status code 400 (Bad Request) on failure.
+        Given the request *data* return the cleaned, validated content.
+        Typically raises an :class:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
         """
         resource = self.resource(self)
         return resource.validate_request(data, files)
@@ -459,8 +458,8 @@ class ResourceMixin(object):
 
 class InstanceMixin(object):
     """
-    Mixin class that is used to identify a view class as being the canonical identifier
-    for the resources it is mapped too.
+    `Mixin` class that is used to identify a `View` class as being the canonical identifier
+    for the resources it is mapped to.
     """
 
     @classmethod
@@ -482,7 +481,7 @@ class InstanceMixin(object):
 
 class ReadModelMixin(object):
     """
-    Behavior to read a model instance on GET requests
+    Behavior to read a `model` instance on GET requests
     """
     def get(self, request, *args, **kwargs):
         model = self.resource.model
@@ -501,7 +500,7 @@ class ReadModelMixin(object):
 
 class CreateModelMixin(object):
     """
-    Behavior to create a model instance on POST requests
+    Behavior to create a `model` instance on POST requests
     """
     def post(self, request, *args, **kwargs):        
         model = self.resource.model
@@ -525,7 +524,7 @@ class CreateModelMixin(object):
 
 class UpdateModelMixin(object):
     """
-    Behavior to update a model instance on PUT requests
+    Behavior to update a `model` instance on PUT requests
     """
     def put(self, request, *args, **kwargs):
         model = self.resource.model
@@ -550,7 +549,7 @@ class UpdateModelMixin(object):
 
 class DeleteModelMixin(object):
     """
-    Behavior to delete a model instance on DELETE requests
+    Behavior to delete a `model` instance on DELETE requests
     """
     def delete(self, request, *args, **kwargs):
         model = self.resource.model
@@ -570,7 +569,7 @@ class DeleteModelMixin(object):
 
 class ListModelMixin(object):
     """
-    Behavior to list a set of model instances on GET requests
+    Behavior to list a set of `model` instances on GET requests
     """
 
     # NB. Not obvious to me if it would be better to set this on the resource?

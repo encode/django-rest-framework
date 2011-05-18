@@ -5,8 +5,9 @@ to general HTTP requests.
 
 We need a method to be able to:
 
-1) Determine the parsed content on a request for methods other than POST (eg typically also PUT)
-2) Determine the parsed content on a request for media types other than application/x-www-form-urlencoded
+1.) Determine the parsed content on a request for methods other than POST (eg typically also PUT)
+
+2.) Determine the parsed content on a request for media types other than application/x-www-form-urlencoded
    and multipart/form-data.  (eg also handle multipart/json)
 """
 
@@ -22,47 +23,51 @@ __all__ = (
     'BaseParser',
     'JSONParser',
     'PlainTextParser',
+    'DataFlatener',
     'FormParser',
-    'MultiPartParser'
+    'MultiPartParser',
 )
 
 
 class BaseParser(object):
     """
-    All parsers should extend BaseParser, specifying a media_type attribute,
-    and overriding the parse() method.
+    All parsers should extend :class:`BaseParser`, specifying a :attr:`media_type` attribute,
+    and overriding the :meth:`parse` method.
     """
     media_type = None
 
     def __init__(self, view):
         """
         Initialize the parser with the ``View`` instance as state,
-        in case the parser needs to access any metadata on the ``View`` object.
+        in case the parser needs to access any metadata on the :obj:`View` object.
         """
         self.view = view
     
     def can_handle_request(self, content_type):
         """
-        Returns `True` if this parser is able to deal with the given media type.
+        Returns :const:`True` if this parser is able to deal with the given *content_type*.
         
-        The default implementation for this function is to check the ``media_type``
-        argument against the ``media_type`` attribute set on the class to see if
+        The default implementation for this function is to check the *content_type*
+        argument against the :attr:`media_type` attribute set on the class to see if
         they match.
         
         This may be overridden to provide for other behavior, but typically you'll
-        instead want to just set the ``media_type`` attribute on the class.
+        instead want to just set the :attr:`media_type` attribute on the class.
         """
         return media_type_matches(content_type, self.media_type)
 
     def parse(self, stream):
         """
-        Given a stream to read from, return the deserialized output.
+        Given a *stream* to read from, return the deserialized output.
         Should return a 2-tuple of (data, files).
         """
         raise NotImplementedError("BaseParser.parse() Must be overridden to be implemented.")
 
 
 class JSONParser(BaseParser):
+    """
+    Parses JSON-serialized data.
+    """
     media_type = 'application/json'
 
     def parse(self, stream):
@@ -74,11 +79,14 @@ class JSONParser(BaseParser):
 
 
 class DataFlatener(object):
-    """Utility object for flattening dictionaries of lists. Useful for "urlencoded" decoded data."""
-
+    """
+    Utility object for flattening dictionaries of lists. Useful for "urlencoded" decoded data.
+    """
+    # TODO: move me to utils ??
+    
     def flatten_data(self, data):
-        """Given a data dictionary {<key>: <value_list>}, returns a flattened dictionary
-        with information provided by the method "is_a_list"."""
+        """Given a *data* dictionary ``{<key>: <value_list>}``, returns a flattened dictionary
+        with information provided by the method :meth:`is_a_list`."""
         flatdata = dict()
         for key, val_list in data.items():
             if self.is_a_list(key, val_list):
@@ -93,15 +101,13 @@ class DataFlatener(object):
         return flatdata
 
     def is_a_list(self, key, val_list):
-        """Returns True if the parameter with name *key* is expected to be a list, or False otherwise.
+        """Returns :const:`True` if the parameter with name *key* is expected to be a list, or :const:`False` otherwise.
         *val_list* which is the received value for parameter *key* can be used to guess the answer."""
         return False
 
 
 class PlainTextParser(BaseParser):
     """
-    Plain text parser.
-    
     Simply returns the content of the stream.
     """
     media_type = 'text/plain'
@@ -113,10 +119,10 @@ class PlainTextParser(BaseParser):
 class FormParser(BaseParser, DataFlatener):
     """
     The default parser for form data.
-    Return a dict containing a single value for each non-reserved parameter.
+    Returns a dict containing a single value for each non-reserved parameter.
 
     In order to handle select multiple (and having possibly more than a single value for each parameter),
-    you can customize the output by subclassing the method 'is_a_list'."""
+    you can customize the output by subclassing the method :meth:`DataFlatener.is_a_list`."""
 
     media_type = 'application/x-www-form-urlencoded'
 
