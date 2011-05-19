@@ -1,4 +1,6 @@
-"""Compatability module to provide support for backwards compatability with older versions of django/python"""
+"""
+Compatability module to provide support for backwards compatability with older versions of django/python
+"""
 
 # cStringIO only if it's available
 try:
@@ -27,24 +29,25 @@ except ImportError:
     # Lovely stuff
     class RequestFactory(Client):
         """
-        Class that lets you create mock Request objects for use in testing.
+        Class that lets you create mock :obj:`Request` objects for use in testing.
         
-        Usage:
+        Usage::
         
-        rf = RequestFactory()
-        get_request = rf.get('/hello/')
-        post_request = rf.post('/submit/', {'foo': 'bar'})
+            rf = RequestFactory()
+            get_request = rf.get('/hello/')
+            post_request = rf.post('/submit/', {'foo': 'bar'})
         
-        This class re-uses the django.test.client.Client interface, docs here:
-        http://www.djangoproject.com/documentation/testing/#the-test-client
+        This class re-uses the :class:`django.test.client.Client` interface. Of which
+        you can find the docs here__.
         
-        Once you have a request object you can pass it to any view function, 
-        just as if that view had been hooked up using a URLconf.
+        __ http://www.djangoproject.com/documentation/testing/#the-test-client
         
+        Once you have a :obj:`request` object you can pass it to any :func:`view` function, 
+        just as if that :func:`view` had been hooked up using a URLconf.
         """
         def request(self, **request):
             """
-            Similar to parent class, but returns the request object as soon as it
+            Similar to parent class, but returns the :obj:`request` object as soon as it
             has created it.
             """
             environ = {
@@ -148,9 +151,11 @@ try:
     import re
     
     class CustomSetextHeaderProcessor(markdown.blockprocessors.BlockProcessor):
-        """Override markdown's SetextHeaderProcessor, so that ==== headers are <h2> and ---- headers are <h3>.
+        """
+        Override `markdown`'s :class:`SetextHeaderProcessor`, so that ==== headers are <h2> and ---- headers are <h3>.
         
-        We use <h1> for the resource name."""
+        We use <h1> for the resource name.
+        """
     
         # Detect Setext-style header. Must be first 2 lines of block.
         RE = re.compile(r'^.*?\n[=-]{3,}', re.MULTILINE)
@@ -172,8 +177,11 @@ try:
                 blocks.insert(0, '\n'.join(lines[2:]))
             
     def apply_markdown(text):
-        """Simple wrapper around markdown.markdown to apply our CustomSetextHeaderProcessor,
-        and also set the base level of '#' style headers to <h2>."""
+        """
+        Simple wrapper around :func:`markdown.markdown` to apply our :class:`CustomSetextHeaderProcessor`,
+        and also set the base level of '#' style headers to <h2>.
+        """
+        
         extensions = ['headerid(level=2)']
         safe_mode = False,
         output_format = markdown.DEFAULT_OUTPUT_FORMAT
