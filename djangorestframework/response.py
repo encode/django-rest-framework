@@ -1,3 +1,10 @@
+"""
+The :mod:`response` module provides Response classes you can use in your 
+views to return a certain HTTP response. Typically a response is *rendered* 
+into a HTTP response depending on what renderers are set on your view and
+als depending on the accept header of the request. 
+"""
+
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
 
 __all__ = ('Response', 'ErrorResponse')

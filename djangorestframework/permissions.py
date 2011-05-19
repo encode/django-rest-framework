@@ -1,3 +1,9 @@
+"""
+The :mod:`permissions` module bundles a set of  permission classes that are used 
+for checking if a request passes a certain set of constraints. You can assign a permision 
+class to your view by setting your View's :attr:`permissions` class attribute.
+"""
+
 from django.core.cache import cache
 from djangorestframework import status
 from djangorestframework.response import ErrorResponse
@@ -36,7 +42,7 @@ class BasePermission(object):
     
     def check_permission(self, auth):
         """
-        Should simply return, or raise an :class:`response.ErrorResponse`.
+        Should simply return, or raise an :exc:`response.ErrorResponse`.
         """
         pass
 

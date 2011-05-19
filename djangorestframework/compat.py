@@ -1,5 +1,5 @@
 """
-Compatability module to provide support for backwards compatability with older versions of django/python
+The :mod:`compatability` module provides support for backwards compatability with older versions of django/python.
 """
 
 # cStringIO only if it's available
@@ -42,7 +42,7 @@ except ImportError:
         
         __ http://www.djangoproject.com/documentation/testing/#the-test-client
         
-        Once you have a :obj:`request` object you can pass it to any :func:`view` function, 
+        Once you have a `request` object you can pass it to any :func:`view` function, 
         just as if that :func:`view` had been hooked up using a URLconf.
         """
         def request(self, **request):

@@ -124,8 +124,8 @@ class BaseResource(object):
 
     def validate_request(self, data, files):
         """
-        Given the request data return the cleaned, validated content.
-        Typically raises a ErrorResponse with status code 400 (Bad Request) on failure.
+        Given the request content return the cleaned, validated content.
+        Typically raises a :exc:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
         """
         return data
     
@@ -160,28 +160,28 @@ class Resource(BaseResource):
 class FormResource(Resource):
     """
     Resource class that uses forms for validation.
-    Also provides a get_bound_form() method which may be used by some renderers.
+    Also provides a :meth:`get_bound_form` method which may be used by some renderers.
 
-    On calling validate() this validator may set a `.bound_form_instance` attribute on the
+    On calling :meth:`validate_request` this validator may set a :attr:`bound_form_instance` attribute on the
     view, which may be used by some renderers.
     """
-
-    """
-    The form class that should be used for request validation.
-    """
     form = None
+    """
+    The :class:`Form` class that should be used for request validation.
+    """
+    
 
 
     def validate_request(self, data, files):
         """
         Given some content as input return some cleaned, validated content.
-        Raises a ErrorResponse with status code 400 (Bad Request) on failure.
+        Raises a :exc:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
         
-        Validation is standard form validation, with an additional constraint that no extra unknown fields may be supplied.
+        Validation is standard form validation, with an additional constraint that *no extra unknown fields* may be supplied.
 
-        On failure the ErrorResponse content is a dict which may contain 'errors' and 'field-errors' keys.
-        If the 'errors' key exists it is a list of strings of non-field errors.
-        If the 'field-errors' key exists it is a dict of {field name as string: list of errors as strings}.
+        On failure the :exc:`response.ErrorResponse` content is a dict which may contain :obj:`'errors'` and :obj:`'field-errors'` keys.
+        If the :obj:`'errors'` key exists it is a list of strings of non-field errors.
+        If the :obj:`'field-errors'` key exists it is a dict of ``{'field name as string': ['errors as strings', ...]}``.
         """
         return self._validate(data, files)
 
@@ -277,7 +277,7 @@ class FormResource(Resource):
     def get_bound_form(self, data=None, files=None):
         """
         Given some content return a Django form bound to that content.
-        If form validation is turned off (form class attribute is None) then returns None.
+        If form validation is turned off (:attr:`form` class attribute is :const:`None`) then returns :const:`None`.
         """
         if not self.form:
             return None
@@ -305,7 +305,7 @@ class FormResource(Resource):
 class ModelResource(FormResource):
     """
     Resource class that uses forms for validation and otherwise falls back to a model form if no form is set.
-    Also provides a get_bound_form() method which may be used by some renderers.
+    Also provides a :meth:`get_bound_form` method which may be used by some renderers.
     """
 
     # Auto-register new ModelResource classes into _model_to_resource 
@@ -313,7 +313,7 @@ class ModelResource(FormResource):
 
     """
     The form class that should be used for request validation.
-    If set to ``None`` then the default model form validation will be used.
+    If set to :const:`None` then the default model form validation will be used.
     """
     form = None
 
@@ -330,18 +330,18 @@ class ModelResource(FormResource):
     The name of a model field.
     The name of an attribute on the model.
     The name of an attribute on the resource.
-    The name of an method on the model, with a signature like ``func(self)``.
-    The name of an method on the resource, with a signature like ``func(self, instance)``.
+    The name of a method on the model, with a signature like ``func(self)``.
+    The name of a method on the resource, with a signature like ``func(self, instance)``.
     """
     fields = None
     
     """
-    The list of fields to exclude.  This is only used if ``fields`` is not set.
+    The list of fields to exclude.  This is only used if :attr:`fields` is not set.
     """
     exclude = ('id', 'pk')
     
     """
-    The list of extra fields to include.  This is only used if ``fields`` is not set.
+    The list of extra fields to include.  This is only used if :attr:`fields` is not set.
     """
     include = ('url',)
 
@@ -349,16 +349,16 @@ class ModelResource(FormResource):
     def validate_request(self, data, files):
         """
         Given some content as input return some cleaned, validated content.
-        Raises a ErrorResponse with status code 400 (Bad Request) on failure.
+        Raises a :exc:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
         
         Validation is standard form or model form validation,
         with an additional constraint that no extra unknown fields may be supplied,
         and that all fields specified by the fields class attribute must be supplied,
         even if they are not validated by the form/model form.
 
-        On failure the ErrorResponse content is a dict which may contain 'errors' and 'field-errors' keys.
-        If the 'errors' key exists it is a list of strings of non-field errors.
-        If the 'field-errors' key exists it is a dict of {field name as string: list of errors as strings}.
+        On failure the ErrorResponse content is a dict which may contain :obj:`'errors'` and :obj:`'field-errors'` keys.
+        If the :obj:`'errors'` key exists it is a list of strings of non-field errors.
+        If the ''field-errors'` key exists it is a dict of {field name as string: list of errors as strings}.
         """
         return self._validate(data, files, allowed_extra_fields=self._property_fields_set)
 
@@ -367,7 +367,7 @@ class ModelResource(FormResource):
         """
         Given some content return a ``Form`` instance bound to that content.
 
-        If the form class attribute has been explicitly set then that class will be used
+        If the :attr:`form` class attribute has been explicitly set then that class will be used
         to create the Form, otherwise the model will be used to create a ModelForm.
         """
 
@@ -396,9 +396,9 @@ class ModelResource(FormResource):
 
     def url(self, instance):
         """
-        Attempts to reverse resolve the url of the given model instance for this resource.
+        Attempts to reverse resolve the url of the given model *instance* for this resource.
 
-        Requires a ``View`` with ``InstanceMixin`` to have been created for this resource.
+        Requires a ``View`` with :class:`mixins.InstanceMixin` to have been created for this resource.
         
         This method can be overridden if you need to set the resource url reversing explicitly.
         """
