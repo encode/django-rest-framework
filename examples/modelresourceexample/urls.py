@@ -8,7 +8,7 @@ class MyModelResource(ModelResource):
     fields = ('foo', 'bar', 'baz', 'url')
     ordering = ('created',)
 
-urlpatterns = patterns('modelresourceexample.views',
+urlpatterns = patterns('',
     url(r'^$',          ListOrCreateModelView.as_view(resource=MyModelResource), name='model-resource-root'),
     url(r'^([0-9]+)/$', InstanceModelView.as_view(resource=MyModelResource)),
 )

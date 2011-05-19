@@ -63,9 +63,18 @@ class BaseParser(object):
 
 
 class JSONParser(BaseParser):
+    """
+    JSON parser.
+    """
     media_type = 'application/json'
 
     def parse(self, stream):
+        """
+        Returns a 2-tuple of `(data, files)`.
+
+        `data` will be an object which is the parsed content of the response.
+        `files` will always be `None`.
+        """
         try:
             return (json.load(stream), None)
         except ValueError, exc:
@@ -73,103 +82,55 @@ class JSONParser(BaseParser):
                                 {'detail': 'JSON parse error - %s' % unicode(exc)})
 
 
-class DataFlatener(object):
-    """Utility object for flattening dictionaries of lists. Useful for "urlencoded" decoded data."""
-
-    def flatten_data(self, data):
-        """Given a data dictionary {<key>: <value_list>}, returns a flattened dictionary
-        with information provided by the method "is_a_list"."""
-        flatdata = dict()
-        for key, val_list in data.items():
-            if self.is_a_list(key, val_list):
-                flatdata[key] = val_list
-            else:
-                if val_list:
-                    flatdata[key] = val_list[0]
-                else:
-                    # If the list is empty, but the parameter is not a list,
-                    # we strip this parameter.
-                    data.pop(key)
-        return flatdata
-
-    def is_a_list(self, key, val_list):
-        """Returns True if the parameter with name *key* is expected to be a list, or False otherwise.
-        *val_list* which is the received value for parameter *key* can be used to guess the answer."""
-        return False
-
-
 class PlainTextParser(BaseParser):
     """
     Plain text parser.
-    
-    Simply returns the content of the stream.
     """
     media_type = 'text/plain'
 
     def parse(self, stream):
+        """
+        Returns a 2-tuple of `(data, files)`.
+        
+        `data` will simply be a string representing the body of the request.
+        `files` will always be `None`.
+        """
         return (stream.read(), None)
 
 
-class FormParser(BaseParser, DataFlatener):
+class FormParser(BaseParser):
     """
-    The default parser for form data.
-    Return a dict containing a single value for each non-reserved parameter.
-
-    In order to handle select multiple (and having possibly more than a single value for each parameter),
-    you can customize the output by subclassing the method 'is_a_list'."""
+    Parser for form data.
+    """
 
     media_type = 'application/x-www-form-urlencoded'
 
-    """The value of the parameter when the select multiple is empty.
-    Browsers are usually stripping the select multiple that have no option selected from the parameters sent.
-    A common hack to avoid this is to send the parameter with a value specifying that the list is empty.
-    This value will always be stripped before the data is returned.
-    """
-    EMPTY_VALUE = '_empty'
-    RESERVED_FORM_PARAMS = ('csrfmiddlewaretoken',)
-
     def parse(self, stream):
+        """
+        Returns a 2-tuple of `(data, files)`.
+        
+        `data` will be a `QueryDict` containing all the form parameters.
+        `files` will always be `None`.
+        """
         data = parse_qs(stream.read(), keep_blank_values=True)
-
-        # removing EMPTY_VALUEs from the lists and flatening the data 
-        for key, val_list in data.items():
-            self.remove_empty_val(val_list)
-        data = self.flatten_data(data)
-
-        # Strip any parameters that we are treating as reserved
-        for key in data.keys():
-            if key in self.RESERVED_FORM_PARAMS:
-                data.pop(key)
-
         return (data, None)
 
-    def remove_empty_val(self, val_list):
-        """ """
-        while(1): # Because there might be several times EMPTY_VALUE in the list
-            try: 
-                ind = val_list.index(self.EMPTY_VALUE)
-            except ValueError:
-                break
-            else:
-                val_list.pop(ind) 
 
+class MultiPartParser(BaseParser):
+    """
+    Parser for multipart form data, which may include file data.
+    """
 
-class MultiPartParser(BaseParser, DataFlatener):
     media_type = 'multipart/form-data'
-    RESERVED_FORM_PARAMS = ('csrfmiddlewaretoken',)
 
     def parse(self, stream):
+        """
+        Returns a 2-tuple of `(data, files)`.
+        
+        `data` will be a `QueryDict` containing all the form parameters.
+        `files` will be a `QueryDict` containing all the form files.
+        """
         upload_handlers = self.view.request._get_upload_handlers()
         django_parser = DjangoMultiPartParser(self.view.request.META, stream, upload_handlers)
-        data, files = django_parser.parse()
+        return django_parser.parse()
 
-        # Flatening data, files and combining them
-        data = self.flatten_data(dict(data.iterlists()))
-        files = self.flatten_data(dict(files.iterlists()))
-
-        # Strip any parameters that we are treating as reserved
-        for key in data.keys():
-            if key in self.RESERVED_FORM_PARAMS:
-                data.pop(key)
-        
-        return (data, files)

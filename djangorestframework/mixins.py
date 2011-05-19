@@ -26,7 +26,7 @@ __all__ = (
     'ResponseMixin',
     'AuthMixin',
     'ResourceMixin',
-    #
+    # Reverse URL lookup behavior
     'InstanceMixin',
     # Model behavior mixins
     'ReadModelMixin',
@@ -359,7 +359,6 @@ class AuthMixin(object):
     
     """
     The set of authentication types that this view can handle.
-    
     
     Should be a tuple/list of classes as described in the ``authentication`` module.    
     """

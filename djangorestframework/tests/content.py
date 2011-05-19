@@ -36,7 +36,7 @@ class TestContentParsing(TestCase):
         form_data = {'qwerty': 'uiop'}
         view.parsers = (FormParser, MultiPartParser)
         view.request = self.req.put('/', data=form_data)
-        self.assertEqual(view.DATA, form_data)
+        self.assertEqual(view.DATA.items(), form_data.items())
 
     def ensure_determines_non_form_content_PUT(self, view):
         """Ensure view.RAW_CONTENT returns content for PUT request with non-form content."""

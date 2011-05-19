@@ -59,6 +59,7 @@ class IsAuthenticated(BasePermission):
         if not user.is_authenticated():
             raise _403_FORBIDDEN_RESPONSE 
 
+
 class IsAdminUser():
     """
     Allows access only to admin users.
