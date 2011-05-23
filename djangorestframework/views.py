@@ -1,3 +1,10 @@
+"""
+The :mod:`views` module provides the Views you will most probably
+be subclassing in your implementation.
+
+By setting or modifying class attributes on your view, you change it's predefined behaviour.
+"""
+
 from django.core.urlresolvers import set_script_prefix
 from django.views.decorators.csrf import csrf_exempt
 
@@ -26,25 +33,25 @@ class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
     # Use the base resource by default
     resource = resources.Resource
 
-    # List of renderers the resource can serialize the response with, ordered by preference.
     renderers = ( renderers.JSONRenderer,
                   renderers.DocumentingHTMLRenderer,
                   renderers.DocumentingXHTMLRenderer,
                   renderers.DocumentingPlainTextRenderer,
                   renderers.XMLRenderer )
-
-    # List of parsers the resource can parse the request with.
+    """ List of renderers the resource can serialize the response with, ordered by preference."""
+    
     parsers = ( parsers.JSONParser,
                 parsers.FormParser,
                 parsers.MultiPartParser )
+    """ List of parsers the resource can parse the request with."""
 
-    # List of all authenticating methods to attempt.
     authentication = ( authentication.UserLoggedInAuthenticaton,
                        authentication.BasicAuthenticaton )
+    """ List of all authenticating methods to attempt."""
     
-    # List of all permissions that must be checked.
     permissions = ( permissions.FullAnonAccess, )
-
+    """ List of all permissions that must be checked."""
+    
     # Allow name and description for the Resource to be set explicitly,
     # overiding the default classname/docstring behaviour.
     # These are used for documentation in the standard html and text renderers.
