@@ -51,6 +51,18 @@ class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
     name = None
     description = None
 
+    @classmethod
+    def as_view(cls, **initkwargs):
+        """
+        Override the default :meth:`as_view` to store an instance of the view
+        as an attribute on the callable function.  This allows us to discover
+        information about the view when we do URL reverse lookups. 
+        """
+        view = super(BaseView, cls).as_view(**initkwargs)
+        view.cls_instance = cls(**initkwargs)
+        return view
+
+
     @property
     def allowed_methods(self):
         """
@@ -122,12 +134,12 @@ class ModelView(BaseView):
 
 class InstanceModelView(InstanceMixin, ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelView):
     """A view which provides default operations for read/update/delete against a model instance."""
-    pass
+    _suffix = 'Instance'
 
 class ListModelView(ListModelMixin, ModelView):
-    """A view which provides default operations for list, against a model in the database."""
-    pass
+    """A view which provides default operations for list, against a model in the database."""   
+    _suffix = 'List'
 
 class ListOrCreateModelView(ListModelMixin, CreateModelMixin, ModelView):
-    """A view which provides default operations for list and create, against a model in the database."""
-    pass
+    """A view which provides default operations for list and create, against a model in the database."""   
+    _suffix = 'List'

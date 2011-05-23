@@ -467,12 +467,13 @@ class InstanceMixin(object):
         Store the callable object on the resource class that has been associated with this view.
         """
         view = super(InstanceMixin, cls).as_view(**initkwargs)
-        if 'resource' in initkwargs:
+        resource = getattr(cls(**initkwargs), 'resource', None)
+        if resource:
             # We do a little dance when we store the view callable...
             # we need to store it wrapped in a 1-tuple, so that inspect will treat it
             # as a function when we later look it up (rather than turning it into a method).
             # This makes sure our URL reversing works ok.      
-            initkwargs['resource'].view_callable = (view,)
+            resource.view_callable = (view,)
         return view
 
 
