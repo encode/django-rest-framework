@@ -51,6 +51,22 @@ def get_media_type_params(media_type):
     return _MediaType(media_type).params
 
 
+def order_by_precedence(media_type_lst):
+    """
+    Returns a list of lists of media type strings, ordered by precedence.
+    Precedence is determined by how specific a media type is:
+
+    3. 'type/subtype; param=val'
+    2. 'type/subtype'
+    1. 'type/*'
+    0. '*/*'
+    """
+    ret = [[],[],[],[]]
+    for media_type in media_type_lst:
+        precedence = _MediaType(media_type).precedence
+        ret[3-precedence].append(media_type)
+    return ret
+
 
 class _MediaType(object):
     def __init__(self, media_type_str):
@@ -61,53 +77,54 @@ class _MediaType(object):
         self.main_type, sep, self.sub_type = self.full_type.partition('/')
 
     def match(self, other):
-        """Return true if this MediaType satisfies the constraint of the given MediaType."""
-        for key in other.params.keys():
-            if key != 'q' and other.params[key] != self.params.get(key, None):
+        """Return true if this MediaType satisfies the given MediaType."""
+        for key in self.params.keys():
+            if key != 'q' and other.params.get(key, None) != self.params.get(key, None):
                 return False
 
-        if other.sub_type != '*' and other.sub_type != self.sub_type:
+        if self.sub_type != '*' and other.sub_type != '*'  and other.sub_type != self.sub_type:
             return False
 
-        if other.main_type != '*' and other.main_type != self.main_type:
+        if self.main_type != '*' and other.main_type != '*' and other.main_type != self.main_type:
             return False
 
         return True
 
+    @property
     def precedence(self):
         """
-        Return a precedence level for the media type given how specific it is.
+        Return a precedence level from 0-3 for the media type given how specific it is.
         """
         if self.main_type == '*':
-            return 1
+            return 0
         elif self.sub_type == '*':
-            return 2
+            return 1
         elif not self.params or self.params.keys() == ['q']:
-            return 3
-        return 4
+            return 2
+        return 3
 
-    def quality(self):
-        """
-        Return a quality level for the media type.
-        """
-        try:
-            return Decimal(self.params.get('q', '1.0'))
-        except:
-            return Decimal(0)
+    #def quality(self):
+    #    """
+    #    Return a quality level for the media type.
+    #    """
+    #    try:
+    #        return Decimal(self.params.get('q', '1.0'))
+    #    except:
+    #        return Decimal(0)
+ 
+    #def score(self):
+    #    """
+    #    Return an overall score for a given media type given it's quality and precedence.
+    #    """
+    #    # NB. quality values should only have up to 3 decimal points
+    #    # http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.9
+    #    return self.quality * 10000 + self.precedence
     
-    def score(self):
-        """
-        Return an overall score for a given media type given it's quality and precedence.
-        """
-        # NB. quality values should only have up to 3 decimal points
-        # http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.9
-        return self.quality * 10000 + self.precedence
-    
-    def as_tuple(self):
-        return (self.main_type, self.sub_type, self.params)
+    #def as_tuple(self):
+    #    return (self.main_type, self.sub_type, self.params)
 
-    def __repr__(self):
-        return "<MediaType %s>" % (self.as_tuple(),)
+    #def __repr__(self):
+    #    return "<MediaType %s>" % (self.as_tuple(),)
 
     def __str__(self):
         return unicode(self).encode('utf-8')

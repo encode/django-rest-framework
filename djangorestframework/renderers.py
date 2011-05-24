@@ -16,7 +16,7 @@ from djangorestframework.compat import apply_markdown
 from djangorestframework.utils import dict2xml, url_resolves
 from djangorestframework.utils.breadcrumbs import get_breadcrumbs
 from djangorestframework.utils.description import get_name, get_description
-from djangorestframework.utils.mediatypes import get_media_type_params, add_media_type_param
+from djangorestframework.utils.mediatypes import get_media_type_params, add_media_type_param, media_type_matches
 
 from decimal import Decimal
 import re
@@ -39,10 +39,25 @@ class BaseRenderer(object):
     All renderers must extend this class, set the :attr:`media_type` attribute,
     and override the :meth:`render` method.
     """
+
     media_type = None
 
     def __init__(self, view):
         self.view = view
+
+    def can_handle_response(self, accept):
+        """
+        Returns :const:`True` if this renderer is able to deal with the given
+        *accept* media type.
+
+        The default implementation for this function is to check the *accept*
+        argument against the :attr:`media_type` attribute set on the class to see if
+        they match.
+
+        This may be overridden to provide for other behavior, but typically you'll
+        instead want to just set the :attr:`media_type` attribute on the class.
+        """
+        return media_type_matches(self.media_type, accept)
 
     def render(self, obj=None, media_type=None):
         """
@@ -66,9 +81,13 @@ class JSONRenderer(BaseRenderer):
     """
     Renderer which serializes to JSON
     """
+
     media_type = 'application/json'
 
     def render(self, obj=None, media_type=None):
+        """
+        Renders *obj* into serialized JSON.
+        """
         if obj is None:
             return ''
 
@@ -92,6 +111,9 @@ class XMLRenderer(BaseRenderer):
     media_type = 'application/xml'
 
     def render(self, obj=None, media_type=None):
+        """
+        Renders *obj* into serialized XML.
+        """
         if obj is None:
             return ''
         return dict2xml(obj)
@@ -103,17 +125,22 @@ class TemplateRenderer(BaseRenderer):
 
     Render the object simply by using the given template.
     To create a template renderer, subclass this class, and set
-    the :attr:`media_type` and `:attr:template` attributes.
+    the :attr:`media_type` and :attr:`template` attributes.
     """
+
     media_type = None
     template = None
 
     def render(self, obj=None, media_type=None):
+        """
+        Renders *obj* using the :attr:`template` specified on the class.
+        """
         if obj is None:
             return ''
 
-        context = RequestContext(self.request, obj)
-        return self.template.render(context)
+        template = loader.get_template(self.template)
+        context = RequestContext(self.view.request, {'object': obj})
+        return template.render(context)
 
 
 class DocumentingTemplateRenderer(BaseRenderer):
@@ -121,6 +148,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
     Base class for renderers used to self-document the API.
     Implementing classes should extend this class and set the template attribute.
     """
+
     template = None
 
     def _get_content(self, view, request, obj, media_type):
@@ -215,6 +243,12 @@ class DocumentingTemplateRenderer(BaseRenderer):
 
 
     def render(self, obj=None, media_type=None):
+        """
+        Renders *obj* using the :attr:`template` set on the class.
+
+        The context used in the template contains all the information
+        needed to self-document the response to this request.
+        """
         content = self._get_content(self.view, self.view.request, obj, media_type)
         form_instance = self._get_form_instance(self.view)
 
@@ -272,6 +306,7 @@ class DocumentingHTMLRenderer(DocumentingTemplateRenderer):
     Renderer which provides a browsable HTML interface for an API.
     See the examples at http://api.django-rest-framework.org to see this in action.
     """
+
     media_type = 'text/html'
     template = 'renderer.html'
 
@@ -282,6 +317,7 @@ class DocumentingXHTMLRenderer(DocumentingTemplateRenderer):
     We need this to be listed in preference to xml in order to return HTML to WebKit based browsers,
     given their Accept headers.
     """
+
     media_type = 'application/xhtml+xml'
     template = 'renderer.html'
 
@@ -292,6 +328,7 @@ class DocumentingPlainTextRenderer(DocumentingTemplateRenderer):
     documentation of the returned status and headers, and of the resource's name and description.
     Useful for browsing an API with command line tools.
     """
+
     media_type = 'text/plain'
     template = 'renderer.txt'
 

@@ -13,6 +13,9 @@ import xml.etree.ElementTree as ET
 #    """Adds the ADMIN_MEDIA_PREFIX to the request context."""
 #    return {'ADMIN_MEDIA_PREFIX': settings.ADMIN_MEDIA_PREFIX}
 
+from mediatypes import media_type_matches, is_form_media_type
+from mediatypes import add_media_type_param, get_media_type_params, order_by_precedence
+
 MSIE_USER_AGENT_REGEX = re.compile(r'^Mozilla/[0-9]+\.[0-9]+ \([^)]*; MSIE [0-9]+\.[0-9]+[a-z]?;[^)]*\)(?!.* Opera )')
 
 def as_tuple(obj):

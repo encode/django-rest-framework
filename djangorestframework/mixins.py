@@ -14,7 +14,7 @@ from djangorestframework.parsers import FormParser, MultiPartParser
 from djangorestframework.resources import Resource
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.utils import as_tuple, MSIE_USER_AGENT_REGEX
-from djangorestframework.utils.mediatypes import is_form_media_type
+from djangorestframework.utils.mediatypes import is_form_media_type, order_by_precedence
 
 from decimal import Decimal
 import re
@@ -206,7 +206,7 @@ class RequestMixin(object):
     @property
     def _default_parser(self):
         """
-        Return the view's default parser.
+        Return the view's default parser class.
         """        
         return self.parsers[0]
 
@@ -245,15 +245,15 @@ class ResponseMixin(object):
         try:
             renderer = self._determine_renderer(self.request)
         except ErrorResponse, exc:
-            renderer = self._default_renderer
+            renderer = self._default_renderer(self)
             response = exc.response
         
         # Serialize the response content
         # TODO: renderer.media_type isn't the right thing to do here...
         if response.has_content_body:
-            content = renderer(self).render(response.cleaned_content, renderer.media_type)
+            content = renderer.render(response.cleaned_content, renderer.media_type)
         else:
-            content = renderer(self).render()
+            content = renderer.render()
 
         # Build the HTTP Response
         # TODO: renderer.media_type isn't the right thing to do here...
@@ -264,10 +264,6 @@ class ResponseMixin(object):
         return resp
 
 
-    # TODO: This should be simpler now.
-    #       Add a handles_response() to the renderer, then iterate through the
-    #       acceptable media types, ordered by how specific they are,
-    #       calling handles_response on each renderer.
     def _determine_renderer(self, request):
         """
         Return the appropriate renderer for the output, given the client's 'Accept' header,
@@ -282,59 +278,32 @@ class ResponseMixin(object):
         elif (self._IGNORE_IE_ACCEPT_HEADER and
               request.META.has_key('HTTP_USER_AGENT') and
               MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT'])):
+            # Ignore MSIE's broken accept behavior and do something sensible instead
             accept_list = ['text/html', '*/*']
         elif request.META.has_key('HTTP_ACCEPT'):
             # Use standard HTTP Accept negotiation
-            accept_list = request.META["HTTP_ACCEPT"].split(',')
+            accept_list = [token.strip() for token in request.META["HTTP_ACCEPT"].split(',')]
         else:
             # No accept header specified
-            return self._default_renderer
-        
-        # Parse the accept header into a dict of {qvalue: set of media types}
-        # We ignore mietype parameters
-        accept_dict = {}    
-        for token in accept_list:
-            components = token.split(';')
-            mimetype = components[0].strip()
-            qvalue = Decimal('1.0')
-            
-            if len(components) > 1:
-                # Parse items that have a qvalue eg 'text/html; q=0.9'
-                try:
-                    (q, num) = components[-1].split('=')
-                    if q == 'q':
-                        qvalue = Decimal(num)
-                except:
-                    # Skip malformed entries
-                    continue
+            return self._default_renderer(self)
 
-            if accept_dict.has_key(qvalue):
-                accept_dict[qvalue].add(mimetype)
-            else:
-                accept_dict[qvalue] = set((mimetype,))
-        
-        # Convert to a list of sets ordered by qvalue (highest first)
-        accept_sets = [accept_dict[qvalue] for qvalue in sorted(accept_dict.keys(), reverse=True)]
+        # Check the acceptable media types against each renderer,
+        # attempting more specific media types first
+        # NB. The inner loop here isn't as bad as it first looks :)
+        #     We're effectivly looping over max len(accept_list) * len(self.renderers)
+        renderers = [renderer_cls(self) for renderer_cls in self.renderers]
+
+        for media_type_lst in order_by_precedence(accept_list):
+            for renderer in renderers:
+                for media_type in media_type_lst:
+                    if renderer.can_handle_response(media_type):
+                        return renderer
        
-        for accept_set in accept_sets:
-            # Return any exact match
-            for renderer in self.renderers:
-                if renderer.media_type in accept_set:
-                    return renderer
-
-            # Return any subtype match
-            for renderer in self.renderers:
-                if renderer.media_type.split('/')[0] + '/*' in accept_set:
-                    return renderer
-
-            # Return default
-            if '*/*' in accept_set:
-                return self._default_renderer
-      
-
+        # No acceptable renderers were found
         raise ErrorResponse(status.HTTP_406_NOT_ACCEPTABLE,
                                 {'detail': 'Could not satisfy the client\'s Accept header',
                                  'available_types': self._rendered_media_types})
+
 
     @property
     def _rendered_media_types(self):
@@ -346,7 +315,7 @@ class ResponseMixin(object):
     @property
     def _default_renderer(self):
         """
-        Return the view's default renderer.
+        Return the view's default renderer class.
         """
         return self.renderers[0]
 

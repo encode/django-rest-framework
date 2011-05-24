@@ -13,23 +13,24 @@ DUMMYCONTENT = 'dummycontent'
 RENDERER_A_SERIALIZER = lambda x: 'Renderer A: %s' % x
 RENDERER_B_SERIALIZER = lambda x: 'Renderer B: %s' % x
 
-class MockView(ResponseMixin, DjangoView):
-    def get(self, request):
-        response = Response(DUMMYSTATUS, DUMMYCONTENT)
-        return self.render(response)
-
 class RendererA(BaseRenderer):
     media_type = 'mock/renderera'
 
-    def render(self, obj=None, content_type=None):
+    def render(self, obj=None, media_type=None):
         return RENDERER_A_SERIALIZER(obj)
 
 class RendererB(BaseRenderer):
     media_type = 'mock/rendererb'
 
-    def render(self, obj=None, content_type=None):
+    def render(self, obj=None, media_type=None):
         return RENDERER_B_SERIALIZER(obj)
 
+class MockView(ResponseMixin, DjangoView):
+    renderers = (RendererA, RendererB)
+
+    def get(self, request):
+        response = Response(DUMMYSTATUS, DUMMYCONTENT)
+        return self.render(response)
 
 urlpatterns = patterns('',
     url(r'^$', MockView.as_view(renderers=[RendererA, RendererB])),

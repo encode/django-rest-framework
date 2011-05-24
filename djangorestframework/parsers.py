@@ -54,7 +54,7 @@ class BaseParser(object):
         This may be overridden to provide for other behavior, but typically you'll
         instead want to just set the :attr:`media_type` attribute on the class.
         """
-        return media_type_matches(content_type, self.media_type)
+        return media_type_matches(self.media_type, content_type)
 
     def parse(self, stream):
         """

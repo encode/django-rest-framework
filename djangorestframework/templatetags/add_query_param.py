@@ -4,7 +4,7 @@ from urllib import quote
 register = Library()
 
 def add_query_param(url, param):
-    (key, val) = param.split('=')
+    (key, sep, val) = param.partition('=')
     param = '%s=%s' % (key, quote(val))
     (scheme, netloc, path, params, query, fragment) = urlparse(url)
     if query:
