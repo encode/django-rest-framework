@@ -243,21 +243,24 @@ class ResponseMixin(object):
         self.response = response
 
         try:
-            renderer = self._determine_renderer(self.request)
+            renderer, media_type = self._determine_renderer(self.request)
         except ErrorResponse, exc:
             renderer = self._default_renderer(self)
+            media_type = renderer.media_type
             response = exc.response
+
+        # Set the media type of the response
+        # Note that the renderer *could* override it in .render() if required.
+        response.media_type = renderer.media_type
         
         # Serialize the response content
-        # TODO: renderer.media_type isn't the right thing to do here...
         if response.has_content_body:
-            content = renderer.render(response.cleaned_content, renderer.media_type)
+            content = renderer.render(response.cleaned_content, media_type)
         else:
             content = renderer.render()
 
         # Build the HTTP Response
-        # TODO: renderer.media_type isn't the right thing to do here...
-        resp = HttpResponse(content, mimetype=renderer.media_type, status=response.status)
+        resp = HttpResponse(content, mimetype=response.media_type, status=response.status)
         for (key, val) in response.headers.items():
             resp[key] = val
 
@@ -266,8 +269,10 @@ class ResponseMixin(object):
 
     def _determine_renderer(self, request):
         """
-        Return the appropriate renderer for the output, given the client's 'Accept' header,
-        and the content types that this mixin knows how to serve.
+        Determines the appropriate renderer for the output, given the client's 'Accept' header,
+        and the :attr:`renderers` set on this class.
+
+        Returns a 2-tuple of `(renderer, media_type)`
 
         See: RFC 2616, Section 14 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
         """
@@ -285,19 +290,19 @@ class ResponseMixin(object):
             accept_list = [token.strip() for token in request.META["HTTP_ACCEPT"].split(',')]
         else:
             # No accept header specified
-            return self._default_renderer(self)
+            return (self._default_renderer(self), self._default_renderer.media_type)
 
         # Check the acceptable media types against each renderer,
         # attempting more specific media types first
         # NB. The inner loop here isn't as bad as it first looks :)
-        #     We're effectivly looping over max len(accept_list) * len(self.renderers)
+        #     Worst case is we're looping over len(accept_list) * len(self.renderers)
         renderers = [renderer_cls(self) for renderer_cls in self.renderers]
 
         for media_type_lst in order_by_precedence(accept_list):
             for renderer in renderers:
                 for media_type in media_type_lst:
                     if renderer.can_handle_response(media_type):
-                        return renderer
+                        return renderer, media_type
        
         # No acceptable renderers were found
         raise ErrorResponse(status.HTTP_406_NOT_ACCEPTABLE,

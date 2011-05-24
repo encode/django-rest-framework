@@ -18,6 +18,7 @@ class Response(object):
 
     def __init__(self, status=200, content=None, headers={}):
         self.status = status
+        self.media_type = None
         self.has_content_body = content is not None
         self.raw_content = content      # content prior to filtering
         self.cleaned_content = content  # content after filtering
