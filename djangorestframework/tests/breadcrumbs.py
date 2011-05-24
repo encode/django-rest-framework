@@ -19,11 +19,11 @@ class NestedResourceInstance(View):
     pass
 
 urlpatterns = patterns('',
-    url(r'^$', Root),
-    url(r'^resource/$', ResourceRoot),
-    url(r'^resource/(?P<key>[0-9]+)$', ResourceInstance),
-    url(r'^resource/(?P<key>[0-9]+)/$', NestedResourceRoot),
-    url(r'^resource/(?P<key>[0-9]+)/(?P<other>[A-Za-z]+)$', NestedResourceInstance),
+    url(r'^$', Root.as_view()),
+    url(r'^resource/$', ResourceRoot.as_view()),
+    url(r'^resource/(?P<key>[0-9]+)$', ResourceInstance.as_view()),
+    url(r'^resource/(?P<key>[0-9]+)/$', NestedResourceRoot.as_view()),
+    url(r'^resource/(?P<key>[0-9]+)/(?P<other>[A-Za-z]+)$', NestedResourceInstance.as_view()),
 )
 
 
