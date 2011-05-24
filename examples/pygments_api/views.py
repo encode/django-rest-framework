@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from djangorestframework.resources import FormResource
 from djangorestframework.response import Response
 from djangorestframework.renderers import BaseRenderer
-from djangorestframework.views import BaseView
+from djangorestframework.views import View
 from djangorestframework import status
 
 from pygments.formatters import HtmlFormatter
@@ -53,7 +53,7 @@ class PygmentsFormResource(FormResource):
     form = PygmentsForm
 
 
-class PygmentsRoot(BaseView):
+class PygmentsRoot(View):
     """
     This example demonstrates a simple RESTful Web API aound the awesome pygments library.
     This top level resource is used to create highlighted code snippets, and to list all the existing code snippets.
@@ -88,7 +88,7 @@ class PygmentsRoot(BaseView):
         return Response(status.HTTP_201_CREATED, headers={'Location': reverse('pygments-instance', args=[unique_id])})
 
 
-class PygmentsInstance(BaseView):
+class PygmentsInstance(View):
     """
     Simply return the stored highlighted HTML file with the correct mime type.
     This Resource only renders HTML and uses a standard HTML renderer rather than the renderers.DocumentingHTMLRenderer class.

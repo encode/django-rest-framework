@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
 
-from djangorestframework.views import BaseView
+from djangorestframework.views import View
 from djangorestframework.response import Response
 from djangorestframework import status
 
@@ -25,7 +25,7 @@ def remove_oldest_files(dir, max_files):
     [os.remove(path) for path in ctime_sorted_paths[max_files:]]
 
 
-class ObjectStoreRoot(BaseView):
+class ObjectStoreRoot(View):
     """
     Root of the Object Store API.
     Allows the client to get a complete list of all the stored objects, or to create a new stored object.
@@ -51,7 +51,7 @@ class ObjectStoreRoot(BaseView):
         return Response(status.HTTP_201_CREATED, self.CONTENT, {'Location': reverse('stored-object', kwargs={'key':key})})
 
 
-class StoredObject(BaseView):
+class StoredObject(View):
     """
     Represents a stored object.
     The object may be any picklable content.

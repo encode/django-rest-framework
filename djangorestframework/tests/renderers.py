@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, url
 from django import http
 from django.test import TestCase
-from djangorestframework.compat import View
+from djangorestframework.compat import View as DjangoView
 from djangorestframework.renderers import BaseRenderer, JSONRenderer
 from djangorestframework.mixins import ResponseMixin
 from djangorestframework.response import Response
@@ -13,7 +13,7 @@ DUMMYCONTENT = 'dummycontent'
 RENDERER_A_SERIALIZER = lambda x: 'Renderer A: %s' % x
 RENDERER_B_SERIALIZER = lambda x: 'Renderer B: %s' % x
 
-class MockView(ResponseMixin, View):
+class MockView(ResponseMixin, DjangoView):
     def get(self, request):
         response = Response(DUMMYSTATUS, DUMMYCONTENT)
         return self.render(response)

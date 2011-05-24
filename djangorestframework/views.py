@@ -6,16 +6,17 @@ By setting or modifying class attributes on your view, you change it's predefine
 """
 
 from django.core.urlresolvers import set_script_prefix
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from djangorestframework.compat import View
+from djangorestframework.compat import View as DjangoView
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.mixins import *
 from djangorestframework import resources, renderers, parsers, authentication, permissions, status
 
 
 __all__ = (
-    'BaseView',
+    'View',
     'ModelView',
     'InstanceModelView',
     'ListModelView',
@@ -24,7 +25,7 @@ __all__ = (
 
 
 
-class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
+class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     Handles incoming requests and maps them to REST operations.
     Performs request deserialization, response serialization, authentication and input validation.
@@ -65,7 +66,7 @@ class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
         as an attribute on the callable function.  This allows us to discover
         information about the view when we do URL reverse lookups. 
         """
-        view = super(BaseView, cls).as_view(**initkwargs)
+        view = super(View, cls).as_view(**initkwargs)
         view.cls_instance = cls(**initkwargs)
         return view
 
@@ -86,6 +87,14 @@ class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
                             {'detail': 'Method \'%s\' not allowed on this resource.' % self.method})
 
 
+    def initial(self, request, *args, **kargs):
+        """
+        Hook for any code that needs to run prior to anything else.
+        Required if you want to do things like set `request.upload_handlers` before
+        the authentication and dispatch handling is run.
+        """
+        pass
+
     # Note: session based authentication is explicitly CSRF validated,
     # all other authentication is CSRF exempt.
     @csrf_exempt
@@ -99,6 +108,8 @@ class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
         set_script_prefix(prefix)
 
         try:
+            self.initial(request, *args, **kwargs)
+
             # Authenticate and check request has the relevant permissions
             self._check_permissions()
 
@@ -110,8 +121,10 @@ class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
 
             response_obj = handler(request, *args, **kwargs)
 
-            # Allow return value to be either Response, or an object, or None
-            if isinstance(response_obj, Response):
+            # Allow return value to be either HttpResponse, Response, or an object, or None
+            if isinstance(response_obj, HttpResponse):
+                return response_obj
+            elif isinstance(response_obj, Response):
                 response = response_obj
             elif response_obj is not None:
                 response = Response(status.HTTP_200_OK, response_obj)
@@ -135,7 +148,7 @@ class BaseView(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, View):
     
 
 
-class ModelView(BaseView):
+class ModelView(View):
     """A RESTful view that maps to a model in the database."""
     resource = resources.ModelResource
 

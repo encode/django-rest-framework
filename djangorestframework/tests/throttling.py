@@ -3,11 +3,11 @@ from django.test import TestCase
 from django.utils import simplejson as json
 
 from djangorestframework.compat import RequestFactory
-from djangorestframework.views import BaseView
+from djangorestframework.views import View
 from djangorestframework.permissions import PerUserThrottling
 
 
-class MockView(BaseView):
+class MockView(View):
     permissions = ( PerUserThrottling, )
     throttle = (3, 1) # 3 requests per second
 

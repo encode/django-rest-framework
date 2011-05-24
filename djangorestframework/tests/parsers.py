@@ -2,11 +2,11 @@
 # ..
 #     >>> from djangorestframework.parsers import FormParser
 #     >>> from djangorestframework.compat import RequestFactory
-#     >>> from djangorestframework.views import BaseView
+#     >>> from djangorestframework.views import View
 #     >>> from StringIO import StringIO
 #     >>> from urllib import urlencode
 #     >>> req = RequestFactory().get('/')
-#     >>> some_view = BaseView()
+#     >>> some_view = View()
 #     >>> some_view.request = req  # Make as if this request had been dispatched
 # 
 # FormParser
@@ -85,7 +85,7 @@
 # from django.test import TestCase
 # from djangorestframework.compat import RequestFactory
 # from djangorestframework.parsers import MultiPartParser
-# from djangorestframework.views import BaseView
+# from djangorestframework.views import View
 # from StringIO import StringIO
 # 
 # def encode_multipart_formdata(fields, files):
@@ -125,7 +125,7 @@
 #    def test_multipartparser(self):
 #        """Ensure that MultiPartParser can parse multipart/form-data that contains a mix of several files and parameters."""
 #        post_req = RequestFactory().post('/', self.body, content_type=self.content_type)
-#        view = BaseView()
+#        view = View()
 #        view.request = post_req
 #        (data, files) = MultiPartParser(view).parse(StringIO(self.body))
 #        self.assertEqual(data['key1'], 'val1')

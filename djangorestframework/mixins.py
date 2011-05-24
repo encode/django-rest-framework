@@ -216,7 +216,7 @@ class RequestMixin(object):
 
 class ResponseMixin(object):
     """
-    Adds behavior for pluggable `Renderers` to a :class:`views.BaseView` or Django :class:`View` class.
+    Adds behavior for pluggable `Renderers` to a :class:`views.View` class.
     
     Default behavior is to use standard HTTP Accept header content negotiation.
     Also supports overriding the content type by specifying an ``_accept=`` parameter in the URL.

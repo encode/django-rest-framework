@@ -1,6 +1,6 @@
 from django.test import TestCase
 from djangorestframework.compat import RequestFactory
-from djangorestframework.views import BaseView
+from djangorestframework.views import View
 
 
 # See: http://www.useragentstring.com/
@@ -19,7 +19,7 @@ class UserAgentMungingTest(TestCase):
 
     def setUp(self):
 
-        class MockView(BaseView):
+        class MockView(View):
             permissions = ()
 
             def get(self, request):

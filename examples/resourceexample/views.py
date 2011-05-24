@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 
-from djangorestframework.views import BaseView
+from djangorestframework.views import View
 from djangorestframework.resources import FormResource
 from djangorestframework.response import Response
 from djangorestframework import status
@@ -14,7 +14,7 @@ class MyFormValidation(FormResource):
     form = MyForm
 
     
-class ExampleResource(BaseView):
+class ExampleResource(View):
     """
     A basic read-only resource that points to 3 other resources.
     """
@@ -23,7 +23,7 @@ class ExampleResource(BaseView):
         return {"Some other resources": [reverse('another-example-resource', kwargs={'num':num}) for num in range(3)]}
 
 
-class AnotherExampleResource(BaseView):
+class AnotherExampleResource(View):
     """
     A basic GET-able/POST-able resource.
     """

@@ -4,7 +4,7 @@ from django.test import TestCase
 from djangorestframework.compat import RequestFactory
 from djangorestframework.resources import Resource, FormResource, ModelResource
 from djangorestframework.response import ErrorResponse
-from djangorestframework.views import BaseView
+from djangorestframework.views import View
 from djangorestframework.resources import Resource
 
 
@@ -18,7 +18,7 @@ class TestDisabledValidations(TestCase):
         class DisabledFormResource(FormResource):
             form = None
 
-        class MockView(BaseView):
+        class MockView(View):
             resource = DisabledFormResource
 
         view = MockView()
@@ -31,7 +31,7 @@ class TestDisabledValidations(TestCase):
         class DisabledFormResource(FormResource):
             form = None
 
-        class MockView(BaseView):
+        class MockView(View):
             resource = DisabledFormResource
     
         view = MockView()
@@ -43,7 +43,7 @@ class TestDisabledValidations(TestCase):
         """If the view's form is None and does not have a Resource with a model set then
         ModelFormValidator(view).validate_request(content, None) should just return the content unmodified."""
 
-        class DisabledModelFormView(BaseView):
+        class DisabledModelFormView(View):
             resource = ModelResource
 
         view = DisabledModelFormView()
@@ -52,7 +52,7 @@ class TestDisabledValidations(TestCase):
 
     def test_disabled_model_form_validator_get_bound_form_returns_none(self):
         """If the form attribute is None on FormValidatorMixin then get_bound_form(content) should just return None."""
-        class DisabledModelFormView(BaseView):
+        class DisabledModelFormView(View):
             resource = ModelResource
  
         view = DisabledModelFormView()
@@ -77,7 +77,7 @@ class TestNonFieldErrors(TestCase):
         class MockResource(FormResource):
             form = MockForm
         
-        class MockView(BaseView):
+        class MockView(View):
             pass
 
         view = MockView()
@@ -104,10 +104,10 @@ class TestFormValidation(TestCase):
         class MockModelResource(ModelResource):
             form = MockForm
  
-        class MockFormView(BaseView):
+        class MockFormView(View):
             resource = MockFormResource
  
-        class MockModelFormView(BaseView):
+        class MockModelFormView(View):
             resource = MockModelResource
 
         self.MockFormResource = MockFormResource
@@ -277,7 +277,7 @@ class TestModelFormValidator(TestCase):
         class MockResource(ModelResource):
             model = MockModel
  
-        class MockView(BaseView):
+        class MockView(View):
             resource = MockResource
        
         self.validator = MockResource(MockView)
