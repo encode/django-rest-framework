@@ -63,11 +63,11 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
             # Make URL we want to point to.
             url = None
             if middle.startswith('http://') or middle.startswith('https://'):
-                url = urlquote(middle, safe='/&=:;#?+*')
+                url = middle
             elif middle.startswith('www.') or ('@' not in middle and \
                     middle and middle[0] in string.ascii_letters + string.digits and \
                     (middle.endswith('.org') or middle.endswith('.net') or middle.endswith('.com'))):
-                url = urlquote('http://%s' % middle, safe='/&=:;#?+*')
+                url = 'http://%s' % middle
             elif '@' in middle and not ':' in middle and simple_email_re.match(middle):
                 url = 'mailto:%s' % middle
                 nofollow_attr = ''
