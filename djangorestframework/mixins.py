@@ -11,7 +11,7 @@ from django.http.multipartparser import LimitBytes
 
 from djangorestframework import status
 from djangorestframework.parsers import FormParser, MultiPartParser
-from djangorestframework.resources import Resource
+from djangorestframework.resources import Resource, FormResource, ModelResource
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.utils import as_tuple, MSIE_USER_AGENT_REGEX
 from djangorestframework.utils.mediatypes import is_form_media_type, order_by_precedence
@@ -395,7 +395,7 @@ class ResourceMixin(object):
     It provides validation on the content of incoming requests,
     and filters the object representation into a serializable object for the response.
     """
-    resource = Resource
+    resource = None
 
     @property
     def CONTENT(self):
@@ -406,24 +406,31 @@ class ResourceMixin(object):
             self._content = self.validate_request(self.DATA, self.FILES)
         return self._content
 
+    @property
+    def _resource(self):
+        if self.resource:
+            return self.resource(self)
+        elif hasattr(self, 'model'):
+            return ModelResource(self)
+        elif hasattr(self, 'form'):
+            return FormResource(self)
+        return Resource(self)
+
     def validate_request(self, data, files):
         """
         Given the request *data* return the cleaned, validated content.
         Typically raises an :class:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
         """
-        resource = self.resource(self)
-        return resource.validate_request(data, files)
+        return self._resource.validate_request(data, files)
 
     def filter_response(self, obj):
         """
         Given the response content, filter it into a serializable object.
         """
-        resource = self.resource(self)
-        return resource.filter_response(obj)
+        return self._resource.filter_response(obj)
 
     def get_bound_form(self, content=None):
-        resource = self.resource(self)
-        return resource.get_bound_form(content)
+        return self._resource.get_bound_form(content)
 
 
 

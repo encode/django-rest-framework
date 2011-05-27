@@ -31,27 +31,38 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     Performs request deserialization, response serialization, authentication and input validation.
     """
 
-    # Use the base resource by default
-    resource = resources.Resource
+    """
+    The resource to use when validating requests and filtering responses,
+    or `None` to use default behaviour.
+    """
+    resource = None
 
+    """
+    List of renderers the resource can serialize the response with, ordered by preference.
+    """
     renderers = ( renderers.JSONRenderer,
                   renderers.DocumentingHTMLRenderer,
                   renderers.DocumentingXHTMLRenderer,
                   renderers.DocumentingPlainTextRenderer,
                   renderers.XMLRenderer )
-    """ List of renderers the resource can serialize the response with, ordered by preference."""
     
+    """
+    List of parsers the resource can parse the request with.
+    """
     parsers = ( parsers.JSONParser,
                 parsers.FormParser,
                 parsers.MultiPartParser )
-    """ List of parsers the resource can parse the request with."""
 
+    """
+    List of all authenticating methods to attempt.
+    """
     authentication = ( authentication.UserLoggedInAuthenticaton,
                        authentication.BasicAuthenticaton )
-    """ List of all authenticating methods to attempt."""
     
+    """
+    List of all permissions that must be checked.
+    """
     permissions = ( permissions.FullAnonAccess, )
-    """ List of all permissions that must be checked."""
     
     # Allow name and description for the Resource to be set explicitly,
     # overiding the default classname/docstring behaviour.

@@ -165,11 +165,22 @@ class FormResource(Resource):
     On calling :meth:`validate_request` this validator may set a :attr:`bound_form_instance` attribute on the
     view, which may be used by some renderers.
     """
-    form = None
+
     """
     The :class:`Form` class that should be used for request validation.
+    This can be overridden by a :attr:`form` attribute on the :class:`.View`.
     """
-    
+    form = None
+
+    def __init__(self, view):
+        """
+        Allow a :attr:`form` attributes set on the :class:`View` to override
+        the :attr:`form` attribute set on the :class:`Resource`.
+        """
+        super(FormResource, self).__init__(view)
+
+        if getattr(view, 'form', None):
+            self.form = view.form
 
 
     def validate_request(self, data, files):
@@ -314,11 +325,15 @@ class ModelResource(FormResource):
     """
     The form class that should be used for request validation.
     If set to :const:`None` then the default model form validation will be used.
+
+    This can be overridden by a :attr:`form` attribute on the :class:`.View`.
     """
     form = None
 
     """
     The model class which this resource maps to.
+
+    This can be overridden by a :attr:`model` attribute on the :class:`.View`.
     """
     model = None
 
@@ -345,6 +360,17 @@ class ModelResource(FormResource):
     """
     include = ('url',)
 
+
+    def __init__(self, view):
+        """
+        Allow :attr:`form` and :attr:`model` attributes set on the
+        :class:`View` to override the :attr:`form` and :attr:`model`
+        attributes set on the :class:`Resource`.
+        """
+        super(ModelResource, self).__init__(view)
+
+        if getattr(view, 'model', None):
+            self.model = view.model
 
     def validate_request(self, data, files):
         """
