@@ -64,11 +64,6 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     permissions = ( permissions.FullAnonAccess, )
     
-    # Allow name and description for the Resource to be set explicitly,
-    # overiding the default classname/docstring behaviour.
-    # These are used for documentation in the standard html and text renderers.
-    name = None
-    description = None
 
     @classmethod
     def as_view(cls, **initkwargs):

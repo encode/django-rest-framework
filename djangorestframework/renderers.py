@@ -172,7 +172,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
         return content
 
 
-    def _get_form_instance(self, view):
+    def _get_form_instance(self, view, method):
         """
         Get a form, possibly bound to either the input or output data.
         In the absence on of the Resource having an associated form then
@@ -180,22 +180,24 @@ class DocumentingTemplateRenderer(BaseRenderer):
         """
 
         # Get the form instance if we have one bound to the input
-        form_instance = getattr(view, 'bound_form_instance', None)
+        form_instance = None
+        if method == view.method.lower():
+            form_instance = getattr(view, 'bound_form_instance', None)
 
         if not form_instance and hasattr(view, 'get_bound_form'):
             # Otherwise if we have a response that is valid against the form then use that
             if view.response.has_content_body:
                 try:
-                    form_instance = view.get_bound_form(view.response.cleaned_content)
+                    form_instance = view.get_bound_form(view.response.cleaned_content, method=method)
                     if form_instance and not form_instance.is_valid():
                         form_instance = None
                 except:
                     form_instance = None
-            
+
         # If we still don't have a form instance then try to get an unbound form
         if not form_instance:
             try:
-                form_instance = view.get_bound_form()
+                form_instance = view.get_bound_form(method=method)
             except:
                 pass
 
@@ -250,7 +252,9 @@ class DocumentingTemplateRenderer(BaseRenderer):
         needed to self-document the response to this request.
         """
         content = self._get_content(self.view, self.view.request, obj, media_type)
-        form_instance = self._get_form_instance(self.view)
+
+        put_form_instance = self._get_form_instance(self.view, 'put')
+        post_form_instance = self._get_form_instance(self.view, 'post')
 
         if url_resolves(settings.LOGIN_URL) and url_resolves(settings.LOGOUT_URL):
             login_url = "%s?next=%s" % (settings.LOGIN_URL, quote_plus(self.view.request.path))
@@ -282,7 +286,8 @@ class DocumentingTemplateRenderer(BaseRenderer):
             'markeddown': markeddown,
             'breadcrumblist': breadcrumb_list,
             'available_media_types': self.view._rendered_media_types,
-            'form': form_instance,
+            'put_form': put_form_instance,
+            'post_form': post_form_instance,
             'login_url': login_url,
             'logout_url': logout_url,
             'ACCEPT_PARAM': getattr(self.view, '_ACCEPT_QUERY_PARAM', None),

@@ -58,19 +58,16 @@
 			</form>
 	{% endif %}
 	
-	{% comment %} *** Only display the POST/PUT/DELETE forms if we have a bound form, and if method     ***
-	              *** tunneling via POST forms is enabled.                                              ***
-	              *** (We could display only the POST form if method tunneling is disabled, but I think ***
-	              ***  the user experience would be confusing, so we simply turn all forms off.         *** {% endcomment %}
-	
-	{% if METHOD_PARAM and form %}
+	{# Only display the POST/PUT/DELETE forms if method tunneling via POST forms is enabled. #}	
+	{% if METHOD_PARAM %}
+
 		{% if 'POST' in view.allowed_methods %}
-				<form action="{{ request.path }}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+				<form action="{{ request.path }}" method="post" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
 				<fieldset class='module aligned'>
 					<h2>POST {{ name }}</h2>
 				    {% csrf_token %}
-				    {{ form.non_field_errors }}
-					{% for field in form %}
+				    {{ post_form.non_field_errors }}
+					{% for field in post_form %}
 					<div class='form-row'>
 					    {{ field.label_tag }}
 					    {{ field }}
@@ -86,13 +83,13 @@
 		{% endif %}
 		
 		{% if 'PUT' in view.allowed_methods %}
-				<form action="{{ request.path }}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+				<form action="{{ request.path }}" method="post" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
 				<fieldset class='module aligned'>
 					<h2>PUT {{ name }}</h2>
 					<input type="hidden" name="{{ METHOD_PARAM }}" value="PUT" />
 					{% csrf_token %}
-					{{ form.non_field_errors }}
-					{% for field in form %}
+					{{ put_form.non_field_errors }}
+					{% for field in put_form %}
 					<div class='form-row'>
 					    {{ field.label_tag }}
 					    {{ field }}
@@ -119,6 +116,7 @@
 				</fieldset>
 				</form>
 		{% endif %}
+
 	{% endif %}
 	</div>
 	</div>

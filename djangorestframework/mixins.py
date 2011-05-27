@@ -401,10 +401,21 @@ class ResourceMixin(object):
     def CONTENT(self):
         """
         Returns the cleaned, validated request content.
+
+        May raise an :class:`response.ErrorResponse` with status code 400 (Bad Request).
         """
         if not hasattr(self, '_content'):
             self._content = self.validate_request(self.DATA, self.FILES)
         return self._content
+
+    @property
+    def PARAMS(self):
+        """
+        Returns the cleaned, validated query parameters.
+
+        May raise an :class:`response.ErrorResponse` with status code 400 (Bad Request).
+        """
+        return self.validate_request(self.request.GET)
 
     @property
     def _resource(self):
@@ -414,12 +425,14 @@ class ResourceMixin(object):
             return ModelResource(self)
         elif getattr(self, 'form', None):
             return FormResource(self)
+        elif getattr(self, '%s_form' % self.method.lower(), None):
+            return FormResource(self)
         return Resource(self)
 
-    def validate_request(self, data, files):
+    def validate_request(self, data, files=None):
         """
-        Given the request *data* return the cleaned, validated content.
-        Typically raises an :class:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
+        Given the request *data* and optional *files*, return the cleaned, validated content.
+        May raise an :class:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
         """
         return self._resource.validate_request(data, files)
 
@@ -429,8 +442,8 @@ class ResourceMixin(object):
         """
         return self._resource.filter_response(obj)
 
-    def get_bound_form(self, content=None):
-        return self._resource.get_bound_form(content)
+    def get_bound_form(self, content=None, method=None):
+        return self._resource.get_bound_form(content, method=method)
 
 
 
