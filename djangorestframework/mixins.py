@@ -410,9 +410,9 @@ class ResourceMixin(object):
     def _resource(self):
         if self.resource:
             return self.resource(self)
-        elif hasattr(self, 'model'):
+        elif getattr(self, 'model', None):
             return ModelResource(self)
-        elif hasattr(self, 'form'):
+        elif getattr(self, 'form', None):
             return FormResource(self)
         return Resource(self)
 
