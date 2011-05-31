@@ -47,10 +47,10 @@
 				<fieldset class='module aligned'>
 				<h2>GET {{ name }}</h2>
 				<div class='submit-row' style='margin: 0; border: 0'>
-				<a href='{{ request.path }}' rel="nofollow" style='float: left'>GET</a>
+				<a href='{{ request.get_full_path }}' rel="nofollow" style='float: left'>GET</a>
 				{% for media_type in available_media_types %}
 				  {% with ACCEPT_PARAM|add:"="|add:media_type as param %}
-				    [<a href='{{ request.path|add_query_param:param }}' rel="nofollow">{{ media_type }}</a>]
+				    [<a href='{{ request.get_full_path|add_query_param:param }}' rel="nofollow">{{ media_type }}</a>]
 				  {% endwith %}
 				{% endfor %}
 				</div>
@@ -62,7 +62,7 @@
 	{% if METHOD_PARAM %}
 
 		{% if 'POST' in view.allowed_methods %}
-				<form action="{{ request.path }}" method="post" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+				<form action="{{ request.get_full_path }}" method="post" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
 				<fieldset class='module aligned'>
 					<h2>POST {{ name }}</h2>
 				    {% csrf_token %}
@@ -83,7 +83,7 @@
 		{% endif %}
 		
 		{% if 'PUT' in view.allowed_methods %}
-				<form action="{{ request.path }}" method="post" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+				<form action="{{ request.get_full_path }}" method="post" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
 				<fieldset class='module aligned'>
 					<h2>PUT {{ name }}</h2>
 					<input type="hidden" name="{{ METHOD_PARAM }}" value="PUT" />
@@ -105,7 +105,7 @@
 		{% endif %}
 		
 		{% if 'DELETE' in view.allowed_methods %}
-				<form action="{{ request.path }}" method="post">
+				<form action="{{ request.get_full_path }}" method="post">
 				<fieldset class='module aligned'>			
 					<h2>DELETE {{ name }}</h2>
 				    {% csrf_token %}
