@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django import forms
 from djangorestframework.compat import RequestFactory
-from djangorestframework.resource import Resource
+from djangorestframework.views import View
+from djangorestframework.resources import FormResource
 import StringIO
 
 class UploadFilesTests(TestCase):
@@ -15,19 +16,21 @@ class UploadFilesTests(TestCase):
         class FileForm(forms.Form):
             file = forms.FileField
 
-        class MockResource(Resource):
-            allowed_methods = anon_allowed_methods = ('POST',)
+        class MockResource(FormResource):
             form = FileForm
 
-            def post(self, request, auth, content, *args, **kwargs):
-                #self.uploaded = content.file
-                return {'FILE_NAME': content['file'].name,
-                        'FILE_CONTENT': content['file'].read()}
+        class MockView(View):
+            permissions = ()
+            resource = MockResource
+
+            def post(self, request, *args, **kwargs):
+                return {'FILE_NAME': self.CONTENT['file'][0].name,
+                        'FILE_CONTENT': self.CONTENT['file'][0].read()}
                 
         file = StringIO.StringIO('stuff')
         file.name = 'stuff.txt'
         request = self.factory.post('/', {'file': file})
-        view = MockResource.as_view()
+        view = MockView.as_view()
         response = view(request)
         self.assertEquals(response.content, '{"FILE_CONTENT": "stuff", "FILE_NAME": "stuff.txt"}')
 

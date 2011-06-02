@@ -31,12 +31,12 @@ We'll need two resources:
 Form validation
 ---------------
 
-We'll now add a form to specify what input fields are required when creating a new highlighed code snippet.  This will include:
+We'll now add a form to specify what input fields are required when creating a new highlighted code snippet.  This will include:
 
 * The code text itself.
 * An optional title for the code.
 * A flag to determine if line numbers should be included.
-* Which programming langauge to interpret the code snippet as.
+* Which programming language to interpret the code snippet as.
 * Which output style to use for the highlighting.
 
 ``forms.py``

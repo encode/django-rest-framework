@@ -1,7 +1,7 @@
 from django.test import TestCase
-from djangorestframework.resource import Resource
-from djangorestframework.markdownwrapper import apply_markdown
-from djangorestframework.description import get_name, get_description
+from djangorestframework.views import View
+from djangorestframework.compat import apply_markdown
+from djangorestframework.utils.description import get_name, get_description
 
 # We check that docstrings get nicely un-indented.
 DESCRIPTION = """an example docstring
@@ -32,23 +32,24 @@ MARKED_DOWN = """<h2>an example docstring</h2>
 <h2 id="hash_style_header">hash style header</h2>"""
 
 
-class TestResourceNamesAndDescriptions(TestCase):
+class TestViewNamesAndDescriptions(TestCase):
     def test_resource_name_uses_classname_by_default(self):
         """Ensure Resource names are based on the classname by default."""
-        class MockResource(Resource):
+        class MockView(View):
             pass
-        self.assertEquals(get_name(MockResource()), 'Mock Resource')
+        self.assertEquals(get_name(MockView()), 'Mock')
 
-    def test_resource_name_can_be_set_explicitly(self):
-        """Ensure Resource names can be set using the 'name' class attribute."""
-        example = 'Some Other Name'
-        class MockResource(Resource):
-            name = example
-        self.assertEquals(get_name(MockResource()), example)
+    # This has been turned off now.
+    #def test_resource_name_can_be_set_explicitly(self):
+    #    """Ensure Resource names can be set using the 'name' class attribute."""
+    #    example = 'Some Other Name'
+    #    class MockView(View):
+    #        name = example
+    #    self.assertEquals(get_name(MockView()), example)
 
     def test_resource_description_uses_docstring_by_default(self):
         """Ensure Resource names are based on the docstring by default."""
-        class MockResource(Resource):
+        class MockView(View):
             """an example docstring
             ====================
 
@@ -64,28 +65,29 @@ class TestResourceNamesAndDescriptions(TestCase):
             
             # hash style header #"""
         
-        self.assertEquals(get_description(MockResource()), DESCRIPTION)
+        self.assertEquals(get_description(MockView()), DESCRIPTION)
 
-    def test_resource_description_can_be_set_explicitly(self):
-        """Ensure Resource descriptions can be set using the 'description' class attribute."""
-        example = 'Some other description'
-        class MockResource(Resource):
-            """docstring"""
-            description = example
-        self.assertEquals(get_description(MockResource()), example)
+    # This has been turned off now
+    #def test_resource_description_can_be_set_explicitly(self):
+    #    """Ensure Resource descriptions can be set using the 'description' class attribute."""
+    #    example = 'Some other description'
+    #    class MockView(View):
+    #        """docstring"""
+    #        description = example
+    #    self.assertEquals(get_description(MockView()), example)
  
-    def test_resource_description_does_not_require_docstring(self):
-        """Ensure that empty docstrings do not affect the Resource's description if it has been set using the 'description' class attribute."""
-        example = 'Some other description'
-        class MockResource(Resource):
-            description = example
-        self.assertEquals(get_description(MockResource()), example)
+    #def test_resource_description_does_not_require_docstring(self):
+    #    """Ensure that empty docstrings do not affect the Resource's description if it has been set using the 'description' class attribute."""
+    #    example = 'Some other description'
+    #    class MockView(View):
+    #        description = example
+    #    self.assertEquals(get_description(MockView()), example)
 
     def test_resource_description_can_be_empty(self):
         """Ensure that if a resource has no doctring or 'description' class attribute, then it's description is the empty string"""
-        class MockResource(Resource):
+        class MockView(View):
             pass
-        self.assertEquals(get_description(MockResource()), '')
+        self.assertEquals(get_description(MockView()), '')
   
     def test_markdown(self):
         """Ensure markdown to HTML works as expected"""

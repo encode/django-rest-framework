@@ -1,6 +1,6 @@
 from django.test import TestCase
 from djangorestframework.compat import RequestFactory
-from djangorestframework.resource import Resource
+from djangorestframework.views import View
 
 
 # See: http://www.useragentstring.com/
@@ -18,13 +18,16 @@ class UserAgentMungingTest(TestCase):
     http://www.gethifi.com/blog/browser-rest-http-accept-headers"""
 
     def setUp(self):
-        class MockResource(Resource):
-            anon_allowed_methods = allowed_methods = ('GET',)
-            def get(self, request, auth):
+
+        class MockView(View):
+            permissions = ()
+
+            def get(self, request):
                 return {'a':1, 'b':2, 'c':3}
+
         self.req = RequestFactory()
-        self.MockResource = MockResource
-        self.view = MockResource.as_view()
+        self.MockView = MockView
+        self.view = MockView.as_view()
 
     def test_munge_msie_accept_header(self):
         """Send MSIE user agent strings and ensure that we get an HTML response,
@@ -37,9 +40,9 @@ class UserAgentMungingTest(TestCase):
             self.assertEqual(resp['Content-Type'], 'text/html')
 
     def test_dont_rewrite_msie_accept_header(self):
-        """Turn off REWRITE_IE_ACCEPT_HEADER, send MSIE user agent strings and ensure
+        """Turn off _IGNORE_IE_ACCEPT_HEADER, send MSIE user agent strings and ensure
         that we get a JSON response if we set a */* accept header."""
-        view = self.MockResource.as_view(REWRITE_IE_ACCEPT_HEADER=False)
+        view = self.MockView.as_view(_IGNORE_IE_ACCEPT_HEADER=False)
 
         for user_agent in (MSIE_9_USER_AGENT,
                            MSIE_8_USER_AGENT,

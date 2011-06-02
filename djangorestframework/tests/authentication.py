@@ -1,23 +1,24 @@
 from django.conf.urls.defaults import patterns
+from django.contrib.auth.models import User
+from django.contrib.auth import login
 from django.test import Client, TestCase
+
 from django.utils import simplejson as json
 
 from djangorestframework.compat import RequestFactory
-from djangorestframework.resource import Resource
-from django.contrib.auth.models import User
-from django.contrib.auth import login
+from djangorestframework.views import View
+from djangorestframework import permissions
 
 import base64
 
 
-class MockResource(Resource):
-    allowed_methods = ('POST',)
-
-    def post(self, request, auth, content):
+class MockView(View):
+    permissions = ( permissions.IsAuthenticated, )
+    def post(self, request):
         return {'a':1, 'b':2, 'c':3}
 
 urlpatterns = patterns('',
-    (r'^$', MockResource.as_view()),
+    (r'^$', MockView.as_view()),
 )
 
 
@@ -86,3 +87,4 @@ class SessionAuthTests(TestCase):
         """Ensure POSTing form over session authentication without logged in user fails."""
         response = self.csrf_client.post('/', {'example': 'example'})
         self.assertEqual(response.status_code, 403)
+

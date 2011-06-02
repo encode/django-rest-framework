@@ -42,15 +42,15 @@
 {% endfor %}
 {{ content|urlize_quoted_links }}</pre>{% endautoescape %}</div>
 
-	{% if 'GET' in resource.allowed_methods %}
+	{% if 'GET' in view.allowed_methods %}
 			<form>
 				<fieldset class='module aligned'>
 				<h2>GET {{ name }}</h2>
 				<div class='submit-row' style='margin: 0; border: 0'>
-				<a href='{{ request.path }}' rel="nofollow" style='float: left'>GET</a>
-				{% for media_type in resource.emitted_media_types %}
-				  {% with resource.ACCEPT_QUERY_PARAM|add:"="|add:media_type as param %}
-				    [<a href='{{ request.path|add_query_param:param }}' rel="nofollow">{{ media_type }}</a>]
+				<a href='{{ request.get_full_path }}' rel="nofollow" style='float: left'>GET</a>
+				{% for media_type in available_media_types %}
+				  {% with ACCEPT_PARAM|add:"="|add:media_type as param %}
+				    [<a href='{{ request.get_full_path|add_query_param:param }}' rel="nofollow">{{ media_type }}</a>]
 				  {% endwith %}
 				{% endfor %}
 				</div>
@@ -58,19 +58,16 @@
 			</form>
 	{% endif %}
 	
-	{% comment %} *** Only display the POST/PUT/DELETE forms if we have a bound form, and if method     ***
-	              *** tunneling via POST forms is enabled.                                              ***
-	              *** (We could display only the POST form if method tunneling is disabled, but I think ***
-	              ***  the user experience would be confusing, so we simply turn all forms off.         *** {% endcomment %}
-	
-	{% if resource.METHOD_PARAM and form %}
-		{% if 'POST' in resource.allowed_methods %}
-				<form action="{{ request.path }}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+	{# Only display the POST/PUT/DELETE forms if method tunneling via POST forms is enabled. #}	
+	{% if METHOD_PARAM %}
+
+		{% if 'POST' in view.allowed_methods %}
+				<form action="{{ request.get_full_path }}" method="post" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
 				<fieldset class='module aligned'>
 					<h2>POST {{ name }}</h2>
 				    {% csrf_token %}
-				    {{ form.non_field_errors }}
-					{% for field in form %}
+				    {{ post_form.non_field_errors }}
+					{% for field in post_form %}
 					<div class='form-row'>
 					    {{ field.label_tag }}
 					    {{ field }}
@@ -85,14 +82,14 @@
 				</form>
 		{% endif %}
 		
-		{% if 'PUT' in resource.allowed_methods %}
-				<form action="{{ request.path }}" method="post" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+		{% if 'PUT' in view.allowed_methods %}
+				<form action="{{ request.get_full_path }}" method="post" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
 				<fieldset class='module aligned'>
 					<h2>PUT {{ name }}</h2>
-					<input type="hidden" name="{{ resource.METHOD_PARAM }}" value="PUT" />
+					<input type="hidden" name="{{ METHOD_PARAM }}" value="PUT" />
 					{% csrf_token %}
-					{{ form.non_field_errors }}
-					{% for field in form %}
+					{{ put_form.non_field_errors }}
+					{% for field in put_form %}
 					<div class='form-row'>
 					    {{ field.label_tag }}
 					    {{ field }}
@@ -107,18 +104,19 @@
 				</form>
 		{% endif %}
 		
-		{% if 'DELETE' in resource.allowed_methods %}
-				<form action="{{ request.path }}" method="post">
+		{% if 'DELETE' in view.allowed_methods %}
+				<form action="{{ request.get_full_path }}" method="post">
 				<fieldset class='module aligned'>			
 					<h2>DELETE {{ name }}</h2>
 				    {% csrf_token %}
-					<input type="hidden" name="{{ resource.METHOD_PARAM }}" value="DELETE" />
+					<input type="hidden" name="{{ METHOD_PARAM }}" value="DELETE" />
 					<div class='submit-row' style='margin: 0; border: 0'>			
 					  <input type="submit" value="DELETE" class="default" />
 					</div>
 				</fieldset>
 				</form>
 		{% endif %}
+
 	{% endif %}
 	</div>
 	</div>

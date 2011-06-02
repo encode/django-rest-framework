@@ -1,9 +1,26 @@
-"""Compatability module to provide support for backwards compatability with older versions of django/python"""
+"""
+The :mod:`compatability` module provides support for backwards compatability with older versions of django/python.
+"""
 
+# cStringIO only if it's available
+try:
+    import cStringIO as StringIO
+except ImportError:
+    import StringIO
+
+
+# parse_qs 
+try:
+    # python >= ?
+    from urlparse import parse_qs
+except ImportError:
+    # python <= ?
+    from cgi import parse_qs
+
+   
 # django.test.client.RequestFactory (Django >= 1.3) 
 try:
     from django.test.client import RequestFactory
-
 except ImportError:
     from django.test import Client
     from django.core.handlers.wsgi import WSGIRequest
@@ -12,24 +29,25 @@ except ImportError:
     # Lovely stuff
     class RequestFactory(Client):
         """
-        Class that lets you create mock Request objects for use in testing.
+        Class that lets you create mock :obj:`Request` objects for use in testing.
         
-        Usage:
+        Usage::
         
-        rf = RequestFactory()
-        get_request = rf.get('/hello/')
-        post_request = rf.post('/submit/', {'foo': 'bar'})
+            rf = RequestFactory()
+            get_request = rf.get('/hello/')
+            post_request = rf.post('/submit/', {'foo': 'bar'})
         
-        This class re-uses the django.test.client.Client interface, docs here:
-        http://www.djangoproject.com/documentation/testing/#the-test-client
+        This class re-uses the :class:`django.test.client.Client` interface. Of which
+        you can find the docs here__.
         
-        Once you have a request object you can pass it to any view function, 
-        just as if that view had been hooked up using a URLconf.
+        __ http://www.djangoproject.com/documentation/testing/#the-test-client
         
+        Once you have a `request` object you can pass it to any :func:`view` function, 
+        just as if that :func:`view` had been hooked up using a URLconf.
         """
         def request(self, **request):
             """
-            Similar to parent class, but returns the request object as soon as it
+            Similar to parent class, but returns the :obj:`request` object as soon as it
             has created it.
             """
             environ = {
@@ -49,7 +67,7 @@ except ImportError:
 # django.views.generic.View (Django >= 1.3)
 try:
     from django.views.generic import View
-except:
+except ImportError:
     from django import http
     from django.utils.functional import update_wrapper
     # from django.utils.log import getLogger
@@ -126,3 +144,53 @@ except:
             #    }
             #)
             return http.HttpResponseNotAllowed(allowed_methods)
+
+
+try:
+    import markdown
+    import re
+    
+    class CustomSetextHeaderProcessor(markdown.blockprocessors.BlockProcessor):
+        """
+        Override `markdown`'s :class:`SetextHeaderProcessor`, so that ==== headers are <h2> and ---- headers are <h3>.
+        
+        We use <h1> for the resource name.
+        """
+    
+        # Detect Setext-style header. Must be first 2 lines of block.
+        RE = re.compile(r'^.*?\n[=-]{3,}', re.MULTILINE)
+    
+        def test(self, parent, block):
+            return bool(self.RE.match(block))
+    
+        def run(self, parent, blocks):
+            lines = blocks.pop(0).split('\n')
+            # Determine level. ``=`` is 1 and ``-`` is 2.
+            if lines[1].startswith('='):
+                level = 2
+            else:
+                level = 3
+            h = markdown.etree.SubElement(parent, 'h%d' % level)
+            h.text = lines[0].strip()
+            if len(lines) > 2:
+                # Block contains additional lines. Add to  master blocks for later.
+                blocks.insert(0, '\n'.join(lines[2:]))
+            
+    def apply_markdown(text):
+        """
+        Simple wrapper around :func:`markdown.markdown` to apply our :class:`CustomSetextHeaderProcessor`,
+        and also set the base level of '#' style headers to <h2>.
+        """
+        
+        extensions = ['headerid(level=2)']
+        safe_mode = False,
+        output_format = markdown.DEFAULT_OUTPUT_FORMAT
+
+        md = markdown.Markdown(extensions=markdown.load_extensions(extensions),
+                               safe_mode=safe_mode, 
+                               output_format=output_format)
+        md.parser.blockprocessors['setextheader'] = CustomSetextHeaderProcessor(md.parser)
+        return md.convert(text)
+
+except ImportError:
+    apply_markdown = None

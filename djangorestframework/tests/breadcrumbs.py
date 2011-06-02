@@ -1,34 +1,34 @@
 from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
-from djangorestframework.breadcrumbs import get_breadcrumbs
-from djangorestframework.resource import Resource
+from djangorestframework.utils.breadcrumbs import get_breadcrumbs
+from djangorestframework.views import View
 
-class Root(Resource):
+class Root(View):
     pass
 
-class ResourceRoot(Resource):
+class ResourceRoot(View):
     pass
 
-class ResourceInstance(Resource):
+class ResourceInstance(View):
     pass
 
-class NestedResourceRoot(Resource):
+class NestedResourceRoot(View):
     pass
 
-class NestedResourceInstance(Resource):
+class NestedResourceInstance(View):
     pass
 
 urlpatterns = patterns('',
-    url(r'^$', Root),
-    url(r'^resource/$', ResourceRoot),
-    url(r'^resource/(?P<key>[0-9]+)$', ResourceInstance),
-    url(r'^resource/(?P<key>[0-9]+)/$', NestedResourceRoot),
-    url(r'^resource/(?P<key>[0-9]+)/(?P<other>[A-Za-z]+)$', NestedResourceInstance),
+    url(r'^$', Root.as_view()),
+    url(r'^resource/$', ResourceRoot.as_view()),
+    url(r'^resource/(?P<key>[0-9]+)$', ResourceInstance.as_view()),
+    url(r'^resource/(?P<key>[0-9]+)/$', NestedResourceRoot.as_view()),
+    url(r'^resource/(?P<key>[0-9]+)/(?P<other>[A-Za-z]+)$', NestedResourceInstance.as_view()),
 )
 
 
 class BreadcrumbTests(TestCase):
-    """Tests the breadcrumb functionality used by the HTML emitter."""
+    """Tests the breadcrumb functionality used by the HTML renderer."""
 
     urls = 'djangorestframework.tests.breadcrumbs'
 

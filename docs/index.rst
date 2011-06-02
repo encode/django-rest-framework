@@ -18,7 +18,7 @@ Features:
 * Automatically provides an awesome Django admin style `browse-able self-documenting API <http://api.django-rest-framework.org>`_.
 * Clean, simple, views for Resources, using Django's new `class based views <http://docs.djangoproject.com/en/dev/topics/class-based-views/>`_.
 * Support for ModelResources with out-of-the-box default implementations and input validation.
-* Pluggable :mod:`.emitters`, :mod:`parsers`, :mod:`validators` and :mod:`authenticators` - Easy to customise.
+* Pluggable :mod:`.parsers`, :mod:`renderers`, :mod:`authentication` and :mod:`permissions` - Easy to customise.
 * Content type negotiation using HTTP Accept headers.
 * Optional support for forms as input validation.
 * Modular architecture - MixIn classes can be used without requiring the :class:`.Resource` or :class:`.ModelResource` classes.
@@ -36,7 +36,8 @@ Resources
 
 Any and all questions, thoughts, bug reports and contributions are *hugely appreciated*.
 
-We'd like for this to be a real community driven effort, so come say hi, get involved, and get forking!  (See: `Bitbucket <http://confluence.atlassian.com/display/BITBUCKET/Forking+a+Bitbucket+Repository>`_, `GitHub <http://help.github.com/fork-a-repo/>`_)
+We'd like for this to be a real community driven effort, so come say hi, get involved, and get forking!  (See: `Forking a Bitbucket Repository 
+<http://confluence.atlassian.com/display/BITBUCKET/Forking+a+Bitbucket+Repository>`_, or `Fork A GitHub Repo <http://help.github.com/fork-a-repo/>`_)
 
 Requirements
 ------------
@@ -139,14 +140,16 @@ Library Reference
 .. toctree::
   :maxdepth: 1
 
-  library/resource
-  library/modelresource
-  library/emitters
+  library/authentication
+  library/compat
+  library/mixins
   library/parsers
-  library/authenticators
-  library/validators
+  library/permissions
+  library/renderers
+  library/resource
   library/response
   library/status
+  library/views
 
 Examples Reference
 ------------------

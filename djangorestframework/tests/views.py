@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.test import Client
 
 
-urlpatterns = patterns('djangorestframework.views',
+urlpatterns = patterns('djangorestframework.utils.staticviews',
     url(r'^robots.txt$', 'deny_robots'),
     url(r'^favicon.ico$', 'favicon'),
     url(r'^accounts/login$', 'api_login'),

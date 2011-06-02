@@ -1,19 +1,21 @@
 from django.core.urlresolvers import resolve
-from djangorestframework.description import get_name
+from djangorestframework.utils.description import get_name
 
 def get_breadcrumbs(url):
     """Given a url returns a list of breadcrumbs, which are each a tuple of (name, url)."""
     
+    from djangorestframework.views import View
+    
     def breadcrumbs_recursive(url, breadcrumbs_list):
         """Add tuples of (name, url) to the breadcrumbs list, progressively chomping off parts of the url."""
         
-        # This is just like compsci 101 all over again...
         try:
             (view, unused_args, unused_kwargs) = resolve(url)
         except:
             pass
         else:
-            if callable(view):
+            # Check if this is a REST framework view, and if so add it to the breadcrumbs
+            if isinstance(getattr(view, 'cls_instance', None), View):
                 breadcrumbs_list.insert(0, (get_name(view), url))
         
         if url == '':
