@@ -12,8 +12,8 @@ VERSION = re.match("__version__ = '([^']+)'", init_py).group(1)
 setup(
     name = 'djangorestframework',
     version = VERSION,
-    url = 'https://bitbucket.org/tomchristie/django-rest-framework/wiki/Home',
-    download_url = 'https://bitbucket.org/tomchristie/django-rest-framework/downloads',
+    url = 'http://django-rest-framework.org',
+    download_url = 'http://pypi.python.org/pypi/djangorestframework/',
     license = 'BSD',
     description = 'A lightweight REST framework for Django.',
     author = 'Tom Christie',
