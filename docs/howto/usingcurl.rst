@@ -24,3 +24,7 @@ There are a few things that can be helpful to remember when using CURL with djan
 #. Or any other content type::
 
     curl -X PUT -H 'Content-Type: application/json' --data-binary '{"foo":"bar"}' http://example.com/my-api/some-resource/
+
+#. You can use basic authentication to send the username and password::
+
+    curl -X GET -H 'Accept: application/json' -u <user>:<password> http://example.com/my-api/

@@ -3,6 +3,13 @@
 Setup
 =====
 
+Installing into site-packages
+-----------------------------
+
+If you need to manually install Django REST framework to your ``site-packages`` directory, run the ``setup.py`` script::
+
+    python setup.py install
+
 Template Loaders
 ----------------
 
