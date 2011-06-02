@@ -70,28 +70,22 @@ For more information on settings take a look at the :ref:`setup` section.
 Getting Started
 ---------------
 
-Using Django REST framework can be as simple as adding a few lines to your urlconf and adding a `permalink <http://docs.djangoproject.com/en/dev/ref/models/instances/#get-absolute-url>`_ to your model.
+Using Django REST framework can be as simple as adding a few lines to your urlconf.
 
-`urls.py`::
+``urls.py``::
 
     from django.conf.urls.defaults import patterns, url
-    from djangorestframework import ModelResource, RootModelResource
-    from models import MyModel
+    from djangorestframework.resources import ModelResource
+    from djangorestframework.views import ListOrCreateModelView, InstanceModelView
+    from myapp.models import MyModel
+    
+    class MyResource(ModelResource):
+        model = MyModel
 
     urlpatterns = patterns('',
-        url(r'^$', RootModelResource.as_view(model=MyModel)),
-        url(r'^(?P<pk>[^/]+)/$', ModelResource.as_view(model=MyModel), name='my-model'),
-     )
-
-`models.py`::
-
-    class MyModel(models.Model):
-
-        # (Rest of model definition...)
-
-        @models.permalink
-        def get_absolute_url(self):
-            return ('my-model', (self.pk,))
+        url(r'^$', RootModelResource.as_view(resource=MyResource)),
+        url(r'^(?P<pk>[^/]+)/$', ModelResource.as_view(resource=MyResource)),
+    )
 
 Django REST framework comes with two "getting started" examples.
 

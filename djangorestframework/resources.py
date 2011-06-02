@@ -44,7 +44,7 @@ def _model_to_dict(instance, resource=None):
     include = resource and resource.include or ()
     exclude = resource and resource.exclude or ()
 
-    extra_fields = fields and list(resource.fields) or []
+    extra_fields = fields and list(fields) or list(include)
 
     # Model fields
     for f in opts.fields + opts.many_to_many:
@@ -62,21 +62,26 @@ def _model_to_dict(instance, resource=None):
     
     # Method fields
     for fname in extra_fields:
-        if hasattr(resource, fname):
-            # check the resource first, to allow it to override fields
-            obj = getattr(resource, fname)
-            # if it's a method like foo(self, instance), then call it 
-            if inspect.ismethod(obj) and len(inspect.getargspec(obj)[0]) == 2:
-                obj = obj(instance)
-        elif hasattr(instance, fname):
-            # now check the object instance
-            obj = getattr(instance, fname)
-        else:
-            continue
+        try:
+            if hasattr(resource, fname):
+                # check the resource first, to allow it to override fields
+                obj = getattr(resource, fname)
+                # if it's a method like foo(self, instance), then call it 
+                if inspect.ismethod(obj) and len(inspect.getargspec(obj)[0]) == 2:
+                    obj = obj(instance)
+            elif hasattr(instance, fname):
+                # now check the object instance
+                obj = getattr(instance, fname)
+            else:
+                continue
+    
+            # TODO: It would be nicer if this didn't recurse here.
+            # Let's keep _model_to_dict flat, and _object_to_data recursive.
+            data[fname] = _object_to_data(obj)
 
-        # TODO: It would be nicer if this didn't recurse here.
-        # Let's keep _model_to_dict flat, and _object_to_data recursive.
-        data[fname] = _object_to_data(obj)
+        except NoReverseMatch:
+            # Ug, bit of a hack for now
+            pass
    
     return data
 
@@ -223,7 +228,7 @@ class FormResource(Resource):
 
         # In addition to regular validation we also ensure no additional fields are being passed in...
         unknown_fields = seen_fields_set - (form_fields_set | allowed_extra_fields_set)
-        unknown_fields = unknown_fields - set(('csrfmiddlewaretoken', '_accept'))  # TODO: Ugh.
+        unknown_fields = unknown_fields - set(('csrfmiddlewaretoken', '_accept', '_method'))  # TODO: Ugh.
 
         # Check using both regular validation, and our stricter no additional fields rule
         if bound_form.is_valid() and not unknown_fields:
@@ -436,6 +441,9 @@ class ModelResource(FormResource):
         
         This method can be overridden if you need to set the resource url reversing explicitly.
         """
+
+        if not hasattr(self, 'view_callable'):
+            raise NoReverseMatch        
 
         # dis does teh magicks...
         urlconf = get_urlconf()
