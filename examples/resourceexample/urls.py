@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, url
-from resourceexample.views import ExampleResource, AnotherExampleResource
+from resourceexample.views import ExampleView, AnotherExampleView
 
 urlpatterns = patterns('',
-    url(r'^$',                 ExampleResource.as_view(), name='example-resource'),
-    url(r'^(?P<num>[0-9]+)/$', AnotherExampleResource.as_view(), name='another-example-resource'),
+    url(r'^$',                 ExampleView.as_view(), name='example'),
+    url(r'^(?P<num>[0-9]+)/$', AnotherExampleView.as_view(), name='another-example'),
 )

@@ -1,42 +1,45 @@
 from django.core.urlresolvers import reverse
 
 from djangorestframework.views import View
-from djangorestframework.resources import FormResource
 from djangorestframework.response import Response
 from djangorestframework import status
 
 from resourceexample.forms import MyForm
 
-class MyFormValidation(FormResource):
-    """
-    A resource which applies form validation on the input.
-    """
-    form = MyForm
 
-    
-class ExampleResource(View):
+class ExampleView(View):
     """
-    A basic read-only resource that points to 3 other resources.
+    A basic read-only view that points to 3 other views.
     """
 
     def get(self, request):
-        return {"Some other resources": [reverse('another-example-resource', kwargs={'num':num}) for num in range(3)]}
+        """
+        Handle GET requests, returning a list of URLs pointing to 3 other views.
+        """
+        return {"Some other resources": [reverse('another-example', kwargs={'num':num}) for num in range(3)]}
 
 
-class AnotherExampleResource(View):
+class AnotherExampleView(View):
     """
-    A basic GET-able/POST-able resource.
+    A basic view, that can be handle GET and POST requests.
+    Applies some simple form validation on POST requests.
     """
-    resource = MyFormValidation
+    form = MyForm
 
     def get(self, request, num):
-        """Handle GET requests"""
+        """
+        Handle GET requests.
+        Returns a simple string indicating which view the GET request was for.
+        """
         if int(num) > 2:
             return Response(status.HTTP_404_NOT_FOUND)
         return "GET request to AnotherExampleResource %s" % num
     
     def post(self, request, num):
-        """Handle POST requests"""
+        """
+        Handle POST requests, with form validation.
+        Returns a simple string indicating what content was supplied.
+        """
         if int(num) > 2:
             return Response(status.HTTP_404_NOT_FOUND)
         return "POST request to AnotherExampleResource %s, with content: %s" % (num, repr(self.CONTENT))

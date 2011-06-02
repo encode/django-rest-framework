@@ -89,17 +89,17 @@ Using Django REST framework can be as simple as adding a few lines to your urlco
 
 Django REST framework comes with two "getting started" examples.
 
-#. :ref:`resources`
-#. :ref:`modelresources`
+#. :ref:`views`
+#. :ref:`modelviews`
 	
 Examples
 --------
 
 There are a few real world web API examples included with Django REST framework.
 
-#. :ref:`objectstore` - Using :class:`.Resource` for resources that do not map to models.
-#. :ref:`codehighlighting` - Using :class:`.Resource` with forms for input validation.
-#. :ref:`blogposts` - Using :class:`.ModelResource` for resources that map directly to models.
+#. :ref:`objectstore` - Using :class:`views.View` classes for APIs that do not map to models.
+#. :ref:`codehighlighting` - Using :class:`views.View` classes with forms for input validation.
+#. :ref:`blogposts` - Using :class:`views.ModelView` classes for APIs that map directly to models.
 
 All the examples are freely available for testing in the sandbox:
 
@@ -143,8 +143,8 @@ Examples Reference
 .. toctree::
   :maxdepth: 1
   
-  examples/resources
-  examples/modelresources
+  examples/views
+  examples/modelviews
   examples/objectstore
   examples/pygments
   examples/blogpost

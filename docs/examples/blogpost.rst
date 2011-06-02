@@ -8,26 +8,22 @@ Blog Posts API
 The models
 ----------
 
+In this example we're working from two related models:
+
 ``models.py``
 
 .. include:: ../../examples/blogpost/models.py
     :literal:
 
-URL configuration
------------------
+Creating the resources
+----------------------
+
+Once we have some existing models there's very little we need to do to create the API.
+Firstly create a resource for each model that defines which fields we want to expose on the model.
+Secondly we map a base view and an instance view for each resource.
+The generic views :class:`.ListOrCreateModelView` and :class:`.InstanceModelView` provide default operations for listing, creating and updating our models via the API, and also automatically provide input validation using default ModelForms for each model.
 
 ``urls.py``
 
 .. include:: ../../examples/blogpost/urls.py
     :literal:
-
-Creating the resources
-----------------------
-
-Once we have some existing models there's very little we need to do to create the corresponding resources.  We simply create a base resource and an instance resource for each model we're working with.
-django-rest-framework will provide the default operations on the resources all the usual input validation that Django's models can give us for free.
-
-#``views.py``
-
-#.. include:: ../../examples/blogpost/views.py
-#   :literal:

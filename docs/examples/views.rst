@@ -1,7 +1,7 @@
-.. _resources:
+.. _views:
 
-Getting Started - Resources
----------------------------
+Getting Started - Views
+-----------------------
 
 .. note::
 
@@ -15,12 +15,12 @@ Getting Started - Resources
 
 We're going to start off with a simple example, that demonstrates a few things:
 
-#. Creating resources.
-#. Linking resources.
-#. Writing method handlers on resources.
-#. Adding form validation to resources.
+#. Creating views.
+#. Linking views.
+#. Writing method handlers on views.
+#. Adding form validation to views.
 
-First we'll define two resources in our urlconf.
+First we'll define two views in our urlconf.
 
 ``urls.py``
 
@@ -34,7 +34,7 @@ Now we'll add a form that we'll use for input validation.  This is completely op
 .. include:: ../../examples/resourceexample/forms.py
     :literal:
 
-Now we'll write our resources.  The first is a read only resource that links to three instances of the second.  The second resource just has some stub handler methods to help us see that our example is working.
+Now we'll write our views.  The first is a read only view that links to three instances of the second.  The second view just has some stub handler methods to help us see that our example is working.
 
 ``views.py``
 
