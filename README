@@ -34,3 +34,7 @@ sphinx-build -c docs -b html -d docs/build docs html
 
 deactivate  # Ensure we are not currently running in a virtualenv
 tox
+
+# To create sdist packages
+
+python setup.py sdist --formats=gztar,zip
