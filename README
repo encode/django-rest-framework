@@ -52,6 +52,10 @@ To create the sdist packages
 Release Notes
 =============
 
+0.2.1
+
+  * Couple of simple bugfixes over 0.2.0
+  
 0.2.0
 
   * Big refactoring changes since 0.1.0, ask on the discussion group if anything isn't clear.
