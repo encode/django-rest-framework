@@ -13,13 +13,13 @@ from djangorestframework.utils import as_tuple
 import base64
 
 __all__ = (
-    'BaseAuthenticaton',
-    'BasicAuthenticaton',
-    'UserLoggedInAuthenticaton'
+    'BaseAuthentication',
+    'BasicAuthentication',
+    'UserLoggedInAuthentication'
 )
 
 
-class BaseAuthenticaton(object):
+class BaseAuthentication(object):
     """
     All authentication classes should extend BaseAuthentication.
     """
@@ -47,7 +47,7 @@ class BaseAuthenticaton(object):
         return None
 
 
-class BasicAuthenticaton(BaseAuthenticaton):
+class BasicAuthentication(BaseAuthentication):
     """
     Use HTTP Basic authentication.
     """
@@ -78,7 +78,7 @@ class BasicAuthenticaton(BaseAuthenticaton):
         return None
                 
 
-class UserLoggedInAuthenticaton(BaseAuthenticaton):
+class UserLoggedInAuthentication(BaseAuthentication):
     """
     Use Django's session framework for authentication.
     """

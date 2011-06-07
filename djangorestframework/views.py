@@ -56,8 +56,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     List of all authenticating methods to attempt.
     """
-    authentication = ( authentication.UserLoggedInAuthenticaton,
-                       authentication.BasicAuthenticaton )
+    authentication = ( authentication.UserLoggedInAuthentication,
+                       authentication.BasicAuthentication )
     
     """
     List of all permissions that must be checked.
