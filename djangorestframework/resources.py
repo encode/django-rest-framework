@@ -62,6 +62,12 @@ def _model_to_dict(instance, resource=None):
     
     # Method fields
     for fname in extra_fields:
+        
+        if isinstance(fname, (tuple, list)):
+            fname, fields = fname
+        else:
+            fname, fields = fname, False
+
         try:
             if hasattr(resource, fname):
                 # check the resource first, to allow it to override fields
@@ -77,7 +83,13 @@ def _model_to_dict(instance, resource=None):
     
             # TODO: It would be nicer if this didn't recurse here.
             # Let's keep _model_to_dict flat, and _object_to_data recursive.
-            data[fname] = _object_to_data(obj)
+            if fields:
+                Resource = type('Resource', (object,), {'fields': fields,
+                                                        'include': (),
+                                                        'exclude': ()})
+                data[fname] = _object_to_data(obj, Resource())
+            else:
+                data[fname] = _object_to_data(obj)
 
         except NoReverseMatch:
             # Ug, bit of a hack for now
