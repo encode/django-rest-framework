@@ -7,9 +7,10 @@ from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 
 from djangorestframework.compat import RequestFactory
+from djangorestframework.views import InstanceModelView, ListOrCreateModelView
 
-from blogpost import models
-import blogpost
+from blogpost import models, urls
+#import blogpost
 
 
 # class AcceptHeaderTests(TestCase):
@@ -178,32 +179,33 @@ class TestRotation(TestCase):
         models.BlogPost.objects.all().delete()
 
     def test_get_to_root(self):
-        '''Simple test to demonstrate how the requestfactory needs to be used'''
+        '''Simple get to the *root* url of blogposts'''
         request = self.factory.get('/blog-post')
-        view = views.BlogPosts.as_view()
+        view = ListOrCreateModelView.as_view(resource=urls.BlogPostResource)
         response = view(request)
         self.assertEqual(response.status_code, 200)
 
     def test_blogposts_not_exceed_MAX_POSTS(self):
         '''Posting blog-posts should not result in more than MAX_POSTS items stored.'''
-        for post in range(views.MAX_POSTS + 5):
+        for post in range(models.MAX_POSTS + 5):
             form_data = {'title': 'This is post #%s' % post, 'content': 'This is the content of post #%s' % post}
             request = self.factory.post('/blog-post', data=form_data)
-            view = views.BlogPosts.as_view()
+            view = ListOrCreateModelView.as_view(resource=urls.BlogPostResource)
             view(request)
-        self.assertEquals(len(models.BlogPost.objects.all()),views.MAX_POSTS)
+        self.assertEquals(len(models.BlogPost.objects.all()),models.MAX_POSTS)
         
     def test_fifo_behaviour(self):
         '''It's fine that the Blogposts are capped off at MAX_POSTS. But we want to make sure we see FIFO behaviour.'''
         for post in range(15):
             form_data = {'title': '%s' % post, 'content': 'This is the content of post #%s' % post}
             request = self.factory.post('/blog-post', data=form_data)
-            view = views.BlogPosts.as_view()
+            view = ListOrCreateModelView.as_view(resource=urls.BlogPostResource)
             view(request)
         request = self.factory.get('/blog-post')    
-        view = views.BlogPosts.as_view()
+        view = ListOrCreateModelView.as_view(resource=urls.BlogPostResource)
         response = view(request)
         response_posts = json.loads(response.content)
         response_titles = [d['title'] for d in response_posts]
-        self.assertEquals(response_titles, ['%s' % i for i in range(views.MAX_POSTS - 5, views.MAX_POSTS + 5)])
+        response_titles.reverse()
+        self.assertEquals(response_titles, ['%s' % i for i in range(models.MAX_POSTS - 5, models.MAX_POSTS + 5)])
         
