@@ -6,6 +6,8 @@ from django.test import TestCase
 from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 
+from djangorestframework.compat import RequestFactory
+
 from blogpost import models
 import blogpost
 
