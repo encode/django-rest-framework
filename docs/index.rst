@@ -83,8 +83,8 @@ Using Django REST framework can be as simple as adding a few lines to your urlco
         model = MyModel
 
     urlpatterns = patterns('',
-        url(r'^$', RootModelResource.as_view(resource=MyResource)),
-        url(r'^(?P<pk>[^/]+)/$', ModelResource.as_view(resource=MyResource)),
+        url(r'^$', ListOrCreateModelView.as_view(resource=MyResource)),
+        url(r'^(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=MyResource)),
     )
 
 Django REST framework comes with two "getting started" examples.
