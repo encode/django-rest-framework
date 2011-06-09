@@ -1,11 +1,13 @@
 Tom Christie <tomchristie> - tom@tomchristie.com, @thisneonsoul
 
 Paul Bagwell <pbgwl> - Suggestions & bugfixes.
-Marko Tibold <markotibold> - Contributions & Providing the Hudson CI Server.
+Marko Tibold <markotibold> - Contributions & Providing the Jenkins CI Server.
 Sébastien Piquemal <sebpiq> - Contributions.
 Carmen Wick <cwick> - Bugfixes.
 Alex Ehlke <aehlke> - Design Contributions.
+Alen Mujezinovic <flashingpumpkin> - Contributions.
 
 THANKS TO:
+
 Jesper Noehr <jespern> & the django-piston contributors for providing the starting point for this project.
-And of course, to the Django core team and the Django community at large.
+And of course, to the Django core team and the Django community at large.  You guys rock.
