@@ -15,9 +15,7 @@ from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.utils import simplejson as json
 from djangorestframework import status
-from djangorestframework.compat import parse_qs
 from djangorestframework.response import ErrorResponse
-from djangorestframework.utils import as_tuple
 from djangorestframework.utils.mediatypes import media_type_matches
 
 __all__ = (
