@@ -131,3 +131,30 @@
 #        self.assertEqual(data['key1'], 'val1')
 #        self.assertEqual(files['file1'].read(), 'blablabla')
 
+from StringIO import StringIO
+from cgi import parse_qs
+from django import forms
+from django.test import TestCase
+from djangorestframework.parsers import FormParser
+
+class Form(forms.Form):
+    field1 = forms.CharField(max_length=3)
+    field2 = forms.CharField()
+
+class TestFormParser(TestCase):
+    def setUp(self):
+        self.string = "field1=abc&field2=defghijk" 
+    
+    def test_fail(self):
+        """ Demonstrate that `parse_qs` fails on forms """
+        data = parse_qs(self.string, keep_blank_values=True)
+        self.assertEqual(Form(data).is_valid(), False)        
+        
+    def test_parse(self):
+        """ Make sure the `QueryDict` works OK """
+        parser = FormParser(None)
+        
+        stream = StringIO(self.string)
+        (data, files) = parser.parse(stream)
+
+        self.assertEqual(Form(data).is_valid(), True)
