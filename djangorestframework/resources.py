@@ -241,13 +241,11 @@ class FormResource(Resource):
         # In addition to regular validation we also ensure no additional fields are being passed in...
         unknown_fields = seen_fields_set - (form_fields_set | allowed_extra_fields_set)
         unknown_fields = unknown_fields - set(('csrfmiddlewaretoken', '_accept', '_method'))  # TODO: Ugh.
-
+        
         # Check using both regular validation, and our stricter no additional fields rule
         if bound_form.is_valid() and not unknown_fields:
             # Validation succeeded...
             cleaned_data = bound_form.cleaned_data
-
-            cleaned_data.update(bound_form.files)
 
             # Add in any extra fields to the cleaned content...
             for key in (allowed_extra_fields_set & seen_fields_set) - set(cleaned_data.keys()):
