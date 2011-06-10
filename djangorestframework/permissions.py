@@ -103,9 +103,9 @@ class PerUserThrottling(BasePermission):
 
     def check_permission(self, user):
         (num_requests, duration) = getattr(self.view, 'throttle', (0, 0))
-
+        
         if user.is_authenticated():
-            ident = str(auth)
+            ident = str(user)
         else:
             ident = self.view.request.META.get('REMOTE_ADDR', None)
 
