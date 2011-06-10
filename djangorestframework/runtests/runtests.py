@@ -27,7 +27,11 @@ def main():
         failures = TestRunner(['djangorestframework'])
     else:
         test_runner = TestRunner()
-        failures = test_runner.run_tests(['djangorestframework'])
+        if len(sys.argv) > 1:
+            test_case = '.' + sys.argv[1]
+        else:
+            test_case = ''
+        failures = test_runner.run_tests(['djangorestframework' + test_case])
 
     sys.exit(failures)
 
