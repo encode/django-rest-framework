@@ -11,12 +11,11 @@ We need a method to be able to:
    and multipart/form-data.  (eg also handle multipart/json)
 """
 
+from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.utils import simplejson as json
 from djangorestframework import status
-from djangorestframework.compat import parse_qs
 from djangorestframework.response import ErrorResponse
-from djangorestframework.utils import as_tuple
 from djangorestframework.utils.mediatypes import media_type_matches
 
 __all__ = (
@@ -117,7 +116,7 @@ class FormParser(BaseParser):
         `data` will be a :class:`QueryDict` containing all the form parameters.
         `files` will always be :const:`None`.
         """
-        data = parse_qs(stream.read(), keep_blank_values=True)
+        data = QueryDict(stream.read())
         return (data, None)
 
 
