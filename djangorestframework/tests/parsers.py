@@ -143,12 +143,7 @@ class Form(forms.Form):
 
 class TestFormParser(TestCase):
     def setUp(self):
-        self.string = "field1=abc&field2=defghijk" 
-    
-    def test_fail(self):
-        """ Demonstrate that `parse_qs` fails on forms """
-        data = parse_qs(self.string, keep_blank_values=True)
-        self.assertEqual(Form(data).is_valid(), False)        
+        self.string = "field1=abc&field2=defghijk"       
         
     def test_parse(self):
         """ Make sure the `QueryDict` works OK """
