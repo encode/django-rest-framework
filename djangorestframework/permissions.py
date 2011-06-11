@@ -122,3 +122,35 @@ class PerUserThrottling(BasePermission):
 
         history.insert(0, now)
         cache.set(key, history, duration)
+
+class PerResourceThrottling(BasePermission):
+    """
+    Rate throttling of requests on a per-resource basis.
+
+    The rate (requests / seconds) is set by a :attr:`throttle` attribute on the ``View`` class.
+    The attribute is a two tuple of the form (number of requests, duration in seconds).
+
+    The user id will be used as a unique identifier if the user is authenticated.
+    For anonymous requests, the IP address of the client will be used.
+
+    Previous request information used for throttling is stored in the cache.
+    """
+
+    def check_permission(self, ignore):
+        (num_requests, duration) = getattr(self.view, 'throttle', (0, 0))
+        
+        
+        key = 'throttle_%s' % self.view.__class__.__name__
+        
+        history = cache.get(key, [])
+        now = time.time()
+        
+        # Drop any requests from the history which have now passed the throttle duration
+        while history and history[0] < now - duration:
+            history.pop()
+
+        if len(history) >= num_requests:
+            raise _503_THROTTLED_RESPONSE
+
+        history.insert(0, now)
+        cache.set(key, history, duration)
