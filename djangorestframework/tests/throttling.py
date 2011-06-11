@@ -53,26 +53,26 @@ class ThrottlingTests(TestCase):
         response = MockView.as_view()(request)
         self.assertEqual(200, response.status_code)
         
-    def ensure_is_throttled(self, view):
+    def ensure_is_throttled(self, view, expect):
         request = self.factory.get('/')
         request.user = User.objects.create(username='a')
         for dummy in range(3):
             response = view.as_view()(request)
         request.user = User.objects.create(username='b')
         response = view.as_view()(request)
-        self.assertEqual(503, response.status_code)
+        self.assertEqual(expect, response.status_code)
         
     def test_request_throttling_is_per_user(self):
         """Ensure request rate is only limited per user, not globally for PerUserTrottles"""
-        self.ensure_is_throttled(MockView)
+        self.ensure_is_throttled(MockView, 200)
         
     def test_request_throttling_is_per_view(self):
         """Ensure request rate is limited globally per View for PerViewThrottles"""
-        self.ensure_is_throttled(MockView1)
+        self.ensure_is_throttled(MockView1, 503)
         
     def test_request_throttling_is_per_resource(self):
         """Ensure request rate is limited globally per Resource for PerResourceThrottles"""        
-        self.ensure_is_throttled(MockView3)
+        self.ensure_is_throttled(MockView3, 503)
 
     def test_raises_no_resource_found(self):
         """Ensure an Exception is raised when someone sets at per-resource throttle
