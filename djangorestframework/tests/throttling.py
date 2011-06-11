@@ -8,78 +8,77 @@ from django.core.cache import cache
 
 from djangorestframework.compat import RequestFactory
 from djangorestframework.views import View
-from djangorestframework.permissions import PerUserThrottling, PerResourceThrottling
-
+from djangorestframework.permissions import PerUserThrottling, PerViewThrottling, PerResourceThrottling, ConfigurationException
+from djangorestframework.resources import FormResource
 
 class MockView(View):
     permissions = ( PerUserThrottling, )
-    throttle = (3, 1) # 3 requests per second
+    throttle = '3/sec' # 3 requests per second
 
     def get(self, request):
         return 'foo'
 
-class MockView1(View):
+class MockView1(MockView):
+    permissions = ( PerViewThrottling, )
+
+class MockView2(MockView):
     permissions = ( PerResourceThrottling, )
-    throttle = (3, 1) # 3 requests per second
-
-    def get(self, request):
-        return 'foo'
-
-urlpatterns = patterns('',
-    (r'^$', MockView.as_view()),
-    (r'^1$', MockView1.as_view()),
-)
-
+    #No resource set
+    
+class MockView3(MockView2):    
+    resource = FormResource
+    
 class ThrottlingTests(TestCase):
     urls = 'djangorestframework.tests.throttling'   
     
     def setUp(self):
         """Reset the cache so that no throttles will be active"""
         cache.clear()
+        self.factory = RequestFactory()
         
     def test_requests_are_throttled(self):
         """Ensure request rate is limited"""
-        for dummy in range(3):
-            response = self.client.get('/')
-        response = self.client.get('/')
-        self.assertEqual(503, response.status_code)
-        
-    def test_request_throttling_is_per_user(self):
-        """Ensure request rate is only limited per user, not globally"""
-        for username in ('testuser', 'another_testuser'):
-            user = User.objects.create(username=username)
-            user.set_password('test')
-            user.save()
-        
-        self.assertTrue(self.client.login(username='testuser', password='test'), msg='Login Failed')
-        for dummy in range(3):
-            response = self.client.get('/')
-        self.client.logout()
-        self.assertTrue(self.client.login(username='another_testuser', password='test'), msg='Login failed')
-        response = self.client.get('/')
-        self.assertEqual(200, response.status_code)
- 
-    def test_request_throttling_is_per_resource(self):
-        """Ensure request rate is limited globally per View"""
-        for username in ('testuser', 'another_testuser'):
-            user = User.objects.create(username=username)
-            user.set_password('test')
-            user.save()
-        
-        self.assertTrue(self.client.login(username='testuser', password='test'), msg='Login Failed')
-        for dummy in range(3):
-            response = self.client.get('/1')
-        self.client.logout()
-        self.assertTrue(self.client.login(username='another_testuser', password='test'), msg='Login failed')
-        response = self.client.get('/1')
+        request = self.factory.get('/')
+        for dummy in range(4):
+            response = MockView.as_view()(request)
         self.assertEqual(503, response.status_code)
         
     def test_request_throttling_expires(self):
         """Ensure request rate is limited for a limited duration only"""
-        for dummy in range(3):
-            response = self.client.get('/')
-        response = self.client.get('/')
+        request = self.factory.get('/')
+        for dummy in range(4):
+            response = MockView.as_view()(request)
         self.assertEqual(503, response.status_code)
         time.sleep(1)
-        response = self.client.get('/')
+        response = MockView.as_view()(request)
         self.assertEqual(200, response.status_code)
+        
+    def ensure_is_throttled(self, view):
+        request = self.factory.get('/')
+        request.user = User.objects.create(username='a')
+        for dummy in range(3):
+            response = view.as_view()(request)
+        request.user = User.objects.create(username='b')
+        response = view.as_view()(request)
+        self.assertEqual(503, response.status_code)
+        
+    def test_request_throttling_is_per_user(self):
+        """Ensure request rate is only limited per user, not globally for PerUserTrottles"""
+        self.ensure_is_throttled(MockView)
+        
+    def test_request_throttling_is_per_view(self):
+        """Ensure request rate is limited globally per View for PerViewThrottles"""
+        self.ensure_is_throttled(MockView1)
+        
+    def test_request_throttling_is_per_resource(self):
+        """Ensure request rate is limited globally per Resource for PerResourceThrottles"""        
+        self.ensure_is_throttled(MockView3)
+
+    def test_raises_no_resource_found(self):
+        """Ensure an Exception is raised when someone sets at per-resource throttle
+        on a view with no resource set."""
+        request = self.factory.get('/')
+        view = MockView2.as_view()
+        self.assertRaises(ConfigurationException, view, request)
+        
+    
