@@ -314,7 +314,7 @@ class FormResource(Resource):
         if not form:
             return None
 
-        if data is not None:
+        if data is not None or files is not None:
             return form(data, files)
 
         return form()

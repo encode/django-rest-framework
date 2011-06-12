@@ -12,20 +12,16 @@ class UploadFilesTests(TestCase):
 
     def test_upload_file(self):
 
-
         class FileForm(forms.Form):
-            file = forms.FileField
-
-        class MockResource(FormResource):
-            form = FileForm
+            file = forms.FileField()
 
         class MockView(View):
             permissions = ()
-            resource = MockResource
+            form = FileForm
 
             def post(self, request, *args, **kwargs):
-                return {'FILE_NAME': self.CONTENT['file'][0].name,
-                        'FILE_CONTENT': self.CONTENT['file'][0].read()}
+                return {'FILE_NAME': self.CONTENT['file'].name,
+                        'FILE_CONTENT': self.CONTENT['file'].read()}
                 
         file = StringIO.StringIO('stuff')
         file.name = 'stuff.txt'
