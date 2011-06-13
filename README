@@ -52,6 +52,10 @@ To create the sdist packages
 Release Notes
 =============
 
+0.2.2
+
+  * Throttling support complete
+
 0.2.1
 
   * Couple of simple bugfixes over 0.2.0
