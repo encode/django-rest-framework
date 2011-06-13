@@ -31,11 +31,6 @@ _503_SERVICE_UNAVAILABLE = ErrorResponse(
     {'detail': 'request was throttled'})
 
 
-class ConfigurationException(BaseException):
-    """To alert for bad configuration decisions as a convenience."""
-    pass
-
-
 class BasePermission(object):
     """
     A base class from which all permission classes should inherit.
@@ -144,12 +139,11 @@ class BaseThrottle(BasePermission):
         # throttle duration
         while self.history and self.history[0] <= self.now - self.duration:
             self.history.pop()
-
         if len(self.history) >= self.num_requests:
             self.throttle_failure()
         else:
             self.throttle_success()
-    
+
     def throttle_success(self):
         """
         Inserts the current request's timestamp along with the key
@@ -157,15 +151,23 @@ class BaseThrottle(BasePermission):
         """
         self.history.insert(0, self.now)
         cache.set(self.key, self.history, self.duration)
-    
+        self.view.add_header('X-Throttle', 'status=SUCCESS; next=%s sec' % self.next())
+            
     def throttle_failure(self):
         """
         Called when a request to the API has failed due to throttling.
         Raises a '503 service unavailable' response.
         """
+        self.view.add_header('X-Throttle', 'status=FAILURE; next=%s sec' % self.next())
         raise _503_SERVICE_UNAVAILABLE
-
-
+    
+    def next(self):
+        """
+        Returns the recommended next request time in seconds.
+        """
+        return '%.2f' % (self.duration / (self.num_requests - len(self.history) *1.0 + 1))  
+    
+    
 class PerUserThrottling(BaseThrottle):
     """
     Limits the rate of API calls that may be made by a given user.

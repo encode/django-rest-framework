@@ -1,17 +1,14 @@
 """
 Tests for the throttling implementations in the permissions module.
 """
-import time
 
-from django.conf.urls.defaults import patterns
 from django.test import TestCase
-from django.utils import simplejson as json
 from django.contrib.auth.models import User
 from django.core.cache import cache
 
 from djangorestframework.compat import RequestFactory
 from djangorestframework.views import View
-from djangorestframework.permissions import PerUserThrottling, PerViewThrottling, PerResourceThrottling, ConfigurationException
+from djangorestframework.permissions import PerUserThrottling, PerViewThrottling, PerResourceThrottling
 from djangorestframework.resources import FormResource
 
 class MockView(View):
@@ -30,28 +27,40 @@ class MockView2(MockView):
     
 class MockView3(MockView2):    
     resource = FormResource
+
+class MockView4(MockView):
+    throttle = '3/min' # 3 request per minute
     
 class ThrottlingTests(TestCase):
     urls = 'djangorestframework.tests.throttling'   
     
     def setUp(self):
-        """Reset the cache so that no throttles will be active"""
+        """
+        Reset the cache so that no throttles will be active
+        """
         cache.clear()
         self.factory = RequestFactory()
         
     def test_requests_are_throttled(self):
-        """Ensure request rate is limited"""
+        """
+        Ensure request rate is limited
+        """
         request = self.factory.get('/')
         for dummy in range(4):
             response = MockView.as_view()(request)
         self.assertEqual(503, response.status_code)
         
+    def set_throttle_timer(self, view, value):
+        """
+        Explicitly set the timer, overriding time.time()
+        """
+        view.permissions[0].timer = lambda self: value
+
     def test_request_throttling_expires(self):
         """
         Ensure request rate is limited for a limited duration only
         """
-        # Explicitly set the timer, overridding time.time()
-        MockView.permissions[0].timer = lambda self: 0
+        self.set_throttle_timer(MockView, 0)
 
         request = self.factory.get('/')
         for dummy in range(4):
@@ -59,7 +68,7 @@ class ThrottlingTests(TestCase):
         self.assertEqual(503, response.status_code)
 
         # Advance the timer by one second
-        MockView.permissions[0].timer = lambda self: 1
+        self.set_throttle_timer(MockView, 1)
 
         response = MockView.as_view()(request)
         self.assertEqual(200, response.status_code)
@@ -68,20 +77,61 @@ class ThrottlingTests(TestCase):
         request = self.factory.get('/')
         request.user = User.objects.create(username='a')
         for dummy in range(3):
-            response = view.as_view()(request)
+            view.as_view()(request)
         request.user = User.objects.create(username='b')
         response = view.as_view()(request)
         self.assertEqual(expect, response.status_code)
         
     def test_request_throttling_is_per_user(self):
-        """Ensure request rate is only limited per user, not globally for PerUserThrottles"""
+        """
+        Ensure request rate is only limited per user, not globally for 
+        PerUserThrottles
+        """
         self.ensure_is_throttled(MockView, 200)
         
     def test_request_throttling_is_per_view(self):
-        """Ensure request rate is limited globally per View for PerViewThrottles"""
+        """
+        Ensure request rate is limited globally per View for PerViewThrottles
+        """
         self.ensure_is_throttled(MockView1, 503)
         
     def test_request_throttling_is_per_resource(self):
-        """Ensure request rate is limited globally per Resource for PerResourceThrottles"""        
+        """
+        Ensure request rate is limited globally per Resource for PerResourceThrottles
+        """        
         self.ensure_is_throttled(MockView3, 503)
-    
+        
+        
+    def ensure_response_header_contains_proper_throttle_field(self, view, expected_headers):
+        """
+        Ensure the response returns an X-Throttle field with status and next attributes
+        set properly.
+        """
+        request = self.factory.get('/')
+        for expect in expected_headers:
+            self.set_throttle_timer(view, 0)
+            response = view.as_view()(request)
+            self.assertEquals(response['X-Throttle'], expect)
+            
+    def test_seconds_fields(self):
+        """
+        Ensure for second based throttles.
+        """
+        self.ensure_response_header_contains_proper_throttle_field(MockView,
+         ('status=SUCCESS; next=0.33 sec',
+          'status=SUCCESS; next=0.50 sec',
+          'status=SUCCESS; next=1.00 sec',
+          'status=FAILURE; next=1.00 sec'
+         ))
+            
+    def test_minutes_fields(self):
+        """
+        Ensure for minute based throttles.
+        """
+        self.ensure_response_header_contains_proper_throttle_field(MockView4,
+         ('status=SUCCESS; next=20.00 sec',
+          'status=SUCCESS; next=30.00 sec',
+          'status=SUCCESS; next=60.00 sec',
+          'status=FAILURE; next=60.00 sec'
+         ))
+                                                                    

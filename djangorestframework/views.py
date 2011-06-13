@@ -64,7 +64,11 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     permissions = ( permissions.FullAnonAccess, )
     
-
+    """
+    Headers to be sent with response.
+    """
+    headers = {}
+    
     @classmethod
     def as_view(cls, **initkwargs):
         """
@@ -101,6 +105,12 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         """
         pass
 
+    def add_header(self, field, value):
+        """
+        Add *field* and *value* to the :attr:`headers` attribute of the :class:`View` class. 
+        """
+        self.headers[field] = value
+    
     # Note: session based authentication is explicitly CSRF validated,
     # all other authentication is CSRF exempt.
     @csrf_exempt
@@ -149,7 +159,10 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         # also it's currently sub-obtimal for HTTP caching - need to sort that out. 
         response.headers['Allow'] = ', '.join(self.allowed_methods)
         response.headers['Vary'] = 'Authenticate, Accept'
-
+        
+        # merge with headers possibly set by a Throttle class
+        response.headers = dict(response.headers.items() + self.headers.items())
+        
         return self.render(response)    
 
 
