@@ -16,6 +16,8 @@ __all__ = (
     'IsAdminUser',
     'IsUserOrIsAnonReadOnly',
     'PerUserThrottling'
+    'PerViewThrottling'
+    'PerResourceThrottling'
 )
 
 
