@@ -150,8 +150,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         response.headers['Allow'] = ', '.join(self.allowed_methods)
         response.headers['Vary'] = 'Authenticate, Accept'
 
-        return self.render(response)    
-
+        return self.render(response)
+    
 
 class ModelView(View):
     """A RESTful view that maps to a model in the database."""

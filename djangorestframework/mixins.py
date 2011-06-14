@@ -582,7 +582,12 @@ class ListModelMixin(object):
 
     def get(self, request, *args, **kwargs):
         queryset = self.queryset if self.queryset else self.resource.model.objects.all()
-        ordering = getattr(self.resource, 'ordering', None)
+
+        if hasattr(self, 'resource'):
+            ordering = getattr(self.resource.Meta, 'ordering', None)
+        else:
+            ordering = None
+
         if ordering:
             args = as_tuple(ordering)
             queryset = queryset.order_by(*args)

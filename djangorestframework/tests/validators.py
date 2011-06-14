@@ -75,7 +75,8 @@ class TestNonFieldErrors(TestCase):
                 return self.cleaned_data  #pragma: no cover
         
         class MockResource(FormResource):
-            form = MockForm
+            class Meta:
+                form = MockForm
         
         class MockView(View):
             pass
@@ -99,10 +100,12 @@ class TestFormValidation(TestCase):
             qwerty = forms.CharField(required=True)
 
         class MockFormResource(FormResource):
-            form = MockForm
+            class Meta:
+                form = MockForm
         
         class MockModelResource(ModelResource):
-            form = MockForm
+            class Meta:
+                form = MockForm
  
         class MockFormView(View):
             resource = MockFormResource
@@ -275,7 +278,8 @@ class TestModelFormValidator(TestCase):
                 return 'read only'
         
         class MockResource(ModelResource):
-            model = MockModel
+            class Meta:
+                model = MockModel
  
         class MockView(View):
             resource = MockResource
