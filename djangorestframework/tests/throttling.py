@@ -1,3 +1,6 @@
+"""
+Tests for the throttling implementations in the permissions module.
+"""
 import time
 
 from django.conf.urls.defaults import patterns
@@ -44,12 +47,20 @@ class ThrottlingTests(TestCase):
         self.assertEqual(503, response.status_code)
         
     def test_request_throttling_expires(self):
-        """Ensure request rate is limited for a limited duration only"""
+        """
+        Ensure request rate is limited for a limited duration only
+        """
+        # Explicitly set the timer, overridding time.time()
+        MockView.permissions[0].timer = lambda self: 0
+
         request = self.factory.get('/')
         for dummy in range(4):
             response = MockView.as_view()(request)
         self.assertEqual(503, response.status_code)
-        time.sleep(1)
+
+        # Advance the timer by one second
+        MockView.permissions[0].timer = lambda self: 1
+
         response = MockView.as_view()(request)
         self.assertEqual(200, response.status_code)
         
@@ -63,7 +74,7 @@ class ThrottlingTests(TestCase):
         self.assertEqual(expect, response.status_code)
         
     def test_request_throttling_is_per_user(self):
-        """Ensure request rate is only limited per user, not globally for PerUserTrottles"""
+        """Ensure request rate is only limited per user, not globally for PerUserThrottles"""
         self.ensure_is_throttled(MockView, 200)
         
     def test_request_throttling_is_per_view(self):
@@ -73,12 +84,4 @@ class ThrottlingTests(TestCase):
     def test_request_throttling_is_per_resource(self):
         """Ensure request rate is limited globally per Resource for PerResourceThrottles"""        
         self.ensure_is_throttled(MockView3, 503)
-
-    def test_raises_no_resource_found(self):
-        """Ensure an Exception is raised when someone sets at per-resource throttle
-        on a view with no resource set."""
-        request = self.factory.get('/')
-        view = MockView2.as_view()
-        self.assertRaises(ConfigurationException, view, request)
-        
     
