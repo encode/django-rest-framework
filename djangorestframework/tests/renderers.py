@@ -1,11 +1,15 @@
 from django.conf.urls.defaults import patterns, url
 from django import http
 from django.test import TestCase
+
 from djangorestframework.compat import View as DjangoView
 from djangorestframework.renderers import BaseRenderer, JSONRenderer
+from djangorestframework.parsers import JSONParser
 from djangorestframework.mixins import ResponseMixin
 from djangorestframework.response import Response
 from djangorestframework.utils.mediatypes import add_media_type_param
+
+from StringIO import StringIO
 
 DUMMYSTATUS = 200
 DUMMYCONTENT = 'dummycontent'
@@ -95,14 +99,35 @@ class JSONRendererTests(TestCase):
     """
     Tests specific to the JSON Renderer
     """
+
     def test_without_content_type_args(self):
+        """
+        Test basic JSON rendering.
+        """
         obj = {'foo':['bar','baz']}
         renderer = JSONRenderer(None)
         content = renderer.render(obj, 'application/json')
         self.assertEquals(content, _flat_repr)
 
     def test_with_content_type_args(self):
+        """
+        Test JSON rendering with additional content type arguments supplied. 
+        """
         obj = {'foo':['bar','baz']}
         renderer = JSONRenderer(None)
         content = renderer.render(obj, 'application/json; indent=2')
         self.assertEquals(content, _indented_repr)
+    
+    def test_render_and_parse(self):
+        """
+        Test rendering and then parsing returns the original object.
+        IE obj -> render -> parse -> obj.
+        """
+        obj = {'foo':['bar','baz']}
+
+        renderer = JSONRenderer(None)
+        parser = JSONParser(None)
+
+        content = renderer.render(obj, 'application/json')
+        (data, files) = parser.parse(StringIO(content))
+        self.assertEquals(obj, data)    
