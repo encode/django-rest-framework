@@ -80,8 +80,7 @@ Using Django REST framework can be as simple as adding a few lines to your urlco
     from myapp.models import MyModel
     
     class MyResource(ModelResource):
-        class Meta:
-            model = MyModel
+        model = MyModel
 
     urlpatterns = patterns('',
         url(r'^$', ListOrCreateModelView.as_view(resource=MyResource)),

@@ -46,19 +46,12 @@ class HTMLRenderer(BaseRenderer):
     media_type = 'text/html'
 
 
-
-class PygmentsFormResource(FormResource):
-    """
-    """
-    form = PygmentsForm
-
-
 class PygmentsRoot(View):
     """
-    This example demonstrates a simple RESTful Web API aound the awesome pygments library.
+    This example demonstrates a simple RESTful Web API around the awesome pygments library.
     This top level resource is used to create highlighted code snippets, and to list all the existing code snippets.
     """
-    resource = PygmentsFormResource
+    form = PygmentsForm
 
     def get(self, request):
         """

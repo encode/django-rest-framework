@@ -46,30 +46,14 @@ class _SkipField(Exception):
     pass
 
 
-class _BuildInnerMeta(type):
+class _RegisterSerializer(type):
     """
-    Some magic so that an inner Meta class gets inheriting behavior.
+    Metaclass to register serializers.
     """
     def __new__(cls, name, bases, attrs):
-        # Get a list of all the inner Metas, from the bases upwards.
-        inner_metas = [getattr(base, 'Meta', object) for base in bases]
-        inner_metas.append(attrs.get('Meta', object))
-
-        # Build up the attributes on the inner Meta.
-        meta_attrs = {}
-        [meta_attrs.update(inner_meta.__dict__) for inner_meta in inner_metas]
-        
-        # Drop private attributes.
-        meta_attrs = dict([ (key, val) for (key, val) in meta_attrs.items()
-                            if not key.startswith('_') ])
-
-        # Lovely, now we can create our inner Meta class.
-        attrs['Meta'] = type('Meta', (object,), meta_attrs)
-
         # Build the class and register it.
-        ret = super(_BuildInnerMeta, cls).__new__(cls, name, bases, attrs) 
+        ret = super(_RegisterSerializer, cls).__new__(cls, name, bases, attrs) 
         _serializers[name] = ret
-        
         return ret
 
 
@@ -78,8 +62,8 @@ class Serializer(object):
     Converts python objects into plain old native types suitable for
     serialization.  In particular it handles models and querysets.
     
-    The output format is specified by setting a number of attributes on the
-    inner `Meta` class.
+    The output format is specified by setting a number of attributes
+    on the class.
 
     You may also override any of the serialization methods, to provide
     for more flexible behavior.
@@ -87,75 +71,61 @@ class Serializer(object):
     Valid output types include anything that may be directly rendered into
     json, xml etc...
     """
-    __metaclass__ = _BuildInnerMeta
+    __metaclass__ = _RegisterSerializer
 
-    class Meta:
-        """
-        Information on how to serialize the data.
-        """
+    fields = () 
+    """
+    Specify the fields to be serialized on a model or dict.
+    Overrides `include` and `exclude`.
+    """
 
-        fields = () 
-        """
-        Specify the fields to be serialized on a model or dict.
-        Overrides `include` and `exclude`.
-        """
+    include = ()
+    """
+    Fields to add to the default set to be serialized on a model/dict.
+    """
 
-        include = ()
-        """
-        Fields to add to the default set to be serialized on a model/dict.
-        """
+    exclude = ()
+    """
+    Fields to remove from the default set to be serialized on a model/dict.
+    """
 
-        exclude = ()
-        """
-        Fields to remove from the default set to be serialized on a model/dict.
-        """
+    rename = {}
+    """
+    A dict of key->name to use for the field keys.
+    """
 
-        rename = {}
-        """
-        A dict of key->name to use for the field keys.
-        """
+    related_serializer = None
+    """
+    The default serializer class to use for any related models.
+    """
 
-        related_serializer = None
-        """
-        The default serializer class to use for any related models.
-        """
-
-        depth = None
-        """
-        The maximum depth to serialize to, or `None`.
-        """
+    depth = None
+    """
+    The maximum depth to serialize to, or `None`.
+    """
 
 
     def __init__(self, depth=None, stack=[], **kwargs):
-        """
-        Allow `Meta` items to be set on init.
-        """
-        self.depth = depth
+        self.depth = depth or self.depth
         self.stack = stack
-
-        if self.depth is None:
-            self.depth = self.Meta.depth
-        
-        for (key, val) in kwargs.items():
-            setattr(self.Meta, key, val)
         
 
     def get_fields(self, obj):
         """
         Return the set of field names/keys to use for a model instance/dict.
         """
-        fields = self.Meta.fields
+        fields = self.fields
 
-        # If Meta.fields is not set, we use the default fields and modify
-        # them with Meta.include and Meta.exclude
+        # If `fields` is not set, we use the default fields and modify
+        # them with `include` and `exclude`
         if not fields:
             default = self.get_default_fields(obj)
-            include = self.Meta.include or ()
-            exclude = self.Meta.exclude or ()
+            include = self.include or ()
+            exclude = self.exclude or ()
             fields = set(default + list(include)) - set(exclude)
 
         else:
-            fields = _fields_to_list(self.Meta.fields)
+            fields = _fields_to_list(self.fields)
 
         return fields
 
@@ -163,7 +133,7 @@ class Serializer(object):
     def get_default_fields(self, obj):
         """
         Return the default list of field names/keys for a model instance/dict.
-        These are used if `Meta.fields` is not given.
+        These are used if `fields` is not given.
         """
         if isinstance(obj, models.Model):
             opts = obj._meta
@@ -173,15 +143,14 @@ class Serializer(object):
 
 
     def get_related_serializer(self, key):
-        info = _fields_to_dict(self.Meta.fields).get(key, None)
+        info = _fields_to_dict(self.fields).get(key, None)
 
         # If an element in `fields` is a 2-tuple of (str, tuple)
         # then the second element of the tuple is the fields to
         # set on the related serializer
         if isinstance(info, (list, tuple)):
             class OnTheFlySerializer(Serializer):
-                class Meta:
-                    fields = info
+                fields = info
             return OnTheFlySerializer
 
         # If an element in `fields` is a 2-tuple of (str, Serializer)
@@ -200,15 +169,15 @@ class Serializer(object):
             return _serializers[info]
         
         # Otherwise use `related_serializer` or fall back to `Serializer`
-        return getattr(self.Meta, 'related_serializer') or Serializer
+        return getattr(self, 'related_serializer') or Serializer
 
 
     def serialize_key(self, key):
         """
         Keys serialize to their string value,
-        unless they exist in the `Meta.rename` dict.
+        unless they exist in the `rename` dict.
         """
-        return getattr(self.Meta.rename, key, key)
+        return getattr(self.rename, key, key)
 
 
     def serialize_val(self, key, obj):
@@ -251,8 +220,7 @@ class Serializer(object):
 
     def serialize_model(self, instance):
         """
-        Given a model instance or dict, serialize it to a dict, using
-        the given behavior given on Meta.
+        Given a model instance or dict, serialize it to a dict..
         """
         data = {}
 

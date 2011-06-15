@@ -69,12 +69,10 @@ class TestFieldNesting(TestCase):
         Test tuple nesting on `fields` attr
         """
         class SerializerM2(Serializer):
-            class Meta:
-                fields = (('field', ('field1',)),)
+            fields = (('field', ('field1',)),)
 
         class SerializerM3(Serializer):
-            class Meta:
-                fields = (('field', ('field2',)),)
+            fields = (('field', ('field2',)),)
 
         self.assertEqual(SerializerM2().serialize(self.m2), {'field': {'field1': u'foo'}})
         self.assertEqual(SerializerM3().serialize(self.m3), {'field': {'field2': u'bar'}})
@@ -85,20 +83,16 @@ class TestFieldNesting(TestCase):
         Test related model serialization
         """
         class NestedM2(Serializer):
-            class Meta:
-                fields = ('field1', )
+            fields = ('field1', )
 
         class NestedM3(Serializer):
-            class Meta:
-                fields = ('field2', )
+            fields = ('field2', )
 
         class SerializerM2(Serializer):
-            class Meta:
-                fields = [('field', NestedM2)]
+            fields = [('field', NestedM2)]
 
         class SerializerM3(Serializer):
-            class Meta:
-                fields = [('field', NestedM3)]
+            fields = [('field', NestedM3)]
 
         self.assertEqual(SerializerM2().serialize(self.m2), {'field': {'field1': u'foo'}})
         self.assertEqual(SerializerM3().serialize(self.m3), {'field': {'field2': u'bar'}})
@@ -108,20 +102,16 @@ class TestFieldNesting(TestCase):
         Test related model serialization
         """
         class SerializerM2(Serializer):
-            class Meta:
-                fields = [('field', 'NestedM2')]
+            fields = [('field', 'NestedM2')]
 
         class SerializerM3(Serializer):
-            class Meta:
-                fields = [('field', 'NestedM3')]
+            fields = [('field', 'NestedM3')]
 
         class NestedM2(Serializer):
-            class Meta:
-                fields = ('field1', )
+            fields = ('field1', )
 
         class NestedM3(Serializer):
-            class Meta:
-                fields = ('field2', )
+            fields = ('field2', )
 
         self.assertEqual(SerializerM2().serialize(self.m2), {'field': {'field1': u'foo'}})
         self.assertEqual(SerializerM3().serialize(self.m3), {'field': {'field2': u'bar'}})

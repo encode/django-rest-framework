@@ -25,7 +25,14 @@ Here's the model we're working from in this example:
 .. include:: ../../examples/modelresourceexample/models.py
     :literal:
 
-To add an API for the model, all we need to do is create a Resource for the model, and map a couple of views to it in our urlconf.
+To add an API for the model, first we need to create a Resource for the model.
+
+``resources.py``
+
+.. include:: ../../examples/modelresourceexample/resources.py
+    :literal:
+
+Then we simply map a couple of views to the Resource in our urlconf.
 
 ``urls.py``
 

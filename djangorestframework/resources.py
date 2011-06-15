@@ -20,12 +20,11 @@ class BaseResource(Serializer):
     """
     Base class for all Resource classes, which simply defines the interface they provide.
     """
-    class Meta:
-        fields = None
-        include = None
-        exclude = None
+    fields = None
+    include = None
+    exclude = None
 
-    def __init__(self, view, depth=None, stack=[], **kwargs):
+    def __init__(self, view=None, depth=None, stack=[], **kwargs):
         super(BaseResource, self).__init__(depth, stack, **kwargs)
         self.view = view
 
@@ -49,20 +48,19 @@ class Resource(BaseResource):
     Objects that a resource can act on include plain Python object instances, Django Models, and Django QuerySets.
     """
     
-    class Meta:
-        # The model attribute refers to the Django Model which this Resource maps to.
-        # (The Model's class, rather than an instance of the Model)
-        model = None
-        
-        # By default the set of returned fields will be the set of:
-        #
-        # 0. All the fields on the model, excluding 'id'.
-        # 1. All the properties on the model.
-        # 2. The absolute_url of the model, if a get_absolute_url method exists for the model.
-        #
-        # If you wish to override this behaviour,
-        # you should explicitly set the fields attribute on your class.
-        fields = None
+    # The model attribute refers to the Django Model which this Resource maps to.
+    # (The Model's class, rather than an instance of the Model)
+    model = None
+    
+    # By default the set of returned fields will be the set of:
+    #
+    # 0. All the fields on the model, excluding 'id'.
+    # 1. All the properties on the model.
+    # 2. The absolute_url of the model, if a get_absolute_url method exists for the model.
+    #
+    # If you wish to override this behaviour,
+    # you should explicitly set the fields attribute on your class.
+    fields = None
 
 
 class FormResource(Resource):
@@ -74,12 +72,11 @@ class FormResource(Resource):
     view, which may be used by some renderers.
     """
 
-    class Meta:
-        """
-        The :class:`Form` class that should be used for request validation.
-        This can be overridden by a :attr:`form` attribute on the :class:`views.View`.
-        """
-        form = None
+    """
+    The :class:`Form` class that should be used for request validation.
+    This can be overridden by a :attr:`form` attribute on the :class:`views.View`.
+    """
+    form = None
 
 
     def validate_request(self, data, files=None):
@@ -189,7 +186,7 @@ class FormResource(Resource):
         """
 
         # A form on the view overrides a form on the resource.
-        form = getattr(self.view, 'form', None) or self.Meta.form
+        form = getattr(self.view, 'form', None) or self.form
 
         # Use the requested method or determine the request method
         if method is None and hasattr(self.view, 'request') and hasattr(self.view, 'method'):
@@ -235,44 +232,43 @@ class ModelResource(FormResource):
     # Auto-register new ModelResource classes into _model_to_resource 
     #__metaclass__ = _RegisterModelResource
 
-    class Meta:
-        """
-        The form class that should be used for request validation.
-        If set to :const:`None` then the default model form validation will be used.
+    """
+    The form class that should be used for request validation.
+    If set to :const:`None` then the default model form validation will be used.
+
+    This can be overridden by a :attr:`form` attribute on the :class:`views.View`.
+    """
+    form = None
+
+    """
+    The model class which this resource maps to.
+
+    This can be overridden by a :attr:`model` attribute on the :class:`views.View`.
+    """
+    model = None
+
+    """
+    The list of fields to use on the output.
     
-        This can be overridden by a :attr:`form` attribute on the :class:`views.View`.
-        """
-        form = None
+    May be any of:
     
-        """
-        The model class which this resource maps to.
+    The name of a model field.
+    The name of an attribute on the model.
+    The name of an attribute on the resource.
+    The name of a method on the model, with a signature like ``func(self)``.
+    The name of a method on the resource, with a signature like ``func(self, instance)``.
+    """
+    fields = None
     
-        This can be overridden by a :attr:`model` attribute on the :class:`views.View`.
-        """
-        model = None
+    """
+    The list of fields to exclude.  This is only used if :attr:`fields` is not set.
+    """
+    exclude = ('id', 'pk')
     
-        """
-        The list of fields to use on the output.
-        
-        May be any of:
-        
-        The name of a model field.
-        The name of an attribute on the model.
-        The name of an attribute on the resource.
-        The name of a method on the model, with a signature like ``func(self)``.
-        The name of a method on the resource, with a signature like ``func(self, instance)``.
-        """
-        fields = None
-        
-        """
-        The list of fields to exclude.  This is only used if :attr:`fields` is not set.
-        """
-        exclude = ('id', 'pk')
-        
-        """
-        The list of extra fields to include.  This is only used if :attr:`fields` is not set.
-        """
-        include = ('url',)
+    """
+    The list of extra fields to include.  This is only used if :attr:`fields` is not set.
+    """
+    include = ('url',)
 
 
     def __init__(self, view):
@@ -283,7 +279,7 @@ class ModelResource(FormResource):
         """
         super(ModelResource, self).__init__(view)
 
-        self.model = getattr(view, 'model', None) or self.Meta.model
+        self.model = getattr(view, 'model', None) or self.model
 
 
     def validate_request(self, data, files=None):
@@ -369,7 +365,7 @@ class ModelResource(FormResource):
                     if isinstance(attr, models.Model):
                         instance_attrs[param] = attr.pk
                     else:
-                        instance_attrs[param] = attr    
+                        instance_attrs[param] = attr
 
                 try:
                     return reverse(self.view_callable[0], kwargs=instance_attrs)
@@ -399,7 +395,7 @@ class ModelResource(FormResource):
                               isinstance(getattr(self.model, attr, None), property)
                               and not attr.startswith('_'))
 
-        if self.Meta.fields:
-            return property_fields & set(as_tuple(self.Meta.fields))
+        if self.fields:
+            return property_fields & set(as_tuple(self.fields))
 
-        return property_fields.union(set(as_tuple(self.Meta.include))) - set(as_tuple(self.Meta.exclude))
+        return property_fields.union(set(as_tuple(self.include))) - set(as_tuple(self.exclude))

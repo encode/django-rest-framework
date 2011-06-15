@@ -466,7 +466,7 @@ class InstanceMixin(object):
             # We do a little dance when we store the view callable...
             # we need to store it wrapped in a 1-tuple, so that inspect will treat it
             # as a function when we later look it up (rather than turning it into a method).
-            # This makes sure our URL reversing works ok.      
+            # This makes sure our URL reversing works ok.
             resource.view_callable = (view,)
         return view
 
@@ -479,6 +479,7 @@ class ReadModelMixin(object):
     """
     def get(self, request, *args, **kwargs):
         model = self.resource.model
+
         try:
             if args:
                 # If we have any none kwargs then assume the last represents the primrary key
@@ -498,6 +499,7 @@ class CreateModelMixin(object):
     """
     def post(self, request, *args, **kwargs):        
         model = self.resource.model
+
         # translated 'related_field' kwargs into 'related_field_id'
         for related_name in [field.name for field in model._meta.fields if isinstance(field, RelatedField)]:
             if kwargs.has_key(related_name):
@@ -522,6 +524,7 @@ class UpdateModelMixin(object):
     """
     def put(self, request, *args, **kwargs):
         model = self.resource.model
+        
         # TODO: update on the url of a non-existing resource url doesn't work correctly at the moment - will end up with a new url 
         try:
             if args:
@@ -547,6 +550,7 @@ class DeleteModelMixin(object):
     """
     def delete(self, request, *args, **kwargs):
         model = self.resource.model
+
         try:
             if args:
                 # If we have any none kwargs then assume the last represents the primrary key
@@ -581,10 +585,12 @@ class ListModelMixin(object):
     queryset = None
 
     def get(self, request, *args, **kwargs):
-        queryset = self.queryset if self.queryset else self.resource.model.objects.all()
+        model = self.resource.model
+
+        queryset = self.queryset if self.queryset else model.objects.all()
 
         if hasattr(self, 'resource'):
-            ordering = getattr(self.resource.Meta, 'ordering', None)
+            ordering = getattr(self.resource, 'ordering', None)
         else:
             ordering = None
 

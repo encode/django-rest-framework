@@ -22,6 +22,9 @@ class BlogPost(models.Model):
     slug = models.SlugField(editable=False, default='')
 
     def save(self, *args, **kwargs):
+        """
+        For the purposes of the sandbox, limit the maximum number of stored models.
+        """
         self.slug = slugify(self.title)
         super(self.__class__, self).save(*args, **kwargs)
         for obj in self.__class__.objects.order_by('-created')[MAX_POSTS:]:

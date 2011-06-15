@@ -181,7 +181,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
 
         # Get the form instance if we have one bound to the input
         form_instance = None
-        if method == view.method.lower():
+        if method == getattr(view, 'method', view.request.method).lower():
             form_instance = getattr(view, 'bound_form_instance', None)
 
         if not form_instance and hasattr(view, 'get_bound_form'):
