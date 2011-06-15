@@ -31,11 +31,6 @@ _503_SERVICE_UNAVAILABLE = ErrorResponse(
     {'detail': 'request was throttled'})
 
 
-class ConfigurationException(BaseException):
-    """To alert for bad configuration decisions as a convenience."""
-    pass
-
-
 class BasePermission(object):
     """
     A base class from which all permission classes should inherit.
@@ -142,14 +137,13 @@ class BaseThrottle(BasePermission):
         
         # Drop any requests from the history which have now passed the
         # throttle duration
-        while self.history and self.history[0] <= self.now - self.duration:
+        while self.history and self.history[-1] <= self.now - self.duration:
             self.history.pop()
-
         if len(self.history) >= self.num_requests:
             self.throttle_failure()
         else:
             self.throttle_success()
-    
+
     def throttle_success(self):
         """
         Inserts the current request's timestamp along with the key
@@ -157,13 +151,30 @@ class BaseThrottle(BasePermission):
         """
         self.history.insert(0, self.now)
         cache.set(self.key, self.history, self.duration)
-    
+        header = 'status=SUCCESS; next=%s sec' % self.next()
+        self.view.add_header('X-Throttle', header)
+            
     def throttle_failure(self):
         """
         Called when a request to the API has failed due to throttling.
         Raises a '503 service unavailable' response.
         """
+        header = 'status=FAILURE; next=%s sec' % self.next()
+        self.view.add_header('X-Throttle', header)
         raise _503_SERVICE_UNAVAILABLE
+    
+    def next(self):
+        """
+        Returns the recommended next request time in seconds.
+        """
+        if self.history:
+            remaining_duration = self.duration - (self.now - self.history[-1])
+        else:
+            remaining_duration = self.duration
+
+        available_requests = self.num_requests - len(self.history) + 1
+
+        return '%.2f' % (remaining_duration / float(available_requests))
 
 
 class PerUserThrottling(BaseThrottle):

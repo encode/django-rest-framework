@@ -64,7 +64,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     permissions = ( permissions.FullAnonAccess, )
     
-
+    
     @classmethod
     def as_view(cls, **initkwargs):
         """
@@ -101,6 +101,14 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         """
         pass
 
+
+    def add_header(self, field, value):
+        """
+        Add *field* and *value* to the :attr:`headers` attribute of the :class:`View` class. 
+        """
+        self.headers[field] = value
+
+
     # Note: session based authentication is explicitly CSRF validated,
     # all other authentication is CSRF exempt.
     @csrf_exempt
@@ -108,6 +116,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         self.request = request
         self.args = args
         self.kwargs = kwargs
+        self.headers = {}
 
         # Calls to 'reverse' will not be fully qualified unless we set the scheme/host/port here.
         prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
@@ -149,9 +158,12 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         # also it's currently sub-obtimal for HTTP caching - need to sort that out. 
         response.headers['Allow'] = ', '.join(self.allowed_methods)
         response.headers['Vary'] = 'Authenticate, Accept'
+        
+        # merge with headers possibly set at some point in the view
+        response.headers.update(self.headers)
+        
+        return self.render(response)    
 
-        return self.render(response)
-    
 
 class ModelView(View):
     """A RESTful view that maps to a model in the database."""

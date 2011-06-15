@@ -13,25 +13,27 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'djangorestframework.runtests.settings'
 from django.conf import settings
 from django.test.utils import get_runner
 
+def usage():
+    return """
+    Usage: python runtests.py [UnitTestClass].[method]
+    
+    You can pass the Class name of the `UnitTestClass` you want to test.
+    
+    Append a method name if you only want to test a specific method of that class.
+    """
+    
 def main():
     TestRunner = get_runner(settings)
 
-    if hasattr(TestRunner, 'func_name'):
-        # Pre 1.2 test runners were just functions,
-        # and did not support the 'failfast' option.
-        import warnings
-        warnings.warn(
-            'Function-based test runners are deprecated. Test runners should be classes with a run_tests() method.',
-            DeprecationWarning
-        )
-        failures = TestRunner(['djangorestframework'])
+    test_runner = TestRunner()
+    if len(sys.argv) == 2:
+        test_case = '.' + sys.argv[1]
+    elif len(sys.argv) == 1:
+        test_case = ''
     else:
-        test_runner = TestRunner()
-        if len(sys.argv) > 1:
-            test_case = '.' + sys.argv[1]
-        else:
-            test_case = ''
-        failures = test_runner.run_tests(['djangorestframework' + test_case])
+        print usage()
+        sys.exit(1)
+    failures = test_runner.run_tests(['djangorestframework' + test_case])
 
     sys.exit(failures)
 
