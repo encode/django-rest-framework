@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     (r'^object-store/', include('objectstore.urls')),
     (r'^pygments/', include('pygments_api.urls')),
     (r'^blog-post/', include('blogpost.urls')),
+    (r'^permissions-example/', include('permissionsexample.urls')),
 
     (r'^', include('djangorestframework.urls')),
 )
