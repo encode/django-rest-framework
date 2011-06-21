@@ -31,4 +31,6 @@ class Sandbox(View):
                 {'name': 'Simple Mixin-only example', 'url': reverse('mixin-view')},
                 {'name': 'Object store API', 'url': reverse('object-store-root')},
                 {'name': 'Code highlighting API', 'url': reverse('pygments-root')},
-                {'name': 'Blog posts API', 'url': reverse('blog-posts-root')}]
+                {'name': 'Blog posts API', 'url': reverse('blog-posts-root')},
+                {'name': 'Permissions example', 'url': reverse('throttled-resource')}
+                ]
