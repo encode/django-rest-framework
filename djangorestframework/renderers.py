@@ -108,6 +108,7 @@ class XMLRenderer(BaseRenderer):
     """
     Renderer which serializes to XML.
     """
+
     media_type = 'application/xml'
 
     def render(self, obj=None, media_type=None):
@@ -251,6 +252,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
         The context used in the template contains all the information
         needed to self-document the response to this request.
         """
+
         content = self._get_content(self.view, self.view.request, obj, media_type)
 
         put_form_instance = self._get_form_instance(self.view, 'put')

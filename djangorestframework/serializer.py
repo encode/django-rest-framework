@@ -4,7 +4,7 @@ Customizable serialization.
 from django.db import models
 from django.db.models.query import QuerySet
 from django.db.models.fields.related import RelatedField
-from django.utils.encoding import smart_unicode
+from django.utils.encoding import smart_unicode, is_protected_type
 
 import decimal
 import inspect
@@ -273,13 +273,6 @@ class Serializer(object):
         return self.serialize_iter(obj.all())
 
 
-    def serialize_decimal(self, obj):
-        """
-        Convert a Decimal instance into a serializable representation.
-        """
-        return str(obj)
-
-
     def serialize_fallback(self, obj):
         """
         Convert any unhandled object into a serializable representation.
@@ -301,9 +294,6 @@ class Serializer(object):
         elif isinstance(obj, models.Manager):
             # Manager objects
             return self.serialize_manager(obj)
-        elif isinstance(obj, decimal.Decimal):
-            # Decimals (force to string representation)
-            return self.serialize_decimal(obj)
         elif inspect.isfunction(obj) and not inspect.getargspec(obj)[0]:
             # function with no args
             return self.serialize_func(obj)
@@ -311,5 +301,10 @@ class Serializer(object):
             # bound method
             return self.serialize_func(obj)
 
-        # fall back to smart unicode
+        # Protected types are passed through as is.
+        # (i.e. Primitives like None, numbers, dates, and Decimals.)
+        if is_protected_type(obj):
+            return obj
+
+        # All other values are converted to string.
         return self.serialize_fallback(obj)

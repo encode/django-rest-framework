@@ -18,7 +18,7 @@ class TestObjectToData(TestCase):
 
     def test_decimal(self):
         """Decimals need to be converted to a string representation."""
-        self.assertEquals(self.serialize(decimal.Decimal('1.5')), '1.5')
+        self.assertEquals(self.serialize(decimal.Decimal('1.5')), decimal.Decimal('1.5'))
 
     def test_function(self):
         """Functions with no arguments should be called."""
