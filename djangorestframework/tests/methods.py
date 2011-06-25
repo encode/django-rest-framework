@@ -24,3 +24,9 @@ class TestMethodOverloading(TestCase):
         view = RequestMixin()
         view.request = self.req.post('/', {view._METHOD_PARAM: 'DELETE'})
         self.assertEqual(view.method, 'DELETE')
+
+    def test_HEAD_is_a_valid_method(self):
+        """HEAD requests identified"""
+        view = RequestMixin()
+        view.request = self.req.head('/')
+        self.assertEqual(view.method, 'HEAD')
