@@ -69,7 +69,7 @@ try:
     from django.views.generic import View
     if not hasattr(View, 'head'):
         # First implementation of Django class-based views did not include head method 
-        # in base View class - https://code.djangoproject.com/ticket/15688
+        # in base View class - https://code.djangoproject.com/ticket/15668
         class ViewPlusHead(View):
             def head(self, request, *args, **kwargs):
                 return self.get(request, *args, **kwargs)
