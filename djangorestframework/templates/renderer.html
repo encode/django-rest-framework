@@ -60,8 +60,8 @@
 			</form>
 	{% endif %}
 	
-	{# Only display the POST/PUT/DELETE forms if method tunneling via POST forms is enabled. #}	
-	{% if METHOD_PARAM %}
+	{# Only display the POST/PUT/DELETE forms if method tunneling via POST forms is enabled and the user has permissions on this view. #}	
+	{% if METHOD_PARAM and response.status != 403 %}
 
 		{% if 'POST' in view.allowed_methods %}
 				<form action="{{ request.get_full_path }}" method="post" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
