@@ -67,6 +67,14 @@ except ImportError:
 # django.views.generic.View (Django >= 1.3)
 try:
     from django.views.generic import View
+    if not hasattr(View, 'head'):
+        # First implementation of Django class-based views did not include head method 
+        # in base View class - https://code.djangoproject.com/ticket/15668
+        class ViewPlusHead(View):
+            def head(self, request, *args, **kwargs):
+                return self.get(request, *args, **kwargs)
+        View = ViewPlusHead
+        
 except ImportError:
     from django import http
     from django.utils.functional import update_wrapper
@@ -145,6 +153,8 @@ except ImportError:
             #)
             return http.HttpResponseNotAllowed(allowed_methods)
 
+        def head(self, request, *args, **kwargs):
+            return self.get(request, *args, **kwargs)
 
 try:
     import markdown

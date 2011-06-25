@@ -6,7 +6,7 @@ from django.db.models.fields.related import RelatedField
 from django.utils.encoding import smart_unicode
 
 from djangorestframework.response import ErrorResponse
-from djangorestframework.serializer import Serializer
+from djangorestframework.serializer import Serializer, _SkipField
 from djangorestframework.utils import as_tuple
 
 import decimal
@@ -342,7 +342,7 @@ class ModelResource(FormResource):
         """
 
         if not hasattr(self, 'view_callable'):
-            raise NoReverseMatch        
+            raise _SkipField        
 
         # dis does teh magicks...
         urlconf = get_urlconf()
@@ -371,7 +371,7 @@ class ModelResource(FormResource):
                     return reverse(self.view_callable[0], kwargs=instance_attrs)
                 except NoReverseMatch:
                     pass
-        raise NoReverseMatch
+        raise _SkipField
 
 
     @property

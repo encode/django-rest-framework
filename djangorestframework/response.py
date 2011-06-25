@@ -16,13 +16,13 @@ class Response(object):
     An HttpResponse that may include content that hasn't yet been serialized.
     """
 
-    def __init__(self, status=200, content=None, headers={}):
+    def __init__(self, status=200, content=None, headers=None):
         self.status = status
         self.media_type = None
         self.has_content_body = content is not None
         self.raw_content = content      # content prior to filtering
         self.cleaned_content = content  # content after filtering
-        self.headers = headers
+        self.headers = headers or {}
  
     @property
     def status_text(self):

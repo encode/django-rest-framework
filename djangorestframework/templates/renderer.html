@@ -18,7 +18,7 @@
   
 	<div id="header">
 		<div id="branding">
-		  <h1 id="site-name"><a href='http://django-rest-framework.org'>Django REST framework</a></h1>
+		  <h1 id="site-name"><a href='http://django-rest-framework.org'>Django REST framework</a> <small>{{ version }}</small></h1>
 		</div>
 		<div id="user-tools">
 		  {% if user.is_active %}Welcome, {{ user }}.{% if logout_url %} <a href='{{ logout_url }}'>Log out</a>{% endif %}{% else %}Anonymous {% if login_url %}<a href='{{ login_url }}'>Log in</a>{% endif %}{% endif %}
