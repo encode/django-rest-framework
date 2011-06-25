@@ -22,7 +22,7 @@ class Sandbox(View):
     4. A generic object store API.
     5. A code highlighting API.
     6. A blog posts and comments API.
-    7. A basic example using permissions. You can login with **'test', 'test'.** 
+    7. A basic example using permissions.
 
     Please feel free to browse, create, edit and delete the resources in these examples."""
 

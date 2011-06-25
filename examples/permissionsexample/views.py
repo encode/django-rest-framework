@@ -29,8 +29,10 @@ class ThrottlingExampleView(View):
         """
         return "Successful response to GET request because throttle is not yet active."
     
-class LoggedinView(View):
-    
+class LoggedInExampleView(View):
+    """
+    You can login with **'test', 'test'.** 
+    """
     permissions = (IsAuthenticated, )
     def get(self, request):
         return 'Logged in or not?'
