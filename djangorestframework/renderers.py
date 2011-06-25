@@ -17,6 +17,7 @@ from djangorestframework.utils import dict2xml, url_resolves
 from djangorestframework.utils.breadcrumbs import get_breadcrumbs
 from djangorestframework.utils.description import get_name, get_description
 from djangorestframework.utils.mediatypes import get_media_type_params, add_media_type_param, media_type_matches
+from djangorestframework import VERSION
 
 from decimal import Decimal
 import re
@@ -285,6 +286,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
             'response': self.view.response,
             'description': description,
             'name': name,
+            'version': VERSION,
             'markeddown': markeddown,
             'breadcrumblist': breadcrumb_list,
             'available_media_types': self.view._rendered_media_types,
