@@ -44,7 +44,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
                   renderers.DocumentingHTMLRenderer,
                   renderers.DocumentingXHTMLRenderer,
                   renderers.DocumentingPlainTextRenderer,
-                  renderers.XMLRenderer )
+                  renderers.XMLRenderer,
+                  renderers.YAMLRenderer )
     
     """
     List of parsers the resource can parse the request with.
