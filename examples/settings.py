@@ -89,6 +89,12 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+# for loading initial data
+##SERIALIZATION_MODULES = { 
+  #  'yml': "django.core.serializers.pyyaml"
+
+#} 
+
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -104,6 +110,7 @@ INSTALLED_APPS = (
     'objectstore',
     'pygments_api',
     'blogpost',
+    'permissionsexample',
 )
 
 import os
