@@ -18,12 +18,15 @@ from djangorestframework import status
 from djangorestframework.response import ErrorResponse
 from djangorestframework.utils.mediatypes import media_type_matches
 
+import yaml
+
 __all__ = (
     'BaseParser',
     'JSONParser',
     'PlainTextParser',
     'FormParser',
     'MultiPartParser',
+    'YAMLParser',
 )
 
 
@@ -83,6 +86,26 @@ class JSONParser(BaseParser):
             raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
                                 {'detail': 'JSON parse error - %s' % unicode(exc)})
 
+
+class YAMLParser(BaseParser):
+    """
+    Parses YAML-serialized data.
+    """
+
+    media_type = 'application/yaml'
+
+    def parse(self, stream):
+        """
+        Returns a 2-tuple of `(data, files)`.
+
+        `data` will be an object which is the parsed content of the response.
+        `files` will always be `None`.
+        """
+        try:
+            return (yaml.safe_load(stream), None)
+        except ValueError, exc:
+            raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
+                                {'detail': 'YAML parse error - %s' % unicode(exc)})
 
 
 class PlainTextParser(BaseParser):
