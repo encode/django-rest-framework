@@ -55,6 +55,13 @@ class RendererIntegrationTests(TestCase):
         self.assertEquals(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEquals(resp.status_code, DUMMYSTATUS)
 
+    def test_head_method_serializes_no_content(self):
+        """No response must be included in HEAD requests."""
+        resp = self.client.head('/')
+        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEquals(resp['Content-Type'], RendererA.media_type)
+        self.assertEquals(resp.content, '')
+
     def test_default_renderer_serializes_content_on_accept_any(self):
         """If the Accept header is set to */* the default renderer should serialize the response."""
         resp = self.client.get('/', HTTP_ACCEPT='*/*')
@@ -82,8 +89,6 @@ class RendererIntegrationTests(TestCase):
         """If the Accept header is unsatisfiable we should return a 406 Not Acceptable response."""
         resp = self.client.get('/', HTTP_ACCEPT='foo/bar')
         self.assertEquals(resp.status_code, 406)
-
-
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
 

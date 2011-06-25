@@ -6,7 +6,6 @@ from djangorestframework.compat import RequestFactory
 from djangorestframework.mixins import RequestMixin
 from djangorestframework.parsers import FormParser, MultiPartParser, PlainTextParser
 
-
 class TestContentParsing(TestCase):
     def setUp(self):
         self.req = RequestFactory()
@@ -14,6 +13,11 @@ class TestContentParsing(TestCase):
     def ensure_determines_no_content_GET(self, view):
         """Ensure view.DATA returns None for GET request with no content."""
         view.request = self.req.get('/')
+        self.assertEqual(view.DATA, None)
+
+    def ensure_determines_no_content_HEAD(self, view):
+        """Ensure view.DATA returns None for HEAD request."""
+        view.request = self.req.head('/')
         self.assertEqual(view.DATA, None)
 
     def ensure_determines_form_content_POST(self, view):
@@ -49,6 +53,10 @@ class TestContentParsing(TestCase):
     def test_standard_behaviour_determines_no_content_GET(self):
         """Ensure view.DATA returns None for GET request with no content."""
         self.ensure_determines_no_content_GET(RequestMixin())
+
+    def test_standard_behaviour_determines_no_content_HEAD(self):
+        """Ensure view.DATA returns None for HEAD request."""
+        self.ensure_determines_no_content_HEAD(RequestMixin())
 
     def test_standard_behaviour_determines_form_content_POST(self):
         """Ensure view.DATA returns content for POST request with form content."""
