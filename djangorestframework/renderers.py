@@ -40,8 +40,11 @@ class BaseRenderer(object):
     All renderers must extend this class, set the :attr:`media_type` attribute,
     and override the :meth:`render` method.
     """
+    
+    _FORMAT_QUERY_PARAM = 'format'
 
     media_type = None
+    format = None
 
     def __init__(self, view):
         self.view = view
@@ -58,6 +61,11 @@ class BaseRenderer(object):
         This may be overridden to provide for other behavior, but typically you'll
         instead want to just set the :attr:`media_type` attribute on the class.
         """
+        format = self.view.kwargs.get(self._FORMAT_QUERY_PARAM, None)
+        if format is None:
+            format = self.view.request.GET.get(self._FORMAT_QUERY_PARAM, None)
+        if format is not None:
+            return format == self.format
         return media_type_matches(self.media_type, accept)
 
     def render(self, obj=None, media_type=None):
@@ -84,6 +92,7 @@ class JSONRenderer(BaseRenderer):
     """
 
     media_type = 'application/json'
+    format = 'json'
 
     def render(self, obj=None, media_type=None):
         """
@@ -111,6 +120,7 @@ class XMLRenderer(BaseRenderer):
     """
 
     media_type = 'application/xml'
+    format = 'xml'
 
     def render(self, obj=None, media_type=None):
         """
@@ -289,12 +299,12 @@ class DocumentingTemplateRenderer(BaseRenderer):
             'version': VERSION,
             'markeddown': markeddown,
             'breadcrumblist': breadcrumb_list,
-            'available_media_types': self.view._rendered_media_types,
+            'available_formats': self.view._rendered_formats,
             'put_form': put_form_instance,
             'post_form': post_form_instance,
             'login_url': login_url,
             'logout_url': logout_url,
-            'ACCEPT_PARAM': getattr(self.view, '_ACCEPT_QUERY_PARAM', None),
+            'FORMAT_PARAM': self._FORMAT_QUERY_PARAM,
             'METHOD_PARAM': getattr(self.view, '_METHOD_PARAM', None),
             'ADMIN_MEDIA_PREFIX': settings.ADMIN_MEDIA_PREFIX
         })
@@ -317,6 +327,7 @@ class DocumentingHTMLRenderer(DocumentingTemplateRenderer):
     """
 
     media_type = 'text/html'
+    format = 'html'
     template = 'renderer.html'
 
 
@@ -328,6 +339,7 @@ class DocumentingXHTMLRenderer(DocumentingTemplateRenderer):
     """
 
     media_type = 'application/xhtml+xml'
+    format = 'xhtml'
     template = 'renderer.html'
 
 
@@ -339,6 +351,7 @@ class DocumentingPlainTextRenderer(DocumentingTemplateRenderer):
     """
 
     media_type = 'text/plain'
+    format = 'txt'
     template = 'renderer.txt'
 
 

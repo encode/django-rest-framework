@@ -48,9 +48,9 @@
 				<h2>GET {{ name }}</h2>
 				<div class='submit-row' style='margin: 0; border: 0'>
 				<a href='{{ request.get_full_path }}' rel="nofollow" style='float: left'>GET</a>
-				{% for media_type in available_media_types %}
-				  {% with ACCEPT_PARAM|add:"="|add:media_type as param %}
-				    [<a href='{{ request.get_full_path|add_query_param:param }}' rel="nofollow">{{ media_type }}</a>]
+				{% for format in available_formats %}
+				  {% with FORMAT_PARAM|add:"="|add:format as param %}
+				    [<a href='{{ request.get_full_path|add_query_param:param }}' rel="nofollow">{{ format }}</a>]
 				  {% endwith %}
 				{% endfor %}
 				</div>

@@ -11,6 +11,7 @@ from django.http.multipartparser import LimitBytes
 
 from djangorestframework import status
 from djangorestframework.parsers import FormParser, MultiPartParser
+from djangorestframework.renderers import BaseRenderer
 from djangorestframework.resources import Resource, FormResource, ModelResource
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.utils import as_tuple, MSIE_USER_AGENT_REGEX
@@ -290,7 +291,7 @@ class ResponseMixin(object):
             accept_list = [token.strip() for token in request.META["HTTP_ACCEPT"].split(',')]
         else:
             # No accept header specified
-            return (self._default_renderer(self), self._default_renderer.media_type)
+            accept_list = ['*/*']
 
         # Check the acceptable media types against each renderer,
         # attempting more specific media types first
@@ -298,12 +299,12 @@ class ResponseMixin(object):
         #     Worst case is we're looping over len(accept_list) * len(self.renderers)
         renderers = [renderer_cls(self) for renderer_cls in self.renderers]
 
-        for media_type_lst in order_by_precedence(accept_list):
+        for accepted_media_type_lst in order_by_precedence(accept_list):
             for renderer in renderers:
-                for media_type in media_type_lst:
-                    if renderer.can_handle_response(media_type):
-                        return renderer, media_type
-       
+                for accepted_media_type in accepted_media_type_lst:
+                    if renderer.can_handle_response(accepted_media_type):
+                        return renderer, accepted_media_type
+
         # No acceptable renderers were found
         raise ErrorResponse(status.HTTP_406_NOT_ACCEPTABLE,
                                 {'detail': 'Could not satisfy the client\'s Accept header',
@@ -316,6 +317,13 @@ class ResponseMixin(object):
         Return an list of all the media types that this view can render.
         """
         return [renderer.media_type for renderer in self.renderers]
+    
+    @property
+    def _rendered_formats(self):
+        """
+        Return a list of all the formats that this view can render.
+        """
+        return [renderer.format for renderer in self.renderers]
 
     @property
     def _default_renderer(self):
@@ -486,7 +494,10 @@ class ReadModelMixin(object):
                 instance = model.objects.get(pk=args[-1], **kwargs)
             else:
                 # Otherwise assume the kwargs uniquely identify the model
-                instance = model.objects.get(**kwargs)
+                filtered_keywords = kwargs.copy()
+                if BaseRenderer._FORMAT_QUERY_PARAM in filtered_keywords:
+                    del filtered_keywords[BaseRenderer._FORMAT_QUERY_PARAM]
+                instance = model.objects.get(**filtered_keywords)
         except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
 

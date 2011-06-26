@@ -113,57 +113,61 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     # all other authentication is CSRF exempt.
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
-        self.request = request
-        self.args = args
-        self.kwargs = kwargs
-        self.headers = {}
-
-        # Calls to 'reverse' will not be fully qualified unless we set the scheme/host/port here.
-        prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
-        set_script_prefix(prefix)
-
         try:
-            self.initial(request, *args, **kwargs)
-        
-            # Authenticate and check request has the relevant permissions
-            self._check_permissions()
-
-            # Get the appropriate handler method
-            if self.method.lower() in self.http_method_names:
-                handler = getattr(self, self.method.lower(), self.http_method_not_allowed)
-            else:
-                handler = self.http_method_not_allowed
-
-            response_obj = handler(request, *args, **kwargs)
-
-            # Allow return value to be either HttpResponse, Response, or an object, or None
-            if isinstance(response_obj, HttpResponse):
-                return response_obj
-            elif isinstance(response_obj, Response):
-                response = response_obj
-            elif response_obj is not None:
-                response = Response(status.HTTP_200_OK, response_obj)
-            else:
-                response = Response(status.HTTP_204_NO_CONTENT)
-
-            # Pre-serialize filtering (eg filter complex objects into natively serializable types)
-            response.cleaned_content = self.filter_response(response.raw_content)
+            self.request = request
+            self.args = args
+            self.kwargs = kwargs
+            self.headers = {}
     
-        except ErrorResponse, exc:
-            response = exc.response
+            # Calls to 'reverse' will not be fully qualified unless we set the scheme/host/port here.
+            prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
+            set_script_prefix(prefix)
+    
+            try:
+                self.initial(request, *args, **kwargs)
+            
+                # Authenticate and check request has the relevant permissions
+                self._check_permissions()
+    
+                # Get the appropriate handler method
+                if self.method.lower() in self.http_method_names:
+                    handler = getattr(self, self.method.lower(), self.http_method_not_allowed)
+                else:
+                    handler = self.http_method_not_allowed
+    
+                response_obj = handler(request, *args, **kwargs)
+    
+                # Allow return value to be either HttpResponse, Response, or an object, or None
+                if isinstance(response_obj, HttpResponse):
+                    return response_obj
+                elif isinstance(response_obj, Response):
+                    response = response_obj
+                elif response_obj is not None:
+                    response = Response(status.HTTP_200_OK, response_obj)
+                else:
+                    response = Response(status.HTTP_204_NO_CONTENT)
+    
+                # Pre-serialize filtering (eg filter complex objects into natively serializable types)
+                response.cleaned_content = self.filter_response(response.raw_content)
         
-        # Always add these headers.
-        #
-        # TODO - this isn't actually the correct way to set the vary header,
-        # also it's currently sub-obtimal for HTTP caching - need to sort that out. 
-        response.headers['Allow'] = ', '.join(self.allowed_methods)
-        response.headers['Vary'] = 'Authenticate, Accept'
-        
-        # merge with headers possibly set at some point in the view
-        response.headers.update(self.headers)
-        
-        return self.render(response)    
-
+            except ErrorResponse, exc:
+                response = exc.response
+            
+            # Always add these headers.
+            #
+            # TODO - this isn't actually the correct way to set the vary header,
+            # also it's currently sub-obtimal for HTTP caching - need to sort that out. 
+            response.headers['Allow'] = ', '.join(self.allowed_methods)
+            response.headers['Vary'] = 'Authenticate, Accept'
+            
+            # merge with headers possibly set at some point in the view
+            response.headers.update(self.headers)
+            
+            return self.render(response)    
+        except:
+            import traceback
+            traceback.print_exc()
+            raise
 
 class ModelView(View):
     """A RESTful view that maps to a model in the database."""
