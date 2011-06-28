@@ -1,8 +1,6 @@
-# For the examples we need Django, pygments and httplib2...
+# Pygments for the code highlighting example,
+# markdown for the docstring -> auto-documentation
 
-Django==1.2.4
-wsgiref==0.1.2
 Pygments==1.4
-httplib2==0.6.0
 Markdown==2.0.3
 

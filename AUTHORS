@@ -1,11 +1,13 @@
-Tom Christie <tomchristie> - tom@tomchristie.com, @thisneonsoul
-
+Tom Christie <tomchristie> - tom@tomchristie.com, @thisneonsoul - Author.
 Paul Bagwell <pbgwl> - Suggestions & bugfixes.
 Marko Tibold <markotibold> - Contributions & Providing the Jenkins CI Server.
 Sébastien Piquemal <sebpiq> - Contributions.
 Carmen Wick <cwick> - Bugfixes.
 Alex Ehlke <aehlke> - Design Contributions.
 Alen Mujezinovic <flashingpumpkin> - Contributions.
+Carles Barrobés <txels> - HEAD support.
+Michael Fötsch <mfoetsch> - File format support.
+David Larlet <david> - OAuth support.
 
 THANKS TO:
 

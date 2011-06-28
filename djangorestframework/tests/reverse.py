@@ -24,9 +24,5 @@ class ReverseTests(TestCase):
     urls = 'djangorestframework.tests.reverse'
 
     def test_reversed_urls_are_fully_qualified(self):
-        try:
-            response = self.client.get('/')
-        except:
-            import traceback
-            traceback.print_exc()
+        response = self.client.get('/')
         self.assertEqual(json.loads(response.content), 'http://testserver/another')
