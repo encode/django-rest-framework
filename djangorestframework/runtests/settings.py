@@ -84,7 +84,7 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
-INSTALLED_APPS = [
+INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -95,15 +95,15 @@ INSTALLED_APPS = [
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'djangorestframework',
-]
+)
 
 # OAuth support is optional, so we only test oauth if it's installed.
 try:
     import oauth_provider
-except:
+except ImportError:
     pass
 else:
-    INSTALLED_APPS.append('oauth_provider')
+    INSTALLED_APPS += ('oauth_provider',)
 
 # If we're running on the Jenkins server we want to archive the coverage reports as XML.
 import os

@@ -15,7 +15,7 @@ try:
     from oauth_provider.decorators import oauth_required
     from oauth_provider.models import Resource, Consumer, Token
 
-except:
+except ImportError:
     pass
 
 else:
