@@ -4,7 +4,7 @@ Customizable serialization.
 from django.db import models
 from django.db.models.query import QuerySet
 from django.db.models.fields.related import RelatedField
-from django.utils.encoding import smart_unicode, is_protected_type
+from django.utils.encoding import smart_unicode, is_protected_type, smart_str
 
 import decimal
 import inspect
@@ -177,7 +177,7 @@ class Serializer(object):
         Keys serialize to their string value,
         unless they exist in the `rename` dict.
         """
-        return getattr(self.rename, key, key)
+        return getattr(self.rename, smart_str(key), smart_str(key))
 
 
     def serialize_val(self, key, obj):
@@ -228,12 +228,12 @@ class Serializer(object):
 
         # serialize each required field 
         for fname in fields:
-            if hasattr(self, fname):
+            if hasattr(self, smart_str(fname)):
                 # check for a method 'fname' on self first
                 meth = getattr(self, fname)
                 if inspect.ismethod(meth) and len(inspect.getargspec(meth)[0]) == 2:
                     obj = meth(instance)
-            elif hasattr(instance, fname):
+            elif hasattr(instance, smart_str(fname)):
                 # now check for an attribute 'fname' on the instance
                 obj = getattr(instance, fname)
             elif fname in instance:
