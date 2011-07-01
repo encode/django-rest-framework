@@ -13,12 +13,12 @@ General questions should be taken to the `discussion group <http://groups.google
 Installation Notes
 ==================
 
-Cloning from GitHub::
+To clone the project from GitHub using git::
 
     git clone git@github.com:tomchristie/django-rest-framework.git
 
 
-Cloning from Bitbucket::
+To clone the project from Bitbucket using mercurial::
 
     hg clone https://tomchristie@bitbucket.org/tomchristie/django-rest-framework
 
