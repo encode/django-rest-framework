@@ -75,13 +75,13 @@ Release Notes
 
 0.2.3
 
-* Fix some throttling bugs
-* X-Throttle header on throttling
-* Support for nesting resources on related models
+* Fix some throttling bugs.
+* X-Throttle header on throttling.
+* Support for nesting resources on related models.
 
 0.2.2
 
-* Throttling support complete
+* Throttling support complete.
 
 0.2.1
 
