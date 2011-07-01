@@ -3,9 +3,7 @@ Django REST framework
 
 Django REST framework makes it easy to build well-connected, self-describing RESTful Web APIs.
 
-Full documentation for the project is available at:
-
-http://django-rest-framework.org
+Full documentation for the project is available at http://django-rest-framework.org
 
 Issue tracking is on `GitHub <https://github.com/tomchristie/django-rest-framework/issues>`_.
 General questions should be taken to the `discussion group <http://groups.google.com/group/django-rest-framework>`_.
