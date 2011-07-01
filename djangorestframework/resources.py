@@ -177,14 +177,12 @@ class FormResource(Resource):
 
         # Return HTTP 400 response (BAD REQUEST)
         raise ErrorResponse(400, detail)
-  
 
-    def get_bound_form(self, data=None, files=None, method=None):
-        """
-        Given some content return a Django form bound to that content.
-        If form validation is turned off (:attr:`form` class attribute is :const:`None`) then returns :const:`None`.
-        """
 
+    def get_form_class(self, method=None):
+        """
+        Returns the form class used to validate this resource.
+        """
         # A form on the view overrides a form on the resource.
         form = getattr(self.view, 'form', None) or self.form
 
@@ -199,6 +197,16 @@ class FormResource(Resource):
         if method:
             form = getattr(self, '%s_form' % method.lower(), form)
             form = getattr(self.view, '%s_form' % method.lower(), form)
+
+        return form
+  
+
+    def get_bound_form(self, data=None, files=None, method=None):
+        """
+        Given some content return a Django form bound to that content.
+        If form validation is turned off (:attr:`form` class attribute is :const:`None`) then returns :const:`None`.
+        """
+        form = self.get_form_class(method)
 
         if not form:
             return None
@@ -306,31 +314,31 @@ class ModelResource(FormResource):
         If the :attr:`form` class attribute has been explicitly set then that class will be used
         to create the Form, otherwise the model will be used to create a ModelForm.
         """
+        form = self.get_form_class(method)
 
-        form = super(ModelResource, self).get_bound_form(data, files, method=method)
-        
-        # Use an explict Form if it exists
-        if form:
-            return form
-
-        elif self.model:
+        if not form and self.model:
             # Fall back to ModelForm which we create on the fly
             class OnTheFlyModelForm(forms.ModelForm):
                 class Meta:
                     model = self.model
                     #fields = tuple(self._model_fields_set)
 
-            # Instantiate the ModelForm as appropriate
-            if data and isinstance(data, models.Model):
-                # Bound to an existing model instance
-                return OnTheFlyModelForm(instance=content)
-            elif data is not None:
-                return OnTheFlyModelForm(data, files)
-            return OnTheFlyModelForm()
+            form = OnTheFlyModelForm
 
         # Both form and model not set?  Okay bruv, whatevs...
-        return None
-    
+        if not form:
+            return None
+
+        # Instantiate the ModelForm as appropriate
+        if data is not None or files is not None:
+            if issubclass(form, forms.ModelForm) and hasattr(self.view, 'model_instance'):
+                # Bound to an existing model instance
+                return form(data, files, instance=self.view.model_instance)
+            else:
+                return form(data, files)
+
+        return form()
+
 
     def url(self, instance):
         """
