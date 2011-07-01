@@ -491,17 +491,17 @@ class ReadModelMixin(object):
         try:
             if args:
                 # If we have any none kwargs then assume the last represents the primrary key
-                instance = model.objects.get(pk=args[-1], **kwargs)
+                self.model_instance = model.objects.get(pk=args[-1], **kwargs)
             else:
                 # Otherwise assume the kwargs uniquely identify the model
                 filtered_keywords = kwargs.copy()
                 if BaseRenderer._FORMAT_QUERY_PARAM in filtered_keywords:
                     del filtered_keywords[BaseRenderer._FORMAT_QUERY_PARAM]
-                instance = model.objects.get(**filtered_keywords)
+                self.model_instance = model.objects.get(**filtered_keywords)
         except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
 
-        return instance
+        return self.model_instance
 
 
 class CreateModelMixin(object):
@@ -540,19 +540,19 @@ class UpdateModelMixin(object):
         try:
             if args:
                 # If we have any none kwargs then assume the last represents the primrary key
-                instance = model.objects.get(pk=args[-1], **kwargs)
+                self.model_instance = model.objects.get(pk=args[-1], **kwargs)
             else:
                 # Otherwise assume the kwargs uniquely identify the model
-                instance = model.objects.get(**kwargs)
+                self.model_instance = model.objects.get(**kwargs)
 
             for (key, val) in self.CONTENT.items():
-                setattr(instance, key, val)
+                setattr(self.model_instance, key, val)
         except model.DoesNotExist:
-            instance = model(**self.CONTENT)
-            instance.save()
+            self.model_instance = model(**self.CONTENT)
+            self.model_instance.save()
 
-        instance.save()
-        return instance
+        self.model_instance.save()
+        return self.model_instance
 
 
 class DeleteModelMixin(object):
