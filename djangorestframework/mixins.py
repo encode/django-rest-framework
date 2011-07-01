@@ -598,7 +598,7 @@ class ListModelMixin(object):
     def get(self, request, *args, **kwargs):
         model = self.resource.model
 
-        queryset = self.queryset if self.queryset else model.objects.all()
+        queryset = self.queryset if self.queryset is not None else model.objects.all()
 
         if hasattr(self, 'resource'):
             ordering = getattr(self.resource, 'ordering', None)
