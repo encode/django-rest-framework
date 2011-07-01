@@ -22,6 +22,7 @@ class Sandbox(View):
     4. A generic object store API.
     5. A code highlighting API.
     6. A blog posts and comments API.
+    7. A basic example using permissions.
 
     Please feel free to browse, create, edit and delete the resources in these examples."""
 
@@ -32,5 +33,5 @@ class Sandbox(View):
                 {'name': 'Object store API', 'url': reverse('object-store-root')},
                 {'name': 'Code highlighting API', 'url': reverse('pygments-root')},
                 {'name': 'Blog posts API', 'url': reverse('blog-posts-root')},
-                {'name': 'Permissions example', 'url': reverse('throttled-resource')}
+                {'name': 'Permissions example', 'url': reverse('permissions-example')}
                 ]

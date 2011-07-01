@@ -156,6 +156,7 @@ except ImportError:
         def head(self, request, *args, **kwargs):
             return self.get(request, *args, **kwargs)
 
+# Markdown is optional
 try:
     import markdown
     import re
@@ -204,3 +205,9 @@ try:
 
 except ImportError:
     apply_markdown = None
+
+# Yaml is optional
+try:
+    import yaml
+except ImportError:
+    yaml = None

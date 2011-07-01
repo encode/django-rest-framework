@@ -11,16 +11,14 @@ from django.core.serializers.json import DateTimeAwareJSONEncoder
 from django.template import RequestContext, loader
 from django.utils import simplejson as json
 
-from djangorestframework import status
-from djangorestframework.compat import apply_markdown
+
+from djangorestframework.compat import apply_markdown, yaml
 from djangorestframework.utils import dict2xml, url_resolves
 from djangorestframework.utils.breadcrumbs import get_breadcrumbs
 from djangorestframework.utils.description import get_name, get_description
 from djangorestframework.utils.mediatypes import get_media_type_params, add_media_type_param, media_type_matches
 from djangorestframework import VERSION
 
-from decimal import Decimal
-import re
 import string
 from urllib import quote_plus
 
@@ -31,7 +29,8 @@ __all__ = (
     'DocumentingHTMLRenderer',
     'DocumentingXHTMLRenderer',
     'DocumentingPlainTextRenderer',
-    'XMLRenderer'
+    'XMLRenderer',
+    'YAMLRenderer'
 )
 
 
@@ -129,6 +128,27 @@ class XMLRenderer(BaseRenderer):
         if obj is None:
             return ''
         return dict2xml(obj)
+
+
+if yaml:
+    class YAMLRenderer(BaseRenderer):
+        """
+        Renderer which serializes to YAML.
+        """
+    
+        media_type = 'application/yaml'
+        format = 'yaml'
+    
+        def render(self, obj=None, media_type=None):
+            """
+            Renders *obj* into serialized YAML.
+            """
+            if obj is None:
+                return ''
+
+            return yaml.dump(obj)
+else:
+    YAMLRenderer = None
 
 
 class TemplateRenderer(BaseRenderer):
@@ -361,4 +381,5 @@ DEFAULT_RENDERERS = ( JSONRenderer,
                       DocumentingPlainTextRenderer,
                       XMLRenderer )
 
-
+if YAMLRenderer:
+    DEFAULT_RENDERERS += (YAMLRenderer,)

@@ -4,8 +4,8 @@ from django.test import TestCase
 
 from djangorestframework import status
 from djangorestframework.compat import View as DjangoView
-from djangorestframework.renderers import BaseRenderer, JSONRenderer
-from djangorestframework.parsers import JSONParser
+from djangorestframework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer
+from djangorestframework.parsers import JSONParser, YAMLParser
 from djangorestframework.mixins import ResponseMixin
 from djangorestframework.response import Response
 from djangorestframework.utils.mediatypes import add_media_type_param
@@ -189,3 +189,38 @@ class JSONRendererTests(TestCase):
         content = renderer.render(obj, 'application/json')
         (data, files) = parser.parse(StringIO(content))
         self.assertEquals(obj, data)    
+
+
+
+if YAMLRenderer:
+    _yaml_repr = 'foo: [bar, baz]\n'
+    
+    
+    class YAMLRendererTests(TestCase):
+        """
+        Tests specific to the JSON Renderer
+        """
+    
+        def test_render(self):
+            """
+            Test basic YAML rendering.
+            """
+            obj = {'foo':['bar','baz']}
+            renderer = YAMLRenderer(None)
+            content = renderer.render(obj, 'application/yaml')
+            self.assertEquals(content, _yaml_repr)
+    
+        
+        def test_render_and_parse(self):
+            """
+            Test rendering and then parsing returns the original object.
+            IE obj -> render -> parse -> obj.
+            """
+            obj = {'foo':['bar','baz']}
+    
+            renderer = YAMLRenderer(None)
+            parser = YAMLParser(None)
+    
+            content = renderer.render(obj, 'application/yaml')
+            (data, files) = parser.parse(StringIO(content))
+            self.assertEquals(obj, data)    

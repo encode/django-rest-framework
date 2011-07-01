@@ -1,6 +1,16 @@
 from djangorestframework.views import View
-from djangorestframework.permissions import PerUserThrottling
+from djangorestframework.permissions import PerUserThrottling, IsAuthenticated
+from django.core.urlresolvers import reverse
 
+class PermissionsExampleView(View):
+    """
+    A container view for permissions examples.
+    """
+    
+    def get(self, request):
+        return [{'name': 'Throttling Example', 'url': reverse('throttled-resource')},
+                {'name': 'Logged in example', 'url': reverse('loggedin-resource')},]
+        
 
 class ThrottlingExampleView(View):
     """
@@ -18,3 +28,11 @@ class ThrottlingExampleView(View):
         Handle GET requests.
         """
         return "Successful response to GET request because throttle is not yet active."
+    
+class LoggedInExampleView(View):
+    """
+    You can login with **'test', 'test'.** 
+    """
+    permissions = (IsAuthenticated, )
+    def get(self, request):
+        return 'Logged in or not?'
