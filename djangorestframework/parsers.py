@@ -173,4 +173,4 @@ DEFAULT_PARSERS = ( JSONParser,
                     MultiPartParser )
 
 if YAMLParser:
-    DEFAULT_PARSERS += (YAMLParser,)
+    DEFAULT_PARSERS += ( YAMLParser, )
