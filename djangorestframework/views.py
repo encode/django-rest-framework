@@ -40,20 +40,12 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     List of renderers the resource can serialize the response with, ordered by preference.
     """
-    renderers = ( renderers.JSONRenderer,
-                  renderers.DocumentingHTMLRenderer,
-                  renderers.DocumentingXHTMLRenderer,
-                  renderers.DocumentingPlainTextRenderer,
-                  renderers.XMLRenderer,
-                  renderers.YAMLRenderer )
+    renderers = renderers.DEFAULT_RENDERERS
     
     """
     List of parsers the resource can parse the request with.
     """
-    parsers = ( parsers.JSONParser,
-                parsers.FormParser,
-                parsers.MultiPartParser )
-
+    parsers = parsers.DEFAULT_PARSERS
     """
     List of all authenticating methods to attempt.
     """
