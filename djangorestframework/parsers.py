@@ -167,3 +167,9 @@ class MultiPartParser(BaseParser):
                                 {'detail': 'multipart parse error - %s' % unicode(exc)})
         return django_parser.parse()
 
+DEFAULT_PARSERS = ( parsers.JSONParser,
+                    parsers.FormParser,
+                    parsers.MultiPartParser )
+
+if YAMLParser:
+    DEFAULT_PARSERS += (YAMLParser,)
