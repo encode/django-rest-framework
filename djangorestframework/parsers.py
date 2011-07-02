@@ -108,7 +108,8 @@ if yaml:
             except ValueError, exc:
                 raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
                                     {'detail': 'YAML parse error - %s' % unicode(exc)})
-
+else:
+    YAMLParser = None
 
 class PlainTextParser(BaseParser):
     """
