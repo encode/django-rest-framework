@@ -44,9 +44,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     List of parsers the resource can parse the request with.
     """
-    parsers = ( parsers.JSONParser,
-                parsers.FormParser,
-                parsers.MultiPartParser )
+    parsers = parsers.DEFAULT_PARSERS
 
     """
     List of all authenticating methods to attempt.

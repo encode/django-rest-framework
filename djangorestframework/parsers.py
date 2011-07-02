@@ -108,7 +108,8 @@ if yaml:
             except ValueError, exc:
                 raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
                                     {'detail': 'YAML parse error - %s' % unicode(exc)})
-
+else:
+    YAMLParser = None
 
 class PlainTextParser(BaseParser):
     """
@@ -167,3 +168,9 @@ class MultiPartParser(BaseParser):
                                 {'detail': 'multipart parse error - %s' % unicode(exc)})
         return django_parser.parse()
 
+DEFAULT_PARSERS = ( JSONParser,
+                    FormParser,
+                    MultiPartParser )
+
+if YAMLParser:
+    DEFAULT_PARSERS += (YAMLParser,)
