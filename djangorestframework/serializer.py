@@ -177,7 +177,7 @@ class Serializer(object):
         Keys serialize to their string value,
         unless they exist in the `rename` dict.
         """
-        return getattr(self.rename, smart_str(key), smart_str(key))
+        return self.rename.get(smart_str(key), smart_str(key))
 
 
     def serialize_val(self, key, obj):
@@ -228,7 +228,10 @@ class Serializer(object):
 
         # serialize each required field 
         for fname in fields:
-            if hasattr(self, smart_str(fname)):
+            if fname in instance:
+                # finally check for a key 'fname' on the instance
+                obj = instance[fname]
+            elif hasattr(self, smart_str(fname)):
                 # check for a method 'fname' on self first
                 meth = getattr(self, fname)
                 if inspect.ismethod(meth) and len(inspect.getargspec(meth)[0]) == 2:
@@ -236,9 +239,6 @@ class Serializer(object):
             elif hasattr(instance, smart_str(fname)):
                 # now check for an attribute 'fname' on the instance
                 obj = getattr(instance, fname)
-            elif fname in instance:
-                # finally check for a key 'fname' on the instance
-                obj = instance[fname]
             else:
                 continue
 
