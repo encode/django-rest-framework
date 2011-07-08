@@ -524,8 +524,7 @@ class CreateModelMixin(object):
         for field in model._meta.many_to_many:
             if content.has_key(field.name):
                 m2m_data[field.name] = (
-                    model._meta.many_to_many[0].m2m_reverse_field_name(),
-                    content[field.name]
+                    field.m2m_reverse_field_name(), content[field.name]
                 )
                 del content[field.name]
 
