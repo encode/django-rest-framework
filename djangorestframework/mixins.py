@@ -5,7 +5,7 @@ classes that can be added to a `View`.
 
 from django.contrib.auth.models import AnonymousUser
 from django.db.models.query import QuerySet
-from django.db.models.fields.related import RelatedField
+from django.db.models.fields.related import ForeignKey
 from django.http import HttpResponse
 from django.http.multipartparser import LimitBytes
 
@@ -508,21 +508,35 @@ class CreateModelMixin(object):
     """
     Behavior to create a `model` instance on POST requests
     """
-    def post(self, request, *args, **kwargs):        
+    def post(self, request, *args, **kwargs):
         model = self.resource.model
 
-        # translated 'related_field' kwargs into 'related_field_id'
-        for related_name in [field.name for field in model._meta.fields if isinstance(field, RelatedField)]:
-            if kwargs.has_key(related_name):
-                kwargs[related_name + '_id'] = kwargs[related_name]
-                del kwargs[related_name]
+        # Copy the dict to keep self.CONTENT intact
+        content = dict(self.CONTENT)
+        m2m_data = {}
 
-        all_kw_args = dict(self.CONTENT.items() + kwargs.items())
+        for field in model._meta.fields:
+            if isinstance(field, ForeignKey) and kwargs.has_key(field.name):
+                # translate 'related_field' kwargs into 'related_field_id'
+                kwargs[field.name + '_id'] = kwargs[field.name]
+                del kwargs[field.name]
+
+        for field in model._meta.many_to_many:
+            if content.has_key(field.name):
+                m2m_data[field.name] = content[field.name]
+                del content[field.name]
+
+        all_kw_args = dict(content.items() + kwargs.items())
+
         if args:
             instance = model(pk=args[-1], **all_kw_args)
         else:
             instance = model(**all_kw_args)
         instance.save()
+
+        for fieldname in m2m_data:
+            getattr(instance, fieldname).add(*m2m_data[fieldname])
+
         headers = {}
         if hasattr(instance, 'get_absolute_url'):
             headers['Location'] = self.resource(self).url(instance)
