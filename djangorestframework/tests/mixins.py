@@ -5,6 +5,7 @@ from djangorestframework.compat import RequestFactory
 from django.contrib.auth.models import Group, User
 from djangorestframework.mixins import CreateModelMixin
 from djangorestframework.resources import ModelResource
+from djangorestframework.tests.models import CustomUser
 
 
 class TestModelCreation(TestCase): 
@@ -52,5 +53,31 @@ class TestModelCreation(TestCase):
         self.assertEquals(1, User.objects.count())
         self.assertEquals(1, response.cleaned_content.groups.count())
         self.assertEquals('foo', response.cleaned_content.groups.all()[0].name)
+        
+    def test_creation_with_m2m_relation_through(self):
+        """
+        Tests creation where the m2m relation uses a through table
+        """
+        class UserResource(ModelResource):
+            model = CustomUser
+   
+            def url(self, instance):
+                return "/customusers/%i" % instance.id
+
+        group = Group(name='foo')
+        group.save()
+
+        form_data = {'username': 'bar', 'groups': [group.id]}        
+        request = self.req.post('/groups', data=form_data)
+        cleaned_data = dict(form_data)
+        cleaned_data['groups'] = [group]
+        mixin = CreateModelMixin()
+        mixin.resource = UserResource
+        mixin.CONTENT = cleaned_data
+
+        response = mixin.post(request)
+        self.assertEquals(1, CustomUser.objects.count())
+        self.assertEquals(1, response.cleaned_content.groups.count())
+        self.assertEquals('foo', response.cleaned_content.groups.all()[0].name)        
         
 
