@@ -523,7 +523,10 @@ class CreateModelMixin(object):
 
         for field in model._meta.many_to_many:
             if content.has_key(field.name):
-                m2m_data[field.name] = content[field.name]
+                m2m_data[field.name] = (
+                    model._meta.many_to_many[0].m2m_reverse_field_name(),
+                    content[field.name]
+                )
                 del content[field.name]
 
         all_kw_args = dict(content.items() + kwargs.items())
@@ -535,7 +538,17 @@ class CreateModelMixin(object):
         instance.save()
 
         for fieldname in m2m_data:
-            getattr(instance, fieldname).add(*m2m_data[fieldname])
+            manager = getattr(instance, fieldname)
+            
+            if hasattr(manager, 'add'):
+                manager.add(*m2m_data[fieldname][1])
+            else:
+                data = {}
+                data[manager.source_field_name] = instance
+                
+                for related_item in m2m_data[fieldname][1]:
+                    data[m2m_data[fieldname][0]] = related_item
+                    manager.through(**data).save()
 
         headers = {}
         if hasattr(instance, 'get_absolute_url'):
