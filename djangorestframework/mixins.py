@@ -161,17 +161,18 @@ class RequestMixin(object):
             return
         
         # At this point we're committed to parsing the request as form data.
-        self._data = data = self.request.POST
+        self._data = data = self.request.POST.copy()
         self._files = self.request.FILES
 
         # Method overloading - change the method and remove the param from the content.
         if self._METHOD_PARAM in data:
-            self._method = data[self._METHOD_PARAM].upper()
+            # NOTE: unlike `get`, `pop` on a `QueryDict` seems to return a list of values.
+            self._method = self._data.pop(self._METHOD_PARAM)[0].upper()
 
         # Content overloading - modify the content type, and re-parse.
         if self._CONTENT_PARAM in data and self._CONTENTTYPE_PARAM in data:
-            self._content_type = data[self._CONTENTTYPE_PARAM]
-            stream = StringIO(data[self._CONTENT_PARAM])
+            self._content_type = self._data.pop(self._CONTENTTYPE_PARAM)[0]
+            stream = StringIO(self._data.pop(self._CONTENT_PARAM)[0])
             (self._data, self._files) = self._parse(stream, self._content_type)
 
 
