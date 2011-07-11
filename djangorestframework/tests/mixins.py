@@ -107,7 +107,7 @@ class TestModelCreation(TestCase):
         response = mixin.post(request)
         self.assertEquals(3, CustomUser.objects.count())
         self.assertEquals(2, response.cleaned_content.groups.count())
-        self.assertEquals('foo', response.cleaned_content.groups.all()[0].name)
+        self.assertEquals('foo1', response.cleaned_content.groups.all()[0].name)
         self.assertEquals('foo2', response.cleaned_content.groups.all()[1].name)
         
 
