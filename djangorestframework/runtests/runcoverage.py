@@ -9,27 +9,18 @@ import os
 import sys
 os.environ['DJANGO_SETTINGS_MODULE'] = 'djangorestframework.runtests.settings'
 
-from django.conf import settings
-from django.test.utils import get_runner
 from coverage import coverage
 from itertools import chain
-import djangorestframework
 
 def main():
     """Run the tests for djangorestframework and generate a coverage report."""
-    
-    # Discover the list of all modules that we should test coverage for
-    project_dir = os.path.dirname(djangorestframework.__file__)
-    cov_files = []
-    for (path, dirs, files) in os.walk(project_dir):
-        # Drop tests and runtests directories from the test coverage report
-        if os.path.basename(path) == 'tests' or os.path.basename(path) == 'runtests':
-            continue
-        cov_files.extend([os.path.join(path, file) for file in files if file.endswith('.py')])
 
     cov = coverage()
     cov.erase()
     cov.start()
+
+    from django.conf import settings
+    from django.test.utils import get_runner
     TestRunner = get_runner(settings)
 
     if hasattr(TestRunner, 'func_name'):
@@ -46,6 +37,26 @@ def main():
         failures = test_runner.run_tests(['djangorestframework'])
 
     cov.stop()
+
+    # Discover the list of all modules that we should test coverage for
+    import djangorestframework
+
+    project_dir = os.path.dirname(djangorestframework.__file__)
+    cov_files = []
+
+    for (path, dirs, files) in os.walk(project_dir):
+        # Drop tests and runtests directories from the test coverage report
+        if os.path.basename(path) == 'tests' or os.path.basename(path) == 'runtests':
+            continue
+
+        # Drop the compat module from coverage, since we're not interested in the coverage
+        # of a module which is specifically for resolving environment dependant imports.
+        # (Because we'll end up getting different coverage reports for it for each environment)  
+        if 'compat.py' in files:
+            files.remove('compat.py')
+    
+        cov_files.extend([os.path.join(path, file) for file in files if file.endswith('.py')])
+
     cov.report(cov_files)
     cov.xml_report(cov_files)
     sys.exit(failures)
