@@ -40,6 +40,12 @@ class TestObjectToData(TestCase):
         now = datetime.datetime.now()
         self.assertEquals(self.serialize(now), now)
 
+    def test_dict_method_name_collision(self):
+        """dict with key that collides with dict method name"""
+        self.assertEquals(self.serialize({'items': 'foo'}), {'items': u'foo'})
+        self.assertEquals(self.serialize({'keys': 'foo'}), {'keys': u'foo'})
+        self.assertEquals(self.serialize({'values': 'foo'}), {'values': u'foo'})
+
 
 class TestFieldNesting(TestCase):
     """
