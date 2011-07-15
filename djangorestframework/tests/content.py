@@ -1,10 +1,28 @@
 """
 Tests for content parsing, and form-overloaded content parsing.
 """
-from django.test import TestCase
+from django.conf.urls.defaults import patterns
+from django.contrib.auth.models import User
+from django.test import TestCase, Client
+from djangorestframework import status
+from djangorestframework.authentication import UserLoggedInAuthentication
 from djangorestframework.compat import RequestFactory
 from djangorestframework.mixins import RequestMixin
 from djangorestframework.parsers import FormParser, MultiPartParser, PlainTextParser
+from djangorestframework.response import Response
+from djangorestframework.views import View
+
+class MockView(View):
+    authentication = (UserLoggedInAuthentication,)
+    def post(self, request):
+        if request.POST.get('example') is not None:
+            return Response(status.OK)
+        
+        return Response(status.INTERNAL_SERVER_ERROR)
+
+urlpatterns = patterns('',
+    (r'^$', MockView.as_view()),
+)
 
 class TestContentParsing(TestCase):
     def setUp(self):
@@ -84,3 +102,36 @@ class TestContentParsing(TestCase):
         view.request = self.req.post('/', form_data)
         view.parsers = (PlainTextParser,)
         self.assertEqual(view.DATA, content)
+
+class TestContentParsingWithAuthentication(TestCase):
+    urls = 'djangorestframework.tests.content'
+    
+    def setUp(self):
+        self.csrf_client = Client(enforce_csrf_checks=True)
+        self.username = 'john'
+        self.email = 'lennon@thebeatles.com'
+        self.password = 'password'
+        self.user = User.objects.create_user(self.username, self.email, self.password)
+        self.req = RequestFactory()
+    
+    def test_user_logged_in_authentication_has_post_when_not_logged_in(self):
+        """Ensures request.POST exists after UserLoggedInAuthentication when user doesn't log in"""
+        content = {'example': 'example'}
+        
+        response = self.client.post('/', content)
+        self.assertEqual(status.OK, response.status_code)
+        
+        response = self.csrf_client.post('/', content)
+        self.assertEqual(status.OK, response.status_code)
+    
+    def test_user_logged_in_authentication_has_post_when_logged_in(self):
+        """Ensures request.POST exists after UserLoggedInAuthentication when user does log in"""
+        self.client.login(username='john', password='password')
+        self.csrf_client.login(username='john', password='password')
+        content = {'example': 'example'}
+        
+        response = self.client.post('/', content)
+        self.assertEqual(status.OK, response.status_code, "POST data")
+        
+        response = self.csrf_client.post('/', content)
+        self.assertEqual(status.OK, response.status_code)
