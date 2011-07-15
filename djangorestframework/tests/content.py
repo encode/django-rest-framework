@@ -8,7 +8,8 @@ from djangorestframework import status
 from djangorestframework.authentication import UserLoggedInAuthentication
 from djangorestframework.compat import RequestFactory
 from djangorestframework.mixins import RequestMixin
-from djangorestframework.parsers import FormParser, MultiPartParser, PlainTextParser
+from djangorestframework.parsers import FormParser, MultiPartParser, \
+    PlainTextParser, JSONParser
 from djangorestframework.response import Response
 from djangorestframework.views import View
 
@@ -102,6 +103,64 @@ class TestContentParsing(TestCase):
         view.request = self.req.post('/', form_data)
         view.parsers = (PlainTextParser,)
         self.assertEqual(view.DATA, content)
+    
+    def test_accessing_post_after_data_form(self):
+        """Ensures request.POST can be accessed after request.DATA in form request"""
+        form_data = {'qwerty': 'uiop'}
+        view = RequestMixin()
+        view.parsers = (FormParser, MultiPartParser)
+        view.request = self.req.post('/', data=form_data)
+        
+        self.assertEqual(view.DATA.items(), form_data.items())
+        self.assertEqual(view.request.POST.items(), form_data.items())
+    
+    def test_empty_post_after_data_for_json(self):
+        """Ensures request.POST can be accessed after request.DATA in json request"""
+        from django.utils import simplejson as json
+        
+        data = {'qwerty': 'uiop'}
+        content = json.dumps(data)
+        content_type = 'application/json'
+        
+        view = RequestMixin()
+        view.parsers = (JSONParser,)
+        
+        form_data = {view._CONTENT_PARAM: content,
+                     view._CONTENTTYPE_PARAM: content_type}
+        
+        view.request = self.req.post('/', data=form_data)
+        
+        self.assertEqual(view.DATA.items(), data.items())
+        self.assertEqual(view.request.POST.items(), form_data.items())
+    
+    def test_accessing_data_after_post_form(self):
+        """Ensures request.DATA can be accessed after request.POST in form request"""
+        form_data = {'qwerty': 'uiop'}
+        view = RequestMixin()
+        view.parsers = (FormParser, MultiPartParser)
+        view.request = self.req.post('/', data=form_data)
+        
+        self.assertEqual(view.request.POST.items(), form_data.items())
+        self.assertEqual(view.DATA.items(), form_data.items())
+    
+    def test_accessing_data_after_post_json(self):
+        """Ensures request.DATA can be accessed after request.POST in json request"""
+        from django.utils import simplejson as json
+        
+        data = {'qwerty': 'uiop'}
+        content = json.dumps(data)
+        content_type = 'application/json'
+        
+        view = RequestMixin()
+        view.parsers = (JSONParser,)
+        
+        form_data = {view._CONTENT_PARAM: content,
+                     view._CONTENTTYPE_PARAM: content_type}
+        
+        view.request = self.req.post('/', data=form_data)
+        
+        self.assertEqual(view.request.POST.items(), form_data.items())
+        self.assertEqual(view.DATA.items(), data.items())
 
 class TestContentParsingWithAuthentication(TestCase):
     urls = 'djangorestframework.tests.content'
@@ -119,10 +178,10 @@ class TestContentParsingWithAuthentication(TestCase):
         content = {'example': 'example'}
         
         response = self.client.post('/', content)
-        self.assertEqual(status.OK, response.status_code)
+        self.assertEqual(status.OK, response.status_code, "POST data is malformed")
         
         response = self.csrf_client.post('/', content)
-        self.assertEqual(status.OK, response.status_code)
+        self.assertEqual(status.OK, response.status_code, "POST data is malformed")
     
     def test_user_logged_in_authentication_has_post_when_logged_in(self):
         """Ensures request.POST exists after UserLoggedInAuthentication when user does log in"""
@@ -131,7 +190,7 @@ class TestContentParsingWithAuthentication(TestCase):
         content = {'example': 'example'}
         
         response = self.client.post('/', content)
-        self.assertEqual(status.OK, response.status_code, "POST data")
+        self.assertEqual(status.OK, response.status_code, "POST data is malformed")
         
         response = self.csrf_client.post('/', content)
-        self.assertEqual(status.OK, response.status_code)
+        self.assertEqual(status.OK, response.status_code, "POST data is malformed")
