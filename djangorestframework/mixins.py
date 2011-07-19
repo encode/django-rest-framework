@@ -713,7 +713,7 @@ class PaginatorMixin(object):
         try:
             page_num = int(self.request.GET.get('page', '1'))
         except ValueError:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND, {'detail': 'That page contains no results'})
+            page_num = 1
 
         if page_num not in paginator.page_range:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND, {'detail': 'That page contains no results'})
