@@ -279,13 +279,13 @@ class ModelResource(FormResource):
     include = ('url',)
 
 
-    def __init__(self, view):
+    def __init__(self, view=None, depth=None, stack=[], **kwargs):
         """
         Allow :attr:`form` and :attr:`model` attributes set on the
         :class:`View` to override the :attr:`form` and :attr:`model`
         attributes set on the :class:`Resource`.
         """
-        super(ModelResource, self).__init__(view)
+        super(ModelResource, self).__init__(view, depth, stack, **kwargs)
 
         self.model = getattr(view, 'model', None) or self.model
 
