@@ -72,11 +72,11 @@ class FormResource(Resource):
     view, which may be used by some renderers.
     """
 
+    form = None
     """
     The :class:`Form` class that should be used for request validation.
     This can be overridden by a :attr:`form` attribute on the :class:`views.View`.
     """
-    form = None
 
 
     def validate_request(self, data, files=None):
@@ -240,44 +240,44 @@ class ModelResource(FormResource):
     # Auto-register new ModelResource classes into _model_to_resource 
     #__metaclass__ = _RegisterModelResource
 
+    form = None
     """
     The form class that should be used for request validation.
     If set to :const:`None` then the default model form validation will be used.
 
     This can be overridden by a :attr:`form` attribute on the :class:`views.View`.
     """
-    form = None
 
+    model = None
     """
     The model class which this resource maps to.
 
     This can be overridden by a :attr:`model` attribute on the :class:`views.View`.
     """
-    model = None
 
+    fields = None
     """
     The list of fields to use on the output.
     
     May be any of:
     
-    The name of a model field.
+    The name of a model field. To view nested resources, give the field as a tuple of ("fieldName", resource) where `resource` may be any of ModelResource reference, the name of a ModelResourc reference as a string or a tuple of strings representing fields on the nested model.
     The name of an attribute on the model.
     The name of an attribute on the resource.
     The name of a method on the model, with a signature like ``func(self)``.
     The name of a method on the resource, with a signature like ``func(self, instance)``.
     """
-    fields = None
     
+    exclude = ('id', 'pk')
     """
     The list of fields to exclude.  This is only used if :attr:`fields` is not set.
     """
-    exclude = ('id', 'pk')
     
+
+    include = ('url',)
     """
     The list of extra fields to include.  This is only used if :attr:`fields` is not set.
     """
-    include = ('url',)
-
 
     def __init__(self, view=None, depth=None, stack=[], **kwargs):
         """
