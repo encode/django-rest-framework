@@ -73,7 +73,7 @@ class IsAdminUser(BasePermission):
     """
 
     def check_permission(self, user):
-        if not user.is_admin():
+        if not user.is_staff():
             raise _403_FORBIDDEN_RESPONSE
 
 
