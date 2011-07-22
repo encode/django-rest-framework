@@ -143,7 +143,10 @@ class Serializer(object):
 
 
     def get_related_serializer(self, key):
-        info = _fields_to_dict(self.fields).get(key, None)
+        fields = _fields_to_dict(self.fields)
+        fields.update(_fields_to_dict(self.include))
+        info = fields.get(key, None)
+
 
         # If an element in `fields` is a 2-tuple of (str, tuple)
         # then the second element of the tuple is the fields to

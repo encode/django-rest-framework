@@ -73,7 +73,7 @@ class DjangoRestFrameworkSite(object):
             prefix += '/'
         if issubclass(view, ListModelMixin):
             urlpatterns = patterns('',
-                url(r'^%s%s/' % (prefix,resource_name),
+                url(r'^%s%s/$' % (prefix,resource_name),
                     view.as_view(resource=resource),
                     name=resource_name
                     )
