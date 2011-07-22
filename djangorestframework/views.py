@@ -40,7 +40,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     List of renderers the resource can serialize the response with, ordered by preference.
     """
-    renderers = renderers.DEFAULT_RENDERERS    
+    renderers = renderers.DEFAULT_RENDERERS
+  
     """
     List of parsers the resource can parse the request with.
     """
