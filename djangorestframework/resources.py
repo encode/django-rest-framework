@@ -279,13 +279,13 @@ class ModelResource(FormResource):
     include = ('url',)
 
 
-    def __init__(self, view=None, depth=None, stack=[], **kwargs):
+    def __init__(self, view):
         """
         Allow :attr:`form` and :attr:`model` attributes set on the
         :class:`View` to override the :attr:`form` and :attr:`model`
         attributes set on the :class:`Resource`.
         """
-        super(ModelResource, self).__init__(view, depth, stack, **kwargs)
+        super(ModelResource, self).__init__(view)
 
         self.model = getattr(view, 'model', None) or self.model
 
@@ -355,7 +355,7 @@ class ModelResource(FormResource):
         # dis does teh magicks...
         urlconf = get_urlconf()
         resolver = get_resolver(urlconf)
-
+        
         possibilities = resolver.reverse_dict.getlist(self.view_callable[0])
         for tuple_item in possibilities:
             possibility = tuple_item[0]
@@ -379,6 +379,14 @@ class ModelResource(FormResource):
                     return reverse(self.view_callable[0], kwargs=instance_attrs)
                 except NoReverseMatch:
                     pass
+        try:
+            model_name = instance.__class__.__name__.split('.')[0].lower()
+            return reverse('%s:%s_change' % ('api', model_name), args=(instance.pk,))
+        except NoReverseMatch:
+            pass
+        import pdb
+        pdb.set_trace()
+        
         raise _SkipField
 
 
