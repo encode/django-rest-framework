@@ -109,7 +109,6 @@ class JSONRenderer(BaseRenderer):
             sort_keys = True
         except (ValueError, TypeError):
             indent = None
-
         return json.dumps(obj, cls=DateTimeAwareJSONEncoder, indent=indent, sort_keys=sort_keys)
 
 

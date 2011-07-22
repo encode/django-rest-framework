@@ -59,7 +59,6 @@ def autodiscover():
             continue
 
         import_module("%s.api" % app)
-        print 'aaaaaaaaaaaaa',app
-
+        
     # autodiscover was successful, reset loading flag.
     LOADING = False
