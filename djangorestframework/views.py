@@ -160,17 +160,25 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
 
 class ModelView(View):
-    """A RESTful view that maps to a model in the database."""
+    """
+    A RESTful view that maps to a model in the database.
+    """
     resource = resources.ModelResource
 
 class InstanceModelView(InstanceMixin, ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelView):
-    """A view which provides default operations for read/update/delete against a model instance."""
+    """
+    A view which provides default operations for read/update/delete against a model instance.
+    """
     _suffix = 'Instance'
 
 class ListModelView(ListModelMixin, ModelView):
-    """A view which provides default operations for list, against a model in the database."""   
+    """
+    A view which provides default operations for list, against a model in the database.
+    """   
     _suffix = 'List'
 
 class ListOrCreateModelView(ListModelMixin, CreateModelMixin, ModelView):
-    """A view which provides default operations for list and create, against a model in the database."""   
+    """
+    A view which provides default operations for list and create, against a model in the database.
+    """   
     _suffix = 'List'
