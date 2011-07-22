@@ -8,7 +8,7 @@ from django.utils.importlib import import_module
 
 import imp
 
-__all__ = ('autodiscover','site')
+__all__ = ('autodiscover','site', '__version__', 'VERSION')
 
 api = DjangoRestFrameworkSite()
 
