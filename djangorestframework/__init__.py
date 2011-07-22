@@ -4,14 +4,6 @@ __version__ = '0.2.3'
 VERSION = __version__  # synonym
 
 from djangorestframework.builtins import DjangoRestFrameworkSite
-
-try:
-    VERSION = __import__('pkg_resources') \
-        .get_distribution('gargoyle').version
-except Exception, e:
-    VERSION = 'unknown'
-
-
 from django.utils.importlib import import_module
 
 import imp
