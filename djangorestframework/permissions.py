@@ -30,6 +30,10 @@ _403_NOT_LOGGED_IN_RESPONSE = ErrorResponse(
     status.HTTP_403_FORBIDDEN,
     {'detail': 'You need to login to access this resource.'})
 
+_403_PERMISSION_DENIED_RESPONSE = ErrorResponse(
+    status.HTTP_403_FORBIDDEN,
+    {'detail': 'You do not have permission to access this resource.'})
+
 _503_SERVICE_UNAVAILABLE = ErrorResponse(
     status.HTTP_503_SERVICE_UNAVAILABLE,
     {'detail': 'request was throttled'})
