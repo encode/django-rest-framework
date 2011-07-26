@@ -28,7 +28,7 @@ _403_FORBIDDEN_RESPONSE = ErrorResponse(
 
 _403_NOT_LOGGED_IN_RESPONSE = ErrorResponse(
     status.HTTP_403_FORBIDDEN,
-    {'detail': 'You need to login to access this resource.'})
+    {'detail': 'You need to login before you can access this resource.'})
 
 _403_PERMISSION_DENIED_RESPONSE = ErrorResponse(
     status.HTTP_403_FORBIDDEN,
