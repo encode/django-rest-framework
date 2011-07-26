@@ -388,6 +388,7 @@ class AuthMixin(object):
         user = self.user
         for permission_cls in self.permissions:
             permission = permission_cls(self)
+            permission.request = self.request
             permission.check_permission(user)
 
 

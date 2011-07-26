@@ -26,6 +26,10 @@ _403_FORBIDDEN_RESPONSE = ErrorResponse(
     {'detail': 'You do not have permission to access this resource. ' +
                'You may need to login or otherwise authenticate the request.'})
 
+_403_NOT_LOGGED_IN_RESPONSE = ErrorResponse(
+    status.HTTP_403_FORBIDDEN,
+    {'detail': 'You need to login to access this resource.'})
+
 _503_SERVICE_UNAVAILABLE = ErrorResponse(
     status.HTTP_503_SERVICE_UNAVAILABLE,
     {'detail': 'request was throttled'})
@@ -64,7 +68,7 @@ class IsAuthenticated(BasePermission):
 
     def check_permission(self, user):
         if not user.is_authenticated():
-            raise _403_FORBIDDEN_RESPONSE 
+            raise _403_NOT_LOGGED_IN_RESPONSE 
 
 
 class IsAdminUser(BasePermission):
