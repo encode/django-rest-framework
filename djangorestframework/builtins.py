@@ -1,5 +1,6 @@
 from djangorestframework.mixins import ListModelMixin, InstanceMixin
 from django.conf.urls.defaults import patterns, url
+from django.views.decorators.csrf import csrf_exempt
 
 class DjangoRestFrameworkSite(object):
     app_name = 'api'

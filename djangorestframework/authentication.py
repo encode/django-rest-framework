@@ -82,6 +82,7 @@ class UserLoggedInAuthentication(BaseAuthentication):
     """
     Use Django's session framework for authentication.
     """
+    check_csrf = True
 
     def authenticate(self, request):
         """
@@ -91,7 +92,7 @@ class UserLoggedInAuthentication(BaseAuthentication):
         # TODO: Switch this back to request.POST, and let FormParser/MultiPartParser deal with the consequences.
         if getattr(request, 'user', None) and request.user.is_active:
             # If this is a POST request we enforce CSRF validation.
-            if request.method.upper() == 'POST':
+            if request.method.upper() == 'POST' and self.check_csrf:
                 # Temporarily replace request.POST with .DATA,
                 # so that we use our more generic request parsing
                 request._post = self.view.DATA
