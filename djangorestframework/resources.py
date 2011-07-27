@@ -111,7 +111,7 @@ class FormResource(Resource):
         # To get around this case we revalidate with some fake data. 
         if fake_data:
             data[fake_data] = '_fake_data'
-            allowed_extra_fields = allowed_extra_fields + ('_fake_data',)
+            allowed_extra_fields = tuple(allowed_extra_fields) + ('_fake_data',)
         
         bound_form = self.get_bound_form(data, files)
 
