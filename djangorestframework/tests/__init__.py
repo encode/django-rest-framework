@@ -5,7 +5,7 @@ from django.conf import settings
 try:
     skiptest = settings.SKIP_DJANGORESTFRAMEWORK_TESTS
 except:
-    skiptest = True
+    skiptest = False
     
 if not skiptest:
     import os
