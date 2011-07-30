@@ -452,7 +452,10 @@ class ResourceMixin(object):
         return self._resource.filter_response(obj)
 
     def get_bound_form(self, content=None, method=None):
-        return self._resource.get_bound_form(content, method=method)
+        if hasattr(self._resource, 'get_bound_form'):
+            return self._resource.get_bound_form(content, method=method)
+        else:
+            return None
 
 
 
@@ -566,7 +569,7 @@ class UpdateModelMixin(object):
         # TODO: update on the url of a non-existing resource url doesn't work correctly at the moment - will end up with a new url 
         try:
             if args:
-                # If we have any none kwargs then assume the last represents the primrary key
+                # If we have any none kwargs then assume the last represents the primary key
                 self.model_instance = model.objects.get(pk=args[-1], **kwargs)
             else:
                 # Otherwise assume the kwargs uniquely identify the model
