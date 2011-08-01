@@ -379,13 +379,17 @@ class ModelResource(FormResource):
                     return reverse(self.view_callable[0], kwargs=instance_attrs)
                 except NoReverseMatch:
                     pass
+                
         try:
-            model_name = instance.__class__.__name__.split('.')[0].lower()
-            return reverse('%s:%s_change' % ('api', model_name), args=(instance.pk,))
+            if hasattr(self, 'resource_name'):
+                resource_name = self.resource_name
+            else:
+                resource_name = instance.__class__.__name__.split('.')[0].lower()
+            return reverse(
+               '%s:%s_change' % ('api', resource_name), args=(instance.pk,)
+            )
         except NoReverseMatch:
             pass
-        import pdb
-        pdb.set_trace()
         
         raise _SkipField
 
