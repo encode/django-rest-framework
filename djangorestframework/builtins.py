@@ -1,6 +1,42 @@
 from djangorestframework.mixins import ListModelMixin, InstanceMixin
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls.defaults import patterns, url, include
 from django.views.decorators.csrf import csrf_exempt
+
+class ApiEntry(object):
+    def __init__(self, resource, view, prefix, resource_name):
+        self.resource, self.view = resource, view
+        self.prefix, self.resource_name = prefix, resource_name
+        if self.prefix is None:
+            self.prefix = ''
+        
+    def get_urls(self):
+        from django.conf.urls.defaults import patterns, url
+
+        if self.prefix == '':
+            url_prefix = ''
+        else:
+            url_prefix = self.prefix + '/'
+
+        if issubclass(self.view, ListModelMixin):
+            urlpatterns = patterns('',
+                url(r'^%s%s/$' % (url_prefix, self.resource_name),
+                    self.view.as_view(resource=self.resource),
+                    name=self.resource_name,
+                    )
+            )
+        elif issubclass(self.view, InstanceMixin):
+            urlpatterns = patterns('',
+                url(r'^%s%s/(?P<pk>[0-9]+)/$' % (url_prefix, self.resource_name),
+                    self.view.as_view(resource=self.resource),
+                    name=self.resource_name + '_change',
+                    )
+            )
+        return urlpatterns
+    
+
+    def urls(self):
+        return self.get_urls(), 'api', self.prefix
+    urls = property(urls)
 
 class DjangoRestFrameworkSite(object):
     app_name = 'api'
@@ -17,13 +53,16 @@ class DjangoRestFrameworkSite(object):
             else:
                 resource_name = resource.__name__.lower()
         
+        resource.resource_name = resource_name
+        
         if prefix not in self._registry:
             self._registry[prefix] = {}
             
         if resource_name not in self._registry[prefix]:
             self._registry[prefix][resource_name] = []
             
-        self._registry[prefix][resource_name].append((resource, view))
+        api_entry = ApiEntry(resource, view, prefix, resource_name)
+        self._registry[prefix][resource_name].append(api_entry)
 
 
 #    def unregister(self, prefix=None, resource_name=None, resource=None):
@@ -57,34 +96,11 @@ class DjangoRestFrameworkSite(object):
         # Add in each resource's views.
         for prefix in self._registry.keys():
             for resource_name in self._registry[prefix].keys():
-                for resource, view in self._registry[prefix][resource_name]:
-                    urlpatterns += self.__get_urlpatterns(
-                        prefix, resource_name, resource, view
+                for api_entry in self._registry[prefix][resource_name]:
+                    urlpatterns += patterns('',
+                        url(r'^', include(api_entry.urls))
                     )
-
-        return urlpatterns
-    
-    def __get_urlpatterns(self, prefix, resource_name, resource, view):
-        """
-        Calculates the URL pattern for a given resource and view
-        """
-        if prefix is None:
-            prefix = ''
-        else:
-            prefix += '/'
-        if issubclass(view, ListModelMixin):
-            urlpatterns = patterns('',
-                url(r'^%s%s/$' % (prefix,resource_name),
-                    view.as_view(resource=resource),
-                    name=resource_name
-                    )
-            )
-        elif issubclass(view, InstanceMixin):
-            urlpatterns = patterns('',
-                url(r'^%s%s/(?P<pk>[0-9]+)/$' % (prefix,resource_name),
-                    view.as_view(resource=resource),
-                    name=resource_name + '_change'
-                    )
-            )
+ 
             
         return urlpatterns
+
