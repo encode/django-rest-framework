@@ -212,9 +212,14 @@ class FormResource(Resource):
             return None
 
         if data is not None or files is not None:
-            return form(data, files)
-
-        return form()
+            form_ = form(data, files)
+        else: 
+            form_ = form()
+            
+        if hasattr(self.view, 'request'):
+            form_.request = self.view.request
+        
+        return form_
 
 
 
@@ -333,11 +338,17 @@ class ModelResource(FormResource):
         if data is not None or files is not None:
             if issubclass(form, forms.ModelForm) and hasattr(self.view, 'model_instance'):
                 # Bound to an existing model instance
-                return form(data, files, instance=self.view.model_instance)
+                form_ = form(data, files, instance=self.view.model_instance)
             else:
-                return form(data, files)
+                form_ = form(data, files)
 
-        return form()
+        else:
+            form_ = form()
+            
+        if hasattr(self.view, 'request'):
+            form_.request = self.view.request
+            
+        return form_
 
 
     def url(self, instance):

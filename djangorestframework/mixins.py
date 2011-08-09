@@ -572,7 +572,6 @@ class UpdateModelMixin(object):
             else:
                 # Otherwise assume the kwargs uniquely identify the model
                 self.model_instance = model.objects.get(**kwargs)
-
             for (key, val) in self.CONTENT.items():
                 setattr(self.model_instance, key, val)
         except model.DoesNotExist:
