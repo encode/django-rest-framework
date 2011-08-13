@@ -202,11 +202,7 @@ class Serializer(object):
         return related_serializer(depth=depth, stack=stack).serialize(obj, request)
 
 
-<<<<<<< HEAD
     def serialize_max_depth(self, obj, request=None):
-=======
-    def serialize_max_depth(self, obj, request):
->>>>>>> c59a37b0a6149f0d7c86000e1559c3a3d7a10873
         """
         Determine how objects should be serialized once `depth` is exceeded.
         The default behavior is to ignore the field.
@@ -214,11 +210,7 @@ class Serializer(object):
         raise _SkipField
 
 
-<<<<<<< HEAD
     def serialize_recursion(self, obj, request=None):
-=======
-    def serialize_recursion(self, obj, request):
->>>>>>> c59a37b0a6149f0d7c86000e1559c3a3d7a10873
         """
         Determine how objects should be serialized if recursion occurs.
         The default behavior is to ignore the field.
@@ -226,11 +218,7 @@ class Serializer(object):
         raise _SkipField
 
 
-<<<<<<< HEAD
     def serialize_model(self, instance, request=None):
-=======
-    def serialize_model(self, instance, request):
->>>>>>> c59a37b0a6149f0d7c86000e1559c3a3d7a10873
         """
         Given a model instance or dict, serialize it to a dict..
         """
