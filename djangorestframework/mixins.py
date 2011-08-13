@@ -444,11 +444,11 @@ class ResourceMixin(object):
         """
         return self._resource.validate_request(data, files)
 
-    def filter_response(self, obj):
+    def filter_response(self, obj, request=None):
         """
         Given the response content, filter it into a serializable object.
         """
-        return self._resource.filter_response(obj)
+        return self._resource.filter_response(obj, request)
 
     def get_bound_form(self, content=None, method=None):
         return self._resource.get_bound_form(content, method=method)

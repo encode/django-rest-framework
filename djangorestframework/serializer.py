@@ -172,7 +172,7 @@ class Serializer(object):
         return getattr(self, 'related_serializer') or Serializer
 
 
-    def serialize_key(self, key):
+    def serialize_key(self, key, request=None):
         """
         Keys serialize to their string value,
         unless they exist in the `rename` dict.
@@ -180,7 +180,7 @@ class Serializer(object):
         return self.rename.get(smart_str(key), smart_str(key))
 
 
-    def serialize_val(self, key, obj):
+    def serialize_val(self, key, obj, request=None):
         """
         Convert a model field or dict value into a serializable representation.
         """
@@ -189,20 +189,20 @@ class Serializer(object):
         if self.depth is None:
             depth = None
         elif self.depth <= 0:
-            return self.serialize_max_depth(obj)
+            return self.serialize_max_depth(obj, request)
         else:
             depth = self.depth - 1
 
         if any([obj is elem for elem in self.stack]):
-            return self.serialize_recursion(obj)
+            return self.serialize_recursion(obj, request)
         else:
             stack = self.stack[:]
             stack.append(obj)
 
-        return related_serializer(depth=depth, stack=stack).serialize(obj)
+        return related_serializer(depth=depth, stack=stack).serialize(obj, request)
 
 
-    def serialize_max_depth(self, obj):
+    def serialize_max_depth(self, obj, request=None):
         """
         Determine how objects should be serialized once `depth` is exceeded.
         The default behavior is to ignore the field.
@@ -210,7 +210,7 @@ class Serializer(object):
         raise _SkipField
 
 
-    def serialize_recursion(self, obj):
+    def serialize_recursion(self, obj, request=None):
         """
         Determine how objects should be serialized if recursion occurs.
         The default behavior is to ignore the field.
@@ -218,7 +218,7 @@ class Serializer(object):
         raise _SkipField
 
 
-    def serialize_model(self, instance):
+    def serialize_model(self, instance, request=None):
         """
         Given a model instance or dict, serialize it to a dict..
         """
@@ -243,8 +243,8 @@ class Serializer(object):
                 continue
 
             try:
-                key = self.serialize_key(fname)
-                val = self.serialize_val(fname, obj)
+                key = self.serialize_key(fname, request)
+                val = self.serialize_val(fname, obj, request)
                 data[key] = val
             except _SkipField:
                 pass
@@ -252,54 +252,54 @@ class Serializer(object):
         return data
 
 
-    def serialize_iter(self, obj):
+    def serialize_iter(self, obj, request=None):
         """
         Convert iterables into a serializable representation.
         """
-        return [self.serialize(item) for item in obj]
+        return [self.serialize(item, request) for item in obj]
 
 
-    def serialize_func(self, obj):
+    def serialize_func(self, obj, request=None):
         """
         Convert no-arg methods and functions into a serializable representation.
         """
-        return self.serialize(obj())
+        return self.serialize(obj(), request)
 
 
-    def serialize_manager(self, obj):
+    def serialize_manager(self, obj, request=None):
         """
         Convert a model manager into a serializable representation.
         """
-        return self.serialize_iter(obj.all())
+        return self.serialize_iter(obj.all(), request)
 
 
-    def serialize_fallback(self, obj):
+    def serialize_fallback(self, obj, request=None):
         """
         Convert any unhandled object into a serializable representation.
         """
         return smart_unicode(obj, strings_only=True)
  
  
-    def serialize(self, obj):
+    def serialize(self, obj, request=None):
         """
         Convert any object into a serializable representation.
         """
         
         if isinstance(obj, (dict, models.Model)):
             # Model instances & dictionaries
-            return self.serialize_model(obj)
+            return self.serialize_model(obj, request)
         elif isinstance(obj, (tuple, list, set, QuerySet, types.GeneratorType)):
             # basic iterables
-            return self.serialize_iter(obj)
+            return self.serialize_iter(obj, request)
         elif isinstance(obj, models.Manager):
             # Manager objects
-            return self.serialize_manager(obj)
+            return self.serialize_manager(obj, request)
         elif inspect.isfunction(obj) and not inspect.getargspec(obj)[0]:
             # function with no args
-            return self.serialize_func(obj)
+            return self.serialize_func(obj, request)
         elif inspect.ismethod(obj) and len(inspect.getargspec(obj)[0]) <= 1:
             # bound method
-            return self.serialize_func(obj)
+            return self.serialize_func(obj, request)
 
         # Protected types are passed through as is.
         # (i.e. Primitives like None, numbers, dates, and Decimals.)
@@ -307,4 +307,4 @@ class Serializer(object):
             return obj
 
         # All other values are converted to string.
-        return self.serialize_fallback(obj)
+        return self.serialize_fallback(obj, request)
