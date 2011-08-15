@@ -26,7 +26,7 @@ class ApiEntry(object):
             )
         elif issubclass(self.view, InstanceMixin):
             urlpatterns = patterns('',
-                url(r'^%s%s/(?P<pk>[0-9]+)/$' % (url_prefix, self.resource_name),
+                url(r'^%s%s/(?P<pk>[0-9a-zA-Z]+)/$' % (url_prefix, self.resource_name),
                     self.view.as_view(resource=self.resource),
                     name=self.resource_name + '_change',
                     )
