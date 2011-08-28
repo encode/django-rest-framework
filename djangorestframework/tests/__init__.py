@@ -11,3 +11,4 @@ for module in modules:
     exec("from djangorestframework.tests.%s import *" % module)
     __test__[module] = module_doc or ""
 
+print 'TestXMLParser' in locals().keys()
