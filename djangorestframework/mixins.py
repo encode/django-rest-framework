@@ -7,7 +7,6 @@ from django.contrib.auth.models import AnonymousUser
 from django.db.models.query import QuerySet
 from django.db.models.fields.related import ForeignKey
 from django.http import HttpResponse
-from django.http.multipartparser import LimitBytes
 
 from djangorestframework import status
 from djangorestframework.parsers import FormParser, MultiPartParser
