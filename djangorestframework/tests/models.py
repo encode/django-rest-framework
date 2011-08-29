@@ -25,4 +25,10 @@ class UserGroupMap(models.Model):
     def get_absolute_url(self):
         return ('user_group_map', (), {
             'pk': self.id
-        })            
+        })          
+        
+class Company(models.Model):
+    name = models.CharField(max_length=20)  
+        
+class Employee(models.Model):
+    employee_id = models.CharField(max_length=20, primary_key=True)  
