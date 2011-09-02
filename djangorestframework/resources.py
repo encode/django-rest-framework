@@ -212,7 +212,7 @@ class FormResource(Resource):
             return None
 
         if data is not None or files is not None:
-            form_ = form(data, files)
+            form_ = form(data=data, files=files)
         else: 
             form_ = form()
             
@@ -338,9 +338,9 @@ class ModelResource(FormResource):
         if data is not None or files is not None:
             if issubclass(form, forms.ModelForm) and hasattr(self.view, 'model_instance'):
                 # Bound to an existing model instance
-                form_ = form(data, files, instance=self.view.model_instance)
+                form_ = form(data=data, files=files, instance=self.view.model_instance)
             else:
-                form_ = form(data, files)
+                form_ = form(data=data, files=files)
 
         else:
             form_ = form()
