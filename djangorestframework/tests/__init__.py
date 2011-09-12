@@ -20,3 +20,4 @@ if not skiptest:
         exec("from djangorestframework.tests.%s import *" % module)
         __test__[module] = module_doc or ""
 
+print 'TestXMLParser' in locals().keys()

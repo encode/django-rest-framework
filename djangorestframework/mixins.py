@@ -185,7 +185,6 @@ class RequestMixin(object):
             return (None, None)
 
         parsers = as_tuple(self.parsers)
-
         for parser_cls in parsers:
             parser = parser_cls(self)
             if parser.can_handle_request(content_type):
