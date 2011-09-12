@@ -1,4 +1,4 @@
-from djangorestframework.mixins import ListModelMixin, InstanceMixin
+
 from django.conf.urls.defaults import patterns, url, include
 from django.views.decorators.csrf import csrf_exempt
 
@@ -10,6 +10,7 @@ class ApiEntry(object):
             self.prefix = ''
         
     def get_urls(self):
+        from djangorestframework.mixins import ListModelMixin, InstanceMixin
         from django.conf.urls.defaults import patterns, url
 
         if self.prefix == '':
