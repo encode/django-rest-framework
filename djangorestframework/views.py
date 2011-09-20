@@ -156,7 +156,10 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         # merge with headers possibly set at some point in the view
         response.headers.update(self.headers)
         
-        return self.render(response)    
+        result = self.render(response)
+        set_script_prefix("/")
+        
+        return result
 
 
 class ModelView(View):
