@@ -13,14 +13,15 @@
      </style>
      <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/base.css'/>
      <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/forms.css'/>
-    <title>Django REST framework - {{ name }}</title>
+     <link rel="shortcut icon" href="/media/img/favicon.ico" type="image/x-icon" />
+    <title>Yipit's RESTful Framework - {{ name }}</title>
   </head>
   <body>
   <div id="container">
   
 	<div id="header">
 		<div id="branding">
-		  <h1 id="site-name"><a href='http://django-rest-framework.org'>Django REST framework</a> <span class="version"> v {{ version }}</span></h1>
+		  <h1 id="site-name"><a href='http://django-rest-framework.org'>Yipit's RESTful Framework</a> <span class="version"> v {{ version }}</span></h1>
 		</div>
 		<div id="user-tools">
 		  {% if user.is_active %}Welcome, {{ user }}.{% if logout_url %} <a href='{{ logout_url }}'>Log out</a>{% endif %}{% else %}Anonymous {% if login_url %}<a href='{{ login_url }}'>Log in</a>{% endif %}{% endif %}
