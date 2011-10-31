@@ -113,7 +113,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         self.headers = {}
 
         # Calls to 'reverse' will not be fully qualified unless we set the scheme/host/port here.
-	orig_prefix = get_script_prefix()
+        orig_prefix = get_script_prefix()
         prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
         set_script_prefix(prefix + orig_prefix)
 
@@ -157,7 +157,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         # merge with headers possibly set at some point in the view
         response.headers.update(self.headers)
         
-	set_script_prefix(orig_prefix)
+        set_script_prefix(orig_prefix)
 
         return self.render(response)    
 
