@@ -5,7 +5,7 @@ be subclassing in your implementation.
 By setting or modifying class attributes on your view, you change it's predefined behaviour.
 """
 
-from django.core.urlresolvers import set_script_prefix
+from django.core.urlresolvers import set_script_prefix, get_script_prefix
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -113,8 +113,9 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         self.headers = {}
 
         # Calls to 'reverse' will not be fully qualified unless we set the scheme/host/port here.
+	orig_prefix = get_script_prefix()
         prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
-        set_script_prefix(prefix)
+        set_script_prefix(prefix + orig_prefix)
 
         try:
             self.initial(request, *args, **kwargs)
@@ -156,6 +157,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         # merge with headers possibly set at some point in the view
         response.headers.update(self.headers)
         
+	set_script_prefix(orig_prefix)
+
         return self.render(response)    
 
 
