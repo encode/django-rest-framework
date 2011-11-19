@@ -264,6 +264,7 @@ class ResponseMixin(object):
         resp = HttpResponse(content, mimetype=response.media_type, status=response.status)
         for (key, val) in response.headers.items():
             resp[key] = val
+        resp['Content-Length'] = len(content)
 
         return resp
 
