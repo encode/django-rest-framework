@@ -13,6 +13,7 @@ from djangorestframework.compat import View as DjangoView
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.mixins import *
 from djangorestframework import resources, renderers, parsers, authentication, permissions, status
+from djangorestframework.utils.description import get_name, get_description
 
 
 __all__ = (
@@ -140,8 +141,13 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             else:
                 response = Response(status.HTTP_204_NO_CONTENT)
 
-            # Pre-serialize filtering (eg filter complex objects into natively serializable types)
-            response.cleaned_content = self.filter_response(response.raw_content)
+            if request.method == 'OPTIONS':
+                # do not filter the response for HTTP OPTIONS, else the response fields are lost,
+                # as they do not correspond with model fields
+                response.cleaned_content = response.raw_content
+            else:
+                # Pre-serialize filtering (eg filter complex objects into natively serializable types)
+                response.cleaned_content = self.filter_response(response.raw_content)
     
         except ErrorResponse, exc:
             response = exc.response
@@ -156,7 +162,23 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         # merge with headers possibly set at some point in the view
         response.headers.update(self.headers)
         
-        return self.render(response)    
+        return self.render(response)
+
+
+    def options(self, request, *args,  **kwargs):
+        response_obj = {
+            'name' : get_name(self), 
+            'description' : get_description(self), 
+            'renders': self._rendered_media_types,
+            'parses': self._parsed_media_types,
+        }
+        form = self.get_bound_form()
+        if form is not None:
+            field_name_types = {}
+            for name, field in form.fields.iteritems():
+                field_name_types[name] = field.__class__.__name__
+            response_obj['fields'] = field_name_types
+        return response_obj
 
 
 class ModelView(View):
