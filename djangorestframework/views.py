@@ -5,7 +5,7 @@ be subclassing in your implementation.
 By setting or modifying class attributes on your view, you change it's predefined behaviour.
 """
 
-from django.core.urlresolvers import set_script_prefix
+from django.core.urlresolvers import set_script_prefix, get_script_prefix
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
@@ -42,7 +42,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     List of renderers the resource can serialize the response with, ordered by preference.
     """
     renderers = renderers.DEFAULT_RENDERERS
-  
+
     """
     List of parsers the resource can parse the request with.
     """
@@ -53,19 +53,19 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     authentication = ( authentication.UserLoggedInAuthentication,
                        authentication.BasicAuthentication )
-    
+
     """
     List of all permissions that must be checked.
     """
     permissions = ( permissions.FullAnonAccess, )
-    
-    
+
+
     @classmethod
     def as_view(cls, **initkwargs):
         """
         Override the default :meth:`as_view` to store an instance of the view
         as an attribute on the callable function.  This allows us to discover
-        information about the view when we do URL reverse lookups. 
+        information about the view when we do URL reverse lookups.
         """
         view = super(View, cls).as_view(**initkwargs)
         view.cls_instance = cls(**initkwargs)
@@ -82,7 +82,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
-        Return an HTTP 405 error if an operation is called which does not have a handler method.        
+        Return an HTTP 405 error if an operation is called which does not have a handler method.
         """
         raise ErrorResponse(status.HTTP_405_METHOD_NOT_ALLOWED,
                             {'detail': 'Method \'%s\' not allowed on this resource.' % self.method})
@@ -99,7 +99,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
     def add_header(self, field, value):
         """
-        Add *field* and *value* to the :attr:`headers` attribute of the :class:`View` class. 
+        Add *field* and *value* to the :attr:`headers` attribute of the :class:`View` class.
         """
         self.headers[field] = value
 
@@ -114,12 +114,13 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         self.headers = {}
 
         # Calls to 'reverse' will not be fully qualified unless we set the scheme/host/port here.
+        orig_prefix = get_script_prefix()
         prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
-        set_script_prefix(prefix)
+        set_script_prefix(prefix + orig_prefix)
 
         try:
             self.initial(request, *args, **kwargs)
-        
+
             # Authenticate and check request has the relevant permissions
             self._check_permissions()
 
@@ -148,27 +149,28 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             else:
                 # Pre-serialize filtering (eg filter complex objects into natively serializable types)
                 response.cleaned_content = self.filter_response(response.raw_content)
-    
+
         except ErrorResponse, exc:
             response = exc.response
-        
+
         # Always add these headers.
         #
         # TODO - this isn't actually the correct way to set the vary header,
-        # also it's currently sub-obtimal for HTTP caching - need to sort that out. 
+        # also it's currently sub-obtimal for HTTP caching - need to sort that out.
         response.headers['Allow'] = ', '.join(self.allowed_methods)
         response.headers['Vary'] = 'Authenticate, Accept'
-        
+
         # merge with headers possibly set at some point in the view
         response.headers.update(self.headers)
-        
+
+        set_script_prefix(orig_prefix)
+
         return self.render(response)
 
-
-    def options(self, request, *args,  **kwargs):
+    def options(self, request, *args, **kwargs):
         response_obj = {
-            'name' : get_name(self), 
-            'description' : get_description(self), 
+            'name': get_name(self),
+            'description': get_description(self),
             'renders': self._rendered_media_types,
             'parses': self._parsed_media_types,
         }
@@ -196,11 +198,11 @@ class InstanceModelView(InstanceMixin, ReadModelMixin, UpdateModelMixin, DeleteM
 class ListModelView(ListModelMixin, ModelView):
     """
     A view which provides default operations for list, against a model in the database.
-    """   
+    """
     _suffix = 'List'
 
 class ListOrCreateModelView(ListModelMixin, CreateModelMixin, ModelView):
     """
     A view which provides default operations for list and create, against a model in the database.
-    """   
+    """
     _suffix = 'List'
