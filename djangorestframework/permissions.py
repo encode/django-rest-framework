@@ -1,6 +1,6 @@
 """
-The :mod:`permissions` module bundles a set of  permission classes that are used 
-for checking if a request passes a certain set of constraints. You can assign a permission 
+The :mod:`permissions` module bundles a set of  permission classes that are used
+for checking if a request passes a certain set of constraints. You can assign a permission
 class to your view by setting your View's :attr:`permissions` class attribute.
 """
 
@@ -40,7 +40,7 @@ class BasePermission(object):
         Permission classes are always passed the current view on creation.
         """
         self.view = view
-    
+
     def check_permission(self, auth):
         """
         Should simply return, or raise an :exc:`response.ErrorResponse`.
@@ -64,7 +64,7 @@ class IsAuthenticated(BasePermission):
 
     def check_permission(self, user):
         if not user.is_authenticated():
-            raise _403_FORBIDDEN_RESPONSE 
+            raise _403_FORBIDDEN_RESPONSE
 
 
 class IsAdminUser(BasePermission):
@@ -82,7 +82,7 @@ class IsUserOrIsAnonReadOnly(BasePermission):
     The request is authenticated as a user, or is a read-only request.
     """
 
-    def check_permission(self, user): 
+    def check_permission(self, user):
         if (not user.is_authenticated() and
             self.view.method != 'GET' and
             self.view.method != 'HEAD'):
@@ -100,7 +100,7 @@ class BaseThrottle(BasePermission):
     Period should be one of: ('s', 'sec', 'm', 'min', 'h', 'hour', 'd', 'day')
 
     Previous request information used for throttling is stored in the cache.
-    """    
+    """
 
     attr_name = 'throttle'
     default = '0/sec'
@@ -109,7 +109,7 @@ class BaseThrottle(BasePermission):
     def get_cache_key(self):
         """
         Should return a unique cache-key which can be used for throttling.
-        Muse be overridden. 
+        Muse be overridden.
         """
         pass
 
@@ -123,7 +123,7 @@ class BaseThrottle(BasePermission):
         self.duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[period[0]]
         self.auth = auth
         self.check_throttle()
-        
+
     def check_throttle(self):
         """
         Implement the check to see if the request should be throttled.
@@ -134,7 +134,7 @@ class BaseThrottle(BasePermission):
         self.key = self.get_cache_key()
         self.history = cache.get(self.key, [])
         self.now = self.timer()
-        
+
         # Drop any requests from the history which have now passed the
         # throttle duration
         while self.history and self.history[-1] <= self.now - self.duration:
@@ -153,7 +153,7 @@ class BaseThrottle(BasePermission):
         cache.set(self.key, self.history, self.duration)
         header = 'status=SUCCESS; next=%s sec' % self.next()
         self.view.add_header('X-Throttle', header)
-            
+
     def throttle_failure(self):
         """
         Called when a request to the API has failed due to throttling.
@@ -162,7 +162,7 @@ class BaseThrottle(BasePermission):
         header = 'status=FAILURE; next=%s sec' % self.next()
         self.view.add_header('X-Throttle', header)
         raise _503_SERVICE_UNAVAILABLE
-    
+
     def next(self):
         """
         Returns the recommended next request time in seconds.
@@ -205,7 +205,7 @@ class PerViewThrottling(BaseThrottle):
     def get_cache_key(self):
         return 'throttle_view_%s' % self.view.__class__.__name__
 
-  
+
 class PerResourceThrottling(BaseThrottle):
     """
     Limits the rate of API calls that may be used against all views on
