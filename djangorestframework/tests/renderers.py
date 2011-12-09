@@ -3,8 +3,10 @@ from django import http
 from django.test import TestCase
 
 from djangorestframework import status
+from djangorestframework.views import View
 from djangorestframework.compat import View as DjangoView
-from djangorestframework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer
+from djangorestframework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
+    JSONPRenderer
 from djangorestframework.parsers import JSONParser, YAMLParser
 from djangorestframework.mixins import ResponseMixin
 from djangorestframework.response import Response
@@ -39,10 +41,16 @@ class MockView(ResponseMixin, DjangoView):
         response = Response(DUMMYSTATUS, DUMMYCONTENT)
         return self.render(response)
     
+class MockGETView(View):
+    def get(self, request, **kwargs):
+        return {'foo':['bar','baz']}
+    
 
 urlpatterns = patterns('',
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderers=[RendererA, RendererB])),
     url(r'^$', MockView.as_view(renderers=[RendererA, RendererB])),
+    url(r'^jsonp/jsonrenderer$', MockGETView.as_view(renderers=[JSONRenderer, JSONPRenderer])),
+    url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(renderers=[JSONPRenderer])),
 )
 
 
@@ -188,8 +196,46 @@ class JSONRendererTests(TestCase):
 
         content = renderer.render(obj, 'application/json')
         (data, files) = parser.parse(StringIO(content))
-        self.assertEquals(obj, data)    
+        self.assertEquals(obj, data)
+        
 
+class JSONPRendererTests(TestCase):
+    """
+    Tests specific to the JSONP Renderer
+    """
+
+    urls = 'djangorestframework.tests.renderers'
+
+    def test_without_callback_with_json_renderer(self):
+        """
+        Test JSONP rendering with View JSON Renderer.
+        """
+        resp = self.client.get('/jsonp/jsonrenderer',
+                               HTTP_ACCEPT='application/json-p')
+        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(resp['Content-Type'], 'application/json-p')
+        self.assertEquals(resp.content, 'callback(%s);' % _flat_repr)
+        
+    def test_without_callback_without_json_renderer(self):
+        """
+        Test JSONP rendering without View JSON Renderer.
+        """
+        resp = self.client.get('/jsonp/nojsonrenderer',
+                               HTTP_ACCEPT='application/json-p')
+        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(resp['Content-Type'], 'application/json-p')
+        self.assertEquals(resp.content, 'callback(%s);' % _flat_repr)
+        
+    def test_with_callback(self):
+        """
+        Test JSONP rendering with callback function name.
+        """
+        callback_func = 'myjsonpcallback'
+        resp = self.client.get('/jsonp/nojsonrenderer?callback='+callback_func,
+                               HTTP_ACCEPT='application/json-p')
+        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(resp['Content-Type'], 'application/json-p')
+        self.assertEquals(resp.content, '%s(%s);' % (callback_func, _flat_repr))
 
 
 if YAMLRenderer:
