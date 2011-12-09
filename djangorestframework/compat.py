@@ -1,5 +1,5 @@
 """
-The :mod:`compatibility ` module provides support for backwards compatibility with older versions of django/python.
+The :mod:`compat` module provides support for backwards compatibility with older versions of django/python.
 """
 
 # cStringIO only if it's available
