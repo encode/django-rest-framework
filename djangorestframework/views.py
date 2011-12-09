@@ -141,7 +141,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
                 response = Response(status.HTTP_204_NO_CONTENT)
 
             # Pre-serialize filtering (eg filter complex objects into natively serializable types)
-            response.cleaned_content = self.filter_response(response.raw_content)
+            response.cleaned_content = self.filter_response(response.raw_content, request)
     
         except ErrorResponse, exc:
             response = exc.response

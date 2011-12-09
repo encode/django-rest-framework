@@ -35,11 +35,11 @@ class BaseResource(Serializer):
         """
         return data
     
-    def filter_response(self, obj):
+    def filter_response(self, obj, request=None):
         """
         Given the response content, filter it into a serializable object.
         """
-        return self.serialize(obj)
+        return self.serialize(obj, request)
 
 
 class Resource(BaseResource):

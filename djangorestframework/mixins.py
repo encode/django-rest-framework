@@ -264,6 +264,7 @@ class ResponseMixin(object):
         resp = HttpResponse(content, mimetype=response.media_type, status=response.status)
         for (key, val) in response.headers.items():
             resp[key] = val
+        resp['Content-Length'] = len(content)
 
         return resp
 
@@ -444,11 +445,11 @@ class ResourceMixin(object):
         """
         return self._resource.validate_request(data, files)
 
-    def filter_response(self, obj):
+    def filter_response(self, obj, request=None):
         """
         Given the response content, filter it into a serializable object.
         """
-        return self._resource.filter_response(obj)
+        return self._resource.filter_response(obj, request)
 
     def get_bound_form(self, content=None, method=None):
         return self._resource.get_bound_form(content, method=method)
