@@ -212,9 +212,14 @@ class FormResource(Resource):
             return None
 
         if data is not None or files is not None:
-            return form(data, files)
-
-        return form()
+            form_ = form(data=data, files=files)
+        else: 
+            form_ = form()
+            
+        if hasattr(self.view, 'request'):
+            form_.request = self.view.request
+        
+        return form_
 
 
 
@@ -279,13 +284,13 @@ class ModelResource(FormResource):
     The list of extra fields to include.  This is only used if :attr:`fields` is not set.
     """
 
-    def __init__(self, view=None, depth=None, stack=[], **kwargs):
+    def __init__(self, view):
         """
         Allow :attr:`form` and :attr:`model` attributes set on the
         :class:`View` to override the :attr:`form` and :attr:`model`
         attributes set on the :class:`Resource`.
         """
-        super(ModelResource, self).__init__(view, depth, stack, **kwargs)
+        super(ModelResource, self).__init__(view)
 
         self.model = getattr(view, 'model', None) or self.model
 
@@ -333,11 +338,17 @@ class ModelResource(FormResource):
         if data is not None or files is not None:
             if issubclass(form, forms.ModelForm) and hasattr(self.view, 'model_instance'):
                 # Bound to an existing model instance
-                return form(data, files, instance=self.view.model_instance)
+                form_ = form(data=data, files=files, instance=self.view.model_instance)
             else:
-                return form(data, files)
+                form_ = form(data=data, files=files)
 
-        return form()
+        else:
+            form_ = form()
+            
+        if hasattr(self.view, 'request'):
+            form_.request = self.view.request
+            
+        return form_
 
 
     def url(self, instance):
@@ -355,7 +366,7 @@ class ModelResource(FormResource):
         # dis does teh magicks...
         urlconf = get_urlconf()
         resolver = get_resolver(urlconf)
-
+        
         possibilities = resolver.reverse_dict.getlist(self.view_callable[0])
         for tuple_item in possibilities:
             possibility = tuple_item[0]
@@ -379,6 +390,18 @@ class ModelResource(FormResource):
                     return reverse(self.view_callable[0], kwargs=instance_attrs)
                 except NoReverseMatch:
                     pass
+                
+        try:
+            if hasattr(self, 'resource_name'):
+                resource_name = self.resource_name
+            else:
+                resource_name = instance.__class__.__name__.split('.')[0].lower()
+            return reverse(
+               '%s:%s_change' % ('api', resource_name), args=(instance.pk,)
+            )
+        except NoReverseMatch:
+            pass
+        
         raise _SkipField
 
 

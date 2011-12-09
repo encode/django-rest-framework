@@ -185,7 +185,6 @@ class RequestMixin(object):
             return (None, None)
 
         parsers = as_tuple(self.parsers)
-
         for parser_cls in parsers:
             parser = parser_cls(self)
             if parser.can_handle_request(content_type):
@@ -387,6 +386,7 @@ class AuthMixin(object):
         user = self.user
         for permission_cls in self.permissions:
             permission = permission_cls(self)
+            permission.request = self.request
             permission.check_permission(user)
 
 
@@ -570,7 +570,6 @@ class UpdateModelMixin(object):
             else:
                 # Otherwise assume the kwargs uniquely identify the model
                 self.model_instance = model.objects.get(**kwargs)
-
             for (key, val) in self.CONTENT.items():
                 setattr(self.model_instance, key, val)
         except model.DoesNotExist:
@@ -606,7 +605,6 @@ class ListModelMixin(object):
     """
     Behavior to list a set of `model` instances on GET requests
     """
-
     # NB. Not obvious to me if it would be better to set this on the resource?
     #
     # Presumably it's more useful to have on the view, because that way you can
