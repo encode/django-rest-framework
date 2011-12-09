@@ -109,7 +109,7 @@ class BaseThrottle(BasePermission):
     def get_cache_key(self):
         """
         Should return a unique cache-key which can be used for throttling.
-        Muse be overridden.
+        Must be overridden.
         """
         pass
 
