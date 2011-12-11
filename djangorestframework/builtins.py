@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import patterns, url, include
+from collections import defaultdict
 
 class ApiEntry(object):
     """
@@ -35,17 +36,16 @@ class ApiEntry(object):
             )
         return urlpatterns
     
-
+    @property
     def urls(self):
         return self.get_urls(), 'api', self.namespace
-    urls = property(urls)
 
 class DjangoRestFrameworkApi(object):
     app_name = 'api'
     namespace = 'api'
 
     def __init__(self, *args, **kwargs):
-        self._registry = {}
+        self._registry = defaultdict(lambda: defaultdict(list))
         super(DjangoRestFrameworkApi, self).__init__(*args, **kwargs)
 
     def register(self, view, resource, namespace=None, name=None):
@@ -62,12 +62,6 @@ class DjangoRestFrameworkApi(object):
                 name = resource.__name__.lower()
         
         resource.api_name = name
-        
-        if namespace not in self._registry:
-            self._registry[namespace] = {}
-            
-        if name not in self._registry[namespace]:
-            self._registry[namespace][name] = []
             
         api_entry = ApiEntry(resource, view, name, namespace)
         self._registry[namespace][name].append(api_entry)
