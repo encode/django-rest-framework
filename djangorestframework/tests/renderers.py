@@ -228,6 +228,7 @@ if YAMLRenderer:
             (data, files) = parser.parse(StringIO(content))
             self.assertEquals(obj, data)    
 
+
 			            
 class XMLRendererTestCase(TestCase):
     """

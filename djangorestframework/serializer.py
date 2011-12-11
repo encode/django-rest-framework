@@ -106,7 +106,8 @@ class Serializer(object):
 
 
     def __init__(self, depth=None, stack=[], **kwargs):
-        self.depth = depth or self.depth
+        if depth is not None:
+            self.depth = depth
         self.stack = stack
         
 
