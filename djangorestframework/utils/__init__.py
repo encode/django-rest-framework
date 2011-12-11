@@ -150,6 +150,10 @@ class XMLRenderer():
                 xml.startElement(key, {})
                 self._to_xml(xml, value)
                 xml.endElement(key)
+				
+        elif data is None:
+            # Don't output any value
+            pass				
 
         else:
             xml.characters(smart_unicode(data))
