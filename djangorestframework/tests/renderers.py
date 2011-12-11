@@ -4,13 +4,16 @@ from django.test import TestCase
 
 from djangorestframework import status
 from djangorestframework.compat import View as DjangoView
-from djangorestframework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer
-from djangorestframework.parsers import JSONParser, YAMLParser
+from djangorestframework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer,\
+    XMLRenderer
+from djangorestframework.parsers import JSONParser, YAMLParser, XMLParser
 from djangorestframework.mixins import ResponseMixin
 from djangorestframework.response import Response
 from djangorestframework.utils.mediatypes import add_media_type_param
 
 from StringIO import StringIO
+import datetime
+from decimal import Decimal
 
 DUMMYSTATUS = status.HTTP_200_OK
 DUMMYCONTENT = 'dummycontent'
@@ -224,3 +227,66 @@ if YAMLRenderer:
             content = renderer.render(obj, 'application/yaml')
             (data, files) = parser.parse(StringIO(content))
             self.assertEquals(obj, data)    
+
+
+			            
+class XMLRendererTestCase(TestCase):
+    """
+    Tests specific to the JSON Renderer
+    """
+
+    def test_render_string(self):
+        """
+        Test XML rendering.
+        """
+        renderer = XMLRenderer(None)
+        content = renderer.render({'field': 'astring'}, 'application/xml')
+        self.assertXMLContains(content, '<field>astring</field>')
+
+    def test_render_integer(self):
+        """
+        Test XML rendering.
+        """
+        renderer = XMLRenderer(None)
+        content = renderer.render({'field': 111}, 'application/xml')
+        self.assertXMLContains(content, '<field>111</field>')
+
+    def test_render_datetime(self):
+        """
+        Test XML rendering.
+        """
+        renderer = XMLRenderer(None)
+        content = renderer.render({
+            'field': datetime.datetime(2011, 12, 25, 12, 45, 00)
+        }, 'application/xml')
+        self.assertXMLContains(content, '<field>2011-12-25 12:45:00</field>')
+
+    def test_render_float(self):
+        """
+        Test XML rendering.
+        """
+        renderer = XMLRenderer(None)
+        content = renderer.render({'field': 123.4}, 'application/xml')
+        self.assertXMLContains(content, '<field>123.4</field>')
+
+    def test_render_decimal(self):
+        """
+        Test XML rendering.
+        """
+        renderer = XMLRenderer(None)
+        content = renderer.render({'field': Decimal('111.2')}, 'application/xml')
+        self.assertXMLContains(content, '<field>111.2</field>')
+
+    def test_render_none(self):
+        """
+        Test XML rendering.
+        """
+        renderer = XMLRenderer(None)
+        content = renderer.render({'field': None}, 'application/xml')
+        self.assertXMLContains(content, '<field></field>')
+
+
+    def assertXMLContains(self, xml, string):
+        self.assertTrue(xml.startswith('<?xml version="1.0" encoding="utf-8"?>\n<root>'))
+        self.assertTrue(xml.endswith('</root>'))
+        self.assertTrue(string in xml, '%r not in %r' % (string, xml))    
