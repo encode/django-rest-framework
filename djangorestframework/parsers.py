@@ -19,6 +19,9 @@ from djangorestframework import status
 from djangorestframework.compat import yaml
 from djangorestframework.response import ErrorResponse
 from djangorestframework.utils.mediatypes import media_type_matches
+from xml.etree import ElementTree as ET
+import datetime
+import decimal
 
 
 __all__ = (
@@ -28,6 +31,7 @@ __all__ = (
     'FormParser',
     'MultiPartParser',
     'YAMLParser',
+	'XMLParser'
 )
 
 
@@ -167,10 +171,60 @@ class MultiPartParser(BaseParser):
             raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
                                 {'detail': 'multipart parse error - %s' % unicode(exc)})
         return django_parser.parse()
+		
+		
+class XMLParser(BaseParser):
+    """
+    XML parser.
+    """
+
+    media_type = 'application/xml'
+
+    def parse(self, stream):
+        """
+        Returns a 2-tuple of `(data, files)`.
+		
+        `data` will simply be a string representing the body of the request.
+        `files` will always be `None`.
+        """
+        data = {}
+        tree = ET.parse(stream)
+        for child in tree.getroot().getchildren():
+            data[child.tag] = self._type_convert(child.text)
+			
+        return (data, None)
+		
+    def _type_convert(self, value): 
+        """
+        Converts the value returned by the XMl parse into the equivalent 
+        Python type
+        """	
+        if value is None:	
+            return value
+			
+        try:
+            return datetime.datetime.strptime(value,'%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            pass
+			
+        try:
+            return int(value)
+        except ValueError:
+            pass
+			
+        try:
+            return decimal.Decimal(value)
+        except decimal.InvalidOperation:
+            pass
+			
+        return value
+
 
 DEFAULT_PARSERS = ( JSONParser,
                     FormParser,
-                    MultiPartParser )
+                    MultiPartParser,
+					XMLParser
+					)
 
 if YAMLParser:
     DEFAULT_PARSERS += ( YAMLParser, )
