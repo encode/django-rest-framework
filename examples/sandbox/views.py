@@ -7,7 +7,7 @@ from djangorestframework.views import View
 class Sandbox(View):
     """This is the sandbox for the examples provided with [Django REST framework](http://django-rest-framework.org).
 
-    These examples are provided to help you get a better idea of the some of the features of RESTful APIs created using the framework.
+    These examples are provided to help you get a better idea of some of the features of RESTful APIs created using the framework.
 
     All the example APIs allow anonymous access, and can be navigated either through the browser or from the command line...
 
