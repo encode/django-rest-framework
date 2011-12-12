@@ -6,7 +6,7 @@ from djangorestframework import status
 from djangorestframework.compat import View as DjangoView
 from djangorestframework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer,\
     XMLRenderer
-from djangorestframework.parsers import JSONParser, YAMLParser, XMLParser
+from djangorestframework.parsers import JSONParser, YAMLParser
 from djangorestframework.mixins import ResponseMixin
 from djangorestframework.response import Response
 from djangorestframework.utils.mediatypes import add_media_type_param
