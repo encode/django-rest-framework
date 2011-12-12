@@ -232,7 +232,7 @@ if YAMLRenderer:
 			            
 class XMLRendererTestCase(TestCase):
     """
-    Tests specific to the JSON Renderer
+    Tests specific to the XML Renderer
     """
 
     def test_render_string(self):
