@@ -156,7 +156,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         # Always add these headers.
         #
         # TODO - this isn't actually the correct way to set the vary header,
-        # also it's currently sub-obtimal for HTTP caching - need to sort that out.
+        # also it's currently sub-optimal for HTTP caching - need to sort that out.
         response.headers['Allow'] = ', '.join(self.allowed_methods)
         response.headers['Vary'] = 'Authenticate, Accept'
 
