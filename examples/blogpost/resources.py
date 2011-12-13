@@ -12,16 +12,16 @@ class BlogPostResource(ModelResource):
     ordering = ('-created',)
 
     def comments(self, instance):
-        return reverse('comments', kwargs={'blogpost': instance.key}) 
+        return reverse('comments', kwargs={'blogpost': instance.key})
 
 
 class CommentResource(ModelResource):
     """
-    A Comment is associated with a given Blog Post and has a *username* and *comment*, and optionally a *rating*. 
+    A Comment is associated with a given Blog Post and has a *username* and *comment*, and optionally a *rating*.
     """
     model = Comment
     fields = ('username', 'comment', 'created', 'rating', 'url', 'blogpost')
     ordering = ('-created',)
-    
+
     def blogpost(self, instance):
-        return reverse('blog-post', kwargs={'key': instance.blogpost.key}) 
+        return reverse('blog-post', kwargs={'key': instance.blogpost.key})

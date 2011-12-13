@@ -5,7 +5,7 @@
 #from djangorestframework.response import Response
 #
 #
-#class TestResponse(TestCase): 
+#class TestResponse(TestCase):
 #
 #    # Interface tests
 #

@@ -14,8 +14,8 @@ class Sandbox(View):
         bash: curl -X GET http://api.django-rest-framework.org/                           # (Use default renderer)
         bash: curl -X GET http://api.django-rest-framework.org/ -H 'Accept: text/plain'   # (Use plaintext documentation renderer)
 
-    The examples provided: 
-   
+    The examples provided:
+
     1. A basic example using the [Resource](http://django-rest-framework.org/library/resource.html) class.
     2. A basic example using the [ModelResource](http://django-rest-framework.org/library/modelresource.html) class.
     3. An basic example using Django 1.3's [class based views](http://docs.djangoproject.com/en/dev/topics/class-based-views/) and djangorestframework's [RendererMixin](http://django-rest-framework.org/library/renderers.html).

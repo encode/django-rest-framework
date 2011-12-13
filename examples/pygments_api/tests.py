@@ -46,4 +46,3 @@ class TestPygmentsExample(TestCase):
         self.assertEquals(locations, response_locations)
         
         
-        
