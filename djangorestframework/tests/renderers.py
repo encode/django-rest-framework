@@ -150,7 +150,7 @@ _flat_repr = '{"foo": ["bar", "baz"]}'
 
 _indented_repr = """{
   "foo": [
-    "bar",
+    "bar", 
     "baz"
   ]
 }"""
