@@ -5,6 +5,7 @@ from django.contrib.auth.models import Group, User
 from djangorestframework.resources import ModelResource
 from djangorestframework.views import ListOrCreateModelView, InstanceModelView
 from djangorestframework.tests.models import CustomUser
+from djangorestframework.tests.testcases import TestModelsTestCase
 
 class GroupResource(ModelResource):
     model = Group
@@ -31,7 +32,7 @@ urlpatterns = patterns('',
 )
 
 
-class ModelViewTests(TestCase):
+class ModelViewTests(TestModelsTestCase):
     """Test the model views djangorestframework provides"""
     urls = 'djangorestframework.tests.modelviews'  
 

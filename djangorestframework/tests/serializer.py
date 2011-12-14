@@ -56,8 +56,8 @@ class TestFieldNesting(TestCase):
         self.serialize = self.serializer.serialize
 
         class M1(models.Model):
-            field1 = models.CharField()
-            field2 = models.CharField()
+            field1 = models.CharField(max_length=256)
+            field2 = models.CharField(max_length=256)
 
         class M2(models.Model):
             field = models.OneToOneField(M1)

@@ -8,13 +8,15 @@ from djangorestframework.mixins import CreateModelMixin, PaginatorMixin
 from djangorestframework.resources import ModelResource
 from djangorestframework.response import Response
 from djangorestframework.tests.models import CustomUser
+from djangorestframework.tests.testcases import TestModelsTestCase
 from djangorestframework.views import View
 
 
-class TestModelCreation(TestCase):
+class TestModelCreation(TestModelsTestCase):
     """Tests on CreateModelMixin"""
 
     def setUp(self):
+        super(TestModelsTestCase, self).setUp()
         self.req = RequestFactory()
 
     def test_creation(self):

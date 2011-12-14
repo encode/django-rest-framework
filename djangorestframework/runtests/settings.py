@@ -95,7 +95,6 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'djangorestframework',
-    'djangorestframework.tests',
 )
 
 # OAuth support is optional, so we only test oauth if it's installed.
