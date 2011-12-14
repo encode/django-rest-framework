@@ -379,6 +379,16 @@ class ModelResource(FormResource):
                     return reverse(self.view_callable[0], kwargs=instance_attrs)
                 except NoReverseMatch:
                     pass
+                
+        if hasattr(self, 'api_name'):
+            # Get the URL from the API
+            try:
+                return reverse(
+                    '%s:%s_change' % ('api', self.api_name), args=(instance.pk,)
+                )
+            except NoReverseMatch:
+                pass
+                        
         raise _SkipField
 
 
