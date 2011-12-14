@@ -45,7 +45,6 @@ Requirements
 Installation
 ------------
 
-
 You can install Django REST framework using ``pip`` or ``easy_install``::
 
     pip install djangorestframework
