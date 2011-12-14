@@ -3,7 +3,7 @@ Renderers are used to serialize a View's output into specific media types.
 
 Django REST framework also provides HTML and PlainText renderers that help self-document the API,
 by serializing the output along with documentation regarding the View, output status and headers,
-and providing forms and links depending on the allowed methods, renderers and parsers on the View. 
+and providing forms and links depending on the allowed methods, renderers and parsers on the View.
 """
 from django import forms
 from django.conf import settings
@@ -39,7 +39,7 @@ class BaseRenderer(object):
     All renderers must extend this class, set the :attr:`media_type` attribute,
     and override the :meth:`render` method.
     """
-    
+
     _FORMAT_QUERY_PARAM = 'format'
 
     media_type = None
@@ -81,7 +81,7 @@ class BaseRenderer(object):
         """
         if obj is None:
             return ''
-        
+
         return str(obj)
 
 
@@ -135,10 +135,10 @@ if yaml:
         """
         Renderer which serializes to YAML.
         """
-    
+
         media_type = 'application/yaml'
         format = 'yaml'
-    
+
         def render(self, obj=None, media_type=None):
             """
             Renders *obj* into serialized YAML.
@@ -200,7 +200,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
         content = renderers[0](view).render(obj, media_type)
         if not all(char in string.printable for char in content):
             return '[%d bytes of binary content]'
-            
+
         return content
 
 
@@ -236,7 +236,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
         # If we still don't have a form instance then try to get an unbound form which can tunnel arbitrary content types
         if not form_instance:
             form_instance = self._get_generic_content_form(view)
-        
+
         return form_instance
 
 
@@ -328,7 +328,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
             'METHOD_PARAM': getattr(self.view, '_METHOD_PARAM', None),
             'ADMIN_MEDIA_PREFIX': settings.ADMIN_MEDIA_PREFIX
         })
-        
+
         ret = template.render(context)
 
         # Munge DELETE Response code to allow us to return content

@@ -1,6 +1,6 @@
 """Adds the custom filter 'urlize_quoted_links'
 
-This is identical to the built-in filter 'urlize' with the exception that 
+This is identical to the built-in filter 'urlize' with the exception that
 single and double quotes are permitted as leading or trailing punctuation.
 """
 

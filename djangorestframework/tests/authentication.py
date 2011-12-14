@@ -31,7 +31,7 @@ class BasicAuthTests(TestCase):
         self.username = 'john'
         self.email = 'lennon@thebeatles.com'
         self.password = 'password'
-        self.user = User.objects.create_user(self.username, self.email, self.password)       
+        self.user = User.objects.create_user(self.username, self.email, self.password)
 
     def test_post_form_passing_basic_auth(self):
         """Ensure POSTing json over basic auth with correct credentials passes and does not require CSRF"""
@@ -66,7 +66,7 @@ class SessionAuthTests(TestCase):
         self.username = 'john'
         self.email = 'lennon@thebeatles.com'
         self.password = 'password'
-        self.user = User.objects.create_user(self.username, self.email, self.password)       
+        self.user = User.objects.create_user(self.username, self.email, self.password)
 
     def tearDown(self):
         self.csrf_client.logout()

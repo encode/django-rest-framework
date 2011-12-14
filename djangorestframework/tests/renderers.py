@@ -41,7 +41,7 @@ class MockView(ResponseMixin, DjangoView):
     def get(self, request, **kwargs):
         response = Response(DUMMYSTATUS, DUMMYCONTENT)
         return self.render(response)
-    
+
 
 urlpatterns = patterns('',
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderers=[RendererA, RendererB])),
@@ -92,7 +92,7 @@ class RendererIntegrationTests(TestCase):
         self.assertEquals(resp['Content-Type'], RendererB.media_type)
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEquals(resp.status_code, DUMMYSTATUS)
-    
+
     def test_specified_renderer_serializes_content_on_accept_query(self):
         """The '_accept' query string should behave in the same way as the Accept header."""
         resp = self.client.get('/?_accept=%s' % RendererB.media_type)
@@ -172,13 +172,13 @@ class JSONRendererTests(TestCase):
 
     def test_with_content_type_args(self):
         """
-        Test JSON rendering with additional content type arguments supplied. 
+        Test JSON rendering with additional content type arguments supplied.
         """
         obj = {'foo':['bar','baz']}
         renderer = JSONRenderer(None)
         content = renderer.render(obj, 'application/json; indent=2')
         self.assertEquals(content, _indented_repr)
-    
+
     def test_render_and_parse(self):
         """
         Test rendering and then parsing returns the original object.
@@ -191,19 +191,19 @@ class JSONRendererTests(TestCase):
 
         content = renderer.render(obj, 'application/json')
         (data, files) = parser.parse(StringIO(content))
-        self.assertEquals(obj, data)    
+        self.assertEquals(obj, data)
 
 
 
 if YAMLRenderer:
     _yaml_repr = 'foo: [bar, baz]\n'
-    
-    
+
+
     class YAMLRendererTests(TestCase):
         """
         Tests specific to the JSON Renderer
         """
-    
+
         def test_render(self):
             """
             Test basic YAML rendering.
@@ -212,24 +212,24 @@ if YAMLRenderer:
             renderer = YAMLRenderer(None)
             content = renderer.render(obj, 'application/yaml')
             self.assertEquals(content, _yaml_repr)
-    
-        
+
+
         def test_render_and_parse(self):
             """
             Test rendering and then parsing returns the original object.
             IE obj -> render -> parse -> obj.
             """
             obj = {'foo':['bar','baz']}
-    
+
             renderer = YAMLRenderer(None)
             parser = YAMLParser(None)
-    
+
             content = renderer.render(obj, 'application/yaml')
             (data, files) = parser.parse(StringIO(content))
-            self.assertEquals(obj, data)    
+            self.assertEquals(obj, data)
 
 
-			            
+
 class XMLRendererTestCase(TestCase):
     """
     Tests specific to the XML Renderer
@@ -289,4 +289,4 @@ class XMLRendererTestCase(TestCase):
     def assertXMLContains(self, xml, string):
         self.assertTrue(xml.startswith('<?xml version="1.0" encoding="utf-8"?>\n<root>'))
         self.assertTrue(xml.endswith('</root>'))
-        self.assertTrue(string in xml, '%r not in %r' % (string, xml))    
+        self.assertTrue(string in xml, '%r not in %r' % (string, xml))
