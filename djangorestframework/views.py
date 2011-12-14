@@ -50,13 +50,13 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     List of all authenticating methods to attempt.
     """
-    authentication = ( authentication.UserLoggedInAuthentication,
-                       authentication.BasicAuthentication )
+    authentication = (authentication.UserLoggedInAuthentication,
+                      authentication.BasicAuthentication)
 
     """
     List of all permissions that must be checked.
     """
-    permissions = ( permissions.FullAnonAccess, )
+    permissions = (permissions.FullAnonAccess,)
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -86,8 +86,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     def initial(self, request, *args, **kargs):
         """
         Hook for any code that needs to run prior to anything else.
-        Required if you want to do things like set `request.upload_handlers` before
-        the authentication and dispatch handling is run.
+        Required if you want to do things like set `request.upload_handlers`
+        before the authentication and dispatch handling is run.
         """
         pass
 
@@ -136,11 +136,13 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
                 response = Response(status.HTTP_204_NO_CONTENT)
 
             if request.method == 'OPTIONS':
-                # do not filter the response for HTTP OPTIONS, else the response fields are lost,
+                # do not filter the response for HTTP OPTIONS,
+                # else the response fields are lost,
                 # as they do not correspond with model fields
                 response.cleaned_content = response.raw_content
             else:
-                # Pre-serialize filtering (eg filter complex objects into natively serializable types)
+                # Pre-serialize filtering (eg filter complex objects into
+                # natively serializable types)
                 response.cleaned_content = self.filter_response(response.raw_content)
 
         except ErrorResponse, exc:
@@ -148,8 +150,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
         # Always add these headers.
         #
-        # TODO - this isn't actually the correct way to set the vary header,
-        # also it's currently sub-optimal for HTTP caching - need to sort that out.
+        # TODO - this isn't really the correct way to set the Vary header,
+        # also it's currently sub-optimal for HTTP caching.
         response.headers['Allow'] = ', '.join(self.allowed_methods)
         response.headers['Vary'] = 'Authenticate, Accept'
 
@@ -161,7 +163,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         return self.render(response)
 
     def options(self, request, *args, **kwargs):
-        response_obj = {
+        ret = {
             'name': get_name(self),
             'description': get_description(self),
             'renders': self._rendered_media_types,
@@ -172,8 +174,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             field_name_types = {}
             for name, field in form.fields.iteritems():
                 field_name_types[name] = field.__class__.__name__
-            response_obj['fields'] = field_name_types
-        return response_obj
+            ret['fields'] = field_name_types
+        return ret
 
 
 class ModelView(ModelMixin, View):
@@ -191,7 +193,9 @@ class ModelView(ModelMixin, View):
 
 class InstanceModelView(ModelView):
     """
-    A view which provides default operations for read/update/delete against a model instance.
+    A view which provides default operations for read/update/delete against a
+    model instance.  This view is also treated as the Canonical identifier
+    of the instances.
     """
     _suffix = 'Instance'
 

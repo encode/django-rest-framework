@@ -32,7 +32,7 @@ def url_resolves(url):
 
 # From http://www.koders.com/python/fidB6E125C586A6F49EAC38992CF3AFDAAE35651975.aspx?s=mdef:xml
 #class object_dict(dict):
-#    """object view of dict, you can 
+#    """object view of dict, you can
 #    >>> a = object_dict()
 #    >>> a.fish = 'fish'
 #    >>> a['fish']
@@ -85,8 +85,8 @@ class XML2Dict(object):
             old = node_tree[tag]
             if not isinstance(old, list):
                 node_tree.pop(tag)
-                node_tree[tag] = [old] # multi times, so change old dict to a list       
-            node_tree[tag].append(tree) # add the new one      
+                node_tree[tag] = [old] # multi times, so change old dict to a list
+            node_tree[tag].append(tree) # add the new one
 
         return  node_tree
 
@@ -99,13 +99,13 @@ class XML2Dict(object):
         """
         result = re.compile("\{(.*)\}(.*)").search(tag)
         if result:
-            value.namespace, tag = result.groups()    
+            value.namespace, tag = result.groups()
         return (tag, value)
 
     def parse(self, file):
         """parse a xml file to a dict"""
         f = open(file, 'r')
-        return self.fromstring(f.read()) 
+        return self.fromstring(f.read())
 
     def fromstring(self, s):
         """parse a string"""
@@ -132,16 +132,16 @@ class XMLRenderer():
                 xml.startElement(key, {})
                 self._to_xml(xml, value)
                 xml.endElement(key)
-				
+
         elif data is None:
             # Don't output any value
-            pass				
+            pass
 
         else:
             xml.characters(smart_unicode(data))
 
     def dict2xml(self, data):
-        stream = StringIO.StringIO() 
+        stream = StringIO.StringIO()
 
         xml = SimplerXMLGenerator(stream, "utf-8")
         xml.startDocument()
