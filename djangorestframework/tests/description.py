@@ -20,16 +20,16 @@ indented
 # hash style header #"""
 
 # If markdown is installed we also test it's working (and that our wrapped forces '=' to h2 and '-' to h3)
-MARKED_DOWN = """<h2>an example docstring</h2>
+MARKED_DOWN = """<h2 id="an-example-docstring">an example docstring</h2>
 <ul>
 <li>list</li>
 <li>list</li>
 </ul>
-<h3>another header</h3>
+<h3 id="another-header">another header</h3>
 <pre><code>code block
 </code></pre>
 <p>indented</p>
-<h2 id="hash_style_header">hash style header</h2>"""
+<h2 id="hash-style-header">hash style header</h2>"""
 
 
 class TestViewNamesAndDescriptions(TestCase):
