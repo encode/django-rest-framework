@@ -4,7 +4,6 @@ from django.db import models
 
 from djangorestframework.response import ErrorResponse
 from djangorestframework.serializer import Serializer, _SkipField
-from djangorestframework.utils import as_tuple
 
 
 class BaseResource(Serializer):
@@ -12,9 +11,9 @@ class BaseResource(Serializer):
     Base class for all Resource classes, which simply defines the interface
     they provide.
     """
-    fields = None
-    include = None
-    exclude = None
+    fields = ()
+    include = ()
+    exclude = ()
 
     def __init__(self, view=None, depth=None, stack=[], **kwargs):
         super(BaseResource, self).__init__(depth, stack, **kwargs)
@@ -126,14 +125,16 @@ class FormResource(Resource):
         data = data and data or {}
         files = files and files or {}
 
-        seen_fields_set = set(data.keys())
-        form_fields_set = set(bound_form.fields.keys())
-        allowed_extra_fields_set = set(allowed_extra_fields)
+        seen_fields = set(data.keys())
+        form_fields = set(bound_form.fields.keys())
+        allowed_extra_fields = set(allowed_extra_fields)
 
         # In addition to regular validation we also ensure no additional fields
         # are being passed in...
-        unknown_fields = seen_fields_set - (form_fields_set | allowed_extra_fields_set)
-        unknown_fields = unknown_fields - set(('csrfmiddlewaretoken', '_accept', '_method'))  # TODO: Ugh.
+        # TODO: Hardcoded ignore_fields here is pretty icky.
+        ignore_fields = set(('csrfmiddlewaretoken', '_accept', '_method'))
+        allowed_fields = form_fields | allowed_extra_fields | ignore_fields
+        unknown_fields = seen_fields - allowed_fields
 
         # Check using both regular validation, and our stricter no additional fields rule
         if bound_form.is_valid() and not unknown_fields:
@@ -141,7 +142,7 @@ class FormResource(Resource):
             cleaned_data = bound_form.cleaned_data
 
             # Add in any extra fields to the cleaned content...
-            for key in (allowed_extra_fields_set & seen_fields_set) - set(cleaned_data.keys()):
+            for key in (allowed_extra_fields & seen_fields) - set(cleaned_data.keys()):
                 cleaned_data[key] = data[key]
 
             return cleaned_data
@@ -407,9 +408,9 @@ class ModelResource(FormResource):
         model_fields = set(field.name for field in self.model._meta.fields)
 
         if self.fields:
-            return model_fields & set(as_tuple(self.fields))
+            return model_fields & set(self.fields)
 
-        return model_fields - set(as_tuple(self.exclude))
+        return model_fields - set(self.exclude)
 
     @property
     def _property_fields_set(self):
@@ -421,6 +422,6 @@ class ModelResource(FormResource):
                               and not attr.startswith('_'))
 
         if self.fields:
-            return property_fields & set(as_tuple(self.fields))
+            return property_fields & set(self.fields)
 
-        return property_fields.union(set(as_tuple(self.include))) - set(as_tuple(self.exclude))
+        return property_fields.union(set(self.include)) - set(self.exclude)

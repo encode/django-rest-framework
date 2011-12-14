@@ -12,6 +12,7 @@ from djangorestframework import status
 from djangorestframework.resources import Resource, FormResource, ModelResource
 from djangorestframework.response import ErrorResponse
 from djangorestframework.utils import as_tuple, MSIE_USER_AGENT_REGEX
+from djangorestframework.utils import MSIE_USER_AGENT_REGEX
 from djangorestframework.utils.mediatypes import is_form_media_type, order_by_precedence
 
 from StringIO import StringIO
@@ -177,8 +178,7 @@ class RequestMixin(object):
             return (None, None)
 
         parsers = as_tuple(self.parsers)
-
-        for parser_cls in parsers:
+        for parser_cls in self.parsers:
             parser = parser_cls(self)
             if parser.can_handle_request(content_type):
                 return parser.parse(stream)
