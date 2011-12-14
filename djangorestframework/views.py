@@ -184,14 +184,8 @@ class ModelView(ModelMixin, View):
     """
     resource = resources.ModelResource
 
-    def _filter_kwargs(self, kwargs):
-        kwargs = kwargs.copy()
-        if BaseRenderer._FORMAT_QUERY_PARAM in kwargs:
-            del kwargs[BaseRenderer._FORMAT_QUERY_PARAM]
-        return kwargs
 
-
-class InstanceModelView(ModelView):
+class InstanceModelView(InstanceMixin, ModelView):
     """
     A view which provides default operations for read/update/delete against a
     model instance.  This view is also treated as the Canonical identifier
@@ -199,49 +193,27 @@ class InstanceModelView(ModelView):
     """
     _suffix = 'Instance'
 
-    def get(self, request, *args, **kwargs):
-        instance = self.read(request, *args, **self._filter_kwargs(kwargs))
-
-        if not instance:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
-
-        return instance
-
-    def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **self._filter_kwargs(kwargs))
-
-    def delete(self, request, *args, **kwargs):
-        instance = self.destroy(request, *args, **self._filter_kwargs(kwargs))
-
-        if not instance:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
-
-        return None
+    get = ModelMixin.read
+    put = ModelMixin.update
+    delete = ModelMixin.destroy
 
 
 class ListModelView(ModelView):
     """
-    A view which provides default operations for list, against a model in the database.
+    A view which provides default operations for list, against a model in the
+    database.
     """
     _suffix = 'List'
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **self._filter_kwargs(kwargs))
+    get = ModelMixin.list
 
 
 class ListOrCreateModelView(ModelView):
     """
-    A view which provides default operations for list and create, against a model in the database.
+    A view which provides default operations for list and create, against a
+    model in the database.
     """
     _suffix = 'List'
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **self._filter_kwargs(kwargs))
-
-    def post(self, request, *args, **kwargs):
-        instance = self.create(request, *args, **self._filter_kwargs(kwargs))
-
-        headers = {}
-        if hasattr(instance, 'get_absolute_url'):
-            headers['Location'] = self.resource(self).url(instance)
-        return Response(status.HTTP_201_CREATED, instance, headers)
+    get = ModelMixin.list
+    post = ModelMixin.create
