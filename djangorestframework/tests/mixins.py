@@ -4,7 +4,7 @@ from django.utils import simplejson as json
 from djangorestframework import status
 from djangorestframework.compat import RequestFactory
 from django.contrib.auth.models import Group, User
-from djangorestframework.mixins import CreateModelMixin, PaginatorMixin
+from djangorestframework.mixins import PaginatorMixin
 from djangorestframework.resources import ModelResource
 from djangorestframework.response import Response
 from djangorestframework.tests.models import CustomUser
@@ -25,7 +25,7 @@ class TestModelCreation(TestCase):
 
         form_data = {'name': 'foo'}
         request = self.req.post('/groups', data=form_data)
-        mixin = CreateModelMixin()
+        mixin = ModelMixin()
         mixin.resource = GroupResource
         mixin.CONTENT = form_data
 
@@ -51,7 +51,7 @@ class TestModelCreation(TestCase):
         request = self.req.post('/groups', data=form_data)
         cleaned_data = dict(form_data)
         cleaned_data['groups'] = [group]
-        mixin = CreateModelMixin()
+        mixin = ModelMixin()
         mixin.resource = UserResource
         mixin.CONTENT = cleaned_data
 
@@ -74,7 +74,7 @@ class TestModelCreation(TestCase):
         request = self.req.post('/groups', data=form_data)
         cleaned_data = dict(form_data)
         cleaned_data['groups'] = []
-        mixin = CreateModelMixin()
+        mixin = ModelMixin()
         mixin.resource = UserResource
         mixin.CONTENT = cleaned_data
 
@@ -105,7 +105,7 @@ class TestModelCreation(TestCase):
         request = self.req.post('/groups', data=form_data)
         cleaned_data = dict(form_data)
         cleaned_data['groups'] = [group, group2]
-        mixin = CreateModelMixin()
+        mixin = ModelMixin()
         mixin.resource = UserResource
         mixin.CONTENT = cleaned_data
 

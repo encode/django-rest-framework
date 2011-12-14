@@ -25,7 +25,6 @@ __all__ = (
 )
 
 
-
 class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     Handles incoming requests and maps them to REST operations.
@@ -59,7 +58,6 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     permissions = ( permissions.FullAnonAccess, )
 
-
     @classmethod
     def as_view(cls, **initkwargs):
         """
@@ -71,7 +69,6 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         view.cls_instance = cls(**initkwargs)
         return view
 
-
     @property
     def allowed_methods(self):
         """
@@ -79,14 +76,12 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         """
         return [method.upper() for method in self.http_method_names if hasattr(self, method)]
 
-
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
         Return an HTTP 405 error if an operation is called which does not have a handler method.
         """
         raise ErrorResponse(status.HTTP_405_METHOD_NOT_ALLOWED,
                             {'detail': 'Method \'%s\' not allowed on this resource.' % self.method})
-
 
     def initial(self, request, *args, **kargs):
         """
@@ -96,13 +91,11 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         """
         pass
 
-
     def add_header(self, field, value):
         """
         Add *field* and *value* to the :attr:`headers` attribute of the :class:`View` class.
         """
         self.headers[field] = value
-
 
     # Note: session based authentication is explicitly CSRF validated,
     # all other authentication is CSRF exempt.
@@ -183,26 +176,68 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         return response_obj
 
 
-class ModelView(View):
+class ModelView(ModelMixin, View):
     """
     A RESTful view that maps to a model in the database.
     """
     resource = resources.ModelResource
 
-class InstanceModelView(InstanceMixin, ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelView):
+    def _filter_kwargs(self, kwargs):
+        kwargs = kwargs.copy()
+        if BaseRenderer._FORMAT_QUERY_PARAM in kwargs:
+            del kwargs[BaseRenderer._FORMAT_QUERY_PARAM]
+        return kwargs
+
+
+class InstanceModelView(ModelView):
     """
     A view which provides default operations for read/update/delete against a model instance.
     """
     _suffix = 'Instance'
 
-class ListModelView(ListModelMixin, ModelView):
+    def get(self, request, *args, **kwargs):
+        instance = self.read(request, *args, **self._filter_kwargs(kwargs))
+
+        if not instance:
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
+
+        return instance
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **self._filter_kwargs(kwargs))
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.destroy(request, *args, **self._filter_kwargs(kwargs))
+
+        if not instance:
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
+
+        return None
+
+
+class ListModelView(ModelView):
     """
     A view which provides default operations for list, against a model in the database.
     """
     _suffix = 'List'
 
-class ListOrCreateModelView(ListModelMixin, CreateModelMixin, ModelView):
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **self._filter_kwargs(kwargs))
+
+
+class ListOrCreateModelView(ModelView):
     """
     A view which provides default operations for list and create, against a model in the database.
     """
     _suffix = 'List'
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **self._filter_kwargs(kwargs))
+
+    def post(self, request, *args, **kwargs):
+        instance = self.create(request, *args, **self._filter_kwargs(kwargs))
+
+        headers = {}
+        if hasattr(instance, 'get_absolute_url'):
+            headers['Location'] = self.resource(self).url(instance)
+        return Response(status.HTTP_201_CREATED, instance, headers)

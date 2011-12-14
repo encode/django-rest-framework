@@ -9,9 +9,8 @@ from django.db.models.fields.related import ForeignKey
 from django.http import HttpResponse
 
 from djangorestframework import status
-from djangorestframework.renderers import BaseRenderer
 from djangorestframework.resources import Resource, FormResource, ModelResource
-from djangorestframework.response import Response, ErrorResponse
+from djangorestframework.response import ErrorResponse
 from djangorestframework.utils import as_tuple, MSIE_USER_AGENT_REGEX
 from djangorestframework.utils.mediatypes import is_form_media_type, order_by_precedence
 
@@ -27,11 +26,7 @@ __all__ = (
     # Reverse URL lookup behavior
     'InstanceMixin',
     # Model behavior mixins
-    'ReadModelMixin',
-    'CreateModelMixin',
-    'UpdateModelMixin',
-    'DeleteModelMixin',
-    'ListModelMixin'
+    'ModelMixin',
 )
 
 
@@ -267,25 +262,32 @@ class ResponseMixin(object):
 
     def _determine_renderer(self, request):
         """
-        Determines the appropriate renderer for the output, given the client's 'Accept' header,
-        and the :attr:`renderers` set on this class.
+        Determines the appropriate renderer for the output, given the client's
+        'Accept' header, and the :attr:`renderers` set on this class.
 
         Returns a 2-tuple of `(renderer, media_type)`
 
-        See: RFC 2616, Section 14 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+        See: RFC 2616, Section 14
+        http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
         """
 
-        if self._ACCEPT_QUERY_PARAM and request.GET.get(self._ACCEPT_QUERY_PARAM, None):
+        if (self._ACCEPT_QUERY_PARAM and
+            request.GET.get(self._ACCEPT_QUERY_PARAM, None)):
             # Use _accept parameter override
             accept_list = [request.GET.get(self._ACCEPT_QUERY_PARAM)]
+
         elif (self._IGNORE_IE_ACCEPT_HEADER and
-              request.META.has_key('HTTP_USER_AGENT') and
+              'HTTP_USER_AGENT' in request.META and
               MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT'])):
-            # Ignore MSIE's broken accept behavior and do something sensible instead
+            # Ignore MSIE's broken accept behavior and do something sensible
+            # instead.
             accept_list = ['text/html', '*/*']
-        elif request.META.has_key('HTTP_ACCEPT'):
+
+        elif 'HTTP_USER_AGENT' in request.META:
             # Use standard HTTP Accept negotiation
-            accept_list = [token.strip() for token in request.META["HTTP_ACCEPT"].split(',')]
+            accept_list = [token.strip() for token in
+                           request.META["HTTP_ACCEPT"].split(',')]
+
         else:
             # No accept header specified
             accept_list = ['*/*']
@@ -481,48 +483,86 @@ class InstanceMixin(object):
 
 ########## Model Mixins ##########
 
-class ReadModelMixin(object):
-    """
-    Behavior to read a `model` instance on GET requests
-    """
-    def get(self, request, *args, **kwargs):
-        model = self.resource.model
+class ModelMixin(object):
+    def get_model(self):
+        """
+        Return the model class for this view.
+        """
+        return getattr(self, 'model', self.resource.model)
+
+    def get_queryset(self):
+        """
+        Return the queryset that should be used when retrieving or listing
+        instances.
+        """
+        return getattr(self, 'queryset',
+                    getattr(self.resource, 'queryset',
+                        self._get_model().objects.all()))
+
+    def get_ordering(self):
+        """
+        Return the ordering that should be used when listing instances.
+        """
+        return getattr(self, 'ordering',
+                    getattr(self.resource, 'ordering',
+                        None))
+
+    def get_instance(self, *args, **kwargs):
+        """
+        Return a model instance or None.
+        """
+        model = self.get_model()
+        queryset = self.get_queryset()
+        kwargs = self._filter_kwargs(kwargs)
 
         try:
+            # If we have any positional args then assume the last
+            # represents the primary key.  Otherwise assume the named kwargs
+            # uniquely identify the instance.
             if args:
-                # If we have any none kwargs then assume the last represents the primrary key
-                self.model_instance = model.objects.get(pk=args[-1], **kwargs)
+                return queryset.get(pk=args[-1], **kwargs)
             else:
-                # Otherwise assume the kwargs uniquely identify the model
-                filtered_keywords = kwargs.copy()
-                if BaseRenderer._FORMAT_QUERY_PARAM in filtered_keywords:
-                    del filtered_keywords[BaseRenderer._FORMAT_QUERY_PARAM]
-                self.model_instance = model.objects.get(**filtered_keywords)
+                return queryset.get(**kwargs)
         except model.DoesNotExist:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
+            return None
 
-        return self.model_instance
+    def read(self, request, *args, **kwargs):
+        instance = self.get_instance(*args, **kwargs)
+        return instance
 
+    def update(self, request, *args, **kwargs):
+        """
+        Return a model instance.
+        """
+        instance = self.get_instance(*args, **kwargs)
 
-class CreateModelMixin(object):
-    """
-    Behavior to create a `model` instance on POST requests
-    """
-    def post(self, request, *args, **kwargs):
-        model = self.resource.model
+        if instance:
+            for (key, val) in self.CONTENT.items():
+                setattr(instance, key, val)
+        else:
+            instance = self.get_model()(**self.CONTENT)
+
+        instance.save()
+        return instance
+
+    def create(self, request, *args, **kwargs):
+        """
+        Return a model instance.
+        """
+        model = self._get_model()
 
         # Copy the dict to keep self.CONTENT intact
         content = dict(self.CONTENT)
         m2m_data = {}
 
         for field in model._meta.fields:
-            if isinstance(field, ForeignKey) and kwargs.has_key(field.name):
+            if isinstance(field, ForeignKey) and field.name in kwargs:
                 # translate 'related_field' kwargs into 'related_field_id'
                 kwargs[field.name + '_id'] = kwargs[field.name]
                 del kwargs[field.name]
 
         for field in model._meta.many_to_many:
-            if content.has_key(field.name):
+            if field.name in content:
                 m2m_data[field.name] = (
                     field.m2m_reverse_field_name(), content[field.name]
                 )
@@ -549,90 +589,30 @@ class CreateModelMixin(object):
                     data[m2m_data[fieldname][0]] = related_item
                     manager.through(**data).save()
 
-        headers = {}
-        if hasattr(instance, 'get_absolute_url'):
-            headers['Location'] = self.resource(self).url(instance)
-        return Response(status.HTTP_201_CREATED, instance, headers)
+        return instance
 
 
-class UpdateModelMixin(object):
-    """
-    Behavior to update a `model` instance on PUT requests
-    """
-    def put(self, request, *args, **kwargs):
-        model = self.resource.model
+    def destroy(self, request, *args, **kwargs):
+        """
+        Return a model instance or None.
+        """
+        instance = self.get_instance(*args, **kwargs)
 
-        # TODO: update on the url of a non-existing resource url doesn't work correctly at the moment - will end up with a new url
-        try:
-            if args:
-                # If we have any none kwargs then assume the last represents the primary key
-                self.model_instance = model.objects.get(pk=args[-1], **kwargs)
-            else:
-                # Otherwise assume the kwargs uniquely identify the model
-                self.model_instance = model.objects.get(**kwargs)
+        if instance:
+            instance.delete()
 
-            for (key, val) in self.CONTENT.items():
-                setattr(self.model_instance, key, val)
-        except model.DoesNotExist:
-            self.model_instance = model(**self.CONTENT)
-            self.model_instance.save()
-
-        self.model_instance.save()
-        return self.model_instance
+        return instance
 
 
-class DeleteModelMixin(object):
-    """
-    Behavior to delete a `model` instance on DELETE requests
-    """
-    def delete(self, request, *args, **kwargs):
-        model = self.resource.model
-
-        try:
-            if args:
-                # If we have any none kwargs then assume the last represents the primrary key
-                instance = model.objects.get(pk=args[-1], **kwargs)
-            else:
-                # Otherwise assume the kwargs uniquely identify the model
-                instance = model.objects.get(**kwargs)
-        except model.DoesNotExist:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
-
-        instance.delete()
-        return
-
-
-class ListModelMixin(object):
-    """
-    Behavior to list a set of `model` instances on GET requests
-    """
-
-    # NB. Not obvious to me if it would be better to set this on the resource?
-    #
-    # Presumably it's more useful to have on the view, because that way you can
-    # have multiple views across different querysets mapping to the same resource.
-    #
-    # Perhaps it ought to be:
-    #
-    # 1) View.queryset
-    # 2) if None fall back to Resource.queryset
-    # 3) if None fall back to Resource.model.objects.all()
-    #
-    # Any feedback welcomed.
-    queryset = None
-
-    def get(self, request, *args, **kwargs):
-        model = self.resource.model
-
-        queryset = self.queryset if self.queryset is not None else model.objects.all()
-
-        if hasattr(self, 'resource'):
-            ordering = getattr(self.resource, 'ordering', None)
-        else:
-            ordering = None
+    def list(self, request, *args, **kwargs):
+        """
+        Return a list of instances.
+        """
+        queryset = self.get_queryset()
+        ordering = self.get_ordering()
 
         if ordering:
-            args = as_tuple(ordering)
+            assert(hasattr(ordering, '__iter__'))
             queryset = queryset.order_by(*args)
         return queryset.filter(**kwargs)
 
