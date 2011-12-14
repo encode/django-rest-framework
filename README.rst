@@ -30,11 +30,6 @@ To clone the project from GitHub using git::
     git clone git@github.com:tomchristie/django-rest-framework.git
 
 
-To clone the project from Bitbucket using mercurial::
-
-    hg clone https://tomchristie@bitbucket.org/tomchristie/django-rest-framework
-
-
 To install django-rest-framework in a virtualenv environment::
 
     cd django-rest-framework
