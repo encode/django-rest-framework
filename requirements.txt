@@ -1,5 +1,5 @@
 # We need Django.  Duh.
 # coverage isn't strictly a requirement, but it's useful.
 
-Django
-coverage
+Django>=1.2
+coverage>=3.4
