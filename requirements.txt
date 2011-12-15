@@ -2,4 +2,4 @@
 # coverage isn't strictly a requirement, but it's useful.
 
 Django>=1.2
-coverage
+coverage>=3.4
