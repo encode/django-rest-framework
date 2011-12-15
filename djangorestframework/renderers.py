@@ -114,44 +114,26 @@ class JSONRenderer(BaseRenderer):
         return json.dumps(obj, cls=DateTimeAwareJSONEncoder, indent=indent, sort_keys=sort_keys)
 
 
-class JSONPRenderer(BaseRenderer):
+class JSONPRenderer(JSONRenderer):
     """
     Renderer which serializes to JSONP
     """
+    
     media_type = 'application/json-p'
     format = 'json-p'
-    
+    renderer_class = JSONRenderer
     callback_parameter = 'callback'
 
-    def render(self, obj=None, media_type=None):
-        """
-        Renders *obj* into serialized JSONP.
-        
-        The callback function name is taken from the 'callback' parameter
-        contained in the jsonp request.
-        """
-        callback = self.view.request.GET.get(self.callback_parameter, self.callback_parameter)
-            
-        if obj is None:
-            serialized_obj = ''
-        else:
-            json_renderer = self._get_renderer(JSONRenderer.media_type)
-            if json_renderer is None:
-                serialized_obj = json.dumps(obj, cls=DateTimeAwareJSONEncoder)
-            else:
-                serialized_obj = json_renderer.render(obj, JSONRenderer.media_type)
+    def _get_callback(self):
+        return self.view.request.GET.get(self.callback_parameter, self.callback_parameter)
 
-        return "%s(%s);" % (callback, serialized_obj)
-       
-    def _get_renderer(self, media_type=None):
-        """
-        Get first view renderer that serializes *media_type*.
-        """
-        for r in self.view.renderers:
-            renderer = r(self.view)
-            if renderer.can_handle_response(media_type):
-                return renderer
-        return None
+    def _get_renderer(self):
+        return self.renderer_class(self.view)
+
+    def render(self, obj=None, media_type=None):
+        callback = self._get_callback()
+        json = self._get_renderer().render(obj, media_type)
+        return "%s(%s);" % (callback, json)
 
 
 class XMLRenderer(BaseRenderer):
