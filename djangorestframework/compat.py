@@ -412,7 +412,7 @@ try:
         extensions = ['headerid(level=2)']
         safe_mode = False,
 
-        if markdown.version < (2, 1):
+        if markdown.version_info < (2, 1):
             output_format = markdown.DEFAULT_OUTPUT_FORMAT
 
             md = markdown.Markdown(extensions=markdown.load_extensions(extensions),
