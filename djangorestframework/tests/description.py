@@ -19,8 +19,11 @@ indented
 
 # hash style header #"""
 
-# If markdown is installed we also test it's working (and that our wrapped forces '=' to h2 and '-' to h3)
-MARKED_DOWN = """<h2>an example docstring</h2>
+# If markdown is installed we also test it's working 
+# (and that our wrapped forces '=' to h2 and '-' to h3)
+
+# We support markdown < 2.1 and markdown >= 2.1
+MARKED_DOWN_lt_21 = """<h2>an example docstring</h2>
 <ul>
 <li>list</li>
 <li>list</li>
@@ -30,6 +33,17 @@ MARKED_DOWN = """<h2>an example docstring</h2>
 </code></pre>
 <p>indented</p>
 <h2 id="hash_style_header">hash style header</h2>"""
+
+MARKED_DOWN_gte_21 = """<h2 id="an-example-docstring">an example docstring</h2>
+<ul>
+<li>list</li>
+<li>list</li>
+</ul>
+<h3 id="another-header">another header</h3>
+<pre><code>code block
+</code></pre>
+<p>indented</p>
+<h2 id="hash-style-header">hash style header</h2>"""
 
 
 class TestViewNamesAndDescriptions(TestCase):
@@ -92,4 +106,6 @@ class TestViewNamesAndDescriptions(TestCase):
     def test_markdown(self):
         """Ensure markdown to HTML works as expected"""
         if apply_markdown:
-            self.assertEquals(apply_markdown(DESCRIPTION), MARKED_DOWN)
+            gte_21_match = apply_markdown(DESCRIPTION) == MARKED_DOWN_gte_21
+            lt_21_match = apply_markdown(DESCRIPTION) == MARKED_DOWN_lt_21
+            self.assertTrue(gte_21_match or lt_21_match)

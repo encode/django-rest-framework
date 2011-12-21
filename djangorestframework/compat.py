@@ -374,21 +374,22 @@ else:
 # Markdown is optional
 try:
     import markdown
-    import re
-    
+     
     class CustomSetextHeaderProcessor(markdown.blockprocessors.BlockProcessor):
         """
-        Override `markdown`'s :class:`SetextHeaderProcessor`, so that ==== headers are <h2> and ---- headers are <h3>.
-        
+        Class for markdown < 2.1
+
+        Override `markdown`'s :class:`SetextHeaderProcessor`, so that ==== headers are <h2> and ---- heade
+
         We use <h1> for the resource name.
         """
-    
+        import re
         # Detect Setext-style header. Must be first 2 lines of block.
         RE = re.compile(r'^.*?\n[=-]{3,}', re.MULTILINE)
-    
+
         def test(self, parent, block):
             return bool(self.RE.match(block))
-    
+
         def run(self, parent, blocks):
             lines = blocks.pop(0).split('\n')
             # Determine level. ``=`` is 1 and ``-`` is 2.
@@ -401,21 +402,25 @@ try:
             if len(lines) > 2:
                 # Block contains additional lines. Add to  master blocks for later.
                 blocks.insert(0, '\n'.join(lines[2:]))
-            
+
     def apply_markdown(text):
         """
-        Simple wrapper around :func:`markdown.markdown` to apply our :class:`CustomSetextHeaderProcessor`,
-        and also set the base level of '#' style headers to <h2>.
+        Simple wrapper around :func:`markdown.markdown` to set the base level
+        of '#' style headers to <h2>.
         """
         
         extensions = ['headerid(level=2)']
         safe_mode = False,
-        output_format = markdown.DEFAULT_OUTPUT_FORMAT
 
-        md = markdown.Markdown(extensions=markdown.load_extensions(extensions),
-                               safe_mode=safe_mode, 
+        if markdown.version < (2, 1):
+            output_format = markdown.DEFAULT_OUTPUT_FORMAT
+
+            md = markdown.Markdown(extensions=markdown.load_extensions(extensions),
+                               safe_mode=safe_mode,
                                output_format=output_format)
-        md.parser.blockprocessors['setextheader'] = CustomSetextHeaderProcessor(md.parser)
+            md.parser.blockprocessors['setextheader'] = CustomSetextHeaderProcessor(md.parser)
+        else:
+            md = markdown.Markdown(extensions=extensions, safe_mode=safe_mode)
         return md.convert(text)
 
 except ImportError:
@@ -426,3 +431,4 @@ try:
     import yaml
 except ImportError:
     yaml = None
+
