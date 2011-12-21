@@ -224,3 +224,5 @@ html_static_path = []
 #man_pages = [
 #    ()
 #]
+
+linkcheck_timeout = 120 # seconds, set to extra large value for link_checks
