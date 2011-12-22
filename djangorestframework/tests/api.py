@@ -8,7 +8,6 @@ from djangorestframework.views import ListOrCreateModelView, InstanceModelView,\
 from django.core.urlresolvers import reverse, NoReverseMatch
 import random
 import string
-from mock import Mock
 
 __all__ = ('ApiTestCase', 'ApiEntryTestCase')
 
