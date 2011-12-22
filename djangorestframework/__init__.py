@@ -2,14 +2,13 @@ __version__ = '0.2.3'
 
 VERSION = __version__  # synonym
 
-from djangorestframework.builtins import DjangoRestFrameworkApi
-from django.utils.importlib import import_module
+from djangorestframework.builtins import Api
 
 import imp
 
 __all__ = ('autodiscover','api', '__version__', 'VERSION')
 
-api = DjangoRestFrameworkApi()
+api = Api()
 
 def autodiscover():
     """
@@ -22,7 +21,7 @@ def autodiscover():
     from django.utils.importlib import import_module
 
     for app in settings.INSTALLED_APPS:
-        # Attempt to import the app's gargoyle module.
+        # Attempt to import the app's api module.
         before_import_registry = copy.copy(api._registry)
         try:
             import_module('%s.api' % app)
@@ -30,4 +29,5 @@ def autodiscover():
             # Reset the model registry to the state before the last import as
             # this import will have to reoccur on the next request and this
             # could raise NotRegistered and AlreadyRegistered exceptions
+            # (see https://code.djangoproject.com/ticket/8245)
             api._registry = before_import_registry

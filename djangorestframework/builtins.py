@@ -3,7 +3,7 @@ from collections import defaultdict
 
 class ApiEntry(object):
     """
-    Hold information about a Resource in the api
+    Hold a list of urlpatterns for a given Resource in the API
     """
     
     def __init__(self, resource, view, name, namespace=None):
@@ -28,6 +28,12 @@ class ApiEntry(object):
                     )
             )
         elif issubclass(self.view, InstanceMixin):
+            # This regex pattern is intentionally designed to match primary 
+            # keys which are integers, letters or both.
+            # An improvement would be to infer the right primary key regex from 
+            # the model in the resource, to prevent matching non-numeric
+            # primary keys in the URL when the model can only have numeric
+            # primary keys
             urlpatterns = patterns('',
                 url(r'^%s/(?P<pk>[0-9a-zA-Z]+)/$' % (namespaced_name),
                     self.view.as_view(resource=self.resource),
@@ -40,13 +46,15 @@ class ApiEntry(object):
     def urls(self):
         return self.get_urls(), 'api', self.namespace
 
-class DjangoRestFrameworkApi(object):
+class Api(object):
     app_name = 'api'
     namespace = 'api'
+    api_entry_class = ApiEntry
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, api_entry_class=None):
         self._registry = defaultdict(lambda: defaultdict(list))
-        super(DjangoRestFrameworkApi, self).__init__(*args, **kwargs)
+        if api_entry_class is not None:
+            self.api_entry_class = api_entry_class
 
     def register(self, view, resource, namespace=None, name=None):
         """
@@ -63,13 +71,18 @@ class DjangoRestFrameworkApi(object):
         
         resource.api_name = name
             
-        api_entry = ApiEntry(resource, view, name, namespace)
+        api_entry = self.get_api_entry(
+            resource=resource, view=view, name=name, namespace=namespace
+        )
         self._registry[namespace][name].append(api_entry)
 
     @property
     def urls(self):
         return self.get_urls(), self.app_name, self.namespace
     
+    def get_api_entry(self, resource, view, name, namespace):
+        return self.api_entry_class(resource, view, name, namespace)
+        
     def get_urls(self):
         """
         Return all of the urls for this API
