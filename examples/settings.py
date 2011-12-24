@@ -61,7 +61,7 @@ MEDIA_URL = ''
 # but it does require the admin media be served.  Django's test server will do
 # this for you automatically, but in production you'll want to make sure you
 # serve the admin media from somewhere.
-ADMIN_MEDIA_PREFIX = '/admin-media/'
+ADMIN_MEDIA_PREFIX = '/static/admin'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 't&9mru2_k$t8e2-9uq-wu2a1)9v*us&j3i#lsqkt(lbx*vh1cu'
