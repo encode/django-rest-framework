@@ -15,68 +15,68 @@ from blogpost import models, urls
 
 # class AcceptHeaderTests(TestCase):
 #     """Test correct behaviour of the Accept header as specified by RFC 2616:
-# 
+#
 #     http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1"""
-# 
+#
 #     def assert_accept_mimetype(self, mimetype, expect=None):
 #         """Assert that a request with given mimetype in the accept header,
 #         gives a response with the appropriate content-type."""
 #         if expect is None:
 #             expect = mimetype
-# 
+#
 #         resp = self.client.get(reverse(views.RootResource), HTTP_ACCEPT=mimetype)
-# 
+#
 #         self.assertEquals(resp['content-type'], expect)
-# 
-# 
+#
+#
 #     def dont_test_accept_json(self):
 #         """Ensure server responds with Content-Type of JSON when requested."""
 #         self.assert_accept_mimetype('application/json')
-# 
+#
 #     def dont_test_accept_xml(self):
 #         """Ensure server responds with Content-Type of XML when requested."""
 #         self.assert_accept_mimetype('application/xml')
-# 
+#
 #     def dont_test_accept_json_when_prefered_to_xml(self):
 #         """Ensure server responds with Content-Type of JSON when it is the client's prefered choice."""
 #         self.assert_accept_mimetype('application/json;q=0.9, application/xml;q=0.1', expect='application/json')
-# 
+#
 #     def dont_test_accept_xml_when_prefered_to_json(self):
 #         """Ensure server responds with Content-Type of XML when it is the client's prefered choice."""
 #         self.assert_accept_mimetype('application/json;q=0.1, application/xml;q=0.9', expect='application/xml')
-# 
+#
 #     def dont_test_default_json_prefered(self):
 #         """Ensure server responds with JSON in preference to XML."""
 #         self.assert_accept_mimetype('application/json,application/xml', expect='application/json')
-# 
+#
 #     def dont_test_accept_generic_subtype_format(self):
 #         """Ensure server responds with an appropriate type, when the subtype is left generic."""
 #         self.assert_accept_mimetype('text/*', expect='text/html')
-# 
+#
 #     def dont_test_accept_generic_type_format(self):
 #         """Ensure server responds with an appropriate type, when the type and subtype are left generic."""
 #         self.assert_accept_mimetype('*/*', expect='application/json')
-# 
+#
 #     def dont_test_invalid_accept_header_returns_406(self):
 #         """Ensure server returns a 406 (not acceptable) response if we set the Accept header to junk."""
 #         resp = self.client.get(reverse(views.RootResource), HTTP_ACCEPT='invalid/invalid')
 #         self.assertNotEquals(resp['content-type'], 'invalid/invalid')
 #         self.assertEquals(resp.status_code, 406)
-#     
+#
 #     def dont_test_prefer_specific_over_generic(self):   # This test is broken right now
 #         """More specific accept types have precedence over less specific types."""
 #         self.assert_accept_mimetype('application/xml, */*', expect='application/xml')
 #         self.assert_accept_mimetype('*/*, application/xml', expect='application/xml')
-# 
-# 
+#
+#
 # class AllowedMethodsTests(TestCase):
 #     """Basic tests to check that only allowed operations may be performed on a Resource"""
-# 
+#
 #     def dont_test_reading_a_read_only_resource_is_allowed(self):
 #         """GET requests on a read only resource should default to a 200 (OK) response"""
 #         resp = self.client.get(reverse(views.RootResource))
 #         self.assertEquals(resp.status_code, 200)
-#         
+#
 #     def dont_test_writing_to_read_only_resource_is_not_allowed(self):
 #         """PUT requests on a read only resource should default to a 405 (method not allowed) response"""
 #         resp = self.client.put(reverse(views.RootResource), {})
@@ -171,7 +171,7 @@ from blogpost import models, urls
 
 
 class TestRotation(TestCase):
-    """For the example the maximum amount of Blogposts is capped off at views.MAX_POSTS. 
+    """For the example the maximum amount of Blogposts is capped off at views.MAX_POSTS.
     Whenever a new Blogpost is posted the oldest one should be popped."""
 
     def setUp(self):
@@ -193,7 +193,7 @@ class TestRotation(TestCase):
             view = ListOrCreateModelView.as_view(resource=urls.BlogPostResource)
             view(request)
         self.assertEquals(len(models.BlogPost.objects.all()),models.MAX_POSTS)
-        
+
     def test_fifo_behaviour(self):
         '''It's fine that the Blogposts are capped off at MAX_POSTS. But we want to make sure we see FIFO behaviour.'''
         for post in range(15):
@@ -201,11 +201,11 @@ class TestRotation(TestCase):
             request = self.factory.post('/blog-post', data=form_data)
             view = ListOrCreateModelView.as_view(resource=urls.BlogPostResource)
             view(request)
-        request = self.factory.get('/blog-post')    
+        request = self.factory.get('/blog-post')
         view = ListOrCreateModelView.as_view(resource=urls.BlogPostResource)
         response = view(request)
         response_posts = json.loads(response.content)
         response_titles = [d['title'] for d in response_posts]
         response_titles.reverse()
         self.assertEquals(response_titles, ['%s' % i for i in range(models.MAX_POSTS - 5, models.MAX_POSTS + 5)])
-        
+

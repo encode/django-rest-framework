@@ -72,10 +72,10 @@ class PygmentsRoot(View):
         linenos = 'table' if self.CONTENT['linenos'] else False
         options = {'title': self.CONTENT['title']} if self.CONTENT['title'] else {}
         formatter = HtmlFormatter(style=self.CONTENT['style'], linenos=linenos, full=True, **options)
-        
+
         with open(pathname, 'w') as outfile:
             highlight(self.CONTENT['code'], lexer, formatter, outfile)
-        
+
         remove_oldest_files(HIGHLIGHTED_CODE_DIR, MAX_FILES)
 
         return Response(status.HTTP_201_CREATED, headers={'Location': reverse('pygments-instance', args=[unique_id])})

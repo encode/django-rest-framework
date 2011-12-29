@@ -51,7 +51,7 @@ MEDIA_ROOT = 'media/'
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-# NOTE: None of the djangorestframework examples serve media content via MEDIA_URL. 
+# NOTE: None of the djangorestframework examples serve media content via MEDIA_URL.
 MEDIA_URL = ''
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
@@ -90,10 +90,10 @@ TEMPLATE_DIRS = (
 )
 
 # for loading initial data
-##SERIALIZATION_MODULES = { 
+##SERIALIZATION_MODULES = {
   #  'yml': "django.core.serializers.pyyaml"
 
-#} 
+#}
 
 
 INSTALLED_APPS = (

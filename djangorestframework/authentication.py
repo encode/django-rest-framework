@@ -33,13 +33,13 @@ class BaseAuthentication(object):
     def authenticate(self, request):
         """
         Authenticate the :obj:`request` and return a :obj:`User` or :const:`None`. [*]_
-       
+
         .. [*] The authentication context *will* typically be a :obj:`User`,
             but it need not be.  It can be any user-like object so long as the
             permissions classes (see the :mod:`permissions` module) on the view can
             handle the object and use it to determine if the request has the required
-            permissions or not. 
-        
+            permissions or not.
+
             This can be an important distinction if you're implementing some token
             based authentication mechanism, where the authentication context
             may be more involved than simply mapping to a :obj:`User`.
@@ -55,10 +55,10 @@ class BasicAuthentication(BaseAuthentication):
     def authenticate(self, request):
         """
         Returns a :obj:`User` if a correct username and password have been supplied
-        using HTTP Basic authentication.  Otherwise returns :const:`None`.  
+        using HTTP Basic authentication.  Otherwise returns :const:`None`.
         """
         from django.utils.encoding import smart_unicode, DjangoUnicodeDecodeError
-        
+
         if 'HTTP_AUTHORIZATION' in request.META:
             auth = request.META['HTTP_AUTHORIZATION'].split()
             if len(auth) == 2 and auth[0].lower() == "basic":
@@ -66,17 +66,17 @@ class BasicAuthentication(BaseAuthentication):
                     auth_parts = base64.b64decode(auth[1]).partition(':')
                 except TypeError:
                     return None
-                
+
                 try:
                     uname, passwd = smart_unicode(auth_parts[0]), smart_unicode(auth_parts[2])
                 except DjangoUnicodeDecodeError:
                     return None
-                    
+
                 user = authenticate(username=uname, password=passwd)
                 if user is not None and user.is_active:
                     return user
         return None
-                
+
 
 class UserLoggedInAuthentication(BaseAuthentication):
     """
@@ -92,7 +92,7 @@ class UserLoggedInAuthentication(BaseAuthentication):
         #       and let FormParser/MultiPartParser deal with the consequences.
         if getattr(request, 'user', None) and request.user.is_active:
             # Enforce CSRF validation for session based authentication.
-            
+
             # Temporarily replace request.POST with .DATA, to use our generic parsing.
             # If DATA is not dict-like, use an empty dict.
             if request.method.upper() == 'POST':

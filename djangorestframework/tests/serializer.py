@@ -7,7 +7,7 @@ from django.db import models
 import datetime
 import decimal
 
-class TestObjectToData(TestCase): 
+class TestObjectToData(TestCase):
     """
     Tests for the Serializer class.
     """

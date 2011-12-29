@@ -53,7 +53,7 @@ class SettingsTestCase(TestCase):
     def __init__(self, *args, **kwargs):
         super(SettingsTestCase, self).__init__(*args, **kwargs)
         self.settings_manager = TestSettingsManager()
-    
+
     def tearDown(self):
         self.settings_manager.revert()
 

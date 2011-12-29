@@ -50,7 +50,7 @@ class UserAgentMungingTest(TestCase):
             req = self.req.get('/', HTTP_ACCEPT='*/*', HTTP_USER_AGENT=user_agent)
             resp = view(req)
             self.assertEqual(resp['Content-Type'], 'application/json')
-    
+
     def test_dont_munge_nice_browsers_accept_header(self):
         """Send Non-MSIE user agent strings and ensure that we get a JSON response,
         if we set a */* Accept header.  (Other browsers will correctly set the Accept header)"""

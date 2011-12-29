@@ -51,10 +51,10 @@ def main():
 
         # Drop the compat module from coverage, since we're not interested in the coverage
         # of a module which is specifically for resolving environment dependant imports.
-        # (Because we'll end up getting different coverage reports for it for each environment)  
+        # (Because we'll end up getting different coverage reports for it for each environment)
         if 'compat.py' in files:
             files.remove('compat.py')
-    
+
         cov_files.extend([os.path.join(path, file) for file in files if file.endswith('.py')])
 
     cov.report(cov_files)

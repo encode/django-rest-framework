@@ -18,32 +18,32 @@ except ImportError:
     # python < 2.6
     from cgi import parse_qs
 
-   
-# django.test.client.RequestFactory (Required for Django < 1.3) 
+
+# django.test.client.RequestFactory (Required for Django < 1.3)
 try:
     from django.test.client import RequestFactory
 except ImportError:
     from django.test import Client
     from django.core.handlers.wsgi import WSGIRequest
-    
+
     # From: http://djangosnippets.org/snippets/963/
     # Lovely stuff
     class RequestFactory(Client):
         """
         Class that lets you create mock :obj:`Request` objects for use in testing.
-        
+
         Usage::
-        
+
             rf = RequestFactory()
             get_request = rf.get('/hello/')
             post_request = rf.post('/submit/', {'foo': 'bar'})
-        
+
         This class re-uses the :class:`django.test.client.Client` interface. Of which
         you can find the docs here__.
-        
+
         __ http://www.djangoproject.com/documentation/testing/#the-test-client
-        
-        Once you have a `request` object you can pass it to any :func:`view` function, 
+
+        Once you have a `request` object you can pass it to any :func:`view` function,
         just as if that :func:`view` had been hooked up using a URLconf.
         """
         def request(self, **request):
@@ -69,30 +69,30 @@ except ImportError:
 try:
     from django.views.generic import View
     if not hasattr(View, 'head'):
-        # First implementation of Django class-based views did not include head method 
+        # First implementation of Django class-based views did not include head method
         # in base View class - https://code.djangoproject.com/ticket/15668
         class ViewPlusHead(View):
             def head(self, request, *args, **kwargs):
                 return self.get(request, *args, **kwargs)
         View = ViewPlusHead
-        
+
 except ImportError:
     from django import http
     from django.utils.functional import update_wrapper
     # from django.utils.log import getLogger
     # from django.utils.decorators import classonlymethod
-    
+
     # logger = getLogger('django.request') - We'll just drop support for logger if running Django <= 1.2
     # Might be nice to fix this up sometime to allow djangorestframework.compat.View to match 1.3's View more closely
-    
+
     class View(object):
         """
         Intentionally simple parent class for all views. Only implements
         dispatch-by-method and simple sanity checking.
         """
-    
+
         http_method_names = ['get', 'post', 'put', 'delete', 'head', 'options', 'trace']
-    
+
         def __init__(self, **kwargs):
             """
             Constructor. Called in the URLconf; can contain helpful extra
@@ -102,7 +102,7 @@ except ImportError:
             # instance, or raise an error.
             for key, value in kwargs.iteritems():
                 setattr(self, key, value)
-    
+
         # @classonlymethod - We'll just us classmethod instead if running Django <= 1.2
         @classmethod
         def as_view(cls, **initkwargs):
@@ -118,19 +118,19 @@ except ImportError:
                 if not hasattr(cls, key):
                     raise TypeError(u"%s() received an invalid keyword %r" % (
                         cls.__name__, key))
-    
+
             def view(request, *args, **kwargs):
                 self = cls(**initkwargs)
                 return self.dispatch(request, *args, **kwargs)
-    
+
             # take name and docstring from class
             update_wrapper(view, cls, updated=())
-    
+
             # and possible attributes set by decorators
             # like csrf_exempt from dispatch
             update_wrapper(view, cls.dispatch, assigned=())
             return view
-    
+
         def dispatch(self, request, *args, **kwargs):
             # Try to dispatch to the right method; if a method doesn't exist,
             # defer to the error handler. Also defer to the error handler if the
@@ -143,7 +143,7 @@ except ImportError:
             self.args = args
             self.kwargs = kwargs
             return handler(request, *args, **kwargs)
-    
+
         def http_method_not_allowed(self, request, *args, **kwargs):
             allowed_methods = [m for m in self.http_method_names if hasattr(self, m)]
             #logger.warning('Method Not Allowed (%s): %s' % (request.method, request.path),
@@ -374,7 +374,7 @@ else:
 # Markdown is optional
 try:
     import markdown
-     
+
     class CustomSetextHeaderProcessor(markdown.blockprocessors.BlockProcessor):
         """
         Class for markdown < 2.1
@@ -408,7 +408,7 @@ try:
         Simple wrapper around :func:`markdown.markdown` to set the base level
         of '#' style headers to <h2>.
         """
-        
+
         extensions = ['headerid(level=2)']
         safe_mode = False,
 

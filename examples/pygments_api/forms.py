@@ -13,7 +13,7 @@ class PygmentsForm(forms.Form):
 
     code = forms.CharField(widget=forms.Textarea,
                            label='Code Text',
-                           max_length=1000000, 
+                           max_length=1000000,
                            help_text='(Copy and paste the code text here.)')
     title = forms.CharField(required=False,
                             help_text='(Optional)',

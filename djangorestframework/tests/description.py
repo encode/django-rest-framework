@@ -19,7 +19,7 @@ indented
 
 # hash style header #"""
 
-# If markdown is installed we also test it's working 
+# If markdown is installed we also test it's working
 # (and that our wrapped forces '=' to h2 and '-' to h3)
 
 # We support markdown < 2.1 and markdown >= 2.1
@@ -69,16 +69,16 @@ class TestViewNamesAndDescriptions(TestCase):
 
             * list
             * list
-            
+
             another header
             --------------
 
                 code block
 
             indented
-            
+
             # hash style header #"""
-        
+
         self.assertEquals(get_description(MockView()), DESCRIPTION)
 
     # This has been turned off now
@@ -89,7 +89,7 @@ class TestViewNamesAndDescriptions(TestCase):
     #        """docstring"""
     #        description = example
     #    self.assertEquals(get_description(MockView()), example)
- 
+
     #def test_resource_description_does_not_require_docstring(self):
     #    """Ensure that empty docstrings do not affect the Resource's description if it has been set using the 'description' class attribute."""
     #    example = 'Some other description'
@@ -102,7 +102,7 @@ class TestViewNamesAndDescriptions(TestCase):
         class MockView(View):
             pass
         self.assertEquals(get_description(MockView()), '')
-  
+
     def test_markdown(self):
         """Ensure markdown to HTML works as expected"""
         if apply_markdown:
