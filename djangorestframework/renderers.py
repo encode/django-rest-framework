@@ -26,6 +26,7 @@ __all__ = (
     'BaseRenderer',
     'TemplateRenderer',
     'JSONRenderer',
+    'JSONPRenderer',
     'DocumentingHTMLRenderer',
     'DocumentingXHTMLRenderer',
     'DocumentingPlainTextRenderer',
@@ -111,6 +112,28 @@ class JSONRenderer(BaseRenderer):
             indent = None
 
         return json.dumps(obj, cls=DateTimeAwareJSONEncoder, indent=indent, sort_keys=sort_keys)
+
+
+class JSONPRenderer(JSONRenderer):
+    """
+    Renderer which serializes to JSONP
+    """
+    
+    media_type = 'application/json-p'
+    format = 'json-p'
+    renderer_class = JSONRenderer
+    callback_parameter = 'callback'
+
+    def _get_callback(self):
+        return self.view.request.GET.get(self.callback_parameter, self.callback_parameter)
+
+    def _get_renderer(self):
+        return self.renderer_class(self.view)
+
+    def render(self, obj=None, media_type=None):
+        callback = self._get_callback()
+        json = self._get_renderer().render(obj, media_type)
+        return "%s(%s);" % (callback, json)
 
 
 class XMLRenderer(BaseRenderer):
@@ -376,6 +399,7 @@ class DocumentingPlainTextRenderer(DocumentingTemplateRenderer):
 
 
 DEFAULT_RENDERERS = ( JSONRenderer,
+                      JSONPRenderer,
                       DocumentingHTMLRenderer,
                       DocumentingXHTMLRenderer,
                       DocumentingPlainTextRenderer,
