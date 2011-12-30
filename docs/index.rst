@@ -87,24 +87,23 @@ Using Django REST framework can be as simple as adding a few lines to your urlco
 
 Django REST framework comes with two "getting started" examples.
 
-#. :ref:`views`
-#. :ref:`modelviews`
+#. :doc:`examples/views`
+#. :doc:`examples/modelviews`
 
 Examples
 --------
 
 There are a few real world web API examples included with Django REST framework.
 
-#. :ref:`objectstore` - Using :class:`views.View` classes for APIs that do not map to models.
-#. :ref:`codehighlighting` - Using :class:`views.View` classes with forms for input validation.
-#. :ref:`blogposts` - Using :class:`views.ModelView` classes for APIs that map directly to models.
+#. :doc:`examples/objectstore` - Using :class:`views.View` classes for APIs that do not map to models.
+#. :doc:`examples/pygments` - Using :class:`views.View` classes with forms for input validation.
+#. :doc:`examples/blogpost` - Using :class:`views.ModelView` classes for APIs that map directly to models.
 
 All the examples are freely available for testing in the sandbox:
 
     http://api.django-rest-framework.org
 
-(The :ref:`sandbox` resource is also documented.)
-
+(The :doc:`examples/sandbox` resource is also documented.)
 
 
 How Tos, FAQs & Notes
@@ -136,19 +135,13 @@ Library Reference
   library/status
   library/views
 
-Examples Reference
-------------------
+Example Reference
+-----------------
 
 .. toctree::
-  :maxdepth: 1
+  :maxdepth: 2
 
-  examples/views
-  examples/modelviews
-  examples/objectstore
-  examples/pygments
-  examples/blogpost
-  examples/sandbox
-  howto/mixin
+  examples.rst
 
 Indices and tables
 ------------------

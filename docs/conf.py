@@ -14,8 +14,8 @@
 import sys, os
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'djangorestframework'))
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'examples'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'djangorestframework')) # for documenting the library
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(__file__)), 'examples')) # for importing settings
 import settings
 from django.core.management import setup_environ
 setup_environ(settings)

@@ -1,5 +1,3 @@
-.. _objectstore:
-
 Object Store API
 ================
 

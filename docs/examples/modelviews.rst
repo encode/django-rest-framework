@@ -1,5 +1,3 @@
-.. _modelviews:
-
 Getting Started - Model Views
 -----------------------------
 

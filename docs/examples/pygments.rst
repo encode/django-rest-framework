@@ -1,5 +1,3 @@
-.. _codehighlighting:
-
 Code Highlighting API
 =====================
 

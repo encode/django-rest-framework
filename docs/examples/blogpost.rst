@@ -1,5 +1,3 @@
-.. _blogposts:
-
 Blog Posts API
 ==============
 

@@ -1,5 +1,3 @@
-.. _views:
-
 Getting Started - Views
 -----------------------
 
