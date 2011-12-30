@@ -173,7 +173,7 @@ class FormResource(Resource):
                 field_errors[key] = [u'This field does not exist.']
 
             if field_errors:
-                detail[u'field-errors'] = field_errors
+                detail[u'field_errors'] = field_errors
 
         # Return HTTP 400 response (BAD REQUEST)
         raise ErrorResponse(400, detail)
