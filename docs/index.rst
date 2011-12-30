@@ -70,6 +70,13 @@ Getting Started
 
 Using Django REST framework can be as simple as adding a few lines to your urlconf.
 
+The following example exposes your `MyModel` model through an api. It will provide two views:
+
+ * A view which lists your model instances and simultaniously allows creation of instances 
+   from that view.
+
+ * Another view which lets you view, update or delete  your model instances individually.
+
 ``urls.py``::
 
     from django.conf.urls.defaults import patterns, url
@@ -85,27 +92,6 @@ Using Django REST framework can be as simple as adding a few lines to your urlco
         url(r'^(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=MyResource)),
     )
 
-Django REST framework comes with two "getting started" examples.
-
-#. :doc:`examples/views`
-#. :doc:`examples/modelviews`
-
-Examples
---------
-
-There are a few real world web API examples included with Django REST framework.
-
-#. :doc:`examples/objectstore` - Using :class:`views.View` classes for APIs that do not map to models.
-#. :doc:`examples/pygments` - Using :class:`views.View` classes with forms for input validation.
-#. :doc:`examples/blogpost` - Using :class:`views.ModelView` classes for APIs that map directly to models.
-
-All the examples are freely available for testing in the sandbox:
-
-    http://rest.ep.io
-
-(The :doc:`examples/sandbox` resource is also documented.)
-
-
 How Tos, FAQs & Notes
 ---------------------
 
@@ -117,31 +103,15 @@ How Tos, FAQs & Notes
   howto/alternativeframeworks
   howto/mixin
 
-Library Reference
------------------
+.. include:: library.rst
+
+
+.. include:: examples.rst
 
 .. toctree::
-  :maxdepth: 1
+  :hidden: 
 
-  library/authentication
-  library/compat
-  library/mixins
-  library/parsers
-  library/permissions
-  library/renderers
-  library/resource
-  library/response
-  library/serializer
-  library/status
-  library/views
-
-Example Reference
------------------
-
-.. toctree::
-  :maxdepth: 2
-
-  examples.rst
+  contents
 
 Indices and tables
 ------------------
