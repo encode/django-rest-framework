@@ -92,16 +92,7 @@ The following example exposes your `MyModel` model through an api. It will provi
         url(r'^(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=MyResource)),
     )
 
-How Tos, FAQs & Notes
----------------------
-
-.. toctree::
-  :maxdepth: 1
-
-  howto/setup
-  howto/usingcurl
-  howto/alternativeframeworks
-  howto/mixin
+.. include:: howto.rst
 
 .. include:: library.rst
 
