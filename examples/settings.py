@@ -1,4 +1,5 @@
 # Settings for djangorestframework examples project
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -46,7 +47,7 @@ USE_L10N = True
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/"
 # NOTE: Some of the djangorestframework examples use MEDIA_ROOT to store content.
-MEDIA_ROOT = 'media/'
+MEDIA_ROOT = os.path.join(os.getenv('EPIO_DATA_DIRECTORY', '.'), 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).

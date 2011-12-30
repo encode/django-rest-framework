@@ -13,6 +13,9 @@ import operator
 OBJECT_STORE_DIR = os.path.join(settings.MEDIA_ROOT, 'objectstore')
 MAX_FILES = 10
 
+if not os.path.exists(OBJECT_STORE_DIR):
+    os.makedirs(OBJECT_STORE_DIR)
+
 
 def remove_oldest_files(dir, max_files):
     """
