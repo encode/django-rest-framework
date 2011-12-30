@@ -149,7 +149,7 @@ class TestFormValidation(TestCase):
         try:
             validator.validate_request(content, None)
         except ErrorResponse, exc:
-            self.assertEqual(exc.response.raw_content, {'field-errors': {'qwerty': ['This field is required.']}})
+            self.assertEqual(exc.response.raw_content, {'field_errors': {'qwerty': ['This field is required.']}})
         else:
             self.fail('ResourceException was not raised')  #pragma: no cover
 
@@ -159,7 +159,7 @@ class TestFormValidation(TestCase):
         try:
             validator.validate_request(content, None)
         except ErrorResponse, exc:
-            self.assertEqual(exc.response.raw_content, {'field-errors': {'qwerty': ['This field is required.']}})
+            self.assertEqual(exc.response.raw_content, {'field_errors': {'qwerty': ['This field is required.']}})
         else:
             self.fail('ResourceException was not raised')  #pragma: no cover
 
@@ -169,7 +169,7 @@ class TestFormValidation(TestCase):
         try:
             validator.validate_request(content, None)
         except ErrorResponse, exc:
-            self.assertEqual(exc.response.raw_content, {'field-errors': {'extra': ['This field does not exist.']}})
+            self.assertEqual(exc.response.raw_content, {'field_errors': {'extra': ['This field does not exist.']}})
         else:
             self.fail('ResourceException was not raised')  #pragma: no cover
 
@@ -179,7 +179,7 @@ class TestFormValidation(TestCase):
         try:
             validator.validate_request(content, None)
         except ErrorResponse, exc:
-            self.assertEqual(exc.response.raw_content, {'field-errors': {'qwerty': ['This field is required.'],
+            self.assertEqual(exc.response.raw_content, {'field_errors': {'qwerty': ['This field is required.'],
                                                                          'extra': ['This field does not exist.']}})
         else:
             self.fail('ResourceException was not raised')  #pragma: no cover
