@@ -8,7 +8,7 @@ from coverage import coverage
 
 def main():
     """Run the tests for the examples and generate a coverage report."""
-    
+
     # Discover the list of all modules that we should test coverage for
     project_dir = os.path.dirname(__file__)
     cov_files = []
@@ -18,7 +18,7 @@ def main():
             continue
         cov_files.extend([os.path.join(path, file) for file in files if file.endswith('.py')])
     TestRunner = get_runner(settings)
-    
+
     cov = coverage()
     cov.erase()
     cov.start()

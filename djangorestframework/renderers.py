@@ -3,7 +3,7 @@ Renderers are used to serialize a View's output into specific media types.
 
 Django REST framework also provides HTML and PlainText renderers that help self-document the API,
 by serializing the output along with documentation regarding the View, output status and headers,
-and providing forms and links depending on the allowed methods, renderers and parsers on the View. 
+and providing forms and links depending on the allowed methods, renderers and parsers on the View.
 """
 from django import forms
 from django.conf import settings
@@ -26,6 +26,7 @@ __all__ = (
     'BaseRenderer',
     'TemplateRenderer',
     'JSONRenderer',
+    'JSONPRenderer',
     'DocumentingHTMLRenderer',
     'DocumentingXHTMLRenderer',
     'DocumentingPlainTextRenderer',
@@ -39,7 +40,7 @@ class BaseRenderer(object):
     All renderers must extend this class, set the :attr:`media_type` attribute,
     and override the :meth:`render` method.
     """
-    
+
     _FORMAT_QUERY_PARAM = 'format'
 
     media_type = None
@@ -81,7 +82,7 @@ class BaseRenderer(object):
         """
         if obj is None:
             return ''
-        
+
         return str(obj)
 
 
@@ -113,6 +114,28 @@ class JSONRenderer(BaseRenderer):
         return json.dumps(obj, cls=DateTimeAwareJSONEncoder, indent=indent, sort_keys=sort_keys)
 
 
+class JSONPRenderer(JSONRenderer):
+    """
+    Renderer which serializes to JSONP
+    """
+
+    media_type = 'application/json-p'
+    format = 'json-p'
+    renderer_class = JSONRenderer
+    callback_parameter = 'callback'
+
+    def _get_callback(self):
+        return self.view.request.GET.get(self.callback_parameter, self.callback_parameter)
+
+    def _get_renderer(self):
+        return self.renderer_class(self.view)
+
+    def render(self, obj=None, media_type=None):
+        callback = self._get_callback()
+        json = self._get_renderer().render(obj, media_type)
+        return "%s(%s);" % (callback, json)
+
+
 class XMLRenderer(BaseRenderer):
     """
     Renderer which serializes to XML.
@@ -135,10 +158,10 @@ if yaml:
         """
         Renderer which serializes to YAML.
         """
-    
+
         media_type = 'application/yaml'
         format = 'yaml'
-    
+
         def render(self, obj=None, media_type=None):
             """
             Renders *obj* into serialized YAML.
@@ -200,7 +223,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
         content = renderers[0](view).render(obj, media_type)
         if not all(char in string.printable for char in content):
             return '[%d bytes of binary content]'
-            
+
         return content
 
 
@@ -236,7 +259,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
         # If we still don't have a form instance then try to get an unbound form which can tunnel arbitrary content types
         if not form_instance:
             form_instance = self._get_generic_content_form(view)
-        
+
         return form_instance
 
 
@@ -328,7 +351,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
             'METHOD_PARAM': getattr(self.view, '_METHOD_PARAM', None),
             'ADMIN_MEDIA_PREFIX': getattr(settings, 'ADMIN_MEDIA_PREFIX', None),
         })
-        
+
         ret = template.render(context)
 
         # Munge DELETE Response code to allow us to return content
@@ -376,6 +399,7 @@ class DocumentingPlainTextRenderer(DocumentingTemplateRenderer):
 
 
 DEFAULT_RENDERERS = ( JSONRenderer,
+                      JSONPRenderer,
                       DocumentingHTMLRenderer,
                       DocumentingXHTMLRenderer,
                       DocumentingPlainTextRenderer,

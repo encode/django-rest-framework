@@ -9,11 +9,11 @@ a browseable Web API, and much of the other goodness that Django REST framework 
 
     A live sandbox instance of this API is available for testing:
     
-    * http://api.django-rest-framework.org/mixin/
+    * http://rest.ep.io/mixin/
 
     You can browse the API using a web browser, or from the command line::
 
-        curl -X GET http://api.django-rest-framework.org/mixin/
+        curl -X GET http://rest.ep.io/mixin/
 
 
 URL configuration

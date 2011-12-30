@@ -1,7 +1,7 @@
 Blog Posts API
 ==============
 
-* http://api.django-rest-framework.org/blog-post/
+* http://rest.ep.io/blog-post/
 
 The models
 ----------

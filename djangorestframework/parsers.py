@@ -49,15 +49,15 @@ class BaseParser(object):
         in case the parser needs to access any metadata on the :obj:`View` object.
         """
         self.view = view
-    
+
     def can_handle_request(self, content_type):
         """
         Returns :const:`True` if this parser is able to deal with the given *content_type*.
-        
+
         The default implementation for this function is to check the *content_type*
         argument against the :attr:`media_type` attribute set on the class to see if
         they match.
-        
+
         This may be overridden to provide for other behavior, but typically you'll
         instead want to just set the :attr:`media_type` attribute on the class.
         """
@@ -97,13 +97,13 @@ if yaml:
         """
         Parses YAML-serialized data.
         """
-    
+
         media_type = 'application/yaml'
-    
+
         def parse(self, stream):
             """
             Returns a 2-tuple of `(data, files)`.
-    
+
             `data` will be an object which is the parsed content of the response.
             `files` will always be `None`.
             """
@@ -125,7 +125,7 @@ class PlainTextParser(BaseParser):
     def parse(self, stream):
         """
         Returns a 2-tuple of `(data, files)`.
-        
+
         `data` will simply be a string representing the body of the request.
         `files` will always be `None`.
         """
@@ -142,7 +142,7 @@ class FormParser(BaseParser):
     def parse(self, stream):
         """
         Returns a 2-tuple of `(data, files)`.
-        
+
         `data` will be a :class:`QueryDict` containing all the form parameters.
         `files` will always be :const:`None`.
         """
@@ -160,7 +160,7 @@ class MultiPartParser(BaseParser):
     def parse(self, stream):
         """
         Returns a 2-tuple of `(data, files)`.
-        
+
         `data` will be a :class:`QueryDict` containing all the form parameters.
         `files` will be a :class:`QueryDict` containing all the form files.
         """
@@ -194,9 +194,9 @@ class XMLParser(BaseParser):
 			
         return (data, None)
 		
-    def _type_convert(self, value): 
+    def _type_convert(self, value):
         """
-        Converts the value returned by the XMl parse into the equivalent 
+        Converts the value returned by the XMl parse into the equivalent
         Python type
         """	
         if value is None:	

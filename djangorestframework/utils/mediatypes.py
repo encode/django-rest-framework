@@ -111,7 +111,7 @@ class _MediaType(object):
     #        return Decimal(self.params.get('q', '1.0'))
     #    except:
     #        return Decimal(0)
- 
+
     #def score(self):
     #    """
     #    Return an overall score for a given media type given it's quality and precedence.
@@ -119,7 +119,7 @@ class _MediaType(object):
     #    # NB. quality values should only have up to 3 decimal points
     #    # http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.9
     #    return self.quality * 10000 + self.precedence
-    
+
     #def as_tuple(self):
     #    return (self.main_type, self.sub_type, self.params)
 

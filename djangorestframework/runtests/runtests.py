@@ -16,12 +16,12 @@ from django.test.utils import get_runner
 def usage():
     return """
     Usage: python runtests.py [UnitTestClass].[method]
-    
+
     You can pass the Class name of the `UnitTestClass` you want to test.
-    
+
     Append a method name if you only want to test a specific method of that class.
     """
-    
+
 def main():
     TestRunner = get_runner(settings)
 

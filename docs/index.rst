@@ -11,11 +11,11 @@ Introduction
 
 Django REST framework is a lightweight REST framework for Django, that aims to make it easy to build well-connected, self-describing RESTful Web APIs.
 
-**Browse example APIs created with Django REST framework:** `The Sandbox <http://api.django-rest-framework.org/>`_
+**Browse example APIs created with Django REST framework:** `The Sandbox <http://rest.ep.io/>`_
 
 Features:
 
-* Automatically provides an awesome Django admin style `browse-able self-documenting API <http://api.django-rest-framework.org>`_.
+* Automatically provides an awesome Django admin style `browse-able self-documenting API <http://rest.ep.io>`_.
 * Clean, simple, views for Resources, using Django's new `class based views <http://docs.djangoproject.com/en/dev/topics/class-based-views/>`_.
 * Support for ModelResources with out-of-the-box default implementations and input validation.
 * Pluggable :mod:`.parsers`, :mod:`renderers`, :mod:`authentication` and :mod:`permissions` - Easy to customise.
@@ -101,7 +101,7 @@ There are a few real world web API examples included with Django REST framework.
 
 All the examples are freely available for testing in the sandbox:
 
-    http://api.django-rest-framework.org
+    http://rest.ep.io
 
 (The :doc:`examples/sandbox` resource is also documented.)
 
