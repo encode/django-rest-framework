@@ -35,7 +35,7 @@ To clone the project from GitHub using git::
 To install django-rest-framework in a virtualenv environment::
 
     cd django-rest-framework
-    virtualenv --no-site-packages --distribute --python=python2.6 env
+    virtualenv --no-site-packages --distribute env
     source env/bin/activate
     pip install -r requirements.txt # django, coverage
 
