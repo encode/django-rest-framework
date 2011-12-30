@@ -22,6 +22,9 @@ import operator
 HIGHLIGHTED_CODE_DIR = os.path.join(settings.MEDIA_ROOT, 'pygments')
 MAX_FILES = 10
 
+if not os.path.exists(HIGHLIGHTED_CODE_DIR):
+    os.makedirs(HIGHLIGHTED_CODE_DIR)
+
 
 def list_dir_sorted_by_ctime(dir):
     """
