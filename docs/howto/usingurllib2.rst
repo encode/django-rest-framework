@@ -4,15 +4,15 @@ Using urllib2
 Python's standard library comes with some nice modules
 you can use to test your api or even write a full client.
 
-Here's an example which does a 'GET' on the `model-resource` examle
+Here's an example which does a 'GET' on the `model-resource` example
 in the sandbox.::
 
-    import urllib2
+    >>> import urllib2
     >>> r = urllib2.urlopen('htpp://rest.ep.io/model-resource-example')
     # You can check if the response was ok:
     >>> r.getcode()
     200
-    # Or examin the resonse itself:
+    # Or examin the response itself:
     >>> print r.read()
     [{"url": "http://rest.ep.io/model-resource-example/1/", "baz": "sdf", "foo": true, "bar": 123}]
 
