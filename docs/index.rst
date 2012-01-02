@@ -40,7 +40,7 @@ Requirements
 ------------
 
 * Python (2.5, 2.6, 2.7 supported)
-* Django (1.2, 1.3 supported)
+* Django (1.2, 1.3, 1.4-alpha supported)
 
 
 Installation
@@ -50,7 +50,7 @@ You can install Django REST framework using ``pip`` or ``easy_install``::
 
     pip install djangorestframework
 
-Or get the latest development version using mercurial or git::
+Or get the latest development version using git::
 
     git clone git@github.com:tomchristie/django-rest-framework.git
 
