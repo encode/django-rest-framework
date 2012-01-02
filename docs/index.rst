@@ -49,7 +49,7 @@ You can install Django REST framework using ``pip`` or ``easy_install``::
 
     pip install djangorestframework
 
-Or get the latest development version using mercurial or git::
+Or get the latest development version using git::
 
     git clone git@github.com:tomchristie/django-rest-framework.git
 
