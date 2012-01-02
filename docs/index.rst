@@ -14,6 +14,7 @@ Django REST framework is a lightweight REST framework for Django, that aims to m
 **Browse example APIs created with Django REST framework:** `The Sandbox <http://rest.ep.io/>`_
 
 Features:
+---------
 
 * Automatically provides an awesome Django admin style `browse-able self-documenting API <http://rest.ep.io>`_.
 * Clean, simple, views for Resources, using Django's new `class based views <http://docs.djangoproject.com/en/dev/topics/class-based-views/>`_.

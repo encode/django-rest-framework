@@ -1,5 +1,5 @@
-Using urllib2
-=============
+Using urllib2 with Django REST Framework
+========================================
 
 Python's standard library comes with some nice modules
 you can use to test your api or even write a full client.
