@@ -60,7 +60,7 @@ both::
 
     permissions = (PerUserThrottling, Isauthenticated)
 
-To see what other throttles are available, have a look at the :doc:`../library/permissions` module.
+To see what other throttles are available, have a look at the :mod:`permissions` module.
 
-If you want to implement your own authentication method, then refer to the :doc:`../library/authentication` 
+If you want to implement your own authentication method, then refer to the :mod:`authentication` 
 module.
