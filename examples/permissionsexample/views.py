@@ -31,8 +31,11 @@ class ThrottlingExampleView(View):
 
 class LoggedInExampleView(View):
     """
-    You can login with **'test', 'test'.**
-    """
+    You can login with **'test', 'test'.** or use curl:
+    
+    `curl -X GET -H 'Accept: application/json' -u test:test http://localhost:8000/permissions-example`
+    """ 
+
     permissions = (IsAuthenticated, )
     def get(self, request):
         return 'Logged in or not?'
