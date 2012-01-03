@@ -6,6 +6,7 @@ classes that can be added to a `View`.
 from django.contrib.auth.models import AnonymousUser
 from django.core.paginator import Paginator
 from django.db.models.fields.related import ForeignKey
+from django.db.models.query import Q
 from django.http import HttpResponse
 
 from djangorestframework import status
@@ -33,6 +34,82 @@ __all__ = (
     'DeleteModelMixin',
     'ListModelMixin'
 )
+
+
+#### Base for *ModelMixins using URL arguments to filter out queryset or instances ####
+
+class QueryMixin(object):
+    """ Implements mechanisms used by other classes (like *ModelMixin group) to
+    define a query that represents Model instances the Mixin is working with.
+
+    If a *ModelMixin is going to retrive an instance (or queryset) using args and kwargs
+    passed by as URL arguments, it should provied arguments to objects.get and objects.filter
+    methods wrapped in by `build_query`
+    
+
+    """
+    def build_query(self, *args, **kwargs):
+        
+        # This methods simply mimics the previous behaviour of the framework, where
+        # the following code was used few times in to retrive the instance:
+        #
+        # ------------------------------
+        # if args:
+        #     #If we have any none kwargs then assume the last represents the primrary key
+        #     instance = model.objects.get(pk=args[-1], **kwargs)
+        # else:
+        #     # Otherwise assume the kwargs uniquely identify the model
+        #     instance = model.objects.get(**kwargs)
+        # -----------------------------
+        # 
+        # this block is now replaced with
+        #
+        # -------------
+        # instance = model.objects.get(self.build_query(*args, **kwargs)
+        # -------------
+        #
+        # which is more DRY + gives the simple possibility to provide 
+        # *any* arguments in URL
+        #
+
+        tmp = dict(kwargs)
+        if args:
+            # While this code simply follows the previous behaviour, we feel this 
+            # is somehow strange to use 'pk' with any other query parameters... isn't it?
+
+            # If we have any none kwargs then assume the last represents the primrary key
+            # Otherwise assume the kwargs uniquely identify the model
+            tmp.update({'pk': args[-1]})
+        return Q(**tmp)
+
+
+    def get_instance_data(self, model, content, *args, **kwargs):
+
+        tmp = dict(kwargs)
+
+        for field in model._meta.fields:
+            if isinstance(field, ForeignKey) and tmp.has_key(field.name):
+                # translate 'related_field' kwargs into 'related_field_id'
+                tmp[field.name + '_id'] = tmp[field.name]
+                del tmp[field.name]
+
+        all_kw_args = dict(content.items() + tmp.items())
+
+        if args:
+            all_kw_args.update({'pk': args[-1]})
+
+        return all_kw_args
+
+
+    # TODO: get_object and get_queryset methods should be implemented somehow. This will
+    # give a nice parallel to django class-based generic views. We're leaving this 
+    # unimplementd at the moment.
+
+    def get_object(self):
+        pass
+
+    def get_queryset(self):
+        pass
 
 
 ########## Request Mixin ##########
@@ -481,7 +558,7 @@ class InstanceMixin(object):
 
 ########## Model Mixins ##########
 
-class ReadModelMixin(object):
+class ReadModelMixin(QueryMixin):
     """
     Behavior to read a `model` instance on GET requests
     """
@@ -489,22 +566,21 @@ class ReadModelMixin(object):
         model = self.resource.model
 
         try:
-            if args:
-                # If we have any none kwargs then assume the last represents the primrary key
-                self.model_instance = model.objects.get(pk=args[-1], **kwargs)
-            else:
-                # Otherwise assume the kwargs uniquely identify the model
-                filtered_keywords = kwargs.copy()
-                if BaseRenderer._FORMAT_QUERY_PARAM in filtered_keywords:
-                    del filtered_keywords[BaseRenderer._FORMAT_QUERY_PARAM]
-                self.model_instance = model.objects.get(**filtered_keywords)
+            self.model_instance = model.objects.get(self.build_query(*args, **kwargs))
         except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
 
         return self.model_instance
 
+    def build_query(self, *args, **kwargs):
+        # Build query is overriden to filter the kwargs priori
+        # to use them as build_query argument
+        filtered_keywords = kwargs.copy()
+        if BaseRenderer._FORMAT_QUERY_PARAM in filtered_keywords:
+            del filtered_keywords[BaseRenderer._FORMAT_QUERY_PARAM]
+        return super(ReadModelMixin, self).build_query(*args, **filtered_keywords)
 
-class CreateModelMixin(object):
+class CreateModelMixin(QueryMixin):
     """
     Behavior to create a `model` instance on POST requests
     """
@@ -515,11 +591,6 @@ class CreateModelMixin(object):
         content = dict(self.CONTENT)
         m2m_data = {}
 
-        for field in model._meta.fields:
-            if isinstance(field, ForeignKey) and kwargs.has_key(field.name):
-                # translate 'related_field' kwargs into 'related_field_id'
-                kwargs[field.name + '_id'] = kwargs[field.name]
-                del kwargs[field.name]
 
         for field in model._meta.many_to_many:
             if content.has_key(field.name):
@@ -528,12 +599,8 @@ class CreateModelMixin(object):
                 )
                 del content[field.name]
 
-        all_kw_args = dict(content.items() + kwargs.items())
 
-        if args:
-            instance = model(pk=args[-1], **all_kw_args)
-        else:
-            instance = model(**all_kw_args)
+        instance = model(**self.get_instance_data(model, content, *args, **kwargs))
         instance.save()
 
         for fieldname in m2m_data:
@@ -555,7 +622,7 @@ class CreateModelMixin(object):
         return Response(status.HTTP_201_CREATED, instance, headers)
 
 
-class UpdateModelMixin(object):
+class UpdateModelMixin(QueryMixin):
     """
     Behavior to update a `model` instance on PUT requests
     """
@@ -564,24 +631,21 @@ class UpdateModelMixin(object):
 
         # TODO: update on the url of a non-existing resource url doesn't work correctly at the moment - will end up with a new url
         try:
-            if args:
-                # If we have any none kwargs then assume the last represents the primary key
-                self.model_instance = model.objects.get(pk=args[-1], **kwargs)
-            else:
-                # Otherwise assume the kwargs uniquely identify the model
-                self.model_instance = model.objects.get(**kwargs)
+            self.model_instance = model.objects.get(self.build_query(*args, **kwargs))
 
             for (key, val) in self.CONTENT.items():
                 setattr(self.model_instance, key, val)
         except model.DoesNotExist:
-            self.model_instance = model(**self.CONTENT)
-            self.model_instance.save()
+            self.model_instance = model(**self.get_instance_data(model, self.CONTENT, *args, **kwargs))
+            # args + kwartgs were not provided...
+            # self.model_instance = model(**self.CONTENT)
+            # self.model_instance.save()
 
         self.model_instance.save()
         return self.model_instance
 
 
-class DeleteModelMixin(object):
+class DeleteModelMixin(QueryMixin):
     """
     Behavior to delete a `model` instance on DELETE requests
     """
@@ -589,12 +653,7 @@ class DeleteModelMixin(object):
         model = self.resource.model
 
         try:
-            if args:
-                # If we have any none kwargs then assume the last represents the primrary key
-                instance = model.objects.get(pk=args[-1], **kwargs)
-            else:
-                # Otherwise assume the kwargs uniquely identify the model
-                instance = model.objects.get(**kwargs)
+            instance = model.objects.get(self.build_query(*args, **kwargs))
         except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
 
@@ -602,7 +661,7 @@ class DeleteModelMixin(object):
         return
 
 
-class ListModelMixin(object):
+class ListModelMixin(QueryMixin):
     """
     Behavior to list a set of `model` instances on GET requests
     """
@@ -634,7 +693,7 @@ class ListModelMixin(object):
         if ordering:
             args = as_tuple(ordering)
             queryset = queryset.order_by(*args)
-        return queryset.filter(**kwargs)
+        return queryset.filter(self.build_query(**kwargs))
 
 
 ########## Pagination Mixins ##########
