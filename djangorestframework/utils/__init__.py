@@ -22,7 +22,7 @@ def as_tuple(obj):
     """
     Given an object which may be a list/tuple, another object, or None,
     return that object in list form.
-
+    
     IE:
     If the object is already a list/tuple just return it.
     If the object is not None, return it in a list with a single element.
@@ -150,10 +150,10 @@ class XMLRenderer():
                 xml.startElement(key, {})
                 self._to_xml(xml, value)
                 xml.endElement(key)
-				
+
         elif data is None:
             # Don't output any value
-            pass				
+            pass
 
         else:
             xml.characters(smart_unicode(data))

@@ -156,7 +156,8 @@ class RendererIntegrationTests(TestCase):
         self.assertEquals(resp.status_code, DUMMYSTATUS)
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
-_indented_repr = '{\n  "foo": [\n    "bar", \n    "baz"\n  ]\n}'
+
+_indented_repr = '{\n    "foo": [\n        "bar",\n        "baz"\n    ]\n}'
 
 
 class JSONRendererTests(TestCase):
@@ -179,7 +180,7 @@ class JSONRendererTests(TestCase):
         """
         obj = {'foo': ['bar', 'baz']}
         renderer = JSONRenderer(None)
-        content = renderer.render(obj, 'application/json; indent=2')
+        content = renderer.render(obj, 'application/json; indent=4')
         self.assertEquals(content, _indented_repr)
 
     def test_render_and_parse(self):
@@ -239,6 +240,7 @@ class JSONPRendererTests(TestCase):
 if YAMLRenderer:
     _yaml_repr = 'foo: [bar, baz]\n'
 
+
     class YAMLRendererTests(TestCase):
         """
         Tests specific to the JSON Renderer
@@ -252,6 +254,7 @@ if YAMLRenderer:
             renderer = YAMLRenderer(None)
             content = renderer.render(obj, 'application/yaml')
             self.assertEquals(content, _yaml_repr)
+
 
         def test_render_and_parse(self):
             """

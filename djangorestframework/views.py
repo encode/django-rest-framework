@@ -25,7 +25,6 @@ __all__ = (
 )
 
 
-
 class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     Handles incoming requests and maps them to REST operations.
@@ -51,14 +50,13 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     List of all authenticating methods to attempt.
     """
-    authentication = ( authentication.UserLoggedInAuthentication,
-                       authentication.BasicAuthentication )
+    authentication = (authentication.UserLoggedInAuthentication,
+                      authentication.BasicAuthentication)
 
     """
     List of all permissions that must be checked.
     """
-    permissions = ( permissions.FullAnonAccess, )
-
+    permissions = (permissions.FullAnonAccess,)
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -71,14 +69,12 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         view.cls_instance = cls(**initkwargs)
         return view
 
-
     @property
     def allowed_methods(self):
         """
         Return the list of allowed HTTP methods, uppercased.
         """
         return [method.upper() for method in self.http_method_names if hasattr(self, method)]
-
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
@@ -87,22 +83,19 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         raise ErrorResponse(status.HTTP_405_METHOD_NOT_ALLOWED,
                             {'detail': 'Method \'%s\' not allowed on this resource.' % self.method})
 
-
     def initial(self, request, *args, **kargs):
         """
         Hook for any code that needs to run prior to anything else.
-        Required if you want to do things like set `request.upload_handlers` before
-        the authentication and dispatch handling is run.
+        Required if you want to do things like set `request.upload_handlers`
+        before the authentication and dispatch handling is run.
         """
         pass
-
 
     def add_header(self, field, value):
         """
         Add *field* and *value* to the :attr:`headers` attribute of the :class:`View` class.
         """
         self.headers[field] = value
-
 
     # Note: session based authentication is explicitly CSRF validated,
     # all other authentication is CSRF exempt.
@@ -143,11 +136,13 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
                 response = Response(status.HTTP_204_NO_CONTENT)
 
             if request.method == 'OPTIONS':
-                # do not filter the response for HTTP OPTIONS, else the response fields are lost,
+                # do not filter the response for HTTP OPTIONS,
+                # else the response fields are lost,
                 # as they do not correspond with model fields
                 response.cleaned_content = response.raw_content
             else:
-                # Pre-serialize filtering (eg filter complex objects into natively serializable types)
+                # Pre-serialize filtering (eg filter complex objects into
+                # natively serializable types)
                 response.cleaned_content = self.filter_response(response.raw_content)
 
         except ErrorResponse, exc:
@@ -155,8 +150,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
         # Always add these headers.
         #
-        # TODO - this isn't actually the correct way to set the vary header,
-        # also it's currently sub-optimal for HTTP caching - need to sort that out.
+        # TODO - this isn't really the correct way to set the Vary header,
+        # also it's currently sub-optimal for HTTP caching.
         response.headers['Allow'] = ', '.join(self.allowed_methods)
         response.headers['Vary'] = 'Authenticate, Accept'
 
@@ -168,7 +163,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         return self.render(response)
 
     def options(self, request, *args, **kwargs):
-        response_obj = {
+        ret = {
             'name': get_name(self),
             'description': get_description(self),
             'renders': self._rendered_media_types,
@@ -179,30 +174,46 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             field_name_types = {}
             for name, field in form.fields.iteritems():
                 field_name_types[name] = field.__class__.__name__
-            response_obj['fields'] = field_name_types
-        return response_obj
+            ret['fields'] = field_name_types
+        return ret
 
 
-class ModelView(View):
+class ModelView(ModelMixin, View):
     """
     A RESTful view that maps to a model in the database.
     """
     resource = resources.ModelResource
 
-class InstanceModelView(InstanceMixin, ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelView):
+
+class InstanceModelView(InstanceMixin, ModelView):
     """
-    A view which provides default operations for read/update/delete against a model instance.
+    A view which provides default operations for read/update/delete against a
+    model instance.  This view is also treated as the Canonical identifier
+    of the instances.
     """
     _suffix = 'Instance'
 
-class ListModelView(ListModelMixin, ModelView):
+    get = ModelMixin.read
+    put = ModelMixin.update
+    delete = ModelMixin.destroy
+
+
+class ListModelView(ModelView):
     """
-    A view which provides default operations for list, against a model in the database.
+    A view which provides default operations for list, against a model in the
+    database.
     """
     _suffix = 'List'
 
-class ListOrCreateModelView(ListModelMixin, CreateModelMixin, ModelView):
+    get = ModelMixin.list
+
+
+class ListOrCreateModelView(ModelView):
     """
-    A view which provides default operations for list and create, against a model in the database.
+    A view which provides default operations for list and create, against a
+    model in the database.
     """
     _suffix = 'List'
+
+    get = ModelMixin.list
+    post = ModelMixin.create
