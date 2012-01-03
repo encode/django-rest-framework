@@ -1,9 +1,7 @@
-.. _objectstore:
-
 Object Store API
 ================
 
-* http://api.django-rest-framework.org/object-store/
+* http://rest.ep.io/object-store/
 
 This example shows an object store API that can be used to store arbitrary serializable content.
 

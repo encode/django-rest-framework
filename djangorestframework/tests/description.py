@@ -19,8 +19,11 @@ indented
 
 # hash style header #"""
 
-# If markdown is installed we also test it's working (and that our wrapped forces '=' to h2 and '-' to h3)
-MARKED_DOWN = """<h2>an example docstring</h2>
+# If markdown is installed we also test it's working
+# (and that our wrapped forces '=' to h2 and '-' to h3)
+
+# We support markdown < 2.1 and markdown >= 2.1
+MARKED_DOWN_lt_21 = """<h2>an example docstring</h2>
 <ul>
 <li>list</li>
 <li>list</li>
@@ -30,6 +33,17 @@ MARKED_DOWN = """<h2>an example docstring</h2>
 </code></pre>
 <p>indented</p>
 <h2 id="hash_style_header">hash style header</h2>"""
+
+MARKED_DOWN_gte_21 = """<h2 id="an-example-docstring">an example docstring</h2>
+<ul>
+<li>list</li>
+<li>list</li>
+</ul>
+<h3 id="another-header">another header</h3>
+<pre><code>code block
+</code></pre>
+<p>indented</p>
+<h2 id="hash-style-header">hash style header</h2>"""
 
 
 class TestViewNamesAndDescriptions(TestCase):
@@ -55,16 +69,16 @@ class TestViewNamesAndDescriptions(TestCase):
 
             * list
             * list
-            
+
             another header
             --------------
 
                 code block
 
             indented
-            
+
             # hash style header #"""
-        
+
         self.assertEquals(get_description(MockView()), DESCRIPTION)
 
     # This has been turned off now
@@ -75,7 +89,7 @@ class TestViewNamesAndDescriptions(TestCase):
     #        """docstring"""
     #        description = example
     #    self.assertEquals(get_description(MockView()), example)
- 
+
     #def test_resource_description_does_not_require_docstring(self):
     #    """Ensure that empty docstrings do not affect the Resource's description if it has been set using the 'description' class attribute."""
     #    example = 'Some other description'
@@ -88,8 +102,10 @@ class TestViewNamesAndDescriptions(TestCase):
         class MockView(View):
             pass
         self.assertEquals(get_description(MockView()), '')
-  
+
     def test_markdown(self):
         """Ensure markdown to HTML works as expected"""
         if apply_markdown:
-            self.assertEquals(apply_markdown(DESCRIPTION), MARKED_DOWN)
+            gte_21_match = apply_markdown(DESCRIPTION) == MARKED_DOWN_gte_21
+            lt_21_match = apply_markdown(DESCRIPTION) == MARKED_DOWN_lt_21
+            self.assertTrue(gte_21_match or lt_21_match)

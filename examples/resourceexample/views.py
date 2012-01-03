@@ -34,7 +34,7 @@ class AnotherExampleView(View):
         if int(num) > 2:
             return Response(status.HTTP_404_NOT_FOUND)
         return "GET request to AnotherExampleResource %s" % num
-    
+
     def post(self, request, num):
         """
         Handle POST requests, with form validation.

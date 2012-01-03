@@ -25,4 +25,4 @@ class UserGroupMap(models.Model):
     def get_absolute_url(self):
         return ('user_group_map', (), {
             'pk': self.id
-        })            
+        })

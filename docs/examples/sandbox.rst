@@ -1,5 +1,3 @@
-.. _sandbox:
-
 Sandbox Root API
 ================
 

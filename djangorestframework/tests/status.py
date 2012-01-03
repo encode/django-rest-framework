@@ -3,7 +3,7 @@ from django.test import TestCase
 from djangorestframework import status
 
 
-class TestStatus(TestCase): 
+class TestStatus(TestCase):
     """Simple sanity test to check the status module"""
 
     def test_status(self):
