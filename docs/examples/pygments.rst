@@ -1,5 +1,3 @@
-.. _codehighlighting:
-
 Code Highlighting API
 =====================
 
@@ -8,11 +6,11 @@ We're going to provide a simple wrapper around the awesome `pygments <http://pyg
 
 .. note::
 
-    A live sandbox instance of this API is available at http://api.django-rest-framework.org/pygments/
+    A live sandbox instance of this API is available at http://rest.ep.io/pygments/
 
     You can browse the API using a web browser, or from the command line::
 
-        curl -X GET http://api.django-rest-framework.org/pygments/ -H 'Accept: text/plain'
+        curl -X GET http://rest.ep.io/pygments/ -H 'Accept: text/plain'
 
 
 URL configuration
@@ -79,13 +77,13 @@ For example if we make a POST request using form input:
 
 .. code-block:: bash
 
-    bash: curl -X POST --data 'code=print "hello, world!"' --data 'style=foobar' -H 'X-Requested-With: XMLHttpRequest' http://api.django-rest-framework.org/pygments/
+    bash: curl -X POST --data 'code=print "hello, world!"' --data 'style=foobar' -H 'X-Requested-With: XMLHttpRequest' http://rest.ep.io/pygments/
     {"detail": {"style": ["Select a valid choice. foobar is not one of the available choices."], "lexer": ["This field is required."]}}
 
 Or if we make the same request using JSON:
 
 .. code-block:: bash
 
-    bash: curl -X POST --data-binary '{"code":"print \"hello, world!\"", "style":"foobar"}' -H 'Content-Type: application/json' -H 'X-Requested-With: XMLHttpRequest' http://api.django-rest-framework.org/pygments/
+    bash: curl -X POST --data-binary '{"code":"print \"hello, world!\"", "style":"foobar"}' -H 'Content-Type: application/json' -H 'X-Requested-With: XMLHttpRequest' http://rest.ep.io/pygments/
     {"detail": {"style": ["Select a valid choice. foobar is not one of the available choices."], "lexer": ["This field is required."]}}
 

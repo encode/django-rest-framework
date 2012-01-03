@@ -1,8 +1,8 @@
 """
-The :mod:`response` module provides Response classes you can use in your 
-views to return a certain HTTP response. Typically a response is *rendered* 
+The :mod:`response` module provides Response classes you can use in your
+views to return a certain HTTP response. Typically a response is *rendered*
 into a HTTP response depending on what renderers are set on your view and
-als depending on the accept header of the request. 
+als depending on the accept header of the request.
 """
 
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
@@ -23,7 +23,7 @@ class Response(object):
         self.raw_content = content      # content prior to filtering
         self.cleaned_content = content  # content after filtering
         self.headers = headers or {}
- 
+
     @property
     def status_text(self):
         """

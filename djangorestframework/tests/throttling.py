@@ -21,25 +21,25 @@ class MockView(View):
 class MockView_PerViewThrottling(MockView):
     permissions = ( PerViewThrottling, )
 
-class MockView_PerResourceThrottling(MockView):    
+class MockView_PerResourceThrottling(MockView):
     permissions = ( PerResourceThrottling, )
     resource = FormResource
 
 class MockView_MinuteThrottling(MockView):
     throttle = '3/min'
- 
- 
-    
+
+
+
 class ThrottlingTests(TestCase):
-    urls = 'djangorestframework.tests.throttling'   
-    
+    urls = 'djangorestframework.tests.throttling'
+
     def setUp(self):
         """
         Reset the cache so that no throttles will be active
         """
         cache.clear()
         self.factory = RequestFactory()
-        
+
     def test_requests_are_throttled(self):
         """
         Ensure request rate is limited
@@ -48,7 +48,7 @@ class ThrottlingTests(TestCase):
         for dummy in range(4):
             response = MockView.as_view()(request)
         self.assertEqual(503, response.status_code)
-        
+
     def set_throttle_timer(self, view, value):
         """
         Explicitly set the timer, overriding time.time()
@@ -71,7 +71,7 @@ class ThrottlingTests(TestCase):
 
         response = MockView.as_view()(request)
         self.assertEqual(200, response.status_code)
-        
+
     def ensure_is_throttled(self, view, expect):
         request = self.factory.get('/')
         request.user = User.objects.create(username='a')
@@ -80,27 +80,27 @@ class ThrottlingTests(TestCase):
         request.user = User.objects.create(username='b')
         response = view.as_view()(request)
         self.assertEqual(expect, response.status_code)
-        
+
     def test_request_throttling_is_per_user(self):
         """
-        Ensure request rate is only limited per user, not globally for 
+        Ensure request rate is only limited per user, not globally for
         PerUserThrottles
         """
         self.ensure_is_throttled(MockView, 200)
-        
+
     def test_request_throttling_is_per_view(self):
         """
         Ensure request rate is limited globally per View for PerViewThrottles
         """
         self.ensure_is_throttled(MockView_PerViewThrottling, 503)
-        
+
     def test_request_throttling_is_per_resource(self):
         """
         Ensure request rate is limited globally per Resource for PerResourceThrottles
-        """        
+        """
         self.ensure_is_throttled(MockView_PerResourceThrottling, 503)
-        
-        
+
+
     def ensure_response_header_contains_proper_throttle_field(self, view, expected_headers):
         """
         Ensure the response returns an X-Throttle field with status and next attributes
@@ -111,7 +111,7 @@ class ThrottlingTests(TestCase):
             self.set_throttle_timer(view, timer)
             response = view.as_view()(request)
             self.assertEquals(response['X-Throttle'], expect)
-            
+
     def test_seconds_fields(self):
         """
         Ensure for second based throttles.
@@ -122,7 +122,7 @@ class ThrottlingTests(TestCase):
           (0, 'status=SUCCESS; next=1.00 sec'),
           (0, 'status=FAILURE; next=1.00 sec')
          ))
-            
+
     def test_minutes_fields(self):
         """
         Ensure for minute based throttles.
@@ -133,7 +133,7 @@ class ThrottlingTests(TestCase):
           (0, 'status=SUCCESS; next=60.00 sec'),
           (0, 'status=FAILURE; next=60.00 sec')
          ))
-    
+
     def test_next_rate_remains_constant_if_followed(self):
         """
         If a client follows the recommended next request rate,

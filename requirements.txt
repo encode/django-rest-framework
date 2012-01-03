@@ -1,6 +1,5 @@
 # We need Django.  Duh.
 # coverage isn't strictly a requirement, but it's useful.
 
-Django==1.2.4
-wsgiref==0.1.2
-coverage==3.4
+Django>=1.2
+coverage>=3.4

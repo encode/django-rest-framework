@@ -13,6 +13,9 @@ import operator
 OBJECT_STORE_DIR = os.path.join(settings.MEDIA_ROOT, 'objectstore')
 MAX_FILES = 10
 
+if not os.path.exists(OBJECT_STORE_DIR):
+    os.makedirs(OBJECT_STORE_DIR)
+
 
 def remove_oldest_files(dir, max_files):
     """
@@ -39,7 +42,7 @@ class ObjectStoreRoot(View):
         ctime_sorted_basenames = [item[0] for item in sorted([(os.path.basename(path), os.path.getctime(path)) for path in filepaths],
                                                              key=operator.itemgetter(1), reverse=True)]
         return [reverse('stored-object', kwargs={'key':key}) for key in ctime_sorted_basenames]
-    
+
     def post(self, request):
         """
         Create a new stored object, with a unique key.
