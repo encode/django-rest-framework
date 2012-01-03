@@ -15,7 +15,10 @@ class BaseResource(Serializer):
     include = ()
     exclude = ()
 
-    def __init__(self, view=None, depth=None, stack=[], **kwargs):
+    # TODO: Inheritance, like for models
+    class DoesNotExist(Exception)
+
+    def __init__(self, depth=None, stack=[], **kwargs):
         super(BaseResource, self).__init__(depth, stack, **kwargs)
         self.view = view
 
@@ -32,6 +35,23 @@ class BaseResource(Serializer):
         Given the response content, filter it into a serializable object.
         """
         return self.serialize(obj)
+
+    @classmethod
+    def retrieve(cls, request, *args, **kwargs):
+        raise NotImplementedError()
+
+    @classmethod
+    def create(cls, request, *args, **kwargs):
+        raise NotImplementedError()
+
+    def update(self, data, request, *args, **kwargs):
+        raise NotImplementedError()
+
+    def delete(self, request, *args, **kwargs):
+        raise NotImplementedError()
+
+    def get_url(self):
+        raise NotImplementedError()
 
 
 class Resource(BaseResource):
@@ -426,3 +446,148 @@ class ModelResource(FormResource):
             return property_fields & set(self.fields)
 
         return property_fields.union(set(self.include)) - set(self.exclude)
+
+
+
+
+class ModelMixin(object):
+    def get_model(self):
+        """
+        Return the model class for this view.
+        """
+        return getattr(self, 'model', self.resource.model)
+
+    def get_queryset(self):
+        """
+        Return the queryset that should be used when retrieving or listing
+        instances.
+        """
+        return getattr(self, 'queryset',
+                    getattr(self.resource, 'queryset',
+                        self.get_model().objects.all()))
+
+    def get_ordering(self):
+        """
+        Return the ordering that should be used when listing instances.
+        """
+        return getattr(self, 'ordering',
+                    getattr(self.resource, 'ordering',
+                        None))
+
+    # Underlying instance API...
+
+    def get_instance(self, *args, **kwargs):
+        """
+        Return a model instance or None.
+        """
+        model = self.get_model()
+        queryset = self.get_queryset()
+
+        try:
+            return queryset.get(**kwargs)
+        except model.DoesNotExist:
+            return None
+
+    def create_instance(self, *args, **kwargs):
+        model = self.get_model()
+
+        m2m_data = {}
+        for field in model._meta.many_to_many:
+            if field.name in kwargs:
+                m2m_data[field.name] = (
+                    field.m2m_reverse_field_name(), kwargs[field.name]
+                )
+                del kwargs[field.name]
+
+        instance = model(**kwargs)
+        instance.save()
+
+        for fieldname in m2m_data:
+            manager = getattr(instance, fieldname)
+
+            if hasattr(manager, 'add'):
+                manager.add(*m2m_data[fieldname][1])
+            else:
+                data = {}
+                data[manager.source_field_name] = instance
+
+                for related_item in m2m_data[fieldname][1]:
+                    data[m2m_data[fieldname][0]] = related_item
+                    manager.through(**data).save()
+
+        return instance
+
+    def update_instance(self, instance, *args, **kwargs):
+        for (key, val) in kwargs.items():
+            setattr(instance, key, val)
+        instance.save()
+        return instance
+
+    def delete_instance(self, instance, *args, **kwargs):
+        instance.delete()
+        return instance
+
+    def list_instances(self, *args, **kwargs):
+        queryset = self.get_queryset()
+        ordering = self.get_ordering()
+
+        if ordering:
+            queryset = queryset.order_by(ordering)
+        return queryset.filter(**kwargs)
+
+    # Request/Response layer...
+
+    def _get_url_kwargs(self, kwargs):
+        format_arg = BaseRenderer._FORMAT_QUERY_PARAM
+        if format_arg in kwargs:
+            kwargs = kwargs.copy()
+            del kwargs[format_arg]
+        return kwargs
+
+    def _get_content_kwargs(self, kwargs):
+        return dict(self._get_url_kwargs(kwargs).items() +
+                    self.CONTENT.items())
+
+    def read(self, request, *args, **kwargs):
+        kwargs = self._get_url_kwargs(kwargs)
+        instance = self.get_instance(**kwargs)
+
+        if instance is None:
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
+
+        return instance
+
+    def update(self, request, *args, **kwargs):
+        kwargs = self._get_url_kwargs(kwargs)
+        instance = self.get_instance(**kwargs)
+
+        kwargs = self._get_content_kwargs(kwargs)
+        if instance:
+            instance = self.update_instance(instance, **kwargs)
+        else:
+            instance = self.create_instance(**kwargs)
+
+        return instance
+
+    def create(self, request, *args, **kwargs):
+        kwargs = self._get_content_kwargs(kwargs)
+        instance = self.create_instance(**kwargs)
+
+        headers = {}
+        try:
+            headers['Location'] = self.resource(self).url(instance)
+        except:  # TODO: _SkipField should not really happen.
+            pass
+
+        return Response(status.HTTP_201_CREATED, instance, headers)
+
+    def destroy(self, request, *args, **kwargs):
+        kwargs = self._get_url_kwargs(kwargs)
+        instance = self.delete_instance(**kwargs)
+        if not instance:
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
+
+        return instance
+
+    def list(self, request, *args, **kwargs):
+        return self.list_instances(**kwargs)

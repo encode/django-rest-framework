@@ -405,7 +405,7 @@ class ResourceMixin(object):
     and filters the object representation into a serializable object for the
     response.
     """
-    resource = None
+    resource_class = None
 
     @property
     def CONTENT(self):
@@ -431,8 +431,8 @@ class ResourceMixin(object):
 
     @property
     def _resource(self):
-        if self.resource:
-            return self.resource(self)
+        if self.resource_class:
+            return self.resource_class(self)
         elif getattr(self, 'model', None):
             return ModelResource(self)
         elif getattr(self, 'form', None):
@@ -490,150 +490,59 @@ class InstanceMixin(object):
         return view
 
 
-########## Model Mixins ##########
+########## Resource operation Mixins ##########
 
+class ReadResourceMixin(object):
 
-class ModelMixin(object):
-    def get_model(self):
-        """
-        Return the model class for this view.
-        """
-        return getattr(self, 'model', self.resource.model)
-
-    def get_queryset(self):
-        """
-        Return the queryset that should be used when retrieving or listing
-        instances.
-        """
-        return getattr(self, 'queryset',
-                    getattr(self.resource, 'queryset',
-                        self.get_model().objects.all()))
-
-    def get_ordering(self):
-        """
-        Return the ordering that should be used when listing instances.
-        """
-        return getattr(self, 'ordering',
-                    getattr(self.resource, 'ordering',
-                        None))
-
-    # Underlying instance API...
-
-    def get_instance(self, *args, **kwargs):
-        """
-        Return a model instance or None.
-        """
-        model = self.get_model()
-        queryset = self.get_queryset()
-
+    def get(self, request, *args, **kwargs):
         try:
-            return queryset.get(**kwargs)
-        except model.DoesNotExist:
-            return None
+            resource = self.resource_class.retrieve(request, *args, **kwargs)
+        except self.resource_class.DoesNotExist:
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
+        return resource
 
-    def create_instance(self, *args, **kwargs):
-        model = self.get_model()
 
-        m2m_data = {}
-        for field in model._meta.many_to_many:
-            if field.name in kwargs:
-                m2m_data[field.name] = (
-                    field.m2m_reverse_field_name(), kwargs[field.name]
-                )
-                del kwargs[field.name]
+class CreateResourceMixin(object):
 
-        instance = model(**kwargs)
-        instance.save()
+    def post(self, request, *args, **kwargs):
+        resource = self.resource_class.create(request, *args, **kwargs)
+        resource.update(self.CONTENT, request, *args, **kwargs)
+        headers = {'Location': resource.get_url()}
+        return Response(status.HTTP_201_CREATED, resource, headers)
 
-        for fieldname in m2m_data:
-            manager = getattr(instance, fieldname)
 
-            if hasattr(manager, 'add'):
-                manager.add(*m2m_data[fieldname][1])
-            else:
-                data = {}
-                data[manager.source_field_name] = instance
+class CreateSubResourceMixin(object):
 
-                for related_item in m2m_data[fieldname][1]:
-                    data[m2m_data[fieldname][0]] = related_item
-                    manager.through(**data).save()
+    def post(self, request, *args, **kwargs):
+        sub_resource = self.resource_class.create(request, *args, **kwargs)
+        sub_resource.update(self.CONTENT, request, *args, **kwargs)
+        headers = {'Location': sub_resource.get_url()}
+        return Response(status.HTTP_201_CREATED, sub_resource, headers)
 
-        return instance
 
-    def update_instance(self, instance, *args, **kwargs):
-        for (key, val) in kwargs.items():
-            setattr(instance, key, val)
-        instance.save()
-        return instance
+class UpdateResourceMixin(object):
 
-    def delete_instance(self, instance, *args, **kwargs):
-        instance.delete()
-        return instance
-
-    def list_instances(self, *args, **kwargs):
-        queryset = self.get_queryset()
-        ordering = self.get_ordering()
-
-        if ordering:
-            queryset = queryset.order_by(ordering)
-        return queryset.filter(**kwargs)
-
-    # Request/Response layer...
-
-    def _get_url_kwargs(self, kwargs):
-        format_arg = BaseRenderer._FORMAT_QUERY_PARAM
-        if format_arg in kwargs:
-            kwargs = kwargs.copy()
-            del kwargs[format_arg]
-        return kwargs
-
-    def _get_content_kwargs(self, kwargs):
-        return dict(self._get_url_kwargs(kwargs).items() +
-                    self.CONTENT.items())
-
-    def read(self, request, *args, **kwargs):
-        kwargs = self._get_url_kwargs(kwargs)
-        instance = self.get_instance(**kwargs)
-
-        if instance is None:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
-
-        return instance
-
-    def update(self, request, *args, **kwargs):
-        kwargs = self._get_url_kwargs(kwargs)
-        instance = self.get_instance(**kwargs)
-
-        kwargs = self._get_content_kwargs(kwargs)
-        if instance:
-            instance = self.update_instance(instance, **kwargs)
-        else:
-            instance = self.create_instance(**kwargs)
-
-        return instance
-
-    def create(self, request, *args, **kwargs):
-        kwargs = self._get_content_kwargs(kwargs)
-        instance = self.create_instance(**kwargs)
-
+    def put(self, request, *args, **kwargs):
         headers = {}
         try:
-            headers['Location'] = self.resource(self).url(instance)
-        except:  # TODO: _SkipField should not really happen.
-            pass
+            resource = self.resource_class.retrieve(request, *args, **kwargs)
+            status_code = status.HTTP_204_NO_CONTENT
+        except self.resource_class.DoesNotExist:
+            resource = self.resource_class.create(request, *args, **kwargs)
+            status_code = status.HTTP_201_CREATED
+        resource.update(self.CONTENT, request, *args, **kwargs)
+        return Response(status_code, resource, {})
 
-        return Response(status.HTTP_201_CREATED, instance, headers)
 
-    def destroy(self, request, *args, **kwargs):
-        kwargs = self._get_url_kwargs(kwargs)
-        instance = self.delete_instance(**kwargs)
-        if not instance:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
+class DeleteResourceMixin(object):
 
-        return instance
-
-    def list(self, request, *args, **kwargs):
-        return self.list_instances(**kwargs)
+    def delete(self, request, *args, **kwargs):
+        try:
+            resource = self.resource_class.retrieve(request, *args, **kwargs)
+        except self.resource_class.DoesNotExist:
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
+        resource.delete(request, *args, **kwargs)
+        return
 
 
 ########## Pagination Mixins ##########

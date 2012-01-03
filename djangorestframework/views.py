@@ -35,7 +35,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     The resource to use when validating requests and filtering responses,
     or `None` to use default behaviour.
     """
-    resource = None
+    resource_class = None
 
     """
     List of renderers the resource can serialize the response with, ordered by preference.
@@ -182,7 +182,7 @@ class ModelView(ModelMixin, View):
     """
     A RESTful view that maps to a model in the database.
     """
-    resource = resources.ModelResource
+    resource_class = resources.ModelResource
 
 
 class InstanceModelView(InstanceMixin, ModelView):
