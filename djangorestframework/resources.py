@@ -126,8 +126,6 @@ class FormResource(Resource):
         data = data and data or {}
         files = files and files or {}
 
-        # In addition to regular validation we also ensure no additional fields
-        # are being passed in...
         seen_fields_set = set(data.keys())
         form_fields_set = set(bound_form.fields.keys())
         allowed_extra_fields_set = set(allowed_extra_fields)
@@ -142,7 +140,7 @@ class FormResource(Resource):
             cleaned_data = bound_form.cleaned_data
 
             # Add in any extra fields to the cleaned content...
-            for key in (allowed_extra_fields & seen_fields) - set(cleaned_data.keys()):
+            for key in (allowed_extra_fields_set & seen_fields_set) - set(cleaned_data.keys()):
                 cleaned_data[key] = data[key]
 
             return cleaned_data

@@ -79,9 +79,9 @@ class BasicAuthentication(BaseAuthentication):
                     return None
 
                 try:
-                    username = encoding.smart_unicode(auth_parts[0])
-                    password = encoding.smart_unicode(auth_parts[2])
-                except encoding.DjangoUnicodeDecodeError:
+                    username = smart_unicode(auth_parts[0])
+                    password = smart_unicode(auth_parts[2])
+                except DjangoUnicodeDecodeError:
                     return None
 
                 user = authenticate(username=username, password=password)
