@@ -2,9 +2,10 @@ from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
 
 from djangorestframework import status
+from djangorestframework.views import View
 from djangorestframework.compat import View as DjangoView
-from djangorestframework.renderers import BaseRenderer, JSONRenderer, \
-    YAMLRenderer, XMLRenderer
+from djangorestframework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
+    XMLRenderer, JSONPRenderer
 from djangorestframework.parsers import JSONParser, YAMLParser
 from djangorestframework.mixins import ResponseMixin
 from djangorestframework.response import Response
@@ -44,9 +45,16 @@ class MockView(ResponseMixin, DjangoView):
         return self.render(response)
 
 
+class MockGETView(View):
+    def get(self, request, **kwargs):
+        return {'foo': ['bar', 'baz']}
+
+
 urlpatterns = patterns('',
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderers=[RendererA, RendererB])),
     url(r'^$', MockView.as_view(renderers=[RendererA, RendererB])),
+    url(r'^jsonp/jsonrenderer$', MockGETView.as_view(renderers=[JSONRenderer, JSONPRenderer])),
+    url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(renderers=[JSONPRenderer])),
 )
 
 
@@ -149,7 +157,7 @@ class RendererIntegrationTests(TestCase):
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
 
-_indented_repr = '{\n    "foo": [\n        "bar", \n        "baz"\n    ]\n}'
+_indented_repr = '{\n    "foo": [\n        "bar",\n        "baz"\n    ]\n}'
 
 
 class JSONRendererTests(TestCase):
@@ -190,6 +198,45 @@ class JSONRendererTests(TestCase):
         self.assertEquals(obj, data)
 
 
+class JSONPRendererTests(TestCase):
+    """
+    Tests specific to the JSONP Renderer
+    """
+
+    urls = 'djangorestframework.tests.renderers'
+
+    def test_without_callback_with_json_renderer(self):
+        """
+        Test JSONP rendering with View JSON Renderer.
+        """
+        resp = self.client.get('/jsonp/jsonrenderer',
+                               HTTP_ACCEPT='application/json-p')
+        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(resp['Content-Type'], 'application/json-p')
+        self.assertEquals(resp.content, 'callback(%s);' % _flat_repr)
+
+    def test_without_callback_without_json_renderer(self):
+        """
+        Test JSONP rendering without View JSON Renderer.
+        """
+        resp = self.client.get('/jsonp/nojsonrenderer',
+                               HTTP_ACCEPT='application/json-p')
+        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(resp['Content-Type'], 'application/json-p')
+        self.assertEquals(resp.content, 'callback(%s);' % _flat_repr)
+
+    def test_with_callback(self):
+        """
+        Test JSONP rendering with callback function name.
+        """
+        callback_func = 'myjsonpcallback'
+        resp = self.client.get('/jsonp/nojsonrenderer?callback=' + callback_func,
+                               HTTP_ACCEPT='application/json-p')
+        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(resp['Content-Type'], 'application/json-p')
+        self.assertEquals(resp.content, '%s(%s);' % (callback_func, _flat_repr))
+
+
 if YAMLRenderer:
     _yaml_repr = 'foo: [bar, baz]\n'
 
@@ -203,7 +250,7 @@ if YAMLRenderer:
             """
             Test basic YAML rendering.
             """
-            obj = {'foo':['bar','baz']}
+            obj = {'foo': ['bar', 'baz']}
             renderer = YAMLRenderer(None)
             content = renderer.render(obj, 'application/yaml')
             self.assertEquals(content, _yaml_repr)
@@ -214,7 +261,7 @@ if YAMLRenderer:
             Test rendering and then parsing returns the original object.
             IE obj -> render -> parse -> obj.
             """
-            obj = {'foo':['bar','baz']}
+            obj = {'foo': ['bar', 'baz']}
 
             renderer = YAMLRenderer(None)
             parser = YAMLParser(None)
@@ -222,7 +269,6 @@ if YAMLRenderer:
             content = renderer.render(obj, 'application/yaml')
             (data, files) = parser.parse(StringIO(content))
             self.assertEquals(obj, data)
-
 
 
 class XMLRendererTestCase(TestCase):
@@ -279,7 +325,6 @@ class XMLRendererTestCase(TestCase):
         renderer = XMLRenderer(None)
         content = renderer.render({'field': None}, 'application/xml')
         self.assertXMLContains(content, '<field></field>')
-
 
     def assertXMLContains(self, xml, string):
         self.assertTrue(xml.startswith('<?xml version="1.0" encoding="utf-8"?>\n<root>'))

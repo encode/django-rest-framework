@@ -18,6 +18,24 @@ from mediatypes import add_media_type_param, get_media_type_params, order_by_pre
 
 MSIE_USER_AGENT_REGEX = re.compile(r'^Mozilla/[0-9]+\.[0-9]+ \([^)]*; MSIE [0-9]+\.[0-9]+[a-z]?;[^)]*\)(?!.* Opera )')
 
+def as_tuple(obj):
+    """
+    Given an object which may be a list/tuple, another object, or None,
+    return that object in list form.
+    
+    IE:
+    If the object is already a list/tuple just return it.
+    If the object is not None, return it in a list with a single element.
+    If the object is None return an empty list.
+    """
+    if obj is None:
+        return ()
+    elif isinstance(obj, list):
+        return tuple(obj)
+    elif isinstance(obj, tuple):
+        return obj
+    return (obj,)
+
 
 def url_resolves(url):
     """

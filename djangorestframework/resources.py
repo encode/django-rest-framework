@@ -78,6 +78,7 @@ class FormResource(Resource):
     def validate_request(self, data, files=None):
         """
         Given some content as input return some cleaned, validated content.
+
         Raises a :exc:`response.ErrorResponse` with status code 400
         # (Bad Request) on failure.
 
@@ -125,16 +126,13 @@ class FormResource(Resource):
         data = data and data or {}
         files = files and files or {}
 
-        seen_fields = set(data.keys())
-        form_fields = set(bound_form.fields.keys())
-        allowed_extra_fields = set(allowed_extra_fields)
+        seen_fields_set = set(data.keys())
+        form_fields_set = set(bound_form.fields.keys())
+        allowed_extra_fields_set = set(allowed_extra_fields)
 
-        # In addition to regular validation we also ensure no additional fields
-        # are being passed in...
-        # TODO: Hardcoded ignore_fields here is pretty icky.
-        ignore_fields = set(('csrfmiddlewaretoken', '_accept', '_method'))
-        allowed_fields = form_fields | allowed_extra_fields | ignore_fields
-        unknown_fields = seen_fields - allowed_fields
+        # In addition to regular validation we also ensure no additional fields are being passed in...
+        unknown_fields = seen_fields_set - (form_fields_set | allowed_extra_fields_set)
+        unknown_fields = unknown_fields - set(('csrfmiddlewaretoken', '_accept', '_method')) # TODO: Ugh.
 
         # Check using both regular validation, and our stricter no additional fields rule
         if bound_form.is_valid() and not unknown_fields:
@@ -142,7 +140,7 @@ class FormResource(Resource):
             cleaned_data = bound_form.cleaned_data
 
             # Add in any extra fields to the cleaned content...
-            for key in (allowed_extra_fields & seen_fields) - set(cleaned_data.keys()):
+            for key in (allowed_extra_fields_set & seen_fields_set) - set(cleaned_data.keys()):
                 cleaned_data[key] = data[key]
 
             return cleaned_data
@@ -178,7 +176,7 @@ class FormResource(Resource):
                 field_errors[key] = [u'This field does not exist.']
 
             if field_errors:
-                detail[u'field-errors'] = field_errors
+                detail[u'field_errors'] = field_errors
 
         # Return HTTP 400 response (BAD REQUEST)
         raise ErrorResponse(400, detail)
@@ -203,6 +201,7 @@ class FormResource(Resource):
             form = getattr(self.view, '%s_form' % method.lower(), form)
 
         return form
+
 
     def get_bound_form(self, data=None, files=None, method=None):
         """
@@ -302,6 +301,7 @@ class ModelResource(FormResource):
     def validate_request(self, data, files=None):
         """
         Given some content as input return some cleaned, validated content.
+
         Raises a :exc:`response.ErrorResponse` with status code 400
         (Bad Request) on failure.
 
@@ -410,7 +410,8 @@ class ModelResource(FormResource):
         if self.fields:
             return model_fields & set(self.fields)
 
-        return model_fields - set(self.exclude)
+        return model_fields - set(as_tuple(self.exclude))
+
 
     @property
     def _property_fields_set(self):

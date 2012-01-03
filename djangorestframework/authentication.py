@@ -11,7 +11,8 @@ set of :class:`authentication` classes.
 """
 
 from django.contrib.auth import authenticate
-from django.middleware.csrf import CsrfViewMiddleware
+from djangorestframework.compat import CsrfViewMiddleware
+from djangorestframework.utils import as_tuple
 import base64
 
 __all__ = (
@@ -67,7 +68,7 @@ class BasicAuthentication(BaseAuthentication):
         supplied using HTTP Basic authentication.
         Otherwise returns :const:`None`.
         """
-        from django.utils import encoding
+        from django.utils.encoding import smart_unicode, DjangoUnicodeDecodeError
 
         if 'HTTP_AUTHORIZATION' in request.META:
             auth = request.META['HTTP_AUTHORIZATION'].split()
@@ -78,15 +79,14 @@ class BasicAuthentication(BaseAuthentication):
                     return None
 
                 try:
-                    username = encoding.smart_unicode(auth_parts[0])
-                    password = encoding.smart_unicode(auth_parts[2])
-                except encoding.DjangoUnicodeDecodeError:
+                    username = smart_unicode(auth_parts[0])
+                    password = smart_unicode(auth_parts[2])
+                except DjangoUnicodeDecodeError:
                     return None
 
-                user = self._authenticate_user(username, password)
-                if user:
+                user = authenticate(username=username, password=password)
+                if user is not None and user.is_active:
                     return user
-
         return None
 
 
@@ -100,19 +100,27 @@ class UserLoggedInAuthentication(BaseAuthentication):
         Returns a :obj:`User` if the request session currently has a logged in
         user. Otherwise returns :const:`None`.
         """
-        # TODO: Switch this back to request.POST, and let
-        # FormParser/MultiPartParser deal with the consequences.
+        # TODO: Might be cleaner to switch this back to using request.POST,
+        #       and let FormParser/MultiPartParser deal with the consequences.
         if getattr(request, 'user', None) and request.user.is_active:
-            # If this is a POST request we enforce CSRF validation.
+            # Enforce CSRF validation for session based authentication.
+
+            # Temporarily replace request.POST with .DATA, to use our generic parsing.
+            # If DATA is not dict-like, use an empty dict.
             if request.method.upper() == 'POST':
-                # Temporarily replace request.POST with .DATA,
-                # so that we use our more generic request parsing
-                request._post = self.view.DATA
-                resp = CsrfViewMiddleware().process_view(request, None, (), {})
+                if hasattr(self.view.DATA, 'get'):
+                    request._post = self.view.DATA
+                else:
+                    request._post = {}
+
+            resp = CsrfViewMiddleware().process_view(request, None, (), {})
+
+            # Replace request.POST
+            if request.method.upper() == 'POST':
                 del(request._post)
-                if resp is not None:  # csrf failed
-                    return None
-            return request.user
+
+            if resp is None:  # csrf passed
+                return request.user
         return None
 
 

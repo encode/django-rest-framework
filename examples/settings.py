@@ -1,4 +1,5 @@
 # Settings for djangorestframework examples project
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -46,12 +47,12 @@ USE_L10N = True
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/"
 # NOTE: Some of the djangorestframework examples use MEDIA_ROOT to store content.
-MEDIA_ROOT = 'media/'
+MEDIA_ROOT = os.path.join(os.getenv('EPIO_DATA_DIRECTORY', '.'), 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-# NOTE: None of the djangorestframework examples serve media content via MEDIA_URL. 
+# NOTE: None of the djangorestframework examples serve media content via MEDIA_URL.
 MEDIA_URL = ''
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
@@ -61,7 +62,7 @@ MEDIA_URL = ''
 # but it does require the admin media be served.  Django's test server will do
 # this for you automatically, but in production you'll want to make sure you
 # serve the admin media from somewhere.
-ADMIN_MEDIA_PREFIX = '/admin-media/'
+ADMIN_MEDIA_PREFIX = '/static/admin'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 't&9mru2_k$t8e2-9uq-wu2a1)9v*us&j3i#lsqkt(lbx*vh1cu'
@@ -90,10 +91,10 @@ TEMPLATE_DIRS = (
 )
 
 # for loading initial data
-##SERIALIZATION_MODULES = { 
+##SERIALIZATION_MODULES = {
   #  'yml': "django.core.serializers.pyyaml"
 
-#} 
+#}
 
 
 INSTALLED_APPS = (

@@ -18,7 +18,7 @@ _serializers = {}
 
 def _field_to_tuple(field):
     """
-    Convert an item in the `fields` attribute into a 2-tuple. 
+    Convert an item in the `fields` attribute into a 2-tuple.
     """
     if isinstance(field, (tuple, list)):
         return (field[0], field[1])
@@ -52,7 +52,7 @@ class _RegisterSerializer(type):
     """
     def __new__(cls, name, bases, attrs):
         # Build the class and register it.
-        ret = super(_RegisterSerializer, cls).__new__(cls, name, bases, attrs) 
+        ret = super(_RegisterSerializer, cls).__new__(cls, name, bases, attrs)
         _serializers[name] = ret
         return ret
 
@@ -61,19 +61,19 @@ class Serializer(object):
     """
     Converts python objects into plain old native types suitable for
     serialization.  In particular it handles models and querysets.
-    
+
     The output format is specified by setting a number of attributes
     on the class.
 
     You may also override any of the serialization methods, to provide
     for more flexible behavior.
- 
+
     Valid output types include anything that may be directly rendered into
     json, xml etc...
     """
     __metaclass__ = _RegisterSerializer
 
-    fields = () 
+    fields = ()
     """
     Specify the fields to be serialized on a model or dict.
     Overrides `include` and `exclude`.
@@ -109,7 +109,7 @@ class Serializer(object):
         if depth is not None:
             self.depth = depth
         self.stack = stack
-        
+
 
     def get_fields(self, obj):
         """
@@ -168,7 +168,7 @@ class Serializer(object):
         # Similar to what Django does for cyclically related models.
         elif isinstance(info, str) and info in _serializers:
             return _serializers[info]
-        
+
         # Otherwise use `related_serializer` or fall back to `Serializer`
         return getattr(self, 'related_serializer') or Serializer
 
@@ -186,7 +186,7 @@ class Serializer(object):
         Convert a model field or dict value into a serializable representation.
         """
         related_serializer = self.get_related_serializer(key)
-     
+
         if self.depth is None:
             depth = None
         elif self.depth <= 0:
@@ -227,7 +227,7 @@ class Serializer(object):
 
         fields = self.get_fields(instance)
 
-        # serialize each required field 
+        # serialize each required field
         for fname in fields:
             try:
                 if hasattr(self, smart_str(fname)):
@@ -279,13 +279,13 @@ class Serializer(object):
         Convert any unhandled object into a serializable representation.
         """
         return smart_unicode(obj, strings_only=True)
- 
- 
+
+
     def serialize(self, obj):
         """
         Convert any object into a serializable representation.
         """
-        
+
         if isinstance(obj, (dict, models.Model)):
             # Model instances & dictionaries
             return self.serialize_model(obj)

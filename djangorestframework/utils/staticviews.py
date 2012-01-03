@@ -1,6 +1,8 @@
 from django.contrib.auth.views import *
 from django.conf import settings
 from django.http import HttpResponse
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 import base64
 
 def deny_robots(request):

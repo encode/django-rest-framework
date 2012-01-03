@@ -3,7 +3,7 @@ from djangorestframework.compat import RequestFactory
 from djangorestframework.mixins import RequestMixin
 
 
-class TestMethodOverloading(TestCase): 
+class TestMethodOverloading(TestCase):
     def setUp(self):
         self.req = RequestFactory()
 
@@ -18,7 +18,7 @@ class TestMethodOverloading(TestCase):
         view = RequestMixin()
         view.request = self.req.post('/')
         self.assertEqual(view.method, 'POST')
-    
+
     def test_overloaded_POST_behaviour_determines_overloaded_method(self):
         """POST requests can be overloaded to another method by setting a reserved form field"""
         view = RequestMixin()

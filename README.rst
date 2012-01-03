@@ -16,10 +16,12 @@ Full documentation for the project is available at http://django-rest-framework.
 Issue tracking is on `GitHub <https://github.com/tomchristie/django-rest-framework/issues>`_.
 General questions should be taken to the `discussion group <http://groups.google.com/group/django-rest-framework>`_.
 
+We also have a `Jenkins service <http://jenkins.tibold.nl/job/djangorestframework/>`_ which runs our test suite. 
+
 Requirements:
 
 * Python (2.5, 2.6, 2.7 supported)
-* Django (1.2, 1.3 supported)
+* Django (1.2, 1.3, 1.4-alpha supported)
 
 
 Installation Notes
@@ -33,7 +35,7 @@ To clone the project from GitHub using git::
 To install django-rest-framework in a virtualenv environment::
 
     cd django-rest-framework
-    virtualenv --no-site-packages --distribute --python=python2.6 env
+    virtualenv --no-site-packages --distribute env
     source env/bin/activate
     pip install -r requirements.txt # django, coverage
 
