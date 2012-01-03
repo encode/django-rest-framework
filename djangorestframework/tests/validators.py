@@ -83,7 +83,7 @@ class TestNonFieldErrors(TestCase):
         view = MockView()
         content = {'field1': 'example1', 'field2': 'example2'}
         try:
-            MockResource(view).validate_request(content, None)
+            MockResource(view=view).validate_request(content, None)
         except ErrorResponse, exc:
             self.assertEqual(exc.response.raw_content, {'errors': [MockForm.ERROR_TEXT]})
         else:
@@ -187,77 +187,77 @@ class TestFormValidation(TestCase):
     # Tests on FormResource
 
     def test_form_validation_returns_content_unchanged_if_already_valid_and_clean(self):
-        validator = self.MockFormResource(self.MockFormView())
+        validator = self.MockFormResource(view=self.MockFormView())
         self.validation_returns_content_unchanged_if_already_valid_and_clean(validator)
 
     def test_form_validation_failure_raises_response_exception(self):
-        validator = self.MockFormResource(self.MockFormView())
+        validator = self.MockFormResource(view=self.MockFormView())
         self.validation_failure_raises_response_exception(validator)
 
     def test_validation_does_not_allow_extra_fields_by_default(self):
-        validator = self.MockFormResource(self.MockFormView())
+        validator = self.MockFormResource(view=self.MockFormView())
         self.validation_does_not_allow_extra_fields_by_default(validator)
 
     def test_validation_allows_extra_fields_if_explicitly_set(self):
-        validator = self.MockFormResource(self.MockFormView())
+        validator = self.MockFormResource(view=self.MockFormView())
         self.validation_allows_extra_fields_if_explicitly_set(validator)
 
     def test_validation_does_not_require_extra_fields_if_explicitly_set(self):
-        validator = self.MockFormResource(self.MockFormView())
+        validator = self.MockFormResource(view=self.MockFormView())
         self.validation_does_not_require_extra_fields_if_explicitly_set(validator)
 
     def test_validation_failed_due_to_no_content_returns_appropriate_message(self):
-        validator = self.MockFormResource(self.MockFormView())
+        validator = self.MockFormResource(view=self.MockFormView())
         self.validation_failed_due_to_no_content_returns_appropriate_message(validator)
 
     def test_validation_failed_due_to_field_error_returns_appropriate_message(self):
-        validator = self.MockFormResource(self.MockFormView())
+        validator = self.MockFormResource(view=self.MockFormView())
         self.validation_failed_due_to_field_error_returns_appropriate_message(validator)
 
     def test_validation_failed_due_to_invalid_field_returns_appropriate_message(self):
-        validator = self.MockFormResource(self.MockFormView())
+        validator = self.MockFormResource(view=self.MockFormView())
         self.validation_failed_due_to_invalid_field_returns_appropriate_message(validator)
 
     def test_validation_failed_due_to_multiple_errors_returns_appropriate_message(self):
-        validator = self.MockFormResource(self.MockFormView())
+        validator = self.MockFormResource(view=self.MockFormView())
         self.validation_failed_due_to_multiple_errors_returns_appropriate_message(validator)
 
     # Same tests on ModelResource
 
     def test_modelform_validation_returns_content_unchanged_if_already_valid_and_clean(self):
-        validator = self.MockModelResource(self.MockModelFormView())
+        validator = self.MockModelResource(view=self.MockModelFormView())
         self.validation_returns_content_unchanged_if_already_valid_and_clean(validator)
 
     def test_modelform_validation_failure_raises_response_exception(self):
-        validator = self.MockModelResource(self.MockModelFormView())
+        validator = self.MockModelResource(view=self.MockModelFormView())
         self.validation_failure_raises_response_exception(validator)
 
     def test_modelform_validation_does_not_allow_extra_fields_by_default(self):
-        validator = self.MockModelResource(self.MockModelFormView())
+        validator = self.MockModelResource(view=self.MockModelFormView())
         self.validation_does_not_allow_extra_fields_by_default(validator)
 
     def test_modelform_validation_allows_extra_fields_if_explicitly_set(self):
-        validator = self.MockModelResource(self.MockModelFormView())
+        validator = self.MockModelResource(view=self.MockModelFormView())
         self.validation_allows_extra_fields_if_explicitly_set(validator)
 
     def test_modelform_validation_does_not_require_extra_fields_if_explicitly_set(self):
-        validator = self.MockModelResource(self.MockModelFormView())
+        validator = self.MockModelResource(view=self.MockModelFormView())
         self.validation_does_not_require_extra_fields_if_explicitly_set(validator)
 
     def test_modelform_validation_failed_due_to_no_content_returns_appropriate_message(self):
-        validator = self.MockModelResource(self.MockModelFormView())
+        validator = self.MockModelResource(view=self.MockModelFormView())
         self.validation_failed_due_to_no_content_returns_appropriate_message(validator)
 
     def test_modelform_validation_failed_due_to_field_error_returns_appropriate_message(self):
-        validator = self.MockModelResource(self.MockModelFormView())
+        validator = self.MockModelResource(view=self.MockModelFormView())
         self.validation_failed_due_to_field_error_returns_appropriate_message(validator)
 
     def test_modelform_validation_failed_due_to_invalid_field_returns_appropriate_message(self):
-        validator = self.MockModelResource(self.MockModelFormView())
+        validator = self.MockModelResource(view=self.MockModelFormView())
         self.validation_failed_due_to_invalid_field_returns_appropriate_message(validator)
 
     def test_modelform_validation_failed_due_to_multiple_errors_returns_appropriate_message(self):
-        validator = self.MockModelResource(self.MockModelFormView())
+        validator = self.MockModelResource(view=self.MockModelFormView())
         self.validation_failed_due_to_multiple_errors_returns_appropriate_message(validator)
 
 
@@ -280,7 +280,7 @@ class TestModelFormValidator(TestCase):
         class MockView(View):
             resource = MockResource
 
-        self.validator = MockResource(MockView)
+        self.validator = MockResource(view=MockView)
 
 
     def test_property_fields_are_allowed_on_model_forms(self):

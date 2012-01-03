@@ -44,8 +44,8 @@ urlpatterns = patterns('djangorestframework.utils.staticviews',
     url(r'^accounts/logout$', 'api_logout'),
     url(r'^mock/$', MockView.as_view()),
     url(r'^resourcemock/$', ResourceMockView.as_view()),
-    url(r'^model/$', ListOrCreateModelView.as_view(resource=MockResource)),
-    url(r'^model/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=MockResource)),
+    url(r'^model/$', ListOrCreateModelView.as_view(resource_class=MockResource)),
+    url(r'^model/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource_class=MockResource)),
 )
 
 class BaseViewTests(TestCase):

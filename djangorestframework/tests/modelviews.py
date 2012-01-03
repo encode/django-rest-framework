@@ -23,12 +23,12 @@ class CustomUserResource(ModelResource):
     model = CustomUser
 
 urlpatterns = patterns('',
-    url(r'^users/$', ListOrCreateModelView.as_view(resource=UserResource), name='users'),
-    url(r'^users/(?P<id>[0-9]+)/$', InstanceModelView.as_view(resource=UserResource)),
-    url(r'^customusers/$', ListOrCreateModelView.as_view(resource=CustomUserResource), name='customusers'),
-    url(r'^customusers/(?P<id>[0-9]+)/$', InstanceModelView.as_view(resource=CustomUserResource)),
-    url(r'^groups/$', ListOrCreateModelView.as_view(resource=GroupResource), name='groups'),
-    url(r'^groups/(?P<id>[0-9]+)/$', InstanceModelView.as_view(resource=GroupResource)),
+    url(r'^users/$', ListOrCreateModelView.as_view(resource_class=UserResource), name='users'),
+    url(r'^users/(?P<id>[0-9]+)/$', InstanceModelView.as_view(resource_class=UserResource)),
+    url(r'^customusers/$', ListOrCreateModelView.as_view(resource_class=CustomUserResource), name='customusers'),
+    url(r'^customusers/(?P<id>[0-9]+)/$', InstanceModelView.as_view(resource_class=CustomUserResource)),
+    url(r'^groups/$', ListOrCreateModelView.as_view(resource_class=GroupResource), name='groups'),
+    url(r'^groups/(?P<id>[0-9]+)/$', InstanceModelView.as_view(resource_class=GroupResource)),
 )
 
 

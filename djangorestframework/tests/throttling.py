@@ -23,7 +23,7 @@ class MockView_PerViewThrottling(MockView):
 
 class MockView_PerResourceThrottling(MockView):
     permissions = ( PerResourceThrottling, )
-    resource = FormResource
+    resource_class = FormResource
 
 class MockView_MinuteThrottling(MockView):
     throttle = '3/min'

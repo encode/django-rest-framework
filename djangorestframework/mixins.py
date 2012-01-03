@@ -8,7 +8,6 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse
 
 from djangorestframework import status
-from djangorestframework.renderers import BaseRenderer
 from djangorestframework.resources import Resource, FormResource, ModelResource
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.utils import MSIE_USER_AGENT_REGEX
@@ -26,7 +25,11 @@ __all__ = (
     # Reverse URL lookup behavior
     'InstanceMixin',
     # Model behavior mixins
-    'ModelMixin',
+    'GetResourceMixin',
+    'PostResourceMixin',
+    'PutResourceMixin',
+    'DeleteResourceMixin',
+    'ListResourceMixin',
 )
 
 
@@ -429,17 +432,24 @@ class ResourceMixin(object):
         """
         return self.validate_request(self.request.GET)
 
-    @property
-    def _resource(self):
+    def get_resource_class(self):
         if self.resource_class:
-            return self.resource_class(self)
+            return self.resource_class
         elif getattr(self, 'model', None):
-            return ModelResource(self)
+            return ModelResource
         elif getattr(self, 'form', None):
-            return FormResource(self)
-        elif getattr(self, '%s_form' % self.method.lower(), None):
-            return FormResource(self)
-        return Resource(self)
+            return FormResource
+        elif hasattr(self, 'request') and getattr(self, '%s_form' % self.method.lower(), None):
+            return FormResource
+        else:
+            return Resource
+
+    @property
+    def resource(self):
+        if not hasattr(self, '_resource'):
+            resource_class = self.get_resource_class()
+            self._resource = resource_class(view=self)
+        return self._resource
 
     def validate_request(self, data, files=None):
         """
@@ -448,17 +458,17 @@ class ResourceMixin(object):
         May raise an :class:`response.ErrorResponse` with status code 400
         (Bad Request) on failure.
         """
-        return self._resource.validate_request(data, files)
+        return self.resource.validate_request(data, files)
 
     def filter_response(self, obj):
         """
         Given the response content, filter it into a serializable object.
         """
-        return self._resource.filter_response(obj)
+        return self.resource.filter_response(obj)
 
     def get_bound_form(self, content=None, method=None):
-        if hasattr(self._resource, 'get_bound_form'):
-            return self._resource.get_bound_form(content, method=method)
+        if hasattr(self.resource, 'get_bound_form'):
+            return self.resource.get_bound_form(content, method=method)
         else:
             return None
 
@@ -479,70 +489,67 @@ class InstanceMixin(object):
         associated with this view.
         """
         view = super(InstanceMixin, cls).as_view(**initkwargs)
-        resource = getattr(cls(**initkwargs), 'resource', None)
-        if resource:
+        resource_class = getattr(cls(**initkwargs), 'resource_class', None)
+        if resource_class:
             # We do a little dance when we store the view callable...
             # we need to store it wrapped in a 1-tuple, so that inspect will
             # treat it as a function when we later look it up (rather than
             # turning it into a method).
             # This makes sure our URL reversing works ok.
-            resource.view_callable = (view,)
+            resource_class.view_callable = (view,)
         return view
 
 
 ########## Resource operation Mixins ##########
 
-class ReadResourceMixin(object):
+class GetResourceMixin(object):
 
     def get(self, request, *args, **kwargs):
         try:
-            resource = self.resource_class.retrieve(request, *args, **kwargs)
-        except self.resource_class.DoesNotExist:
+            self.resource.retrieve(request, *args, **kwargs)
+        except self.resource.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
-        return resource
+        return self.resource.instance
 
 
-class CreateResourceMixin(object):
-
-    def post(self, request, *args, **kwargs):
-        resource = self.resource_class.create(request, *args, **kwargs)
-        resource.update(self.CONTENT, request, *args, **kwargs)
-        headers = {'Location': resource.get_url()}
-        return Response(status.HTTP_201_CREATED, resource, headers)
-
-
-class CreateSubResourceMixin(object):
+class PostResourceMixin(object):
 
     def post(self, request, *args, **kwargs):
-        sub_resource = self.resource_class.create(request, *args, **kwargs)
-        sub_resource.update(self.CONTENT, request, *args, **kwargs)
-        headers = {'Location': sub_resource.get_url()}
-        return Response(status.HTTP_201_CREATED, sub_resource, headers)
+        self.resource.create(request, *args, **kwargs)
+        self.resource.update(self.CONTENT, request, *args, **kwargs)
+        headers = {'Location': self.resource.get_url()}
+        return Response(status.HTTP_201_CREATED, self.resource.instance, headers)
 
 
-class UpdateResourceMixin(object):
+class PutResourceMixin(object):
 
     def put(self, request, *args, **kwargs):
         headers = {}
         try:
-            resource = self.resource_class.retrieve(request, *args, **kwargs)
+            self.resource.retrieve(request, *args, **kwargs)
             status_code = status.HTTP_204_NO_CONTENT
-        except self.resource_class.DoesNotExist:
-            resource = self.resource_class.create(request, *args, **kwargs)
+        except self.resource.DoesNotExist:
+            self.resource.create(request, *args, **kwargs)
             status_code = status.HTTP_201_CREATED
-        resource.update(self.CONTENT, request, *args, **kwargs)
-        return Response(status_code, resource, {})
+        self.resource.update(self.CONTENT, request, *args, **kwargs)
+        return Response(status_code, self.resource.instance, {})
 
 
 class DeleteResourceMixin(object):
 
     def delete(self, request, *args, **kwargs):
         try:
-            resource = self.resource_class.retrieve(request, *args, **kwargs)
-        except self.resource_class.DoesNotExist:
+            self.resource.retrieve(request, *args, **kwargs)
+        except self.resource.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
-        resource.delete(request, *args, **kwargs)
+        self.resource.delete(request, *args, **kwargs)
         return
+
+
+class ListResourceMixin(object):
+
+    def get(self, request, *args, **kwargs):
+        return self.resource.list(request, *args, **kwargs)
 
 
 ########## Pagination Mixins ##########
@@ -614,7 +621,7 @@ class PaginatorMixin(object):
         # We don't want to paginate responses for anything other than GET
         # requests
         if self.method.upper() != 'GET':
-            return self._resource.filter_response(obj)
+            return self.resource.filter_response(obj)
 
         paginator = Paginator(obj, self.get_limit())
 
@@ -630,7 +637,7 @@ class PaginatorMixin(object):
 
         page = paginator.page(page_num)
 
-        serialized_object_list = self._resource.filter_response(page.object_list)
+        serialized_object_list = self.resource.filter_response(page.object_list)
         serialized_page_info = self.serialize_page_info(page)
 
         serialized_page_info['results'] = serialized_object_list

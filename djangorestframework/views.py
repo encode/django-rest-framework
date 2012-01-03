@@ -178,14 +178,16 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         return ret
 
 
-class ModelView(ModelMixin, View):
+class ModelView(View):
     """
     A RESTful view that maps to a model in the database.
     """
     resource_class = resources.ModelResource
+    model = None
 
 
-class InstanceModelView(InstanceMixin, ModelView):
+class InstanceModelView(GetResourceMixin, PutResourceMixin, DeleteResourceMixin,
+    InstanceMixin, ModelView):
     """
     A view which provides default operations for read/update/delete against a
     model instance.  This view is also treated as the Canonical identifier
@@ -193,27 +195,18 @@ class InstanceModelView(InstanceMixin, ModelView):
     """
     _suffix = 'Instance'
 
-    get = ModelMixin.read
-    put = ModelMixin.update
-    delete = ModelMixin.destroy
 
-
-class ListModelView(ModelView):
+class ListModelView(ListResourceMixin, ModelView):
     """
     A view which provides default operations for list, against a model in the
     database.
     """
     _suffix = 'List'
 
-    get = ModelMixin.list
 
-
-class ListOrCreateModelView(ModelView):
+class ListOrCreateModelView(PostResourceMixin, ListResourceMixin, ModelView):
     """
     A view which provides default operations for list and create, against a
     model in the database.
     """
     _suffix = 'List'
-
-    get = ModelMixin.list
-    post = ModelMixin.create

@@ -6,6 +6,14 @@ from djangorestframework.response import ErrorResponse
 from djangorestframework.serializer import Serializer, _SkipField
 
 
+def bound_resource_required(meth):
+    def _decorated(self, *args, **kwargs):
+        if not self.is_bound():
+            raise Exception("resource needs to be bound") #TODO: what exception?
+        return meth(self, *args, **kwargs)
+    return _decorated
+
+
 class BaseResource(Serializer):
     """
     Base class for all Resource classes, which simply defines the interface
@@ -16,11 +24,12 @@ class BaseResource(Serializer):
     exclude = ()
 
     # TODO: Inheritance, like for models
-    class DoesNotExist(Exception)
+    class DoesNotExist(Exception): pass
 
-    def __init__(self, depth=None, stack=[], **kwargs):
+    def __init__(self, instance=None, view=None, depth=None, stack=[], **kwargs):
         super(BaseResource, self).__init__(depth, stack, **kwargs)
         self.view = view
+        self.instance = instance
 
     def validate_request(self, data, files=None):
         """
@@ -36,22 +45,26 @@ class BaseResource(Serializer):
         """
         return self.serialize(obj)
 
-    @classmethod
-    def retrieve(cls, request, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         raise NotImplementedError()
 
-    @classmethod
-    def create(cls, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         raise NotImplementedError()
 
+    @bound_resource_required
     def update(self, data, request, *args, **kwargs):
         raise NotImplementedError()
 
+    @bound_resource_required
     def delete(self, request, *args, **kwargs):
         raise NotImplementedError()
 
+    @bound_resource_required
     def get_url(self):
         raise NotImplementedError()
+
+    def is_bound(self):
+        return not self.instance is None
 
 
 class Resource(BaseResource):
@@ -222,7 +235,6 @@ class FormResource(Resource):
 
         return form
 
-
     def get_bound_form(self, data=None, files=None, method=None):
         """
         Given some content return a Django form bound to that content.
@@ -308,15 +320,135 @@ class ModelResource(FormResource):
     is not set.
     """
 
-    def __init__(self, view=None, depth=None, stack=[], **kwargs):
+    def __init__(self, instance=None, view=None, depth=None, stack=[], **kwargs):
         """
         Allow :attr:`form` and :attr:`model` attributes set on the
         :class:`View` to override the :attr:`form` and :attr:`model`
         attributes set on the :class:`Resource`.
         """
-        super(ModelResource, self).__init__(view, depth, stack, **kwargs)
+        super(ModelResource, self).__init__(instance=instance, view=view, depth=depth, stack=stack, **kwargs)
 
         self.model = getattr(view, 'model', None) or self.model
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Return a model instance or None.
+        """
+        model = self.get_model()
+        queryset = self.get_queryset()
+        kwargs = self._clean_url_kwargs(kwargs)
+
+        try:
+            instance = queryset.get(**kwargs)
+        except model.DoesNotExist:
+            raise self.DoesNotExist
+        self.instance = instance
+        return self.instance
+
+    def create(self, request, *args, **kwargs):
+        model = self.get_model()
+        kwargs = self._clean_url_kwargs(kwargs)
+
+        self.instance = model(**kwargs)
+        self.instance.save()
+        return self.instance
+
+    @bound_resource_required
+    def update(self, data, request, *args, **kwargs):
+        model = self.get_model()
+        kwargs = self._clean_url_kwargs(kwargs)
+        data = dict(data, **kwargs)
+
+        # Updating many to many relationships
+        # TODO: code very hard to understand
+        m2m_data = {}
+        for field in model._meta.many_to_many:
+            if field.name in data:
+                m2m_data[field.name] = (
+                    field.m2m_reverse_field_name(), data[field.name]
+                )
+                del data[field.name]
+
+        for fieldname in m2m_data:
+            manager = getattr(self.instance, fieldname)
+
+            if hasattr(manager, 'add'):
+                manager.add(*m2m_data[fieldname][1])
+            else:
+                rdata = {}
+                rdata[manager.source_field_name] = self.instance
+
+                for related_item in m2m_data[fieldname][1]:
+                    rdata[m2m_data[fieldname][0]] = related_item
+                    manager.through(**rdata).save()
+
+        # Updating other fields
+        for (key, val) in data.items():
+            setattr(self.instance, key, val)
+        self.instance.save()
+        return self.instance
+
+    @bound_resource_required
+    def delete(self, request, *args, **kwargs):
+        self.instance.delete()
+        return self.instance
+
+    def list(self, request, *args, **kwargs):
+        # TODO: QuerysetResource instead !?
+        kwargs = self._clean_url_kwargs(kwargs)
+        queryset = self.get_queryset()
+        ordering = self.get_ordering()
+
+        if ordering:
+            queryset = queryset.order_by(ordering)
+        return queryset.filter(**kwargs)
+
+    @bound_resource_required
+    def get_url(self):
+        """
+        Attempts to reverse resolve the url of the given model *instance* for
+        this resource.
+
+        Requires a ``View`` with :class:`mixins.InstanceMixin` to have been
+        created for this resource.
+
+        This method can be overridden if you need to set the resource url
+        reversing explicitly.
+        """
+
+        if not hasattr(self, 'view_callable'):
+            raise _SkipField
+
+        # dis does teh magicks...
+        urlconf = get_urlconf()
+        resolver = get_resolver(urlconf)
+
+        possibilities = resolver.reverse_dict.getlist(self.view_callable[0])
+        for tuple_item in possibilities:
+            possibility = tuple_item[0]
+            # pattern = tuple_item[1]
+            # Note: defaults = tuple_item[2] for django >= 1.3
+            for result, params in possibility:
+
+                # instance_attrs = dict([ (param, getattr(instance, param))
+                #                         for param in params
+                #                         if hasattr(instance, param) ])
+
+                instance_attrs = {}
+                for param in params:
+                    if not hasattr(self.instance, param):
+                        continue
+                    attr = getattr(self.instance, param)
+                    if isinstance(attr, models.Model):
+                        instance_attrs[param] = attr.pk
+                    else:
+                        instance_attrs[param] = attr
+
+                try:
+                    return reverse(self.view_callable[0], kwargs=instance_attrs)
+                except NoReverseMatch:
+                    pass
+        raise _SkipField
 
     def validate_request(self, data, files=None):
         """
@@ -338,7 +470,7 @@ class ModelResource(FormResource):
         `{field name as string: list of errors as strings}`.
         """
         return self._validate(data, files,
-                              allowed_extra_fields=self._property_fields_set)
+                              allowed_extra_fields=self._property_fields_set())
 
     def get_bound_form(self, data=None, files=None, method=None):
         """
@@ -374,52 +506,6 @@ class ModelResource(FormResource):
 
         return form()
 
-    def url(self, instance):
-        """
-        Attempts to reverse resolve the url of the given model *instance* for
-        this resource.
-
-        Requires a ``View`` with :class:`mixins.InstanceMixin` to have been
-        created for this resource.
-
-        This method can be overridden if you need to set the resource url
-        reversing explicitly.
-        """
-
-        if not hasattr(self, 'view_callable'):
-            raise _SkipField
-
-        # dis does teh magicks...
-        urlconf = get_urlconf()
-        resolver = get_resolver(urlconf)
-
-        possibilities = resolver.reverse_dict.getlist(self.view_callable[0])
-        for tuple_item in possibilities:
-            possibility = tuple_item[0]
-            # pattern = tuple_item[1]
-            # Note: defaults = tuple_item[2] for django >= 1.3
-            for result, params in possibility:
-
-                # instance_attrs = dict([ (param, getattr(instance, param))
-                #                         for param in params
-                #                         if hasattr(instance, param) ])
-
-                instance_attrs = {}
-                for param in params:
-                    if not hasattr(instance, param):
-                        continue
-                    attr = getattr(instance, param)
-                    if isinstance(attr, models.Model):
-                        instance_attrs[param] = attr.pk
-                    else:
-                        instance_attrs[param] = attr
-
-                try:
-                    return reverse(self.view_callable[0], kwargs=instance_attrs)
-                except NoReverseMatch:
-                    pass
-        raise _SkipField
-
     @property
     def _model_fields_set(self):
         """
@@ -432,8 +518,6 @@ class ModelResource(FormResource):
 
         return model_fields - set(as_tuple(self.exclude))
 
-
-    @property
     def _property_fields_set(self):
         """
         Returns a set containing the names of validated properties on the model.
@@ -447,15 +531,11 @@ class ModelResource(FormResource):
 
         return property_fields.union(set(self.include)) - set(self.exclude)
 
-
-
-
-class ModelMixin(object):
     def get_model(self):
         """
         Return the model class for this view.
         """
-        return getattr(self, 'model', self.resource.model)
+        return getattr(self, 'model', getattr(self.view, 'model', None))
 
     def get_queryset(self):
         """
@@ -463,7 +543,7 @@ class ModelMixin(object):
         instances.
         """
         return getattr(self, 'queryset',
-                    getattr(self.resource, 'queryset',
+                    getattr(self.view, 'queryset',
                         self.get_model().objects.all()))
 
     def get_ordering(self):
@@ -471,123 +551,14 @@ class ModelMixin(object):
         Return the ordering that should be used when listing instances.
         """
         return getattr(self, 'ordering',
-                    getattr(self.resource, 'ordering',
+                    getattr(self.view, 'ordering',
                         None))
 
-    # Underlying instance API...
-
-    def get_instance(self, *args, **kwargs):
-        """
-        Return a model instance or None.
-        """
-        model = self.get_model()
-        queryset = self.get_queryset()
-
-        try:
-            return queryset.get(**kwargs)
-        except model.DoesNotExist:
-            return None
-
-    def create_instance(self, *args, **kwargs):
-        model = self.get_model()
-
-        m2m_data = {}
-        for field in model._meta.many_to_many:
-            if field.name in kwargs:
-                m2m_data[field.name] = (
-                    field.m2m_reverse_field_name(), kwargs[field.name]
-                )
-                del kwargs[field.name]
-
-        instance = model(**kwargs)
-        instance.save()
-
-        for fieldname in m2m_data:
-            manager = getattr(instance, fieldname)
-
-            if hasattr(manager, 'add'):
-                manager.add(*m2m_data[fieldname][1])
-            else:
-                data = {}
-                data[manager.source_field_name] = instance
-
-                for related_item in m2m_data[fieldname][1]:
-                    data[m2m_data[fieldname][0]] = related_item
-                    manager.through(**data).save()
-
-        return instance
-
-    def update_instance(self, instance, *args, **kwargs):
-        for (key, val) in kwargs.items():
-            setattr(instance, key, val)
-        instance.save()
-        return instance
-
-    def delete_instance(self, instance, *args, **kwargs):
-        instance.delete()
-        return instance
-
-    def list_instances(self, *args, **kwargs):
-        queryset = self.get_queryset()
-        ordering = self.get_ordering()
-
-        if ordering:
-            queryset = queryset.order_by(ordering)
-        return queryset.filter(**kwargs)
-
-    # Request/Response layer...
-
-    def _get_url_kwargs(self, kwargs):
+    def _clean_url_kwargs(self, kwargs):
+        # TODO: probably this functionality shouldn't be there
+        from djangorestframework.renderers import BaseRenderer
         format_arg = BaseRenderer._FORMAT_QUERY_PARAM
         if format_arg in kwargs:
             kwargs = kwargs.copy()
             del kwargs[format_arg]
         return kwargs
-
-    def _get_content_kwargs(self, kwargs):
-        return dict(self._get_url_kwargs(kwargs).items() +
-                    self.CONTENT.items())
-
-    def read(self, request, *args, **kwargs):
-        kwargs = self._get_url_kwargs(kwargs)
-        instance = self.get_instance(**kwargs)
-
-        if instance is None:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
-
-        return instance
-
-    def update(self, request, *args, **kwargs):
-        kwargs = self._get_url_kwargs(kwargs)
-        instance = self.get_instance(**kwargs)
-
-        kwargs = self._get_content_kwargs(kwargs)
-        if instance:
-            instance = self.update_instance(instance, **kwargs)
-        else:
-            instance = self.create_instance(**kwargs)
-
-        return instance
-
-    def create(self, request, *args, **kwargs):
-        kwargs = self._get_content_kwargs(kwargs)
-        instance = self.create_instance(**kwargs)
-
-        headers = {}
-        try:
-            headers['Location'] = self.resource(self).url(instance)
-        except:  # TODO: _SkipField should not really happen.
-            pass
-
-        return Response(status.HTTP_201_CREATED, instance, headers)
-
-    def destroy(self, request, *args, **kwargs):
-        kwargs = self._get_url_kwargs(kwargs)
-        instance = self.delete_instance(**kwargs)
-        if not instance:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
-
-        return instance
-
-    def list(self, request, *args, **kwargs):
-        return self.list_instances(**kwargs)
