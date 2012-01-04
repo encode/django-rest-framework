@@ -115,8 +115,9 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
         # Calls to 'reverse' will not be fully qualified unless we set the scheme/host/port here.
         orig_prefix = get_script_prefix()
-        prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
-        set_script_prefix(prefix + orig_prefix)
+        if not (orig_prefix.startswith('http:') or orig_prefix.startswith('https:')):
+            prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
+            set_script_prefix(prefix + orig_prefix)
 
         try:
             self.initial(request, *args, **kwargs)
