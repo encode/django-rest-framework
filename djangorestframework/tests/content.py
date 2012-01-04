@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from djangorestframework import status
 from djangorestframework.authentication import UserLoggedInAuthentication
-from djangorestframework.compat import RequestFactory
+from djangorestframework.compat import RequestFactory, unittest
 from djangorestframework.mixins import RequestMixin
 from djangorestframework.parsers import FormParser, MultiPartParser, \
     PlainTextParser, JSONParser
@@ -114,21 +114,22 @@ class TestContentParsing(TestCase):
         self.assertEqual(view.DATA.items(), form_data.items())
         self.assertEqual(view.request.POST.items(), form_data.items())
 
-    # def test_accessing_post_after_data_for_json(self):
-    #     """Ensures request.POST can be accessed after request.DATA in json request"""
-    #     from django.utils import simplejson as json
+    @unittest.skip('This test was disabled some time ago for some reason')
+    def test_accessing_post_after_data_for_json(self):
+        """Ensures request.POST can be accessed after request.DATA in json request"""
+        from django.utils import simplejson as json
 
-    #     data = {'qwerty': 'uiop'}
-    #     content = json.dumps(data)
-    #     content_type = 'application/json'
+        data = {'qwerty': 'uiop'}
+        content = json.dumps(data)
+        content_type = 'application/json'
 
-    #     view = RequestMixin()
-    #     view.parsers = (JSONParser,)
+        view = RequestMixin()
+        view.parsers = (JSONParser,)
 
-    #     view.request = self.req.post('/', content, content_type=content_type)
+        view.request = self.req.post('/', content, content_type=content_type)
 
-    #     self.assertEqual(view.DATA.items(), data.items())
-    #     self.assertEqual(view.request.POST.items(), [])
+        self.assertEqual(view.DATA.items(), data.items())
+        self.assertEqual(view.request.POST.items(), [])
 
     def test_accessing_post_after_data_for_overloaded_json(self):
         """Ensures request.POST can be accessed after request.DATA in overloaded json request"""
