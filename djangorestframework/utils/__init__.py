@@ -43,7 +43,7 @@ def url_resolves(url):
     """
     try:
         resolve(url)
-    except:
+    except Exception:
         return False
     return True
 

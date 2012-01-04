@@ -18,7 +18,7 @@ class TestPygmentsExample(TestCase):
     def tearDown(self):
         try:
             shutil.rmtree(self.temp_dir)
-        except:
+        except Exception:
             pass
         
     def test_get_to_root(self):
