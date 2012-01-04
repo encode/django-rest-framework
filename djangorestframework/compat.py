@@ -439,10 +439,6 @@ except ImportError: # python < 2.7
     from unittest import TestCase
     import functools 
 
-    class SkipTest(Exception):
-        # Pasted from py27/lib/unittest/case.py
-        pass
-   
     def skip(reason):
         # Pasted from py27/lib/unittest/case.py
         """
@@ -452,7 +448,7 @@ except ImportError: # python < 2.7
             if not (isinstance(test_item, type) and issubclass(test_item, TestCase)):
                 @functools.wraps(test_item)
                 def skip_wrapper(*args, **kwargs):
-                    raise SkipTest(reason)
+                   pass 
                 test_item = skip_wrapper
 
             test_item.__unittest_skip__ = True

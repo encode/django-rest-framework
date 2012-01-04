@@ -35,7 +35,6 @@ def main():
     else:
         test_runner = TestRunner()
         failures = test_runner.run_tests(['djangorestframework'])
-
     cov.stop()
 
     # Discover the list of all modules that we should test coverage for
