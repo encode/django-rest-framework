@@ -11,7 +11,7 @@ def get_breadcrumbs(url):
 
         try:
             (view, unused_args, unused_kwargs) = resolve(url)
-        except:
+        except Exception:
             pass
         else:
             # Check if this is a REST framework view, and if so add it to the breadcrumbs

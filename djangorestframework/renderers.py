@@ -246,14 +246,14 @@ class DocumentingTemplateRenderer(BaseRenderer):
                     form_instance = view.get_bound_form(view.response.cleaned_content, method=method)
                     if form_instance and not form_instance.is_valid():
                         form_instance = None
-                except:
+                except Exception:
                     form_instance = None
 
         # If we still don't have a form instance then try to get an unbound form
         if not form_instance:
             try:
                 form_instance = view.get_bound_form(method=method)
-            except:
+            except Exception:
                 pass
 
         # If we still don't have a form instance then try to get an unbound form which can tunnel arbitrary content types

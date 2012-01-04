@@ -109,7 +109,7 @@ class _MediaType(object):
     #    """
     #    try:
     #        return Decimal(self.params.get('q', '1.0'))
-    #    except:
+    #    except Exception:
     #        return Decimal(0)
 
     #def score(self):
