@@ -157,7 +157,7 @@ class RendererIntegrationTests(TestCase):
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
 
-_indented_repr = '{\n    "foo": [\n        "bar",\n        "baz"\n    ]\n}'
+_indented_repr = '{\n    "foo": [\n        "bar", \n        "baz"\n    ]\n}'
 
 
 class JSONRendererTests(TestCase):
