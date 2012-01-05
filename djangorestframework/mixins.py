@@ -7,6 +7,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.paginator import Paginator
 from django.db.models.fields.related import ForeignKey
 from django.http import HttpResponse
+from urlobject import URLObject
 
 from djangorestframework import status
 from djangorestframework.renderers import BaseRenderer
@@ -659,11 +660,12 @@ class PaginatorMixin(object):
 
     def url_with_page_number(self, page_number):
         """ Constructs a url used for getting the next/previous urls """
-        url = "%s?page=%d" % (self.request.path, page_number)
+        url = URLObject.parse(self.request.get_full_path())
+        url = url.add_query_param('page', page_number)
 
         limit = self.get_limit()
         if limit != self.limit:
-            url = "%s&limit=%d" % (url, limit)
+            url = url.add_query_param('limit', limit)
 
         return url
 

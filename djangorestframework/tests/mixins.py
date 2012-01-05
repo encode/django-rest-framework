@@ -237,3 +237,14 @@ class TestPagination(TestCase):
         response = MockPaginatorView.as_view()(request)
         content = json.loads(response.content)
         self.assertEqual(response.status_code, status.NOT_FOUND)
+
+    def test_existing_query_parameters_are_preserved(self):
+        """ Tests that existing query parameters are preserved when
+        generating next/previous page links """
+        request = self.req.get('/paginator/?foo=bar&another=something')
+        response = MockPaginatorView.as_view()(request)
+        content = json.loads(response.content)
+        self.assertEqual(response.status_code, status.OK)
+        self.assertTrue('foo=bar' in content['next'])
+        self.assertTrue('another=something' in content['next'])
+        self.assertTrue('page=2' in content['next'])

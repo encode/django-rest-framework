@@ -3,3 +3,4 @@
 
 Django>=1.2
 coverage>=3.4
+URLObject>=0.6.0
