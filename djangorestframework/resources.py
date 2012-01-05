@@ -1,3 +1,4 @@
+from django.core.exceptions import ImproperlyConfigured
 from django import forms
 from django.core.urlresolvers import reverse, get_urlconf, get_resolver, NoReverseMatch
 from django.db import models
@@ -533,18 +534,37 @@ class ModelResource(FormResource):
 
     def get_model(self):
         """
-        Return the model class for this view.
+        Return the model class for this resource.
         """
-        return getattr(self, 'model', getattr(self.view, 'model', None))
+        if hasattr(self, 'model'):
+            return self.model
+        elif hasattr(self.view, 'model'):
+            return self.view.model
+        else:
+            raise ImproperlyConfigured(u"%(cls)s is missing a model. Define "
+                                       u"%(cls)s.model." % {
+                                            'cls': self.__class__
+                                       })
 
     def get_queryset(self):
         """
         Return the queryset that should be used when retrieving or listing
         instances.
         """
-        return getattr(self, 'queryset',
-                    getattr(self.view, 'queryset',
-                        self.get_model().objects.all()))
+        if hasattr(self, 'queryset'):
+            queryset = self.queryset
+        elif hasattr (self.view, 'queryset'):
+            queryset = self.view.queryset
+        else:
+            model = self.get_model()
+            if model:
+                queryset = model._default_manager.all()
+            else:
+                raise ImproperlyConfigured(u"%(cls)s is missing a queryset. Define "
+                                           u"%(cls)s.model or %(cls)s.queryset." % {
+                                                'cls': self.__class__
+	                                       })
+        return queryset._clone()
 
     def get_ordering(self):
         """
