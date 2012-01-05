@@ -46,18 +46,18 @@ class BaseResource(Serializer):
         """
         return self.serialize(obj)
 
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def create(self, request, *args, **kwargs):
-        raise NotImplementedError()
-
-    @bound_resource_required
-    def update(self, data, request, *args, **kwargs):
+    def create(self, *args, **kwargs):
         raise NotImplementedError()
 
     @bound_resource_required
-    def delete(self, request, *args, **kwargs):
+    def update(self, data, *args, **kwargs):
+        raise NotImplementedError()
+
+    @bound_resource_required
+    def delete(self, *args, **kwargs):
         raise NotImplementedError()
 
     @bound_resource_required
@@ -331,7 +331,7 @@ class ModelResource(FormResource):
 
         self.model = getattr(view, 'model', None) or self.model
 
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, *args, **kwargs):
         """
         Return a model instance or None.
         """
@@ -346,7 +346,7 @@ class ModelResource(FormResource):
         self.instance = instance
         return self.instance
 
-    def create(self, request, *args, **kwargs):
+    def create(self, *args, **kwargs):
         model = self.get_model()
         kwargs = self._clean_url_kwargs(kwargs)
 
@@ -355,7 +355,7 @@ class ModelResource(FormResource):
         return self.instance
 
     @bound_resource_required
-    def update(self, data, request, *args, **kwargs):
+    def update(self, data, *args, **kwargs):
         model = self.get_model()
         kwargs = self._clean_url_kwargs(kwargs)
         data = dict(data, **kwargs)
@@ -390,11 +390,11 @@ class ModelResource(FormResource):
         return self.instance
 
     @bound_resource_required
-    def delete(self, request, *args, **kwargs):
+    def delete(self, *args, **kwargs):
         self.instance.delete()
         return self.instance
 
-    def list(self, request, *args, **kwargs):
+    def list(self, *args, **kwargs):
         # TODO: QuerysetResource instead !?
         kwargs = self._clean_url_kwargs(kwargs)
         queryset = self.get_queryset()
