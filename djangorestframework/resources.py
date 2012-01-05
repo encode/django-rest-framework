@@ -536,34 +536,33 @@ class ModelResource(FormResource):
         """
         Return the model class for this resource.
         """
-        if hasattr(self, 'model'):
-            return self.model
-        elif hasattr(self.view, 'model'):
-            return self.view.model
-        else:
-            raise ImproperlyConfigured(u"%(cls)s is missing a model. Define "
-                                       u"%(cls)s.model." % {
-                                            'cls': self.__class__
-                                       })
+        model = getattr(self, 'model', None)
+        if model is None:
+            model = getattr(self.view, 'model', None)
+            if model is None:
+                raise ImproperlyConfigured(u"%(cls)s is missing a model. Define "
+                                           u"%(cls)s.model." % {
+                                                'cls': self.__class__
+                                           })
+        return model
 
     def get_queryset(self):
         """
         Return the queryset that should be used when retrieving or listing
         instances.
         """
-        if hasattr(self, 'queryset'):
-            queryset = self.queryset
-        elif hasattr (self.view, 'queryset'):
-            queryset = self.view.queryset
-        else:
-            model = self.get_model()
-            if model:
+        queryset = getattr(self, 'queryset', None)
+        if queryset is None:
+            queryset = getattr(self.view, 'queryset', None)
+            if queryset is None:
+                try:
+                    model = self.get_model()
+                except ImproperlyConfigured:
+                    raise ImproperlyConfigured(u"%(cls)s is missing a queryset. Define "
+                                               u"%(cls)s.model or %(cls)s.queryset." % {
+                                                    'cls': self.__class__
+	                                           })
                 queryset = model._default_manager.all()
-            else:
-                raise ImproperlyConfigured(u"%(cls)s is missing a queryset. Define "
-                                           u"%(cls)s.model or %(cls)s.queryset." % {
-                                                'cls': self.__class__
-	                                       })
         return queryset._clone()
 
     def get_ordering(self):
