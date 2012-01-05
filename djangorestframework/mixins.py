@@ -22,6 +22,7 @@ __all__ = (
     'ResponseMixin',
     'AuthMixin',
     'ResourceMixin',
+    'SerializerMixin',
     # Reverse URL lookup behavior
     'InstanceMixin',
     # Model behavior mixins
@@ -393,6 +394,29 @@ class AuthMixin(object):
             permission.check_permission(user)
 
 
+class SerializerMixin(object):
+    def validate_request(self, data, files=None):
+        """
+        Given the request *data* and optional *files*, return the cleaned,
+        validated content.
+        May raise an :class:`response.ErrorResponse` with status code 400
+        (Bad Request) on failure.
+        """
+        return self.resource.validate_request(data, files)
+
+    def filter_response(self, obj):
+        """
+        Given the response content, filter it into a serializable object.
+        """
+        return self.resource.filter_response(obj)
+
+    def get_bound_form(self, content=None, method=None):
+        if hasattr(self.resource, 'get_bound_form'):
+            return self.resource.get_bound_form(content, method=method)
+        else:
+            return None
+
+
 ########## Resource Mixin ##########
 
 class ResourceMixin(object):
@@ -451,26 +475,7 @@ class ResourceMixin(object):
             self._resource = resource_class(view=self)
         return self._resource
 
-    def validate_request(self, data, files=None):
-        """
-        Given the request *data* and optional *files*, return the cleaned,
-        validated content.
-        May raise an :class:`response.ErrorResponse` with status code 400
-        (Bad Request) on failure.
-        """
-        return self.resource.validate_request(data, files)
 
-    def filter_response(self, obj):
-        """
-        Given the response content, filter it into a serializable object.
-        """
-        return self.resource.filter_response(obj)
-
-    def get_bound_form(self, content=None, method=None):
-        if hasattr(self.resource, 'get_bound_form'):
-            return self.resource.get_bound_form(content, method=method)
-        else:
-            return None
 
 
 ##########

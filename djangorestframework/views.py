@@ -25,7 +25,7 @@ __all__ = (
 )
 
 
-class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
+class View(ResourceMixin, RequestMixin, ResponseMixin, SerializerMixin, AuthMixin, DjangoView):
     """
     Handles incoming requests and maps them to REST operations.
     Performs request deserialization, response serialization, authentication and input validation.
