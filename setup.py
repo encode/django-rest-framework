@@ -26,6 +26,7 @@ setup(
     package_dir={'djangorestframework': 'djangorestframework'},
     package_data = {'djangorestframework': ['templates/*', 'static/*']},
     test_suite = 'djangorestframework.runtests.runcoverage.main',
+    install_requires=['URLObject>=0.6.0'],
     classifiers = [
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
