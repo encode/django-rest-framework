@@ -19,7 +19,8 @@ class BaseResource(object):
     # TODO: Inheritance, like for models
     class DoesNotExist(Exception): pass
 
-    def __init__(self, instance=None, view=None, depth=None, stack=[], **kwargs):
+    # !!! `view` should be first kwarg to avoid backward incompatibilities.
+    def __init__(self, view=None, instance=None, depth=None, stack=[], **kwargs):
         super(BaseResource, self).__init__(depth, stack, **kwargs)
         self.view = view
         self.instance = instance
@@ -320,13 +321,13 @@ class ModelResource(FormResource):
     is not set.
     """
 
-    def __init__(self, instance=None, view=None, depth=None, stack=[], **kwargs):
+    def __init__(self, view=None, instance=None, depth=None, stack=[], **kwargs):
         """
         Allow :attr:`form` and :attr:`model` attributes set on the
         :class:`View` to override the :attr:`form` and :attr:`model`
         attributes set on the :class:`Resource`.
         """
-        super(ModelResource, self).__init__(instance=instance, view=view, depth=depth, stack=stack, **kwargs)
+        super(ModelResource, self).__init__(view=view, instance=instance, depth=depth, stack=stack, **kwargs)
 
         self.model = getattr(view, 'model', None) or self.model
 
