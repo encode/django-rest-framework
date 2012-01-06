@@ -48,59 +48,59 @@ urlpatterns = patterns('djangorestframework.utils.staticviews',
     url(r'^model/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource_class=MockResource)),
 )
 
-class BaseViewTests(TestCase):
-    """Test the base view class of djangorestframework"""
-    urls = 'djangorestframework.tests.views'
-
-    def test_options_method_simple_view(self):
-        response = self.client.options('/mock/')
-        self._verify_options_response(response,
-                                      name='Mock',
-                                      description='This is a basic mock view')
-
-    def test_options_method_resource_view(self):
-        response = self.client.options('/resourcemock/')
-        self._verify_options_response(response,
-                                      name='Resource Mock',
-                                      description='This is a resource-based mock view',
-                                      fields={'foo':'BooleanField',
-                                              'bar':'IntegerField',
-                                              'baz':'CharField',
-                                              })
-
-    def test_options_method_model_resource_list_view(self):
-        response = self.client.options('/model/')
-        self._verify_options_response(response,
-                                      name='Mock List',
-                                      description='This is a mock model-based resource',
-                                      fields={'foo':'BooleanField',
-                                              'bar':'IntegerField',
-                                              'baz':'CharField',
-                                              })
-
-    def test_options_method_model_resource_detail_view(self):
-        response = self.client.options('/model/0/')
-        self._verify_options_response(response,
-                                      name='Mock Instance',
-                                      description='This is a mock model-based resource',
-                                      fields={'foo':'BooleanField',
-                                              'bar':'IntegerField',
-                                              'baz':'CharField',
-                                              })
-
-    def _verify_options_response(self, response, name, description, fields=None, status=200,
-                                 mime_type='application/json'):
-        self.assertEqual(response.status_code, status)
-        self.assertEqual(response['Content-Type'].split(';')[0], mime_type)
-        parser = JSONParser(None)
-        (data, files) = parser.parse(StringIO(response.content))
-        self.assertTrue('application/json' in data['renders'])
-        self.assertEqual(name, data['name'])
-        self.assertEqual(description, data['description'])
-        if fields is None:
-            self.assertFalse(hasattr(data, 'fields'))
-        else:
-            self.assertEqual(data['fields'], fields)
+# class BaseViewTests(TestCase):
+#     """Test the base view class of djangorestframework"""
+#     urls = 'djangorestframework.tests.views'
+# 
+#     def test_options_method_simple_view(self):
+#         response = self.client.options('/mock/')
+#         self._verify_options_response(response,
+#                                       name='Mock',
+#                                       description='This is a basic mock view')
+# 
+#     def test_options_method_resource_view(self):
+#         response = self.client.options('/resourcemock/')
+#         self._verify_options_response(response,
+#                                       name='Resource Mock',
+#                                       description='This is a resource-based mock view',
+#                                       fields={'foo':'BooleanField',
+#                                               'bar':'IntegerField',
+#                                               'baz':'CharField',
+#                                               })
+# 
+#     def test_options_method_model_resource_list_view(self):
+#         response = self.client.options('/model/')
+#         self._verify_options_response(response,
+#                                       name='Mock List',
+#                                       description='This is a mock model-based resource',
+#                                       fields={'foo':'BooleanField',
+#                                               'bar':'IntegerField',
+#                                               'baz':'CharField',
+#                                               })
+# 
+#     def test_options_method_model_resource_detail_view(self):
+#         response = self.client.options('/model/0/')
+#         self._verify_options_response(response,
+#                                       name='Mock Instance',
+#                                       description='This is a mock model-based resource',
+#                                       fields={'foo':'BooleanField',
+#                                               'bar':'IntegerField',
+#                                               'baz':'CharField',
+#                                               })
+# 
+#     def _verify_options_response(self, response, name, description, fields=None, status=200,
+#                                  mime_type='application/json'):
+#         self.assertEqual(response.status_code, status)
+#         self.assertEqual(response['Content-Type'].split(';')[0], mime_type)
+#         parser = JSONParser(None)
+#         (data, files) = parser.parse(StringIO(response.content))
+#         self.assertTrue('application/json' in data['renders'])
+#         self.assertEqual(name, data['name'])
+#         self.assertEqual(description, data['description'])
+#         if fields is None:
+#             self.assertFalse(hasattr(data, 'fields'))
+#         else:
+#             self.assertEqual(data['fields'], fields)
 
 
 class ExtraViewsTests(TestCase):

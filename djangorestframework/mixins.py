@@ -8,7 +8,7 @@ from django.core.paginator import Paginator
 from django.http import HttpResponse
 
 from djangorestframework import status
-from djangorestframework.resources import Resource, FormResource, ModelResource
+from djangorestframework.resources import Resource
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.utils import MSIE_USER_AGENT_REGEX
 from djangorestframework.utils.mediatypes import is_form_media_type, order_by_precedence
@@ -395,24 +395,39 @@ class AuthMixin(object):
 
 
 class SerializerMixin(object):
-    def validate_request(self, data, files=None):
+    serializer_class = None
+    deserializer_class = None
+
+    @property
+    def serializer(self):
+        if not hasattr(self, '_serializer'):
+            self._serializer = self.resource_class(view=self)
+        return self._serializer
+
+    @property
+    def deserializer(self):
+        if not hasattr(self, '_deserializer'):
+            self._deserializer = self.resource_class(view=self)
+        return self._deserializer
+
+    def deserialize(self, data, files=None):
         """
         Given the request *data* and optional *files*, return the cleaned,
         validated content.
         May raise an :class:`response.ErrorResponse` with status code 400
         (Bad Request) on failure.
         """
-        return self.resource.validate_request(data, files)
+        return self.deserializer.deserialize(data, files)
 
-    def filter_response(self, obj):
+    def serialize(self, obj):
         """
         Given the response content, filter it into a serializable object.
         """
-        return self.resource.filter_response(obj)
+        return self.serializer.serialize(obj)
 
     def get_bound_form(self, content=None, method=None):
-        if hasattr(self.resource, 'get_bound_form'):
-            return self.resource.get_bound_form(content, method=method)
+        if hasattr(self.deserializer, 'get_bound_form'):
+            return self.deserializer.get_bound_form(content, method=method)
         else:
             return None
 
@@ -432,7 +447,7 @@ class ResourceMixin(object):
     and filters the object representation into a serializable object for the
     response.
     """
-    resource_class = None
+    resource_class = Resource
 
     @property
     def CONTENT(self):
@@ -443,7 +458,7 @@ class ResourceMixin(object):
         (Bad Request).
         """
         if not hasattr(self, '_content'):
-            self._content = self.validate_request(self.DATA, self.FILES)
+            self._content = self.deserialize(self.DATA, self.FILES)
         return self._content
 
     @property
@@ -454,25 +469,12 @@ class ResourceMixin(object):
         May raise an :class:`response.ErrorResponse` with status code 400
         (Bad Request).
         """
-        return self.validate_request(self.request.GET)
-
-    def get_resource_class(self):
-        if self.resource_class:
-            return self.resource_class
-        elif getattr(self, 'model', None):
-            return ModelResource
-        elif getattr(self, 'form', None):
-            return FormResource
-        elif hasattr(self, 'request') and getattr(self, '%s_form' % self.method.lower(), None):
-            return FormResource
-        else:
-            return Resource
+        return self.deserialize(self.request.GET)
 
     @property
     def resource(self):
         if not hasattr(self, '_resource'):
-            resource_class = self.get_resource_class()
-            self._resource = resource_class(view=self)
+            self._resource = self.resource_class(view=self)
         return self._resource
 
 
@@ -612,7 +614,7 @@ class PaginatorMixin(object):
             'total': page.paginator.count,
         }
 
-    def filter_response(self, obj):
+    def serialize(self, obj):
         """
         Given the response content, paginate and then serialize.
 
@@ -626,7 +628,7 @@ class PaginatorMixin(object):
         # We don't want to paginate responses for anything other than GET
         # requests
         if self.method.upper() != 'GET':
-            return self.resource.filter_response(obj)
+            return self.serializer.serialize(obj)
 
         paginator = Paginator(obj, self.get_limit())
 
@@ -642,7 +644,7 @@ class PaginatorMixin(object):
 
         page = paginator.page(page_num)
 
-        serialized_object_list = self.resource.filter_response(page.object_list)
+        serialized_object_list = self.serializer.serialize(page.object_list)
         serialized_page_info = self.serialize_page_info(page)
 
         serialized_page_info['results'] = serialized_object_list

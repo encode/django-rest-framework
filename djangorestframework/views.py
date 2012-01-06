@@ -35,7 +35,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, SerializerMixin, AuthMixi
     The resource to use when validating requests and filtering responses,
     or `None` to use default behaviour.
     """
-    resource_class = None
+    resource_class = resources.Resource
 
     """
     List of renderers the resource can serialize the response with, ordered by preference.
@@ -143,7 +143,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, SerializerMixin, AuthMixi
             else:
                 # Pre-serialize filtering (eg filter complex objects into
                 # natively serializable types)
-                response.cleaned_content = self.filter_response(response.raw_content)
+                response.cleaned_content = self.serialize(response.raw_content)
 
         except ErrorResponse, exc:
             response = exc.response

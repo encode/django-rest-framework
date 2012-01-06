@@ -31,19 +31,13 @@ class BaseResource(Serializer):
         self.view = view
         self.instance = instance
 
-    def validate_request(self, data, files=None):
+    def deserialize(self, data, files=None):
         """
         Given the request content return the cleaned, validated content.
         Typically raises a :exc:`response.ErrorResponse` with status code 400
         (Bad Request) on failure.
         """
         return data
-
-    def filter_response(self, obj):
-        """
-        Given the response content, filter it into a serializable object.
-        """
-        return self.serialize(obj)
 
     def retrieve(self, request, *args, **kwargs):
         raise NotImplementedError()
@@ -96,7 +90,7 @@ class FormResource(Resource):
     Also provides a :meth:`get_bound_form` method which may be used by some
     renderers.
 
-    On calling :meth:`validate_request` this validator may set a
+    On calling :meth:`deserialize` this validator may set a
     :attr:`bound_form_instance` attribute on the view, which may be used by
     some renderers.
     """
@@ -108,7 +102,7 @@ class FormResource(Resource):
     :class:`views.View`.
     """
 
-    def validate_request(self, data, files=None):
+    def deserialize(self, data, files=None):
         """
         Given some content as input return some cleaned, validated content.
 
@@ -450,7 +444,7 @@ class ModelResource(FormResource):
                     pass
         raise _SkipField
 
-    def validate_request(self, data, files=None):
+    def deserialize(self, data, files=None):
         """
         Given some content as input return some cleaned, validated content.
 

@@ -13,7 +13,7 @@ class TestDisabledValidations(TestCase):
     """Tests on FormValidator with validation disabled by setting form to None"""
 
     def test_disabled_form_validator_returns_content_unchanged(self):
-        """If the view's form attribute is None then FormValidator(view).validate_request(content, None)
+        """If the view's form attribute is None then FormValidator(view).deserialize(content, None)
         should just return the content unmodified."""
         class DisabledFormResource(FormResource):
             form = None
@@ -23,7 +23,7 @@ class TestDisabledValidations(TestCase):
 
         view = MockView()
         content = {'qwerty':'uiop'}
-        self.assertEqual(FormResource(view).validate_request(content, None), content)
+        self.assertEqual(FormResource(view).deserialize(content, None), content)
 
     def test_disabled_form_validator_get_bound_form_returns_none(self):
         """If the view's form attribute is None on then
@@ -41,7 +41,7 @@ class TestDisabledValidations(TestCase):
 
     def test_disabled_model_form_validator_returns_content_unchanged(self):
         """If the view's form is None and does not have a Resource with a model set then
-        ModelFormValidator(view).validate_request(content, None) should just return the content unmodified."""
+        ModelFormValidator(view).deserialize(content, None) should just return the content unmodified."""
 
         class DisabledModelFormView(View):
             resource = ModelResource
@@ -83,7 +83,7 @@ class TestNonFieldErrors(TestCase):
         view = MockView()
         content = {'field1': 'example1', 'field2': 'example2'}
         try:
-            MockResource(view=view).validate_request(content, None)
+            MockResource(view=view).deserialize(content, None)
         except ErrorResponse, exc:
             self.assertEqual(exc.response.raw_content, {'errors': [MockForm.ERROR_TEXT]})
         else:
@@ -119,19 +119,19 @@ class TestFormValidation(TestCase):
     def validation_returns_content_unchanged_if_already_valid_and_clean(self, validator):
         """If the content is already valid and clean then validate(content) should just return the content unmodified."""
         content = {'qwerty':'uiop'}
-        self.assertEqual(validator.validate_request(content, None), content)
+        self.assertEqual(validator.deserialize(content, None), content)
 
     def validation_failure_raises_response_exception(self, validator):
         """If form validation fails a ResourceException 400 (Bad Request) should be raised."""
         content = {}
-        self.assertRaises(ErrorResponse, validator.validate_request, content, None)
+        self.assertRaises(ErrorResponse, validator.deserialize, content, None)
 
     def validation_does_not_allow_extra_fields_by_default(self, validator):
         """If some (otherwise valid) content includes fields that are not in the form then validation should fail.
         It might be okay on normal form submission, but for Web APIs we oughta get strict, as it'll help show up
         broken clients more easily (eg submitting content with a misnamed field)"""
         content = {'qwerty': 'uiop', 'extra': 'extra'}
-        self.assertRaises(ErrorResponse, validator.validate_request, content, None)
+        self.assertRaises(ErrorResponse, validator.deserialize, content, None)
 
     def validation_allows_extra_fields_if_explicitly_set(self, validator):
         """If we include an allowed_extra_fields paramater on _validate, then allow fields with those names."""
@@ -147,7 +147,7 @@ class TestFormValidation(TestCase):
         """If validation fails due to no content, ensure the response contains a single non-field error"""
         content = {}
         try:
-            validator.validate_request(content, None)
+            validator.deserialize(content, None)
         except ErrorResponse, exc:
             self.assertEqual(exc.response.raw_content, {'field_errors': {'qwerty': ['This field is required.']}})
         else:
@@ -157,7 +157,7 @@ class TestFormValidation(TestCase):
         """If validation fails due to a field error, ensure the response contains a single field error"""
         content = {'qwerty': ''}
         try:
-            validator.validate_request(content, None)
+            validator.deserialize(content, None)
         except ErrorResponse, exc:
             self.assertEqual(exc.response.raw_content, {'field_errors': {'qwerty': ['This field is required.']}})
         else:
@@ -167,7 +167,7 @@ class TestFormValidation(TestCase):
         """If validation fails due to an invalid field, ensure the response contains a single field error"""
         content = {'qwerty': 'uiop', 'extra': 'extra'}
         try:
-            validator.validate_request(content, None)
+            validator.deserialize(content, None)
         except ErrorResponse, exc:
             self.assertEqual(exc.response.raw_content, {'field_errors': {'extra': ['This field does not exist.']}})
         else:
@@ -177,7 +177,7 @@ class TestFormValidation(TestCase):
         """If validation for multiple reasons, ensure the response contains each error"""
         content = {'qwerty': '', 'extra': 'extra'}
         try:
-            validator.validate_request(content, None)
+            validator.deserialize(content, None)
         except ErrorResponse, exc:
             self.assertEqual(exc.response.raw_content, {'field_errors': {'qwerty': ['This field is required.'],
                                                                          'extra': ['This field does not exist.']}})
@@ -286,31 +286,31 @@ class TestModelFormValidator(TestCase):
     def test_property_fields_are_allowed_on_model_forms(self):
         """Validation on ModelForms may include property fields that exist on the Model to be included in the input."""
         content = {'qwerty':'example', 'uiop': 'example', 'readonly': 'read only'}
-        self.assertEqual(self.validator.validate_request(content, None), content)
+        self.assertEqual(self.validator.deserialize(content, None), content)
 
     def test_property_fields_are_not_required_on_model_forms(self):
         """Validation on ModelForms does not require property fields that exist on the Model to be included in the input."""
         content = {'qwerty':'example', 'uiop': 'example'}
-        self.assertEqual(self.validator.validate_request(content, None), content)
+        self.assertEqual(self.validator.deserialize(content, None), content)
 
     def test_extra_fields_not_allowed_on_model_forms(self):
         """If some (otherwise valid) content includes fields that are not in the form then validation should fail.
         It might be okay on normal form submission, but for Web APIs we oughta get strict, as it'll help show up
         broken clients more easily (eg submitting content with a misnamed field)"""
         content = {'qwerty': 'example', 'uiop':'example', 'readonly': 'read only', 'extra': 'extra'}
-        self.assertRaises(ErrorResponse, self.validator.validate_request, content, None)
+        self.assertRaises(ErrorResponse, self.validator.deserialize, content, None)
 
     def test_validate_requires_fields_on_model_forms(self):
         """If some (otherwise valid) content includes fields that are not in the form then validation should fail.
         It might be okay on normal form submission, but for Web APIs we oughta get strict, as it'll help show up
         broken clients more easily (eg submitting content with a misnamed field)"""
         content = {'readonly': 'read only'}
-        self.assertRaises(ErrorResponse, self.validator.validate_request, content, None)
+        self.assertRaises(ErrorResponse, self.validator.deserialize, content, None)
 
     def test_validate_does_not_require_blankable_fields_on_model_forms(self):
         """Test standard ModelForm validation behaviour - fields with blank=True are not required."""
         content = {'qwerty':'example', 'readonly': 'read only'}
-        self.validator.validate_request(content, None)
+        self.validator.deserialize(content, None)
 
     def test_model_form_validator_uses_model_forms(self):
         self.assertTrue(isinstance(self.validator.get_bound_form(), forms.ModelForm))
