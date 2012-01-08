@@ -46,44 +46,52 @@ class QueryMixin(object):
     passed by as URL arguments, it should provied arguments to objects.get and objects.filter
     methods wrapped in by `build_query`
     
+    If a *ModelMixin is going to create/update an instance get_instance_data handles the instance 
+    data creation/preaparation.
 
     """
+
     def build_query(self, *args, **kwargs):
-        
-        # This methods simply mimics the previous behaviour of the framework, where
-        # the following code was used few times in to retrive the instance:
-        #
-        # ------------------------------
-        # if args:
-        #     #If we have any none kwargs then assume the last represents the primrary key
-        #     instance = model.objects.get(pk=args[-1], **kwargs)
-        # else:
-        #     # Otherwise assume the kwargs uniquely identify the model
-        #     instance = model.objects.get(**kwargs)
-        # -----------------------------
-        # 
-        # this block is now replaced with
-        #
-        # -------------
-        # instance = model.objects.get(self.build_query(*args, **kwargs)
-        # -------------
-        #
-        # which is more DRY + gives the simple possibility to provide 
-        # *any* arguments in URL
-        #
+        """ Returns django.db.models.Q object to be used for the objects retrival.
+
+        Arguments:
+        - args: unnamed URL arguments
+        - kwargs: named URL arguments
+
+        If a URL passes any arguments to the view being the QueryMixin subclass
+        build_query manages the arguments and provides the Q object that will be
+        used for the objects retrival with filter/get queryset methods.
+
+        Technically, either args nor kwargs have to be provided, however the default
+        behaviour is to map all kwargs as the query constructors so that if this 
+        method is not overriden only kwargs keys being model fields are valid. 
+
+        If args are provided, the last one (args[-1) is understood as instance pk. This
+        should be removed in the future, though.
+
+        """
 
         tmp = dict(kwargs)
         if args:
-            # While this code simply follows the previous behaviour, we feel this 
-            # is somehow strange to use 'pk' with any other query parameters... isn't it?
-
             # If we have any none kwargs then assume the last represents the primrary key
             # Otherwise assume the kwargs uniquely identify the model
             tmp.update({'pk': args[-1]})
         return Q(**tmp)
 
 
-    def get_instance_data(self, model, content, *args, **kwargs):
+    def get_instance_data(self, model, content, **kwargs):
+        """ Returns the dict with the data for model instance creation/update query.
+
+        Arguments:
+        - model: model class (django.db.models.Model subclass) to work with
+        - content: a dictionary with instance data
+        - kwargs: a dict of URL provided keyword arguments
+
+        The create/update queries are created basicly with the contet provided
+        with POST/PUT HTML methods and kwargs passed in the URL. This methods simply merges
+        the URL data and the content preaparing the ready-to-use data dictionary.
+        
+        """
 
         tmp = dict(kwargs)
 
@@ -95,21 +103,7 @@ class QueryMixin(object):
 
         all_kw_args = dict(content.items() + tmp.items())
 
-        if args:
-            all_kw_args.update({'pk': args[-1]})
-
         return all_kw_args
-
-
-    # TODO: get_object and get_queryset methods should be implemented somehow. This will
-    # give a nice parallel to django class-based generic views. We're leaving this 
-    # unimplementd at the moment.
-
-    def get_object(self):
-        pass
-
-    def get_queryset(self):
-        pass
 
 
 ########## Request Mixin ##########
@@ -637,10 +631,6 @@ class UpdateModelMixin(QueryMixin):
                 setattr(self.model_instance, key, val)
         except model.DoesNotExist:
             self.model_instance = model(**self.get_instance_data(model, self.CONTENT, *args, **kwargs))
-            # args + kwartgs were not provided...
-            # self.model_instance = model(**self.CONTENT)
-            # self.model_instance.save()
-
         self.model_instance.save()
         return self.model_instance
 
