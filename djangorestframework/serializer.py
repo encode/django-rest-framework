@@ -230,11 +230,10 @@ class Serializer(object):
         # serialize each required field
         for fname in fields:
             try:
-                if hasattr(self, smart_str(fname)):
+                if inspect.ismethod(getattr(self, fname, None)) and \
+                        len(inspect.getargspec(getattr(self, fname))[0]) == 2:
                     # check first for a method 'fname' on self first
-                    meth = getattr(self, fname)
-                    if inspect.ismethod(meth) and len(inspect.getargspec(meth)[0]) == 2:
-                        obj = meth(instance)
+                    obj = meth(instance)
                 elif hasattr(instance, '__contains__') and fname in instance:
                     # check for a key 'fname' on the instance
                     obj = instance[fname]
