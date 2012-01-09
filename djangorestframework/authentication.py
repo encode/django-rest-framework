@@ -96,10 +96,15 @@ class UserLoggedInAuthentication(BaseAuthentication):
             # Temporarily replace request.POST with .DATA, to use our generic parsing.
             # If DATA is not dict-like, use an empty dict.
             if request.method.upper() == 'POST':
+                token = request.POST.get('csrfmiddlewaretoken')
+
                 if hasattr(self.view.DATA, 'get'):
-                    request._post = self.view.DATA
+                    request._post = self.view.DATA.copy()
                 else:
                     request._post = {}
+
+                if token is not None:
+                    request._post['csrfmiddlewaretoken'] = token
 
             resp = CsrfViewMiddleware().process_view(request, None, (), {})
 
