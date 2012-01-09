@@ -6,14 +6,6 @@ from djangorestframework.response import ErrorResponse
 from djangorestframework.serializer import Serializer, _SkipField
 
 
-def bound_resource_required(meth):
-    def _decorated(self, *args, **kwargs):
-        if not self.is_bound():
-            raise Exception("resource needs to be bound") #TODO: what exception?
-        return meth(self, *args, **kwargs)
-    return _decorated
-
-
 class BaseResource(Serializer):
     """
     Base class for all Resource classes, which simply defines the interface
@@ -26,7 +18,8 @@ class BaseResource(Serializer):
     # TODO: Inheritance, like for models
     class DoesNotExist(Exception): pass
 
-    def __init__(self, instance=None, view=None, depth=None, stack=[], **kwargs):
+    # !!! `view` should be first kwarg to avoid backward incompatibilities. (lol)
+    def __init__(self, view=None, instance=None, depth=None, stack=[], **kwargs):
         super(BaseResource, self).__init__(depth, stack, **kwargs)
         self.view = view
         self.instance = instance
@@ -39,21 +32,18 @@ class BaseResource(Serializer):
         """
         return data
 
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, *args, **kwargs):
         raise NotImplementedError()
 
-    def create(self, request, *args, **kwargs):
+    def create(self, *args, **kwargs):
         raise NotImplementedError()
 
-    @bound_resource_required
-    def update(self, data, request, *args, **kwargs):
+    def update(self, data, *args, **kwargs):
         raise NotImplementedError()
 
-    @bound_resource_required
-    def delete(self, request, *args, **kwargs):
+    def delete(self, *args, **kwargs):
         raise NotImplementedError()
 
-    @bound_resource_required
     def get_url(self):
         raise NotImplementedError()
 
@@ -148,7 +138,8 @@ class FormResource(Resource):
         if bound_form is None:
             return data
 
-        self.view.bound_form_instance = bound_form
+        if self.view is not None:
+            self.view.bound_form_instance = bound_form
 
         data = data and data or {}
         files = files and files or {}
@@ -314,17 +305,17 @@ class ModelResource(FormResource):
     is not set.
     """
 
-    def __init__(self, instance=None, view=None, depth=None, stack=[], **kwargs):
+    def __init__(self, view=None, instance=None, depth=None, stack=[], **kwargs):
         """
         Allow :attr:`form` and :attr:`model` attributes set on the
         :class:`View` to override the :attr:`form` and :attr:`model`
         attributes set on the :class:`Resource`.
         """
-        super(ModelResource, self).__init__(instance=instance, view=view, depth=depth, stack=stack, **kwargs)
+        super(ModelResource, self).__init__(view=None, instance=instance, depth=depth, stack=stack, **kwargs)
 
         self.model = getattr(view, 'model', None) or self.model
 
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, *args, **kwargs):
         """
         Return a model instance or None.
         """
@@ -339,7 +330,7 @@ class ModelResource(FormResource):
         self.instance = instance
         return self.instance
 
-    def create(self, request, *args, **kwargs):
+    def create(self, *args, **kwargs):
         model = self.get_model()
         kwargs = self._clean_url_kwargs(kwargs)
 
@@ -347,8 +338,12 @@ class ModelResource(FormResource):
         self.instance.save()
         return self.instance
 
-    @bound_resource_required
-    def update(self, data, request, *args, **kwargs):
+    def update(self, data, *args, **kwargs):
+        # The resource needs to be bound to an
+        # instance, or updating is not possible
+        if not self.is_bound():
+            raise Exception("resource needs to be bound") #TODO: what exception?
+
         model = self.get_model()
         kwargs = self._clean_url_kwargs(kwargs)
         data = dict(data, **kwargs)
@@ -382,12 +377,16 @@ class ModelResource(FormResource):
         self.instance.save()
         return self.instance
 
-    @bound_resource_required
-    def delete(self, request, *args, **kwargs):
+    def delete(self, *args, **kwargs):
+        # The resource needs to be bound to an
+        # instance, or deleting is not possible
+        if not self.is_bound():
+            raise Exception("resource needs to be bound") #TODO: what exception?
+
         self.instance.delete()
         return self.instance
 
-    def list(self, request, *args, **kwargs):
+    def list(self, *args, **kwargs):
         # TODO: QuerysetResource instead !?
         kwargs = self._clean_url_kwargs(kwargs)
         queryset = self.get_queryset()
@@ -397,7 +396,6 @@ class ModelResource(FormResource):
             queryset = queryset.order_by(ordering)
         return queryset.filter(**kwargs)
 
-    @bound_resource_required
     def get_url(self):
         """
         Attempts to reverse resolve the url of the given model *instance* for
@@ -409,6 +407,10 @@ class ModelResource(FormResource):
         This method can be overridden if you need to set the resource url
         reversing explicitly.
         """
+        # The resource needs to be bound to an
+        # instance, or getting url is not possible
+        if not self.is_bound():
+            raise Exception("resource needs to be bound") #TODO: what exception?
 
         if not hasattr(self, 'view_callable'):
             raise _SkipField
