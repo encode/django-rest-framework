@@ -201,10 +201,11 @@ class ListModelView(ListResourceMixin, ModelView):
     A view which provides default operations for list, against a model in the
     database.
     """
+    queryset = None
     _suffix = 'List'
 
 
-class ListOrCreateModelView(PostResourceMixin, ListResourceMixin, ModelView):
+class ListOrCreateModelView(PostResourceMixin, ListModelView, ModelView):
     """
     A view which provides default operations for list and create, against a
     model in the database.

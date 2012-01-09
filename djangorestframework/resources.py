@@ -7,7 +7,7 @@ from djangorestframework.response import ErrorResponse
 from djangorestframework.serializer import Serializer, _SkipField
 
 
-class BaseResource(Serializer):
+class BaseResource(object):
     """
     Base class for all Resource classes, which simply defines the interface
     they provide.
@@ -31,7 +31,7 @@ class BaseResource(Serializer):
         Typically raises a :exc:`response.ErrorResponse` with status code 400
         (Bad Request) on failure.
         """
-        return data
+        raise NotImplementedError()
 
     def retrieve(self, *args, **kwargs):
         raise NotImplementedError()
@@ -52,7 +52,7 @@ class BaseResource(Serializer):
         return not self.instance is None
 
 
-class Resource(BaseResource):
+class Resource(Serializer, BaseResource):
     """
     A Resource determines how a python object maps to some serializable data.
     Objects that a resource can act on include plain Python object instances,
@@ -73,6 +73,9 @@ class Resource(BaseResource):
     # If you wish to override this behaviour,
     # you should explicitly set the fields attribute on your class.
     fields = None
+
+    def deserialize(self, data, files=None):
+        return data
 
 
 class FormResource(Resource):
