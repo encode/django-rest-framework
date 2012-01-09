@@ -205,6 +205,7 @@ class FormResource(Resource):
         """
         Given some content return a Django form bound to that content.
         If form validation is turned off (:attr:`form` class attribute is :const:`None`) then returns :const:`None`.
+        If the form class uses the `RequestFormMixin` mixin, the request will be set on the form
         """
         form = self.get_form_class(method)
 
@@ -212,9 +213,15 @@ class FormResource(Resource):
             return None
 
         if data is not None or files is not None:
-            return form(data, files)
+            form_instance = form(data, files)
+        else:
+            form_instance = form()
 
-        return form()
+        try:
+            form_instance.set_request(self.view.request)
+        except AttributeError:
+            pass
+        return form_instance
 
 
 

@@ -729,3 +729,18 @@ class PaginatorMixin(object):
         serialized_page_info['results'] = serialized_object_list
 
         return serialized_page_info
+
+
+############## RequestFormMixin ####################
+
+class RequestFormMixin(object):
+    """
+    If you add this mixin to a form class, the instantiated form will have the `set_request`-method
+    which will be set by any resource using standard form validation, allowing you to use `self.request`
+    in any form clean`-methods.
+    """
+
+    request = None
+
+    def set_request(self, request):
+        self.request = request
