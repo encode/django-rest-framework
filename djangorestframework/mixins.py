@@ -36,76 +36,6 @@ __all__ = (
 )
 
 
-#### Base for *ModelMixins using URL arguments to filter out queryset or instances ####
-
-class QueryMixin(object):
-    """ Implements mechanisms used by other classes (like *ModelMixin group) to
-    define a query that represents Model instances the Mixin is working with.
-
-    If a *ModelMixin is going to retrive an instance (or queryset) using args and kwargs
-    passed by as URL arguments, it should provied arguments to objects.get and objects.filter
-    methods wrapped in by `build_query`
-    
-    If a *ModelMixin is going to create/update an instance get_instance_data handles the instance 
-    data creation/preaparation.
-
-    """
-
-    def build_query(self, *args, **kwargs):
-        """ Returns django.db.models.Q object to be used for the objects retrival.
-
-        Arguments:
-        - args: unnamed URL arguments
-        - kwargs: named URL arguments
-
-        If a URL passes any arguments to the view being the QueryMixin subclass
-        build_query manages the arguments and provides the Q object that will be
-        used for the objects retrival with filter/get queryset methods.
-
-        Technically, either args nor kwargs have to be provided, however the default
-        behaviour is to map all kwargs as the query constructors so that if this 
-        method is not overriden only kwargs keys being model fields are valid. 
-
-        If args are provided, the last one (args[-1) is understood as instance pk. This
-        should be removed in the future, though.
-
-        """
-
-        tmp = dict(kwargs)
-        if args:
-            # If we have any none kwargs then assume the last represents the primrary key
-            # Otherwise assume the kwargs uniquely identify the model
-            tmp.update({'pk': args[-1]})
-        return Q(**tmp)
-
-
-    def get_instance_data(self, model, content, **kwargs):
-        """ Returns the dict with the data for model instance creation/update query.
-
-        Arguments:
-        - model: model class (django.db.models.Model subclass) to work with
-        - content: a dictionary with instance data
-        - kwargs: a dict of URL provided keyword arguments
-
-        The create/update queries are created basicly with the contet provided
-        with POST/PUT HTML methods and kwargs passed in the URL. This methods simply merges
-        the URL data and the content preaparing the ready-to-use data dictionary.
-        
-        """
-
-        tmp = dict(kwargs)
-
-        for field in model._meta.fields:
-            if isinstance(field, ForeignKey) and tmp.has_key(field.name):
-                # translate 'related_field' kwargs into 'related_field_id'
-                tmp[field.name + '_id'] = tmp[field.name]
-                del tmp[field.name]
-
-        all_kw_args = dict(content.items() + tmp.items())
-
-        return all_kw_args
-
-
 ########## Request Mixin ##########
 
 class RequestMixin(object):
@@ -552,7 +482,75 @@ class InstanceMixin(object):
 
 ########## Model Mixins ##########
 
-class ReadModelMixin(QueryMixin):
+class ModelMixin(object):
+    """ Implements mechanisms used by other classes (like *ModelMixin group) to
+    define a query that represents Model instances the Mixin is working with.
+
+    If a *ModelMixin is going to retrive an instance (or queryset) using args and kwargs
+    passed by as URL arguments, it should provied arguments to objects.get and objects.filter
+    methods wrapped in by `build_query`
+    
+    If a *ModelMixin is going to create/update an instance get_instance_data handles the instance 
+    data creation/preaparation.
+
+    """
+
+    def build_query(self, *args, **kwargs):
+        """ Returns django.db.models.Q object to be used for the objects retrival.
+
+        Arguments:
+        - args: unnamed URL arguments
+        - kwargs: named URL arguments
+
+        If a URL passes any arguments to the view being the QueryMixin subclass
+        build_query manages the arguments and provides the Q object that will be
+        used for the objects retrival with filter/get queryset methods.
+
+        Technically, neither args nor kwargs have to be provided, however the default
+        behaviour is to map all kwargs as the query constructors so that if this 
+        method is not overriden only kwargs keys being model fields are valid. 
+
+        If args are provided, the last one (args[-1) is understood as instance pk. This
+        should be removed in the future, though.
+
+        """
+
+        tmp = dict(kwargs)
+        if args:
+            # If we have any none kwargs then assume the last represents the primrary key
+            # Otherwise assume the kwargs uniquely identify the model
+            tmp.update({'pk': args[-1]})
+        return Q(**tmp)
+
+
+    def get_instance_data(self, model, content, **kwargs):
+        """ Returns the dict with the data for model instance creation/update query.
+
+        Arguments:
+        - model: model class (django.db.models.Model subclass) to work with
+        - content: a dictionary with instance data
+        - kwargs: a dict of URL provided keyword arguments
+
+        The create/update queries are created basicly with the contet provided
+        with POST/PUT HTML methods and kwargs passed in the URL. This methods simply merges
+        the URL data and the content preaparing the ready-to-use data dictionary.
+        
+        """
+
+        tmp = dict(kwargs)
+
+        for field in model._meta.fields:
+            if isinstance(field, ForeignKey) and tmp.has_key(field.name):
+                # translate 'related_field' kwargs into 'related_field_id'
+                tmp[field.name + '_id'] = tmp[field.name]
+                del tmp[field.name]
+
+        all_kw_args = dict(content.items() + tmp.items())
+
+        return all_kw_args
+
+
+class ReadModelMixin(ModelMixin):
     """
     Behavior to read a `model` instance on GET requests
     """
@@ -574,7 +572,7 @@ class ReadModelMixin(QueryMixin):
             del filtered_keywords[BaseRenderer._FORMAT_QUERY_PARAM]
         return super(ReadModelMixin, self).build_query(*args, **filtered_keywords)
 
-class CreateModelMixin(QueryMixin):
+class CreateModelMixin(ModelMixin):
     """
     Behavior to create a `model` instance on POST requests
     """
@@ -616,7 +614,7 @@ class CreateModelMixin(QueryMixin):
         return Response(status.HTTP_201_CREATED, instance, headers)
 
 
-class UpdateModelMixin(QueryMixin):
+class UpdateModelMixin(ModelMixin):
     """
     Behavior to update a `model` instance on PUT requests
     """
@@ -635,7 +633,7 @@ class UpdateModelMixin(QueryMixin):
         return self.model_instance
 
 
-class DeleteModelMixin(QueryMixin):
+class DeleteModelMixin(ModelMixin):
     """
     Behavior to delete a `model` instance on DELETE requests
     """
@@ -651,7 +649,7 @@ class DeleteModelMixin(QueryMixin):
         return
 
 
-class ListModelMixin(QueryMixin):
+class ListModelMixin(ModelMixin):
     """
     Behavior to list a set of `model` instances on GET requests
     """
