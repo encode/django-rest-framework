@@ -34,9 +34,7 @@ class TestObjectToData(TestCase):
         self.assertEquals(self.serialize(Foo().foo), 1)
 
     def test_datetime(self):
-        """
-        datetime objects are left as-is.
-        """
+        """datetime objects are left as-is."""
         now = datetime.datetime.now()
         self.assertEquals(self.serialize(now), now)
 
@@ -121,3 +119,14 @@ class TestFieldNesting(TestCase):
 
         self.assertEqual(SerializerM2().serialize(self.m2), {'field': {'field1': u'foo'}})
         self.assertEqual(SerializerM3().serialize(self.m3), {'field': {'field2': u'bar'}})
+
+    def test_serializer_unvalid_hook_method(self):
+        """
+        Test serializing a model instance with an unvalid hook method on the serializer.
+        """
+        class SerializerM2(Serializer):
+            fields = ('unvalid_hook', )
+            def unvalid_hook(self):
+                return
+        self.m2.unvalid_hook = 'bla'
+        self.assertEqual(SerializerM2().serialize_model(self.m2), {'unvalid_hook': 'bla'})
