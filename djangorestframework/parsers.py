@@ -196,8 +196,6 @@ class XMLParser(BaseParser):
     def _xml_convert(self, element):
         """
         convert the xml `element` into the corresponding python object 
-        
-        `data` The python object representation of xml `element`.
         """
         
         children = element.getchildren()
