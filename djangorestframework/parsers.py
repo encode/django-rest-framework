@@ -31,7 +31,7 @@ __all__ = (
     'FormParser',
     'MultiPartParser',
     'YAMLParser',
-	'XMLParser'
+    'XMLParser'
 )
 
 
