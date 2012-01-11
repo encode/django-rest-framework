@@ -119,7 +119,6 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         """
         self.headers[field] = value
 
-
     # Note: session based authentication is explicitly CSRF validated,
     # all other authentication is CSRF exempt.
     @csrf_exempt
@@ -153,13 +152,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             else:
                 response = Response(status.HTTP_204_NO_CONTENT)
 
-            if request.method == 'OPTIONS':
-                # do not filter the response for HTTP OPTIONS, else the response fields are lost,
-                # as they do not correspond with model fields
-                response.cleaned_content = response.raw_content
-            else:
-                # Pre-serialize filtering (eg filter complex objects into natively serializable types)
-                response.cleaned_content = self.filter_response(response.raw_content)
+            # Pre-serialize filtering (eg filter complex objects into natively serializable types)
+            response.cleaned_content = self.filter_response(response.raw_content)
 
         except ErrorResponse, exc:
             response = exc.response
@@ -179,7 +173,10 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             for name, field in form.fields.iteritems():
                 field_name_types[name] = field.__class__.__name__
             response_obj['fields'] = field_name_types
-        return response_obj
+        # Note 'ErrorResponse' is misleading, it's just any response
+        # that should be rendered and returned immediately, without any
+        # response filtering.
+        raise ErrorResponse(status.HTTP_200_OK, response_obj)
 
 
 class ModelView(View):
