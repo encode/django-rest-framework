@@ -281,13 +281,13 @@ class ResponseMixin(object):
             # Use _accept parameter override
             accept_list = [request.GET.get(self._ACCEPT_QUERY_PARAM)]
         elif (self._IGNORE_IE_ACCEPT_HEADER and
-              request.META.has_key('HTTP_USER_AGENT') and
+              'HTTP_USER_AGENT' in request.META and
               MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT'])):
             # Ignore MSIE's broken accept behavior and do something sensible instead
             accept_list = ['text/html', '*/*']
-        elif request.META.has_key('HTTP_ACCEPT'):
+        elif 'HTTP_ACCEPT' in request.META:
             # Use standard HTTP Accept negotiation
-            accept_list = [token.strip() for token in request.META["HTTP_ACCEPT"].split(',')]
+            accept_list = [token.strip() for token in request.META['HTTP_ACCEPT'].split(',')]
         else:
             # No accept header specified
             accept_list = ['*/*']
