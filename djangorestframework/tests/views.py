@@ -1,4 +1,5 @@
 from django.conf.urls.defaults import patterns, url
+from django.http import HttpResponse
 from django.test import TestCase
 from django.test import Client
 from django import forms
@@ -15,6 +16,13 @@ from StringIO import StringIO
 class MockView(View):
     """This is a basic mock view"""
     pass
+
+
+class MockViewFinal(View):
+    """View with final() override"""
+
+    def final(self, request, response, *args, **kwargs):
+        return HttpResponse('{"test": "passed"}', content_type="application/json")
 
 class ResourceMockView(View):
     """This is a resource-based mock view"""
@@ -43,6 +51,7 @@ urlpatterns = patterns('djangorestframework.utils.staticviews',
     url(r'^accounts/login$', 'api_login'),
     url(r'^accounts/logout$', 'api_logout'),
     url(r'^mock/$', MockView.as_view()),
+    url(r'^mock/final/$', MockViewFinal.as_view()),
     url(r'^resourcemock/$', ResourceMockView.as_view()),
     url(r'^model/$', ListOrCreateModelView.as_view(resource=MockResource)),
     url(r'^model/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=MockResource)),
@@ -51,6 +60,13 @@ urlpatterns = patterns('djangorestframework.utils.staticviews',
 class BaseViewTests(TestCase):
     """Test the base view class of djangorestframework"""
     urls = 'djangorestframework.tests.views'
+
+    def test_view_call_final(self):
+        response = self.client.options('/mock/final/')
+        self.assertEqual(response['Content-Type'].split(';')[0], "application/json")
+        parser = JSONParser(None)
+        (data, files) = parser.parse(StringIO(response.content))
+        self.assertEqual(data['test'], 'passed')
 
     def test_options_method_simple_view(self):
         response = self.client.options('/mock/')
