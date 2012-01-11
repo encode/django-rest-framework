@@ -215,7 +215,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
         """
 
         # Find the first valid renderer and render the content. (Don't use another documenting renderer.)
-        renderers = [renderer for renderer in view.renderers if not isinstance(renderer, DocumentingTemplateRenderer)]
+        renderers = [renderer for renderer in view.renderers if not issubclass(renderer, DocumentingTemplateRenderer)]
         if not renderers:
             return '[No renderers were found]'
 
