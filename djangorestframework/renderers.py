@@ -169,7 +169,7 @@ if yaml:
             if obj is None:
                 return ''
 
-            return yaml.dump(obj)
+            return yaml.safe_dump(obj)
 else:
     YAMLRenderer = None
 
