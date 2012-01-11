@@ -490,10 +490,9 @@ class ModelMixin(object):
     If a *ModelMixin is going to retrive an instance (or queryset) using args and kwargs
     passed by as URL arguments, it should provied arguments to objects.get and objects.filter
     methods wrapped in by `build_query`
-    
-    If a *ModelMixin is going to create/update an instance get_instance_data handles the instance 
-    data creation/preaparation.
 
+    If a *ModelMixin is going to create/update an instance get_instance_data
+    handles the instance data creation/preaparation.
     """
 
     def build_query(self, *args, **kwargs):
@@ -508,24 +507,32 @@ class ModelMixin(object):
         used for the objects retrival with filter/get queryset methods.
 
         Technically, neither args nor kwargs have to be provided, however the default
-        behaviour is to map all kwargs as the query constructors so that if this 
-        method is not overriden only kwargs keys being model fields are valid. 
+        behaviour is to map all kwargs as the query constructors so that if this
+        method is not overriden only kwargs keys being model fields are valid.
 
-        If args are provided, the last one (args[-1) is understood as instance pk. This
-        should be removed in the future, though.
-
+        If positional args are provided, the last one argument is understood
+        as the primary key.  However this usage should be considered
+        deperecated, and will be removed in a future version.
         """
 
         tmp = dict(kwargs)
+
+        # If the URLconf includes a .(?P<format>\w+) pattern to match against
+        # a .json, .xml suffix, then drop the 'format' kwarg before
+        # constructing the query.
+        if BaseRenderer._FORMAT_QUERY_PARAM in tmp:
+            del tmp[BaseRenderer._FORMAT_QUERY_PARAM]
+
         if args:
-            # If we have any none kwargs then assume the last represents the primrary key
-            # Otherwise assume the kwargs uniquely identify the model
+            # If we have any no kwargs then assume the last arg represents the
+            # primrary key. Otherwise assume the kwargs uniquely identify the
+            # model.
             tmp.update({'pk': args[-1]})
         return Q(**tmp)
 
-
     def get_instance_data(self, model, content, **kwargs):
-        """ Returns the dict with the data for model instance creation/update query.
+        """
+        Returns the dict with the data for model instance creation/update query.
 
         Arguments:
         - model: model class (django.db.models.Model subclass) to work with
@@ -533,15 +540,15 @@ class ModelMixin(object):
         - kwargs: a dict of URL provided keyword arguments
 
         The create/update queries are created basicly with the contet provided
-        with POST/PUT HTML methods and kwargs passed in the URL. This methods simply merges
-        the URL data and the content preaparing the ready-to-use data dictionary.
-        
+        with POST/PUT HTML methods and kwargs passed in the URL. This methods
+        simply merges the URL data and the content preaparing the ready-to-use
+        data dictionary.
         """
 
         tmp = dict(kwargs)
 
         for field in model._meta.fields:
-            if isinstance(field, ForeignKey) and tmp.has_key(field.name):
+            if isinstance(field, ForeignKey) and field.name in tmp:
                 # translate 'related_field' kwargs into 'related_field_id'
                 tmp[field.name + '_id'] = tmp[field.name]
                 del tmp[field.name]
@@ -569,9 +576,9 @@ class ReadModelMixin(ModelMixin):
         # Build query is overriden to filter the kwargs priori
         # to use them as build_query argument
         filtered_keywords = kwargs.copy()
-        if BaseRenderer._FORMAT_QUERY_PARAM in filtered_keywords:
-            del filtered_keywords[BaseRenderer._FORMAT_QUERY_PARAM]
+
         return super(ReadModelMixin, self).build_query(*args, **filtered_keywords)
+
 
 class CreateModelMixin(ModelMixin):
     """
@@ -584,14 +591,12 @@ class CreateModelMixin(ModelMixin):
         content = dict(self.CONTENT)
         m2m_data = {}
 
-
         for field in model._meta.many_to_many:
-            if content.has_key(field.name):
+            if field.name in content:
                 m2m_data[field.name] = (
                     field.m2m_reverse_field_name(), content[field.name]
                 )
                 del content[field.name]
-
 
         instance = model(**self.get_instance_data(model, content, *args, **kwargs))
         instance.save()
