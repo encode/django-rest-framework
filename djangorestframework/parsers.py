@@ -189,38 +189,11 @@ class XMLParser(BaseParser):
         """
         data = {}
         tree = ET.parse(stream)
-        data = self._xml_convert(tree.getroot())
-        	
+        for child in tree.getroot().getchildren():
+            data[child.tag] = self._type_convert(child.text)
+			
         return (data, None)
 		
-    def _xml_convert(self, element):
-        """
-        convert the xml `element` into the corresponding python object 
-        
-        `data` The python object representation of xml `element`.
-        """
-        
-        children = element.getchildren()
-        
-        if len(children) == 0:
-            return self._type_convert(element.text)
-        else:
-            if element.tag == "resource":
-                data = []
-                for child in children:
-                    data.append(self._xml_convert(child))
-            else:    
-                if children[0].tag == "resource":
-                    data = []
-                    for child in children:
-                       data.append(self._xml_convert(child))                       
-                else:    
-                    data = {}
-                    for child in children:
-                       data[child.tag] = self._xml_convert(child)
-
-            return data
-        
     def _type_convert(self, value):
         """
         Converts the value returned by the XMl parse into the equivalent
