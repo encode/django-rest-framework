@@ -59,7 +59,6 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     permissions = ( permissions.FullAnonAccess, )
 
-
     @classmethod
     def as_view(cls, **initkwargs):
         """
@@ -71,14 +70,12 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         view.cls_instance = cls(**initkwargs)
         return view
 
-
     @property
     def allowed_methods(self):
         """
         Return the list of allowed HTTP methods, uppercased.
         """
         return [method.upper() for method in self.http_method_names if hasattr(self, method)]
-
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
@@ -87,15 +84,34 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         raise ErrorResponse(status.HTTP_405_METHOD_NOT_ALLOWED,
                             {'detail': 'Method \'%s\' not allowed on this resource.' % self.method})
 
-
     def initial(self, request, *args, **kargs):
         """
         Hook for any code that needs to run prior to anything else.
         Required if you want to do things like set `request.upload_handlers` before
         the authentication and dispatch handling is run.
         """
-        pass
+        # Calls to 'reverse' will not be fully qualified unless we set the
+        # scheme/host/port here.
+        self.orig_prefix = get_script_prefix()
+        if not (self.orig_prefix.startswith('http:') or self.orig_prefix.startswith('https:')):
+            prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
+            set_script_prefix(prefix + self.orig_prefix)
 
+    def final(self, request, response, *args, **kargs):
+        """
+        Hook for any code that needs to run after everything else in the view.
+        """
+        # Restore script_prefix.
+        set_script_prefix(self.orig_prefix)
+
+        # Always add these headers.
+        response.headers['Allow'] = ', '.join(self.allowed_methods)
+        # sample to allow caching using Vary http header
+        response.headers['Vary'] = 'Authenticate, Accept'
+
+        # merge with headers possibly set at some point in the view
+        response.headers.update(self.headers)
+        return self.render(response)
 
     def add_header(self, field, value):
         """
@@ -112,12 +128,6 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         self.args = args
         self.kwargs = kwargs
         self.headers = {}
-
-        # Calls to 'reverse' will not be fully qualified unless we set the scheme/host/port here.
-        orig_prefix = get_script_prefix()
-        if not (orig_prefix.startswith('http:') or orig_prefix.startswith('https:')):
-            prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
-            set_script_prefix(prefix + orig_prefix)
 
         try:
             self.initial(request, *args, **kwargs)
@@ -154,7 +164,6 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         except ErrorResponse, exc:
             response = exc.response
 
-        set_script_prefix(orig_prefix)
         return self.final(request, response, *args, **kwargs)
 
     def options(self, request, *args, **kwargs):
@@ -171,19 +180,6 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
                 field_name_types[name] = field.__class__.__name__
             response_obj['fields'] = field_name_types
         return response_obj
-
-    def final(self, request, response, *args, **kargs):
-        """
-        Hook for any code that needs to run after everything else in the view.
-        """
-        # Always add these headers.
-        response.headers['Allow'] = ', '.join(self.allowed_methods)
-        # sample to allow caching using Vary http header
-        response.headers['Vary'] = 'Authenticate, Accept'
-
-        # merge with headers possibly set at some point in the view
-        response.headers.update(self.headers)
-        return self.render(response)
 
 
 class ModelView(View):
