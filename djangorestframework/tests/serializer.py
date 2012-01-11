@@ -1,8 +1,8 @@
 """Tests for the resource module"""
-from django.test import TestCase
-from djangorestframework.serializer import Serializer
-
 from django.db import models
+from django.test import TestCase
+from django.utils.translation import ugettext_lazy
+from djangorestframework.serializer import Serializer
 
 import datetime
 import decimal
@@ -43,6 +43,9 @@ class TestObjectToData(TestCase):
         self.assertEquals(self.serialize({'items': 'foo'}), {'items': u'foo'})
         self.assertEquals(self.serialize({'keys': 'foo'}), {'keys': u'foo'})
         self.assertEquals(self.serialize({'values': 'foo'}), {'values': u'foo'})
+
+    def test_ugettext_lazy(self):
+        self.assertEquals(self.serialize(ugettext_lazy('foobar')), u'foobar')
 
 
 class TestFieldNesting(TestCase):
