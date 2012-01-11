@@ -154,19 +154,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         except ErrorResponse, exc:
             response = exc.response
 
-        # Always add these headers.
-        #
-        # TODO - this isn't actually the correct way to set the vary header,
-        # also it's currently sub-optimal for HTTP caching - need to sort that out.
-        response.headers['Allow'] = ', '.join(self.allowed_methods)
-        response.headers['Vary'] = 'Authenticate, Accept'
-
-        # merge with headers possibly set at some point in the view
-        response.headers.update(self.headers)
-
         set_script_prefix(orig_prefix)
-
-        return self.render(response)
+        return self.final(request, response, *args, **kwargs)
 
     def options(self, request, *args, **kwargs):
         response_obj = {
@@ -182,6 +171,19 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
                 field_name_types[name] = field.__class__.__name__
             response_obj['fields'] = field_name_types
         return response_obj
+
+    def final(self, request, response, *args, **kargs):
+        """
+        Hook for any code that needs to run after everything else in the view.
+        """
+        # Always add these headers.
+        response.headers['Allow'] = ', '.join(self.allowed_methods)
+        # sample to allow caching using Vary http header
+        response.headers['Vary'] = 'Authenticate, Accept'
+
+        # merge with headers possibly set at some point in the view
+        response.headers.update(self.headers)
+        return self.render(response)
 
 
 class ModelView(View):
