@@ -120,13 +120,17 @@ class TestFieldNesting(TestCase):
         self.assertEqual(SerializerM2().serialize(self.m2), {'field': {'field1': u'foo'}})
         self.assertEqual(SerializerM3().serialize(self.m3), {'field': {'field2': u'bar'}})
 
-    def test_serializer_unvalid_hook_method(self):
+    def test_serializer_overridden_hook_method(self):
         """
-        Test serializing a model instance with an unvalid hook method on the serializer.
+        Test serializing a model instance which overrides a class method on the
+        serializer.  Checks for correct behaviour in odd edge case.
         """
         class SerializerM2(Serializer):
-            fields = ('unvalid_hook', )
-            def unvalid_hook(self):
-                return
-        self.m2.unvalid_hook = 'bla'
-        self.assertEqual(SerializerM2().serialize_model(self.m2), {'unvalid_hook': 'bla'})
+            fields = ('overridden', )
+
+            def overridden(self):
+                return False
+
+        self.m2.overridden = True
+        self.assertEqual(SerializerM2().serialize_model(self.m2),
+                         {'overridden': True})
