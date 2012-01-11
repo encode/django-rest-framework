@@ -471,12 +471,21 @@ class ResourceMixin(object):
         """
         return self.deserialize(self.request.GET)
 
-    @property
-    def resource(self):
-        if not hasattr(self, '_resource'):
-            self._resource = self.resource_class(view=self)
-        return self._resource
+    def get_resource_class(self):
+        if self.resource_class:
+            return self.resource_class
+        elif getattr(self, 'model', None):
+            return ModelResource
+        elif getattr(self, 'form', None):
+            return FormResource
+        elif hasattr(self, 'request') and getattr(self, '%s_form' % self.method.lower(), None):
+            return FormResource
+        else:
+            return Resource
 
+    def get_resource(self):
+        resource_class = self.get_resource_class()
+        return resource_class(view=self)
 
 
 
@@ -496,6 +505,7 @@ class InstanceMixin(object):
         associated with this view.
         """
         view = super(InstanceMixin, cls).as_view(**initkwargs)
+        # TODO: FIX !!! Very bad now, since this is attached on the class (thread-safety)
         resource_class = getattr(cls(**initkwargs), 'resource_class', None)
         if resource_class:
             # We do a little dance when we store the view callable...
@@ -512,51 +522,55 @@ class InstanceMixin(object):
 class GetResourceMixin(object):
 
     def get(self, request, *args, **kwargs):
+        resource = self.get_resource()
         try:
-            self.resource.retrieve(request, *args, **kwargs)
-        except self.resource.DoesNotExist:
+            resource.retrieve(*args, **kwargs)
+        except resource.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
-        return self.resource.instance
+        return resource.instance
 
 
 class PostResourceMixin(object):
 
     def post(self, request, *args, **kwargs):
-        self.resource.create(request, *args, **kwargs)
-        self.resource.update(self.CONTENT, request, *args, **kwargs)
-        headers = {'Location': self.resource.get_url()}
-        return Response(status.HTTP_201_CREATED, self.resource.instance, headers)
+        resource = self.get_resource()
+        resource.create(*args, **kwargs)
+        resource.update(self.CONTENT, *args, **kwargs)
+        headers = {'Location': resource.get_url()}
+        return Response(status.HTTP_201_CREATED, resource.instance, headers)
 
 
 class PutResourceMixin(object):
 
     def put(self, request, *args, **kwargs):
-        headers = {}
+        resource = self.get_resource()
         try:
-            self.resource.retrieve(request, *args, **kwargs)
+            resource.retrieve(*args, **kwargs)
             status_code = status.HTTP_204_NO_CONTENT
-        except self.resource.DoesNotExist:
-            self.resource.create(request, *args, **kwargs)
+        except resource.DoesNotExist:
+            resource.create(*args, **kwargs)
             status_code = status.HTTP_201_CREATED
-        self.resource.update(self.CONTENT, request, *args, **kwargs)
-        return Response(status_code, self.resource.instance, {})
+        resource.update(self.CONTENT, *args, **kwargs)
+        return Response(status_code, resource.instance, {})
 
 
 class DeleteResourceMixin(object):
 
     def delete(self, request, *args, **kwargs):
+        resource = self.get_resource()
         try:
-            self.resource.retrieve(request, *args, **kwargs)
-        except self.resource.DoesNotExist:
+            resource.retrieve(*args, **kwargs)
+        except resource.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
-        self.resource.delete(request, *args, **kwargs)
+        resource.delete(*args, **kwargs)
         return
 
 
 class ListResourceMixin(object):
 
     def get(self, request, *args, **kwargs):
-        return self.resource.list(request, *args, **kwargs)
+        resource = self.get_resource()
+        return resource.list(*args, **kwargs)
 
 
 ########## Pagination Mixins ##########

@@ -1,20 +1,13 @@
 from django import forms
 from django.core.urlresolvers import reverse, get_urlconf, get_resolver, NoReverseMatch
 from django.db import models
+from django.core.exceptions import ImproperlyConfigured
 
 from djangorestframework.response import ErrorResponse
 from djangorestframework.serializer import Serializer, _SkipField
 
 
-def bound_resource_required(meth):
-    def _decorated(self, *args, **kwargs):
-        if not self.is_bound():
-            raise Exception("resource needs to be bound") #TODO: what exception?
-        return meth(self, *args, **kwargs)
-    return _decorated
-
-
-class BaseResource(Serializer):
+class BaseResource(object):
     """
     Base class for all Resource classes, which simply defines the interface
     they provide.
@@ -26,7 +19,8 @@ class BaseResource(Serializer):
     # TODO: Inheritance, like for models
     class DoesNotExist(Exception): pass
 
-    def __init__(self, instance=None, view=None, depth=None, stack=[], **kwargs):
+    # !!! `view` should be first kwarg to avoid backward incompatibilities. (lol)
+    def __init__(self, view=None, instance=None, depth=None, stack=[], **kwargs):
         super(BaseResource, self).__init__(depth, stack, **kwargs)
         self.view = view
         self.instance = instance
@@ -37,23 +31,20 @@ class BaseResource(Serializer):
         Typically raises a :exc:`response.ErrorResponse` with status code 400
         (Bad Request) on failure.
         """
-        return data
-
-    def retrieve(self, request, *args, **kwargs):
         raise NotImplementedError()
 
-    def create(self, request, *args, **kwargs):
+    def retrieve(self, *args, **kwargs):
         raise NotImplementedError()
 
-    @bound_resource_required
-    def update(self, data, request, *args, **kwargs):
+    def create(self, *args, **kwargs):
         raise NotImplementedError()
 
-    @bound_resource_required
-    def delete(self, request, *args, **kwargs):
+    def update(self, data, *args, **kwargs):
         raise NotImplementedError()
 
-    @bound_resource_required
+    def delete(self, *args, **kwargs):
+        raise NotImplementedError()
+
     def get_url(self):
         raise NotImplementedError()
 
@@ -61,7 +52,7 @@ class BaseResource(Serializer):
         return not self.instance is None
 
 
-class Resource(BaseResource):
+class Resource(Serializer, BaseResource):
     """
     A Resource determines how a python object maps to some serializable data.
     Objects that a resource can act on include plain Python object instances,
@@ -82,6 +73,9 @@ class Resource(BaseResource):
     # If you wish to override this behaviour,
     # you should explicitly set the fields attribute on your class.
     fields = None
+
+    def deserialize(self, data, files=None):
+        return data
 
 
 class FormResource(Resource):
@@ -148,7 +142,8 @@ class FormResource(Resource):
         if bound_form is None:
             return data
 
-        self.view.bound_form_instance = bound_form
+        if self.view is not None:
+            self.view.bound_form_instance = bound_form
 
         data = data and data or {}
         files = files and files or {}
@@ -314,17 +309,17 @@ class ModelResource(FormResource):
     is not set.
     """
 
-    def __init__(self, instance=None, view=None, depth=None, stack=[], **kwargs):
+    def __init__(self, view=None, instance=None, depth=None, stack=[], **kwargs):
         """
         Allow :attr:`form` and :attr:`model` attributes set on the
         :class:`View` to override the :attr:`form` and :attr:`model`
         attributes set on the :class:`Resource`.
         """
-        super(ModelResource, self).__init__(instance=instance, view=view, depth=depth, stack=stack, **kwargs)
+        super(ModelResource, self).__init__(view=None, instance=instance, depth=depth, stack=stack, **kwargs)
 
         self.model = getattr(view, 'model', None) or self.model
 
-    def retrieve(self, request, *args, **kwargs):
+    def retrieve(self, *args, **kwargs):
         """
         Return a model instance or None.
         """
@@ -339,7 +334,7 @@ class ModelResource(FormResource):
         self.instance = instance
         return self.instance
 
-    def create(self, request, *args, **kwargs):
+    def create(self, *args, **kwargs):
         model = self.get_model()
         kwargs = self._clean_url_kwargs(kwargs)
 
@@ -347,8 +342,12 @@ class ModelResource(FormResource):
         self.instance.save()
         return self.instance
 
-    @bound_resource_required
-    def update(self, data, request, *args, **kwargs):
+    def update(self, data, *args, **kwargs):
+        # The resource needs to be bound to an
+        # instance, or updating is not possible
+        if not self.is_bound():
+            raise Exception("resource needs to be bound") #TODO: what exception?
+
         model = self.get_model()
         kwargs = self._clean_url_kwargs(kwargs)
         data = dict(data, **kwargs)
@@ -382,12 +381,16 @@ class ModelResource(FormResource):
         self.instance.save()
         return self.instance
 
-    @bound_resource_required
-    def delete(self, request, *args, **kwargs):
+    def delete(self, *args, **kwargs):
+        # The resource needs to be bound to an
+        # instance, or deleting is not possible
+        if not self.is_bound():
+            raise Exception("resource needs to be bound") #TODO: what exception?
+
         self.instance.delete()
         return self.instance
 
-    def list(self, request, *args, **kwargs):
+    def list(self, *args, **kwargs):
         # TODO: QuerysetResource instead !?
         kwargs = self._clean_url_kwargs(kwargs)
         queryset = self.get_queryset()
@@ -397,7 +400,6 @@ class ModelResource(FormResource):
             queryset = queryset.order_by(ordering)
         return queryset.filter(**kwargs)
 
-    @bound_resource_required
     def get_url(self):
         """
         Attempts to reverse resolve the url of the given model *instance* for
@@ -409,6 +411,10 @@ class ModelResource(FormResource):
         This method can be overridden if you need to set the resource url
         reversing explicitly.
         """
+        # The resource needs to be bound to an
+        # instance, or getting url is not possible
+        if not self.is_bound():
+            raise Exception("resource needs to be bound") #TODO: what exception?
 
         if not hasattr(self, 'view_callable'):
             raise _SkipField
@@ -527,18 +533,36 @@ class ModelResource(FormResource):
 
     def get_model(self):
         """
-        Return the model class for this view.
+        Return the model class for this resource.
         """
-        return getattr(self, 'model', getattr(self.view, 'model', None))
+        model = getattr(self, 'model', None)
+        if model is None:
+            model = getattr(self.view, 'model', None)
+            if model is None:
+                raise ImproperlyConfigured(u"%(cls)s is missing a model. Define "
+                                           u"%(cls)s.model." % {
+                                                'cls': self.__class__
+                                           })
+        return model
 
     def get_queryset(self):
         """
         Return the queryset that should be used when retrieving or listing
         instances.
         """
-        return getattr(self, 'queryset',
-                    getattr(self.view, 'queryset',
-                        self.get_model().objects.all()))
+        queryset = getattr(self, 'queryset', None)
+        if queryset is None:
+            queryset = getattr(self.view, 'queryset', None)
+            if queryset is None:
+                try:
+                    model = self.get_model()
+                except ImproperlyConfigured:
+                    raise ImproperlyConfigured(u"%(cls)s is missing a queryset. Define "
+                                               u"%(cls)s.model or %(cls)s.queryset." % {
+                                                    'cls': self.__class__
+                                               })
+                queryset = model._default_manager.all()
+        return queryset._clone()
 
     def get_ordering(self):
         """

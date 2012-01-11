@@ -216,4 +216,4 @@ class PerResourceThrottling(BaseThrottle):
     """
 
     def get_cache_key(self):
-        return 'throttle_resource_%s' % self.view.resource.__class__.__name__
+        return 'throttle_resource_%s' % self.view.get_resource_class().__name__
