@@ -1,17 +1,11 @@
 from django.template import Library
-from urlparse import urlparse, urlunparse
-from urllib import quote
+from urlobject import URLObject
 register = Library()
+
 
 def add_query_param(url, param):
     (key, sep, val) = param.partition('=')
-    param = '%s=%s' % (key, quote(val))
-    (scheme, netloc, path, params, query, fragment) = urlparse(url)
-    if query:
-        query += "&" + param
-    else:
-        query = param
-    return urlunparse((scheme, netloc, path, params, query, fragment))
+    return unicode(URLObject(url) & (key, val))
 
 
 register.filter('add_query_param', add_query_param)
