@@ -6,7 +6,7 @@ from djangorestframework.views import View
 from djangorestframework.compat import View as DjangoView
 from djangorestframework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
     XMLRenderer, JSONPRenderer, DocumentingHTMLRenderer
-from djangorestframework.parsers import JSONParser, YAMLParser
+from djangorestframework.parsers import JSONParser, YAMLParser, XMLParser
 from djangorestframework.mixins import ResponseMixin
 from djangorestframework.response import Response
 
@@ -478,6 +478,33 @@ class XMLRendererTestCase(TestCase):
         renderer = XMLRenderer(None)
         content = renderer.render({'field': None}, 'application/xml')
         self.assertXMLContains(content, '<field></field>')
+
+    def test_render_and_parse_complex_data(self):
+        """
+        Test XML rendering.
+        """
+        renderer = XMLRenderer(None)
+        complex_data_in = {
+            "creation_date": datetime.datetime(2011, 12, 25, 12, 45, 00), 
+            "name": "name", 
+            "sub_data_list": [
+                {
+                    "sub_id": 1, 
+                    "sub_name": "first"
+                }, 
+                {
+                    "sub_id": 2, 
+                    "sub_name": "second"
+                }
+            ]
+        }
+            
+        content = StringIO(renderer.render(complex_data_in, 'application/xml'))
+        
+        parser = XMLParser(None)
+        complex_data_out, dummy = parser.parse(content)
+        error_msg = "complex data differs!IN:\n %s \n\n OUT:\n %s" % (repr(complex_data_in), repr(complex_data_out))
+        self.assertDictEqual(complex_data_in, complex_data_out, error_msg)
 
     def assertXMLContains(self, xml, string):
         self.assertTrue(xml.startswith('<?xml version="1.0" encoding="utf-8"?>\n<root>'))
