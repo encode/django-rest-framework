@@ -187,13 +187,33 @@ class XMLParser(BaseParser):
         `data` will simply be a string representing the body of the request.
         `files` will always be `None`.
         """
-        data = {}
         tree = ET.parse(stream)
-        for child in tree.getroot().getchildren():
-            data[child.tag] = self._type_convert(child.text)
-			
+        data = self._xml_convert(tree.getroot())
+
         return (data, None)
-		
+
+    def _xml_convert(self, element):
+        """
+        convert the xml `element` into the corresponding python object 
+        """
+        
+        children = element.getchildren()
+        
+        if len(children) == 0:
+            return self._type_convert(element.text)
+        else:
+            # if the fist child tag is list-item means all children are list-item
+            if children[0].tag == "list-item":
+                data = []
+                for child in children:
+                    data.append(self._xml_convert(child))                       
+            else:    
+                data = {}
+                for child in children:
+                    data[child.tag] = self._xml_convert(child)
+
+            return data
+        
     def _type_convert(self, value):
         """
         Converts the value returned by the XMl parse into the equivalent
