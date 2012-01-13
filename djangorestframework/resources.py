@@ -104,6 +104,25 @@ class FormResource(Resource):
         to be populated when an empty dict is supplied in `data`
         """
 
+        # Autocompleet fields if they have a default value set in the model.
+        # Otherwise, what's the point of having a default value in the model if
+        #  they aren't used during form validation.
+        # A better place for this would be in Django forms or db module.
+        if hasattr(self.model, '_meta'):
+            data_mutable = data.copy()
+            for field in self.model._meta.fields:
+                # Exclude the id and pk
+                exclude = self.exclude
+                try:
+                    # Excludes set in ModelForm
+                    exclude += self.form.Meta.exclude
+                except AttributeError:
+                    pass
+                if field.has_default() and field.name not in data and field.name not in exclude:
+                    default = field.get_default()
+                    data_mutable.update({field.name:default})
+            data = data_mutable
+        
         # We'd like nice error messages even if no content is supplied.
         # Typically if an empty dict is given to a form Django will
         # return .is_valid() == False, but .errors == {}
