@@ -374,7 +374,7 @@ class XMLRendererTestCase(TestCase):
         parser = XMLParser(None)
         complex_data_out, dummy = parser.parse(content)
         error_msg = "complex data differs!IN:\n %s \n\n OUT:\n %s" % (repr(self._complex_data), repr(complex_data_out))
-        self.assertDictEqual(self._complex_data, complex_data_out, error_msg)
+        self.assertEqual(self._complex_data, complex_data_out, error_msg)
 
     def assertXMLContains(self, xml, string):
         self.assertTrue(xml.startswith('<?xml version="1.0" encoding="utf-8"?>\n<root>'))
