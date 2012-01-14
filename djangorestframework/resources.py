@@ -104,10 +104,11 @@ class FormResource(Resource):
         to be populated when an empty dict is supplied in `data`
         """
 
-        # Autocompleet fields if they have a default value set in the model.
-        # Otherwise, what's the point of having a default value in the model if
-        #  they aren't used during form validation.
-        # A better place for this would be in Django forms or db module.
+        # Auto-complete fields with the default value on a POST request.
+        #
+        # While Django web forms have auto-populate, POST requests in REST
+        #  should have auto-complete. Otherwise, what's the point
+        #  of having a default value.
         method = self.view._method if hasattr(self.view, '_method') else None
         if 'POST' == method and hasattr(self.model, '_meta'):
             data_mutable = data.copy()
