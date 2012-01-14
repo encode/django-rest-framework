@@ -108,17 +108,17 @@ class FormResource(Resource):
         # Otherwise, what's the point of having a default value in the model if
         #  they aren't used during form validation.
         # A better place for this would be in Django forms or db module.
-        if hasattr(self.model, '_meta'):
+        method = self.view._method if hasattr(self.view, '_method') else None
+        if 'POST' == method and hasattr(self.model, '_meta'):
             data_mutable = data.copy()
             for field in self.model._meta.fields:
-                # Exclude the id and pk
-                exclude = self.exclude
+                # Gather excludes like id and pk from self and Meta
+                exclude = self.exclude + tuple(data.keys())
                 try:
-                    # Excludes set in ModelForm
                     exclude += self.form.Meta.exclude
                 except AttributeError:
                     pass
-                if field.has_default() and field.name not in data and field.name not in exclude:
+                if field.name not in exclude and field.has_default():
                     default = field.get_default()
                     data_mutable.update({field.name:default})
             data = data_mutable
