@@ -93,7 +93,7 @@ class FormResource(Resource):
         Raises a :exc:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
 
         Validation is standard form validation, with an additional constraint that *no extra unknown fields* may be supplied
-        if :attr:`self.unknown_form_fields` is ``True``.
+        if :attr:`self.unknown_form_fields` is ``False``.
 
         On failure the :exc:`response.ErrorResponse` content is a dict which may contain :obj:`'errors'` and :obj:`'field-errors'` keys.
         If the :obj:`'errors'` key exists it is a list of strings of non-field errors.
