@@ -78,7 +78,7 @@ class FormResource(Resource):
     This can be overridden by a :attr:`form` attribute on the :class:`views.View`.
     """
 
-    unknown_form_fields = False
+    allow_unknown_form_fields = False
     """
     Flag to check for unknown fields when validating a form. If set to false and
     we receive request data that is not expected by the form it raises an
@@ -93,7 +93,7 @@ class FormResource(Resource):
         Raises a :exc:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
 
         Validation is standard form validation, with an additional constraint that *no extra unknown fields* may be supplied
-        if :attr:`self.unknown_form_fields` is ``False``.
+        if :attr:`self.allow_unknown_form_fields` is ``False``.
 
         On failure the :exc:`response.ErrorResponse` content is a dict which may contain :obj:`'errors'` and :obj:`'field-errors'` keys.
         If the :obj:`'errors'` key exists it is a list of strings of non-field errors.
@@ -141,7 +141,7 @@ class FormResource(Resource):
         unknown_fields = unknown_fields - set(('csrfmiddlewaretoken', '_accept', '_method'))  # TODO: Ugh.
 
         # Check using both regular validation, and our stricter no additional fields rule
-        if bound_form.is_valid() and (self.unknown_form_fields or not unknown_fields):
+        if bound_form.is_valid() and (self.allow_unknown_form_fields or not unknown_fields):
             # Validation succeeded...
             cleaned_data = bound_form.cleaned_data
 
@@ -398,7 +398,7 @@ class ModelResource(FormResource):
         """
         model_fields = set(field.name for field in self.model._meta.fields)
 
-        if fields:
+        if model_fields:
             return model_fields & set(as_tuple(self.fields))
 
         return model_fields - set(as_tuple(self.exclude))

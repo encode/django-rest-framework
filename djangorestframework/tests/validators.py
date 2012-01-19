@@ -142,9 +142,9 @@ class TestFormValidation(TestCase):
         """If we set ``unknown_form_fields`` on the form resource, then don't
         raise errors on unexpected request data"""
         content = {'qwerty': 'uiop', 'extra': 'extra'}
-        validator.unknown_form_fields = True
+        validator.allow_unknown_form_fields = True
         self.assertDictEqual({'qwerty': u'uiop'}, validator.validate_request(content, None), "Resource didn't accept unknown fields.")
-        validator.unknown_form_fields = False
+        validator.allow_unknown_form_fields = False
 
     def validation_does_not_require_extra_fields_if_explicitly_set(self, validator):
         """If we include an allowed_extra_fields paramater on _validate, then do not fail if we do not have fields with those names."""
