@@ -32,32 +32,32 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     Performs request deserialization, response serialization, authentication and input validation.
     """
 
+    resource = None
     """
     The resource to use when validating requests and filtering responses,
     or `None` to use default behaviour.
     """
-    resource = None
 
+    renderers = renderers.DEFAULT_RENDERERS
     """
     List of renderers the resource can serialize the response with, ordered by preference.
     """
-    renderers = renderers.DEFAULT_RENDERERS
 
+    parsers = parsers.DEFAULT_PARSERS
     """
     List of parsers the resource can parse the request with.
     """
-    parsers = parsers.DEFAULT_PARSERS
 
+    authentication = ( authentication.UserLoggedInAuthentication,
+                       authentication.BasicAuthentication )
     """
     List of all authenticating methods to attempt.
     """
-    authentication = ( authentication.UserLoggedInAuthentication,
-                       authentication.BasicAuthentication )
 
+    permissions = ( permissions.FullAnonAccess, )
     """
     List of all permissions that must be checked.
     """
-    permissions = ( permissions.FullAnonAccess, )
 
     @classmethod
     def as_view(cls, **initkwargs):
