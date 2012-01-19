@@ -675,9 +675,7 @@ class ListModelMixin(ModelMixin):
     queryset = None
 
     def get(self, request, *args, **kwargs):
-        model = self.resource.model
-
-        queryset = self.queryset if self.queryset is not None else model.objects.all()
+        queryset = self.get_queryset()
 
         if hasattr(self, 'resource'):
             ordering = getattr(self.resource, 'ordering', None)
@@ -688,6 +686,10 @@ class ListModelMixin(ModelMixin):
             args = as_tuple(ordering)
             queryset = queryset.order_by(*args)
         return queryset.filter(self.build_query(**kwargs))
+
+    def get_queryset(self):
+        model = self.resource.model
+        return model.objects.all() if self.queryset is None else self.queryset 
 
 
 ########## Pagination Mixins ##########
