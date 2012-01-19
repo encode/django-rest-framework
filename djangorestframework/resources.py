@@ -398,7 +398,7 @@ class ModelResource(FormResource):
         """
         model_fields = set(field.name for field in self.model._meta.fields)
 
-        if model_fields:
+        if self.fields:
             return model_fields & set(as_tuple(self.fields))
 
         return model_fields - set(as_tuple(self.exclude))
