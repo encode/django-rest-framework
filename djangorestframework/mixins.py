@@ -49,12 +49,12 @@ class RequestMixin(object):
     _CONTENTTYPE_PARAM = '_content_type'
     _CONTENT_PARAM = '_content'
 
+    parsers = ()
     """
     The set of request parsers that the view can handle.
 
     Should be a tuple/list of classes as described in the :mod:`parsers` module.
     """
-    parsers = ()
 
     @property
     def method(self):
@@ -226,12 +226,12 @@ class ResponseMixin(object):
     _ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
     _IGNORE_IE_ACCEPT_HEADER = True
 
+    renderers = ()
     """
     The set of response renderers that the view can handle.
 
     Should be a tuple/list of classes as described in the :mod:`renderers` module.
     """
-    renderers = ()
 
 
     # TODO: wrap this behavior around dispatch(), ensuring it works
@@ -339,19 +339,19 @@ class AuthMixin(object):
     Simple :class:`mixin` class to add authentication and permission checking to a :class:`View` class.
     """
 
+    authentication = ()
     """
     The set of authentication types that this view can handle.
 
     Should be a tuple/list of classes as described in the :mod:`authentication` module.
     """
-    authentication = ()
 
+    permissions = ()
     """
     The set of permissions that will be enforced on this view.
 
     Should be a tuple/list of classes as described in the :mod:`permissions` module.
     """
-    permissions = ()
 
 
     @property

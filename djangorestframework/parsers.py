@@ -171,8 +171,8 @@ class MultiPartParser(BaseParser):
             raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
                                 {'detail': 'multipart parse error - %s' % unicode(exc)})
         return django_parser.parse()
-		
-		
+
+
 class XMLParser(BaseParser):
     """
     XML parser.
@@ -183,7 +183,7 @@ class XMLParser(BaseParser):
     def parse(self, stream):
         """
         Returns a 2-tuple of `(data, files)`.
-		
+
         `data` will simply be a string representing the body of the request.
         `files` will always be `None`.
         """
@@ -218,33 +218,33 @@ class XMLParser(BaseParser):
         """
         Converts the value returned by the XMl parse into the equivalent
         Python type
-        """	
-        if value is None:	
+        """
+        if value is None:
             return value
-			
+
         try:
             return datetime.datetime.strptime(value,'%Y-%m-%d %H:%M:%S')
         except ValueError:
             pass
-			
+
         try:
             return int(value)
         except ValueError:
             pass
-			
+
         try:
             return decimal.Decimal(value)
         except decimal.InvalidOperation:
             pass
-			
+
         return value
 
 
 DEFAULT_PARSERS = ( JSONParser,
                     FormParser,
                     MultiPartParser,
-					XMLParser
-					)
+                    XMLParser
+                    )
 
 if YAMLParser:
     DEFAULT_PARSERS += ( YAMLParser, )

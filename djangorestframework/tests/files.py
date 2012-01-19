@@ -30,7 +30,3 @@ class UploadFilesTests(TestCase):
         response = view(request)
         self.assertEquals(response.content, '{"FILE_CONTENT": "stuff", "FILE_NAME": "stuff.txt"}')
 
-
-
-
-

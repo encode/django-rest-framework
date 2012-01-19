@@ -63,6 +63,3 @@ class UserAgentMungingTest(TestCase):
             resp = self.view(req)
             self.assertEqual(resp['Content-Type'], 'application/json')
 
-
-
-

@@ -172,7 +172,6 @@ class TestXMLParser(TestCase):
             'field_b': 'dasd',	
             'field_c': None,
             'field_d': datetime.datetime(2011, 12, 25, 12, 45, 00)
-			
         }
         self._complex_data_input = StringIO(
             '<?xml version="1.0" encoding="utf-8"?>'
