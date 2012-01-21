@@ -77,7 +77,7 @@ class StoredObject(View):
         pickle.dump(self.CONTENT, open(pathname, 'wb'))
         return self.CONTENT
 
-    def delete(self, request):
+    def delete(self, request, key):
         """
         Delete a stored object, by removing it's pickled file.
         """
