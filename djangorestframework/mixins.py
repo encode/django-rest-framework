@@ -455,9 +455,8 @@ class ResourceMixin(object):
         else:
             return None
 
-
-
 ##########
+
 
 class InstanceMixin(object):
     """
@@ -494,6 +493,8 @@ class ModelMixin(object):
     If a *ModelMixin is going to create/update an instance get_instance_data
     handles the instance data creation/preaparation.
     """
+
+    queryset = None
 
     def build_query(self, *args, **kwargs):
         """ Returns django.db.models.Q object to be used for the objects retrival.
@@ -563,6 +564,19 @@ class ModelMixin(object):
         """
         model = self.resource.model
         return model.objects.get(self.build_query(*args, **kwargs))
+
+    def get_queryset(self):
+        """
+        Return the queryset for this view.
+        """
+        return getattr(self.resource, 'queryset',
+                       self.resource.model.objects.all())
+
+    def get_ordering(self):
+        """
+        Return the ordering for this view.
+        """
+        return getattr(self.resource, 'ordering', None)
 
 
 class ReadModelMixin(ModelMixin):
@@ -634,7 +648,8 @@ class UpdateModelMixin(ModelMixin):
     def put(self, request, *args, **kwargs):
         model = self.resource.model
 
-        # TODO: update on the url of a non-existing resource url doesn't work correctly at the moment - will end up with a new url
+        # TODO: update on the url of a non-existing resource url doesn't work
+        # correctly at the moment - will end up with a new url
         try:
             self.model_instance = self.get_object(*args, **kwargs)
 
@@ -667,36 +682,15 @@ class ListModelMixin(ModelMixin):
     Behavior to list a set of `model` instances on GET requests
     """
 
-    # NB. Not obvious to me if it would be better to set this on the resource?
-    #
-    # Presumably it's more useful to have on the view, because that way you can
-    # have multiple views across different querysets mapping to the same resource.
-    #
-    # Perhaps it ought to be:
-    #
-    # 1) View.queryset
-    # 2) if None fall back to Resource.queryset
-    # 3) if None fall back to Resource.model.objects.all()
-    #
-    # Any feedback welcomed.
-    queryset = None
-
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
+        ordering = self.get_ordering()
 
-        if hasattr(self, 'resource'):
-            ordering = getattr(self.resource, 'ordering', None)
-        else:
-            ordering = None
-
+        queryset = queryset.filter(self.build_query(**kwargs))
         if ordering:
-            args = as_tuple(ordering)
-            queryset = queryset.order_by(*args)
-        return queryset.filter(self.build_query(**kwargs))
+            queryset = queryset.order_by(*ordering)
 
-    def get_queryset(self):
-        model = self.resource.model
-        return model.objects.all() if self.queryset is None else self.queryset
+        return queryset
 
 
 ########## Pagination Mixins ##########
