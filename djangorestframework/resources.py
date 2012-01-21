@@ -1,19 +1,10 @@
 from django import forms
 from django.core.urlresolvers import reverse, get_urlconf, get_resolver, NoReverseMatch
 from django.db import models
-from django.db.models.query import QuerySet
-from django.db.models.fields.related import RelatedField
-from django.utils.encoding import smart_unicode
 
 from djangorestframework.response import ErrorResponse
 from djangorestframework.serializer import Serializer, _SkipField
 from djangorestframework.utils import as_tuple
-
-import decimal
-import inspect
-import re
-
-
 
 
 class BaseResource(Serializer):
@@ -82,10 +73,9 @@ class FormResource(Resource):
     """
     Flag to check for unknown fields when validating a form. If set to false and
     we receive request data that is not expected by the form it raises an
-    :exc:`response.ErrorResponse` with status code 400. If set to true, only 
+    :exc:`response.ErrorResponse` with status code 400. If set to true, only
     expected fields are validated.
     """
-
 
     def validate_request(self, data, files=None):
         """
@@ -100,7 +90,6 @@ class FormResource(Resource):
         If the :obj:`'field-errors'` key exists it is a dict of ``{'field name as string': ['errors as strings', ...]}``.
         """
         return self._validate(data, files)
-
 
     def _validate(self, data, files, allowed_extra_fields=(), fake_data=None):
         """
@@ -187,7 +176,6 @@ class FormResource(Resource):
         # Return HTTP 400 response (BAD REQUEST)
         raise ErrorResponse(400, detail)
 
-
     def get_form_class(self, method=None):
         """
         Returns the form class used to validate this resource.
@@ -209,7 +197,6 @@ class FormResource(Resource):
 
         return form
 
-
     def get_bound_form(self, data=None, files=None, method=None):
         """
         Given some content return a Django form bound to that content.
@@ -224,20 +211,6 @@ class FormResource(Resource):
             return form(data, files)
 
         return form()
-
-
-
-#class _RegisterModelResource(type):
-#    """
-#    Auto register new ModelResource classes into ``_model_to_resource``
-#    """
-#    def __new__(cls, name, bases, dct):
-#        resource_cls = type.__new__(cls, name, bases, dct)
-#        model_cls = dct.get('model', None)
-#        if model_cls:
-#            _model_to_resource[model_cls] = resource_cls
-#        return resource_cls
-
 
 
 class ModelResource(FormResource):
@@ -282,7 +255,6 @@ class ModelResource(FormResource):
     The list of fields to exclude.  This is only used if :attr:`fields` is not set.
     """
 
-
     include = ('url',)
     """
     The list of extra fields to include.  This is only used if :attr:`fields` is not set.
@@ -297,7 +269,6 @@ class ModelResource(FormResource):
         super(ModelResource, self).__init__(view, depth, stack, **kwargs)
 
         self.model = getattr(view, 'model', None) or self.model
-
 
     def validate_request(self, data, files=None):
         """
@@ -314,7 +285,6 @@ class ModelResource(FormResource):
         If the ''field-errors'` key exists it is a dict of {field name as string: list of errors as strings}.
         """
         return self._validate(data, files, allowed_extra_fields=self._property_fields_set)
-
 
     def get_bound_form(self, data=None, files=None, method=None):
         """
@@ -347,7 +317,6 @@ class ModelResource(FormResource):
                 return form(data, files)
 
         return form()
-
 
     def url(self, instance):
         """
@@ -389,7 +358,6 @@ class ModelResource(FormResource):
                 except NoReverseMatch:
                     pass
         raise _SkipField
-
 
     @property
     def _model_fields_set(self):

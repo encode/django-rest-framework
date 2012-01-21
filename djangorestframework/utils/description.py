@@ -50,7 +50,6 @@ def get_name(view):
     return re.sub('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', ' \\1', name).strip()
 
 
-
 def get_description(view):
     """
     Provide a description for the view.
@@ -62,7 +61,6 @@ def get_description(view):
     # grok the class instance that we stored when as_view was called.
     if getattr(view, 'cls_instance', None):
         view = view.cls_instance
-
 
     # If this view has a resource that's been overridden, then use the resource's doctring
     if getattr(view, 'resource', None) not in (None, Resource, FormResource, ModelResource):
@@ -88,4 +86,3 @@ def get_description(view):
 
     # otherwise return it as-is
     return doc
-

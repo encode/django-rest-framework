@@ -11,6 +11,7 @@ __all__ = ('Response', 'ErrorResponse')
 
 # TODO: remove raw_content/cleaned_content and just use content?
 
+
 class Response(object):
     """
     An HttpResponse that may include content that hasn't yet been serialized.

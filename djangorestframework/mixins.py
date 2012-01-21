@@ -68,7 +68,6 @@ class RequestMixin(object):
             self._load_method_and_content_type()
         return self._method
 
-
     @property
     def content_type(self):
         """
@@ -82,7 +81,6 @@ class RequestMixin(object):
             self._load_method_and_content_type()
         return self._content_type
 
-
     @property
     def DATA(self):
         """
@@ -95,7 +93,6 @@ class RequestMixin(object):
             self._load_data_and_files()
         return self._data
 
-
     @property
     def FILES(self):
         """
@@ -107,7 +104,6 @@ class RequestMixin(object):
             self._load_data_and_files()
         return self._files
 
-
     def _load_data_and_files(self):
         """
         Parse the request content into self.DATA and self.FILES.
@@ -118,7 +114,6 @@ class RequestMixin(object):
         if not hasattr(self, '_data'):
             (self._data, self._files) = self._parse(self._get_stream(), self._content_type)
 
-
     def _load_method_and_content_type(self):
         """
         Set the method and content_type, and then check if they've been overridden.
@@ -126,7 +121,6 @@ class RequestMixin(object):
         self._method = self.request.method
         self._content_type = self.request.META.get('HTTP_CONTENT_TYPE', self.request.META.get('CONTENT_TYPE', ''))
         self._perform_form_overloading()
-
 
     def _get_stream(self):
         """
@@ -144,9 +138,8 @@ class RequestMixin(object):
         if content_length == 0:
             return None
         elif hasattr(request, 'read'):
-             return request
+            return request
         return StringIO(request.raw_post_data)
-
 
     def _perform_form_overloading(self):
         """
@@ -173,7 +166,6 @@ class RequestMixin(object):
             stream = StringIO(self._data.pop(self._CONTENT_PARAM)[0])
             (self._data, self._files) = self._parse(stream, self._content_type)
 
-
     def _parse(self, stream, content_type):
         """
         Parse the request content.
@@ -194,7 +186,6 @@ class RequestMixin(object):
                             {'error': 'Unsupported media type in request \'%s\'.' %
                             content_type})
 
-
     @property
     def _parsed_media_types(self):
         """
@@ -202,14 +193,12 @@ class RequestMixin(object):
         """
         return [parser.media_type for parser in self.parsers]
 
-
     @property
     def _default_parser(self):
         """
         Return the view's default parser class.
         """
         return self.parsers[0]
-
 
 
 ########## ResponseMixin ##########
@@ -232,7 +221,6 @@ class ResponseMixin(object):
 
     Should be a tuple/list of classes as described in the :mod:`renderers` module.
     """
-
 
     # TODO: wrap this behavior around dispatch(), ensuring it works
     # out of the box with existing Django classes that use render_to_response.
@@ -265,7 +253,6 @@ class ResponseMixin(object):
             resp[key] = val
 
         return resp
-
 
     def _determine_renderer(self, request):
         """
@@ -308,7 +295,6 @@ class ResponseMixin(object):
         raise ErrorResponse(status.HTTP_406_NOT_ACCEPTABLE,
                                 {'detail': 'Could not satisfy the client\'s Accept header',
                                  'available_types': self._rendered_media_types})
-
 
     @property
     def _rendered_media_types(self):
@@ -353,7 +339,6 @@ class AuthMixin(object):
     Should be a tuple/list of classes as described in the :mod:`permissions` module.
     """
 
-
     @property
     def user(self):
         """
@@ -363,7 +348,6 @@ class AuthMixin(object):
         if not hasattr(self, '_user'):
             self._user = self._authenticate()
         return self._user
-
 
     def _authenticate(self):
         """
@@ -376,7 +360,6 @@ class AuthMixin(object):
             if user:
                 return user
         return AnonymousUser()
-
 
     # TODO: wrap this behavior around dispatch()
     def _check_permissions(self):

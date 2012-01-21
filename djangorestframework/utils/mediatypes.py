@@ -61,10 +61,10 @@ def order_by_precedence(media_type_lst):
     1. 'type/*'
     0. '*/*'
     """
-    ret = [[],[],[],[]]
+    ret = [[], [], [], []]
     for media_type in media_type_lst:
         precedence = _MediaType(media_type).precedence
-        ret[3-precedence].append(media_type)
+        ret[3 - precedence].append(media_type)
     return ret
 
 
@@ -103,29 +103,6 @@ class _MediaType(object):
             return 2
         return 3
 
-    #def quality(self):
-    #    """
-    #    Return a quality level for the media type.
-    #    """
-    #    try:
-    #        return Decimal(self.params.get('q', '1.0'))
-    #    except Exception:
-    #        return Decimal(0)
-
-    #def score(self):
-    #    """
-    #    Return an overall score for a given media type given it's quality and precedence.
-    #    """
-    #    # NB. quality values should only have up to 3 decimal points
-    #    # http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.9
-    #    return self.quality * 10000 + self.precedence
-
-    #def as_tuple(self):
-    #    return (self.main_type, self.sub_type, self.params)
-
-    #def __repr__(self):
-    #    return "<MediaType %s>" % (self.as_tuple(),)
-
     def __str__(self):
         return unicode(self).encode('utf-8')
 
@@ -134,4 +111,3 @@ class _MediaType(object):
         for key, val in self.params.items():
             ret += "; %s=%s" % (key, val)
         return ret
-

@@ -1,6 +1,7 @@
 from django.core.urlresolvers import resolve
 from djangorestframework.utils.description import get_name
 
+
 def get_breadcrumbs(url):
     """Given a url returns a list of breadcrumbs, which are each a tuple of (name, url)."""
 

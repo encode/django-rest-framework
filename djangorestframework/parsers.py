@@ -115,6 +115,7 @@ if yaml:
 else:
     YAMLParser = None
 
+
 class PlainTextParser(BaseParser):
     """
     Plain text parser.
@@ -194,11 +195,11 @@ class XMLParser(BaseParser):
 
     def _xml_convert(self, element):
         """
-        convert the xml `element` into the corresponding python object 
+        convert the xml `element` into the corresponding python object
         """
-        
+
         children = element.getchildren()
-        
+
         if len(children) == 0:
             return self._type_convert(element.text)
         else:
@@ -206,14 +207,14 @@ class XMLParser(BaseParser):
             if children[0].tag == "list-item":
                 data = []
                 for child in children:
-                    data.append(self._xml_convert(child))                       
-            else:    
+                    data.append(self._xml_convert(child))
+            else:
                 data = {}
                 for child in children:
                     data[child.tag] = self._xml_convert(child)
 
             return data
-        
+
     def _type_convert(self, value):
         """
         Converts the value returned by the XMl parse into the equivalent
@@ -223,7 +224,7 @@ class XMLParser(BaseParser):
             return value
 
         try:
-            return datetime.datetime.strptime(value,'%Y-%m-%d %H:%M:%S')
+            return datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
         except ValueError:
             pass
 
@@ -240,11 +241,12 @@ class XMLParser(BaseParser):
         return value
 
 
-DEFAULT_PARSERS = ( JSONParser,
-                    FormParser,
-                    MultiPartParser,
-                    XMLParser
-                    )
+DEFAULT_PARSERS = (
+    JSONParser,
+    FormParser,
+    MultiPartParser,
+    XMLParser
+)
 
 if YAMLParser:
-    DEFAULT_PARSERS += ( YAMLParser, )
+    DEFAULT_PARSERS += (YAMLParser,)
