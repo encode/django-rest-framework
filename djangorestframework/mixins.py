@@ -689,7 +689,9 @@ class PaginatorMixin(object):
     limit = 20
 
     def get_limit(self):
-        """ Helper method to determine what the `limit` should be """
+        """
+        Helper method to determine what the `limit` should be
+        """
         try:
             limit = int(self.request.GET.get('limit', self.limit))
             return min(limit, self.limit)
@@ -697,7 +699,9 @@ class PaginatorMixin(object):
             return self.limit
 
     def url_with_page_number(self, page_number):
-        """ Constructs a url used for getting the next/previous urls """
+        """
+        Constructs a url used for getting the next/previous urls
+        """
         url = URLObject.parse(self.request.get_full_path())
         url = url.add_query_param('page', page_number)
 
@@ -708,7 +712,9 @@ class PaginatorMixin(object):
         return url
 
     def next(self, page):
-        """ Returns a url to the next page of results (if any) """
+        """
+        Returns a url to the next page of results (if any)
+        """
         if not page.has_next():
             return None
 
@@ -722,7 +728,9 @@ class PaginatorMixin(object):
         return self.url_with_page_number(page.previous_page_number())
 
     def serialize_page_info(self, page):
-        """ This is some useful information that is added to the response """
+        """
+        This is some useful information that is added to the response
+        """
         return {
             'next': self.next(page),
             'page': page.number,
