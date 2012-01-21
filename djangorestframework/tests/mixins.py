@@ -1,12 +1,15 @@
 """Tests for the mixin module"""
+from django import forms
+from django.core.exceptions import ValidationError
+from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
 from django.utils import simplejson as json
 from djangorestframework import status
 from djangorestframework.compat import RequestFactory
 from django.contrib.auth.models import Group, User
-from djangorestframework.mixins import CreateModelMixin, PaginatorMixin
+from djangorestframework.mixins import CreateModelMixin, PaginatorMixin, RequestFormMixin
 from djangorestframework.resources import ModelResource
-from djangorestframework.response import Response
+from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.tests.models import CustomUser
 from djangorestframework.tests.testcases import TestModelsTestCase
 from djangorestframework.views import View
@@ -248,3 +251,33 @@ class TestPagination(TestCase):
         self.assertTrue('foo=bar' in content['next'])
         self.assertTrue('another=something' in content['next'])
         self.assertTrue('page=2' in content['next'])
+
+
+class RequestFormMockView(View):
+    """This is a request form mock view"""
+
+    class MockForm(forms.Form, RequestFormMixin):
+        foo = forms.BooleanField(required=False)
+        bar = forms.IntegerField(help_text='Must be an integer.')
+        baz = forms.CharField(max_length=32)
+
+    def clean(self):
+        if not hasattr(self, "request"):
+            raise ValidationError("Request Not Set")
+        return super(MockForm, self).clean()
+
+    form = MockForm
+
+
+urlpatterns = patterns('',
+    url(r'^requestformmock/$', RequestFormMockView.as_view()),
+)
+
+class TestRequestFormMixin(TestCase):
+    """Tests the RequestFormMixin"""
+    urls = 'djangorestframework.tests.mixins'
+
+    def test_options_method_simple_view(self):
+        response = self.client.options('/requestformmock/')
+        self.assertEqual(response.status_code, status.OK)
+
