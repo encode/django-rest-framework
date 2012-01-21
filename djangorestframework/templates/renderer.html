@@ -11,8 +11,13 @@
 	   /* Custom styles */
 	   .version{font-size:8px;}
      </style>
-     <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/base.css'/>
-     <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/forms.css'/>
+    {% if ADMIN_MEDIA_PREFIX %}
+      <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/base.css'/>
+      <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/forms.css'/>
+    {% else %}
+      <link rel="stylesheet" type="text/css" href='{{STATIC_URL}}admin/css/base.css'/>
+      <link rel="stylesheet" type="text/css" href='{{STATIC_URL}}admin/css/forms.css'/>
+    {% endif %}
     <title>Django REST framework - {{ name }}</title>
   </head>
   <body>

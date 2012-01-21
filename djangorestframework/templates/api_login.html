@@ -1,8 +1,14 @@
 <html>
   <head>
-     <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/base.css'/>
-     <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/forms.css'/>
-     <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/login.css' />
+    {% if ADMIN_MEDIA_PREFIX %}
+      <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/base.css'/>
+      <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/forms.css'/>
+      <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/login.css' />
+    {% else %}
+      <link rel="stylesheet" type="text/css" href='{{STATIC_URL}}admin/css/base.css'/>
+      <link rel="stylesheet" type="text/css" href='{{STATIC_URL}}admin/css/forms.css'/>
+      <link rel="stylesheet" type="text/css" href='{{STATIC_URL}}admin/css/login.css' />
+    {% endif %}
      <style>
      .form-row {border-bottom: 0.25em !important}</style>
   </head>
@@ -11,12 +17,12 @@
   <div id="header">
         <div id="branding">
           <h1 id="site-name">Django REST framework</h1>
-        </div>      
+        </div>
     </div>
 
 
 <div id="content" class="colM">
-        
+
 <div id="content-main">
 <form method="post" action="{% url djangorestframework.utils.staticviews.api_login %}" id="login-form">
 {% csrf_token %}
@@ -37,11 +43,11 @@ document.getElementById('id_username').focus()
 </script>
 </div>
 
-        
+
         <br class="clear">
     </div>
 
-    <div id="footer"></div> 
+    <div id="footer"></div>
 
 </div>
 </body>
