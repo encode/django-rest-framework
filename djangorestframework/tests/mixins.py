@@ -125,7 +125,7 @@ class MockPaginatorView(PaginatorMixin, View):
         return range(0, self.total)
 
     def post(self, request):
-        return Response(status.CREATED, {'status': 'OK'})
+        return Response(status.HTTP_201_CREATED, {'status': 'OK'})
 
 
 class TestPagination(TestCase):
@@ -139,7 +139,7 @@ class TestPagination(TestCase):
 
         content = json.loads(response.content)
 
-        self.assertEqual(response.status_code, status.OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(MockPaginatorView.total, content['total'])
         self.assertEqual(MockPaginatorView.limit, content['per_page'])
 
@@ -154,7 +154,7 @@ class TestPagination(TestCase):
 
         content = json.loads(response.content)
 
-        self.assertEqual(response.status_code, status.OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(content['per_page'], limit)
 
         self.assertEqual(range(0, limit), content['results'])
@@ -171,7 +171,7 @@ class TestPagination(TestCase):
 
         content = json.loads(response.content)
 
-        self.assertEqual(response.status_code, status.OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(MockPaginatorView.total, content['total'])
         self.assertEqual(limit, content['per_page'])
         self.assertEqual(num_pages, content['pages'])
@@ -188,7 +188,7 @@ class TestPagination(TestCase):
 
         content = json.loads(response.content)
 
-        self.assertEqual(response.status_code, status.OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(MockPaginatorView.total, content['total'])
         self.assertNotEqual(limit, content['per_page'])
         self.assertNotEqual(num_pages, content['pages'])
@@ -201,7 +201,7 @@ class TestPagination(TestCase):
 
         content = json.loads(response.content)
 
-        self.assertEqual(response.status_code, status.CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(None, content.get('per_page'))
         self.assertEqual('OK', content['status'])
 
@@ -210,19 +210,19 @@ class TestPagination(TestCase):
         request = self.req.get('/paginator/?page=spam')
         response = MockPaginatorView.as_view()(request)
 
-        self.assertEqual(response.status_code, status.NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_page_range(self):
         """ Tests that the page range is handle correctly """
         request = self.req.get('/paginator/?page=0')
         response = MockPaginatorView.as_view()(request)
         content = json.loads(response.content)
-        self.assertEqual(response.status_code, status.NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         request = self.req.get('/paginator/')
         response = MockPaginatorView.as_view()(request)
         content = json.loads(response.content)
-        self.assertEqual(response.status_code, status.OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(range(0, MockPaginatorView.limit), content['results'])
 
         num_pages = content['pages']
@@ -230,13 +230,13 @@ class TestPagination(TestCase):
         request = self.req.get('/paginator/?page=%d' % num_pages)
         response = MockPaginatorView.as_view()(request)
         content = json.loads(response.content)
-        self.assertEqual(response.status_code, status.OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(range(MockPaginatorView.limit*(num_pages-1), MockPaginatorView.total), content['results'])
 
         request = self.req.get('/paginator/?page=%d' % (num_pages + 1,))
         response = MockPaginatorView.as_view()(request)
         content = json.loads(response.content)
-        self.assertEqual(response.status_code, status.NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_existing_query_parameters_are_preserved(self):
         """ Tests that existing query parameters are preserved when
@@ -244,7 +244,7 @@ class TestPagination(TestCase):
         request = self.req.get('/paginator/?foo=bar&another=something')
         response = MockPaginatorView.as_view()(request)
         content = json.loads(response.content)
-        self.assertEqual(response.status_code, status.OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue('foo=bar' in content['next'])
         self.assertTrue('another=something' in content['next'])
         self.assertTrue('page=2' in content['next'])

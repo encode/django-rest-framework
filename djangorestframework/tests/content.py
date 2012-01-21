@@ -17,7 +17,7 @@ class MockView(View):
     authentication = (UserLoggedInAuthentication,)
     def post(self, request):
         if request.POST.get('example') is not None:
-            return Response(status.OK)
+            return Response(status.HTTP_200_OK)
 
         return Response(status.INTERNAL_SERVER_ERROR)
 
@@ -215,10 +215,10 @@ class TestContentParsingWithAuthentication(TestCase):
         content = {'example': 'example'}
 
         response = self.client.post('/', content)
-        self.assertEqual(status.OK, response.status_code, "POST data is malformed")
+        self.assertEqual(status.HTTP_200_OK, response.status_code, "POST data is malformed")
 
         response = self.csrf_client.post('/', content)
-        self.assertEqual(status.OK, response.status_code, "POST data is malformed")
+        self.assertEqual(status.HTTP_200_OK, response.status_code, "POST data is malformed")
 
     # def test_user_logged_in_authentication_has_post_when_logged_in(self):
     #     """Ensures request.POST exists after UserLoggedInAuthentication when user does log in"""
