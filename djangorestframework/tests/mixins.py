@@ -4,12 +4,45 @@ from django.utils import simplejson as json
 from djangorestframework import status
 from djangorestframework.compat import RequestFactory
 from django.contrib.auth.models import Group, User
-from djangorestframework.mixins import CreateModelMixin, PaginatorMixin
+from djangorestframework.mixins import CreateModelMixin, PaginatorMixin, ReadModelMixin
 from djangorestframework.resources import ModelResource
-from djangorestframework.response import Response
+from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.tests.models import CustomUser
 from djangorestframework.tests.testcases import TestModelsTestCase
 from djangorestframework.views import View
+
+
+class TestModelRead(TestModelsTestCase):
+    """Tests on ReadModelMixin"""
+
+    def setUp(self):
+        super(TestModelRead, self).setUp()
+        self.req = RequestFactory()
+
+    def test_read(self):
+        Group.objects.create(name='other group')
+        group = Group.objects.create(name='my group')
+
+        class GroupResource(ModelResource):
+            model = Group
+
+        request = self.req.get('/groups')
+        mixin = ReadModelMixin()
+        mixin.resource = GroupResource
+
+        response = mixin.get(request, group.id)
+        self.assertEquals(group.name, response.name)
+
+    def test_read_404(self):
+        class GroupResource(ModelResource):
+            model = Group
+
+        request = self.req.get('/groups')
+        mixin = ReadModelMixin()
+        mixin.resource = GroupResource
+
+        with self.assertRaises(ErrorResponse):
+            response = mixin.get(request, 12345)
 
 
 class TestModelCreation(TestModelsTestCase):

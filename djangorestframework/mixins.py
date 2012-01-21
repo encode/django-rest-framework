@@ -557,6 +557,13 @@ class ModelMixin(object):
 
         return all_kw_args
 
+    def get_object(self, *args, **kwargs):
+        """
+        Get the instance object for read/update/delete requests.
+        """
+        model = self.resource.model
+        return model.objects.get(self.build_query(*args, **kwargs))
+
 
 class ReadModelMixin(ModelMixin):
     """
@@ -566,7 +573,7 @@ class ReadModelMixin(ModelMixin):
         model = self.resource.model
 
         try:
-            self.model_instance = model.objects.get(self.build_query(*args, **kwargs))
+            self.model_instance = self.get_object(*args, **kwargs)
         except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
 
@@ -629,7 +636,7 @@ class UpdateModelMixin(ModelMixin):
 
         # TODO: update on the url of a non-existing resource url doesn't work correctly at the moment - will end up with a new url
         try:
-            self.model_instance = model.objects.get(self.build_query(*args, **kwargs))
+            self.model_instance = self.get_object(*args, **kwargs)
 
             for (key, val) in self.CONTENT.items():
                 setattr(self.model_instance, key, val)
@@ -647,7 +654,7 @@ class DeleteModelMixin(ModelMixin):
         model = self.resource.model
 
         try:
-            instance = model.objects.get(self.build_query(*args, **kwargs))
+            instance = self.get_object(*args, **kwargs)
         except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
 
@@ -689,7 +696,7 @@ class ListModelMixin(ModelMixin):
 
     def get_queryset(self):
         model = self.resource.model
-        return model.objects.all() if self.queryset is None else self.queryset 
+        return model.objects.all() if self.queryset is None else self.queryset
 
 
 ########## Pagination Mixins ##########
