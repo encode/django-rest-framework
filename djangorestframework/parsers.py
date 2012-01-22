@@ -165,9 +165,10 @@ class MultiPartParser(BaseParser):
         `data` will be a :class:`QueryDict` containing all the form parameters.
         `files` will be a :class:`QueryDict` containing all the form files.
         """
-        upload_handlers = self.view.request._get_upload_handlers()
+        # TODO: now self.view is in fact request, but should disappear ...
+        upload_handlers = self.view._get_upload_handlers()
         try:
-            django_parser = DjangoMultiPartParser(self.view.request.META, stream, upload_handlers)
+            django_parser = DjangoMultiPartParser(self.view.META, stream, upload_handlers)
         except MultiPartParserError, exc:
             raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
                                 {'detail': 'multipart parse error - %s' % unicode(exc)})

@@ -14,10 +14,9 @@ from djangorestframework import status
 from djangorestframework.renderers import BaseRenderer
 from djangorestframework.resources import Resource, FormResource, ModelResource
 from djangorestframework.response import Response, ErrorResponse
+from djangorestframework.request import request_class_factory
 from djangorestframework.utils import as_tuple, MSIE_USER_AGENT_REGEX
 from djangorestframework.utils.mediatypes import is_form_media_type, order_by_precedence
-
-from StringIO import StringIO
 
 
 __all__ = (
@@ -56,150 +55,28 @@ class RequestMixin(object):
     Should be a tuple/list of classes as described in the :mod:`parsers` module.
     """
 
-    @property
-    def method(self):
+    def get_request_class(self):
         """
-        Returns the HTTP method.
-
-        This should be used instead of just reading :const:`request.method`, as it allows the `method`
-        to be overridden by using a hidden `form` field on a form POST request.
+        Returns a custom subclass of Django's `HttpRequest`, providing new facilities
+        such as direct access to the parsed request content.
         """
-        if not hasattr(self, '_method'):
-            self._load_method_and_content_type()
-        return self._method
+        if not hasattr(self, '_request_class'):
+            self._request_class = request_class_factory(self.request)
+            self._request_class._USE_FORM_OVERLOADING = self._USE_FORM_OVERLOADING
+            self._request_class._METHOD_PARAM = self._METHOD_PARAM
+            self._request_class._CONTENTTYPE_PARAM = self._CONTENTTYPE_PARAM
+            self._request_class._CONTENT_PARAM = self._CONTENT_PARAM
+            self._request_class.parsers = self.parsers
+        return self._request_class
 
-    @property
-    def content_type(self):
+    def get_request(self):
         """
-        Returns the content type header.
-
-        This should be used instead of ``request.META.get('HTTP_CONTENT_TYPE')``,
-        as it allows the content type to be overridden by using a hidden form
-        field on a form POST request.
+        Returns a custom request instance, with data and attributes copied from the
+        original request.
         """
-        if not hasattr(self, '_content_type'):
-            self._load_method_and_content_type()
-        return self._content_type
-
-    @property
-    def DATA(self):
-        """
-        Parses the request body and returns the data.
-
-        Similar to ``request.POST``, except that it handles arbitrary parsers,
-        and also works on methods other than POST (eg PUT).
-        """
-        if not hasattr(self, '_data'):
-            self._load_data_and_files()
-        return self._data
-
-    @property
-    def FILES(self):
-        """
-        Parses the request body and returns the files.
-        Similar to ``request.FILES``, except that it handles arbitrary parsers,
-        and also works on methods other than POST (eg PUT).
-        """
-        if not hasattr(self, '_files'):
-            self._load_data_and_files()
-        return self._files
-
-    def _load_data_and_files(self):
-        """
-        Parse the request content into self.DATA and self.FILES.
-        """
-        if not hasattr(self, '_content_type'):
-            self._load_method_and_content_type()
-
-        if not hasattr(self, '_data'):
-            (self._data, self._files) = self._parse(self._get_stream(), self._content_type)
-
-    def _load_method_and_content_type(self):
-        """
-        Set the method and content_type, and then check if they've been overridden.
-        """
-        self._method = self.request.method
-        self._content_type = self.request.META.get('HTTP_CONTENT_TYPE', self.request.META.get('CONTENT_TYPE', ''))
-        self._perform_form_overloading()
-
-    def _get_stream(self):
-        """
-        Returns an object that may be used to stream the request content.
-        """
-        request = self.request
-
-        try:
-            content_length = int(request.META.get('CONTENT_LENGTH', request.META.get('HTTP_CONTENT_LENGTH')))
-        except (ValueError, TypeError):
-            content_length = 0
-
-        # TODO: Add 1.3's LimitedStream to compat and use that.
-        # NOTE: Currently only supports parsing request body as a stream with 1.3
-        if content_length == 0:
-            return None
-        elif hasattr(request, 'read'):
-            return request
-        return StringIO(request.raw_post_data)
-
-    def _perform_form_overloading(self):
-        """
-        If this is a form POST request, then we need to check if the method and content/content_type have been
-        overridden by setting them in hidden form fields or not.
-        """
-
-        # We only need to use form overloading on form POST requests.
-        if not self._USE_FORM_OVERLOADING or self._method != 'POST' or not is_form_media_type(self._content_type):
-            return
-
-        # At this point we're committed to parsing the request as form data.
-        self._data = data = self.request.POST.copy()
-        self._files = self.request.FILES
-
-        # Method overloading - change the method and remove the param from the content.
-        if self._METHOD_PARAM in data:
-            # NOTE: unlike `get`, `pop` on a `QueryDict` seems to return a list of values.
-            self._method = self._data.pop(self._METHOD_PARAM)[0].upper()
-
-        # Content overloading - modify the content type, and re-parse.
-        if self._CONTENT_PARAM in data and self._CONTENTTYPE_PARAM in data:
-            self._content_type = self._data.pop(self._CONTENTTYPE_PARAM)[0]
-            stream = StringIO(self._data.pop(self._CONTENT_PARAM)[0])
-            (self._data, self._files) = self._parse(stream, self._content_type)
-
-    def _parse(self, stream, content_type):
-        """
-        Parse the request content.
-
-        May raise a 415 ErrorResponse (Unsupported Media Type), or a 400 ErrorResponse (Bad Request).
-        """
-        if stream is None or content_type is None:
-            return (None, None)
-
-        parsers = as_tuple(self.parsers)
-
-        for parser_cls in parsers:
-            parser = parser_cls(self)
-            if parser.can_handle_request(content_type):
-                return parser.parse(stream)
-
-        raise ErrorResponse(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                            {'error': 'Unsupported media type in request \'%s\'.' %
-                            content_type})
-
-    @property
-    def _parsed_media_types(self):
-        """
-        Return a list of all the media types that this view can parse.
-        """
-        return [parser.media_type for parser in self.parsers]
-
-    @property
-    def _default_parser(self):
-        """
-        Return the view's default parser class.
-        """
-        return self.parsers[0]
-
+        request_class = self.get_request_class()
+        return request_class(self.request)
+        
 
 ########## ResponseMixin ##########
 
@@ -395,7 +272,7 @@ class ResourceMixin(object):
         May raise an :class:`response.ErrorResponse` with status code 400 (Bad Request).
         """
         if not hasattr(self, '_content'):
-            self._content = self.validate_request(self.DATA, self.FILES)
+            self._content = self.validate_request(self.request.DATA, self.request.FILES)
         return self._content
 
     @property
@@ -415,7 +292,7 @@ class ResourceMixin(object):
             return ModelResource(self)
         elif getattr(self, 'form', None):
             return FormResource(self)
-        elif getattr(self, '%s_form' % self.method.lower(), None):
+        elif getattr(self, '%s_form' % self.request.method.lower(), None):
             return FormResource(self)
         return Resource(self)
 
@@ -752,7 +629,7 @@ class PaginatorMixin(object):
         """
 
         # We don't want to paginate responses for anything other than GET requests
-        if self.method.upper() != 'GET':
+        if self.request.method.upper() != 'GET':
             return self._resource.filter_response(obj)
 
         paginator = Paginator(obj, self.get_limit())

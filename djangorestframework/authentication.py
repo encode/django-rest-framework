@@ -95,8 +95,8 @@ class UserLoggedInAuthentication(BaseAuthentication):
             # Temporarily replace request.POST with .DATA, to use our generic parsing.
             # If DATA is not dict-like, use an empty dict.
             if request.method.upper() == 'POST':
-                if hasattr(self.view.DATA, 'get'):
-                    request._post = self.view.DATA
+                if hasattr(request.DATA, 'get'):
+                    request._post = request.DATA
                 else:
                     request._post = {}
 

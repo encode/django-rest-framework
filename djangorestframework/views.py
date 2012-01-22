@@ -81,7 +81,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         Return an HTTP 405 error if an operation is called which does not have a handler method.
         """
         raise ErrorResponse(status.HTTP_405_METHOD_NOT_ALLOWED,
-                            {'detail': 'Method \'%s\' not allowed on this resource.' % self.method})
+                            {'detail': 'Method \'%s\' not allowed on this resource.' % request.method})
 
     def initial(self, request, *args, **kargs):
         """
@@ -128,17 +128,20 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         self.headers = {}
 
         try:
+            # Get a custom request, built form the original request instance
+            self.request = request = self.get_request()
+
             self.initial(request, *args, **kwargs)
 
             # Authenticate and check request has the relevant permissions
             self._check_permissions()
 
             # Get the appropriate handler method
-            if self.method.lower() in self.http_method_names:
-                handler = getattr(self, self.method.lower(), self.http_method_not_allowed)
+            if request.method.lower() in self.http_method_names:
+                handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
             else:
                 handler = self.http_method_not_allowed
-
+ 
             response_obj = handler(request, *args, **kwargs)
 
             # Allow return value to be either HttpResponse, Response, or an object, or None
@@ -164,7 +167,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             'name': get_name(self),
             'description': get_description(self),
             'renders': self._rendered_media_types,
-            'parses': self._parsed_media_types,
+            'parses': request._parsed_media_types,
         }
         form = self.get_bound_form()
         if form is not None:

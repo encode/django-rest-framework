@@ -269,32 +269,32 @@ class DocumentingTemplateRenderer(BaseRenderer):
 
         # If we're not using content overloading there's no point in supplying a generic form,
         # as the view won't treat the form's value as the content of the request.
-        if not getattr(view, '_USE_FORM_OVERLOADING', False):
+        if not getattr(view.request, '_USE_FORM_OVERLOADING', False):
             return None
 
         # NB. http://jacobian.org/writing/dynamic-form-generation/
         class GenericContentForm(forms.Form):
-            def __init__(self, view):
+            def __init__(self, request):
                 """We don't know the names of the fields we want to set until the point the form is instantiated,
                 as they are determined by the Resource the form is being created against.
                 Add the fields dynamically."""
                 super(GenericContentForm, self).__init__()
 
-                contenttype_choices = [(media_type, media_type) for media_type in view._parsed_media_types]
-                initial_contenttype = view._default_parser.media_type
+                contenttype_choices = [(media_type, media_type) for media_type in request._parsed_media_types]
+                initial_contenttype = request._default_parser.media_type
 
-                self.fields[view._CONTENTTYPE_PARAM] = forms.ChoiceField(label='Content Type',
+                self.fields[request._CONTENTTYPE_PARAM] = forms.ChoiceField(label='Content Type',
                                                                          choices=contenttype_choices,
                                                                          initial=initial_contenttype)
-                self.fields[view._CONTENT_PARAM] = forms.CharField(label='Content',
+                self.fields[request._CONTENT_PARAM] = forms.CharField(label='Content',
                                                                    widget=forms.Textarea)
 
         # If either of these reserved parameters are turned off then content tunneling is not possible
-        if self.view._CONTENTTYPE_PARAM is None or self.view._CONTENT_PARAM is None:
+        if self.view.request._CONTENTTYPE_PARAM is None or self.view.request._CONTENT_PARAM is None:
             return None
 
         # Okey doke, let's do it
-        return GenericContentForm(view)
+        return GenericContentForm(view.request)
 
     def render(self, obj=None, media_type=None):
         """
