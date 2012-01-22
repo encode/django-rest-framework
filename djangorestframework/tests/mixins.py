@@ -41,8 +41,7 @@ class TestModelRead(TestModelsTestCase):
         mixin = ReadModelMixin()
         mixin.resource = GroupResource
 
-        with self.assertRaises(ErrorResponse):
-            response = mixin.get(request, 12345)
+        self.assertRaises(ErrorResponse, mixin.get, request, 12345)
 
 
 class TestModelCreation(TestModelsTestCase):
