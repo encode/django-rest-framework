@@ -35,6 +35,39 @@ __all__ = (
 )
 
 
+class HeaderGetter(object):
+    """
+    A class to zip request and response headers for easy display in a template.
+    """
+    def __init__(self, request, response, media_type, content_length):
+        self.request = request
+        self.response = response
+        self.media_type = media_type
+        self.content_length = content_length
+
+    def __iter__(self):
+        request = {}
+        for key, value in self.request.META.items():
+            if key in ('CONTENT_TYPE', 'CONTENT_LENGTH'):
+                if key == 'CONTENT_LENGTH' and not value:
+                    value = '0'
+                key = key.title().replace('_', '-')
+            elif key.startswith('HTTP_'):
+                key = key[5:].title().replace('_', '-')
+            else:
+                continue
+            request[key] = value
+        response = self.response.headers.copy()
+        response['Content-Type'] = self.media_type
+        response['Content-Length'] = self.content_length
+        for (pair1), (pair2) in map(None, request.items(), response.items()):
+            if pair1 is None:
+                pair1 = (None, None)
+            if pair2 is None:
+                pair2 = (None, None)
+            yield pair1[0], pair1[1], pair2[0], pair2[1]
+
+
 class BaseRenderer(object):
     """
     All renderers must extend this class, set the :attr:`media_type` attribute,
@@ -224,7 +257,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
         if not all(char in string.printable for char in content):
             return '[%d bytes of binary content]'
 
-        return content
+        return content, renderers[0].media_type
 
     def _get_form_instance(self, view, method):
         """
@@ -304,7 +337,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
         needed to self-document the response to this request.
         """
 
-        content = self._get_content(self.view, self.view.request, obj, media_type)
+        content, media_type = self._get_content(self.view, self.view.request, obj, media_type)
 
         put_form_instance = self._get_form_instance(self.view, 'put')
         post_form_instance = self._get_form_instance(self.view, 'post')
@@ -334,6 +367,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
             'view': self.view,
             'request': self.view.request,  # TODO: remove
             'response': self.view.response,
+            'headers': HeaderGetter(self.view.request, self.view.response, media_type, len(content)),
             'description': description,
             'name': name,
             'version': VERSION,
