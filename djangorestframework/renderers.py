@@ -355,21 +355,12 @@ class DocumentingTemplateRenderer(BaseRenderer):
         name = get_name(self.view)
         description = get_description(self.view)
 
-        markeddown = {}
+        markeddown = None
         if apply_markdown:
             try:
-                markeddown['view'] = apply_markdown(description)
+                markeddown = apply_markdown(description)
             except AttributeError:
-                markeddown.pop('view', None)
-            for method in self.view.allowed_methods:
-                methodfunc = getattr(self.view, method.lower(), None)
-                if methodfunc is None:
-                    continue
-                methoddesc = get_description(methodfunc)
-                try:
-                    markeddown[method] = apply_markdown(methoddesc)
-                except AttributeError:
-                    markeddown.pop(method, None)
+                markeddown = None
 
         breadcrumb_list = get_breadcrumbs(self.view.request.path)
 

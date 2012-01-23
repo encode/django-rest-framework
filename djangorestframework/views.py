@@ -77,48 +77,6 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         """
         return [method.upper() for method in self.http_method_names if hasattr(self, method)]
 
-    def get_name(self):
-        """
-        Return the resource or view class name for use as this view's name.
-        Override to customize.
-        """
-        # If this view has a resource that's been overridden, then use that resource for the name
-        if getattr(self, 'resource', None) not in (None, resources.Resource, resources.FormResource, resources.ModelResource):
-            name = self.resource.__name__
-
-            # Chomp of any non-descriptive trailing part of the resource class name
-            if name.endswith('Resource') and name != 'Resource':
-                name = name[:-len('Resource')]
-
-            # If the view has a descriptive suffix, eg '*** List', '*** Instance'
-            if getattr(self, '_suffix', None):
-                name += self._suffix
-        # If it's a view class with no resource then grok the name from the class name
-        elif getattr(self, '__class__', None) is not None:
-            name = self.__class__.__name__
-
-            # Chomp of any non-descriptive trailing part of the view class name
-            if name.endswith('View') and name != 'View':
-                name = name[:-len('View')]
-        else:
-            name = ''
-        return name
-
-    def get_description(self):
-        """
-        Return the resource or view docstring for use as this view's description.
-        Override to customize.
-        """
-        # If this view has a resource that's been overridden, then use the resource's doctring
-        if getattr(self, 'resource', None) not in (None, resources.Resource, resources.FormResource, resources.ModelResource):
-            doc = self.resource.__doc__
-        # Otherwise use the view doctring
-        elif getattr(self, '__doc__', None):
-            doc = self.__doc__
-        else:
-            doc = ''
-        return doc
-
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
         Return an HTTP 405 error if an operation is called which does not have a handler method.

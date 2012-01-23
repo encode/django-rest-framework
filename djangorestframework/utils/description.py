@@ -19,13 +19,29 @@ def get_name(view):
     if getattr(view, 'cls_instance', None):
         view = view.cls_instance
 
-    # If this view provides a get_name method, try to use that:
-    if callable(getattr(view, 'get_name', None)):
-        name = view.get_name()
+    # If this view has a resource that's been overridden, then use that resource for the name
+    if getattr(view, 'resource', None) not in (None, Resource, FormResource, ModelResource):
+        name = view.resource.__name__
+
+        # Chomp of any non-descriptive trailing part of the resource class name
+        if name.endswith('Resource') and name != 'Resource':
+            name = name[:-len('Resource')]
+
+        # If the view has a descriptive suffix, eg '*** List', '*** Instance'
+        if getattr(view, '_suffix', None):
+            name += view._suffix
 
     # Otherwise if it's a function view use the function's name
     elif getattr(view, '__name__', None) is not None:
         name = view.__name__
+
+    # If it's a view class with no resource then grok the name from the class name
+    elif getattr(view, '__class__', None) is not None:
+        name = view.__class__.__name__
+
+        # Chomp of any non-descriptive trailing part of the view class name
+        if name.endswith('View') and name != 'View':
+            name = name[:-len('View')]
 
     # I ain't got nuthin fo' ya
     else:
@@ -47,9 +63,10 @@ def get_description(view):
     if getattr(view, 'cls_instance', None):
         view = view.cls_instance
 
-    # If this view provides a get_description method, try to use that:
-    if callable(getattr(view, 'get_description', None)):
-        doc = view.get_description()
+
+    # If this view has a resource that's been overridden, then use the resource's doctring
+    if getattr(view, 'resource', None) not in (None, Resource, FormResource, ModelResource):
+        doc = view.resource.__doc__
 
     # Otherwise use the view doctring
     elif getattr(view, '__doc__', None):

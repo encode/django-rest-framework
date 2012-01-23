@@ -45,7 +45,7 @@
 
 	<div class='content-main'>
 	    <h1>{{ name }}</h1>
-	    <p>{% if markeddown.view %}{% autoescape off %}{{ markeddown.view }}{% endautoescape %}{% else %}{{ description|linebreaksbr }}{% endif %}</p>
+	    <p>{% if markeddown %}{% autoescape off %}{{ markeddown }}{% endautoescape %}{% else %}{{ description|linebreaksbr }}{% endif %}</p>
 	    <div class='module'>
 	    <pre><b>{{ response.status }} {{ response.status_text }}</b>{% autoescape off %}
 {% for key, val in response.headers.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
@@ -56,7 +56,6 @@
 			<form>
 				<fieldset class='module aligned'>
 				<h2>GET {{ name }}</h2>
-				{% if markeddown.GET %}<p>{% autoescape off %}{{ markeddown.GET }}{% endautoescape %}</p>{% endif %}
 				<div class='submit-row' style='margin: 0; border: 0'>
 				<a href='{{ request.get_full_path }}' rel="nofollow" style='float: left'>GET</a>
 				{% for format in available_formats %}
@@ -76,7 +75,6 @@
 				<form action="{{ request.get_full_path }}" method="post" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
 				<fieldset class='module aligned'>
 					<h2>POST {{ name }}</h2>
-					{% if markeddown.POST %}<p>{% autoescape off %}{{ markeddown.POST }}{% endautoescape %}</p>{% endif %}
 				    {% csrf_token %}
 				    {{ post_form.non_field_errors }}
 					{% for field in post_form %}
@@ -98,7 +96,6 @@
 				<form action="{{ request.get_full_path }}" method="post" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
 				<fieldset class='module aligned'>
 					<h2>PUT {{ name }}</h2>
-					{% if markeddown.PUT %}<p>{% autoescape off %}{{ markeddown.PUT }}{% endautoescape %}</p>{% endif %}
 					<input type="hidden" name="{{ METHOD_PARAM }}" value="PUT" />
 					{% csrf_token %}
 					{{ put_form.non_field_errors }}
@@ -121,7 +118,6 @@
 				<form action="{{ request.get_full_path }}" method="post">
 				<fieldset class='module aligned'>
 					<h2>DELETE {{ name }}</h2>
-					{% if markeddown.DELETE %}<p>{% autoescape off %}{{ markeddown.DELETE }}{% endautoescape %}</p>{% endif %}
 				    {% csrf_token %}
 					<input type="hidden" name="{{ METHOD_PARAM }}" value="DELETE" />
 					<div class='submit-row' style='margin: 0; border: 0'>
