@@ -12,10 +12,9 @@ from django.template import RequestContext, loader
 from django.utils import simplejson as json
 
 
-from djangorestframework.compat import apply_markdown, yaml
+from djangorestframework.compat import yaml
 from djangorestframework.utils import dict2xml, url_resolves
 from djangorestframework.utils.breadcrumbs import get_breadcrumbs
-from djangorestframework.utils.description import get_name, get_description
 from djangorestframework.utils.mediatypes import get_media_type_params, add_media_type_param, media_type_matches
 from djangorestframework import VERSION
 
@@ -226,6 +225,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
 
         return content
 
+
     def _get_form_instance(self, view, method):
         """
         Get a form, possibly bound to either the input or output data.
@@ -260,6 +260,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
             form_instance = self._get_generic_content_form(view)
 
         return form_instance
+
 
     def _get_generic_content_form(self, view):
         """
@@ -296,6 +297,20 @@ class DocumentingTemplateRenderer(BaseRenderer):
         # Okey doke, let's do it
         return GenericContentForm(view)
 
+    def get_name(self):
+        try:
+            return self.view.get_name()
+        except AttributeError:
+            return self.view.__doc__
+
+    def get_description(self, html=None):
+        if html is None:
+            html = bool('html' in self.format)
+        try:
+            return self.view.get_description(html)
+        except AttributeError:
+            return self.view.__doc__
+
     def render(self, obj=None, media_type=None):
         """
         Renders *obj* using the :attr:`template` set on the class.
@@ -316,15 +331,8 @@ class DocumentingTemplateRenderer(BaseRenderer):
             login_url = None
             logout_url = None
 
-        name = get_name(self.view)
-        description = get_description(self.view)
-
-        markeddown = None
-        if apply_markdown:
-            try:
-                markeddown = apply_markdown(description)
-            except AttributeError:
-                markeddown = None
+        name = self.get_name()
+        description = self.get_description()
 
         breadcrumb_list = get_breadcrumbs(self.view.request.path)
 
@@ -332,12 +340,11 @@ class DocumentingTemplateRenderer(BaseRenderer):
         context = RequestContext(self.view.request, {
             'content': content,
             'view': self.view,
-            'request': self.view.request,  # TODO: remove
+            'request': self.view.request, # TODO: remove
             'response': self.view.response,
             'description': description,
             'name': name,
             'version': VERSION,
-            'markeddown': markeddown,
             'breadcrumblist': breadcrumb_list,
             'available_formats': self.view._rendered_formats,
             'put_form': put_form_instance,
@@ -395,14 +402,12 @@ class DocumentingPlainTextRenderer(DocumentingTemplateRenderer):
     template = 'renderer.txt'
 
 
-DEFAULT_RENDERERS = (
-    JSONRenderer,
-    JSONPRenderer,
-    DocumentingHTMLRenderer,
-    DocumentingXHTMLRenderer,
-    DocumentingPlainTextRenderer,
-    XMLRenderer
-)
+DEFAULT_RENDERERS = ( JSONRenderer,
+                      JSONPRenderer,
+                      DocumentingHTMLRenderer,
+                      DocumentingXHTMLRenderer,
+                      DocumentingPlainTextRenderer,
+                      XMLRenderer )
 
 if YAMLRenderer:
     DEFAULT_RENDERERS += (YAMLRenderer,)

@@ -5,15 +5,17 @@ be subclassing in your implementation.
 By setting or modifying class attributes on your view, you change it's predefined behaviour.
 """
 
+import re
 from django.core.urlresolvers import set_script_prefix, get_script_prefix
 from django.http import HttpResponse
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 
-from djangorestframework.compat import View as DjangoView
+from djangorestframework.compat import View as DjangoView, apply_markdown
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.mixins import *
 from djangorestframework import resources, renderers, parsers, authentication, permissions, status
-from djangorestframework.utils.description import get_name, get_description
 
 
 __all__ = (
@@ -23,6 +25,7 @@ __all__ = (
     'ListModelView',
     'ListOrCreateModelView'
 )
+
 
 
 class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
@@ -47,13 +50,13 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     List of parsers the resource can parse the request with.
     """
 
-    authentication = (authentication.UserLoggedInAuthentication,
-                      authentication.BasicAuthentication)
+    authentication = ( authentication.UserLoggedInAuthentication,
+                       authentication.BasicAuthentication )
     """
     List of all authenticating methods to attempt.
     """
 
-    permissions = (permissions.FullAnonAccess,)
+    permissions = ( permissions.FullAnonAccess, )
     """
     List of all permissions that must be checked.
     """
@@ -75,6 +78,59 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         Return the list of allowed HTTP methods, uppercased.
         """
         return [method.upper() for method in self.http_method_names if hasattr(self, method)]
+
+    def get_name(self):
+        """
+        Return the resource or view class name for use as this view's name.
+        Override to customize.
+        """
+        # If this view has a resource that's been overridden, then use that resource for the name
+        if getattr(self, 'resource', None) not in (None, resources.Resource, resources.FormResource, resources.ModelResource):
+            name = self.resource.__name__
+
+            # Chomp of any non-descriptive trailing part of the resource class name
+            if name.endswith('Resource') and name != 'Resource':
+                name = name[:-len('Resource')]
+
+            # If the view has a descriptive suffix, eg '*** List', '*** Instance'
+            if getattr(self, '_suffix', None):
+                name += self._suffix
+        # If it's a view class with no resource then grok the name from the class name
+        elif getattr(self, '__class__', None) is not None:
+            name = self.__class__.__name__
+
+            # Chomp of any non-descriptive trailing part of the view class name
+            if name.endswith('View') and name != 'View':
+                name = name[:-len('View')]
+        else:
+            name = ''
+        return re.sub('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', ' \\1', name).strip()
+
+    def get_description(self, html=False):
+        """
+        Return the resource or view docstring for use as this view's description.
+        Override to customize.
+        """
+        # If this view has a resource that's been overridden, then use the resource's doctring
+        if getattr(self, 'resource', None) not in (None, resources.Resource, resources.FormResource, resources.ModelResource):
+            doc = self.resource.__doc__
+        # Otherwise use the view doctring
+        elif getattr(self, '__doc__', None):
+            doc = self.__doc__
+        else:
+            doc = ''
+        whitespace_counts = [len(line) - len(line.lstrip(' ')) for line in doc.splitlines()[1:] if line.lstrip()]
+        # unindent the docstring if needed
+        if whitespace_counts:
+            whitespace_pattern = '^' + (' ' * min(whitespace_counts))
+            doc = re.sub(re.compile(whitespace_pattern, re.MULTILINE), '', doc)
+        if doc and html:
+            if apply_markdown:
+                doc = apply_markdown(doc)
+            else:
+                doc = escape(doc)
+                doc = mark_safe(doc.replace('\n', '<br />'))
+        return doc
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
@@ -161,8 +217,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
     def options(self, request, *args, **kwargs):
         response_obj = {
-            'name': get_name(self),
-            'description': get_description(self),
+            'name': self.get_name(),
+            'description': self.get_description(),
             'renders': self._rendered_media_types,
             'parses': self._parsed_media_types,
         }
@@ -184,20 +240,17 @@ class ModelView(View):
     """
     resource = resources.ModelResource
 
-
 class InstanceModelView(InstanceMixin, ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelView):
     """
     A view which provides default operations for read/update/delete against a model instance.
     """
     _suffix = 'Instance'
 
-
 class ListModelView(ListModelMixin, ModelView):
     """
     A view which provides default operations for list, against a model in the database.
     """
     _suffix = 'List'
-
 
 class ListOrCreateModelView(ListModelMixin, CreateModelMixin, ModelView):
     """

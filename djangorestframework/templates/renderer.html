@@ -11,13 +11,8 @@
 	   /* Custom styles */
 	   .version{font-size:8px;}
      </style>
-    {% if ADMIN_MEDIA_PREFIX %}
-      <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/base.css'/>
-      <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/forms.css'/>
-    {% else %}
-      <link rel="stylesheet" type="text/css" href='{{STATIC_URL}}admin/css/base.css'/>
-      <link rel="stylesheet" type="text/css" href='{{STATIC_URL}}admin/css/forms.css'/>
-    {% endif %}
+     <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/base.css'/>
+     <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/forms.css'/>
     <title>Django REST framework - {{ name }}</title>
   </head>
   <body>
@@ -50,7 +45,7 @@
 
 	<div class='content-main'>
 	    <h1>{{ name }}</h1>
-	    <p>{% if markeddown %}{% autoescape off %}{{ markeddown }}{% endautoescape %}{% else %}{{ description|linebreaksbr }}{% endif %}</p>
+	    <p>{% autoescape off %}{{ description }}{% endautoescape %}</p>
 	    <div class='module'>
 	    <pre><b>{{ response.status }} {{ response.status_text }}</b>{% autoescape off %}
 {% for key, val in response.headers.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
