@@ -1,6 +1,4 @@
 from django.core.urlresolvers import resolve
-from djangorestframework.utils.description import get_name
-
 
 def get_breadcrumbs(url):
     """Given a url returns a list of breadcrumbs, which are each a tuple of (name, url)."""
@@ -17,7 +15,7 @@ def get_breadcrumbs(url):
         else:
             # Check if this is a REST framework view, and if so add it to the breadcrumbs
             if isinstance(getattr(view, 'cls_instance', None), View):
-                breadcrumbs_list.insert(0, (get_name(view), url))
+                breadcrumbs_list.insert(0, (view.cls_instance.get_name(), url))
 
         if url == '':
             # All done
