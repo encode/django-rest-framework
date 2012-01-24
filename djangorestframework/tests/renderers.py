@@ -1,3 +1,5 @@
+import re
+
 from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
 
@@ -172,7 +174,7 @@ class RendererIntegrationTests(TestCase):
         self.assertEquals(resp.status_code, DUMMYSTATUS)
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
-_indented_repr = '{\n  "foo": [\n    "bar", \n    "baz"\n  ]\n}'
+_indented_repr = '{\n  "foo": [\n    "bar",\n    "baz"\n  ]\n}'
 
 
 class JSONRendererTests(TestCase):
@@ -187,6 +189,8 @@ class JSONRendererTests(TestCase):
         obj = {'foo': ['bar', 'baz']}
         renderer = JSONRenderer(None)
         content = renderer.render(obj, 'application/json')
+        # Fix failing test case which depends on version of JSON library.
+        content = re.sub(' +\n', '\n', content)
         self.assertEquals(content, _flat_repr)
 
     def test_with_content_type_args(self):
