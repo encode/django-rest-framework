@@ -27,7 +27,6 @@ __all__ = (
 )
 
 
-
 class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     Handles incoming requests and maps them to REST operations.
@@ -50,13 +49,13 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     List of parsers the resource can parse the request with.
     """
 
-    authentication = ( authentication.UserLoggedInAuthentication,
-                       authentication.BasicAuthentication )
+    authentication = (authentication.UserLoggedInAuthentication,
+                       authentication.BasicAuthentication)
     """
     List of all authenticating methods to attempt.
     """
 
-    permissions = ( permissions.FullAnonAccess, )
+    permissions = (permissions.FullAnonAccess,)
     """
     List of all permissions that must be checked.
     """
@@ -240,17 +239,20 @@ class ModelView(View):
     """
     resource = resources.ModelResource
 
+
 class InstanceModelView(InstanceMixin, ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelView):
     """
     A view which provides default operations for read/update/delete against a model instance.
     """
     _suffix = 'Instance'
 
+
 class ListModelView(ListModelMixin, ModelView):
     """
     A view which provides default operations for list, against a model in the database.
     """
     _suffix = 'List'
+
 
 class ListOrCreateModelView(ListModelMixin, CreateModelMixin, ModelView):
     """

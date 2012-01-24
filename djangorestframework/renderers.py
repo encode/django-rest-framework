@@ -225,7 +225,6 @@ class DocumentingTemplateRenderer(BaseRenderer):
 
         return content
 
-
     def _get_form_instance(self, view, method):
         """
         Get a form, possibly bound to either the input or output data.
@@ -260,7 +259,6 @@ class DocumentingTemplateRenderer(BaseRenderer):
             form_instance = self._get_generic_content_form(view)
 
         return form_instance
-
 
     def _get_generic_content_form(self, view):
         """
@@ -340,7 +338,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
         context = RequestContext(self.view.request, {
             'content': content,
             'view': self.view,
-            'request': self.view.request, # TODO: remove
+            'request': self.view.request,  # TODO: remove
             'response': self.view.response,
             'description': description,
             'name': name,
@@ -402,12 +400,14 @@ class DocumentingPlainTextRenderer(DocumentingTemplateRenderer):
     template = 'renderer.txt'
 
 
-DEFAULT_RENDERERS = ( JSONRenderer,
-                      JSONPRenderer,
-                      DocumentingHTMLRenderer,
-                      DocumentingXHTMLRenderer,
-                      DocumentingPlainTextRenderer,
-                      XMLRenderer )
+DEFAULT_RENDERERS = (
+    JSONRenderer,
+    JSONPRenderer,
+    DocumentingHTMLRenderer,
+    DocumentingXHTMLRenderer,
+    DocumentingPlainTextRenderer,
+    XMLRenderer
+)
 
 if YAMLRenderer:
     DEFAULT_RENDERERS += (YAMLRenderer,)
