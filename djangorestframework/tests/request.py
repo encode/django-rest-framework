@@ -66,8 +66,6 @@ class TestMethodOverloading(RequestTestCase):
 
 
 class TestContentParsing(RequestTestCase):
-    #TODO: is there any reason why many test cases documented as testing a PUT,
-    # in fact use a POST !?
 
     def tearDown(self):
         request_class.parsers = ()
@@ -115,7 +113,7 @@ class TestContentParsing(RequestTestCase):
         content = 'qwerty'
         content_type = 'text/plain'
         request_class.parsers = (PlainTextParser,)
-        request = self.build_request('post', '/', content, content_type=content_type)
+        request = self.build_request('put', '/', content, content_type=content_type)
         self.assertEqual(request.DATA, content)
 
     def test_overloaded_behaviour_allows_content_tunnelling(self):
