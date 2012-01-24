@@ -112,6 +112,7 @@ INSTALLED_APPS = (
     'pygments_api',
     'blogpost',
     'permissionsexample',
+    'requestexample',
 )
 
 import os

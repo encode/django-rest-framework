@@ -11,6 +11,8 @@ This enhanced request object offers the following :
 
 from django.http import HttpRequest
 
+from djangorestframework.response import ErrorResponse
+from djangorestframework import status
 from djangorestframework.utils.mediatypes import is_form_media_type, order_by_precedence
 from djangorestframework.utils import as_tuple
 
