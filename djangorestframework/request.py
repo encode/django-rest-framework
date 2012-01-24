@@ -1,9 +1,12 @@
 """
-The :mod:`request` module provides a `Request` class that can be used
-to replace the standard Django request passed to the views.
-This replacement `Request` provides many facilities, like automatically
-parsed request content, form overloading of method/content type/content,
-better support for HTTP PUT method. 
+The :mod:`request` module provides a :class:`Request` class that can be used 
+to enhance the standard `request` object received in all the views.
+
+This enhanced request object offers the following :
+
+    - content automatically parsed according to `Content-Type` header, and available as :meth:`request.DATA<Request.DATA>`
+    - full support of PUT method, including support for file uploads
+    - form overloading of HTTP method, content type and content
 """
 
 from django.http import HttpRequest
@@ -14,7 +17,7 @@ from djangorestframework.utils import as_tuple
 from StringIO import StringIO
 
 
-__all__ = ('Request')
+__all__ = ('Request',)
 
 
 def request_class_factory(request):
@@ -30,6 +33,9 @@ def request_class_factory(request):
 
 
 class Request(object):
+    """
+    A mixin class allowing to enhance Django's standard HttpRequest.
+    """
 
     _USE_FORM_OVERLOADING = True
     _METHOD_PARAM = '_method'

@@ -40,7 +40,7 @@ __all__ = (
 
 class RequestMixin(object):
     """
-    `Mixin` class to provide request parsing behavior.
+    `Mixin` class to enhance API of Django's standard `request`.
     """
 
     _USE_FORM_OVERLOADING = True
@@ -50,15 +50,15 @@ class RequestMixin(object):
 
     parsers = ()
     """
-    The set of request parsers that the view can handle.
+    The set of parsers that the request can handle.
 
     Should be a tuple/list of classes as described in the :mod:`parsers` module.
     """
 
     def get_request_class(self):
         """
-        Returns a custom subclass of Django's `HttpRequest`, providing new facilities
-        such as direct access to the parsed request content.
+        Returns a subclass of Django's `HttpRequest` with a richer API,
+        as described in :mod:`request`.
         """
         if not hasattr(self, '_request_class'):
             self._request_class = request_class_factory(self.request)
