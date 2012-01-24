@@ -5,7 +5,7 @@ register = Library()
 
 def add_query_param(url, param):
     (key, sep, val) = param.partition('=')
-    return unicode(URLObject(url) & (key, val))
+    return unicode(URLObject.parse(url) & (key, val))
 
 
 register.filter('add_query_param', add_query_param)
