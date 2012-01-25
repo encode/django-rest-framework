@@ -27,6 +27,46 @@ __all__ = (
 )
 
 
+def _remove_trailing_string(content, trailing):
+    """
+    Strip trailing component `trailing` from `content` if it exists.
+    Used when generating names from view/resource classes.
+    """
+    if content.endswith(trailing) and content != trailing:
+        return content[:-len(trailing)]
+    return content
+
+def _remove_leading_indent(content):
+    """
+    Remove leading indent from a block of text.
+    Used when generating descriptions from docstrings.
+    """
+    whitespace_counts = [len(line) - len(line.lstrip(' '))
+                         for line in content.splitlines()[1:] if line.lstrip()]
+
+    # unindent the content if needed
+    if whitespace_counts:
+        whitespace_pattern = '^' + (' ' * min(whitespace_counts))
+        return re.sub(re.compile(whitespace_pattern, re.MULTILINE), '', content)
+    return content
+
+def _camelcase_to_spaces(content):
+    """
+    Translate 'CamelCaseNames' to 'Camel Case Names'.
+    Used when generating names from view/resource classes.
+    """
+    camelcase_boundry = '(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))'
+    return re.sub(camelcase_boundry, ' \\1', content).strip()
+
+
+_resource_classes = (
+    None,
+    resources.Resource,
+    resources.FormResource,
+    resources.ModelResource
+)
+
+
 class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
     Handles incoming requests and maps them to REST operations.
@@ -84,52 +124,46 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         Override to customize.
         """
         # If this view has a resource that's been overridden, then use that resource for the name
-        if getattr(self, 'resource', None) not in (None, resources.Resource, resources.FormResource, resources.ModelResource):
+        if getattr(self, 'resource', None) not in _resource_classes:
             name = self.resource.__name__
+            name = _remove_trailing_string(name, 'Resource')
+            name += getattr(self, '_suffix', '')
 
-            # Chomp of any non-descriptive trailing part of the resource class name
-            if name.endswith('Resource') and name != 'Resource':
-                name = name[:-len('Resource')]
-
-            # If the view has a descriptive suffix, eg '*** List', '*** Instance'
-            if getattr(self, '_suffix', None):
-                name += self._suffix
         # If it's a view class with no resource then grok the name from the class name
-        elif getattr(self, '__class__', None) is not None:
-            name = self.__class__.__name__
-
-            # Chomp of any non-descriptive trailing part of the view class name
-            if name.endswith('View') and name != 'View':
-                name = name[:-len('View')]
         else:
-            name = ''
-        return re.sub('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))', ' \\1', name).strip()
+            name = self.__class__.__name__
+            name = _remove_trailing_string(name, 'View')
+
+        return _camelcase_to_spaces(name)
 
     def get_description(self, html=False):
         """
         Return the resource or view docstring for use as this view's description.
         Override to customize.
         """
-        # If this view has a resource that's been overridden, then use the resource's doctring
-        if getattr(self, 'resource', None) not in (None, resources.Resource, resources.FormResource, resources.ModelResource):
-            doc = self.resource.__doc__
-        # Otherwise use the view doctring
-        elif getattr(self, '__doc__', None):
-            doc = self.__doc__
+
+        description = None
+
+        # If this view has a resource that's been overridden,
+        # then try to use the resource's docstring
+        if getattr(self, 'resource', None) not in _resource_classes:
+            description = self.resource.__doc__
+
+        # Otherwise use the view docstring
+        if not description:
+            description = self.__doc__ or ''
+
+        description = _remove_leading_indent(description)
+
+        if html:
+            return self.markup_description(description)
+        return description
+
+    def markup_description(self, description):
+        if apply_markdown:
+            return apply_markdown(description)
         else:
-            doc = ''
-        whitespace_counts = [len(line) - len(line.lstrip(' ')) for line in doc.splitlines()[1:] if line.lstrip()]
-        # unindent the docstring if needed
-        if whitespace_counts:
-            whitespace_pattern = '^' + (' ' * min(whitespace_counts))
-            doc = re.sub(re.compile(whitespace_pattern, re.MULTILINE), '', doc)
-        if doc and html:
-            if apply_markdown:
-                doc = apply_markdown(doc)
-            else:
-                doc = escape(doc)
-                doc = mark_safe(doc.replace('\n', '<br />'))
-        return doc
+            return mark_safe(escape(description).replace('\n', '<br />'))
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
