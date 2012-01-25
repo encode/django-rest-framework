@@ -18,7 +18,7 @@
       <link rel="stylesheet" type="text/css" href='{{STATIC_URL}}admin/css/base.css'/>
       <link rel="stylesheet" type="text/css" href='{{STATIC_URL}}admin/css/forms.css'/>
     {% endif %}
-    <title>Django REST framework - {{ name }}</title>
+  <title>Django REST framework - {{ name }}</title>
   </head>
   <body>
   <div id="container">
@@ -50,7 +50,7 @@
 
 	<div class='content-main'>
 	    <h1>{{ name }}</h1>
-	    <p>{% if markeddown %}{% autoescape off %}{{ markeddown }}{% endautoescape %}{% else %}{{ description|linebreaksbr }}{% endif %}</p>
+	    <p>{% autoescape off %}{{ description }}{% endautoescape %}</p>
 	    <div class='module'>
 	    <pre><b>{{ response.status }} {{ response.status_text }}</b>{% autoescape off %}
 {% for key, val in response.headers.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
