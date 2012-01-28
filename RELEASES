@@ -1,6 +1,10 @@
-0.3.3 (dev)
+development
 
-* Saner template varible autoescaping
+* Saner template varible autoescaping.
+* Use `staticfiles` for css files.
+  - Easier to override.  Won't conflict with customised admin styles (eg grappelli)
+* Drop implied 'pk' filter if last arg in urlconf is unnamed.
+  - Too magical.  Explict is better than implicit.
 
 0.3.2
 
