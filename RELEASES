@@ -1,3 +1,7 @@
+0.3.3 (dev)
+
+* Saner template varible autoescaping
+
 0.3.2
 
 * Bugfixes:
@@ -5,6 +9,10 @@
   * serialize_model method in serializer.py may cause wrong value (#73)
   * Fix Error when clicking OPTIONS button (#146)
   * And many other fixes
+* Remove short status codes
+  - Zen of Python: "There should be one-- and preferably only one --obvious way to do it."
+* get_name, get_description become methods on the view - makes them overridable.
+* Improved model mixin API - Hooks for build_query, get_instance_data, get_model, get_queryset, get_ordering
 
 0.3.1
 
