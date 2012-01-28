@@ -50,7 +50,7 @@
 
 	<div class='content-main'>
 	    <h1>{{ name }}</h1>
-	    <p>{% autoescape off %}{{ description }}{% endautoescape %}</p>
+	    <p>{{ description }}</p>
 	    <div class='module'>
 	    <pre><b>{{ response.status }} {{ response.status_text }}</b>{% autoescape off %}
 {% for key, val in response.headers.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}

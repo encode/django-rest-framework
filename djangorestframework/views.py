@@ -36,6 +36,7 @@ def _remove_trailing_string(content, trailing):
         return content[:-len(trailing)]
     return content
 
+
 def _remove_leading_indent(content):
     """
     Remove leading indent from a block of text.
@@ -49,6 +50,7 @@ def _remove_leading_indent(content):
         whitespace_pattern = '^' + (' ' * min(whitespace_counts))
         return re.sub(re.compile(whitespace_pattern, re.MULTILINE), '', content)
     return content
+
 
 def _camelcase_to_spaces(content):
     """
@@ -161,9 +163,10 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
     def markup_description(self, description):
         if apply_markdown:
-            return apply_markdown(description)
+            description = apply_markdown(description)
         else:
-            return mark_safe(escape(description).replace('\n', '<br />'))
+            description = escape(description).replace('\n', '<br />')
+        return mark_safe(description)
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
