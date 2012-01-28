@@ -1,3 +1,15 @@
+0.3.2
+
+* Bugfixes:
+  * Fix 403 for POST and PUT from the UI with UserLoggedInAuthentication (#115)
+  * serialize_model method in serializer.py may cause wrong value (#73)
+  * Fix Error when clicking OPTIONS button (#146)
+  * And many other fixes
+
+0.3.1
+
+* [not documented]
+
 0.3.0
 
 * JSONP Support
