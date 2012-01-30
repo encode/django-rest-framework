@@ -4,7 +4,7 @@ Release Notes
 development
 -----------
 
-* Saner template varible autoescaping.
+* Saner template variable autoescaping.
 * Use `staticfiles` for css files.
   - Easier to override.  Won't conflict with customised admin styles (eg grappelli)
 * Drop implied 'pk' filter if last arg in urlconf is unnamed.
