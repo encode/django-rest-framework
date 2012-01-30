@@ -188,7 +188,7 @@ class PerUserThrottling(BaseThrottle):
 
     def get_cache_key(self):
         if self.auth.is_authenticated():
-            ident = str(self.auth)
+            ident = unicode(self.auth)
         else:
             ident = self.view.request.META.get('REMOTE_ADDR', None)
         return 'throttle_user_%s' % ident
