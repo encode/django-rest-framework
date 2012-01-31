@@ -1,25 +1,14 @@
-{% load urlize_quoted_links %}{% load add_query_param %}<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+{% load urlize_quoted_links %}
+{% load add_query_param %}
+{% load static %}
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-     <style>
-       /* Override some of the Django admin styling */
-       #site-name a {color: #F4F379 !important;}
-       .errorlist {display: inline !important}
-       .errorlist li {display: inline !important; background: white !important; color: black !important; border: 0 !important;}
-	   /* Custom styles */
-	   .version{font-size:8px;}
-     </style>
-    {% if ADMIN_MEDIA_PREFIX %}
-      <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/base.css'/>
-      <link rel="stylesheet" type="text/css" href='{{ADMIN_MEDIA_PREFIX}}css/forms.css'/>
-    {% else %}
-      <link rel="stylesheet" type="text/css" href='{{STATIC_URL}}admin/css/base.css'/>
-      <link rel="stylesheet" type="text/css" href='{{STATIC_URL}}admin/css/forms.css'/>
-    {% endif %}
-    <title>Django REST framework - {{ name }}</title>
-  </head>
+  	<head>
+      	<link rel="stylesheet" type="text/css" href='{% get_static_prefix %}css/djangorestframework.css'/>
+  		<title>Django REST framework - {{ name }}</title>
+  	</head>
   <body>
   <div id="container">
 
@@ -34,7 +23,7 @@
 
 	<div class="breadcrumbs">
 	{% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
-    <a href="{{breadcrumb_url}}">{{breadcrumb_name}}</a> {% if not forloop.last %}&rsaquo;{% endif %}
+    <a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a> {% if not forloop.last %}&rsaquo;{% endif %}
     {% endfor %}
     </div>
 
@@ -50,7 +39,7 @@
 
 	<div class='content-main'>
 	    <h1>{{ name }}</h1>
-	    <p>{% if markeddown %}{% autoescape off %}{{ markeddown }}{% endautoescape %}{% else %}{{ description|linebreaksbr }}{% endif %}</p>
+	    <p>{{ description }}</p>
 	    <div class='module'>
 	    <pre><b>{{ response.status }} {{ response.status_text }}</b>{% autoescape off %}
 {% for key, val in response.headers.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}

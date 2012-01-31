@@ -11,7 +11,7 @@ import base64
 
 
 class MockView(View):
-    permissions = ( permissions.IsAuthenticated, )
+    permissions = (permissions.IsAuthenticated,)
 
     def post(self, request):
         return {'a': 1, 'b': 2, 'c': 3}
@@ -74,24 +74,32 @@ class SessionAuthTests(TestCase):
         self.csrf_client.logout()
 
     def test_post_form_session_auth_failing_csrf(self):
-        """Ensure POSTing form over session authentication without CSRF token fails."""
+        """
+        Ensure POSTing form over session authentication without CSRF token fails.
+        """
         self.csrf_client.login(username=self.username, password=self.password)
         response = self.csrf_client.post('/', {'example': 'example'})
         self.assertEqual(response.status_code, 403)
 
     def test_post_form_session_auth_passing(self):
-        """Ensure POSTing form over session authentication with logged in user and CSRF token passes."""
+        """
+        Ensure POSTing form over session authentication with logged in user and CSRF token passes.
+        """
         self.non_csrf_client.login(username=self.username, password=self.password)
         response = self.non_csrf_client.post('/', {'example': 'example'})
         self.assertEqual(response.status_code, 200)
 
     def test_put_form_session_auth_passing(self):
-        """Ensure PUTting form over session authentication with logged in user and CSRF token passes."""
+        """
+        Ensure PUTting form over session authentication with logged in user and CSRF token passes.
+        """
         self.non_csrf_client.login(username=self.username, password=self.password)
         response = self.non_csrf_client.put('/', {'example': 'example'})
         self.assertEqual(response.status_code, 200)
 
     def test_post_form_session_auth_failing(self):
-        """Ensure POSTing form over session authentication without logged in user fails."""
+        """
+        Ensure POSTing form over session authentication without logged in user fails.
+        """
         response = self.csrf_client.post('/', {'example': 'example'})
         self.assertEqual(response.status_code, 403)

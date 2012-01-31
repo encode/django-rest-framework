@@ -30,7 +30,7 @@ class TestModelRead(TestModelsTestCase):
         mixin = ReadModelMixin()
         mixin.resource = GroupResource
 
-        response = mixin.get(request, group.id)
+        response = mixin.get(request, id=group.id)
         self.assertEquals(group.name, response.name)
 
     def test_read_404(self):
@@ -41,8 +41,7 @@ class TestModelRead(TestModelsTestCase):
         mixin = ReadModelMixin()
         mixin.resource = GroupResource
 
-        with self.assertRaises(ErrorResponse):
-            response = mixin.get(request, 12345)
+        self.assertRaises(ErrorResponse, mixin.get, request, id=12345)
 
 
 class TestModelCreation(TestModelsTestCase):

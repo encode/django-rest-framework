@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.conf import settings
 from sandbox.views import Sandbox
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 urlpatterns = patterns('',
     (r'^$', Sandbox.as_view()),
@@ -16,3 +17,4 @@ urlpatterns = patterns('',
     (r'^', include('djangorestframework.urls')),
 )
 
+urlpatterns += staticfiles_urlpatterns()

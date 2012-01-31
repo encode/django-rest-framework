@@ -87,24 +87,11 @@ class UserLoggedInAuthentication(BaseAuthentication):
         Returns a :obj:`User` if the request session currently has a logged in user.
         Otherwise returns :const:`None`.
         """
-        # TODO: Might be cleaner to switch this back to using request.POST,
-        #       and let FormParser/MultiPartParser deal with the consequences.
+        request.DATA  # Make sure our generic parsing runs first
+
         if getattr(request, 'user', None) and request.user.is_active:
             # Enforce CSRF validation for session based authentication.
-
-            # Temporarily replace request.POST with .DATA, to use our generic parsing.
-            # If DATA is not dict-like, use an empty dict.
-            if request.method.upper() == 'POST':
-                if hasattr(request.DATA, 'get'):
-                    request._post = request.DATA
-                else:
-                    request._post = {}
-
             resp = CsrfViewMiddleware().process_view(request, None, (), {})
-
-            # Replace request.POST
-            if request.method.upper() == 'POST':
-                del(request._post)
 
             if resp is None:  # csrf passed
                 return request.user

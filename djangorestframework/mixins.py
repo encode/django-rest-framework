@@ -384,11 +384,6 @@ class ModelMixin(object):
         if BaseRenderer._FORMAT_QUERY_PARAM in tmp:
             del tmp[BaseRenderer._FORMAT_QUERY_PARAM]
 
-        if args:
-            # If we have any no kwargs then assume the last arg represents the
-            # primrary key. Otherwise assume the kwargs uniquely identify the
-            # model.
-            tmp.update({'pk': args[-1]})
         return Q(**tmp)
 
     def get_instance_data(self, model, content, **kwargs):
