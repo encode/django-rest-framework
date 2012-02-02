@@ -543,7 +543,7 @@ class ModelMixin(object):
         query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
 
         try:
-            self._model_instance = self.get_instance(**kwargs)
+            self._model_instance = self.get_instance(**query_kwargs)
         except model.DoesNotExist:
             pass
 
