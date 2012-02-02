@@ -211,6 +211,7 @@ class Serializer(object):
         raise _SkipField
 
     def serialize_model(self, instance):
+        print 'sdfff',self, instance
         """
         Given a model instance or dict, serialize it to a dict..
         """

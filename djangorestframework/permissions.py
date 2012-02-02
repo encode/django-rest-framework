@@ -13,6 +13,7 @@ __all__ = (
     'BasePermission',
     'FullAnonAccess',
     'IsAuthenticated',
+    'IsModelInstanceOwnerOrIsAnonReadOnly',
     'IsAdminUser',
     'IsUserOrIsAnonReadOnly',
     'PerUserThrottling',
