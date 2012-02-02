@@ -527,6 +527,28 @@ class ModelMixin(object):
         """
         return self.get_queryset().get(**kwargs)
 
+    @property
+    def model_instance(self):
+        """
+        Returns the model instance for read/update/delete, or None if does not exit.
+        """
+
+        if hasattr(self, '_model_instance'): return self._model_instance
+
+        model = self.resource.model
+        request = self.request
+        args = self.args
+        kwargs = self.kwargs
+
+        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
+
+        try:
+            self._model_instance = self.get_instance(**kwargs)
+        except model.DoesNotExist:
+            pass
+
+        return self._model_instance
+
     def get_queryset(self):
         """
         Return the queryset for this view.
@@ -546,12 +568,8 @@ class ReadModelMixin(ModelMixin):
     Behavior to read a `model` instance on GET requests
     """
     def get(self, request, *args, **kwargs):
-        model = self.resource.model
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
 
-        try:
-            self.model_instance = self.get_instance(**query_kwargs)
-        except model.DoesNotExist:
+        if self.model_instance == None:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
 
         return self.model_instance
@@ -602,18 +620,17 @@ class UpdateModelMixin(ModelMixin):
     Behavior to update a `model` instance on PUT requests
     """
     def put(self, request, *args, **kwargs):
+
         model = self.resource.model
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
 
         # TODO: update on the url of a non-existing resource url doesn't work
         # correctly at the moment - will end up with a new url
-        try:
-            self.model_instance = self.get_instance(**query_kwargs)
-
+        if self.model_instance == None:
+            self.model_instance = model(**self.get_instance_data(model, self.CONTENT, *args, **kwargs))
+        else:
             for (key, val) in self.CONTENT.items():
                 setattr(self.model_instance, key, val)
-        except model.DoesNotExist:
-            self.model_instance = model(**self.get_instance_data(model, self.CONTENT, *args, **kwargs))
+        
         self.model_instance.save()
         return self.model_instance
 
@@ -623,15 +640,9 @@ class DeleteModelMixin(ModelMixin):
     Behavior to delete a `model` instance on DELETE requests
     """
     def delete(self, request, *args, **kwargs):
-        model = self.resource.model
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
 
-        try:
-            instance = self.get_instance(**query_kwargs)
-        except model.DoesNotExist:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
-
-        instance.delete()
+        if self.model_instance == None: raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
+        self.model_instance.delete()
         return
 
 
