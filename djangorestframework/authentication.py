@@ -87,7 +87,7 @@ class UserLoggedInAuthentication(BaseAuthentication):
         Returns a :obj:`User` if the request session currently has a logged in user.
         Otherwise returns :const:`None`.
         """
-        self.view.DATA  # Make sure our generic parsing runs first
+        request.DATA  # Make sure our generic parsing runs first
 
         if getattr(request, 'user', None) and request.user.is_active:
             # Enforce CSRF validation for session based authentication.

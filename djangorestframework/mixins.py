@@ -6,7 +6,6 @@ classes that can be added to a `View`.
 from django.contrib.auth.models import AnonymousUser
 from django.core.paginator import Paginator
 from django.db.models.fields.related import ForeignKey
-from django.http import HttpResponse
 from urlobject import URLObject
 
 from djangorestframework import status
@@ -14,8 +13,7 @@ from djangorestframework.renderers import BaseRenderer
 from djangorestframework.resources import Resource, FormResource, ModelResource
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.request import request_class_factory
-from djangorestframework.utils import as_tuple, MSIE_USER_AGENT_REGEX
-from djangorestframework.utils.mediatypes import is_form_media_type, order_by_precedence
+from djangorestframework.utils import as_tuple, allowed_methods
 
 
 __all__ = (
@@ -34,6 +32,7 @@ __all__ = (
     'ListModelMixin'
 )
 
+#TODO: In RequestMixin and ResponseMixin : get_response_class/get_request_class are a bit ugly. Do we even want to be able to set the parameters on the view ?
 
 ########## Request Mixin ##########
 
@@ -88,9 +87,6 @@ class ResponseMixin(object):
     Ignores Accept headers from Internet Explorer user agents and uses a sensible browser Accept header instead.
     """
 
-    _ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
-    _IGNORE_IE_ACCEPT_HEADER = True
-
     renderers = ()
     """
     The set of response renderers that the view can handle.
@@ -98,79 +94,27 @@ class ResponseMixin(object):
     Should be a tuple/list of classes as described in the :mod:`renderers` module.
     """
 
-    # TODO: wrap this behavior around dispatch(), ensuring it works
-    # out of the box with existing Django classes that use render_to_response.
-    def render(self, response):
+    response_class = Response
+
+    def prepare_response(self, response):
         """
-        Takes a :obj:`Response` object and returns an :obj:`HttpResponse`.
+        Prepares response for the response cycle. Sets some headers, sets renderers, ...
         """
+        if hasattr(response, 'request') and response.request is None:
+            response.request = self.request
+        # Always add these headers.
+        response['Allow'] = ', '.join(allowed_methods(self))
+        # sample to allow caching using Vary http header
+        response['Vary'] = 'Authenticate, Accept'
+        # merge with headers possibly set at some point in the view
+        for name, value in self.headers.items():
+            response[name] = value
+        # set the views renderers on the response
+        response.renderers = self.renderers
+        # TODO: must disappear
+        response.view = self
         self.response = response
-
-        try:
-            renderer, media_type = self._determine_renderer(self.request)
-        except ErrorResponse, exc:
-            renderer = self._default_renderer(self)
-            media_type = renderer.media_type
-            response = exc.response
-
-        # Set the media type of the response
-        # Note that the renderer *could* override it in .render() if required.
-        response.media_type = renderer.media_type
-
-        # Serialize the response content
-        if response.has_content_body:
-            content = renderer.render(response.cleaned_content, media_type)
-        else:
-            content = renderer.render()
-
-        # Build the HTTP Response
-        resp = HttpResponse(content, mimetype=response.media_type, status=response.status)
-        for (key, val) in response.headers.items():
-            resp[key] = val
-
-        return resp
-
-    def _determine_renderer(self, request):
-        """
-        Determines the appropriate renderer for the output, given the client's 'Accept' header,
-        and the :attr:`renderers` set on this class.
-
-        Returns a 2-tuple of `(renderer, media_type)`
-
-        See: RFC 2616, Section 14 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-        """
-
-        if self._ACCEPT_QUERY_PARAM and request.GET.get(self._ACCEPT_QUERY_PARAM, None):
-            # Use _accept parameter override
-            accept_list = [request.GET.get(self._ACCEPT_QUERY_PARAM)]
-        elif (self._IGNORE_IE_ACCEPT_HEADER and
-              'HTTP_USER_AGENT' in request.META and
-              MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT'])):
-            # Ignore MSIE's broken accept behavior and do something sensible instead
-            accept_list = ['text/html', '*/*']
-        elif 'HTTP_ACCEPT' in request.META:
-            # Use standard HTTP Accept negotiation
-            accept_list = [token.strip() for token in request.META['HTTP_ACCEPT'].split(',')]
-        else:
-            # No accept header specified
-            accept_list = ['*/*']
-
-        # Check the acceptable media types against each renderer,
-        # attempting more specific media types first
-        # NB. The inner loop here isn't as bad as it first looks :)
-        #     Worst case is we're looping over len(accept_list) * len(self.renderers)
-        renderers = [renderer_cls(self) for renderer_cls in self.renderers]
-
-        for accepted_media_type_lst in order_by_precedence(accept_list):
-            for renderer in renderers:
-                for accepted_media_type in accepted_media_type_lst:
-                    if renderer.can_handle_response(accepted_media_type):
-                        return renderer, accepted_media_type
-
-        # No acceptable renderers were found
-        raise ErrorResponse(status.HTTP_406_NOT_ACCEPTABLE,
-                                {'detail': 'Could not satisfy the client\'s Accept header',
-                                 'available_types': self._rendered_media_types})
+        return response
 
     @property
     def _rendered_media_types(self):
@@ -192,6 +136,17 @@ class ResponseMixin(object):
         Return the view's default renderer class.
         """
         return self.renderers[0]
+
+    @property
+    def headers(self):
+        """
+        Dictionary of headers to set on the response.
+        This is useful when the response doesn't exist yet, but you
+        want to memorize some headers to set on it when it will exist.
+        """
+        if not hasattr(self, '_headers'):
+            self._headers = {}
+        return self._headers
 
 
 ########## Auth Mixin ##########
@@ -429,7 +384,7 @@ class ReadModelMixin(ModelMixin):
         try:
             self.model_instance = self.get_instance(**query_kwargs)
         except model.DoesNotExist:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
+            raise ErrorResponse(status=status.HTTP_404_NOT_FOUND)
 
         return self.model_instance
 
@@ -468,10 +423,12 @@ class CreateModelMixin(ModelMixin):
                     data[m2m_data[fieldname][0]] = related_item
                     manager.through(**data).save()
 
-        headers = {}
+        response = Response(instance, status=status.HTTP_201_CREATED)
+
+        # Set headers
         if hasattr(instance, 'get_absolute_url'):
-            headers['Location'] = self.resource(self).url(instance)
-        return Response(status.HTTP_201_CREATED, instance, headers)
+            response['Location'] = self.resource(self).url(instance)
+        return response
 
 
 class UpdateModelMixin(ModelMixin):
@@ -492,7 +449,7 @@ class UpdateModelMixin(ModelMixin):
         except model.DoesNotExist:
             self.model_instance = model(**self.get_instance_data(model, self.CONTENT, *args, **kwargs))
         self.model_instance.save()
-        return self.model_instance
+        return Response(self.model_instance)
 
 
 class DeleteModelMixin(ModelMixin):
@@ -506,10 +463,10 @@ class DeleteModelMixin(ModelMixin):
         try:
             instance = self.get_instance(**query_kwargs)
         except model.DoesNotExist:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
+            raise ErrorResponse(status=status.HTTP_404_NOT_FOUND)
 
         instance.delete()
-        return
+        return Response()
 
 
 class ListModelMixin(ModelMixin):
@@ -526,7 +483,7 @@ class ListModelMixin(ModelMixin):
         if ordering:
             queryset = queryset.order_by(*ordering)
 
-        return queryset
+        return Response(queryset)
 
 
 ########## Pagination Mixins ##########
@@ -613,12 +570,14 @@ class PaginatorMixin(object):
         try:
             page_num = int(self.request.GET.get('page', '1'))
         except ValueError:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND,
-                                {'detail': 'That page contains no results'})
+            raise ErrorResponse(
+                content={'detail': 'That page contains no results'},
+                status=status.HTTP_404_NOT_FOUND)
 
         if page_num not in paginator.page_range:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND,
-                                {'detail': 'That page contains no results'})
+            raise ErrorResponse(
+                content={'detail': 'That page contains no results'},
+                status=status.HTTP_404_NOT_FOUND)
 
         page = paginator.page(page_num)
 

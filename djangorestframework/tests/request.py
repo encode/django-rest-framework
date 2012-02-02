@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from djangorestframework import status
 from djangorestframework.authentication import UserLoggedInAuthentication
-from djangorestframework.compat import RequestFactory, unittest
+from djangorestframework.compat import RequestFactory
 from djangorestframework.mixins import RequestMixin
 from djangorestframework.parsers import FormParser, MultiPartParser, \
     PlainTextParser, JSONParser
@@ -19,9 +19,9 @@ class MockView(View):
     authentication = (UserLoggedInAuthentication,)
     def post(self, request):
         if request.POST.get('example') is not None:
-            return Response(status.HTTP_200_OK)
+            return Response(status=status.HTTP_200_OK)
 
-        return Response(status.INTERNAL_SERVER_ERROR)
+        return Response(status=status.INTERNAL_SERVER_ERROR)
 
 urlpatterns = patterns('',
     (r'^$', MockView.as_view()),

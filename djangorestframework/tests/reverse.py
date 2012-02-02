@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.utils import simplejson as json
 
 from djangorestframework.views import View
+from djangorestframework.response import Response
 
 
 class MockView(View):
@@ -11,7 +12,7 @@ class MockView(View):
     permissions = ()
 
     def get(self, request):
-        return reverse('another')
+        return Response(reverse('another'))
 
 urlpatterns = patterns('',
     url(r'^$', MockView.as_view()),

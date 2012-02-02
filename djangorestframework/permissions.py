@@ -22,13 +22,13 @@ __all__ = (
 
 
 _403_FORBIDDEN_RESPONSE = ErrorResponse(
-    status.HTTP_403_FORBIDDEN,
-    {'detail': 'You do not have permission to access this resource. ' +
-               'You may need to login or otherwise authenticate the request.'})
+    content={'detail': 'You do not have permission to access this resource. ' +
+               'You may need to login or otherwise authenticate the request.'},
+    status=status.HTTP_403_FORBIDDEN)
 
 _503_SERVICE_UNAVAILABLE = ErrorResponse(
-    status.HTTP_503_SERVICE_UNAVAILABLE,
-    {'detail': 'request was throttled'})
+    content={'detail': 'request was throttled'},
+    status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
 class BasePermission(object):
@@ -152,7 +152,7 @@ class BaseThrottle(BasePermission):
         self.history.insert(0, self.now)
         cache.set(self.key, self.history, self.duration)
         header = 'status=SUCCESS; next=%s sec' % self.next()
-        self.view.add_header('X-Throttle', header)
+        self.view.headers['X-Throttle'] = header
 
     def throttle_failure(self):
         """
@@ -160,7 +160,7 @@ class BaseThrottle(BasePermission):
         Raises a '503 service unavailable' response.
         """
         header = 'status=FAILURE; next=%s sec' % self.next()
-        self.view.add_header('X-Throttle', header)
+        self.view.headers['X-Throttle'] = header
         raise _503_SERVICE_UNAVAILABLE
 
     def next(self):

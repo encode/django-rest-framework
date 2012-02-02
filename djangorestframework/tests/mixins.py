@@ -65,7 +65,7 @@ class TestModelCreation(TestModelsTestCase):
 
         response = mixin.post(request)
         self.assertEquals(1, Group.objects.count())
-        self.assertEquals('foo', response.cleaned_content.name)
+        self.assertEquals('foo', response.raw_content.name)
 
     def test_creation_with_m2m_relation(self):
         class UserResource(ModelResource):
@@ -91,8 +91,8 @@ class TestModelCreation(TestModelsTestCase):
 
         response = mixin.post(request)
         self.assertEquals(1, User.objects.count())
-        self.assertEquals(1, response.cleaned_content.groups.count())
-        self.assertEquals('foo', response.cleaned_content.groups.all()[0].name)
+        self.assertEquals(1, response.raw_content.groups.count())
+        self.assertEquals('foo', response.raw_content.groups.all()[0].name)
 
     def test_creation_with_m2m_relation_through(self):
         """
@@ -114,7 +114,7 @@ class TestModelCreation(TestModelsTestCase):
 
         response = mixin.post(request)
         self.assertEquals(1, CustomUser.objects.count())
-        self.assertEquals(0, response.cleaned_content.groups.count())
+        self.assertEquals(0, response.raw_content.groups.count())
 
         group = Group(name='foo1')
         group.save()
@@ -129,8 +129,8 @@ class TestModelCreation(TestModelsTestCase):
 
         response = mixin.post(request)
         self.assertEquals(2, CustomUser.objects.count())
-        self.assertEquals(1, response.cleaned_content.groups.count())
-        self.assertEquals('foo1', response.cleaned_content.groups.all()[0].name)
+        self.assertEquals(1, response.raw_content.groups.count())
+        self.assertEquals('foo1', response.raw_content.groups.all()[0].name)
 
         group2 = Group(name='foo2')
         group2.save()
@@ -145,19 +145,19 @@ class TestModelCreation(TestModelsTestCase):
 
         response = mixin.post(request)
         self.assertEquals(3, CustomUser.objects.count())
-        self.assertEquals(2, response.cleaned_content.groups.count())
-        self.assertEquals('foo1', response.cleaned_content.groups.all()[0].name)
-        self.assertEquals('foo2', response.cleaned_content.groups.all()[1].name)
+        self.assertEquals(2, response.raw_content.groups.count())
+        self.assertEquals('foo1', response.raw_content.groups.all()[0].name)
+        self.assertEquals('foo2', response.raw_content.groups.all()[1].name)
 
 
 class MockPaginatorView(PaginatorMixin, View):
     total = 60
 
     def get(self, request):
-        return range(0, self.total)
+        return Response(range(0, self.total))
 
     def post(self, request):
-        return Response(status.HTTP_201_CREATED, {'status': 'OK'})
+        return Response({'status': 'OK'}, status=status.HTTP_201_CREATED)
 
 
 class TestPagination(TestCase):
@@ -168,8 +168,7 @@ class TestPagination(TestCase):
         """ Tests if pagination works without overwriting the limit """
         request = self.req.get('/paginator')
         response = MockPaginatorView.as_view()(request)
-
-        content = json.loads(response.content)
+        content = response.raw_content
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(MockPaginatorView.total, content['total'])
@@ -183,8 +182,7 @@ class TestPagination(TestCase):
 
         request = self.req.get('/paginator')
         response = MockPaginatorView.as_view(limit=limit)(request)
-
-        content = json.loads(response.content)
+        content = response.raw_content
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(content['per_page'], limit)
@@ -200,8 +198,7 @@ class TestPagination(TestCase):
 
         request = self.req.get('/paginator/?limit=%d' % limit)
         response = MockPaginatorView.as_view()(request)
-
-        content = json.loads(response.content)
+        content = response.raw_content
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(MockPaginatorView.total, content['total'])
@@ -217,8 +214,7 @@ class TestPagination(TestCase):
 
         request = self.req.get('/paginator/?limit=%d' % limit)
         response = MockPaginatorView.as_view()(request)
-
-        content = json.loads(response.content)
+        content = response.raw_content
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(MockPaginatorView.total, content['total'])
@@ -230,8 +226,7 @@ class TestPagination(TestCase):
         """ Pagination should only work for GET requests """
         request = self.req.post('/paginator', data={'content': 'spam'})
         response = MockPaginatorView.as_view()(request)
-
-        content = json.loads(response.content)
+        content = response.raw_content
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(None, content.get('per_page'))
@@ -248,12 +243,12 @@ class TestPagination(TestCase):
         """ Tests that the page range is handle correctly """
         request = self.req.get('/paginator/?page=0')
         response = MockPaginatorView.as_view()(request)
-        content = json.loads(response.content)
+        content = response.raw_content
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         request = self.req.get('/paginator/')
         response = MockPaginatorView.as_view()(request)
-        content = json.loads(response.content)
+        content = response.raw_content
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(range(0, MockPaginatorView.limit), content['results'])
 
@@ -261,13 +256,13 @@ class TestPagination(TestCase):
 
         request = self.req.get('/paginator/?page=%d' % num_pages)
         response = MockPaginatorView.as_view()(request)
-        content = json.loads(response.content)
+        content = response.raw_content
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(range(MockPaginatorView.limit*(num_pages-1), MockPaginatorView.total), content['results'])
 
         request = self.req.get('/paginator/?page=%d' % (num_pages + 1,))
         response = MockPaginatorView.as_view()(request)
-        content = json.loads(response.content)
+        content = response.raw_content
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_existing_query_parameters_are_preserved(self):
@@ -275,7 +270,7 @@ class TestPagination(TestCase):
         generating next/previous page links """
         request = self.req.get('/paginator/?foo=bar&another=something')
         response = MockPaginatorView.as_view()(request)
-        content = json.loads(response.content)
+        content = response.raw_content
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertTrue('foo=bar' in content['next'])
         self.assertTrue('another=something' in content['next'])

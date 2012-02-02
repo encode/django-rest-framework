@@ -118,7 +118,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         """
         Return the list of allowed HTTP methods, uppercased.
         """
-        return [method.upper() for method in self.http_method_names if hasattr(self, method)]
+        return allowed_methods(self)
 
     def get_name(self):
         """
@@ -172,12 +172,14 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         """
         Return an HTTP 405 error if an operation is called which does not have a handler method.
         """
-        raise ErrorResponse(status.HTTP_405_METHOD_NOT_ALLOWED,
-                            {'detail': 'Method \'%s\' not allowed on this resource.' % request.method})
+        raise ErrorResponse(content=
+                {'detail': 'Method \'%s\' not allowed on this resource.' % request.method},
+            status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def initial(self, request, *args, **kargs):
         """
-        Hook for any code that needs to run prior to anything else.
+        Returns an `HttpRequest`. This method is a hook for any code that needs to run
+        prior to anything else.
         Required if you want to do things like set `request.upload_handlers` before
         the authentication and dispatch handling is run.
         """
@@ -187,28 +189,16 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         if not (self.orig_prefix.startswith('http:') or self.orig_prefix.startswith('https:')):
             prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
             set_script_prefix(prefix + self.orig_prefix)
+        return request
 
     def final(self, request, response, *args, **kargs):
         """
-        Hook for any code that needs to run after everything else in the view.
+        Returns an `HttpResponse`. This method is a hook for any code that needs to run
+        after everything else in the view.
         """
         # Restore script_prefix.
         set_script_prefix(self.orig_prefix)
-
-        # Always add these headers.
-        response.headers['Allow'] = ', '.join(self.allowed_methods)
-        # sample to allow caching using Vary http header
-        response.headers['Vary'] = 'Authenticate, Accept'
-
-        # merge with headers possibly set at some point in the view
-        response.headers.update(self.headers)
-        return self.render(response)
-
-    def add_header(self, field, value):
-        """
-        Add *field* and *value* to the :attr:`headers` attribute of the :class:`View` class.
-        """
-        self.headers[field] = value
+        return response
 
     # Note: session based authentication is explicitly CSRF validated,
     # all other authentication is CSRF exempt.
@@ -217,13 +207,14 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         self.request = request
         self.args = args
         self.kwargs = kwargs
-        self.headers = {}
 
         try:
             # Get a custom request, built form the original request instance
             self.request = request = self.get_request()
 
-            self.initial(request, *args, **kwargs)
+            # `initial` is the opportunity to temper with the request, 
+            # even completely replace it.
+            self.request = request = self.initial(request, *args, **kwargs)
 
             # Authenticate and check request has the relevant permissions
             self._check_permissions()
@@ -234,28 +225,29 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             else:
                 handler = self.http_method_not_allowed
  
-            response_obj = handler(request, *args, **kwargs)
+            # TODO: should we enforce HttpResponse, like Django does ?
+            response = handler(request, *args, **kwargs)
 
-            # Allow return value to be either HttpResponse, Response, or an object, or None
-            if isinstance(response_obj, HttpResponse):
-                return response_obj
-            elif isinstance(response_obj, Response):
-                response = response_obj
-            elif response_obj is not None:
-                response = Response(status.HTTP_200_OK, response_obj)
-            else:
-                response = Response(status.HTTP_204_NO_CONTENT)
+            # Prepare response for the response cycle.
+            self.prepare_response(response)
 
             # Pre-serialize filtering (eg filter complex objects into natively serializable types)
-            response.cleaned_content = self.filter_response(response.raw_content)
+            # TODO: ugly
+            if hasattr(response, 'raw_content'):
+                response.raw_content = self.filter_response(response.raw_content)
+            else:
+                response.content = self.filter_response(response.content)
 
-        except ErrorResponse, exc:
-            response = exc.response
+        except ErrorResponse, response:
+            # Prepare response for the response cycle.
+            self.prepare_response(response)
 
+        # `final` is the last opportunity to temper with the response, or even
+        # completely replace it.
         return self.final(request, response, *args, **kwargs)
 
     def options(self, request, *args, **kwargs):
-        response_obj = {
+        content = {
             'name': self.get_name(),
             'description': self.get_description(),
             'renders': self._rendered_media_types,
@@ -266,11 +258,11 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             field_name_types = {}
             for name, field in form.fields.iteritems():
                 field_name_types[name] = field.__class__.__name__
-            response_obj['fields'] = field_name_types
+            content['fields'] = field_name_types
         # Note 'ErrorResponse' is misleading, it's just any response
         # that should be rendered and returned immediately, without any
         # response filtering.
-        raise ErrorResponse(status.HTTP_200_OK, response_obj)
+        raise ErrorResponse(content=content, status=status.HTTP_200_OK)
 
 
 class ModelView(View):

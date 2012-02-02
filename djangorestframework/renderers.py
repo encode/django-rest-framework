@@ -60,9 +60,13 @@ class BaseRenderer(object):
         This may be overridden to provide for other behavior, but typically you'll
         instead want to just set the :attr:`media_type` attribute on the class.
         """
-        format = self.view.kwargs.get(self._FORMAT_QUERY_PARAM, None)
-        if format is None:
+        # TODO: format overriding must go out of here
+        format = None
+        if self.view is not None:
+            format = self.view.kwargs.get(self._FORMAT_QUERY_PARAM, None)
+        if format is None and self.view is not None:
             format = self.view.request.GET.get(self._FORMAT_QUERY_PARAM, None)
+
         if format is not None:
             return format == self.format
         return media_type_matches(self.media_type, accept)
@@ -359,8 +363,8 @@ class DocumentingTemplateRenderer(BaseRenderer):
         # Munge DELETE Response code to allow us to return content
         # (Do this *after* we've rendered the template so that we include
         # the normal deletion response code in the output)
-        if self.view.response.status == 204:
-            self.view.response.status = 200
+        if self.view.response.status_code == 204:
+            self.view.response.status_code = 200
 
         return ret
 

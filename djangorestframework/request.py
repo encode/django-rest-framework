@@ -206,9 +206,9 @@ class Request(object):
             if parser.can_handle_request(content_type):
                 return parser.parse(stream)
 
-        raise ErrorResponse(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                            {'error': 'Unsupported media type in request \'%s\'.' %
-                            content_type})
+        raise ErrorResponse(content={'error':
+                            'Unsupported media type in request \'%s\'.' % content_type},
+                        status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 
     @property
     def _parsed_media_types(self):

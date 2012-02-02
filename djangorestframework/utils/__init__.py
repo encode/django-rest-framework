@@ -48,6 +48,13 @@ def url_resolves(url):
     return True
 
 
+def allowed_methods(view):
+    """
+    Return the list of uppercased allowed HTTP methods on `view`.
+    """
+    return [method.upper() for method in view.http_method_names if hasattr(view, method)]
+
+
 # From http://www.koders.com/python/fidB6E125C586A6F49EAC38992CF3AFDAAE35651975.aspx?s=mdef:xml
 #class object_dict(dict):
 #    """object view of dict, you can
