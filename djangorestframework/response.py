@@ -34,7 +34,7 @@ class Response(object):
         return STATUS_CODE_TEXT.get(self.status, '')
 
 
-class ErrorResponse(BaseException):
+class ErrorResponse(Exception):
     """
     An exception representing an Response that should be returned immediately.
     Any content should be serialized as-is, without being filtered.
