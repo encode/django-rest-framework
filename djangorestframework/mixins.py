@@ -608,7 +608,7 @@ class UpdateModelMixin(ModelMixin):
         # TODO: update on the url of a non-existing resource url doesn't work
         # correctly at the moment - will end up with a new url
         try:
-            self.model_instance = self.get_instance(*query_kwargs)
+            self.model_instance = self.get_instance(**query_kwargs)
 
             for (key, val) in self.CONTENT.items():
                 setattr(self.model_instance, key, val)
