@@ -53,16 +53,10 @@ MEDIA_ROOT = os.path.join(os.getenv('EPIO_DATA_DIRECTORY', '.'), 'media')
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 # NOTE: None of the djangorestframework examples serve media content via MEDIA_URL.
-MEDIA_URL = ''
+MEDIA_URL = '/uploads/'
 
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".
-# NOTE: djangorestframework does not require the admin app to be installed,
-# but it does require the admin media be served.  Django's test server will do
-# this for you automatically, but in production you'll want to make sure you
-# serve the admin media from somewhere.
-ADMIN_MEDIA_PREFIX = '/static/admin'
+STATIC_URL = '/static/'
+
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 't&9mru2_k$t8e2-9uq-wu2a1)9v*us&j3i#lsqkt(lbx*vh1cu'
@@ -102,6 +96,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.staticfiles',
     'django.contrib.messages',
 
     'djangorestframework',

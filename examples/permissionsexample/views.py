@@ -2,14 +2,23 @@ from djangorestframework.views import View
 from djangorestframework.permissions import PerUserThrottling, IsAuthenticated
 from django.core.urlresolvers import reverse
 
+
 class PermissionsExampleView(View):
     """
     A container view for permissions examples.
     """
 
     def get(self, request):
-        return [{'name': 'Throttling Example', 'url': reverse('throttled-resource')},
-                {'name': 'Logged in example', 'url': reverse('loggedin-resource')},]
+        return [
+            {
+                'name': 'Throttling Example',
+                'url': reverse('throttled-resource')
+            },
+            {
+                'name': 'Logged in example',
+                'url': reverse('loggedin-resource')
+            },
+        ]
 
 
 class ThrottlingExampleView(View):
@@ -20,7 +29,7 @@ class ThrottlingExampleView(View):
     throttle will be applied until 60 seconds have passed since the first request.
     """
 
-    permissions = ( PerUserThrottling, )
+    permissions = (PerUserThrottling,)
     throttle = '10/min'
 
     def get(self, request):
@@ -29,13 +38,15 @@ class ThrottlingExampleView(View):
         """
         return "Successful response to GET request because throttle is not yet active."
 
+
 class LoggedInExampleView(View):
     """
     You can login with **'test', 'test'.** or use curl:
-    
+
     `curl -X GET -H 'Accept: application/json' -u test:test http://localhost:8000/permissions-example`
-    """ 
+    """
 
     permissions = (IsAuthenticated, )
+
     def get(self, request):
-        return 'Logged in or not?'
+        return 'You have permission to view this resource'

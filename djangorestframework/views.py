@@ -5,15 +5,17 @@ be subclassing in your implementation.
 By setting or modifying class attributes on your view, you change it's predefined behaviour.
 """
 
+import re
 from django.core.urlresolvers import set_script_prefix, get_script_prefix
 from django.http import HttpResponse
+from django.utils.html import escape
+from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 
-from djangorestframework.compat import View as DjangoView
+from djangorestframework.compat import View as DjangoView, apply_markdown
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.mixins import *
 from djangorestframework import resources, renderers, parsers, authentication, permissions, status
-from djangorestframework.utils.description import get_name, get_description
 
 
 __all__ = (
@@ -22,6 +24,48 @@ __all__ = (
     'InstanceModelView',
     'ListModelView',
     'ListOrCreateModelView'
+)
+
+
+def _remove_trailing_string(content, trailing):
+    """
+    Strip trailing component `trailing` from `content` if it exists.
+    Used when generating names from view/resource classes.
+    """
+    if content.endswith(trailing) and content != trailing:
+        return content[:-len(trailing)]
+    return content
+
+
+def _remove_leading_indent(content):
+    """
+    Remove leading indent from a block of text.
+    Used when generating descriptions from docstrings.
+    """
+    whitespace_counts = [len(line) - len(line.lstrip(' '))
+                         for line in content.splitlines()[1:] if line.lstrip()]
+
+    # unindent the content if needed
+    if whitespace_counts:
+        whitespace_pattern = '^' + (' ' * min(whitespace_counts))
+        return re.sub(re.compile(whitespace_pattern, re.MULTILINE), '', content)
+    return content
+
+
+def _camelcase_to_spaces(content):
+    """
+    Translate 'CamelCaseNames' to 'Camel Case Names'.
+    Used when generating names from view/resource classes.
+    """
+    camelcase_boundry = '(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))'
+    return re.sub(camelcase_boundry, ' \\1', content).strip()
+
+
+_resource_classes = (
+    None,
+    resources.Resource,
+    resources.FormResource,
+    resources.ModelResource
 )
 
 
@@ -48,7 +92,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
 
     authentication = (authentication.UserLoggedInAuthentication,
-                      authentication.BasicAuthentication)
+                       authentication.BasicAuthentication)
     """
     List of all authenticating methods to attempt.
     """
@@ -75,6 +119,54 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         Return the list of allowed HTTP methods, uppercased.
         """
         return [method.upper() for method in self.http_method_names if hasattr(self, method)]
+
+    def get_name(self):
+        """
+        Return the resource or view class name for use as this view's name.
+        Override to customize.
+        """
+        # If this view has a resource that's been overridden, then use that resource for the name
+        if getattr(self, 'resource', None) not in _resource_classes:
+            name = self.resource.__name__
+            name = _remove_trailing_string(name, 'Resource')
+            name += getattr(self, '_suffix', '')
+
+        # If it's a view class with no resource then grok the name from the class name
+        else:
+            name = self.__class__.__name__
+            name = _remove_trailing_string(name, 'View')
+
+        return _camelcase_to_spaces(name)
+
+    def get_description(self, html=False):
+        """
+        Return the resource or view docstring for use as this view's description.
+        Override to customize.
+        """
+
+        description = None
+
+        # If this view has a resource that's been overridden,
+        # then try to use the resource's docstring
+        if getattr(self, 'resource', None) not in _resource_classes:
+            description = self.resource.__doc__
+
+        # Otherwise use the view docstring
+        if not description:
+            description = self.__doc__ or ''
+
+        description = _remove_leading_indent(description)
+
+        if html:
+            return self.markup_description(description)
+        return description
+
+    def markup_description(self, description):
+        if apply_markdown:
+            description = apply_markdown(description)
+        else:
+            description = escape(description).replace('\n', '<br />')
+        return mark_safe(description)
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
@@ -164,8 +256,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
     def options(self, request, *args, **kwargs):
         response_obj = {
-            'name': get_name(self),
-            'description': get_description(self),
+            'name': self.get_name(),
+            'description': self.get_description(),
             'renders': self._rendered_media_types,
             'parses': request._parsed_media_types,
         }

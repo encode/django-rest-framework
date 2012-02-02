@@ -1,3 +1,5 @@
+import re
+
 from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
 
@@ -175,6 +177,13 @@ _flat_repr = '{"foo": ["bar", "baz"]}'
 _indented_repr = '{\n  "foo": [\n    "bar",\n    "baz"\n  ]\n}'
 
 
+def strip_trailing_whitespace(content):
+    """
+    Seems to be some inconsistencies re. trailing whitespace with
+    different versions of the json lib.
+    """
+    return re.sub(' +\n', '\n', content)
+
 class JSONRendererTests(TestCase):
     """
     Tests specific to the JSON Renderer
@@ -187,6 +196,7 @@ class JSONRendererTests(TestCase):
         obj = {'foo': ['bar', 'baz']}
         renderer = JSONRenderer(None)
         content = renderer.render(obj, 'application/json')
+        # Fix failing test case which depends on version of JSON library.
         self.assertEquals(content, _flat_repr)
 
     def test_with_content_type_args(self):
@@ -196,7 +206,7 @@ class JSONRendererTests(TestCase):
         obj = {'foo': ['bar', 'baz']}
         renderer = JSONRenderer(None)
         content = renderer.render(obj, 'application/json; indent=2')
-        self.assertEquals(content, _indented_repr)
+        self.assertEquals(strip_trailing_whitespace(content), _indented_repr)
 
     def test_render_and_parse(self):
         """
