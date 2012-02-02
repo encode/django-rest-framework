@@ -530,7 +530,7 @@ class ModelMixin(object):
     @property
     def model_instance(self):
         """
-        Returns the model instance for read/update/delete, or None if does not exit.
+        Returns the model instance for read/update/delete, or None if does not exist.
         """
 
         if hasattr(self, '_model_instance'): return self._model_instance
