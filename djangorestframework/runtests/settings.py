@@ -97,6 +97,8 @@ INSTALLED_APPS = (
     'djangorestframework',
 )
 
+STATIC_URL = '/static/'
+
 import django
 
 if django.VERSION < (1, 3):
