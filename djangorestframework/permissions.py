@@ -81,8 +81,8 @@ class IsModelInstanceOwnerOrIsAnonReadOnly(BasePermission):
     """
     The request is authenticated as the owner of the model instance, or is a read-only request.
 
-    In order to determine the owner the model has to provide a .get_owner() function,
-    otherwise the permission will be denied. 
+    In order to determine the owner, the model has to provide a .get_owner() function that
+    returns the owner, otherwise the permission will be denied. 
     """
 
     def check_permission(self, user):
