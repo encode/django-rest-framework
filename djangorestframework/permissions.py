@@ -77,6 +77,27 @@ class IsAdminUser(BasePermission):
             raise _403_FORBIDDEN_RESPONSE
 
 
+class IsModelInstanceOwnerOrIsAnonReadOnly(BasePermission):
+    """
+    The request is authenticated as the owner of the model instance, or is a read-only request.
+    """
+
+    def check_permission(self, user):
+
+        if self.view.method in('GET', 'HEAD',):
+            return
+
+        if not user.is_authenticated():
+            raise _403_FORBIDDEN_RESPONSE
+
+        try:
+            if self.view.model_instance.get_owner() == user:
+                return
+        except: pass
+
+        raise _403_FORBIDDEN_RESPONSE
+
+
 class IsUserOrIsAnonReadOnly(BasePermission):
     """
     The request is authenticated as a user, or is a read-only request.
