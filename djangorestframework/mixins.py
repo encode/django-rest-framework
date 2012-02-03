@@ -527,6 +527,16 @@ class ModelMixin(object):
         """
         return self.get_queryset().get(**kwargs)
 
+    def get_owner(self):
+        """
+        Returns the model instance's owner, if any.
+
+        The owner is retrieved by calling the .get_owner() function on the model instance, if implemented. 
+        """
+        try:
+            return self.model_instance.get_owner()
+        except: pass
+
     @property
     def model_instance(self):
         """

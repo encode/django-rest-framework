@@ -13,7 +13,7 @@ __all__ = (
     'BasePermission',
     'FullAnonAccess',
     'IsAuthenticated',
-    'IsModelInstanceOwnerOrIsAnonReadOnly',
+    'IsResourceOwnerOrIsAnonReadOnly',
     'IsAdminUser',
     'IsUserOrIsAnonReadOnly',
     'PerUserThrottling',
@@ -78,12 +78,9 @@ class IsAdminUser(BasePermission):
             raise _403_FORBIDDEN_RESPONSE
 
 
-class IsModelInstanceOwnerOrIsAnonReadOnly(BasePermission):
+class IsResourceOwnerOrIsAnonReadOnly(BasePermission):
     """
-    The request is authenticated as the owner of the model instance, or is a read-only request.
-
-    In order to determine the owner, the model has to provide a .get_owner() function that
-    returns the owner, otherwise the permission will be denied. 
+    The request is authenticated as the owner of the resource, or is a read-only request.
     """
 
     def check_permission(self, user):
@@ -94,10 +91,8 @@ class IsModelInstanceOwnerOrIsAnonReadOnly(BasePermission):
         if not user.is_authenticated():
             raise _403_FORBIDDEN_RESPONSE
 
-        try:
-            if self.view.model_instance.get_owner() == user:
-                return
-        except: pass
+        if self.view.get_owner() == user:
+            return
 
         raise _403_FORBIDDEN_RESPONSE
 
