@@ -62,7 +62,8 @@ def api_login(request, template_name='api_login.html',
         redirect_field_name: redirect_to,
         #'site': current_site,
         #'site_name': current_site.name,
-        'ADMIN_MEDIA_PREFIX': settings.ADMIN_MEDIA_PREFIX,
+        'ADMIN_MEDIA_PREFIX': "%sadmin/" % settings.STATIC_URL if hasattr(settings,"STATIC_URL") 
+                            else settings.ADMIN_MEDIA_PREFIX,
     }, context_instance=RequestContext(request))
 
 
