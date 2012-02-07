@@ -62,8 +62,7 @@ setup(
     author_email='tom@tomchristie.com',
     packages=get_packages('djangorestframework'),
     package_data=get_package_data('djangorestframework'),
-    test_suite='djangorestframework.runtests.runcoverage.main',
-    install_requires=['URLObject>=0.6.0'],
+    requires=['URLObject>=0.6.0'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
