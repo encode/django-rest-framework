@@ -280,3 +280,12 @@ class TestPagination(TestCase):
         self.assertTrue('foo=bar' in content['next'])
         self.assertTrue('another=something' in content['next'])
         self.assertTrue('page=2' in content['next'])
+
+    def test_duplicate_parameters_are_not_created(self):
+        """ Regression: ensure duplicate "page" parameters are not added to
+        paginated URLs. So page 1 should contain ?page=2, not ?page=1&page=2 """
+        request = self.req.get('/paginator/?page=1')
+        response = MockPaginatorView.as_view()(request)
+        content = json.loads(response.content)
+        self.assertTrue('page=2' in content['next'])
+        self.assertFalse('page=1' in content['next'])
