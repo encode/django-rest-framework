@@ -1,5 +1,7 @@
 from django.conf.urls.defaults import patterns, url
-from requestexample.views import RequestExampleView, MockView, EchoRequestContentView
+from requestexample.views import RequestExampleView, EchoRequestContentView
+from examples.views import MockView
+
 
 urlpatterns = patterns('',
     url(r'^$', RequestExampleView.as_view(), name='request-example'),

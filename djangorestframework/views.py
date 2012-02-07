@@ -15,6 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 from djangorestframework.compat import View as DjangoView, apply_markdown
 from djangorestframework.response import Response, ImmediateResponse
 from djangorestframework.mixins import *
+from djangorestframework.utils import allowed_methods
 from djangorestframework import resources, renderers, parsers, authentication, permissions, status
 
 

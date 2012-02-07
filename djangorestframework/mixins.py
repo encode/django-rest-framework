@@ -58,7 +58,7 @@ class RequestMixin(object):
         to parse its content.
         """
         if not hasattr(self, '_parsers'):
-            self._parsers = [r(self) for r in self.parser_classes]
+            self._parsers = [p(self) for p in self.parser_classes]
         return self._parsers
 
     def prepare_request(self, request):

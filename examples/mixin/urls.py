@@ -10,12 +10,12 @@ from django.core.urlresolvers import reverse
 class ExampleView(ResponseMixin, View):
     """An example view using Django 1.3's class based views.
     Uses djangorestframework's RendererMixin to provide support for multiple output formats."""
-    renderers = DEFAULT_RENDERERS
+    renderer_classes = DEFAULT_RENDERERS
 
     def get(self, request):
-        response = Response(200, {'description': 'Some example content',
-                                  'url': reverse('mixin-view')})
-        return self.render(response)
+        response = Response({'description': 'Some example content',
+                                  'url': reverse('mixin-view')}, status=200)
+        return self.prepare_response(response)
 
 
 urlpatterns = patterns('',

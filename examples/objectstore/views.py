@@ -41,7 +41,7 @@ class ObjectStoreRoot(View):
         filepaths = [os.path.join(OBJECT_STORE_DIR, file) for file in os.listdir(OBJECT_STORE_DIR) if not file.startswith('.')]
         ctime_sorted_basenames = [item[0] for item in sorted([(os.path.basename(path), os.path.getctime(path)) for path in filepaths],
                                                              key=operator.itemgetter(1), reverse=True)]
-        return [reverse('stored-object', kwargs={'key':key}) for key in ctime_sorted_basenames]
+        return Response([reverse('stored-object', kwargs={'key':key}) for key in ctime_sorted_basenames])
 
     def post(self, request):
         """
@@ -51,7 +51,8 @@ class ObjectStoreRoot(View):
         pathname = os.path.join(OBJECT_STORE_DIR, key)
         pickle.dump(self.CONTENT, open(pathname, 'wb'))
         remove_oldest_files(OBJECT_STORE_DIR, MAX_FILES)
-        return Response(status.HTTP_201_CREATED, self.CONTENT, {'Location': reverse('stored-object', kwargs={'key':key})})
+        self.headers['Location'] = reverse('stored-object', kwargs={'key':key})
+        return Response(self.CONTENT, status=status.HTTP_201_CREATED)
 
 
 class StoredObject(View):
@@ -67,7 +68,7 @@ class StoredObject(View):
         pathname = os.path.join(OBJECT_STORE_DIR, key)
         if not os.path.exists(pathname):
             return Response(status.HTTP_404_NOT_FOUND)
-        return pickle.load(open(pathname, 'rb'))
+        return Response(pickle.load(open(pathname, 'rb')))
 
     def put(self, request, key):
         """
@@ -75,7 +76,7 @@ class StoredObject(View):
         """
         pathname = os.path.join(OBJECT_STORE_DIR, key)
         pickle.dump(self.CONTENT, open(pathname, 'wb'))
-        return self.CONTENT
+        return Response(self.CONTENT)
 
     def delete(self, request, key):
         """
@@ -85,3 +86,4 @@ class StoredObject(View):
         if not os.path.exists(pathname):
             return Response(status.HTTP_404_NOT_FOUND)
         os.remove(pathname)
+        return Response()
