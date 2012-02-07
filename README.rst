@@ -2,7 +2,8 @@ Django REST framework
 =====================
 
 **Django REST framework makes it easy to build well-connected, self-describing RESTful Web APIs.**
-**Author:** Tom Christie.  `Follow me on twitter <https://twitter.com/#!/_tomchristie>`.
+
+**Author:** Tom Christie.  `Follow me on twitter <https://twitter.com/#!/_tomchristie>`_.
 
 Overview
 ========
