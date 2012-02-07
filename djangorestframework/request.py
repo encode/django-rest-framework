@@ -1,8 +1,8 @@
 """
-The :mod:`request` module provides a :class:`Request` class that can be used 
-to wrap the standard `request` object received in all the views, and upgrade its API.
+The :mod:`request` module provides a :class:`Request` class used to wrap the standard `request`
+object received in all the views.
 
-The wrapped request then offer the following :
+The wrapped request then offers a richer API, in particular :
 
     - content automatically parsed according to `Content-Type` header, and available as :meth:`.DATA<Request.DATA>`
     - full support of PUT method, including support for file uploads
@@ -24,7 +24,11 @@ __all__ = ('Request',)
 
 class Request(object):
     """
-    A wrapper allowing to enhance Django's standard HttpRequest.
+    Wrapper allowing to enhance a standard `HttpRequest` instance.
+
+    Kwargs:
+        - request(HttpRequest). The original request instance.
+        - parsers(list/tuple). The parsers to use for parsing the request content.
     """
 
     _USE_FORM_OVERLOADING = True
@@ -33,10 +37,6 @@ class Request(object):
     _CONTENT_PARAM = '_content'
 
     def __init__(self, request=None, parsers=None):
-        """
-        `parsers` is a list/tuple of parser instances and represents the set of psrsers
-        that the response can handle.
-        """
         self.request = request
         if parsers is not None:
             self.parsers = parsers
@@ -185,9 +185,6 @@ class Request(object):
         return self.parsers[0]
 
     def _get_parsers(self):
-        """
-        This just provides a default when parsers havent' been set.
-        """
         if hasattr(self, '_parsers'):
             return self._parsers
         return ()

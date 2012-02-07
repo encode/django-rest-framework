@@ -37,7 +37,7 @@ __all__ = (
 
 class RequestMixin(object):
     """
-    `Mixin` class to enhance API of Django's standard `request`.
+    `Mixin` class enabling the use of :class:`request.Request` in your views.
     """
 
     parser_classes = ()
@@ -63,8 +63,8 @@ class RequestMixin(object):
 
     def prepare_request(self, request):
         """
-        Prepares the request for the request cycle. Returns a custom request instance,
-        with data and attributes copied from the original request.
+        Prepares the request cycle. Returns an instance of :class:`request.Request`,
+        wrapping the original request object.
         """
         parsers = self.get_parsers()
         request = self.request_class(request, parsers=parsers)
@@ -74,7 +74,7 @@ class RequestMixin(object):
     @property
     def _parsed_media_types(self):
         """
-        Return a list of all the media types that this view can parse.
+        Returns a list of all the media types that this view can parse.
         """
         return [p.media_type for p in self.parser_classes]
         
@@ -83,11 +83,7 @@ class RequestMixin(object):
 
 class ResponseMixin(object):
     """
-    Adds behavior for pluggable `renderers` to a :class:`views.View` class.
-
-    Default behavior is to use standard HTTP Accept header content negotiation.
-    Also supports overriding the content type by specifying an ``_accept=`` parameter in the URL.
-    Ignores Accept headers from Internet Explorer user agents and uses a sensible browser Accept header instead.
+    `Mixin` class enabling the use of :class:`response.Response` in your views.
     """
 
     renderer_classes = ()
@@ -108,7 +104,7 @@ class ResponseMixin(object):
 
     def prepare_response(self, response):
         """
-        Prepares the response for the response cycle, and returns the prepared response. 
+        Prepares and returns `response`. 
         This has no effect if the response is not an instance of :class:`response.Response`.
         """
         if hasattr(response, 'request') and response.request is None:

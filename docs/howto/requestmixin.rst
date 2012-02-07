@@ -1,7 +1,7 @@
 Using the enhanced request in all your views
 ==============================================
 
-This example shows how you can use Django REST framework's enhanced `request` in your own views, without having to use the full-blown :class:`views.View` class. 
+This example shows how you can use Django REST framework's enhanced `request` - :class:`request.Request` - in your own views, without having to use the full-blown :class:`views.View` class.
 
 What can it do for you ? Mostly, it will take care of parsing the request's content, and handling equally all HTTP methods ... 
 
@@ -64,13 +64,12 @@ Now that you're convinced you need to use the enhanced request object, here is h
         Base view enabling the usage of enhanced requests with user defined views.
         """
 
-        parsers = parsers.DEFAULT_PARSERS
+        parser_classes = parsers.DEFAULT_PARSERS
 
         def dispatch(self, request, *args, **kwargs):
-            self.request = request
-            request = self.get_request()
+            request = self.prepare_request(request)
             return super(MyBaseViewUsingEnhancedRequest, self).dispatch(request, *args, **kwargs)
 
 And then, use this class as a base for all your custom views.
 
-.. note:: you can also check the request example. 
+.. note:: you can see this live in the examples. 

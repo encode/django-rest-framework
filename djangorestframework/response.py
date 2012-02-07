@@ -2,12 +2,13 @@
 The :mod:`response` module provides :class:`Response` and :class:`ImmediateResponse` classes.
 
 `Response` is a subclass of `HttpResponse`, and can be similarly instantiated and returned
-from any view. It is a bit smarter than Django's `HttpResponse` though, for it knows how
-to use :mod:`renderers` to automatically render its content to a serial format.
-This is achieved by :
+from any view. It is a bit smarter than Django's `HttpResponse`, for it renders automatically
+its content to a serial format by using a list of :mod:`renderers`.
 
-    - determining the accepted types by checking for an overload or an `Accept` header in the request
-    - looking for a suitable renderer and using it on the content given at instantiation
+To determine the content type to which it must render, default behaviour is to use standard
+HTTP Accept header content negotiation. But `Response` also supports overriding the content type 
+by specifying an ``_accept=`` parameter in the URL. Also, `Response` will ignore `Accept` headers
+from Internet Explorer user agents and use a sensible browser `Accept` header instead.
 
 
 `ImmediateResponse` is an exception that inherits from `Response`. It can be used
@@ -29,19 +30,17 @@ __all__ = ('Response', 'ImmediateResponse')
 class Response(SimpleTemplateResponse):
     """
     An HttpResponse that may include content that hasn't yet been serialized.
+
+    Kwargs: 
+        - content(object). The raw content, not yet serialized. This must be simple Python \
+        data that renderers can handle (e.g.: `dict`, `str`, ...)
+        - renderers(list/tuple). The renderers to use for rendering the response content.
     """
 
     _ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
     _IGNORE_IE_ACCEPT_HEADER = True
 
     def __init__(self, content=None, status=None, request=None, renderers=None):
-        """
-        `content` is the raw content, not yet serialized. This must be simple Python
-        data that renderers can handle (cf: dict, str, ...)
-
-        `renderers` is a list/tuple of renderer instances and represents the set of renderers
-        that the response can handle.
-        """
         # First argument taken by `SimpleTemplateResponse.__init__` is template_name,
         # which we don't need
         super(Response, self).__init__(None, status=status)
@@ -132,9 +131,6 @@ class Response(SimpleTemplateResponse):
                         renderers=self.renderers)
 
     def _get_renderers(self):
-        """
-        This just provides a default when renderers havent' been set.
-        """
         if hasattr(self, '_renderers'):
             return self._renderers
         return ()

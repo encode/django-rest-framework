@@ -21,11 +21,10 @@ class MyBaseViewUsingEnhancedRequest(RequestMixin, View):
     Base view enabling the usage of enhanced requests with user defined views.
     """
 
-    parsers = parsers.DEFAULT_PARSERS
+    parser_classes = parsers.DEFAULT_PARSERS
 
     def dispatch(self, request, *args, **kwargs):
-        self.request = request
-        request = self.get_request()
+        request = self.prepare_request(request)
         return super(MyBaseViewUsingEnhancedRequest, self).dispatch(request, *args, **kwargs)
 
 
