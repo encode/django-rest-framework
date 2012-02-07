@@ -23,9 +23,10 @@ class UserAgentMungingTest(TestCase):
 
         class MockView(View):
             permissions = ()
+            response_class = Response
 
             def get(self, request):
-                return Response({'a':1, 'b':2, 'c':3})
+                return self.response_class({'a':1, 'b':2, 'c':3})
 
         self.req = RequestFactory()
         self.MockView = MockView

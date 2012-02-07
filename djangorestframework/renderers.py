@@ -45,7 +45,7 @@ class BaseRenderer(object):
     media_type = None
     format = None
 
-    def __init__(self, view):
+    def __init__(self, view=None):
         self.view = view
 
     def can_handle_response(self, accept):
@@ -218,7 +218,8 @@ class DocumentingTemplateRenderer(BaseRenderer):
         """
 
         # Find the first valid renderer and render the content. (Don't use another documenting renderer.)
-        renderers = [renderer for renderer in view.renderers if not issubclass(renderer, DocumentingTemplateRenderer)]
+        renderers = [renderer for renderer in view.renderer_classes 
+                if not issubclass(renderer, DocumentingTemplateRenderer)]
         if not renderers:
             return '[No renderers were found]'
 

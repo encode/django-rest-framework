@@ -11,7 +11,7 @@ This enhanced request object offers the following :
 
 from django.http import HttpRequest
 
-from djangorestframework.response import ErrorResponse
+from djangorestframework.response import ImmediateResponse
 from djangorestframework import status
 from djangorestframework.utils.mediatypes import is_form_media_type, order_by_precedence
 from djangorestframework.utils import as_tuple
@@ -194,7 +194,7 @@ class Request(object):
         """
         Parse the request content.
 
-        May raise a 415 ErrorResponse (Unsupported Media Type), or a 400 ErrorResponse (Bad Request).
+        May raise a 415 ImmediateResponse (Unsupported Media Type), or a 400 ImmediateResponse (Bad Request).
         """
         if stream is None or content_type is None:
             return (None, None)
@@ -206,7 +206,7 @@ class Request(object):
             if parser.can_handle_request(content_type):
                 return parser.parse(stream)
 
-        raise ErrorResponse(content={'error':
+        raise ImmediateResponse(content={'error':
                             'Unsupported media type in request \'%s\'.' % content_type},
                         status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
 

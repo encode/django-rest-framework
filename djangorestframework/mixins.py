@@ -11,7 +11,7 @@ from urlobject import URLObject
 from djangorestframework import status
 from djangorestframework.renderers import BaseRenderer
 from djangorestframework.resources import Resource, FormResource, ModelResource
-from djangorestframework.response import Response, ErrorResponse
+from djangorestframework.response import Response, ImmediateResponse
 from djangorestframework.request import request_class_factory
 from djangorestframework.utils import as_tuple, allowed_methods
 
@@ -80,28 +80,37 @@ class RequestMixin(object):
 
 class ResponseMixin(object):
     """
-    Adds behavior for pluggable `Renderers` to a :class:`views.View` class.
+    Adds behavior for pluggable `renderers` to a :class:`views.View` class.
 
     Default behavior is to use standard HTTP Accept header content negotiation.
     Also supports overriding the content type by specifying an ``_accept=`` parameter in the URL.
     Ignores Accept headers from Internet Explorer user agents and uses a sensible browser Accept header instead.
     """
 
-    renderers = ()
+    renderer_classes = ()
     """
     The set of response renderers that the view can handle.
 
     Should be a tuple/list of classes as described in the :mod:`renderers` module.
     """
 
-    response_class = Response
+    def get_renderers(self):
+        """
+        Instantiates and returns the list of renderers that will be used to render
+        the response.
+        """
+        if not hasattr(self, '_renderers'):
+            self._renderers = [r(self) for r in self.renderer_classes]
+        return self._renderers
 
     def prepare_response(self, response):
         """
-        Prepares response for the response cycle. Sets some headers, sets renderers, ...
+        Prepares the response for the response cycle. This has no effect if the 
+        response is not an instance of :class:`response.Response`.
         """
         if hasattr(response, 'request') and response.request is None:
             response.request = self.request
+
         # Always add these headers.
         response['Allow'] = ', '.join(allowed_methods(self))
         # sample to allow caching using Vary http header
@@ -109,10 +118,9 @@ class ResponseMixin(object):
         # merge with headers possibly set at some point in the view
         for name, value in self.headers.items():
             response[name] = value
+
         # set the views renderers on the response
-        response.renderers = self.renderers
-        # TODO: must disappear
-        response.view = self
+        response.renderers = self.get_renderers()
         self.response = response
         return response
 
@@ -121,21 +129,21 @@ class ResponseMixin(object):
         """
         Return an list of all the media types that this view can render.
         """
-        return [renderer.media_type for renderer in self.renderers]
+        return [renderer.media_type for renderer in self.get_renderers()]
 
     @property
     def _rendered_formats(self):
         """
         Return a list of all the formats that this view can render.
         """
-        return [renderer.format for renderer in self.renderers]
+        return [renderer.format for renderer in self.get_renderers()]
 
     @property
     def _default_renderer(self):
         """
         Return the view's default renderer class.
         """
-        return self.renderers[0]
+        return self.get_renderers()[0]
 
     @property
     def headers(self):
@@ -195,7 +203,7 @@ class AuthMixin(object):
     # TODO: wrap this behavior around dispatch()
     def _check_permissions(self):
         """
-        Check user permissions and either raise an ``ErrorResponse`` or return.
+        Check user permissions and either raise an ``ImmediateResponse`` or return.
         """
         user = self.user
         for permission_cls in self.permissions:
@@ -223,7 +231,7 @@ class ResourceMixin(object):
         """
         Returns the cleaned, validated request content.
 
-        May raise an :class:`response.ErrorResponse` with status code 400 (Bad Request).
+        May raise an :class:`response.ImmediateResponse` with status code 400 (Bad Request).
         """
         if not hasattr(self, '_content'):
             self._content = self.validate_request(self.request.DATA, self.request.FILES)
@@ -234,7 +242,7 @@ class ResourceMixin(object):
         """
         Returns the cleaned, validated query parameters.
 
-        May raise an :class:`response.ErrorResponse` with status code 400 (Bad Request).
+        May raise an :class:`response.ImmediateResponse` with status code 400 (Bad Request).
         """
         return self.validate_request(self.request.GET)
 
@@ -253,7 +261,7 @@ class ResourceMixin(object):
     def validate_request(self, data, files=None):
         """
         Given the request *data* and optional *files*, return the cleaned, validated content.
-        May raise an :class:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
+        May raise an :class:`response.ImmediateResponse` with status code 400 (Bad Request) on failure.
         """
         return self._resource.validate_request(data, files)
 
@@ -384,7 +392,7 @@ class ReadModelMixin(ModelMixin):
         try:
             self.model_instance = self.get_instance(**query_kwargs)
         except model.DoesNotExist:
-            raise ErrorResponse(status=status.HTTP_404_NOT_FOUND)
+            raise ImmediateResponse(status=status.HTTP_404_NOT_FOUND)
 
         return self.model_instance
 
@@ -463,7 +471,7 @@ class DeleteModelMixin(ModelMixin):
         try:
             instance = self.get_instance(**query_kwargs)
         except model.DoesNotExist:
-            raise ErrorResponse(status=status.HTTP_404_NOT_FOUND)
+            raise ImmediateResponse(status=status.HTTP_404_NOT_FOUND)
 
         instance.delete()
         return Response()
@@ -570,12 +578,12 @@ class PaginatorMixin(object):
         try:
             page_num = int(self.request.GET.get('page', '1'))
         except ValueError:
-            raise ErrorResponse(
+            raise ImmediateResponse(
                 content={'detail': 'That page contains no results'},
                 status=status.HTTP_404_NOT_FOUND)
 
         if page_num not in paginator.page_range:
-            raise ErrorResponse(
+            raise ImmediateResponse(
                 content={'detail': 'That page contains no results'},
                 status=status.HTTP_404_NOT_FOUND)
 

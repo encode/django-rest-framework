@@ -6,7 +6,7 @@ class to your view by setting your View's :attr:`permissions` class attribute.
 
 from django.core.cache import cache
 from djangorestframework import status
-from djangorestframework.response import ErrorResponse
+from djangorestframework.response import ImmediateResponse
 import time
 
 __all__ = (
@@ -21,12 +21,12 @@ __all__ = (
 )
 
 
-_403_FORBIDDEN_RESPONSE = ErrorResponse(
+_403_FORBIDDEN_RESPONSE = ImmediateResponse(
     content={'detail': 'You do not have permission to access this resource. ' +
                'You may need to login or otherwise authenticate the request.'},
     status=status.HTTP_403_FORBIDDEN)
 
-_503_SERVICE_UNAVAILABLE = ErrorResponse(
+_503_SERVICE_UNAVAILABLE = ImmediateResponse(
     content={'detail': 'request was throttled'},
     status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
@@ -43,7 +43,7 @@ class BasePermission(object):
 
     def check_permission(self, auth):
         """
-        Should simply return, or raise an :exc:`response.ErrorResponse`.
+        Should simply return, or raise an :exc:`response.ImmediateResponse`.
         """
         pass
 
@@ -116,7 +116,7 @@ class BaseThrottle(BasePermission):
     def check_permission(self, auth):
         """
         Check the throttling.
-        Return `None` or raise an :exc:`.ErrorResponse`.
+        Return `None` or raise an :exc:`.ImmediateResponse`.
         """
         num, period = getattr(self.view, self.attr_name, self.default).split('/')
         self.num_requests = int(num)

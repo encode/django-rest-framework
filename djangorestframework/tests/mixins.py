@@ -6,7 +6,7 @@ from djangorestframework.compat import RequestFactory
 from django.contrib.auth.models import Group, User
 from djangorestframework.mixins import CreateModelMixin, PaginatorMixin, ReadModelMixin
 from djangorestframework.resources import ModelResource
-from djangorestframework.response import Response, ErrorResponse
+from djangorestframework.response import Response, ImmediateResponse
 from djangorestframework.tests.models import CustomUser
 from djangorestframework.tests.testcases import TestModelsTestCase
 from djangorestframework.views import View
@@ -41,7 +41,7 @@ class TestModelRead(TestModelsTestCase):
         mixin = ReadModelMixin()
         mixin.resource = GroupResource
 
-        self.assertRaises(ErrorResponse, mixin.get, request, id=12345)
+        self.assertRaises(ImmediateResponse, mixin.get, request, id=12345)
 
 
 class TestModelCreation(TestModelsTestCase):

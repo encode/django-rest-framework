@@ -17,7 +17,7 @@ from django.http.multipartparser import MultiPartParserError
 from django.utils import simplejson as json
 from djangorestframework import status
 from djangorestframework.compat import yaml
-from djangorestframework.response import ErrorResponse
+from djangorestframework.response import ImmediateResponse
 from djangorestframework.utils.mediatypes import media_type_matches
 from xml.etree import ElementTree as ET
 import datetime
@@ -88,7 +88,7 @@ class JSONParser(BaseParser):
         try:
             return (json.load(stream), None)
         except ValueError, exc:
-            raise ErrorResponse(
+            raise ImmediateResponse(
                 content={'detail': 'JSON parse error - %s' % unicode(exc)},
                 status=status.HTTP_400_BAD_REQUEST)
 
@@ -111,7 +111,7 @@ if yaml:
             try:
                 return (yaml.safe_load(stream), None)
             except ValueError, exc:
-                raise ErrorResponse(
+                raise ImmediateResponse(
                     content={'detail': 'YAML parse error - %s' % unicode(exc)},
                     status=status.HTTP_400_BAD_REQUEST)
 else:
@@ -172,7 +172,7 @@ class MultiPartParser(BaseParser):
         try:
             django_parser = DjangoMultiPartParser(self.view.META, stream, upload_handlers)
         except MultiPartParserError, exc:
-            raise ErrorResponse(
+            raise ImmediateResponse(
                 content={'detail': 'multipart parse error - %s' % unicode(exc)},
                 status=status.HTTP_400_BAD_REQUEST)
         return django_parser.parse()

@@ -13,7 +13,7 @@ from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 
 from djangorestframework.compat import View as DjangoView, apply_markdown
-from djangorestframework.response import Response, ErrorResponse
+from djangorestframework.response import Response, ImmediateResponse
 from djangorestframework.mixins import *
 from djangorestframework import resources, renderers, parsers, authentication, permissions, status
 
@@ -81,7 +81,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     or `None` to use default behaviour.
     """
 
-    renderers = renderers.DEFAULT_RENDERERS
+    renderer_classes = renderers.DEFAULT_RENDERERS
     """
     List of renderers the resource can serialize the response with, ordered by preference.
     """
@@ -172,7 +172,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         """
         Return an HTTP 405 error if an operation is called which does not have a handler method.
         """
-        raise ErrorResponse(content=
+        raise ImmediateResponse(content=
                 {'detail': 'Method \'%s\' not allowed on this resource.' % request.method},
             status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -232,13 +232,13 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             self.prepare_response(response)
 
             # Pre-serialize filtering (eg filter complex objects into natively serializable types)
-            # TODO: ugly
+            # TODO: ugly hack to handle both HttpResponse and Response. 
             if hasattr(response, 'raw_content'):
                 response.raw_content = self.filter_response(response.raw_content)
             else:
                 response.content = self.filter_response(response.content)
 
-        except ErrorResponse, response:
+        except ImmediateResponse, response:
             # Prepare response for the response cycle.
             self.prepare_response(response)
 
@@ -259,10 +259,10 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             for name, field in form.fields.iteritems():
                 field_name_types[name] = field.__class__.__name__
             content['fields'] = field_name_types
-        # Note 'ErrorResponse' is misleading, it's just any response
+        # Note 'ImmediateResponse' is misleading, it's just any response
         # that should be rendered and returned immediately, without any
         # response filtering.
-        raise ErrorResponse(content=content, status=status.HTTP_200_OK)
+        raise ImmediateResponse(content=content, status=status.HTTP_200_OK)
 
 
 class ModelView(View):

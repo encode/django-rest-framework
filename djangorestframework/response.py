@@ -1,8 +1,18 @@
 """
-The :mod:`response` module provides Response classes you can use in your
-views to return a certain HTTP response. Typically a response is *rendered*
-into a HTTP response depending on what renderers are set on your view and
-als depending on the accept header of the request.
+The :mod:`response` module provides :class:`Response` and :class:`ImmediateResponse` classes.
+
+`Response` is a subclass of `HttpResponse`, and can be similarly instantiated and returned
+from any view. It is a bit smarter than Django's `HttpResponse` though, for it knows how
+to use :mod:`renderers` to automatically render its content to a serial format.
+This is achieved by :
+
+    - determining the accepted types by checking for an overload or an `Accept` header in the request
+    - looking for a suitable renderer and using it on the content given at instantiation
+
+
+`ImmediateResponse` is an exception that inherits from `Response`. It can be used
+to abort the request handling (i.e. ``View.get``, ``View.put``, ...), 
+and immediately returning a response.
 """
 
 from django.template.response import SimpleTemplateResponse
@@ -13,7 +23,7 @@ from djangorestframework.utils import MSIE_USER_AGENT_REGEX
 from djangorestframework import status
 
 
-__all__ = ('Response', 'ErrorResponse')
+__all__ = ('Response', 'ImmediateResponse')
 
 
 class Response(SimpleTemplateResponse):
@@ -26,15 +36,16 @@ class Response(SimpleTemplateResponse):
 
     def __init__(self, content=None, status=None, request=None, renderers=None):
         """
-        content is the raw content.
+        `content` is the raw content, not yet serialized. This must be simple Python
+        data that renderers can handle (cf: dict, str, ...)
 
-        The set of renderers that the response can handle.
-
-        Should be a tuple/list of classes as described in the :mod:`renderers` module.
+        `renderers` is a list/tuple of renderer instances and represents the set of renderers
+        that the response can handle.
         """
         # First argument taken by `SimpleTemplateResponse.__init__` is template_name,
         # which we don't need
         super(Response, self).__init__(None, status=status)
+
         # We need to store our content in raw content to avoid overriding HttpResponse's
         # `content` property
         self.raw_content = content 
@@ -42,17 +53,14 @@ class Response(SimpleTemplateResponse):
         self.request = request
         if renderers is not None:
             self.renderers = renderers
-        # TODO: must go
-        self.view = None
 
-    # TODO: wrap this behavior around dispatch(), ensuring it works
-    # out of the box with existing Django classes that use render_to_response.
     @property
     def rendered_content(self):
         """
+        The final rendered content. Accessing this attribute triggers the complete rendering cycle : 
+        selecting suitable renderer, setting response's actual content type, rendering data.
         """
         renderer, media_type = self._determine_renderer()
-        # TODO: renderer *could* override media_type in .render() if required.
 
         # Set the media type of the response
         self['Content-Type'] = renderer.media_type
@@ -65,12 +73,20 @@ class Response(SimpleTemplateResponse):
     @property
     def status_text(self):
         """
-        Return reason text corresponding to our HTTP response status code.
+        Returns reason text corresponding to our HTTP response status code.
         Provided for convenience.
         """
         return STATUS_CODE_TEXT.get(self.status, '')
 
     def _determine_accept_list(self):
+        """
+        Returns a list of accepted media types. This list is determined from :
+        
+            1. overload with `_ACCEPT_QUERY_PARAM`
+            2. `Accept` header of the request 
+
+        If those are useless, a default value is returned instead.
+        """
         request = self.request
         if request is None:
             return ['*/*']
@@ -92,7 +108,7 @@ class Response(SimpleTemplateResponse):
 
     def _determine_renderer(self):
         """
-        Determines the appropriate renderer for the output, given the client's 'Accept' header,
+        Determines the appropriate renderer for the output, given the list of accepted media types,
         and the :attr:`renderers` set on this class.
 
         Returns a 2-tuple of `(renderer, media_type)`
@@ -103,16 +119,14 @@ class Response(SimpleTemplateResponse):
         # attempting more specific media types first
         # NB. The inner loop here isn't as bad as it first looks :)
         #     Worst case is we're looping over len(accept_list) * len(self.renderers)
-        renderers = [renderer_cls(self.view) for renderer_cls in self.renderers]
-
         for media_type_list in order_by_precedence(self._determine_accept_list()):
-            for renderer in renderers:
+            for renderer in self.renderers:
                 for media_type in media_type_list:
                     if renderer.can_handle_response(media_type):
                         return renderer, media_type
 
         # No acceptable renderers were found
-        raise ErrorResponse(content={'detail': 'Could not satisfy the client\'s Accept header',
+        raise ImmediateResponse(content={'detail': 'Could not satisfy the client\'s Accept header',
                                  'available_types': self._rendered_media_types},
                         status=status.HTTP_406_NOT_ACCEPTABLE,
                         renderers=self.renderers)
@@ -152,10 +166,9 @@ class Response(SimpleTemplateResponse):
         return self.renderers[0]
 
 
-class ErrorResponse(Response, BaseException):
+class ImmediateResponse(Response, BaseException):
     """
-    An exception representing an Response that should be returned immediately.
-    Any content should be serialized as-is, without being filtered.
+    A subclass of :class:`Response` used to abort the current request handling.
     """
     pass
 
