@@ -9,6 +9,7 @@ development
   - Easier to override.  Won't conflict with customised admin styles (eg grappelli)
 * Drop implied 'pk' filter if last arg in urlconf is unnamed.
   - Too magical.  Explict is better than implicit.
+* Tider setup.py
 * Bugfixes:
   - Bug with PerUserThrottling when user contains unicode chars.
 
