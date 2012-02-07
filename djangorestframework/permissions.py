@@ -13,6 +13,7 @@ __all__ = (
     'BasePermission',
     'FullAnonAccess',
     'IsAuthenticated',
+    'IsResourceOwnerOrIsAnonReadOnly',
     'IsAdminUser',
     'IsUserOrIsAnonReadOnly',
     'PerUserThrottling',
@@ -75,6 +76,25 @@ class IsAdminUser(BasePermission):
     def check_permission(self, user):
         if not user.is_staff:
             raise _403_FORBIDDEN_RESPONSE
+
+
+class IsResourceOwnerOrIsAnonReadOnly(BasePermission):
+    """
+    The request is authenticated as the owner of the resource, or is a read-only request.
+    """
+
+    def check_permission(self, user):
+
+        if self.view.method in('GET', 'HEAD',):
+            return
+
+        if not user.is_authenticated():
+            raise _403_FORBIDDEN_RESPONSE
+
+        if self.view.get_owner() == user:
+            return
+
+        raise _403_FORBIDDEN_RESPONSE
 
 
 class IsUserOrIsAnonReadOnly(BasePermission):

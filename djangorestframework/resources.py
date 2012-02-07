@@ -32,6 +32,12 @@ class BaseResource(Serializer):
         """
         return self.serialize(obj)
 
+    def get_owner(self):
+        """
+        Returns a Django User instance as the owner of the resource, if any.
+        """
+        return None
+
 
 class Resource(BaseResource):
     """
