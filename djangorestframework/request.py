@@ -1,10 +1,10 @@
 """
 The :mod:`request` module provides a :class:`Request` class that can be used 
-to enhance the standard `request` object received in all the views.
+to wrap the standard `request` object received in all the views, and upgrade its API.
 
-This enhanced request object offers the following :
+The wrapped request then offer the following :
 
-    - content automatically parsed according to `Content-Type` header, and available as :meth:`request.DATA<Request.DATA>`
+    - content automatically parsed according to `Content-Type` header, and available as :meth:`.DATA<Request.DATA>`
     - full support of PUT method, including support for file uploads
     - form overloading of HTTP method, content type and content
 """
@@ -22,21 +22,9 @@ from StringIO import StringIO
 __all__ = ('Request',)
 
 
-def request_class_factory(request):
-    """
-    Builds and returns a request class, to be used as a replacement of Django's built-in.
-    
-    In fact :class:`request.Request` needs to be mixed-in with a subclass of `HttpRequest` for use,
-    and we cannot do that before knowing which subclass of `HttpRequest` is used. So this function
-    takes a request instance as only argument, and returns a properly mixed-in request class.
-    """
-    request_class = type(request)
-    return type(request_class.__name__, (Request, request_class), {})
-
-
 class Request(object):
     """
-    A mixin class allowing to enhance Django's standard HttpRequest.
+    A wrapper allowing to enhance Django's standard HttpRequest.
     """
 
     _USE_FORM_OVERLOADING = True
@@ -44,24 +32,14 @@ class Request(object):
     _CONTENTTYPE_PARAM = '_content_type'
     _CONTENT_PARAM = '_content'
 
-    parsers = ()
-    """
-    The set of parsers that the request can handle.
-
-    Should be a tuple/list of classes as described in the :mod:`parsers` module.
-    """
-
-    def __init__(self, request):
-        # this allows to "copy" a request object into a new instance
-        # of our custom request class.
-
-        # First, we prepare the attributes to copy.
-        attrs_dict = request.__dict__.copy()
-        attrs_dict.pop('method', None)
-        attrs_dict['_raw_method'] = request.method
-
-        # Then, put them in the instance's own __dict__
-        self.__dict__ = attrs_dict
+    def __init__(self, request=None, parsers=None):
+        """
+        `parsers` is a list/tuple of parser instances and represents the set of psrsers
+        that the response can handle.
+        """
+        self.request = request
+        if parsers is not None:
+            self.parsers = parsers
 
     @property
     def method(self):
@@ -111,22 +89,6 @@ class Request(object):
             self._load_data_and_files()
         return self._files
 
-    def _load_post_and_files(self):
-        """
-        Overrides the parent's `_load_post_and_files` to isolate it 
-        from the form overloading mechanism (see: `_perform_form_overloading`).
-        """
-        # When self.POST or self.FILES are called they need to know the original
-        # HTTP method, not our overloaded HTTP method. So, we save our overloaded
-        # HTTP method and restore it after the call to parent.
-        method_mem = getattr(self, '_method', None)
-        self._method = self._raw_method
-        super(Request, self)._load_post_and_files()
-        if method_mem is None:
-            del self._method
-        else:
-            self._method = method_mem
-
     def _load_data_and_files(self):
         """
         Parses the request content into self.DATA and self.FILES.
@@ -145,7 +107,7 @@ class Request(object):
         self._perform_form_overloading()
         # if the HTTP method was not overloaded, we take the raw HTTP method 
         if not hasattr(self, '_method'):
-            self._method = self._raw_method
+            self._method = self.request.method
 
     def _get_stream(self):
         """
@@ -172,7 +134,8 @@ class Request(object):
         """
 
         # We only need to use form overloading on form POST requests.
-        if not self._USE_FORM_OVERLOADING or self._raw_method != 'POST' or not is_form_media_type(self._content_type):
+        if (not self._USE_FORM_OVERLOADING or self.request.method != 'POST'
+                                or not is_form_media_type(self._content_type)):
             return
 
         # At this point we're committed to parsing the request as form data.
@@ -199,10 +162,7 @@ class Request(object):
         if stream is None or content_type is None:
             return (None, None)
 
-        parsers = as_tuple(self.parsers)
-
-        for parser_cls in parsers:
-            parser = parser_cls(self)
+        for parser in as_tuple(self.parsers):
             if parser.can_handle_request(content_type):
                 return parser.parse(stream)
 
@@ -223,3 +183,26 @@ class Request(object):
         Return the view's default parser class.
         """
         return self.parsers[0]
+
+    def _get_parsers(self):
+        """
+        This just provides a default when parsers havent' been set.
+        """
+        if hasattr(self, '_parsers'):
+            return self._parsers
+        return ()
+
+    def _set_parsers(self, value):
+        self._parsers = value
+
+    parsers = property(_get_parsers, _set_parsers)
+
+    def __getattr__(self, name):
+        """
+        When an attribute is not present on the calling instance, try to get it
+        from the original request.
+        """
+        if hasattr(self.request, name):
+            return getattr(self.request, name)
+        else:
+            return super(Request, self).__getattribute__(name)

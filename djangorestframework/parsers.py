@@ -43,7 +43,7 @@ class BaseParser(object):
 
     media_type = None
 
-    def __init__(self, view):
+    def __init__(self, view=None):
         """
         Initialize the parser with the ``View`` instance as state,
         in case the parser needs to access any metadata on the :obj:`View` object.
@@ -167,10 +167,9 @@ class MultiPartParser(BaseParser):
         `data` will be a :class:`QueryDict` containing all the form parameters.
         `files` will be a :class:`QueryDict` containing all the form files.
         """
-        # TODO: now self.view is in fact request, but should disappear ...
-        upload_handlers = self.view._get_upload_handlers()
+        upload_handlers = self.view.request._get_upload_handlers()
         try:
-            django_parser = DjangoMultiPartParser(self.view.META, stream, upload_handlers)
+            django_parser = DjangoMultiPartParser(self.view.request.META, stream, upload_handlers)
         except MultiPartParserError, exc:
             raise ImmediateResponse(
                 content={'detail': 'multipart parse error - %s' % unicode(exc)},

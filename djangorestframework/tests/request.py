@@ -10,36 +10,19 @@ from djangorestframework.compat import RequestFactory
 from djangorestframework.mixins import RequestMixin
 from djangorestframework.parsers import FormParser, MultiPartParser, \
     PlainTextParser, JSONParser
+from djangorestframework.request import Request
 from djangorestframework.response import Response
 from djangorestframework.request import Request
 from djangorestframework.views import View
-from djangorestframework.request import request_class_factory
-
-class MockView(View):
-    authentication = (UserLoggedInAuthentication,)
-    def post(self, request):
-        if request.POST.get('example') is not None:
-            return Response(status=status.HTTP_200_OK)
-
-        return Response(status=status.INTERNAL_SERVER_ERROR)
-
-urlpatterns = patterns('',
-    (r'^$', MockView.as_view()),
-)
-
-request_class = request_class_factory(RequestFactory().get('/'))
 
 
 class RequestTestCase(TestCase):
-
-    def tearDown(self):
-        request_class.parsers = ()
 
     def build_request(self, method, *args, **kwargs):
         factory = RequestFactory()
         method = getattr(factory, method)
         original_request = method(*args, **kwargs)
-        return request_class(original_request)
+        return Request(original_request)
 
 
 class TestMethodOverloading(RequestTestCase):
@@ -67,14 +50,22 @@ class TestMethodOverloading(RequestTestCase):
 
 class TestContentParsing(RequestTestCase):
 
-    def tearDown(self):
-        request_class.parsers = ()
-
     def build_request(self, method, *args, **kwargs):
         factory = RequestFactory()
+        parsers = kwargs.pop('parsers', None)
         method = getattr(factory, method)
         original_request = method(*args, **kwargs)
-        return request_class(original_request)
+        rkwargs = {}
+        if parsers is not None:
+            rkwargs['parsers'] = parsers
+        request = Request(original_request, **rkwargs)
+        # TODO: Just a hack because the parsers need a view. This will be fixed in the future
+        class Obj(object): pass
+        obj = Obj()
+        obj.request = request
+        for p in request.parsers:
+            p.view = obj
+        return request
     
     def test_standard_behaviour_determines_no_content_GET(self):
         """Ensure request.DATA returns None for GET request with no content."""
@@ -89,31 +80,35 @@ class TestContentParsing(RequestTestCase):
     def test_standard_behaviour_determines_form_content_POST(self):
         """Ensure request.DATA returns content for POST request with form content."""
         form_data = {'qwerty': 'uiop'}
-        request_class.parsers = (FormParser, MultiPartParser)
-        request = self.build_request('post', '/', data=form_data)
+        parsers = (FormParser(), MultiPartParser())
+
+        request = self.build_request('post', '/', data=form_data, parsers=parsers)
         self.assertEqual(request.DATA.items(), form_data.items())
 
     def test_standard_behaviour_determines_non_form_content_POST(self):
         """Ensure request.DATA returns content for POST request with non-form content."""
         content = 'qwerty'
         content_type = 'text/plain'
-        request_class.parsers = (PlainTextParser,)
-        request = self.build_request('post', '/', content, content_type=content_type)
+        parsers = (PlainTextParser(),)
+
+        request = self.build_request('post', '/', content, content_type=content_type, parsers=parsers)
         self.assertEqual(request.DATA, content)
 
     def test_standard_behaviour_determines_form_content_PUT(self):
         """Ensure request.DATA returns content for PUT request with form content."""
         form_data = {'qwerty': 'uiop'}
-        request_class.parsers = (FormParser, MultiPartParser)
-        request = self.build_request('put', '/', data=form_data)
+        parsers = (FormParser(), MultiPartParser())
+
+        request = self.build_request('put', '/', data=form_data, parsers=parsers)
         self.assertEqual(request.DATA.items(), form_data.items())
 
     def test_standard_behaviour_determines_non_form_content_PUT(self):
         """Ensure request.DATA returns content for PUT request with non-form content."""
         content = 'qwerty'
         content_type = 'text/plain'
-        request_class.parsers = (PlainTextParser,)
-        request = self.build_request('put', '/', content, content_type=content_type)
+        parsers = (PlainTextParser(),)
+
+        request = self.build_request('put', '/', content, content_type=content_type, parsers=parsers)
         self.assertEqual(request.DATA, content)
 
     def test_overloaded_behaviour_allows_content_tunnelling(self):
@@ -122,16 +117,17 @@ class TestContentParsing(RequestTestCase):
         content_type = 'text/plain'
         form_data = {Request._CONTENT_PARAM: content,
                      Request._CONTENTTYPE_PARAM: content_type}
-        request_class.parsers = (PlainTextParser,)
-        request = self.build_request('post', '/', form_data)
+        parsers = (PlainTextParser(),)
+
+        request = self.build_request('post', '/', form_data, parsers=parsers)
         self.assertEqual(request.DATA, content)
 
     def test_accessing_post_after_data_form(self):
         """Ensures request.POST can be accessed after request.DATA in form request"""
         form_data = {'qwerty': 'uiop'}
-        request_class.parsers = (FormParser, MultiPartParser)
-        request = self.build_request('post', '/', data=form_data)
+        parsers = (FormParser(), MultiPartParser())
 
+        request = self.build_request('post', '/', data=form_data)
         self.assertEqual(request.DATA.items(), form_data.items())
         self.assertEqual(request.POST.items(), form_data.items())
 
@@ -142,11 +138,9 @@ class TestContentParsing(RequestTestCase):
         data = {'qwerty': 'uiop'}
         content = json.dumps(data)
         content_type = 'application/json'
+        parsers = (JSONParser(),)
 
-        request_class.parsers = (JSONParser,)
-
-        request = self.build_request('post', '/', content, content_type=content_type)
-
+        request = self.build_request('post', '/', content, content_type=content_type, parsers=parsers)
         self.assertEqual(request.DATA.items(), data.items())
         self.assertEqual(request.POST.items(), [])
 
@@ -157,22 +151,19 @@ class TestContentParsing(RequestTestCase):
         data = {'qwerty': 'uiop'}
         content = json.dumps(data)
         content_type = 'application/json'
-
-        request_class.parsers = (JSONParser,)
-
+        parsers = (JSONParser(),)
         form_data = {Request._CONTENT_PARAM: content,
                      Request._CONTENTTYPE_PARAM: content_type}
 
-        request = self.build_request('post', '/', data=form_data)
-
+        request = self.build_request('post', '/', data=form_data, parsers=parsers)
         self.assertEqual(request.DATA.items(), data.items())
         self.assertEqual(request.POST.items(), form_data.items())
 
     def test_accessing_data_after_post_form(self):
         """Ensures request.DATA can be accessed after request.POST in form request"""
         form_data = {'qwerty': 'uiop'}
-        request_class.parsers = (FormParser, MultiPartParser)
-        request = self.build_request('post', '/', data=form_data)
+        parsers = (FormParser, MultiPartParser)
+        request = self.build_request('post', '/', data=form_data, parsers=parsers)
 
         self.assertEqual(request.POST.items(), form_data.items())
         self.assertEqual(request.DATA.items(), form_data.items())
@@ -184,11 +175,9 @@ class TestContentParsing(RequestTestCase):
         data = {'qwerty': 'uiop'}
         content = json.dumps(data)
         content_type = 'application/json'
+        parsers = (JSONParser(),)
 
-        request_class.parsers = (JSONParser,)
-
-        request = self.build_request('post', '/', content, content_type=content_type)
-
+        request = self.build_request('post', '/', content, content_type=content_type, parsers=parsers)
         post_items = request.POST.items()
 
         self.assertEqual(len(post_items), 1)
@@ -203,15 +192,26 @@ class TestContentParsing(RequestTestCase):
         data = {'qwerty': 'uiop'}
         content = json.dumps(data)
         content_type = 'application/json'
-
-        request_class.parsers = (JSONParser,)
-
+        parsers = (JSONParser(),)
         form_data = {Request._CONTENT_PARAM: content,
                      Request._CONTENTTYPE_PARAM: content_type}
 
-        request = self.build_request('post', '/', data=form_data)
+        request = self.build_request('post', '/', data=form_data, parsers=parsers)
         self.assertEqual(request.POST.items(), form_data.items())
         self.assertEqual(request.DATA.items(), data.items())
+
+
+class MockView(View):
+    authentication = (UserLoggedInAuthentication,)
+    def post(self, request):
+        if request.POST.get('example') is not None:
+            return Response(status=status.HTTP_200_OK)
+
+        return Response(status=status.INTERNAL_SERVER_ERROR)
+
+urlpatterns = patterns('',
+    (r'^$', MockView.as_view()),
+)
 
 
 class TestContentParsingWithAuthentication(TestCase):

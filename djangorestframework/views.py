@@ -83,12 +83,12 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
     renderer_classes = renderers.DEFAULT_RENDERERS
     """
-    List of renderers the resource can serialize the response with, ordered by preference.
+    List of renderer classes the resource can serialize the response with, ordered by preference.
     """
 
-    parsers = parsers.DEFAULT_PARSERS
+    parser_classes = parsers.DEFAULT_PARSERS
     """
-    List of parsers the resource can parse the request with.
+    List of parser classes the resource can parse the request with.
     """
 
     authentication = (authentication.UserLoggedInAuthentication,
@@ -210,7 +210,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
         try:
             # Get a custom request, built form the original request instance
-            self.request = request = self.get_request()
+            request = self.prepare_request(request)
 
             # `initial` is the opportunity to temper with the request, 
             # even completely replace it.
@@ -229,7 +229,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             response = handler(request, *args, **kwargs)
 
             # Prepare response for the response cycle.
-            self.prepare_response(response)
+            response = self.prepare_response(response)
 
             # Pre-serialize filtering (eg filter complex objects into natively serializable types)
             # TODO: ugly hack to handle both HttpResponse and Response. 
@@ -251,7 +251,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             'name': self.get_name(),
             'description': self.get_description(),
             'renders': self._rendered_media_types,
-            'parses': request._parsed_media_types,
+            'parses': self._parsed_media_types,
         }
         form = self.get_bound_form()
         if form is not None:

@@ -12,7 +12,7 @@ from djangorestframework import status
 from djangorestframework.renderers import BaseRenderer
 from djangorestframework.resources import Resource, FormResource, ModelResource
 from djangorestframework.response import Response, ImmediateResponse
-from djangorestframework.request import request_class_factory
+from djangorestframework.request import Request
 from djangorestframework.utils import as_tuple, allowed_methods
 
 
@@ -32,7 +32,6 @@ __all__ = (
     'ListModelMixin'
 )
 
-#TODO: In RequestMixin and ResponseMixin : get_response_class/get_request_class are a bit ugly. Do we even want to be able to set the parameters on the view ?
 
 ########## Request Mixin ##########
 
@@ -41,39 +40,43 @@ class RequestMixin(object):
     `Mixin` class to enhance API of Django's standard `request`.
     """
 
-    _USE_FORM_OVERLOADING = True
-    _METHOD_PARAM = '_method'
-    _CONTENTTYPE_PARAM = '_content_type'
-    _CONTENT_PARAM = '_content'
-
-    parsers = ()
+    parser_classes = ()
     """
-    The set of parsers that the request can handle.
+    The set of parsers that the view can handle.
 
     Should be a tuple/list of classes as described in the :mod:`parsers` module.
     """
 
-    def get_request_class(self):
-        """
-        Returns a subclass of Django's `HttpRequest` with a richer API,
-        as described in :mod:`request`.
-        """
-        if not hasattr(self, '_request_class'):
-            self._request_class = request_class_factory(self.request)
-            self._request_class._USE_FORM_OVERLOADING = self._USE_FORM_OVERLOADING
-            self._request_class._METHOD_PARAM = self._METHOD_PARAM
-            self._request_class._CONTENTTYPE_PARAM = self._CONTENTTYPE_PARAM
-            self._request_class._CONTENT_PARAM = self._CONTENT_PARAM
-            self._request_class.parsers = self.parsers
-        return self._request_class
+    request_class = Request
+    """
+    The class to use as a wrapper for the original request object.
+    """
 
-    def get_request(self):
+    def get_parsers(self):
         """
-        Returns a custom request instance, with data and attributes copied from the
-        original request.
+        Instantiates and returns the list of parsers that will be used by the request
+        to parse its content.
         """
-        request_class = self.get_request_class()
-        return request_class(self.request)
+        if not hasattr(self, '_parsers'):
+            self._parsers = [r(self) for r in self.parser_classes]
+        return self._parsers
+
+    def prepare_request(self, request):
+        """
+        Prepares the request for the request cycle. Returns a custom request instance,
+        with data and attributes copied from the original request.
+        """
+        parsers = self.get_parsers()
+        request = self.request_class(request, parsers=parsers)
+        self.request = request
+        return request
+
+    @property
+    def _parsed_media_types(self):
+        """
+        Return a list of all the media types that this view can parse.
+        """
+        return [p.media_type for p in self.parser_classes]
         
 
 ########## ResponseMixin ##########
@@ -105,8 +108,8 @@ class ResponseMixin(object):
 
     def prepare_response(self, response):
         """
-        Prepares the response for the response cycle. This has no effect if the 
-        response is not an instance of :class:`response.Response`.
+        Prepares the response for the response cycle, and returns the prepared response. 
+        This has no effect if the response is not an instance of :class:`response.Response`.
         """
         if hasattr(response, 'request') and response.request is None:
             response.request = self.request
@@ -125,6 +128,17 @@ class ResponseMixin(object):
         return response
 
     @property
+    def headers(self):
+        """
+        Dictionary of headers to set on the response.
+        This is useful when the response doesn't exist yet, but you
+        want to memorize some headers to set on it when it will exist.
+        """
+        if not hasattr(self, '_headers'):
+            self._headers = {}
+        return self._headers
+
+    @property
     def _rendered_media_types(self):
         """
         Return an list of all the media types that this view can render.
@@ -137,24 +151,6 @@ class ResponseMixin(object):
         Return a list of all the formats that this view can render.
         """
         return [renderer.format for renderer in self.get_renderers()]
-
-    @property
-    def _default_renderer(self):
-        """
-        Return the view's default renderer class.
-        """
-        return self.get_renderers()[0]
-
-    @property
-    def headers(self):
-        """
-        Dictionary of headers to set on the response.
-        This is useful when the response doesn't exist yet, but you
-        want to memorize some headers to set on it when it will exist.
-        """
-        if not hasattr(self, '_headers'):
-            self._headers = {}
-        return self._headers
 
 
 ########## Auth Mixin ##########
