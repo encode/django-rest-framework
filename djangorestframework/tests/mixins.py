@@ -30,7 +30,7 @@ class TestModelRead(TestModelsTestCase):
         mixin = ReadModelMixin()
         mixin.resource = GroupResource
 
-        response = mixin.get(request, group.id)
+        response = mixin.get(request, id=group.id)
         self.assertEquals(group.name, response.name)
 
     def test_read_404(self):
@@ -41,7 +41,7 @@ class TestModelRead(TestModelsTestCase):
         mixin = ReadModelMixin()
         mixin.resource = GroupResource
 
-        self.assertRaises(ErrorResponse, mixin.get, request, 12345)
+        self.assertRaises(ErrorResponse, mixin.get, request, id=12345)
 
 
 class TestModelCreation(TestModelsTestCase):
@@ -280,3 +280,12 @@ class TestPagination(TestCase):
         self.assertTrue('foo=bar' in content['next'])
         self.assertTrue('another=something' in content['next'])
         self.assertTrue('page=2' in content['next'])
+
+    def test_duplicate_parameters_are_not_created(self):
+        """ Regression: ensure duplicate "page" parameters are not added to
+        paginated URLs. So page 1 should contain ?page=2, not ?page=1&page=2 """
+        request = self.req.get('/paginator/?page=1')
+        response = MockPaginatorView.as_view()(request)
+        content = json.loads(response.content)
+        self.assertTrue('page=2' in content['next'])
+        self.assertFalse('page=1' in content['next'])

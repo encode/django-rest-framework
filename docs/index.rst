@@ -105,6 +105,8 @@ The following example exposes your `MyModel` model through an api. It will provi
 
   contents
 
+.. include:: ../CHANGELOG.rst
+
 Indices and tables
 ------------------
 
