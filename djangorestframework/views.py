@@ -173,7 +173,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         """
         Return an HTTP 405 error if an operation is called which does not have a handler method.
         """
-        raise ImmediateResponse(content=
+        raise ImmediateResponse(
                 {'detail': 'Method \'%s\' not allowed on this resource.' % request.method},
             status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -199,6 +199,12 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         """
         # Restore script_prefix.
         set_script_prefix(self.orig_prefix)
+
+        # Always add these headers.
+        response['Allow'] = ', '.join(allowed_methods(self))
+        # sample to allow caching using Vary http header
+        response['Vary'] = 'Authenticate, Accept'
+
         return response
 
     # Note: session based authentication is explicitly CSRF validated,
@@ -211,7 +217,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
         try:
             # Get a custom request, built form the original request instance
-            request = self.prepare_request(request)
+            self.request = request = self.create_request(request)
 
             # `initial` is the opportunity to temper with the request, 
             # even completely replace it.
@@ -230,7 +236,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             response = handler(request, *args, **kwargs)
 
             # Prepare response for the response cycle.
-            response = self.prepare_response(response)
+            self.response = response = self.prepare_response(response)
 
             # Pre-serialize filtering (eg filter complex objects into natively serializable types)
             # TODO: ugly hack to handle both HttpResponse and Response. 
@@ -241,7 +247,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
         except ImmediateResponse, response:
             # Prepare response for the response cycle.
-            self.prepare_response(response)
+            self.response = response = self.prepare_response(response)
 
         # `final` is the last opportunity to temper with the response, or even
         # completely replace it.
@@ -260,10 +266,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             for name, field in form.fields.iteritems():
                 field_name_types[name] = field.__class__.__name__
             content['fields'] = field_name_types
-        # Note 'ImmediateResponse' is misleading, it's just any response
-        # that should be rendered and returned immediately, without any
-        # response filtering.
-        raise ImmediateResponse(content=content, status=status.HTTP_200_OK)
+        raise ImmediateResponse(content, status=status.HTTP_200_OK)
 
 
 class ModelView(View):

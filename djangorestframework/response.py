@@ -125,7 +125,7 @@ class Response(SimpleTemplateResponse):
                         return renderer, media_type
 
         # No acceptable renderers were found
-        raise ImmediateResponse(content={'detail': 'Could not satisfy the client\'s Accept header',
+        raise ImmediateResponse({'detail': 'Could not satisfy the client\'s Accept header',
                                  'available_types': self._rendered_media_types},
                         status=status.HTTP_406_NOT_ACCEPTABLE,
                         renderers=self.renderers)

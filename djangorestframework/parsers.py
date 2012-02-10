@@ -89,7 +89,7 @@ class JSONParser(BaseParser):
             return (json.load(stream), None)
         except ValueError, exc:
             raise ImmediateResponse(
-                content={'detail': 'JSON parse error - %s' % unicode(exc)},
+                {'detail': 'JSON parse error - %s' % unicode(exc)},
                 status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -112,7 +112,7 @@ if yaml:
                 return (yaml.safe_load(stream), None)
             except ValueError, exc:
                 raise ImmediateResponse(
-                    content={'detail': 'YAML parse error - %s' % unicode(exc)},
+                    {'detail': 'YAML parse error - %s' % unicode(exc)},
                     status=status.HTTP_400_BAD_REQUEST)
 else:
     YAMLParser = None
@@ -172,7 +172,7 @@ class MultiPartParser(BaseParser):
             django_parser = DjangoMultiPartParser(self.view.request.META, stream, upload_handlers)
         except MultiPartParserError, exc:
             raise ImmediateResponse(
-                content={'detail': 'multipart parse error - %s' % unicode(exc)},
+                {'detail': 'multipart parse error - %s' % unicode(exc)},
                 status=status.HTTP_400_BAD_REQUEST)
         return django_parser.parse()
 

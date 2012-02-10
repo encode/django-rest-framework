@@ -174,7 +174,7 @@ class FormResource(Resource):
                 detail[u'field_errors'] = field_errors
 
         # Return HTTP 400 response (BAD REQUEST)
-        raise ImmediateResponse(content=detail, status=400)
+        raise ImmediateResponse(detail, status=400)
 
     def get_form_class(self, method=None):
         """

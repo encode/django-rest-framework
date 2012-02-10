@@ -43,7 +43,6 @@ class RequestMixin(object):
     parser_classes = ()
     """
     The set of parsers that the view can handle.
-
     Should be a tuple/list of classes as described in the :mod:`parsers` module.
     """
 
@@ -54,22 +53,18 @@ class RequestMixin(object):
 
     def get_parsers(self):
         """
-        Instantiates and returns the list of parsers that will be used by the request
-        to parse its content.
+        Instantiates and returns the list of parsers the request will use.
         """
-        if not hasattr(self, '_parsers'):
-            self._parsers = [p(self) for p in self.parser_classes]
-        return self._parsers
+        return [p(self) for p in self.parser_classes]
 
-    def prepare_request(self, request):
+    def create_request(self, request):
         """
-        Prepares the request cycle. Returns an instance of :class:`request.Request`,
-        wrapping the original request object.
+        Creates and returns an instance of :class:`request.Request`.
+        This new instance wraps the `request` passed as a parameter, and use the 
+        parsers set on the view.
         """
         parsers = self.get_parsers()
-        request = self.request_class(request, parsers=parsers)
-        self.request = request
-        return request
+        return self.request_class(request, parsers=parsers)
 
     @property
     def _parsed_media_types(self):
@@ -89,38 +84,29 @@ class ResponseMixin(object):
     renderer_classes = ()
     """
     The set of response renderers that the view can handle.
-
     Should be a tuple/list of classes as described in the :mod:`renderers` module.
     """
 
     def get_renderers(self):
         """
-        Instantiates and returns the list of renderers that will be used to render
-        the response.
+        Instantiates and returns the list of renderers the response will use.
         """
-        if not hasattr(self, '_renderers'):
-            self._renderers = [r(self) for r in self.renderer_classes]
-        return self._renderers
+        return [r(self) for r in self.renderer_classes]
 
     def prepare_response(self, response):
         """
-        Prepares and returns `response`. 
+        Prepares and returns `response`.
         This has no effect if the response is not an instance of :class:`response.Response`.
         """
         if hasattr(response, 'request') and response.request is None:
             response.request = self.request
 
-        # Always add these headers.
-        response['Allow'] = ', '.join(allowed_methods(self))
-        # sample to allow caching using Vary http header
-        response['Vary'] = 'Authenticate, Accept'
-        # merge with headers possibly set at some point in the view
+        # set all the cached headers
         for name, value in self.headers.items():
             response[name] = value
 
         # set the views renderers on the response
         response.renderers = self.get_renderers()
-        self.response = response
         return response
 
     @property
@@ -571,12 +557,12 @@ class PaginatorMixin(object):
             page_num = int(self.request.GET.get('page', '1'))
         except ValueError:
             raise ImmediateResponse(
-                content={'detail': 'That page contains no results'},
+                {'detail': 'That page contains no results'},
                 status=status.HTTP_404_NOT_FOUND)
 
         if page_num not in paginator.page_range:
             raise ImmediateResponse(
-                content={'detail': 'That page contains no results'},
+                {'detail': 'That page contains no results'},
                 status=status.HTTP_404_NOT_FOUND)
 
         page = paginator.page(page_num)

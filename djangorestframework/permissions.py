@@ -22,12 +22,12 @@ __all__ = (
 
 
 _403_FORBIDDEN_RESPONSE = ImmediateResponse(
-    content={'detail': 'You do not have permission to access this resource. ' +
+    {'detail': 'You do not have permission to access this resource. ' +
                'You may need to login or otherwise authenticate the request.'},
     status=status.HTTP_403_FORBIDDEN)
 
 _503_SERVICE_UNAVAILABLE = ImmediateResponse(
-    content={'detail': 'request was throttled'},
+    {'detail': 'request was throttled'},
     status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
