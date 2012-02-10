@@ -311,7 +311,7 @@ class ModelResource(FormResource):
         # Instantiate the ModelForm as appropriate
         form_kwargs = {'data': data, 'files': files}
          # Bound to an existing model instance
-        if issubclass(form, forms.ModelForm) and if hasattr(self.view, 'model_instance'): form_kwargs['instance'] = self.view.model_instance
+        if hasattr(self.view, 'model_instance'): form_kwargs['instance'] = self.view.model_instance
 
         return form(**form_kwargs)
 
