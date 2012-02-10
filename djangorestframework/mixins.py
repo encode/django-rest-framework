@@ -361,14 +361,14 @@ class AuthMixin(object):
         return AnonymousUser()
 
     # TODO: wrap this behavior around dispatch()
-    def _check_permissions(self):
+    def _check_permissions(self, test_methods=None):
         """
         Check user permissions and either raise an ``ErrorResponse`` or return.
         """
         user = self.user
         for permission_cls in self.permissions:
             permission = permission_cls(self)
-            permission.check_permission(user)
+            permission.check_permission(user, test_methods=test_methods)
 
 
 ########## Resource Mixin ##########
