@@ -2,7 +2,7 @@ from djangorestframework.views import View
 from djangorestframework.response import Response
 
 
-class MockView(View):
+class ProxyView(View):
     """
     A view that just acts as a proxy to call non-djangorestframework views, while still
     displaying the browsable API interface.
@@ -11,10 +11,10 @@ class MockView(View):
     view_class = None
 
     def dispatch(self, request, *args, **kwargs):
-        request = self.prepare_request(request)
+        self.request = request = self.create_request(request)
         if request.method in ['PUT', 'POST']:
             self.response = self.view_class.as_view()(request, *args, **kwargs)
-        return super(MockView, self).dispatch(request, *args, **kwargs)
+        return super(ProxyView, self).dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         return Response()
@@ -31,4 +31,4 @@ class MockView(View):
         elif name == '__doc__':
             return self.view_class.__doc__
         else:
-            return super(MockView, self).__getattribute__(name)
+            return super(ProxyView, self).__getattribute__(name)

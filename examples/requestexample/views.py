@@ -25,7 +25,7 @@ class MyBaseViewUsingEnhancedRequest(RequestMixin, View):
     parser_classes = parsers.DEFAULT_PARSERS
 
     def dispatch(self, request, *args, **kwargs):
-        request = self.prepare_request(request)
+        self.request = request = self.create_request(request)
         return super(MyBaseViewUsingEnhancedRequest, self).dispatch(request, *args, **kwargs)
 
 

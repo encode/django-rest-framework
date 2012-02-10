@@ -355,7 +355,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
             'login_url': login_url,
             'logout_url': logout_url,
             'FORMAT_PARAM': self._FORMAT_QUERY_PARAM,
-            'METHOD_PARAM': getattr(self.view, '_METHOD_PARAM', None),
+            'METHOD_PARAM': getattr(self.view.request, '_METHOD_PARAM', None),
             'ADMIN_MEDIA_PREFIX': getattr(settings, 'ADMIN_MEDIA_PREFIX', None),
         })
 

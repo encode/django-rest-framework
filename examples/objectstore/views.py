@@ -67,7 +67,7 @@ class StoredObject(View):
         """
         pathname = os.path.join(OBJECT_STORE_DIR, key)
         if not os.path.exists(pathname):
-            return Response(status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(pickle.load(open(pathname, 'rb')))
 
     def put(self, request, key):
@@ -84,6 +84,6 @@ class StoredObject(View):
         """
         pathname = os.path.join(OBJECT_STORE_DIR, key)
         if not os.path.exists(pathname):
-            return Response(status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_404_NOT_FOUND)
         os.remove(pathname)
         return Response()

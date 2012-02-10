@@ -41,7 +41,7 @@
 	    <h1>{{ name }}</h1>
 	    <p>{{ description }}</p>
 	    <div class='module'>
-	    <pre><b>{{ response.status }} {{ response.status_text }}</b>{% autoescape off %}
+	    <pre><b>{{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
 {% for key, val in response.headers.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
 {% endfor %}
 {{ content|urlize_quoted_links }}</pre>{% endautoescape %}</div>
@@ -63,7 +63,7 @@
 	{% endif %}
 
 	{# Only display the POST/PUT/DELETE forms if method tunneling via POST forms is enabled and the user has permissions on this view. #}
-	{% if METHOD_PARAM and response.status != 403 %}
+	{% if METHOD_PARAM and response.status_code != 403 %}
 
 		{% if 'POST' in view.allowed_methods %}
 				<form action="{{ request.get_full_path }}" method="post" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>

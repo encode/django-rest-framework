@@ -81,7 +81,8 @@ class PygmentsRoot(View):
 
         remove_oldest_files(HIGHLIGHTED_CODE_DIR, MAX_FILES)
 
-        return Response(status.HTTP_201_CREATED, headers={'Location': reverse('pygments-instance', args=[unique_id])})
+        self.headers['Location'] = reverse('pygments-instance', args=[unique_id])
+        return Response(status.HTTP_201_CREATED)
 
 
 class PygmentsInstance(View):

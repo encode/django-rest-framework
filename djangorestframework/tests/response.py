@@ -139,7 +139,8 @@ class MockView(ResponseMixin, DjangoView):
 
     def get(self, request, **kwargs):
         response = Response(DUMMYCONTENT, status=DUMMYSTATUS)
-        return self.prepare_response(response)
+        self.response = self.prepare_response(response)
+        return self.response
 
 
 class HTMLView(View):
