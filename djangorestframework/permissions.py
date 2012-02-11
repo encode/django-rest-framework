@@ -20,6 +20,8 @@ __all__ = (
     'PerResourceThrottling'
 )
 
+SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
+
 
 _403_FORBIDDEN_RESPONSE = ErrorResponse(
     status.HTTP_403_FORBIDDEN,
@@ -84,8 +86,7 @@ class IsUserOrIsAnonReadOnly(BasePermission):
 
     def check_permission(self, user):
         if (not user.is_authenticated() and
-            self.view.method != 'GET' and
-            self.view.method != 'HEAD'):
+            self.view.method not in SAFE_METHODS):
             raise _403_FORBIDDEN_RESPONSE
 
 
