@@ -89,6 +89,48 @@ class IsUserOrIsAnonReadOnly(BasePermission):
             raise _403_FORBIDDEN_RESPONSE
 
 
+class DjangoModelPermisson(BasePermission):
+    """
+    The request is authenticated against the Django user's permissions on the
+    `Resource`'s `Model`, if the resource is a `ModelResource`. 
+    """
+
+    def check_permission(self, user):
+
+        # GET-style methods are always allowed.
+        if self.view.request.method in ('GET', 'OPTIONS', 'HEAD',):
+            return
+
+        klass = self.view.resource.model
+
+        # If it doesn't look like a model, we can't check permissions.
+        if not klass or not getattr(klass, '_meta', None):
+            return
+
+        # User must be logged in to check permissions.
+        if not hasattr(self.view.request, 'user') or not self.view.request.user.is_authenticated():
+            raise _403_FORBIDDEN_RESPONSE
+
+        permission_map = {
+            'POST': ['%s.add_%s'],
+            'PUT': ['%s.change_%s'],
+            'DELETE': ['%s.delete_%s'],
+            'PATCH': ['%s.add_%s', '%s.change_%s', '%s.delete_%s'],
+        }
+        permission_codes = []
+
+        # If we don't recognize the HTTP method, we don't know what
+        # permissions to check. Deny.
+        if self.view.request.method not in permission_map:
+            raise _403_FORBIDDEN_RESPONSE
+
+        for perm in permission_map[self.view.request.method]:
+            permission_codes.append(perm % (klass._meta.app_label, klass._meta.module_name))
+
+        if not self.view.request.user.has_perms(permission_codes):
+            raise _403_FORBIDDEN_RESPONSE
+
+
 class BaseThrottle(BasePermission):
     """
     Rate throttling of requests.
