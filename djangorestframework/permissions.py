@@ -99,15 +99,15 @@ class DjangoModelPermisson(BasePermission):
         if self.view.request.method in ('GET', 'OPTIONS', 'HEAD',):
             return
 
-        # User must be logged in to check permissions.
-        if not hasattr(self.view.request, 'user') or not self.view.request.user.is_authenticated():
-            raise _403_FORBIDDEN_RESPONSE
-
         klass = self.view.resource.model
 
         # If it doesn't look like a model, we can't check permissions.
         if not klass or not getattr(klass, '_meta', None):
             return
+
+        # User must be logged in to check permissions.
+        if not hasattr(self.view.request, 'user') or not self.view.request.user.is_authenticated():
+            raise _403_FORBIDDEN_RESPONSE
 
         permission_map = {
             'POST': ['%s.add_%s'],
