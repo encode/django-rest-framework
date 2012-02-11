@@ -65,7 +65,7 @@
 	{# Only display the POST/PUT/DELETE forms if method tunneling via POST forms is enabled and the user has permissions on this view. #}
 	{% if METHOD_PARAM and response.status != 403 %}
 
-		{% if 'POST' in view.allowed_methods %}
+		{% if 'POST' in view.allowed_methods and post_form %}
 				<form action="{{ request.get_full_path }}" method="post" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
 				<fieldset class='module aligned'>
 					<h2>POST {{ name }}</h2>
@@ -86,7 +86,7 @@
 				</form>
 		{% endif %}
 
-		{% if 'PUT' in view.allowed_methods %}
+		{% if 'PUT' in view.allowed_methods and put_form %}
 				<form action="{{ request.get_full_path }}" method="post" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
 				<fieldset class='module aligned'>
 					<h2>PUT {{ name }}</h2>

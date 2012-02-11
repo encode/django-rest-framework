@@ -41,7 +41,7 @@ class BasePermission(object):
         """
         self.view = view
 
-    def check_permission(self, auth):
+    def check_permission(self, auth, test_methods=None, **kwargs):
         """
         Should simply return, or raise an :exc:`response.ErrorResponse`.
         """
@@ -53,7 +53,7 @@ class FullAnonAccess(BasePermission):
     Allows full access.
     """
 
-    def check_permission(self, user):
+    def check_permission(self, user, test_methods=None, **kwargs):
         pass
 
 
@@ -62,7 +62,7 @@ class IsAuthenticated(BasePermission):
     Allows access only to authenticated users.
     """
 
-    def check_permission(self, user):
+    def check_permission(self, user, test_methods=None, **kwargs):
         if not user.is_authenticated():
             raise _403_FORBIDDEN_RESPONSE
 
@@ -72,7 +72,7 @@ class IsAdminUser(BasePermission):
     Allows access only to admin users.
     """
 
-    def check_permission(self, user):
+    def check_permission(self, user, test_methods=None, **kwargs):
         if not user.is_staff:
             raise _403_FORBIDDEN_RESPONSE
 
@@ -82,10 +82,9 @@ class IsUserOrIsAnonReadOnly(BasePermission):
     The request is authenticated as a user, or is a read-only request.
     """
 
-    def check_permission(self, user):
-        if (not user.is_authenticated() and
-            self.view.method != 'GET' and
-            self.view.method != 'HEAD'):
+    def check_permission(self, user, test_methods=None, **kwargs):
+        if not test_methods: test_methods = [self.view.method]
+        if not user.is_authenticated() and not set(['GET', 'HEAD']).issuperset(test_methods):
             raise _403_FORBIDDEN_RESPONSE
 
 
@@ -160,11 +159,15 @@ class BaseThrottle(BasePermission):
         """
         pass
 
-    def check_permission(self, auth):
+    def check_permission(self, auth, test_methods=None, **kwargs):
         """
         Check the throttling.
         Return `None` or raise an :exc:`.ErrorResponse`.
         """
+
+        # Return if just testing the permission.
+        if test_methods: return
+
         num, period = getattr(self.view, self.attr_name, self.default).split('/')
         self.num_requests = int(num)
         self.duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[period[0]]
