@@ -89,45 +89,47 @@ class IsUserOrIsAnonReadOnly(BasePermission):
             raise _403_FORBIDDEN_RESPONSE
 
 
-class DjangoModelPermisson(BasePermission):
+class DjangoModelPermission(BasePermission):
     """
     The request is authenticated against the Django user's permissions on the
-    `Resource`'s `Model`, if the resource is a `ModelResource`. 
+    `Resource`'s `Model`.
+
+    This permission should only be used on views with a `ModelResource`. 
     """
 
-    def check_permission(self, user):
+    # Map methods into required permission codes.
+    # Override this if you need to also provide 'read' permissions,
+    # or other custom behaviour.
+    perms_map = {
+        'GET': [],
+        'OPTIONS': [],
+        'HEAD': [],
+        'POST': ['%(app_label)s.add_%(model_name)s'],
+        'PUT': ['%(app_label)s.change_%(model_name)s'],
+        'PATCH': ['%(app_label)s.change_%(model_name)s'],
+        'DELETE': ['%(app_label)s.delete_%(model_name)s'],
+    }
 
-        # GET-style methods are always allowed.
-        if self.view.request.method in ('GET', 'OPTIONS', 'HEAD',):
-            return
-
-        klass = self.view.resource.model
-
-        # If it doesn't look like a model, we can't check permissions.
-        if not klass or not getattr(klass, '_meta', None):
-            return
-
-        # User must be logged in to check permissions.
-        if not hasattr(self.view.request, 'user') or not self.view.request.user.is_authenticated():
-            raise _403_FORBIDDEN_RESPONSE
-
-        permission_map = {
-            'POST': ['%s.add_%s'],
-            'PUT': ['%s.change_%s'],
-            'DELETE': ['%s.delete_%s'],
-            'PATCH': ['%s.add_%s', '%s.change_%s', '%s.delete_%s'],
+    def get_required_permissions(self, method, model_cls):
+        """
+        Given a model and an HTTP method, return the list of permission
+        codes that the user is required to have.
+        """
+        kwargs = {
+            'app_label': model_cls._meta.app_label,
+            'model_name':  model_cls.__name__.lower()
         }
-        permission_codes = []
+        try:
+            return [perm % kwargs for perm in self.perms_map[method]]
+        except KeyError:
+            ErrorResponse(status.HTTP_405_METHOD_NOT_ALLOWED)
 
-        # If we don't recognize the HTTP method, we don't know what
-        # permissions to check. Deny.
-        if self.view.request.method not in permission_map:
-            raise _403_FORBIDDEN_RESPONSE
+    def check_permission(self, user):
+        method = self.view.method
+        model_cls = self.view.resource.model
+        perms = self.get_required_permissions(method, model_cls)
 
-        for perm in permission_map[self.view.request.method]:
-            permission_codes.append(perm % (klass._meta.app_label, klass._meta.module_name))
-
-        if not self.view.request.user.has_perms(permission_codes):
+        if not user.has_perms(perms):
             raise _403_FORBIDDEN_RESPONSE
 
 
