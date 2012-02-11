@@ -89,7 +89,7 @@ class IsUserOrIsAnonReadOnly(BasePermission):
             raise _403_FORBIDDEN_RESPONSE
 
 
-class DjangoModelPermission(BasePermission):
+class DjangoModelPermissions(BasePermission):
     """
     The request is authenticated against the Django user's permissions on the
     `Resource`'s `Model`.
