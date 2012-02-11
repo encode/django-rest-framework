@@ -103,7 +103,7 @@ class DjangoModelPermissions(BasePermission):
 
     # Map methods into required permission codes.
     # Override this if you need to also provide 'read' permissions,
-    # or if you want to provide custom permisson codes.
+    # or if you want to provide custom permission codes.
     perms_map = {
         'GET': [],
         'OPTIONS': [],
