@@ -91,15 +91,18 @@ class IsUserOrIsAnonReadOnly(BasePermission):
 
 class DjangoModelPermissions(BasePermission):
     """
-    The request is authenticated against the Django user's permissions on the
-    `Resource`'s `Model`.
+    The request is authenticated using `django.contrib.auth` permissions.
+    See: https://docs.djangoproject.com/en/dev/topics/auth/#permissions
 
-    This permission should only be used on views with a `ModelResource`. 
+    It ensures that the user is authenticated, and has the appropriate
+    `add`/`change`/`delete` permissions on the model.
+
+    This permission should only be used on views with a `ModelResource`.
     """
 
     # Map methods into required permission codes.
     # Override this if you need to also provide 'read' permissions,
-    # or other custom behaviour.
+    # or if you want to provide custom permisson codes.
     perms_map = {
         'GET': [],
         'OPTIONS': [],
@@ -117,7 +120,7 @@ class DjangoModelPermissions(BasePermission):
         """
         kwargs = {
             'app_label': model_cls._meta.app_label,
-            'model_name':  model_cls.__name__.lower()
+            'model_name':  model_cls._meta.module_name
         }
         try:
             return [perm % kwargs for perm in self.perms_map[method]]
@@ -129,7 +132,7 @@ class DjangoModelPermissions(BasePermission):
         model_cls = self.view.resource.model
         perms = self.get_required_permissions(method, model_cls)
 
-        if not user.has_perms(perms):
+        if not user.is_authenticated or not user.has_perms(perms):
             raise _403_FORBIDDEN_RESPONSE
 
 
