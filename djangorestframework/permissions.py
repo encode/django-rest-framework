@@ -91,6 +91,8 @@ class IsUserOrIsAnonReadOnly(BasePermission):
 
 class DjangoModelPermisson(BasePermission):
     """
+    The request is authenticated against the Django user's permissions on the
+    `Resource`'s `Model`, if the resource is a `ModelResource`. 
     """
 
     def check_permission(self, user):
