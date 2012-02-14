@@ -162,7 +162,7 @@ class Response(SimpleTemplateResponse):
         return self.renderers[0]
 
 
-class ImmediateResponse(Response, BaseException):
+class ImmediateResponse(Response, Exception):
     """
     A subclass of :class:`Response` used to abort the current request handling.
     """

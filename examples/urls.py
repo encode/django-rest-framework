@@ -1,7 +1,10 @@
-from django.conf.urls.defaults import patterns, include, url
-from django.conf import settings
+from django.conf.urls.defaults import patterns, include
 from sandbox.views import Sandbox
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+try:
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+except ImportError:  # Django <= 1.2
+    from staticfiles.urls import staticfiles_urlpatterns
+
 
 urlpatterns = patterns('',
     (r'^$', Sandbox.as_view()),

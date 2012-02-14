@@ -1,4 +1,5 @@
 # Settings for djangorestframework examples project
+import django
 import os
 
 DEBUG = True
@@ -84,19 +85,17 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
-# for loading initial data
-##SERIALIZATION_MODULES = {
-  #  'yml': "django.core.serializers.pyyaml"
-
-#}
-
+if django.VERSION < (1, 3):
+    staticfiles = 'staticfiles'
+else:
+    staticfiles = 'django.contrib.staticfiles'
 
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
-    'django.contrib.staticfiles',
+    staticfiles,
     'django.contrib.messages',
 
     'djangorestframework',
