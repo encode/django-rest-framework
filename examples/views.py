@@ -25,10 +25,8 @@ class ProxyView(View):
     def post(self, request, *args, **kwargs):
         return Response(self.response.content)
 
-    def __getattribute__(self, name):
-        if name == '__name__':
-            return self.view_class.__name__
-        elif name == '__doc__':
-            return self.view_class.__doc__
-        else:
-            return super(ProxyView, self).__getattribute__(name)
+    def get_name(self):    
+        return self.view_class.__name__
+
+    def get_description(self, html):
+        return self.view_class.__doc__

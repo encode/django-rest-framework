@@ -75,7 +75,7 @@ class Response(SimpleTemplateResponse):
         Returns reason text corresponding to our HTTP response status code.
         Provided for convenience.
         """
-        return STATUS_CODE_TEXT.get(self.status, '')
+        return STATUS_CODE_TEXT.get(self.status_code, '')
 
     def _determine_accept_list(self):
         """
@@ -166,5 +166,11 @@ class ImmediateResponse(Response, BaseException):
     """
     A subclass of :class:`Response` used to abort the current request handling.
     """
-    pass
 
+    def __str__(self):
+        """
+        Since this class is also an exception it has to provide a sensible
+        representation for the cases when it is treated as an exception.
+        """
+        return ('%s must be caught in try/except block, '
+                'and returned as a normal HttpResponse' % self.__class__.__name__)

@@ -13,7 +13,7 @@ from django.utils import simplejson as json
 
 
 from djangorestframework.compat import yaml
-from djangorestframework.utils import dict2xml, url_resolves
+from djangorestframework.utils import dict2xml, url_resolves, allowed_methods
 from djangorestframework.utils.breadcrumbs import get_breadcrumbs
 from djangorestframework.utils.mediatypes import get_media_type_params, add_media_type_param, media_type_matches
 from djangorestframework import VERSION
@@ -349,6 +349,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
             'name': name,
             'version': VERSION,
             'breadcrumblist': breadcrumb_list,
+            'allowed_methods': allowed_methods(self.view),
             'available_formats': self.view._rendered_formats,
             'put_form': put_form_instance,
             'post_form': post_form_instance,

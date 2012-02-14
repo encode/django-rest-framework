@@ -82,7 +82,7 @@ class PygmentsRoot(View):
         remove_oldest_files(HIGHLIGHTED_CODE_DIR, MAX_FILES)
 
         self.headers['Location'] = reverse('pygments-instance', args=[unique_id])
-        return Response(status.HTTP_201_CREATED)
+        return Response(status=status.HTTP_201_CREATED)
 
 
 class PygmentsInstance(View):
@@ -90,7 +90,7 @@ class PygmentsInstance(View):
     Simply return the stored highlighted HTML file with the correct mime type.
     This Resource only renders HTML and uses a standard HTML renderer rather than the renderers.DocumentingHTMLRenderer class.
     """
-    renderers = (HTMLRenderer,)
+    renderer_classes = (HTMLRenderer,)
 
     def get(self, request, unique_id):
         """
