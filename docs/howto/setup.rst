@@ -37,16 +37,15 @@ The Python `markdown library <http://www.freewisdom.org/projects/python-markdown
 If markdown is installed your :class:`.Resource` descriptions can include `markdown style formatting 
 <http://daringfireball.net/projects/markdown/syntax>`_ which will be rendered by the HTML documenting renderer.
 
-robots.txt, favicon, login/logout
+login/logout
 ---------------------------------
 
-Django REST framework comes with a few views that can be useful including a deny robots view, a favicon view, and api login and logout views::
+Django REST framework comes with a few views that can be useful including an api
+login and logout views::
 
     from django.conf.urls.defaults import patterns
 
     urlpatterns = patterns('djangorestframework.views',
-        (r'robots.txt', 'deny_robots'),
-        (r'favicon.ico', 'favicon'),
         # Add your resources here
         (r'^accounts/login/$', 'api_login'),
         (r'^accounts/logout/$', 'api_logout'),
