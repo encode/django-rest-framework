@@ -12,7 +12,7 @@ import base64
 # be making settings changes in order to accomodate django-rest-framework
 @csrf_protect
 @never_cache
-def api_login(request, template_name='api_login.html',
+def api_login(request, template_name='djangorestframework/api_login.html',
           redirect_field_name=REDIRECT_FIELD_NAME,
           authentication_form=AuthenticationForm):
     """Displays the login form and handles the login action."""
@@ -57,5 +57,5 @@ def api_login(request, template_name='api_login.html',
     }, context_instance=RequestContext(request))
 
 
-def api_logout(request, next_page=None, template_name='api_login.html', redirect_field_name=REDIRECT_FIELD_NAME):
+def api_logout(request, next_page=None, template_name='djangorestframework/api_login.html', redirect_field_name=REDIRECT_FIELD_NAME):
     return logout(request, next_page, template_name, redirect_field_name)
