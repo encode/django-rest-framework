@@ -29,6 +29,19 @@ but once you move onto a production server, you'll want to make sure you serve t
 * Ensure that the ``ADMIN_MEDIA_PREFIX`` is set appropriately and that you are serving the admin media. 
   (Django's testserver will automatically serve the admin media for you)
 
+You may customize the templates by creating a new template called ``djangorestframework/renderer.html``
+in your project, extend ``djangorestframework/base_renderer.html`` and override the
+appropriate ``{% block tags %}``. For example::
+
+    {% extends "djangorestframework/base_renderer.html" %}
+
+    {% block title %}My API{% endblock %}
+
+    {% block branding %}
+    <h1 id="site-name">My API</h1>
+    {% endblock %}
+
+
 Markdown
 --------
 
