@@ -2,6 +2,7 @@
 
 from django.core.urlresolvers import reverse
 from djangorestframework.views import View
+from djangorestframework.response import Response
 
 
 class Sandbox(View):
@@ -23,15 +24,17 @@ class Sandbox(View):
     5. A code highlighting API.
     6. A blog posts and comments API.
     7. A basic example using permissions.
+    8. A basic example using enhanced request.
 
     Please feel free to browse, create, edit and delete the resources in these examples."""
 
     def get(self, request):
-        return [{'name': 'Simple Resource example', 'url': reverse('example-resource')},
+        return Response([{'name': 'Simple Resource example', 'url': reverse('example-resource')},
                 {'name': 'Simple ModelResource example', 'url': reverse('model-resource-root')},
                 {'name': 'Simple Mixin-only example', 'url': reverse('mixin-view')},
                 {'name': 'Object store API', 'url': reverse('object-store-root')},
                 {'name': 'Code highlighting API', 'url': reverse('pygments-root')},
                 {'name': 'Blog posts API', 'url': reverse('blog-posts-root')},
-                {'name': 'Permissions example', 'url': reverse('permissions-example')}
-                ]
+                {'name': 'Permissions example', 'url': reverse('permissions-example')},
+                {'name': 'Simple request mixin example', 'url': reverse('request-example')}
+                ])

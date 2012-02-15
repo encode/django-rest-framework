@@ -17,7 +17,7 @@ from django.http.multipartparser import MultiPartParserError
 from django.utils import simplejson as json
 from djangorestframework import status
 from djangorestframework.compat import yaml
-from djangorestframework.response import ErrorResponse
+from djangorestframework.response import ImmediateResponse
 from djangorestframework.utils.mediatypes import media_type_matches
 from xml.etree import ElementTree as ET
 import datetime
@@ -43,7 +43,7 @@ class BaseParser(object):
 
     media_type = None
 
-    def __init__(self, view):
+    def __init__(self, view=None):
         """
         Initialize the parser with the ``View`` instance as state,
         in case the parser needs to access any metadata on the :obj:`View` object.
@@ -88,8 +88,9 @@ class JSONParser(BaseParser):
         try:
             return (json.load(stream), None)
         except ValueError, exc:
-            raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
-                                {'detail': 'JSON parse error - %s' % unicode(exc)})
+            raise ImmediateResponse(
+                {'detail': 'JSON parse error - %s' % unicode(exc)},
+                status=status.HTTP_400_BAD_REQUEST)
 
 
 if yaml:
@@ -110,8 +111,9 @@ if yaml:
             try:
                 return (yaml.safe_load(stream), None)
             except ValueError, exc:
-                raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
-                                    {'detail': 'YAML parse error - %s' % unicode(exc)})
+                raise ImmediateResponse(
+                    {'detail': 'YAML parse error - %s' % unicode(exc)},
+                    status=status.HTTP_400_BAD_REQUEST)
 else:
     YAMLParser = None
 
@@ -169,8 +171,9 @@ class MultiPartParser(BaseParser):
         try:
             django_parser = DjangoMultiPartParser(self.view.request.META, stream, upload_handlers)
         except MultiPartParserError, exc:
-            raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
-                                {'detail': 'multipart parse error - %s' % unicode(exc)})
+            raise ImmediateResponse(
+                {'detail': 'multipart parse error - %s' % unicode(exc)},
+                status=status.HTTP_400_BAD_REQUEST)
         return django_parser.parse()
 
 
