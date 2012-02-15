@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+{% load urlize_quoted_links %}
+{% load add_query_param %}
+{% load static %}
+<html xmlns="http://www.w3.org/1999/xhtml">
+  	<head>
+      	<link rel="stylesheet" type="text/css" href='{% get_static_prefix %}djangorestframework/css/style.css'/>
+      	{% block extrastyle %}{% endblock %}
+  		<title>{% block title %}Django REST framework - {{ name }}{% endblock %}</title>
+  		{% block extrahead %}{% endblock %}
+		{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+  	</head>
+  <body class="{% block bodyclass %}{% endblock %}">
+  <div id="container">
+
+	<div id="header">
+		<div id="branding">
+		  <h1 id="site-name">{% block branding %}<a href='http://django-rest-framework.org'>Django REST framework</a> <span class="version"> v {{ version }}</span>{% endblock %}</h1>
+		</div>
+		<div id="user-tools">
+		  {% if user.is_active %}Welcome, {{ user }}.{% if logout_url %} <a href='{{ logout_url }}'>Log out</a>{% endif %}{% else %}Anonymous {% if login_url %}<a href='{{ login_url }}'>Log in</a>{% endif %}{% endif %}
+		  {% block userlinks %}{% endblock %}
+		</div>
+		{% block nav-global %}{% endblock %}
+	</div>
+
+	<div class="breadcrumbs">
+	{% block breadcrumbs %}
+	{% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
+    <a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a> {% if not forloop.last %}&rsaquo;{% endif %}
+    {% endfor %}
+    {% endblock %}
+    </div>
+
+    <!-- Content -->
+    <div id="content" class="{% block coltype %}colM{% endblock %}">
+
+		{% if 'OPTIONS' in view.allowed_methods %}
+				<form action="{{ request.get_full_path }}" method="post">
+				    {% csrf_token %}
+					<input type="hidden" name="{{ METHOD_PARAM }}" value="OPTIONS" />
+					  <input type="submit" value="OPTIONS" class="default" />
+				</form>
+		{% endif %}
+
+	<div class='content-main'>
+	    <h1>{{ name }}</h1>
+	    <p>{{ description }}</p>
+	    <div class='module'>
+	    <pre><b>{{ response.status }} {{ response.status_text }}</b>{% autoescape off %}
+{% for key, val in response.headers.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
+{% endfor %}
+{{ content|urlize_quoted_links }}</pre>{% endautoescape %}</div>
+
+	{% if 'GET' in view.allowed_methods %}
+			<form>
+				<fieldset class='module aligned'>
+				<h2>GET {{ name }}</h2>
+				<div class='submit-row' style='margin: 0; border: 0'>
+				<a href='{{ request.get_full_path }}' rel="nofollow" style='float: left'>GET</a>
+				{% for format in available_formats %}
+				  {% with FORMAT_PARAM|add:"="|add:format as param %}
+				    [<a href='{{ request.get_full_path|add_query_param:param }}' rel="nofollow">{{ format }}</a>]
+				  {% endwith %}
+				{% endfor %}
+				</div>
+				</fieldset>
+			</form>
+	{% endif %}
+
+	{# Only display the POST/PUT/DELETE forms if method tunneling via POST forms is enabled and the user has permissions on this view. #}
+	{% if METHOD_PARAM and response.status != 403 %}
+
+		{% if 'POST' in view.allowed_methods %}
+				<form action="{{ request.get_full_path }}" method="post" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+				<fieldset class='module aligned'>
+					<h2>POST {{ name }}</h2>
+				    {% csrf_token %}
+				    {{ post_form.non_field_errors }}
+					{% for field in post_form %}
+					<div class='form-row'>
+					    {{ field.label_tag }}
+					    {{ field }}
+					    <span class='help'>{{ field.help_text }}</span>
+					    {{ field.errors }}
+					</div>
+					{% endfor %}
+					<div class='submit-row' style='margin: 0; border: 0'>
+						<input type="submit" value="POST" class="default" />
+					</div>
+				</fieldset>
+				</form>
+		{% endif %}
+
+		{% if 'PUT' in view.allowed_methods %}
+				<form action="{{ request.get_full_path }}" method="post" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+				<fieldset class='module aligned'>
+					<h2>PUT {{ name }}</h2>
+					<input type="hidden" name="{{ METHOD_PARAM }}" value="PUT" />
+					{% csrf_token %}
+					{{ put_form.non_field_errors }}
+					{% for field in put_form %}
+					<div class='form-row'>
+					    {{ field.label_tag }}
+					    {{ field }}
+					    <span class='help'>{{ field.help_text }}</span>
+					    {{ field.errors }}
+					</div>
+					{% endfor %}
+					<div class='submit-row' style='margin: 0; border: 0'>
+					  <input type="submit" value="PUT" class="default" />
+					</div>
+				</fieldset>
+				</form>
+		{% endif %}
+
+		{% if 'DELETE' in view.allowed_methods %}
+				<form action="{{ request.get_full_path }}" method="post">
+				<fieldset class='module aligned'>
+					<h2>DELETE {{ name }}</h2>
+				    {% csrf_token %}
+					<input type="hidden" name="{{ METHOD_PARAM }}" value="DELETE" />
+					<div class='submit-row' style='margin: 0; border: 0'>
+					  <input type="submit" value="DELETE" class="default" />
+					</div>
+				</fieldset>
+				</form>
+		{% endif %}
+
+	{% endif %}
+	</div>
+	<!-- END content-main -->
+
+	</div>
+	<!-- END Content -->
+
+    {% block footer %}<div id="footer"></div>{% endblock %}
+	</div>
+  </body>
+</html>
