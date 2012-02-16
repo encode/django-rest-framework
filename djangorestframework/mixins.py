@@ -182,7 +182,7 @@ class RequestMixin(object):
                 return parser.parse(stream)
 
         raise ErrorResponse(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                            {'error': 'Unsupported media type in request \'%s\'.' %
+                            {'error': 'Unsupported media type in request \'%s\'.' % 
                             content_type})
 
     @property
@@ -220,6 +220,13 @@ class ResponseMixin(object):
 
     Should be a tuple/list of classes as described in the :mod:`renderers` module.
     """
+
+    def get_renderers(self):
+        """
+        Return an iterable of available renderers. Override if you want to change
+        this list at runtime, say depending on what settings you have enabled.
+        """
+        return self.renderers
 
     # TODO: wrap this behavior around dispatch(), ensuring it works
     # out of the box with existing Django classes that use render_to_response.
@@ -282,7 +289,7 @@ class ResponseMixin(object):
         # attempting more specific media types first
         # NB. The inner loop here isn't as bad as it first looks :)
         #     Worst case is we're looping over len(accept_list) * len(self.renderers)
-        renderers = [renderer_cls(self) for renderer_cls in self.renderers]
+        renderers = [renderer_cls(self) for renderer_cls in self.get_renderers()]
 
         for accepted_media_type_lst in order_by_precedence(accept_list):
             for renderer in renderers:
