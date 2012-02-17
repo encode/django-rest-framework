@@ -10,13 +10,14 @@ from djangorestframework.compat import RequestFactory
 from djangorestframework.views import View
 from djangorestframework.permissions import PerUserThrottling, PerViewThrottling, PerResourceThrottling
 from djangorestframework.resources import FormResource
+from djangorestframework.response import Response
 
 class MockView(View):
     permissions = ( PerUserThrottling, )
     throttle = '3/sec'
 
     def get(self, request):
-        return 'foo'
+        return Response('foo')
 
 class MockView_PerViewThrottling(MockView):
     permissions = ( PerViewThrottling, )

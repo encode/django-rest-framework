@@ -15,6 +15,7 @@ urlpatterns = patterns('',
     (r'^pygments/', include('pygments_api.urls')),
     (r'^blog-post/', include('blogpost.urls')),
     (r'^permissions-example/', include('permissionsexample.urls')),
+    (r'^request-example/', include('requestexample.urls')),
 
     (r'^', include('djangorestframework.urls')),
 )

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.test import Client, TestCase
 
 from django.utils import simplejson as json
+from django.http import HttpResponse
 
 from djangorestframework.views import View
 from djangorestframework import permissions
@@ -14,10 +15,10 @@ class MockView(View):
     permissions = (permissions.IsAuthenticated,)
 
     def post(self, request):
-        return {'a': 1, 'b': 2, 'c': 3}
+        return HttpResponse({'a': 1, 'b': 2, 'c': 3})
 
     def put(self, request):
-        return {'a': 1, 'b': 2, 'c': 3}
+        return HttpResponse({'a': 1, 'b': 2, 'c': 3})
 
 urlpatterns = patterns('',
     (r'^$', MockView.as_view()),
