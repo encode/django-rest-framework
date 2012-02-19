@@ -24,6 +24,7 @@ __all__ = (
     'InstanceModelView',
     'ListModelView',
     'ListOrCreateModelView'
+    'FilterOrCreateModelView'
 )
 
 
@@ -294,5 +295,14 @@ class ListModelView(ListModelMixin, ModelView):
 class ListOrCreateModelView(ListModelMixin, CreateModelMixin, ModelView):
     """
     A view which provides default operations for list and create, against a model in the database.
+    """
+    _suffix = 'List'
+
+
+
+class FilterOrCreateModelView(FilterModelMixin, CreateModelMixin, ModelView):
+    """
+    A view which provides default operations for list and create, against a model in the database.
+    The view also enables filtering by query parameters
     """
     _suffix = 'List'

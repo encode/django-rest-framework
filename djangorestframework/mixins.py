@@ -33,6 +33,8 @@ __all__ = (
     'UpdateModelMixin',
     'DeleteModelMixin',
     'ListModelMixin'
+    'FilterModelMixin'
+
 )
 
 
@@ -182,7 +184,7 @@ class RequestMixin(object):
                 return parser.parse(stream)
 
         raise ErrorResponse(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                            {'error': 'Unsupported media type in request \'%s\'.' % 
+                            {'error': 'Unsupported media type in request \'%s\'.' %
                             content_type})
 
     @property
@@ -658,6 +660,52 @@ class ListModelMixin(ModelMixin):
 
         return queryset
 
+
+class FilterModelMixin(ModelMixin):
+    """
+    Behavior to list a set of `model` instances on GET requests
+    Also Enables a filter via the url query parameters
+
+    Example: Each of the following requests are valid
+        1) http://www.example.com/?color=blue
+        2) http://www.example.com/shirts/?color=blue
+    """
+
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        ordering = self.get_ordering()
+
+
+        filter_data = dict(request.GET.items())
+
+        # Get the fields for the resource
+        model = self.resource.model
+        fields = model._meta.fields
+
+        # Iterate over fields and get the field names
+        fieldnames = [field.name for field in fields]
+
+
+        # Initialize query object
+        filter_query = Q()
+
+        # Check to ensure that each filter key is a valid field in the model
+        for filter_key,value in filter_data.iteritems():
+            if filter_key in fieldnames:
+                new_filter = {filter_key:value}
+                new_query = Q(**new_filter)
+
+                filter_query = filter_query & new_query
+
+
+
+
+        queryset = queryset.filter(self.build_query(**kwargs)).filter(filter_query)
+        if ordering:
+            queryset = queryset.order_by(*ordering)
+
+        return queryset
 
 ########## Pagination Mixins ##########
 
