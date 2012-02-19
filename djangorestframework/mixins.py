@@ -35,6 +35,8 @@ __all__ = (
     'ListModelMixin',
     'FilterModelMixin',
 
+    'PaginatorMixin',
+
 )
 
 
@@ -676,7 +678,6 @@ class FilterModelMixin(ModelMixin):
         queryset = self.get_queryset()
         ordering = self.get_ordering()
 
-
         filter_data = dict(request.GET.items())
 
         # Get the fields for the resource
@@ -686,26 +687,28 @@ class FilterModelMixin(ModelMixin):
         # Iterate over fields and get the field names
         fieldnames = [field.name for field in fields]
 
+        # Fixed query parameters included in the url path. Ex: /resource/<query1>/<query2>/
+        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
 
-        # Initialize query object
-        filter_query = Q()
+        # Dynamic query parameters from the url query.  Ex: /resource/?color=blue
+        dynamic_query_kwargs = {}
 
         # Check to ensure that each filter key is a valid field in the model
         for filter_key,value in filter_data.iteritems():
             if filter_key in fieldnames:
-                new_filter = {filter_key:value}
-                new_query = Q(**new_filter)
-
-                filter_query = filter_query & new_query
+                dynamic_query_kwargs[filter_key] = value
 
 
+        # Combine the query kwargs from the fixed url path and the dynamic url query parameters
+        filtered_query_kwargs = dict(query_kwargs.items() + dynamic_query_kwargs.items())
 
+        # Get a single query using the combined query kwargs
+        filtered_queryset = queryset.filter(**filtered_query_kwargs)
 
-        queryset = queryset.filter(self.build_query(**kwargs)).filter(filter_query)
         if ordering:
-            queryset = queryset.order_by(*ordering)
+            filtered_queryset = filtered_queryset.order_by(*ordering)
 
-        return queryset
+        return filtered_queryset
 
 ########## Pagination Mixins ##########
 
