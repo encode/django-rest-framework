@@ -32,8 +32,8 @@ __all__ = (
     'CreateModelMixin',
     'UpdateModelMixin',
     'DeleteModelMixin',
-    'ListModelMixin'
-    'FilterModelMixin'
+    'ListModelMixin',
+    'FilterModelMixin',
 
 )
 

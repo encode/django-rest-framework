@@ -23,7 +23,7 @@ __all__ = (
     'ModelView',
     'InstanceModelView',
     'ListModelView',
-    'ListOrCreateModelView'
+    'ListOrCreateModelView',
     'FilterOrCreateModelView'
 )
 
