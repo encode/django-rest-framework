@@ -13,7 +13,6 @@ from djangorestframework.renderers import BaseRenderer
 from djangorestframework.resources import Resource, FormResource, ModelResource
 from djangorestframework.response import Response, ImmediateResponse
 from djangorestframework.request import Request
-from djangorestframework.utils import as_tuple, allowed_methods
 
 
 __all__ = (
