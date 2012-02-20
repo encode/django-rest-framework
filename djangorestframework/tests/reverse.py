@@ -12,7 +12,7 @@ class MockView(View):
     permissions = ()
 
     def get(self, request):
-        return Response(reverse('another'))
+        return Response(reverse('another', request))
 
 urlpatterns = patterns('',
     url(r'^$', MockView.as_view()),
