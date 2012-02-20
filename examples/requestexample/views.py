@@ -1,8 +1,8 @@
 from djangorestframework.compat import View
 from django.http import HttpResponse
-from django.core.urlresolvers import reverse
 
 from djangorestframework.mixins import RequestMixin
+from djangorestframework.utils import reverse
 from djangorestframework.views import View as DRFView
 from djangorestframework import parsers
 from djangorestframework.response import Response
@@ -14,7 +14,7 @@ class RequestExampleView(DRFView):
     """
 
     def get(self, request):
-        return Response([{'name': 'request.DATA Example', 'url': reverse('request-content')},])
+        return Response([{'name': 'request.DATA Example', 'url': reverse('request-content', request)},])
 
 
 class MyBaseViewUsingEnhancedRequest(RequestMixin, View):
