@@ -685,7 +685,7 @@ class PaginatorMixin(object):
         """
         Constructs a url used for getting the next/previous urls
         """
-        url = URLObject.parse(self.request.get_full_path())
+        url = URLObject(self.request.get_full_path())
         url = url.set_query_param('page', page_number)
 
         limit = self.get_limit()
