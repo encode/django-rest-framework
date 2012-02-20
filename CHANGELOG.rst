@@ -13,6 +13,7 @@ development
   - Too magical.  Explict is better than implicit.
 * Saner template variable autoescaping.
 * Tider setup.py
+* Updated for URLObject 2.0
 * Bugfixes:
   - Bug with PerUserThrottling when user contains unicode chars.
 
