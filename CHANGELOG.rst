@@ -1,8 +1,8 @@
 Release Notes
 =============
 
-development
------------
+0.3.3
+-----
 
 * Added DjangoModelPermissions class to support `django.contrib.auth` style permissions.
 * Use `staticfiles` for css files.
