@@ -373,7 +373,7 @@ class DocumentingHTMLRenderer(DocumentingTemplateRenderer):
 
     media_type = 'text/html'
     format = 'html'
-    template = 'djangorestframework/renderer.html'
+    template = 'djangorestframework/api.html'
 
 
 class DocumentingXHTMLRenderer(DocumentingTemplateRenderer):
@@ -385,7 +385,7 @@ class DocumentingXHTMLRenderer(DocumentingTemplateRenderer):
 
     media_type = 'application/xhtml+xml'
     format = 'xhtml'
-    template = 'djangorestframework/renderer.html'
+    template = 'djangorestframework/api.html'
 
 
 class DocumentingPlainTextRenderer(DocumentingTemplateRenderer):
@@ -397,7 +397,7 @@ class DocumentingPlainTextRenderer(DocumentingTemplateRenderer):
 
     media_type = 'text/plain'
     format = 'txt'
-    template = 'djangorestframework/renderer.txt'
+    template = 'djangorestframework/api.txt'
 
 
 DEFAULT_RENDERERS = (
