@@ -2,7 +2,7 @@ from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
 from django.utils import simplejson as json
 
-from djangorestframework.urlresolvers import reverse
+from djangorestframework.utils import reverse
 from djangorestframework.views import View
 
 

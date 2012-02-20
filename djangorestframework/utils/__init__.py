@@ -1,6 +1,6 @@
 from django.utils.encoding import smart_unicode
 from django.utils.xmlutils import SimplerXMLGenerator
-from django.core.urlresolvers import resolve
+from django.core.urlresolvers import resolve, reverse
 from django.conf import settings
 
 from djangorestframework.compat import StringIO
@@ -173,3 +173,6 @@ class XMLRenderer():
 
 def dict2xml(input):
     return XMLRenderer().dict2xml(input)
+
+def reverse(viewname, urlconf=None, args=None, kwargs=None, prefix=None, current_app=None):
+    raise NotImplementedError
