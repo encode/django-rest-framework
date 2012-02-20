@@ -1,5 +1,4 @@
-from django.core.urlresolvers import reverse
-
+from djangorestframework.utils import reverse
 from djangorestframework.views import View
 from djangorestframework.response import Response
 from djangorestframework import status
@@ -16,7 +15,7 @@ class ExampleView(View):
         """
         Handle GET requests, returning a list of URLs pointing to 3 other views.
         """
-        return {"Some other resources": [reverse('another-example', kwargs={'num':num}) for num in range(3)]}
+        return {"Some other resources": [reverse('another-example', request, kwargs={'num':num}) for num in range(3)]}
 
 
 class AnotherExampleView(View):

@@ -2,9 +2,9 @@ from djangorestframework.compat import View  # Use Django 1.3's django.views.gen
 from djangorestframework.mixins import ResponseMixin
 from djangorestframework.renderers import DEFAULT_RENDERERS
 from djangorestframework.response import Response
+from djangorestframework.utils import reverse
 
 from django.conf.urls.defaults import patterns, url
-from django.core.urlresolvers import reverse
 
 
 class ExampleView(ResponseMixin, View):
@@ -14,7 +14,7 @@ class ExampleView(ResponseMixin, View):
 
     def get(self, request):
         response = Response(200, {'description': 'Some example content',
-                                  'url': reverse('mixin-view')})
+                                  'url': reverse('mixin-view', request)})
         return self.render(response)
 
 
