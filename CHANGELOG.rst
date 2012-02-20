@@ -7,6 +7,8 @@ development
 * Added DjangoModelPermissions class to support `django.contrib.auth` style permissions.
 * Use `staticfiles` for css files.
   - Easier to override.  Won't conflict with customised admin styles (eg grappelli)
+* Templates are now nicely namespaced.
+  - Allows easier overriding.
 * Drop implied 'pk' filter if last arg in urlconf is unnamed.
   - Too magical.  Explict is better than implicit.
 * Saner template variable autoescaping.
