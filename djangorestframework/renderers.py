@@ -152,25 +152,22 @@ class XMLRenderer(BaseRenderer):
         return dict2xml(obj)
 
 
-if yaml:
-    class YAMLRenderer(BaseRenderer):
+class YAMLRenderer(BaseRenderer):
+    """
+    Renderer which serializes to YAML.
+    """
+
+    media_type = 'application/yaml'
+    format = 'yaml'
+
+    def render(self, obj=None, media_type=None):
         """
-        Renderer which serializes to YAML.
+        Renders *obj* into serialized YAML.
         """
+        if obj is None:
+            return ''
 
-        media_type = 'application/yaml'
-        format = 'yaml'
-
-        def render(self, obj=None, media_type=None):
-            """
-            Renders *obj* into serialized YAML.
-            """
-            if obj is None:
-                return ''
-
-            return yaml.safe_dump(obj)
-else:
-    YAMLRenderer = None
+        return yaml.safe_dump(obj)
 
 
 class TemplateRenderer(BaseRenderer):
@@ -409,5 +406,7 @@ DEFAULT_RENDERERS = (
     XMLRenderer
 )
 
-if YAMLRenderer:
-    DEFAULT_RENDERERS += (YAMLRenderer,)
+if yaml:
+    DEFAULT_RENDERERS += (YAMLRenderer, )
+else:
+    YAMLRenderer = None

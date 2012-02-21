@@ -92,28 +92,25 @@ class JSONParser(BaseParser):
                                 {'detail': 'JSON parse error - %s' % unicode(exc)})
 
 
-if yaml:
-    class YAMLParser(BaseParser):
+class YAMLParser(BaseParser):
+    """
+    Parses YAML-serialized data.
+    """
+
+    media_type = 'application/yaml'
+
+    def parse(self, stream):
         """
-        Parses YAML-serialized data.
+        Returns a 2-tuple of `(data, files)`.
+
+        `data` will be an object which is the parsed content of the response.
+        `files` will always be `None`.
         """
-
-        media_type = 'application/yaml'
-
-        def parse(self, stream):
-            """
-            Returns a 2-tuple of `(data, files)`.
-
-            `data` will be an object which is the parsed content of the response.
-            `files` will always be `None`.
-            """
-            try:
-                return (yaml.safe_load(stream), None)
-            except ValueError, exc:
-                raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
-                                    {'detail': 'YAML parse error - %s' % unicode(exc)})
-else:
-    YAMLParser = None
+        try:
+            return (yaml.safe_load(stream), None)
+        except (ValueError, yaml.parser.ParserError), exc:
+            content = {'detail': 'YAML parse error - %s' % unicode(exc)}
+            raise ErrorResponse(status.HTTP_400_BAD_REQUEST, content)
 
 
 class PlainTextParser(BaseParser):
@@ -248,5 +245,8 @@ DEFAULT_PARSERS = (
     XMLParser
 )
 
-if YAMLParser:
-    DEFAULT_PARSERS += (YAMLParser,)
+if yaml:
+    DEFAULT_PARSERS += (YAMLParser, )
+else:
+    YAMLParser = None
+
