@@ -1,6 +1,7 @@
+import django
 from django.utils.encoding import smart_unicode
 from django.utils.xmlutils import SimplerXMLGenerator
-from django.core.urlresolvers import resolve
+from django.core.urlresolvers import resolve, reverse as django_reverse
 from django.conf import settings
 
 from djangorestframework.compat import StringIO
@@ -180,3 +181,21 @@ class XMLRenderer():
 
 def dict2xml(input):
     return XMLRenderer().dict2xml(input)
+
+
+def reverse(viewname, request, *args, **kwargs):
+    """
+    Do the same as :py:func:`django.core.urlresolvers.reverse` but using
+    *request* to build a fully qualified URL.
+    """
+    return request.build_absolute_uri(django_reverse(viewname, *args, **kwargs))
+
+if django.VERSION >= (1, 4):
+    from django.core.urlresolvers import reverse_lazy as django_reverse_lazy
+
+    def reverse_lazy(viewname, request, *args, **kwargs):
+        """
+        Do the same as :py:func:`django.core.urlresolvers.reverse_lazy` but using
+        *request* to build a fully qualified URL.
+        """
+        return request.build_absolute_uri(django_reverse_lazy(viewname, *args, **kwargs))

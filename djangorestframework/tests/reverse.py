@@ -1,8 +1,8 @@
 from django.conf.urls.defaults import patterns, url
-from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils import simplejson as json
 
+from djangorestframework.utils import reverse
 from djangorestframework.views import View
 from djangorestframework.response import Response
 
@@ -12,7 +12,7 @@ class MockView(View):
     permissions = ()
 
     def get(self, request):
-        return Response(reverse('another'))
+        return Response(reverse('another', request))
 
 urlpatterns = patterns('',
     url(r'^$', MockView.as_view()),

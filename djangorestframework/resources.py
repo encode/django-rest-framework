@@ -1,10 +1,10 @@
 from django import forms
-from django.core.urlresolvers import reverse, get_urlconf, get_resolver, NoReverseMatch
+from django.core.urlresolvers import get_urlconf, get_resolver, NoReverseMatch
 from django.db import models
 
 from djangorestframework.response import ImmediateResponse
 from djangorestframework.serializer import Serializer, _SkipField
-from djangorestframework.utils import as_tuple
+from djangorestframework.utils import as_tuple, reverse
 
 
 class BaseResource(Serializer):
@@ -354,7 +354,7 @@ class ModelResource(FormResource):
                         instance_attrs[param] = attr
 
                 try:
-                    return reverse(self.view_callable[0], kwargs=instance_attrs)
+                    return reverse(self.view_callable[0], self.view.request, kwargs=instance_attrs)
                 except NoReverseMatch:
                     pass
         raise _SkipField
