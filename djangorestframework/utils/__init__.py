@@ -9,11 +9,6 @@ from djangorestframework.compat import StringIO
 import re
 import xml.etree.ElementTree as ET
 
-
-#def admin_media_prefix(request):
-#    """Adds the ADMIN_MEDIA_PREFIX to the request context."""
-#    return {'ADMIN_MEDIA_PREFIX': settings.ADMIN_MEDIA_PREFIX}
-
 from mediatypes import media_type_matches, is_form_media_type
 from mediatypes import add_media_type_param, get_media_type_params, order_by_precedence
 
@@ -47,38 +42,6 @@ def url_resolves(url):
     except Exception:
         return False
     return True
-
-
-# From http://www.koders.com/python/fidB6E125C586A6F49EAC38992CF3AFDAAE35651975.aspx?s=mdef:xml
-#class object_dict(dict):
-#    """object view of dict, you can
-#    >>> a = object_dict()
-#    >>> a.fish = 'fish'
-#    >>> a['fish']
-#    'fish'
-#    >>> a['water'] = 'water'
-#    >>> a.water
-#    'water'
-#    >>> a.test = {'value': 1}
-#    >>> a.test2 = object_dict({'name': 'test2', 'value': 2})
-#    >>> a.test, a.test2.name, a.test2.value
-#    (1, 'test2', 2)
-#    """
-#    def __init__(self, initd=None):
-#        if initd is None:
-#            initd = {}
-#        dict.__init__(self, initd)
-#
-#    def __getattr__(self, item):
-#        d = self.__getitem__(item)
-#        # if value is the only key in object, you can omit it
-#        if isinstance(d, dict) and 'value' in d and len(d) == 1:
-#            return d['value']
-#        else:
-#            return d
-#
-#    def __setattr__(self, item, value):
-#        self.__setitem__(item, value)
 
 
 # From xml2dict
