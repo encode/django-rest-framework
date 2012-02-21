@@ -2,7 +2,7 @@ from djangorestframework.compat import View  # Use Django 1.3's django.views.gen
 from djangorestframework.mixins import ResponseMixin
 from djangorestframework.renderers import DEFAULT_RENDERERS
 from djangorestframework.response import Response
-from djangorestframework.utils import reverse
+from djangorestframework.reverse import reverse
 
 from django.conf.urls.defaults import patterns, url
 

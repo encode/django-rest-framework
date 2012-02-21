@@ -1,6 +1,6 @@
 """The root view for the examples provided with Django REST framework"""
 
-from djangorestframework.utils import reverse
+from djangorestframework.reverse import reverse
 from djangorestframework.views import View
 from djangorestframework.response import Response
 

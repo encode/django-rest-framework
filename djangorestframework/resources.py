@@ -3,6 +3,7 @@ from django.core.urlresolvers import get_urlconf, get_resolver, NoReverseMatch
 from django.db import models
 
 from djangorestframework.response import ImmediateResponse
+from djangorestframework.reverse import reverse
 from djangorestframework.serializer import Serializer, _SkipField
 from djangorestframework.utils import as_tuple, reverse
 

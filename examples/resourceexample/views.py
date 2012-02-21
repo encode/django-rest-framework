@@ -1,4 +1,4 @@
-from djangorestframework.utils import reverse
+from djangorestframework.reverse import reverse
 from djangorestframework.views import View
 from djangorestframework.response import Response
 from djangorestframework import status

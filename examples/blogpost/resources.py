@@ -1,5 +1,5 @@
 from djangorestframework.resources import ModelResource
-from djangorestframework.utils import reverse
+from djangorestframework.reverse import reverse
 from blogpost.models import BlogPost, Comment
 
 
