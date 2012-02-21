@@ -1,3 +1,4 @@
+import django
 from django.utils.encoding import smart_unicode
 from django.utils.xmlutils import SimplerXMLGenerator
 from django.core.urlresolvers import resolve, reverse as django_reverse
@@ -181,3 +182,13 @@ def reverse(viewname, request, *args, **kwargs):
     *request* to build a fully qualified URL.
     """
     return request.build_absolute_uri(django_reverse(viewname, *args, **kwargs))
+
+if django.VERSION >= (1, 4):
+    from django.core.urlresolvers import reverse_lazy as django_reverse_lazy
+
+    def reverse_lazy(viewname, request, *args, **kwargs):
+        """
+        Do the same as :py:func:`django.core.urlresolvers.reverse_lazy` but using
+        *request* to build a fully qualified URL.
+        """
+        return request.build_absolute_uri(django_reverse_lazy(viewname, *args, **kwargs))
