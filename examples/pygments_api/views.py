@@ -1,10 +1,10 @@
 from __future__ import with_statement  # for python 2.5
 from django.conf import settings
-from django.core.urlresolvers import reverse
 
 from djangorestframework.resources import FormResource
 from djangorestframework.response import Response
 from djangorestframework.renderers import BaseRenderer
+from djangorestframework.utils import reverse
 from djangorestframework.views import View
 from djangorestframework import status
 
@@ -61,7 +61,7 @@ class PygmentsRoot(View):
         Return a list of all currently existing snippets.
         """
         unique_ids = [os.path.split(f)[1] for f in list_dir_sorted_by_ctime(HIGHLIGHTED_CODE_DIR)]
-        return [reverse('pygments-instance', args=[unique_id]) for unique_id in unique_ids]
+        return [reverse('pygments-instance', request, args=[unique_id]) for unique_id in unique_ids]
 
     def post(self, request):
         """
@@ -81,7 +81,7 @@ class PygmentsRoot(View):
 
         remove_oldest_files(HIGHLIGHTED_CODE_DIR, MAX_FILES)
 
-        return Response(status.HTTP_201_CREATED, headers={'Location': reverse('pygments-instance', args=[unique_id])})
+        return Response(status.HTTP_201_CREATED, headers={'Location': reverse('pygments-instance', request, args=[unique_id])})
 
 
 class PygmentsInstance(View):
