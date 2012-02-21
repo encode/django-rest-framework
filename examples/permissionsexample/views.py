@@ -1,6 +1,6 @@
 from djangorestframework.views import View
 from djangorestframework.permissions import PerUserThrottling, IsAuthenticated
-from djangorestframework.utils import reverse
+from djangorestframework.reverse import reverse
 
 
 class PermissionsExampleView(View):

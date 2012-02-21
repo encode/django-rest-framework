@@ -1,12 +1,6 @@
 Returning URIs from your Web APIs
 =================================
 
-    "The central feature that distinguishes the REST architectural style from
-    other network-based styles is its emphasis on a uniform interface between
-    components."
-
-    -- Roy Fielding, Architectural Styles and the Design of Network-based Software Architectures
-
 As a rule, it's probably better practice to return absolute URIs from you web APIs, e.g. "http://example.com/foobar", rather than returning relative URIs, e.g. "/foobar".
 
 The advantages of doing so are:
@@ -23,9 +17,9 @@ There's no requirement for you to use them, but if you do then the self-describi
 reverse(viewname, request, ...)
 -------------------------------
 
-The :py:func:`~utils.reverse` function has the same behavior as :py:func:`django.core.urlresolvers.reverse` [1]_, except that it takes a request object and returns a fully qualified URL, using the request to determine the host and port::
+The :py:func:`~reverse.reverse` function has the same behavior as `django.core.urlresolvers.reverse`_, except that it takes a request object and returns a fully qualified URL, using the request to determine the host and port::
 
-    from djangorestframework.utils import reverse
+    from djangorestframework.reverse import reverse
     from djangorestframework.views import View
    
     class MyView(View):
@@ -39,9 +33,7 @@ The :py:func:`~utils.reverse` function has the same behavior as :py:func:`django
 reverse_lazy(viewname, request, ...)
 ------------------------------------
 
-The :py:func:`~utils.reverse_lazy` function has the same behavior as :py:func:`django.core.urlresolvers.reverse_lazy` [2]_, except that it takes a request object and returns a fully qualified URL, using the request to determine the host and port.
+The :py:func:`~reverse.reverse_lazy` function has the same behavior as `django.core.urlresolvers.reverse_lazy`_, except that it takes a request object and returns a fully qualified URL, using the request to determine the host and port.
 
-.. rubric:: Footnotes
-
-.. [1] https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse
-.. [2] https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse-lazy
+.. _django.core.urlresolvers.reverse: https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse
+.. _django.core.urlresolvers.reverse_lazy: https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse-lazy

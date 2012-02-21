@@ -4,7 +4,7 @@ from django.conf import settings
 from djangorestframework.resources import FormResource
 from djangorestframework.response import Response
 from djangorestframework.renderers import BaseRenderer
-from djangorestframework.utils import reverse
+from djangorestframework.reverse import reverse
 from djangorestframework.views import View
 from djangorestframework import status
 

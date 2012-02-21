@@ -457,3 +457,11 @@ except ImportError: # python < 2.7
         return decorator
      
     unittest.skip = skip
+
+# reverse_lazy (Django 1.4 onwards)
+try:
+    from django.core.urlresolvers import reverse_lazy
+except:
+    from django.core.urlresolvers import reverse
+    from django.utils.functional import lazy
+    reverse_lazy = lazy(reverse, str)
