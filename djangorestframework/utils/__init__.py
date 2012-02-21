@@ -176,4 +176,8 @@ def dict2xml(input):
 
 
 def reverse(viewname, request, *args, **kwargs):
+    """
+    Do the same as :py:func:`django.core.urlresolvers.reverse` but using
+    *request* to build a fully qualified URL.
+    """
     return request.build_absolute_uri(django_reverse(viewname, *args, **kwargs))
