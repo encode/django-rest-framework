@@ -146,8 +146,10 @@ class Serializer(object):
         # then the second element of the tuple is the fields to
         # set on the related serializer
         if isinstance(info, (list, tuple)):
-            class OnTheFlySerializer(Serializer):
-                fields = info
+            # We can only preserve all the (serialization) methods from the resource
+            # class if we inherit from the resource, not if we inherit from the 
+            # `Serializer` class. Gotta love dynamic languages.
+            OnTheFlySerializer = type('OnTheFlySerializer', (self.__class__,), {'fields': info})
             return OnTheFlySerializer
 
         # If an element in `fields` is a 2-tuple of (str, Serializer)
