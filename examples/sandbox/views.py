@@ -1,6 +1,6 @@
 """The root view for the examples provided with Django REST framework"""
 
-from django.core.urlresolvers import reverse
+from djangorestframework.utils import reverse
 from djangorestframework.views import View
 
 
@@ -27,11 +27,11 @@ class Sandbox(View):
     Please feel free to browse, create, edit and delete the resources in these examples."""
 
     def get(self, request):
-        return [{'name': 'Simple Resource example', 'url': reverse('example-resource')},
-                {'name': 'Simple ModelResource example', 'url': reverse('model-resource-root')},
-                {'name': 'Simple Mixin-only example', 'url': reverse('mixin-view')},
-                {'name': 'Object store API', 'url': reverse('object-store-root')},
-                {'name': 'Code highlighting API', 'url': reverse('pygments-root')},
-                {'name': 'Blog posts API', 'url': reverse('blog-posts-root')},
-                {'name': 'Permissions example', 'url': reverse('permissions-example')}
+        return [{'name': 'Simple Resource example', 'url': reverse('example-resource', request)},
+                {'name': 'Simple ModelResource example', 'url': reverse('model-resource-root', request)},
+                {'name': 'Simple Mixin-only example', 'url': reverse('mixin-view', request)},
+                {'name': 'Object store API', 'url': reverse('object-store-root', request)},
+                {'name': 'Code highlighting API', 'url': reverse('pygments-root', request)},
+                {'name': 'Blog posts API', 'url': reverse('blog-posts-root', request)},
+                {'name': 'Permissions example', 'url': reverse('permissions-example', request)}
                 ]
