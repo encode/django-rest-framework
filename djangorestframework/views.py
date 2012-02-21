@@ -181,7 +181,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         Required if you want to do things like set `request.upload_handlers` before
         the authentication and dispatch handling is run.
         """
-        return request
+        pass
 
     def final(self, request, response, *args, **kargs):
         """
