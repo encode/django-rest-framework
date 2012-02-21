@@ -335,7 +335,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
         context = RequestContext(self.view.request, {
             'content': content,
             'view': self.view,
-            'request': self.view.request,  # TODO: remove
+            'request': self.view.request,
             'response': self.view.response,
             'description': description,
             'name': name,
@@ -344,8 +344,6 @@ class DocumentingTemplateRenderer(BaseRenderer):
             'available_formats': self.view._rendered_formats,
             'put_form': put_form_instance,
             'post_form': post_form_instance,
-            'login_url': login_url,
-            'logout_url': logout_url,
             'FORMAT_PARAM': self._FORMAT_QUERY_PARAM,
             'METHOD_PARAM': getattr(self.view, '_METHOD_PARAM', None),
         })

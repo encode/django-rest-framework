@@ -1,6 +1,6 @@
 import re
 
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
 
 from djangorestframework import status
@@ -73,6 +73,7 @@ urlpatterns = patterns('',
     url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(renderers=[JSONPRenderer])),
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
+    url(r'^api', include('djangorestframework.urls', namespace='djangorestframework'))
 )
 
 

@@ -1,3 +1,4 @@
+from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
 from djangorestframework.compat import RequestFactory
 from djangorestframework.views import View
@@ -13,9 +14,19 @@ SAFARI_5_0_USER_AGENT = 'Mozilla/5.0 (X11; U; Linux x86_64; en-ca) AppleWebKit/5
 OPERA_11_0_MSIE_USER_AGENT = 'Mozilla/4.0 (compatible; MSIE 8.0; X11; Linux x86_64; pl) Opera 11.00'
 OPERA_11_0_OPERA_USER_AGENT = 'Opera/9.80 (X11; Linux x86_64; U; pl) Presto/2.7.62 Version/11.00'
 
+
+urlpatterns = patterns('',
+    url(r'^api', include('djangorestframework.urls', namespace='djangorestframework'))
+)
+
+
 class UserAgentMungingTest(TestCase):
-    """We need to fake up the accept headers when we deal with MSIE.  Blergh.
-    http://www.gethifi.com/blog/browser-rest-http-accept-headers"""
+    """
+    We need to fake up the accept headers when we deal with MSIE.  Blergh.
+    http://www.gethifi.com/blog/browser-rest-http-accept-headers
+    """
+
+    urls = 'djangorestframework.tests.accept'
 
     def setUp(self):
 

@@ -1,4 +1,5 @@
-from django.conf.urls.defaults import patterns, url
+from django.core.urlresolvers import reverse
+from django.conf.urls.defaults import patterns, url, include
 from django.http import HttpResponse
 from django.test import TestCase
 from django.test import Client
@@ -45,14 +46,13 @@ class MockResource(ModelResource):
     model = MockResourceModel
     fields = ('foo', 'bar', 'baz')
 
-urlpatterns = patterns('djangorestframework.utils.staticviews',
-    url(r'^accounts/login$', 'api_login'),
-    url(r'^accounts/logout$', 'api_logout'),
+urlpatterns = patterns('',
     url(r'^mock/$', MockView.as_view()),
     url(r'^mock/final/$', MockViewFinal.as_view()),
     url(r'^resourcemock/$', ResourceMockView.as_view()),
     url(r'^model/$', ListOrCreateModelView.as_view(resource=MockResource)),
     url(r'^model/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=MockResource)),
+    url(r'^restframework/', include('djangorestframework.urls', namespace='djangorestframework')),
 )
 
 class BaseViewTests(TestCase):
@@ -123,13 +123,13 @@ class ExtraViewsTests(TestCase):
 
     def test_login_view(self):
         """Ensure the login view exists"""
-        response = self.client.get('/accounts/login')
+        response = self.client.get(reverse('djangorestframework:login'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'].split(';')[0], 'text/html')
 
     def test_logout_view(self):
         """Ensure the logout view exists"""
-        response = self.client.get('/accounts/logout')
+        response = self.client.get(reverse('djangorestframework:logout'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response['Content-Type'].split(';')[0], 'text/html')
 
