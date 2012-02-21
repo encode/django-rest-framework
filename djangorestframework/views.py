@@ -188,22 +188,13 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         Required if you want to do things like set `request.upload_handlers` before
         the authentication and dispatch handling is run.
         """
-        # Calls to 'reverse' will not be fully qualified unless we set the
-        # scheme/host/port here.
-        self.orig_prefix = get_script_prefix()
-        if not (self.orig_prefix.startswith('http:') or self.orig_prefix.startswith('https:')):
-            prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
-            set_script_prefix(prefix + self.orig_prefix)
-        return request
+        pass
 
     def final(self, request, response, *args, **kargs):
         """
         Returns an `HttpResponse`. This method is a hook for any code that needs to run
         after everything else in the view.
         """
-        # Restore script_prefix.
-        set_script_prefix(self.orig_prefix)
-
         # Always add these headers.
         response['Allow'] = ', '.join(allowed_methods(self))
         # sample to allow caching using Vary http header

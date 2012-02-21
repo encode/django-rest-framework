@@ -40,7 +40,7 @@ class Response(SimpleTemplateResponse):
     _ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
     _IGNORE_IE_ACCEPT_HEADER = True
 
-    def __init__(self, content=None, status=None, request=None, renderers=None):
+    def __init__(self, content=None, status=None, request=None, renderers=None, headers=None):
         # First argument taken by `SimpleTemplateResponse.__init__` is template_name,
         # which we don't need
         super(Response, self).__init__(None, status=status)
@@ -50,6 +50,7 @@ class Response(SimpleTemplateResponse):
         self.raw_content = content
         self.has_content_body = content is not None
         self.request = request
+        self.headers = headers and headers[:] or []
         if renderers is not None:
             self.renderers = renderers
 
