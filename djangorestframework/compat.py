@@ -465,3 +465,9 @@ except:
     from django.core.urlresolvers import reverse
     from django.utils.functional import lazy
     reverse_lazy = lazy(reverse, str)
+
+# xml.etree.parse only throws ParseError for python >= 2.7
+try:
+    from xml.etree import ParseError as ETParseError
+except ImportError: # python < 2.7
+    ETParseError = None
