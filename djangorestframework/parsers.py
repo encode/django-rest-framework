@@ -167,10 +167,10 @@ class MultiPartParser(BaseParser):
         upload_handlers = self.view.request._get_upload_handlers()
         try:
             django_parser = DjangoMultiPartParser(self.view.request.META, stream, upload_handlers)
+            return django_parser.parse()
         except MultiPartParserError, exc:
             raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
                                 {'detail': 'multipart parse error - %s' % unicode(exc)})
-        return django_parser.parse()
 
 
 class XMLParser(BaseParser):
