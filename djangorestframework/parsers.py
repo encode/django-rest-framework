@@ -20,6 +20,8 @@ from djangorestframework.compat import yaml
 from djangorestframework.response import ErrorResponse
 from djangorestframework.utils.mediatypes import media_type_matches
 from xml.etree import ElementTree as ET
+from djangorestframework.compat import ETParseError
+from xml.parsers.expat import ExpatError
 import datetime
 import decimal
 
@@ -185,7 +187,11 @@ class XMLParser(BaseParser):
         `data` will simply be a string representing the body of the request.
         `files` will always be `None`.
         """
-        tree = ET.parse(stream)
+        try:
+          tree = ET.parse(stream)
+        except (ExpatError, ETParseError, ValueError), exc:
+          content = {'detail': 'XML parse error - %s' % unicode(exc)}
+          raise ErrorResponse(status.HTTP_400_BAD_REQUEST, content)
         data = self._xml_convert(tree.getroot())
 
         return (data, None)
