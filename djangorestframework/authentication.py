@@ -1,10 +1,7 @@
 """
 The :mod:`authentication` module provides a set of pluggable authentication classes.
 
-Authentication behavior is provided by mixing the :class:`mixins.AuthMixin` class into a :class:`View` class.
-
-The set of authentication methods which are used is then specified by setting the
-:attr:`authentication` attribute on the :class:`View` class, and listing a set of :class:`authentication` classes.
+Authentication behavior is provided by mixing the :class:`mixins.RequestMixin` class into a :class:`View` class.
 """
 
 from django.contrib.auth import authenticate
