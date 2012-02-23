@@ -53,6 +53,14 @@ class Response(SimpleTemplateResponse):
         if renderers is not None:
             self.renderers = renderers
 
+    def render(self):
+        #TODO: see ImmediateResponse
+        try:
+            return super(Response, self).render()
+        except ImmediateResponse as response:
+            response.renderers = self.renderers
+            return response.render()
+
     @property
     def rendered_content(self):
         """
@@ -166,6 +174,18 @@ class ImmediateResponse(Response, Exception):
     """
     A subclass of :class:`Response` used to abort the current request handling.
     """
+    #TODO: this is just a temporary fix, the whole rendering/support for ImmediateResponse, should be remade : see issue #163
+
+    def render(self):
+        try:
+            return super(Response, self).render()
+        except ImmediateResponse as exc:
+            renderer, media_type = self._determine_renderer()
+            self.renderers.remove(renderer)
+            if len(self.renderers) == 0:
+                raise RuntimeError('Caught an ImmediateResponse while '\
+                    'trying to render an ImmediateResponse')
+            return self.render()
 
     def __str__(self):
         """

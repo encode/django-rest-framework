@@ -281,6 +281,6 @@ class TestPagination(TestCase):
         paginated URLs. So page 1 should contain ?page=2, not ?page=1&page=2 """
         request = self.req.get('/paginator/?page=1')
         response = MockPaginatorView.as_view()(request)
-        content = json.loads(response.content)
+        content = response.raw_content
         self.assertTrue('page=2' in content['next'])
         self.assertFalse('page=1' in content['next'])

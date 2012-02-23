@@ -95,20 +95,55 @@ class TestResponseDetermineRenderer(TestCase):
 
 class TestResponseRenderContent(TestCase):
     
-    def get_response(self, url='', accept_list=[], content=None):
+    def get_response(self, url='', accept_list=[], content=None, 
+                                    renderer_classes=DEFAULT_RENDERERS):
+        accept_list = accept_list[0:]
         request = RequestFactory().get(url, HTTP_ACCEPT=','.join(accept_list))
-        return Response(request=request, content=content, renderers=[r() for r in DEFAULT_RENDERERS])
+        return Response(request=request, content=content, 
+                        renderers=[r() for r in renderer_classes])
 
     def test_render(self):
         """
-        Test rendering simple data to json.  
+        Test rendering simple data to json.
         """
         content = {'a': 1, 'b': [1, 2, 3]}
         content_type = 'application/json'
         response = self.get_response(accept_list=[content_type], content=content)
-        response.render()
+        response = response.render()
         self.assertEqual(json.loads(response.content), content)
         self.assertEqual(response['Content-Type'], content_type)
+
+    def test_render_no_renderer(self):
+        """
+        Test rendering response when no renderer can satisfy accept.
+        """
+        content = 'bla'
+        content_type = 'weirdcontenttype'
+        response = self.get_response(accept_list=[content_type], content=content)
+        response = response.render()
+        self.assertEqual(response.status_code, 406)
+        self.assertIsNotNone(response.content)
+
+    def test_render_renderer_raises_ImmediateResponse(self):
+        """
+        Test rendering response when renderer raises ImmediateResponse
+        """
+        class PickyJSONRenderer(BaseRenderer):
+            """
+            A renderer that doesn't make much sense, just to try
+            out raising an ImmediateResponse 
+            """
+            media_type = 'application/json'
+            def render(self, obj=None, media_type=None):
+                raise ImmediateResponse({'error': '!!!'}, status=400)
+
+        response = self.get_response(
+            accept_list=['application/json'],
+            renderer_classes=[PickyJSONRenderer, JSONRenderer]
+        )
+        response = response.render()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.content, json.dumps({'error': '!!!'}))
 
 
 DUMMYSTATUS = status.HTTP_200_OK
