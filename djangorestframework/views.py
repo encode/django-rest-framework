@@ -69,7 +69,7 @@ _resource_classes = (
 )
 
 
-class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
+class View(ResourceMixin, RequestMixin, ResponseMixin, PermissionsMixin, DjangoView):
     """
     Handles incoming requests and maps them to REST operations.
     Performs request deserialization, response serialization, authentication and input validation.
@@ -91,13 +91,13 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     List of parser classes the resource can parse the request with.
     """
 
-    authentication = (authentication.UserLoggedInAuthentication,
+    authentication_classes = (authentication.UserLoggedInAuthentication,
                        authentication.BasicAuthentication)
     """
     List of all authenticating methods to attempt.
     """
 
-    permissions = (permissions.FullAnonAccess,)
+    permissions_classes = (permissions.FullAnonAccess,)
     """
     List of all permissions that must be checked.
     """
@@ -206,15 +206,15 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     # all other authentication is CSRF exempt.
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
-        self.request = self.create_request(request)
+        self.request = request = self.create_request(request)
         self.args = args
         self.kwargs = kwargs
 
         try:
             self.initial(request, *args, **kwargs)
-
-            # Authenticate and check request has the relevant permissions
-            self._check_permissions()
+                
+            # check that user has the relevant permissions
+            self.check_permissions(request.user)
 
             # Get the appropriate handler method
             if request.method.lower() in self.http_method_names:

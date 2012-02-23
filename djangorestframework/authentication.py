@@ -88,13 +88,14 @@ class UserLoggedInAuthentication(BaseAuthentication):
         Otherwise returns :const:`None`.
         """
         request.DATA  # Make sure our generic parsing runs first
+        user = getattr(request.request, 'user', None)
 
-        if getattr(request, 'user', None) and request.user.is_active:
+        if user and user.is_active:
             # Enforce CSRF validation for session based authentication.
             resp = CsrfViewMiddleware().process_view(request, None, (), {})
 
             if resp is None:  # csrf passed
-                return request.user
+                return user
         return None
 
 
