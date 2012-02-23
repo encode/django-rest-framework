@@ -1,12 +1,11 @@
 """Test a range of REST API usage of the example application.
 """
 
-from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.core.urlresolvers import reverse
 from django.utils import simplejson as json
 
 from djangorestframework.compat import RequestFactory
+from djangorestframework.reverse import reverse
 from djangorestframework.views import InstanceModelView, ListOrCreateModelView
 
 from blogpost import models, urls

@@ -6,13 +6,13 @@ from any view. It is a bit smarter than Django's `HttpResponse`, for it renders 
 its content to a serial format by using a list of :mod:`renderers`.
 
 To determine the content type to which it must render, default behaviour is to use standard
-HTTP Accept header content negotiation. But `Response` also supports overriding the content type 
+HTTP Accept header content negotiation. But `Response` also supports overriding the content type
 by specifying an ``_accept=`` parameter in the URL. Also, `Response` will ignore `Accept` headers
 from Internet Explorer user agents and use a sensible browser `Accept` header instead.
 
 
 `ImmediateResponse` is an exception that inherits from `Response`. It can be used
-to abort the request handling (i.e. ``View.get``, ``View.put``, ...), 
+to abort the request handling (i.e. ``View.get``, ``View.put``, ...),
 and immediately returning a response.
 """
 
@@ -31,8 +31,8 @@ class Response(SimpleTemplateResponse):
     """
     An HttpResponse that may include content that hasn't yet been serialized.
 
-    Kwargs: 
-        - content(object). The raw content, not yet serialized. This must be simple Python \
+    Kwargs:
+        - content(object). The raw content, not yet serialized. This must be simple Python
         data that renderers can handle (e.g.: `dict`, `str`, ...)
         - renderers(list/tuple). The renderers to use for rendering the response content.
     """
@@ -40,16 +40,17 @@ class Response(SimpleTemplateResponse):
     _ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
     _IGNORE_IE_ACCEPT_HEADER = True
 
-    def __init__(self, content=None, status=None, request=None, renderers=None):
+    def __init__(self, content=None, status=None, request=None, renderers=None, headers=None):
         # First argument taken by `SimpleTemplateResponse.__init__` is template_name,
         # which we don't need
         super(Response, self).__init__(None, status=status)
 
         # We need to store our content in raw content to avoid overriding HttpResponse's
         # `content` property
-        self.raw_content = content 
+        self.raw_content = content
         self.has_content_body = content is not None
         self.request = request
+        self.headers = headers and headers[:] or []
         if renderers is not None:
             self.renderers = renderers
 
@@ -64,7 +65,7 @@ class Response(SimpleTemplateResponse):
     @property
     def rendered_content(self):
         """
-        The final rendered content. Accessing this attribute triggers the complete rendering cycle : 
+        The final rendered content. Accessing this attribute triggers the complete rendering cycle :
         selecting suitable renderer, setting response's actual content type, rendering data.
         """
         renderer, media_type = self._determine_renderer()
@@ -88,9 +89,9 @@ class Response(SimpleTemplateResponse):
     def _determine_accept_list(self):
         """
         Returns a list of accepted media types. This list is determined from :
-        
+
             1. overload with `_ACCEPT_QUERY_PARAM`
-            2. `Accept` header of the request 
+            2. `Accept` header of the request
 
         If those are useless, a default value is returned instead.
         """

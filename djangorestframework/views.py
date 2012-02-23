@@ -7,13 +7,12 @@ By setting or modifying class attributes on your view, you change it's predefine
 
 import re
 from django.core.urlresolvers import set_script_prefix, get_script_prefix
-from django.http import HttpResponse
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 
 from djangorestframework.compat import View as DjangoView, apply_markdown
-from djangorestframework.response import Response, ImmediateResponse
+from djangorestframework.response import ImmediateResponse
 from djangorestframework.mixins import *
 from djangorestframework.utils import allowed_methods
 from djangorestframework import resources, renderers, parsers, authentication, permissions, status
@@ -163,6 +162,9 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         return description
 
     def markup_description(self, description):
+        """
+        Apply HTML markup to the description of this view.
+        """
         if apply_markdown:
             description = apply_markdown(description)
         else:
@@ -171,11 +173,13 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
-        Return an HTTP 405 error if an operation is called which does not have a handler method.
+        Return an HTTP 405 error if an operation is called which does not have
+        a handler method.
         """
-        raise ImmediateResponse(
-                {'detail': 'Method \'%s\' not allowed on this resource.' % request.method},
-            status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        content = {
+            'detail': "Method '%s' not allowed on this resource." % request.method
+        }
+        raise ImmediateResponse(content, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def initial(self, request, *args, **kargs):
         """
@@ -184,22 +188,13 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         Required if you want to do things like set `request.upload_handlers` before
         the authentication and dispatch handling is run.
         """
-        # Calls to 'reverse' will not be fully qualified unless we set the
-        # scheme/host/port here.
-        self.orig_prefix = get_script_prefix()
-        if not (self.orig_prefix.startswith('http:') or self.orig_prefix.startswith('https:')):
-            prefix = '%s://%s' % (request.is_secure() and 'https' or 'http', request.get_host())
-            set_script_prefix(prefix + self.orig_prefix)
-        return request
+        pass
 
     def final(self, request, response, *args, **kargs):
         """
         Returns an `HttpResponse`. This method is a hook for any code that needs to run
         after everything else in the view.
         """
-        # Restore script_prefix.
-        set_script_prefix(self.orig_prefix)
-
         # Always add these headers.
         response['Allow'] = ', '.join(allowed_methods(self))
         # sample to allow caching using Vary http header
@@ -211,17 +206,12 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     # all other authentication is CSRF exempt.
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
-        self.request = request
+        self.request = self.create_request(request)
         self.args = args
         self.kwargs = kwargs
 
         try:
-            # Get a custom request, built form the original request instance
-            self.request = request = self.create_request(request)
-
-            # `initial` is the opportunity to temper with the request, 
-            # even completely replace it.
-            self.request = request = self.initial(request, *args, **kwargs)
+            self.initial(request, *args, **kwargs)
 
             # Authenticate and check request has the relevant permissions
             self._check_permissions()
@@ -231,7 +221,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
                 handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
             else:
                 handler = self.http_method_not_allowed
- 
+
             # TODO: should we enforce HttpResponse, like Django does ?
             response = handler(request, *args, **kwargs)
 
@@ -239,7 +229,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             self.response = response = self.prepare_response(response)
 
             # Pre-serialize filtering (eg filter complex objects into natively serializable types)
-            # TODO: ugly hack to handle both HttpResponse and Response. 
+            # TODO: ugly hack to handle both HttpResponse and Response.
             if hasattr(response, 'raw_content'):
                 response.raw_content = self.filter_response(response.raw_content)
             else:

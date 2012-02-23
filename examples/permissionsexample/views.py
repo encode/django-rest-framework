@@ -1,7 +1,7 @@
 from djangorestframework.views import View
 from djangorestframework.response import Response
 from djangorestframework.permissions import PerUserThrottling, IsAuthenticated
-from django.core.urlresolvers import reverse
+from djangorestframework.reverse import reverse
 
 
 class PermissionsExampleView(View):
@@ -13,11 +13,11 @@ class PermissionsExampleView(View):
         return Response([
             {
                 'name': 'Throttling Example',
-                'url': reverse('throttled-resource')
+                'url': reverse('throttled-resource', request)
             },
             {
                 'name': 'Logged in example',
-                'url': reverse('loggedin-resource')
+                'url': reverse('loggedin-resource', request)
             },
         ])
 

@@ -146,7 +146,7 @@ class Serializer(object):
         # then the second element of the tuple is the fields to
         # set on the related serializer
         if isinstance(info, (list, tuple)):
-            class OnTheFlySerializer(Serializer):
+            class OnTheFlySerializer(self.__class__):
                 fields = info
             return OnTheFlySerializer
 

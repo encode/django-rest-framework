@@ -9,11 +9,9 @@ The wrapped request then offers a richer API, in particular :
     - form overloading of HTTP method, content type and content
 """
 
-from django.http import HttpRequest
-
 from djangorestframework.response import ImmediateResponse
 from djangorestframework import status
-from djangorestframework.utils.mediatypes import is_form_media_type, order_by_precedence
+from djangorestframework.utils.mediatypes import is_form_media_type
 from djangorestframework.utils import as_tuple
 
 from StringIO import StringIO
@@ -105,7 +103,7 @@ class Request(object):
         """
         self._content_type = self.META.get('HTTP_CONTENT_TYPE', self.META.get('CONTENT_TYPE', ''))
         self._perform_form_overloading()
-        # if the HTTP method was not overloaded, we take the raw HTTP method 
+        # if the HTTP method was not overloaded, we take the raw HTTP method
         if not hasattr(self, '_method'):
             self._method = self.request.method
 

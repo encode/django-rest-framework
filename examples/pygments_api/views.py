@@ -1,10 +1,10 @@
 from __future__ import with_statement  # for python 2.5
 from django.conf import settings
-from django.core.urlresolvers import reverse
 
 from djangorestframework.resources import FormResource
 from djangorestframework.response import Response
 from djangorestframework.renderers import BaseRenderer
+from djangorestframework.reverse import reverse
 from djangorestframework.views import View
 from djangorestframework import status
 
@@ -61,7 +61,7 @@ class PygmentsRoot(View):
         Return a list of all currently existing snippets.
         """
         unique_ids = [os.path.split(f)[1] for f in list_dir_sorted_by_ctime(HIGHLIGHTED_CODE_DIR)]
-        return Response([reverse('pygments-instance', args=[unique_id]) for unique_id in unique_ids])
+        return Response([reverse('pygments-instance', request, args=[unique_id]) for unique_id in unique_ids])
 
     def post(self, request):
         """
@@ -81,8 +81,8 @@ class PygmentsRoot(View):
 
         remove_oldest_files(HIGHLIGHTED_CODE_DIR, MAX_FILES)
 
-        self.headers['Location'] = reverse('pygments-instance', args=[unique_id])
-        return Response(status=status.HTTP_201_CREATED)
+        location = reverse('pygments-instance', request, args=[unique_id])
+        return Response(status=status.HTTP_201_CREATED, headers={'Location': location})
 
 
 class PygmentsInstance(View):
@@ -98,7 +98,7 @@ class PygmentsInstance(View):
         """
         pathname = os.path.join(HIGHLIGHTED_CODE_DIR, unique_id)
         if not os.path.exists(pathname):
-            return Response(status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(open(pathname, 'r').read())
 
     def delete(self, request, unique_id):
@@ -107,6 +107,7 @@ class PygmentsInstance(View):
         """
         pathname = os.path.join(HIGHLIGHTED_CODE_DIR, unique_id)
         if not os.path.exists(pathname):
-            return Response(status.HTTP_404_NOT_FOUND)
-        return Response(os.remove(pathname))
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        os.remove(pathname)
+        return Response()
 

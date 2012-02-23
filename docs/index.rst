@@ -40,8 +40,11 @@ Requirements
 ------------
 
 * Python (2.5, 2.6, 2.7 supported)
-* Django (1.2, 1.3, 1.4-alpha supported)
-
+* Django (1.2, 1.3, 1.4 supported)
+* `django.contrib.staticfiles`_ (or `django-staticfiles`_ for Django 1.2)
+* `URLObject`_ >= 2.0.0
+* `Markdown`_ >= 2.1.0 (Optional)
+* `PyYAML`_ >= 3.10 (Optional)
 
 Installation
 ------------
@@ -53,8 +56,6 @@ You can install Django REST framework using ``pip`` or ``easy_install``::
 Or get the latest development version using git::
 
     git clone git@github.com:tomchristie/django-rest-framework.git
-
-Or you can `download the current release <http://pypi.python.org/pypi/djangorestframework>`_.
 
 Setup
 -----
@@ -114,3 +115,8 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. _django.contrib.staticfiles: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/
+.. _django-staticfiles: http://pypi.python.org/pypi/django-staticfiles/
+.. _URLObject: http://pypi.python.org/pypi/URLObject/
+.. _Markdown: http://pypi.python.org/pypi/Markdown/
+.. _PyYAML: http://pypi.python.org/pypi/PyYAML
