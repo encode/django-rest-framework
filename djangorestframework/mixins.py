@@ -3,7 +3,6 @@ The :mod:`mixins` module provides a set of reusable `mixin`
 classes that can be added to a `View`.
 """
 
-from django.contrib.auth.models import AnonymousUser
 from django.core.paginator import Paginator
 from django.db.models.fields.related import ForeignKey
 from urlobject import URLObject
@@ -19,7 +18,7 @@ __all__ = (
     # Base behavior mixins
     'RequestMixin',
     'ResponseMixin',
-    'AuthMixin',
+    'PermissionsMixin',
     'ResourceMixin',
     # Reverse URL lookup behavior
     'InstanceMixin',
@@ -45,6 +44,13 @@ class RequestMixin(object):
     Should be a tuple/list of classes as described in the :mod:`parsers` module.
     """
 
+    authentication_classes = ()
+    """
+    The set of authentication types that this view can handle.
+
+    Should be a tuple/list of classes as described in the :mod:`authentication` module.
+    """
+
     request_class = Request
     """
     The class to use as a wrapper for the original request object.
@@ -56,6 +62,12 @@ class RequestMixin(object):
         """
         return [p(self) for p in self.parser_classes]
 
+    def get_authentications(self):
+        """
+        Instantiates and returns the list of authentications the request will use.
+        """
+        return [a(self) for a in self.authentication_classes]
+
     def create_request(self, request):
         """
         Creates and returns an instance of :class:`request.Request`.
@@ -63,7 +75,9 @@ class RequestMixin(object):
         parsers set on the view.
         """
         parsers = self.get_parsers()
-        return self.request_class(request, parsers=parsers)
+        authentications = self.get_authentications()
+        return self.request_class(request, parsers=parsers, 
+                                    authentications=authentications)
 
     @property
     def _parsed_media_types(self):
@@ -134,57 +148,32 @@ class ResponseMixin(object):
         return [renderer.format for renderer in self.get_renderers()]
 
 
-########## Auth Mixin ##########
+########## Permissions Mixin ##########
 
-class AuthMixin(object):
+class PermissionsMixin(object):
     """
-    Simple :class:`mixin` class to add authentication and permission checking to a :class:`View` class.
-    """
-
-    authentication = ()
-    """
-    The set of authentication types that this view can handle.
-
-    Should be a tuple/list of classes as described in the :mod:`authentication` module.
+    Simple :class:`mixin` class to add permission checking to a :class:`View` class.
     """
 
-    permissions = ()
+    permissions_classes = ()
     """
     The set of permissions that will be enforced on this view.
 
     Should be a tuple/list of classes as described in the :mod:`permissions` module.
     """
 
-    @property
-    def user(self):
+    def get_permissions(self):
         """
-        Returns the :obj:`user` for the current request, as determined by the set of
-        :class:`authentication` classes applied to the :class:`View`.
+        Instantiates and returns the list of permissions that this view requires.
         """
-        if not hasattr(self, '_user'):
-            self._user = self._authenticate()
-        return self._user
-
-    def _authenticate(self):
-        """
-        Attempt to authenticate the request using each authentication class in turn.
-        Returns a ``User`` object, which may be ``AnonymousUser``.
-        """
-        for authentication_cls in self.authentication:
-            authentication = authentication_cls(self)
-            user = authentication.authenticate(self.request)
-            if user:
-                return user
-        return AnonymousUser()
+        return [p(self) for p in self.permissions_classes]
 
     # TODO: wrap this behavior around dispatch()
-    def _check_permissions(self):
+    def check_permissions(self, user):
         """
         Check user permissions and either raise an ``ImmediateResponse`` or return.
         """
-        user = self.user
-        for permission_cls in self.permissions:
-            permission = permission_cls(self)
+        for permission in self.get_permissions():
             permission.check_permission(user)
 
 

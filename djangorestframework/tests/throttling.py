@@ -13,17 +13,17 @@ from djangorestframework.resources import FormResource
 from djangorestframework.response import Response
 
 class MockView(View):
-    permissions = ( PerUserThrottling, )
+    permissions_classes = ( PerUserThrottling, )
     throttle = '3/sec'
 
     def get(self, request):
         return Response('foo')
 
 class MockView_PerViewThrottling(MockView):
-    permissions = ( PerViewThrottling, )
+    permissions_classes = ( PerViewThrottling, )
 
 class MockView_PerResourceThrottling(MockView):
-    permissions = ( PerResourceThrottling, )
+    permissions_classes = ( PerResourceThrottling, )
     resource = FormResource
 
 class MockView_MinuteThrottling(MockView):
@@ -54,7 +54,7 @@ class ThrottlingTests(TestCase):
         """
         Explicitly set the timer, overriding time.time()
         """
-        view.permissions[0].timer = lambda self: value
+        view.permissions_classes[0].timer = lambda self: value
 
     def test_request_throttling_expires(self):
         """

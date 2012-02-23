@@ -1,10 +1,7 @@
 """
 The :mod:`authentication` module provides a set of pluggable authentication classes.
 
-Authentication behavior is provided by mixing the :class:`mixins.AuthMixin` class into a :class:`View` class.
-
-The set of authentication methods which are used is then specified by setting the
-:attr:`authentication` attribute on the :class:`View` class, and listing a set of :class:`authentication` classes.
+Authentication behavior is provided by mixing the :class:`mixins.RequestMixin` class into a :class:`View` class.
 """
 
 from django.contrib.auth import authenticate
@@ -88,13 +85,14 @@ class UserLoggedInAuthentication(BaseAuthentication):
         Otherwise returns :const:`None`.
         """
         request.DATA  # Make sure our generic parsing runs first
+        user = getattr(request.request, 'user', None)
 
-        if getattr(request, 'user', None) and request.user.is_active:
+        if user and user.is_active:
             # Enforce CSRF validation for session based authentication.
             resp = CsrfViewMiddleware().process_view(request, None, (), {})
 
             if resp is None:  # csrf passed
-                return request.user
+                return user
         return None
 
 

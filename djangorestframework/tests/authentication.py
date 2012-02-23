@@ -12,7 +12,7 @@ import base64
 
 
 class MockView(View):
-    permissions = (permissions.IsAuthenticated,)
+    permissions_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
         return HttpResponse({'a': 1, 'b': 2, 'c': 3})

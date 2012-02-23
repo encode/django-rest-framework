@@ -8,13 +8,14 @@ The wrapped request then offers a richer API, in particular :
     - full support of PUT method, including support for file uploads
     - form overloading of HTTP method, content type and content
 """
+from StringIO import StringIO
+
+from django.contrib.auth.models import AnonymousUser
 
 from djangorestframework.response import ImmediateResponse
 from djangorestframework import status
 from djangorestframework.utils.mediatypes import is_form_media_type
 from djangorestframework.utils import as_tuple
-
-from StringIO import StringIO
 
 
 __all__ = ('Request',)
@@ -27,6 +28,7 @@ class Request(object):
     Kwargs:
         - request(HttpRequest). The original request instance.
         - parsers(list/tuple). The parsers to use for parsing the request content.
+        - authentications(list/tuple). The authentications used to try authenticating the request's user.
     """
 
     _USE_FORM_OVERLOADING = True
@@ -34,10 +36,12 @@ class Request(object):
     _CONTENTTYPE_PARAM = '_content_type'
     _CONTENT_PARAM = '_content'
 
-    def __init__(self, request=None, parsers=None):
+    def __init__(self, request, parsers=None, authentications=None):
         self.request = request
         if parsers is not None:
             self.parsers = parsers
+        if authentications is not None:
+            self.authentications = authentications
 
     @property
     def method(self):
@@ -86,6 +90,16 @@ class Request(object):
         if not hasattr(self, '_files'):
             self._load_data_and_files()
         return self._files
+
+    @property
+    def user(self):
+        """
+        Returns the :obj:`user` for the current request, authenticated 
+        with the set of :class:`authentication` instances applied to the :class:`Request`.
+        """
+        if not hasattr(self, '_user'):
+            self._user = self._authenticate()
+        return self._user
 
     def _load_data_and_files(self):
         """
@@ -191,6 +205,27 @@ class Request(object):
         self._parsers = value
 
     parsers = property(_get_parsers, _set_parsers)
+
+    def _authenticate(self):
+        """
+        Attempt to authenticate the request using each authentication instance in turn.
+        Returns a ``User`` object, which may be ``AnonymousUser``.
+        """
+        for authentication in self.authentications:
+            user = authentication.authenticate(self)
+            if user:
+                return user
+        return AnonymousUser()
+
+    def _get_authentications(self):
+        if hasattr(self, '_authentications'):
+            return self._authentications
+        return ()
+
+    def _set_authentications(self, value):
+        self._authentications = value
+
+    authentications = property(_get_authentications, _set_authentications)
 
     def __getattr__(self, name):
         """

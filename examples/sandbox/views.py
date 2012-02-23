@@ -54,7 +54,7 @@ class Sandbox(View):
              'url': reverse('model-resource-root', request)},
             {'name': 'Simple Mixin-only example',
              'url': reverse('mixin-view', request)},
-            {'name': 'Object store API'
+            {'name': 'Object store API',
              'url': reverse('object-store-root', request)},
             {'name': 'Code highlighting API',
              'url': reverse('pygments-root', request)},
