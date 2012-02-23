@@ -6,7 +6,6 @@ By setting or modifying class attributes on your view, you change it's predefine
 """
 
 import re
-from django.core.urlresolvers import set_script_prefix, get_script_prefix
 from django.http import HttpResponse
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
@@ -269,7 +268,7 @@ class ModelView(View):
     resource = resources.ModelResource
 
 
-class InstanceModelView(InstanceMixin, ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelView):
+class InstanceModelView(ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelView):
     """
     A view which provides default operations for read/update/delete against a model instance.
     """

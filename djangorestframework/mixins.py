@@ -25,14 +25,13 @@ __all__ = (
     'ResponseMixin',
     'AuthMixin',
     'ResourceMixin',
-    # Reverse URL lookup behavior
-    'InstanceMixin',
     # Model behavior mixins
     'ReadModelMixin',
     'CreateModelMixin',
     'UpdateModelMixin',
     'DeleteModelMixin',
-    'ListModelMixin'
+    'ListModelMixin',
+    'PaginatorMixin'
 )
 
 
@@ -444,30 +443,6 @@ class ResourceMixin(object):
         else:
             return None
 
-##########
-
-
-class InstanceMixin(object):
-    """
-    `Mixin` class that is used to identify a `View` class as being the canonical identifier
-    for the resources it is mapped to.
-    """
-
-    @classmethod
-    def as_view(cls, **initkwargs):
-        """
-        Store the callable object on the resource class that has been associated with this view.
-        """
-        view = super(InstanceMixin, cls).as_view(**initkwargs)
-        resource = getattr(cls(**initkwargs), 'resource', None)
-        if resource:
-            # We do a little dance when we store the view callable...
-            # we need to store it wrapped in a 1-tuple, so that inspect will treat it
-            # as a function when we later look it up (rather than turning it into a method).
-            # This makes sure our URL reversing works ok.
-            resource.view_callable = (view,)
-        return view
-
 
 ########## Model Mixins ##########
 
@@ -599,7 +574,7 @@ class CreateModelMixin(ModelMixin):
                     manager.through(**data).save()
 
         headers = {}
-        if hasattr(instance, 'get_absolute_url'):
+        if hasattr(self.resource, 'url'):
             headers['Location'] = self.resource(self).url(instance)
         return Response(status.HTTP_201_CREATED, instance, headers)
 
