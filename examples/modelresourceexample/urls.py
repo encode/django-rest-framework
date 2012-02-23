@@ -4,5 +4,5 @@ from modelresourceexample.resources import MyModelResource
 
 urlpatterns = patterns('',
     url(r'^$',          ListOrCreateModelView.as_view(resource=MyModelResource), name='model-resource-root'),
-    url(r'^(?P<pk>[0-9]+)/$', InstanceModelView.as_view(resource=MyModelResource)),
+    url(r'^(?P<id>[0-9]+)/$', InstanceModelView.as_view(resource=MyModelResource), name='model-resource-instance'),
 )

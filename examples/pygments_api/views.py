@@ -30,9 +30,13 @@ def list_dir_sorted_by_ctime(dir):
     """
     Return a list of files sorted by creation time
     """
-    filepaths = [os.path.join(dir, file) for file in os.listdir(dir) if not file.startswith('.')]
-    return [item[0] for item in sorted( [(path, os.path.getctime(path)) for path in filepaths],
-                                        key=operator.itemgetter(1), reverse=False) ]
+    filepaths = [os.path.join(dir, file)
+                 for file in os.listdir(dir)
+                 if not file.startswith('.')]
+    ctimes = [(path, os.path.getctime(path)) for path in filepaths]
+    ctimes = sorted(ctimes, key=operator.itemgetter(1), reverse=False)
+    return [filepath for filepath, ctime in  ctimes]
+
 
 def remove_oldest_files(dir, max_files):
     """

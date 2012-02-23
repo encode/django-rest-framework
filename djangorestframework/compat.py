@@ -214,17 +214,14 @@ else:
     REASON_NO_CSRF_COOKIE = "CSRF cookie not set."
     REASON_BAD_TOKEN = "CSRF token missing or incorrect."
 
-
     def _get_failure_view():
         """
         Returns the view to be used for CSRF rejections
         """
         return get_callable(settings.CSRF_FAILURE_VIEW)
 
-
     def _get_new_csrf_key():
         return hashlib.md5("%s%s" % (randrange(0, _MAX_CSRF_KEY), settings.SECRET_KEY)).hexdigest()
-
 
     def get_token(request):
         """
@@ -238,7 +235,6 @@ else:
         """
         request.META["CSRF_COOKIE_USED"] = True
         return request.META.get("CSRF_COOKIE", None)
-
 
     def _sanitize_token(token):
         # Allow only alphanum, and ensure we return a 'str' for the sake of the post
@@ -432,12 +428,13 @@ try:
 except ImportError:
     yaml = None
 
+
 import unittest
 try:
     import unittest.skip
-except ImportError: # python < 2.7
+except ImportError:  # python < 2.7
     from unittest import TestCase
-    import functools 
+    import functools
 
     def skip(reason):
         # Pasted from py27/lib/unittest/case.py
@@ -448,26 +445,19 @@ except ImportError: # python < 2.7
             if not (isinstance(test_item, type) and issubclass(test_item, TestCase)):
                 @functools.wraps(test_item)
                 def skip_wrapper(*args, **kwargs):
-                   pass 
+                    pass
                 test_item = skip_wrapper
 
             test_item.__unittest_skip__ = True
             test_item.__unittest_skip_why__ = reason
             return test_item
         return decorator
-     
+
     unittest.skip = skip
 
-# reverse_lazy (Django 1.4 onwards)
-try:
-    from django.core.urlresolvers import reverse_lazy
-except:
-    from django.core.urlresolvers import reverse
-    from django.utils.functional import lazy
-    reverse_lazy = lazy(reverse, str)
 
 # xml.etree.parse only throws ParseError for python >= 2.7
 try:
     from xml.etree import ParseError as ETParseError
-except ImportError: # python < 2.7
+except ImportError:  # python < 2.7
     ETParseError = None

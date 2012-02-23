@@ -10,7 +10,8 @@ from djangorestframework.utils import as_tuple
 
 class BaseResource(Serializer):
     """
-    Base class for all Resource classes, which simply defines the interface they provide.
+    Base class for all Resource classes, which simply defines the interface
+    they provide.
     """
     fields = None
     include = None
@@ -19,11 +20,13 @@ class BaseResource(Serializer):
     def __init__(self, view=None, depth=None, stack=[], **kwargs):
         super(BaseResource, self).__init__(depth, stack, **kwargs)
         self.view = view
+        self.request = view.request
 
     def validate_request(self, data, files=None):
         """
         Given the request content return the cleaned, validated content.
-        Typically raises a :exc:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
+        Typically raises a :exc:`response.ErrorResponse` with status code 400
+        (Bad Request) on failure.
         """
         return data
 
@@ -37,7 +40,8 @@ class BaseResource(Serializer):
 class Resource(BaseResource):
     """
     A Resource determines how a python object maps to some serializable data.
-    Objects that a resource can act on include plain Python object instances, Django Models, and Django QuerySets.
+    Objects that a resource can act on include plain Python object instances,
+    Django Models, and Django QuerySets.
     """
 
     # The model attribute refers to the Django Model which this Resource maps to.
@@ -355,7 +359,9 @@ class ModelResource(FormResource):
                         instance_attrs[param] = attr
 
                 try:
-                    return reverse(self.view_callable[0], self.view.request, kwargs=instance_attrs)
+                    return reverse(self.view_callable[0],
+                                   kwargs=instance_attrs,
+                                   request=self.view.request)
                 except NoReverseMatch:
                     pass
         raise _SkipField
