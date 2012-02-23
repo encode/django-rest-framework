@@ -30,7 +30,7 @@ class ThrottlingExampleView(View):
     throttle will be applied until 60 seconds have passed since the first request.
     """
 
-    permissions = (PerUserThrottling,)
+    permissions_classes = (PerUserThrottling,)
     throttle = '10/min'
 
     def get(self, request):
@@ -47,7 +47,7 @@ class LoggedInExampleView(View):
     `curl -X GET -H 'Accept: application/json' -u test:test http://localhost:8000/permissions-example`
     """
 
-    permissions = (IsAuthenticated, )
+    permissions_classes = (IsAuthenticated, )
 
     def get(self, request):
         return Response('You have permission to view this resource')
