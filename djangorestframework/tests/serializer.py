@@ -104,6 +104,27 @@ class TestFieldNesting(TestCase):
         self.assertEqual(SerializerM2().serialize(self.m2), {'field': {'field1': u'foo'}})
         self.assertEqual(SerializerM3().serialize(self.m3), {'field': {'field2': u'bar'}})
 
+    def test_serializer_no_fields(self):
+        """
+        Test related serializer works when the fields attr isn't present. Fix for
+        #178.
+        """
+        class NestedM2(Serializer):
+            fields = ('field1', )
+
+        class NestedM3(Serializer):
+            fields = ('field2', )
+
+        class SerializerM2(Serializer):
+            include = [('field', NestedM2)]
+            exclude = ('id', )
+
+        class SerializerM3(Serializer):
+            fields = [('field', NestedM3)]
+
+        self.assertEqual(SerializerM2().serialize(self.m2), {'field': {'field1': u'foo'}})
+        self.assertEqual(SerializerM3().serialize(self.m3), {'field': {'field2': u'bar'}})
+
     def test_serializer_classname_nesting(self):
         """
         Test related model serialization
