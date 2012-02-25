@@ -150,7 +150,7 @@ class TestFormParser(TestCase):
 
     def test_parse(self):
         """ Make sure the `QueryDict` works OK """
-        parser = FormParser(None)
+        parser = FormParser()
 
         stream = StringIO(self.string)
         (data, files) = parser.parse(stream, {}, [])
@@ -202,11 +202,11 @@ class TestXMLParser(TestCase):
         }
 
     def test_parse(self):
-        parser = XMLParser(None)
-        (data, files) = parser.parse(self._input)
+        parser = XMLParser()
+        (data, files) = parser.parse(self._input, {}, [])
         self.assertEqual(data, self._data)
 
     def test_complex_data_parse(self):
-        parser = XMLParser(None)
-        (data, files) = parser.parse(self._complex_data_input)
+        parser = XMLParser()
+        (data, files) = parser.parse(self._complex_data_input, {}, [])
         self.assertEqual(data, self._complex_data)

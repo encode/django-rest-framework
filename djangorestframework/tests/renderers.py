@@ -381,8 +381,8 @@ class XMLRendererTestCase(TestCase):
         renderer = XMLRenderer(None)
         content = StringIO(renderer.render(self._complex_data, 'application/xml'))
 
-        parser = XMLParser(None)
-        complex_data_out, dummy = parser.parse(content)
+        parser = XMLParser()
+        complex_data_out, dummy = parser.parse(content, {}, [])
         error_msg = "complex data differs!IN:\n %s \n\n OUT:\n %s" % (repr(self._complex_data), repr(complex_data_out))
         self.assertEqual(self._complex_data, complex_data_out, error_msg)
 

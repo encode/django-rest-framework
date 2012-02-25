@@ -81,7 +81,8 @@ class TestNonFieldErrors(TestCase):
         content = {'field1': 'example1', 'field2': 'example2'}
         try:
             MockResource(view).validate_request(content, None)
-        except ImmediateResponse, response:
+        except ImmediateResponse, exc:
+            response = exc.response
             self.assertEqual(response.raw_content, {'errors': [MockForm.ERROR_TEXT]})
         else:
             self.fail('ImmediateResponse was not raised')
@@ -154,7 +155,8 @@ class TestFormValidation(TestCase):
         content = {}
         try:
             validator.validate_request(content, None)
-        except ImmediateResponse, response:
+        except ImmediateResponse, exc:
+            response = exc.response
             self.assertEqual(response.raw_content, {'field_errors': {'qwerty': ['This field is required.']}})
         else:
             self.fail('ResourceException was not raised')
@@ -164,7 +166,8 @@ class TestFormValidation(TestCase):
         content = {'qwerty': ''}
         try:
             validator.validate_request(content, None)
-        except ImmediateResponse, response:
+        except ImmediateResponse, exc:
+            response = exc.response
             self.assertEqual(response.raw_content, {'field_errors': {'qwerty': ['This field is required.']}})
         else:
             self.fail('ResourceException was not raised')
@@ -174,7 +177,8 @@ class TestFormValidation(TestCase):
         content = {'qwerty': 'uiop', 'extra': 'extra'}
         try:
             validator.validate_request(content, None)
-        except ImmediateResponse, response:
+        except ImmediateResponse, exc:
+            response = exc.response
             self.assertEqual(response.raw_content, {'field_errors': {'extra': ['This field does not exist.']}})
         else:
             self.fail('ResourceException was not raised')
@@ -184,7 +188,8 @@ class TestFormValidation(TestCase):
         content = {'qwerty': '', 'extra': 'extra'}
         try:
             validator.validate_request(content, None)
-        except ImmediateResponse, response:
+        except ImmediateResponse, exc:
+            response = exc.response
             self.assertEqual(response.raw_content, {'field_errors': {'qwerty': ['This field is required.'],
                                                                          'extra': ['This field does not exist.']}})
         else:

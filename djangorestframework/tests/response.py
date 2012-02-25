@@ -4,7 +4,7 @@ import unittest
 from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
 
-from djangorestframework.response import Response, ImmediateResponse
+from djangorestframework.response import Response, NotAcceptable
 from djangorestframework.views import View
 from djangorestframework.compat import RequestFactory
 from djangorestframework import status
@@ -16,6 +16,14 @@ from djangorestframework.renderers import (
 )
 
 
+class MockPickleRenderer(BaseRenderer):
+    media_type = 'application/pickle'
+
+
+class MockJsonRenderer(BaseRenderer):
+    media_type = 'application/json'
+
+
 class TestResponseDetermineRenderer(TestCase):
 
     def get_response(self, url='', accept_list=[], renderers=[]):
@@ -24,11 +32,6 @@ class TestResponseDetermineRenderer(TestCase):
             kwargs['HTTP_ACCEPT'] = ','.join(accept_list)
         request = RequestFactory().get(url, **kwargs)
         return Response(request=request, renderers=renderers)
-
-    def get_renderer_mock(self, media_type):
-        return type('RendererMock', (BaseRenderer,), {
-            'media_type': media_type,
-        })()
 
     def test_determine_accept_list_accept_header(self):
         """
@@ -59,46 +62,43 @@ class TestResponseDetermineRenderer(TestCase):
         Test that right renderer is chosen, in the order of Accept list.
         """
         accept_list = ['application/pickle', 'application/json']
-        prenderer = self.get_renderer_mock('application/pickle')
-        jrenderer = self.get_renderer_mock('application/json')
-
-        response = self.get_response(accept_list=accept_list, renderers=(prenderer, jrenderer))
+        renderers = (MockPickleRenderer, MockJsonRenderer)
+        response = self.get_response(accept_list=accept_list, renderers=renderers)
         renderer, media_type = response._determine_renderer()
         self.assertEqual(media_type, 'application/pickle')
-        self.assertTrue(renderer, prenderer)
+        self.assertTrue(isinstance(renderer, MockPickleRenderer))
 
-        response = self.get_response(accept_list=accept_list, renderers=(jrenderer,))
+        renderers = (MockJsonRenderer, )
+        response = self.get_response(accept_list=accept_list, renderers=renderers)
         renderer, media_type = response._determine_renderer()
         self.assertEqual(media_type, 'application/json')
-        self.assertTrue(renderer, jrenderer)
+        self.assertTrue(isinstance(renderer, MockJsonRenderer))
 
     def test_determine_renderer_default(self):
         """
         Test determine renderer when Accept was not specified.
         """
-        prenderer = self.get_renderer_mock('application/pickle')
-
-        response = self.get_response(accept_list=None, renderers=(prenderer,))
+        renderers = (MockPickleRenderer, )
+        response = self.get_response(accept_list=None, renderers=renderers)
         renderer, media_type = response._determine_renderer()
         self.assertEqual(media_type, '*/*')
-        self.assertTrue(renderer, prenderer)
+        self.assertTrue(isinstance(renderer, MockPickleRenderer))
 
     def test_determine_renderer_no_renderer(self):
         """
         Test determine renderer when no renderer can satisfy the Accept list.
         """
         accept_list = ['application/json']
-        prenderer = self.get_renderer_mock('application/pickle')
-
-        response = self.get_response(accept_list=accept_list, renderers=(prenderer,))
-        self.assertRaises(ImmediateResponse, response._determine_renderer)
+        renderers = (MockPickleRenderer, )
+        response = self.get_response(accept_list=accept_list, renderers=renderers)
+        self.assertRaises(NotAcceptable, response._determine_renderer)
 
 
 class TestResponseRenderContent(TestCase):
 
     def get_response(self, url='', accept_list=[], content=None):
         request = RequestFactory().get(url, HTTP_ACCEPT=','.join(accept_list))
-        return Response(request=request, content=content, renderers=[r() for r in DEFAULT_RENDERERS])
+        return Response(request=request, content=content, renderers=DEFAULT_RENDERERS)
 
     def test_render(self):
         """
