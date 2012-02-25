@@ -19,7 +19,7 @@ class Sandbox(View):
     For example, to get the default representation using curl:
 
         bash: curl -X GET http://rest.ep.io/
-    
+
     Or, to get the plaintext documentation represention:
 
         bash: curl -X GET http://rest.ep.io/ -H 'Accept: text/plain'
@@ -49,19 +49,19 @@ class Sandbox(View):
     def get(self, request):
         return Response([
             {'name': 'Simple Resource example',
-             'url': reverse('example-resource', request)},
+             'url': reverse('example-resource', request=request)},
             {'name': 'Simple ModelResource example',
-             'url': reverse('model-resource-root', request)},
+             'url': reverse('model-resource-root', request=request)},
             {'name': 'Simple Mixin-only example',
-             'url': reverse('mixin-view', request)},
-            {'name': 'Object store API'
-             'url': reverse('object-store-root', request)},
+             'url': reverse('mixin-view', request=request)},
+            {'name': 'Object store API',
+             'url': reverse('object-store-root', request=request)},
             {'name': 'Code highlighting API',
-             'url': reverse('pygments-root', request)},
+             'url': reverse('pygments-root', request=request)},
             {'name': 'Blog posts API',
-             'url': reverse('blog-posts-root', request)},
+             'url': reverse('blog-posts-root', request=request)},
             {'name': 'Permissions example',
-             'url': reverse('permissions-example', request)},
+             'url': reverse('permissions-example', request=request)},
             {'name': 'Simple request mixin example',
-             'url': reverse('request-example', request)}
+             'url': reverse('request-example', request=request)}
         ])

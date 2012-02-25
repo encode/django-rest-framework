@@ -10,4 +10,3 @@ for module in modules:
     exec("from djangorestframework.tests.%s import __doc__ as module_doc" % module)
     exec("from djangorestframework.tests.%s import *" % module)
     __test__[module] = module_doc or ""
-

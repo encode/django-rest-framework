@@ -6,15 +6,13 @@ By setting or modifying class attributes on your view, you change it's predefine
 """
 
 import re
-from django.core.urlresolvers import set_script_prefix, get_script_prefix
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 
 from djangorestframework.compat import View as DjangoView, apply_markdown
-from djangorestframework.response import ImmediateResponse
+from djangorestframework.response import Response, ImmediateResponse
 from djangorestframework.mixins import *
-from djangorestframework.utils import allowed_methods
 from djangorestframework import resources, renderers, parsers, authentication, permissions, status
 
 
@@ -81,12 +79,12 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     or `None` to use default behaviour.
     """
 
-    renderer_classes = renderers.DEFAULT_RENDERERS
+    renderers = renderers.DEFAULT_RENDERERS
     """
     List of renderer classes the resource can serialize the response with, ordered by preference.
     """
 
-    parser_classes = parsers.DEFAULT_PARSERS
+    parsers = parsers.DEFAULT_PARSERS
     """
     List of parser classes the resource can parse the request with.
     """
@@ -118,7 +116,15 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         """
         Return the list of allowed HTTP methods, uppercased.
         """
-        return allowed_methods(self)
+        return [method.upper() for method in self.http_method_names
+                if hasattr(self, method)]
+
+    @property
+    def default_response_headers(self):
+        return {
+            'Allow': ', '.join(self.allowed_methods),
+            'Vary': 'Authenticate, Accept'
+        }
 
     def get_name(self):
         """
@@ -183,32 +189,35 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
     def initial(self, request, *args, **kargs):
         """
-        Returns an `HttpRequest`. This method is a hook for any code that needs to run
-        prior to anything else.
-        Required if you want to do things like set `request.upload_handlers` before
-        the authentication and dispatch handling is run.
+        This method is a hook for any code that needs to run prior to
+        anything else.
+        Required if you want to do things like set `request.upload_handlers`
+        before the authentication and dispatch handling is run.
         """
         pass
 
     def final(self, request, response, *args, **kargs):
         """
-        Returns an `HttpResponse`. This method is a hook for any code that needs to run
-        after everything else in the view.
+        This method is a hook for any code that needs to run after everything
+        else in the view.
+        Returns the final response object.
         """
-        # Always add these headers.
-        response['Allow'] = ', '.join(allowed_methods(self))
-        # sample to allow caching using Vary http header
-        response['Vary'] = 'Authenticate, Accept'
-
+        response.view = self
+        response.request = request
+        response.renderers = self.renderers
+        for key, value in self.headers.items():
+            response[key] = value
         return response
 
     # Note: session based authentication is explicitly CSRF validated,
     # all other authentication is CSRF exempt.
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
-        self.request = self.create_request(request)
+        request = self.create_request(request)
+        self.request = request
         self.args = args
         self.kwargs = kwargs
+        self.headers = self.default_response_headers
 
         try:
             self.initial(request, *args, **kwargs)
@@ -222,26 +231,17 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             else:
                 handler = self.http_method_not_allowed
 
-            # TODO: should we enforce HttpResponse, like Django does ?
             response = handler(request, *args, **kwargs)
 
-            # Prepare response for the response cycle.
-            self.response = response = self.prepare_response(response)
-
-            # Pre-serialize filtering (eg filter complex objects into natively serializable types)
-            # TODO: ugly hack to handle both HttpResponse and Response.
-            if hasattr(response, 'raw_content'):
+            if isinstance(response, Response):
+                # Pre-serialize filtering (eg filter complex objects into natively serializable types)
                 response.raw_content = self.filter_response(response.raw_content)
-            else:
-                response.content = self.filter_response(response.content)
 
-        except ImmediateResponse, response:
-            # Prepare response for the response cycle.
-            self.response = response = self.prepare_response(response)
+        except ImmediateResponse, exc:
+            response = exc.response
 
-        # `final` is the last opportunity to temper with the response, or even
-        # completely replace it.
-        return self.final(request, response, *args, **kwargs)
+        self.response = self.final(request, response, *args, **kwargs)
+        return self.response
 
     def options(self, request, *args, **kwargs):
         content = {
@@ -266,7 +266,7 @@ class ModelView(View):
     resource = resources.ModelResource
 
 
-class InstanceModelView(InstanceMixin, ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelView):
+class InstanceModelView(ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelView):
     """
     A view which provides default operations for read/update/delete against a model instance.
     """

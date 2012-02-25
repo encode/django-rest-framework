@@ -16,7 +16,8 @@ class MyView(View):
     renderers = (JSONRenderer, )
 
     def get(self, request):
-        return Response(reverse('another', request))
+        return Response(reverse('myview', request=request))
+
 
 urlpatterns = patterns('',
     url(r'^myview$', MyView.as_view(), name='myview'),

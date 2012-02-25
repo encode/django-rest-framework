@@ -11,8 +11,15 @@ class BlogPostResource(ModelResource):
     fields = ('created', 'title', 'slug', 'content', 'url', 'comments')
     ordering = ('-created',)
 
+    def url(self, instance):
+        return reverse('blog-post',
+                        kwargs={'key': instance.key},
+                        request=self.request)
+
     def comments(self, instance):
-        return reverse('comments', request, kwargs={'blogpost': instance.key})
+        return reverse('comments',
+                        kwargs={'blogpost': instance.key},
+                        request=self.request)
 
 
 class CommentResource(ModelResource):
@@ -24,4 +31,6 @@ class CommentResource(ModelResource):
     ordering = ('-created',)
 
     def blogpost(self, instance):
-        return reverse('blog-post', request, kwargs={'key': instance.blogpost.key})
+        return reverse('blog-post',
+                       kwargs={'key': instance.blogpost.key},
+                       request=self.request)

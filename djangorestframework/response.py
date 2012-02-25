@@ -27,6 +27,10 @@ from djangorestframework import status
 __all__ = ('Response', 'ImmediateResponse')
 
 
+class NotAcceptable(Exception):
+    pass
+
+
 class Response(SimpleTemplateResponse):
     """
     An HttpResponse that may include content that hasn't yet been serialized.
@@ -40,25 +44,30 @@ class Response(SimpleTemplateResponse):
     _ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
     _IGNORE_IE_ACCEPT_HEADER = True
 
-    def __init__(self, content=None, status=None, request=None, renderers=None, headers=None):
+    def __init__(self, content=None, status=None, headers=None, view=None, request=None, renderers=None):
         # First argument taken by `SimpleTemplateResponse.__init__` is template_name,
         # which we don't need
         super(Response, self).__init__(None, status=status)
 
-        # We need to store our content in raw content to avoid overriding HttpResponse's
-        # `content` property
         self.raw_content = content
         self.has_content_body = content is not None
-        self.request = request
         self.headers = headers and headers[:] or []
-        if renderers is not None:
-            self.renderers = renderers
+        self.view = view
+        self.request = request
+        self.renderers = renderers
+
+    def get_renderers(self):
+        """
+        Instantiates and returns the list of renderers the response will use.
+        """
+        return [renderer(self.view) for renderer in self.renderers]
 
     @property
     def rendered_content(self):
         """
-        The final rendered content. Accessing this attribute triggers the complete rendering cycle :
-        selecting suitable renderer, setting response's actual content type, rendering data.
+        The final rendered content. Accessing this attribute triggers the
+        complete rendering cycle: selecting suitable renderer, setting
+        response's actual content type, rendering data.
         """
         renderer, media_type = self._determine_renderer()
 
@@ -69,6 +78,13 @@ class Response(SimpleTemplateResponse):
         if self.has_content_body:
             return renderer.render(self.raw_content, media_type)
         return renderer.render()
+
+    def render(self):
+        try:
+            return super(Response, self).render()
+        except NotAcceptable:
+            response = self._get_406_response()
+            return response.render()
 
     @property
     def status_text(self):
@@ -88,8 +104,6 @@ class Response(SimpleTemplateResponse):
         If those are useless, a default value is returned instead.
         """
         request = self.request
-        if request is None:
-            return ['*/*']
 
         if self._ACCEPT_QUERY_PARAM and request.GET.get(self._ACCEPT_QUERY_PARAM, None):
             # Use _accept parameter override
@@ -108,70 +122,52 @@ class Response(SimpleTemplateResponse):
 
     def _determine_renderer(self):
         """
-        Determines the appropriate renderer for the output, given the list of accepted media types,
-        and the :attr:`renderers` set on this class.
+        Determines the appropriate renderer for the output, given the list of
+        accepted media types, and the :attr:`renderers` set on this class.
 
         Returns a 2-tuple of `(renderer, media_type)`
 
-        See: RFC 2616, Section 14 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
+        See: RFC 2616, Section 14
+        http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
         """
+
+        renderers = self.get_renderers()
+        accepts = self._determine_accept_list()
+
+        # Not acceptable response - Ignore accept header.
+        if self.status_code == 406:
+            return (renderers[0], renderers[0].media_type)
+
         # Check the acceptable media types against each renderer,
         # attempting more specific media types first
         # NB. The inner loop here isn't as bad as it first looks :)
         #     Worst case is we're looping over len(accept_list) * len(self.renderers)
-        for media_type_list in order_by_precedence(self._determine_accept_list()):
-            for renderer in self.renderers:
+        for media_type_list in order_by_precedence(accepts):
+            for renderer in renderers:
                 for media_type in media_type_list:
                     if renderer.can_handle_response(media_type):
                         return renderer, media_type
 
         # No acceptable renderers were found
-        raise ImmediateResponse({'detail': 'Could not satisfy the client\'s Accept header',
-                                 'available_types': self._rendered_media_types},
-                        status=status.HTTP_406_NOT_ACCEPTABLE,
-                        renderers=self.renderers)
+        raise NotAcceptable
 
-    def _get_renderers(self):
-        if hasattr(self, '_renderers'):
-            return self._renderers
-        return ()
-
-    def _set_renderers(self, value):
-        self._renderers = value
-
-    renderers = property(_get_renderers, _set_renderers)
-
-    @property
-    def _rendered_media_types(self):
-        """
-        Return an list of all the media types that this response can render.
-        """
-        return [renderer.media_type for renderer in self.renderers]
-
-    @property
-    def _rendered_formats(self):
-        """
-        Return a list of all the formats that this response can render.
-        """
-        return [renderer.format for renderer in self.renderers]
-
-    @property
-    def _default_renderer(self):
-        """
-        Return the response's default renderer class.
-        """
-        return self.renderers[0]
+    def _get_406_response(self):
+        renderer = self.renderers[0]
+        return Response(
+            {
+                'detail': 'Could not satisfy the client\'s Accept header',
+                'available_types': [renderer.media_type
+                                    for renderer in self.renderers]
+            },
+            status=status.HTTP_406_NOT_ACCEPTABLE,
+            view=self.view, request=self.request, renderers=[renderer])
 
 
 class ImmediateResponse(Response, Exception):
     """
-    A subclass of :class:`Response` used to abort the current request handling.
+    An exception representing an Response that should be returned immediately.
+    Any content should be serialized as-is, without being filtered.
     """
 
-    def __str__(self):
-        """
-        Since this class is also an exception it has to provide a sensible
-        representation for the cases when it is treated as an exception.
-        """
-        return ('%s must be caught in try/except block, '
-                'and returned as a normal HttpResponse' % self.__class__.__name__)
+    def __init__(self, *args, **kwargs):
+        self.response = Response(*args, **kwargs)

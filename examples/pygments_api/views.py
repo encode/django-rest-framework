@@ -1,7 +1,6 @@
 from __future__ import with_statement  # for python 2.5
 from django.conf import settings
 
-from djangorestframework.resources import FormResource
 from djangorestframework.response import Response
 from djangorestframework.renderers import BaseRenderer
 from djangorestframework.reverse import reverse
@@ -30,9 +29,13 @@ def list_dir_sorted_by_ctime(dir):
     """
     Return a list of files sorted by creation time
     """
-    filepaths = [os.path.join(dir, file) for file in os.listdir(dir) if not file.startswith('.')]
-    return [item[0] for item in sorted( [(path, os.path.getctime(path)) for path in filepaths],
-                                        key=operator.itemgetter(1), reverse=False) ]
+    filepaths = [os.path.join(dir, file)
+                 for file in os.listdir(dir)
+                 if not file.startswith('.')]
+    ctimes = [(path, os.path.getctime(path)) for path in filepaths]
+    ctimes = sorted(ctimes, key=operator.itemgetter(1), reverse=False)
+    return [filepath for filepath, ctime in  ctimes]
+
 
 def remove_oldest_files(dir, max_files):
     """
@@ -60,8 +63,11 @@ class PygmentsRoot(View):
         """
         Return a list of all currently existing snippets.
         """
-        unique_ids = [os.path.split(f)[1] for f in list_dir_sorted_by_ctime(HIGHLIGHTED_CODE_DIR)]
-        return Response([reverse('pygments-instance', request, args=[unique_id]) for unique_id in unique_ids])
+        unique_ids = [os.path.split(f)[1]
+                      for f in list_dir_sorted_by_ctime(HIGHLIGHTED_CODE_DIR)]
+        urls = [reverse('pygments-instance', args=[unique_id], request=request)
+                for unique_id in unique_ids]
+        return Response(urls)
 
     def post(self, request):
         """
@@ -81,7 +87,7 @@ class PygmentsRoot(View):
 
         remove_oldest_files(HIGHLIGHTED_CODE_DIR, MAX_FILES)
 
-        location = reverse('pygments-instance', request, args=[unique_id])
+        location = reverse('pygments-instance', args=[unique_id], request=request)
         return Response(status=status.HTTP_201_CREATED, headers={'Location': location})
 
 
@@ -90,7 +96,7 @@ class PygmentsInstance(View):
     Simply return the stored highlighted HTML file with the correct mime type.
     This Resource only renders HTML and uses a standard HTML renderer rather than the renderers.DocumentingHTMLRenderer class.
     """
-    renderer_classes = (HTMLRenderer,)
+    renderers = (HTMLRenderer, )
 
     def get(self, request, unique_id):
         """
@@ -110,4 +116,3 @@ class PygmentsInstance(View):
             return Response(status=status.HTTP_404_NOT_FOUND)
         os.remove(pathname)
         return Response()
-

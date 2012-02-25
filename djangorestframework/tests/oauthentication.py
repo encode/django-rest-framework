@@ -27,7 +27,7 @@ else:
     urlpatterns = patterns('',
         url(r'^$', oauth_required(ClientView.as_view())),
         url(r'^oauth/', include('oauth_provider.urls')),
-        url(r'^accounts/login/$', 'djangorestframework.utils.staticviews.api_login'),
+        url(r'^restframework/', include('djangorestframework.urls', namespace='djangorestframework')),
     )
 
 

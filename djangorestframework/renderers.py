@@ -6,20 +6,18 @@ by serializing the output along with documentation regarding the View, output st
 and providing forms and links depending on the allowed methods, renderers and parsers on the View.
 """
 from django import forms
-from django.conf import settings
 from django.core.serializers.json import DateTimeAwareJSONEncoder
 from django.template import RequestContext, loader
 from django.utils import simplejson as json
 
-
 from djangorestframework.compat import yaml
-from djangorestframework.utils import dict2xml, url_resolves, allowed_methods
+from djangorestframework.utils import dict2xml
 from djangorestframework.utils.breadcrumbs import get_breadcrumbs
 from djangorestframework.utils.mediatypes import get_media_type_params, add_media_type_param, media_type_matches
 from djangorestframework import VERSION
 
 import string
-from urllib import quote_plus
+
 
 __all__ = (
     'BaseRenderer',
@@ -156,25 +154,22 @@ class XMLRenderer(BaseRenderer):
         return dict2xml(obj)
 
 
-if yaml:
-    class YAMLRenderer(BaseRenderer):
+class YAMLRenderer(BaseRenderer):
+    """
+    Renderer which serializes to YAML.
+    """
+
+    media_type = 'application/yaml'
+    format = 'yaml'
+
+    def render(self, obj=None, media_type=None):
         """
-        Renderer which serializes to YAML.
+        Renders *obj* into serialized YAML.
         """
+        if obj is None:
+            return ''
 
-        media_type = 'application/yaml'
-        format = 'yaml'
-
-        def render(self, obj=None, media_type=None):
-            """
-            Renders *obj* into serialized YAML.
-            """
-            if obj is None:
-                return ''
-
-            return yaml.safe_dump(obj)
-else:
-    YAMLRenderer = None
+        return yaml.safe_dump(obj)
 
 
 class TemplateRenderer(BaseRenderer):
@@ -218,8 +213,8 @@ class DocumentingTemplateRenderer(BaseRenderer):
         """
 
         # Find the first valid renderer and render the content. (Don't use another documenting renderer.)
-        renderers = [renderer for renderer in view.renderer_classes 
-                if not issubclass(renderer, DocumentingTemplateRenderer)]
+        renderers = [renderer for renderer in view.renderers
+                     if not issubclass(renderer, DocumentingTemplateRenderer)]
         if not renderers:
             return '[No renderers were found]'
 
@@ -278,14 +273,14 @@ class DocumentingTemplateRenderer(BaseRenderer):
 
         # NB. http://jacobian.org/writing/dynamic-form-generation/
         class GenericContentForm(forms.Form):
-            def __init__(self, request):
+            def __init__(self, view, request):
                 """We don't know the names of the fields we want to set until the point the form is instantiated,
                 as they are determined by the Resource the form is being created against.
                 Add the fields dynamically."""
                 super(GenericContentForm, self).__init__()
 
-                contenttype_choices = [(media_type, media_type) for media_type in request._parsed_media_types]
-                initial_contenttype = request._default_parser.media_type
+                contenttype_choices = [(media_type, media_type) for media_type in view._parsed_media_types]
+                initial_contenttype = view._default_parser.media_type
 
                 self.fields[request._CONTENTTYPE_PARAM] = forms.ChoiceField(label='Content Type',
                                                                          choices=contenttype_choices,
@@ -298,7 +293,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
             return None
 
         # Okey doke, let's do it
-        return GenericContentForm(view.request)
+        return GenericContentForm(view, view.request)
 
     def get_name(self):
         try:
@@ -327,13 +322,6 @@ class DocumentingTemplateRenderer(BaseRenderer):
         put_form_instance = self._get_form_instance(self.view, 'put')
         post_form_instance = self._get_form_instance(self.view, 'post')
 
-        if url_resolves(settings.LOGIN_URL) and url_resolves(settings.LOGOUT_URL):
-            login_url = "%s?next=%s" % (settings.LOGIN_URL, quote_plus(self.view.request.path))
-            logout_url = "%s?next=%s" % (settings.LOGOUT_URL, quote_plus(self.view.request.path))
-        else:
-            login_url = None
-            logout_url = None
-
         name = self.get_name()
         description = self.get_description()
 
@@ -343,21 +331,18 @@ class DocumentingTemplateRenderer(BaseRenderer):
         context = RequestContext(self.view.request, {
             'content': content,
             'view': self.view,
-            'request': self.view.request,  # TODO: remove
+            'request': self.view.request,
             'response': self.view.response,
             'description': description,
             'name': name,
             'version': VERSION,
             'breadcrumblist': breadcrumb_list,
-            'allowed_methods': allowed_methods(self.view),
+            'allowed_methods': self.view.allowed_methods,
             'available_formats': self.view._rendered_formats,
             'put_form': put_form_instance,
             'post_form': post_form_instance,
-            'login_url': login_url,
-            'logout_url': logout_url,
             'FORMAT_PARAM': self._FORMAT_QUERY_PARAM,
-            'METHOD_PARAM': getattr(self.view.request, '_METHOD_PARAM', None),
-            'ADMIN_MEDIA_PREFIX': getattr(settings, 'ADMIN_MEDIA_PREFIX', None),
+            'METHOD_PARAM': getattr(self.view, '_METHOD_PARAM', None),
         })
 
         ret = template.render(context)
@@ -415,5 +400,7 @@ DEFAULT_RENDERERS = (
     XMLRenderer
 )
 
-if YAMLRenderer:
-    DEFAULT_RENDERERS += (YAMLRenderer,)
+if yaml:
+    DEFAULT_RENDERERS += (YAMLRenderer, )
+else:
+    YAMLRenderer = None

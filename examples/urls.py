@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, include
+from django.conf.urls.defaults import patterns, include, url
 from sandbox.views import Sandbox
 try:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
@@ -15,9 +15,7 @@ urlpatterns = patterns('',
     (r'^pygments/', include('pygments_api.urls')),
     (r'^blog-post/', include('blogpost.urls')),
     (r'^permissions-example/', include('permissionsexample.urls')),
-    (r'^request-example/', include('requestexample.urls')),
-
-    (r'^', include('djangorestframework.urls')),
+    url(r'^restframework/', include('djangorestframework.urls', namespace='djangorestframework')),
 )
 
 urlpatterns += staticfiles_urlpatterns()

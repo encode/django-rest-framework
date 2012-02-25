@@ -21,14 +21,13 @@ __all__ = (
     'ResponseMixin',
     'AuthMixin',
     'ResourceMixin',
-    # Reverse URL lookup behavior
-    'InstanceMixin',
     # Model behavior mixins
     'ReadModelMixin',
     'CreateModelMixin',
     'UpdateModelMixin',
     'DeleteModelMixin',
-    'ListModelMixin'
+    'ListModelMixin',
+    'PaginatorMixin'
 )
 
 
@@ -39,39 +38,33 @@ class RequestMixin(object):
     `Mixin` class enabling the use of :class:`request.Request` in your views.
     """
 
-    parser_classes = ()
-    """
-    The set of parsers that the view can handle.
-    Should be a tuple/list of classes as described in the :mod:`parsers` module.
-    """
-
     request_class = Request
     """
     The class to use as a wrapper for the original request object.
     """
 
-    def get_parsers(self):
-        """
-        Instantiates and returns the list of parsers the request will use.
-        """
-        return [p(self) for p in self.parser_classes]
-
     def create_request(self, request):
         """
         Creates and returns an instance of :class:`request.Request`.
-        This new instance wraps the `request` passed as a parameter, and use the 
-        parsers set on the view.
+        This new instance wraps the `request` passed as a parameter, and use
+        the  parsers set on the view.
         """
-        parsers = self.get_parsers()
-        return self.request_class(request, parsers=parsers)
+        return self.request_class(request, parsers=self.parsers)
 
     @property
     def _parsed_media_types(self):
         """
-        Returns a list of all the media types that this view can parse.
+        Return a list of all the media types that this view can parse.
         """
-        return [p.media_type for p in self.parser_classes]
-        
+        return [parser.media_type for parser in self.parsers]
+
+    @property
+    def _default_parser(self):
+        """
+        Return the view's default parser class.
+        """
+        return self.parsers[0]
+
 
 ########## ResponseMixin ##########
 
@@ -80,58 +73,32 @@ class ResponseMixin(object):
     `Mixin` class enabling the use of :class:`response.Response` in your views.
     """
 
-    renderer_classes = ()
+    renderers = ()
     """
     The set of response renderers that the view can handle.
     Should be a tuple/list of classes as described in the :mod:`renderers` module.
     """
 
-    def get_renderers(self):
-        """
-        Instantiates and returns the list of renderers the response will use.
-        """
-        return [r(self) for r in self.renderer_classes]
-
-    def prepare_response(self, response):
-        """
-        Prepares and returns `response`.
-        This has no effect if the response is not an instance of :class:`response.Response`.
-        """
-        if hasattr(response, 'request') and response.request is None:
-            response.request = self.request
-
-        # set all the cached headers
-        for name, value in self.headers.items():
-            response[name] = value
-
-        # set the views renderers on the response
-        response.renderers = self.get_renderers()
-        return response
-
-    @property
-    def headers(self):
-        """
-        Dictionary of headers to set on the response.
-        This is useful when the response doesn't exist yet, but you
-        want to memorize some headers to set on it when it will exist.
-        """
-        if not hasattr(self, '_headers'):
-            self._headers = {}
-        return self._headers
-
     @property
     def _rendered_media_types(self):
         """
-        Return an list of all the media types that this view can render.
+        Return an list of all the media types that this response can render.
         """
-        return [renderer.media_type for renderer in self.get_renderers()]
+        return [renderer.media_type for renderer in self.renderers]
 
     @property
     def _rendered_formats(self):
         """
-        Return a list of all the formats that this view can render.
+        Return a list of all the formats that this response can render.
         """
-        return [renderer.format for renderer in self.get_renderers()]
+        return [renderer.format for renderer in self.renderers]
+
+    @property
+    def _default_renderer(self):
+        """
+        Return the response's default renderer class.
+        """
+        return self.renderers[0]
 
 
 ########## Auth Mixin ##########
@@ -253,30 +220,6 @@ class ResourceMixin(object):
             return self._resource.get_bound_form(content, method=method)
         else:
             return None
-
-##########
-
-
-class InstanceMixin(object):
-    """
-    `Mixin` class that is used to identify a `View` class as being the canonical identifier
-    for the resources it is mapped to.
-    """
-
-    @classmethod
-    def as_view(cls, **initkwargs):
-        """
-        Store the callable object on the resource class that has been associated with this view.
-        """
-        view = super(InstanceMixin, cls).as_view(**initkwargs)
-        resource = getattr(cls(**initkwargs), 'resource', None)
-        if resource:
-            # We do a little dance when we store the view callable...
-            # we need to store it wrapped in a 1-tuple, so that inspect will treat it
-            # as a function when we later look it up (rather than turning it into a method).
-            # This makes sure our URL reversing works ok.
-            resource.view_callable = (view,)
-        return view
 
 
 ########## Model Mixins ##########
@@ -411,7 +354,7 @@ class CreateModelMixin(ModelMixin):
         response = Response(instance, status=status.HTTP_201_CREATED)
 
         # Set headers
-        if hasattr(instance, 'get_absolute_url'):
+        if hasattr(self.resource, 'url'):
             response['Location'] = self.resource(self).url(instance)
         return response
 

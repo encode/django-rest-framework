@@ -132,16 +132,17 @@
 #        self.assertEqual(files['file1'].read(), 'blablabla')
 
 from StringIO import StringIO
-from cgi import parse_qs
 from django import forms
 from django.test import TestCase
 from djangorestframework.parsers import FormParser
 from djangorestframework.parsers import XMLParser
 import datetime
 
+
 class Form(forms.Form):
     field1 = forms.CharField(max_length=3)
     field2 = forms.CharField()
+
 
 class TestFormParser(TestCase):
     def setUp(self):
@@ -152,9 +153,10 @@ class TestFormParser(TestCase):
         parser = FormParser(None)
 
         stream = StringIO(self.string)
-        (data, files) = parser.parse(stream)
+        (data, files) = parser.parse(stream, {}, [])
 
         self.assertEqual(Form(data).is_valid(), True)
+
 
 class TestXMLParser(TestCase):
     def setUp(self):
@@ -163,13 +165,13 @@ class TestXMLParser(TestCase):
             '<root>'
             '<field_a>121.0</field_a>'
             '<field_b>dasd</field_b>'
-            '<field_c></field_c>'	
+            '<field_c></field_c>'
             '<field_d>2011-12-25 12:45:00</field_d>'
             '</root>'
-        )	
-        self._data = {	
+        )
+        self._data = {
             'field_a': 121,
-            'field_b': 'dasd',	
+            'field_b': 'dasd',
             'field_c': None,
             'field_d': datetime.datetime(2011, 12, 25, 12, 45, 00)
         }
@@ -183,21 +185,21 @@ class TestXMLParser(TestCase):
             '</sub_data_list>'
             '<name>name</name>'
             '</root>'
-        )    
+        )
         self._complex_data = {
-            "creation_date": datetime.datetime(2011, 12, 25, 12, 45, 00), 
-            "name": "name", 
+            "creation_date": datetime.datetime(2011, 12, 25, 12, 45, 00),
+            "name": "name",
             "sub_data_list": [
                 {
-                    "sub_id": 1, 
+                    "sub_id": 1,
                     "sub_name": "first"
-                }, 
+                },
                 {
-                    "sub_id": 2, 
+                    "sub_id": 2,
                     "sub_name": "second"
                 }
             ]
-        }                               
+        }
 
     def test_parse(self):
         parser = XMLParser(None)

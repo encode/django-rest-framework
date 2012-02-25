@@ -22,7 +22,7 @@ class MyBaseViewUsingEnhancedRequest(RequestMixin, View):
     Base view enabling the usage of enhanced requests with user defined views.
     """
 
-    parser_classes = parsers.DEFAULT_PARSERS
+    parsers = parsers.DEFAULT_PARSERS
 
     def dispatch(self, request, *args, **kwargs):
         self.request = request = self.create_request(request)
@@ -41,4 +41,3 @@ class EchoRequestContentView(MyBaseViewUsingEnhancedRequest):
     def put(self, request, *args, **kwargs):
         return HttpResponse(("Found %s in request.DATA, content : %s" %
             (type(request.DATA), request.DATA)))
-

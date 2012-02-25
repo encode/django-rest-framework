@@ -16,9 +16,11 @@ class ExampleView(View):
         Handle GET requests, returning a list of URLs pointing to
         three other views.
         """
-        urls = [reverse('another-example', request, kwargs={'num': num})
-                for num in range(3)]
-        return Response({"Some other resources": urls})
+        resource_urls = [reverse('another-example',
+                                 kwargs={'num': num},
+                                 request=request)
+                         for num in range(3)]
+        return Response({"Some other resources": resource_urls})
 
 
 class AnotherExampleView(View):

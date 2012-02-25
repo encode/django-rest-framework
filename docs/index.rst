@@ -64,6 +64,12 @@ To add Django REST framework to a Django project:
 
 * Ensure that the ``djangorestframework`` directory is on your ``PYTHONPATH``.
 * Add ``djangorestframework`` to your ``INSTALLED_APPS``.
+* Add the following to your URLconf.  (To include the REST framework Login/Logout views.)::
+
+    urlpatterns = patterns('',
+        ...
+        url(r'^restframework', include('djangorestframework.urls', namespace='djangorestframework'))
+    )
 
 For more information on settings take a look at the :ref:`setup` section.
 

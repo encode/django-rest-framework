@@ -2,22 +2,19 @@
 Provide reverse functions that return fully qualified URLs
 """
 from django.core.urlresolvers import reverse as django_reverse
-from djangorestframework.compat import reverse_lazy as django_reverse_lazy
+from django.utils.functional import lazy
 
 
-def reverse(viewname, request, *args, **kwargs):
+def reverse(viewname, *args, **kwargs):
     """
-    Do the same as `django.core.urlresolvers.reverse` but using
-    *request* to build a fully qualified URL.
+    Same as `django.core.urlresolvers.reverse`, but optionally takes a request
+    and returns a fully qualified URL, using the request to get the base URL.
     """
+    request = kwargs.pop('request', None)
     url = django_reverse(viewname, *args, **kwargs)
-    return request.build_absolute_uri(url)
+    if request:
+        return request.build_absolute_uri(url)
+    return url
 
 
-def reverse_lazy(viewname, request, *args, **kwargs):
-    """
-    Do the same as `django.core.urlresolvers.reverse_lazy` but using
-    *request* to build a fully qualified URL.
-    """
-    url = django_reverse_lazy(viewname, *args, **kwargs)
-    return request.build_absolute_uri(url)
+reverse_lazy = lazy(reverse, str)

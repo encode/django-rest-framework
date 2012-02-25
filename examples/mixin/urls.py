@@ -10,11 +10,12 @@ from django.conf.urls.defaults import patterns, url
 class ExampleView(ResponseMixin, View):
     """An example view using Django 1.3's class based views.
     Uses djangorestframework's RendererMixin to provide support for multiple output formats."""
-    renderer_classes = DEFAULT_RENDERERS
+    renderers = DEFAULT_RENDERERS
 
     def get(self, request):
+        url = reverse('mixin-view', request)
         response = Response({'description': 'Some example content',
-                                  'url': reverse('mixin-view', request)}, status=200)
+                                  'url': url}, status=200)
         self.response = self.prepare_response(response)
         return self.response
 
@@ -22,4 +23,3 @@ class ExampleView(ResponseMixin, View):
 urlpatterns = patterns('',
     url(r'^$', ExampleView.as_view(), name='mixin-view'),
 )
-

@@ -49,20 +49,20 @@ YAML
 
 YAML support is optional, and requires `PyYAML`_.
 
-
 Login / Logout
 --------------
 
-Django REST framework includes login and logout views that are useful if
-you're using the self-documenting API::
+Django REST framework includes login and logout views that are needed if
+you're using the self-documenting API.
 
-    from django.conf.urls.defaults import patterns
+Make sure you include the following in your `urlconf`::
 
-    urlpatterns = patterns('djangorestframework.views',
-        # Add your resources here
-        (r'^accounts/login/$', 'api_login'),
-        (r'^accounts/logout/$', 'api_logout'),
-    )
+    from django.conf.urls.defaults import patterns, url
+
+    urlpatterns = patterns('',
+        ...
+        url(r'^restframework', include('djangorestframework.urls', namespace='djangorestframework'))
+    ) 
 
 .. _django.contrib.staticfiles: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/
 .. _django-staticfiles: http://pypi.python.org/pypi/django-staticfiles/

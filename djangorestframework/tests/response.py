@@ -1,18 +1,19 @@
 import json
 import unittest
 
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
 
 from djangorestframework.response import Response, ImmediateResponse
-from djangorestframework.mixins import ResponseMixin
 from djangorestframework.views import View
-from djangorestframework.compat import View as DjangoView
-from djangorestframework.renderers import BaseRenderer, DEFAULT_RENDERERS
 from djangorestframework.compat import RequestFactory
 from djangorestframework import status
-from djangorestframework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
-    XMLRenderer, JSONPRenderer, DocumentingHTMLRenderer
+from djangorestframework.renderers import (
+    BaseRenderer,
+    JSONRenderer,
+    DocumentingHTMLRenderer,
+    DEFAULT_RENDERERS
+)
 
 
 class TestResponseDetermineRenderer(TestCase):
@@ -20,7 +21,7 @@ class TestResponseDetermineRenderer(TestCase):
     def get_response(self, url='', accept_list=[], renderers=[]):
         kwargs = {}
         if accept_list is not None:
-            kwargs['HTTP_ACCEPT'] = HTTP_ACCEPT=','.join(accept_list)
+            kwargs['HTTP_ACCEPT'] = ','.join(accept_list)
         request = RequestFactory().get(url, **kwargs)
         return Response(request=request, renderers=renderers)
 
@@ -43,7 +44,7 @@ class TestResponseDetermineRenderer(TestCase):
         """
         response = self.get_response(accept_list=None)
         self.assertEqual(response._determine_accept_list(), ['*/*'])
-        
+
     def test_determine_accept_list_overriden_header(self):
         """
         Test Accept header overriding.
@@ -81,7 +82,7 @@ class TestResponseDetermineRenderer(TestCase):
         renderer, media_type = response._determine_renderer()
         self.assertEqual(media_type, '*/*')
         self.assertTrue(renderer, prenderer)
-        
+
     def test_determine_renderer_no_renderer(self):
         """
         Test determine renderer when no renderer can satisfy the Accept list.
@@ -94,14 +95,14 @@ class TestResponseDetermineRenderer(TestCase):
 
 
 class TestResponseRenderContent(TestCase):
-    
+
     def get_response(self, url='', accept_list=[], content=None):
         request = RequestFactory().get(url, HTTP_ACCEPT=','.join(accept_list))
         return Response(request=request, content=content, renderers=[r() for r in DEFAULT_RENDERERS])
 
     def test_render(self):
         """
-        Test rendering simple data to json.  
+        Test rendering simple data to json.
         """
         content = {'a': 1, 'b': [1, 2, 3]}
         content_type = 'application/json'
@@ -134,34 +135,33 @@ class RendererB(BaseRenderer):
         return RENDERER_B_SERIALIZER(obj)
 
 
-class MockView(ResponseMixin, DjangoView):
-    renderer_classes = (RendererA, RendererB)
+class MockView(View):
+    renderers = (RendererA, RendererB)
 
     def get(self, request, **kwargs):
-        response = Response(DUMMYCONTENT, status=DUMMYSTATUS)
-        self.response = self.prepare_response(response)
-        return self.response
+        return Response(DUMMYCONTENT, status=DUMMYSTATUS)
 
 
 class HTMLView(View):
-    renderer_classes = (DocumentingHTMLRenderer, )
+    renderers = (DocumentingHTMLRenderer, )
 
     def get(self, request, **kwargs):
         return Response('text')
 
 
 class HTMLView1(View):
-    renderer_classes = (DocumentingHTMLRenderer, JSONRenderer)
+    renderers = (DocumentingHTMLRenderer, JSONRenderer)
 
     def get(self, request, **kwargs):
-        return Response('text') 
+        return Response('text')
 
 
 urlpatterns = patterns('',
-    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
-    url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
+    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderers=[RendererA, RendererB])),
+    url(r'^$', MockView.as_view(renderers=[RendererA, RendererB])),
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
+    url(r'^restframework', include('djangorestframework.urls', namespace='djangorestframework'))
 )
 
 
@@ -257,13 +257,6 @@ class RendererIntegrationTests(TestCase):
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEquals(resp.status_code, DUMMYSTATUS)
 
-    def test_bla(self):
-        resp = self.client.get('/?format=formatb',
-            HTTP_ACCEPT='text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
-        self.assertEquals(resp['Content-Type'], RendererB.media_type)
-        self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
-
 
 class Issue122Tests(TestCase):
     """
@@ -275,10 +268,10 @@ class Issue122Tests(TestCase):
         """
         Test if no infinite recursion occurs.
         """
-        resp = self.client.get('/html')
-        
+        self.client.get('/html')
+
     def test_html_renderer_is_first(self):
         """
         Test if no infinite recursion occurs.
         """
-        resp = self.client.get('/html1')
+        self.client.get('/html1')

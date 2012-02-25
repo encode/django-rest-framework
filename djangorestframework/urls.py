@@ -1,6 +1,9 @@
-from django.conf.urls.defaults import patterns
+from django.conf.urls.defaults import patterns, url
 
-urlpatterns = patterns('djangorestframework.utils.staticviews',
-    (r'^accounts/login/$', 'api_login'),
-    (r'^accounts/logout/$', 'api_logout'),
+
+template_name = {'template_name': 'djangorestframework/login.html'}
+
+urlpatterns = patterns('django.contrib.auth.views',
+    url(r'^login/$', 'login', template_name, name='login'),
+    url(r'^logout/$', 'logout', template_name, name='logout'),
 )

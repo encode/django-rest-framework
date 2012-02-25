@@ -1,16 +1,13 @@
 from django import forms
-from django.core.urlresolvers import get_urlconf, get_resolver, NoReverseMatch
-from django.db import models
-
 from djangorestframework.response import ImmediateResponse
-from djangorestframework.reverse import reverse
-from djangorestframework.serializer import Serializer, _SkipField
-from djangorestframework.utils import as_tuple, reverse
+from djangorestframework.serializer import Serializer
+from djangorestframework.utils import as_tuple
 
 
 class BaseResource(Serializer):
     """
-    Base class for all Resource classes, which simply defines the interface they provide.
+    Base class for all Resource classes, which simply defines the interface
+    they provide.
     """
     fields = None
     include = None
@@ -19,11 +16,13 @@ class BaseResource(Serializer):
     def __init__(self, view=None, depth=None, stack=[], **kwargs):
         super(BaseResource, self).__init__(depth, stack, **kwargs)
         self.view = view
+        self.request = getattr(view, 'request', None)
 
     def validate_request(self, data, files=None):
         """
         Given the request content return the cleaned, validated content.
-        Typically raises a :exc:`response.ImmediateResponse` with status code 400 (Bad Request) on failure.
+        Typically raises a :exc:`response.ImmediateResponse` with status code
+        400 (Bad Request) on failure.
         """
         return data
 
@@ -37,7 +36,8 @@ class BaseResource(Serializer):
 class Resource(BaseResource):
     """
     A Resource determines how a python object maps to some serializable data.
-    Objects that a resource can act on include plain Python object instances, Django Models, and Django QuerySets.
+    Objects that a resource can act on include plain Python object instances,
+    Django Models, and Django QuerySets.
     """
 
     # The model attribute refers to the Django Model which this Resource maps to.
@@ -220,9 +220,6 @@ class ModelResource(FormResource):
     Also provides a :meth:`get_bound_form` method which may be used by some renderers.
     """
 
-    # Auto-register new ModelResource classes into _model_to_resource
-    #__metaclass__ = _RegisterModelResource
-
     form = None
     """
     The form class that should be used for request validation.
@@ -256,7 +253,7 @@ class ModelResource(FormResource):
     The list of fields to exclude.  This is only used if :attr:`fields` is not set.
     """
 
-    include = ('url',)
+    include = ()
     """
     The list of extra fields to include.  This is only used if :attr:`fields` is not set.
     """
@@ -318,47 +315,6 @@ class ModelResource(FormResource):
                 return form(data, files)
 
         return form()
-
-    def url(self, instance):
-        """
-        Attempts to reverse resolve the url of the given model *instance* for this resource.
-
-        Requires a ``View`` with :class:`mixins.InstanceMixin` to have been created for this resource.
-
-        This method can be overridden if you need to set the resource url reversing explicitly.
-        """
-
-        if not hasattr(self, 'view_callable'):
-            raise _SkipField
-
-        # dis does teh magicks...
-        urlconf = get_urlconf()
-        resolver = get_resolver(urlconf)
-
-        possibilities = resolver.reverse_dict.getlist(self.view_callable[0])
-        for tuple_item in possibilities:
-            possibility = tuple_item[0]
-            # pattern = tuple_item[1]
-            # Note: defaults = tuple_item[2] for django >= 1.3
-            for result, params in possibility:
-
-                #instance_attrs = dict([ (param, getattr(instance, param)) for param in params if hasattr(instance, param) ])
-
-                instance_attrs = {}
-                for param in params:
-                    if not hasattr(instance, param):
-                        continue
-                    attr = getattr(instance, param)
-                    if isinstance(attr, models.Model):
-                        instance_attrs[param] = attr.pk
-                    else:
-                        instance_attrs[param] = attr
-
-                try:
-                    return reverse(self.view_callable[0], self.view.request, kwargs=instance_attrs)
-                except NoReverseMatch:
-                    pass
-        raise _SkipField
 
     @property
     def _model_fields_set(self):

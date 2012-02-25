@@ -1,5 +1,4 @@
 from django.conf.urls.defaults import patterns, url
-from django.test import TestCase
 from django.forms import ModelForm
 from django.contrib.auth.models import Group, User
 from djangorestframework.resources import ModelResource
@@ -7,17 +6,21 @@ from djangorestframework.views import ListOrCreateModelView, InstanceModelView
 from djangorestframework.tests.models import CustomUser
 from djangorestframework.tests.testcases import TestModelsTestCase
 
+
 class GroupResource(ModelResource):
     model = Group
+
 
 class UserForm(ModelForm):
     class Meta:
         model = User
         exclude = ('last_login', 'date_joined')
 
+
 class UserResource(ModelResource):
     model = User
     form = UserForm
+
 
 class CustomUserResource(ModelResource):
     model = CustomUser
