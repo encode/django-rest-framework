@@ -1,5 +1,5 @@
-Returning URIs from your Web APIs
-=================================
+Returning URIs as Resource Id's from your Web APIs
+==================================================
 
 As a rule, it's probably better practice to return absolute URIs from you web APIs, e.g. "http://example.com/foobar", rather than returning relative URIs, e.g. "/foobar".
 
@@ -21,7 +21,7 @@ The :py:func:`~reverse.reverse` function has the same behavior as `django.core.u
 
     from djangorestframework.reverse import reverse
     from djangorestframework.views import View
-   
+
     class MyView(View):
         def get(self, request):
             context = {
