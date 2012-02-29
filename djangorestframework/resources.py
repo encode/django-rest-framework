@@ -104,6 +104,26 @@ class FormResource(Resource):
         to be populated when an empty dict is supplied in `data`
         """
 
+        # Auto-complete fields with the default value on a POST request.
+        #
+        # While Django web forms have auto-populate, POST requests in REST
+        #  should have auto-complete. Otherwise, what's the point
+        #  of having a default value.
+        method = self.view._method if hasattr(self.view, '_method') else None
+        if 'POST' == method and hasattr(self.model, '_meta'):
+            data_mutable = data.copy()
+            for field in self.model._meta.fields:
+                # Gather excludes like id and pk from self and Meta
+                exclude = self.exclude + tuple(data.keys())
+                try:
+                    exclude += self.form.Meta.exclude
+                except AttributeError:
+                    pass
+                if field.name not in exclude and field.has_default():
+                    default = field.get_default()
+                    data_mutable.update({field.name:default})
+            data = data_mutable
+        
         # We'd like nice error messages even if no content is supplied.
         # Typically if an empty dict is given to a form Django will
         # return .is_valid() == False, but .errors == {}
