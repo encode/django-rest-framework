@@ -96,6 +96,11 @@ class Serializer(object):
     """
     The maximum depth to serialize to, or `None`.
     """
+    
+    parent = None
+    """
+    A reference to the root serializer when descending down into fields.
+    """
 
     def __init__(self, depth=None, stack=[], **kwargs):
         if depth is not None:
