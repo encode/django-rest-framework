@@ -133,6 +133,7 @@ class Serializer(object):
         if isinstance(info, (list, tuple)):
             class OnTheFlySerializer(self.__class__):
                 fields = info
+                parent = getattr(self, 'parent', self)
             return OnTheFlySerializer
 
         # If an element in `fields` is a 2-tuple of (str, Serializer)
