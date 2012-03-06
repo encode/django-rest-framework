@@ -516,8 +516,8 @@ class ModelMixin(object):
         """
         queryset = getattr(self.resource, 'queryset',
                            self.resource.model.objects.all())
-        return getattr(self.resource, 'queryset',
-                       self.resource.model.objects.all())
+        return queryset() if isinstance(queryset, Callable) else queryset
+
 
     def get_ordering(self):
         """
