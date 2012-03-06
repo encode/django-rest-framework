@@ -3,6 +3,7 @@ The :mod:`mixins` module provides a set of reusable `mixin`
 classes that can be added to a `View`.
 """
 
+from collections import Callable
 from django.contrib.auth.models import AnonymousUser
 from django.core.paginator import Paginator
 from django.db.models.fields.related import ForeignKey
@@ -513,6 +514,8 @@ class ModelMixin(object):
         """
         Return the queryset for this view.
         """
+        queryset = getattr(self.resource, 'queryset',
+                           self.resource.model.objects.all())
         return getattr(self.resource, 'queryset',
                        self.resource.model.objects.all())
 
