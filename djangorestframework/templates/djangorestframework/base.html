@@ -86,7 +86,7 @@
 					<h2>POST {{ name }}</h2>
 				    {% csrf_token %}
 				    {{ post_form.non_field_errors }}
-					{% for field in post_form %}
+					{% for field in post_form.visible_fields %}
 					<div class='form-row'>
 					    {{ field.label_tag }}
 					    {{ field }}
@@ -108,7 +108,7 @@
 					<input type="hidden" name="{{ METHOD_PARAM }}" value="PUT" />
 					{% csrf_token %}
 					{{ put_form.non_field_errors }}
-					{% for field in put_form %}
+					{% for field in put_form.visible_fields %}
 					<div class='form-row'>
 					    {{ field.label_tag }}
 					    {{ field }}
