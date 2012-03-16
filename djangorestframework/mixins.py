@@ -507,7 +507,22 @@ class ModelMixin(object):
         """
         Get a model instance for read/update/delete requests.
         """
+        import warnings
+        warnings.warn(
+                "``get_instance(**kwargs)`` method is deprecated. "
+                "use ``get_object(queryset=None)`` insted.",
+                DeprecationWarning
+            )
         return self.get_queryset().get(**kwargs)
+
+    def get_object(self, queryset=None):
+        """
+        Get a model instance for read/update/delete requests.
+        """
+        queryset = queryset or self.get_queryset()
+        queryset_kwargs = self.get_query_kwargs(*self.args, **self.kwargs)
+        return queryset.get(**queryset_kwargs)
+
 
     def get_queryset(self):
         """
@@ -529,10 +544,9 @@ class ReadModelMixin(ModelMixin):
     """
     def get(self, request, *args, **kwargs):
         model = self.resource.model
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
 
         try:
-            self.model_instance = self.get_instance(**query_kwargs)
+            self.model_instance = self.get_object()
         except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
 
@@ -585,12 +599,11 @@ class UpdateModelMixin(ModelMixin):
     """
     def put(self, request, *args, **kwargs):
         model = self.resource.model
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
 
         # TODO: update on the url of a non-existing resource url doesn't work
         # correctly at the moment - will end up with a new url
         try:
-            self.model_instance = self.get_instance(**query_kwargs)
+            self.model_instance = self.get_object()
 
             for (key, val) in self.CONTENT.items():
                 setattr(self.model_instance, key, val)
@@ -606,10 +619,9 @@ class DeleteModelMixin(ModelMixin):
     """
     def delete(self, request, *args, **kwargs):
         model = self.resource.model
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
 
         try:
-            instance = self.get_instance(**query_kwargs)
+            instance = self.get_object()
         except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
 
