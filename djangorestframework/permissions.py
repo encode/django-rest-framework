@@ -23,6 +23,11 @@ __all__ = (
 SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
 
+_401_UNAUTHORIZED = ErrorResponse(
+    status.HTTP_401_UNAUTHORIZED,
+    {'detail': 'The request requires user authentication.'},
+    {'WWW-Authenticate': 'Basic realm="API"'})
+
 _403_FORBIDDEN_RESPONSE = ErrorResponse(
     status.HTTP_403_FORBIDDEN,
     {'detail': 'You do not have permission to access this resource. ' +
@@ -66,7 +71,7 @@ class IsAuthenticated(BasePermission):
 
     def check_permission(self, user):
         if not user.is_authenticated():
-            raise _403_FORBIDDEN_RESPONSE
+            raise _401_UNAUTHORIZED
 
 
 class IsAdminUser(BasePermission):
