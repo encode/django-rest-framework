@@ -41,7 +41,7 @@ Markdown
 
 `Python markdown`_ is not required but comes recommended.
 
-If markdown is installed your :class:`.Resource` descriptions can include
+If markdown is installed, your :class:`.Resource` descriptions can include
 `markdown formatting`_ which will be rendered by the self-documenting API.
 
 YAML
@@ -62,7 +62,7 @@ Make sure you include the following in your `urlconf`::
     urlpatterns = patterns('',
         ...
         url(r'^restframework', include('djangorestframework.urls', namespace='djangorestframework'))
-    ) 
+    )
 
 .. _django.contrib.staticfiles: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/
 .. _django-staticfiles: http://pypi.python.org/pypi/django-staticfiles/

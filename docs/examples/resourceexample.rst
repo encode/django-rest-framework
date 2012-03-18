@@ -1,10 +1,10 @@
-Getting Started - Views
------------------------
+Resource Example
+----------------
 
 .. note::
 
     A live sandbox instance of this API is available:
-    
+
     http://rest.ep.io/resource-example/
 
     You can browse the API using a web browser, or from the command line::

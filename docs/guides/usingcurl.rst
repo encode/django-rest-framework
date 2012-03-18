@@ -1,4 +1,4 @@
-Using CURL with django-rest-framework
+Using curl with Django REST Framework
 =====================================
 
 `curl <http://curl.haxx.se/>`_ is a great command line tool for making requests to URLs.
