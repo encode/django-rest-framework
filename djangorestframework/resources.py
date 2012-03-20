@@ -169,8 +169,9 @@ class FormResource(Resource):
             )
 
             # Add any unknown field errors
-            for key in unknown_fields:
-                field_errors[key] = [u'This field does not exist.']
+            if not self.allow_unknown_form_fields:
+                for key in unknown_fields:
+                    field_errors[key] = [u'This field does not exist.']
 
             if field_errors:
                 detail[u'field_errors'] = field_errors
