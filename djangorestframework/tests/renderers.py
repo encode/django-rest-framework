@@ -71,7 +71,7 @@ urlpatterns = patterns('',
     url(r'^$', MockView.as_view(renderers=[RendererA, RendererB])),
     url(r'^jsonp/jsonrenderer$', MockGETView.as_view(renderers=[JSONRenderer, JSONPRenderer])),
     url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(renderers=[JSONPRenderer])),
-    url(r'^html$', HTMLView.as_view()),
+    url(r'^html$', HTMLView.as_view(),root='home'),
     url(r'^html1$', HTMLView1.as_view()),
     url(r'^api', include('djangorestframework.urls', namespace='djangorestframework'))
 )
