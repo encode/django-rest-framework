@@ -65,7 +65,7 @@ class PygmentsRoot(View):
         Return a list of all currently existing snippets.
         """
         unique_ids = [os.path.split(f)[1] for f in list_dir_sorted_by_ctime(HIGHLIGHTED_CODE_DIR)]
-        return [reverse('pygments-instance', request, args=[unique_id]) for unique_id in unique_ids]
+        return [reverse('pygments-instance', request=request, args=[unique_id]) for unique_id in unique_ids]
 
     def post(self, request):
         """
@@ -85,7 +85,7 @@ class PygmentsRoot(View):
 
         remove_oldest_files(HIGHLIGHTED_CODE_DIR, MAX_FILES)
 
-        return Response(status.HTTP_201_CREATED, headers={'Location': reverse('pygments-instance', request, args=[unique_id])})
+        return Response(status.HTTP_201_CREATED, headers={'Location': reverse('pygments-instance', request=request, args=[unique_id])})
 
 
 class PygmentsInstance(View):
