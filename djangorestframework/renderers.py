@@ -244,18 +244,20 @@ class DocumentingTemplateRenderer(BaseRenderer):
                 except Exception:
                     form_instance = None
 
-        # If we still don't have a form instance then try to get an unbound form
-        if not form_instance:
-            try:
-                form_instance = view.get_bound_form(method=method)
-            except Exception:
-                pass
+        # Forms for the GET method must be explicit, so do not get an unbound
+        # form nor create a generic form for this instance.
+        if method != 'get':
+            # If we still don't have a form instance then try to get an unbound form
+            if not form_instance:
+                try:
+                    form_instance = view.get_bound_form(method=method)
+                except Exception:
+                    pass
 
-        # If we still don't have a form instance then try to get an unbound form
-        # which can tunnel arbitrary content types.  Forms for the GET method
-        # must be explicit, so do not create a generic form.
-        if not form_instance and method != 'get':
-            form_instance = self._get_generic_content_form(view)
+            # If we still don't have a form instance then try to get an unbound form
+            # which can tunnel arbitrary content types.
+            if not form_instance:
+                form_instance = self._get_generic_content_form(view)
 
         return form_instance
 
