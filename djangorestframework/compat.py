@@ -421,7 +421,7 @@ try:
             md = markdown.Markdown(extensions=extensions, safe_mode=safe_mode)
         return md.convert(text)
 
-except ImportError:
+except (ImportError, AttributeError):
     apply_markdown = None
 
 # Yaml is optional
