@@ -67,7 +67,7 @@ _resource_classes = (
 )
 
 
-class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
+class View(ResourceMixin, RequestMixin, ResponseMixin, PermissionsMixin, DjangoView):
     """
     Handles incoming requests and maps them to REST operations.
     Performs request deserialization, response serialization, authentication and input validation.
@@ -90,7 +90,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     """
 
     authentication = (authentication.UserLoggedInAuthentication,
-                       authentication.BasicAuthentication)
+                      authentication.BasicAuthentication)
     """
     List of all authenticating methods to attempt.
     """
@@ -215,6 +215,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
     def dispatch(self, request, *args, **kwargs):
         request = self.create_request(request)
         self.request = request
+
         self.args = args
         self.kwargs = kwargs
         self.headers = self.default_response_headers
@@ -222,8 +223,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         try:
             self.initial(request, *args, **kwargs)
 
-            # Authenticate and check request has the relevant permissions
-            self._check_permissions()
+            # check that user has the relevant permissions
+            self.check_permissions(request.user)
 
             # Get the appropriate handler method
             if request.method.lower() in self.http_method_names:

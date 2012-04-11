@@ -168,6 +168,18 @@ class ImmediateResponse(Response, Exception):
     An exception representing an Response that should be returned immediately.
     Any content should be serialized as-is, without being filtered.
     """
+    #TODO: this is just a temporary fix, the whole rendering/support for ImmediateResponse, should be remade : see issue #163
+
+    def render(self):
+        try:
+            return super(Response, self).render()
+        except ImmediateResponse:
+            renderer, media_type = self._determine_renderer()
+            self.renderers.remove(renderer)
+            if len(self.renderers) == 0:
+                raise RuntimeError('Caught an ImmediateResponse while '\
+                    'trying to render an ImmediateResponse')
+            return self.render()
 
     def __init__(self, *args, **kwargs):
         self.response = Response(*args, **kwargs)

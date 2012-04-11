@@ -9,11 +9,12 @@ The wrapped request then offers a richer API, in particular :
     - full support of PUT method, including support for file uploads
     - form overloading of HTTP method, content type and content
 """
+from StringIO import StringIO
+
+from django.contrib.auth.models import AnonymousUser
 
 from djangorestframework import status
 from djangorestframework.utils.mediatypes import is_form_media_type
-
-from StringIO import StringIO
 
 
 __all__ = ('Request',)
@@ -34,6 +35,7 @@ class Request(object):
     Kwargs:
         - request(HttpRequest). The original request instance.
         - parsers(list/tuple). The parsers to use for parsing the request content.
+        - authentications(list/tuple). The authentications used to try authenticating the request's user.
     """
 
     _USE_FORM_OVERLOADING = True
@@ -41,9 +43,10 @@ class Request(object):
     _CONTENTTYPE_PARAM = '_content_type'
     _CONTENT_PARAM = '_content'
 
-    def __init__(self, request=None, parsers=None):
+    def __init__(self, request=None, parsers=None, authentication=None):
         self._request = request
         self.parsers = parsers or ()
+        self.authentication = authentication or ()
         self._data = Empty
         self._files = Empty
         self._method = Empty
@@ -55,6 +58,12 @@ class Request(object):
         Instantiates and returns the list of parsers the request will use.
         """
         return [parser() for parser in self.parsers]
+
+    def get_authentications(self):
+        """
+        Instantiates and returns the list of parsers the request will use.
+        """
+        return [authentication() for authentication in self.authentication]
 
     @property
     def method(self):
@@ -112,6 +121,16 @@ class Request(object):
         if not _hasattr(self, '_files'):
             self._load_data_and_files()
         return self._files
+
+    @property
+    def user(self):
+        """
+        Returns the :obj:`user` for the current request, authenticated
+        with the set of :class:`authentication` instances applied to the :class:`Request`.
+        """
+        if not hasattr(self, '_user'):
+            self._user = self._authenticate()
+        return self._user
 
     def _load_data_and_files(self):
         """
@@ -204,6 +223,17 @@ class Request(object):
                 % content_type
             },
             status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+
+    def _authenticate(self):
+        """
+        Attempt to authenticate the request using each authentication instance in turn.
+        Returns a ``User`` object, which may be ``AnonymousUser``.
+        """
+        for authentication in self.get_authentications():
+            user = authentication.authenticate(self)
+            if user:
+                return user
+        return AnonymousUser()
 
     def __getattr__(self, name):
         """

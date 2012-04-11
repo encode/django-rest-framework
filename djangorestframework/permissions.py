@@ -1,7 +1,8 @@
 """
-The :mod:`permissions` module bundles a set of  permission classes that are used
-for checking if a request passes a certain set of constraints. You can assign a permission
-class to your view by setting your View's :attr:`permissions` class attribute.
+The :mod:`permissions` module bundles a set of permission classes that are used
+for checking if a request passes a certain set of constraints.
+
+Permission behavior is provided by mixing the :class:`mixins.PermissionsMixin` class into a :class:`View` class.
 """
 
 from django.core.cache import cache
@@ -126,7 +127,7 @@ class DjangoModelPermissions(BasePermission):
         try:
             return [perm % kwargs for perm in self.perms_map[method]]
         except KeyError:
-            ErrorResponse(status.HTTP_405_METHOD_NOT_ALLOWED)
+            ImmediateResponse(status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def check_permission(self, user):
         method = self.view.method
