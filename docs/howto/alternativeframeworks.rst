@@ -7,7 +7,7 @@ Alternative frameworks
 There are a number of alternative REST frameworks for Django:
 
 * `django-piston <https://bitbucket.org/jespern/django-piston/wiki/Home>`_ is very mature, and has a large community behind it.  This project was originally based on piston code in parts.
-* `django-tasypie <https://github.com/toastdriven/django-tastypie>`_ is also very good, and has a very active and helpful developer community and maintainers.
+* `django-tastypie <https://github.com/toastdriven/django-tastypie>`_ is also very good, and has a very active and helpful developer community and maintainers.
 * Other interesting projects include `dagny <https://github.com/zacharyvoase/dagny>`_ and `dj-webmachine <http://benoitc.github.com/dj-webmachine/>`_
 
 
