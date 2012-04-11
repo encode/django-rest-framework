@@ -370,6 +370,8 @@ else:
 # Markdown is optional
 try:
     import markdown
+    if markdown.version_info < (2, 0):
+        raise ImportError('Markdown < 2.0 is not supported.')
 
     class CustomSetextHeaderProcessor(markdown.blockprocessors.BlockProcessor):
         """
