@@ -104,7 +104,7 @@ class YAMLParser(BaseParser):
         """
         try:
             return (yaml.safe_load(stream), None)
-        except ValueError, exc:
+        except (ValueError, yaml.parser.ParserError), exc:
             raise ImmediateResponse(
                 {'detail': 'YAML parse error - %s' % unicode(exc)},
                 status=status.HTTP_400_BAD_REQUEST)

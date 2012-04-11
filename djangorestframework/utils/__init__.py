@@ -9,7 +9,6 @@ from djangorestframework.request import Request
 import re
 import xml.etree.ElementTree as ET
 
-
 MSIE_USER_AGENT_REGEX = re.compile(r'^Mozilla/[0-9]+\.[0-9]+ \([^)]*; MSIE [0-9]+\.[0-9]+[a-z]?;[^)]*\)(?!.* Opera )')
 
 

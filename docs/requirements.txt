@@ -1,6 +1,6 @@
 # Documentation requires Django & Sphinx, and their dependencies...
 
-Django==1.2.4
+Django>=1.2.4
 Jinja2==2.5.5
 Pygments==1.4
 Sphinx==1.0.7
