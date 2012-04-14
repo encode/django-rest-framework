@@ -58,7 +58,7 @@ you're using the self-documenting API::
 
     from django.conf.urls.defaults import patterns
 
-    urlpatterns = patterns('djangorestframework.views',
+    urlpatterns = patterns('djangorestframework.utils.staticviews',
         # Add your resources here
         (r'^accounts/login/$', 'api_login'),
         (r'^accounts/logout/$', 'api_logout'),
