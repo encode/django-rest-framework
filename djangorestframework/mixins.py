@@ -510,7 +510,7 @@ class ModelMixin(object):
         import warnings
         warnings.warn(
                 "``get_instance(**kwargs)`` method is deprecated. "
-                "use ``get_object(queryset=None)`` insted.",
+                "use ``get_object(queryset=None)`` instead.",
                 DeprecationWarning
             )
         return self.get_queryset().get(**kwargs)
