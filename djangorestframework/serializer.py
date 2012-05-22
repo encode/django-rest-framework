@@ -2,7 +2,7 @@
 Customizable serialization.
 """
 from django.db import models
-from django.db.models.query import QuerySet
+from django.db.models.query import QuerySet, RawQuerySet
 from django.utils.encoding import smart_unicode, is_protected_type, smart_str
 
 import inspect
@@ -261,7 +261,7 @@ class Serializer(object):
         if isinstance(obj, (dict, models.Model)):
             # Model instances & dictionaries
             return self.serialize_model(obj)
-        elif isinstance(obj, (tuple, list, set, QuerySet, types.GeneratorType)):
+        elif isinstance(obj, (tuple, list, set, QuerySet, RawQuerySet, types.GeneratorType)):
             # basic iterables
             return self.serialize_iter(obj)
         elif isinstance(obj, models.Manager):
