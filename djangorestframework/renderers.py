@@ -329,7 +329,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
         name = self.get_name()
         description = self.get_description()
 
-        breadcrumb_list = get_breadcrumbs(self.view.request.path)
+        breadcrumb_list = get_breadcrumbs(self.view.request.path_info)
 
         template = loader.get_template(self.template)
         context = RequestContext(self.view.request, {
