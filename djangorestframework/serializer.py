@@ -100,6 +100,7 @@ class Serializer(object):
     def __init__(self, depth=None, stack=[], **kwargs):
         if depth is not None:
             self.depth = depth
+        stack.append(self)
         self.stack = stack
 
     def get_fields(self, obj):
@@ -173,11 +174,11 @@ class Serializer(object):
         else:
             depth = self.depth - 1
 
+        # detect circular references
         if any([obj is elem for elem in self.stack]):
             return self.serialize_recursion(obj)
         else:
             stack = self.stack[:]
-            stack.append(obj)
 
         return related_serializer(depth=depth, stack=stack).serialize(obj)
 
