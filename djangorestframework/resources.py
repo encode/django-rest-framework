@@ -15,8 +15,17 @@ class BaseResource(Serializer):
 
     def __init__(self, view=None, depth=None, stack=[], **kwargs):
         super(BaseResource, self).__init__(depth, stack, **kwargs)
-        self.view = view
-        self.request = getattr(view, 'request', None)
+        # If a view is passed, use that.  Otherwise traverse up the stack
+        # to find a view we can use
+        if view is not None:
+            self.view = view
+        else:
+            for serializer in stack[::-1]:
+                if hasattr(serializer, 'view') \
+                and getattr(serializer, 'view') != None:
+                    self.view = getattr(serializer, 'view')
+                    break
+        self.request = getattr(self.view, 'request', None)
 
     def validate_request(self, data, files=None):
         """
