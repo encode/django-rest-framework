@@ -244,16 +244,20 @@ class DocumentingTemplateRenderer(BaseRenderer):
                 except Exception:
                     form_instance = None
 
-        # If we still don't have a form instance then try to get an unbound form
-        if not form_instance:
-            try:
-                form_instance = view.get_bound_form(method=method)
-            except Exception:
-                pass
+        # Forms for the GET method must be explicit, so do not get an unbound
+        # form nor create a generic form for this instance.
+        if method != 'get':
+            # If we still don't have a form instance then try to get an unbound form
+            if not form_instance:
+                try:
+                    form_instance = view.get_bound_form(method=method)
+                except Exception:
+                    pass
 
-        # If we still don't have a form instance then try to get an unbound form which can tunnel arbitrary content types
-        if not form_instance:
-            form_instance = self._get_generic_content_form(view)
+            # If we still don't have a form instance then try to get an unbound form
+            # which can tunnel arbitrary content types.
+            if not form_instance:
+                form_instance = self._get_generic_content_form(view)
 
         return form_instance
 
@@ -316,6 +320,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
 
         content = self._get_content(self.view, self.view.request, obj, media_type)
 
+        get_form_instance = self._get_form_instance(self.view, 'get')
         put_form_instance = self._get_form_instance(self.view, 'put')
         post_form_instance = self._get_form_instance(self.view, 'post')
 
@@ -342,6 +347,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
             'version': VERSION,
             'breadcrumblist': breadcrumb_list,
             'available_formats': self.view._rendered_formats,
+            'get_form': get_form_instance,
             'put_form': put_form_instance,
             'post_form': post_form_instance,
             'FORMAT_PARAM': self._FORMAT_QUERY_PARAM,

@@ -182,14 +182,18 @@ class FormResource(Resource):
         """
         Returns the form class used to validate this resource.
         """
-        # A form on the view overrides a form on the resource.
-        form = getattr(self.view, 'form', None) or self.form
-
         # Use the requested method or determine the request method
         if method is None and hasattr(self.view, 'request') and hasattr(self.view, 'method'):
             method = self.view.method
         elif method is None and hasattr(self.view, 'request'):
             method = self.view.request.method
+
+        # A form on the view overrides a form on the resource.  The GET method
+        # must have its form explicity set (e.g., get_form).
+        if not method or method.lower() != 'get':
+            form = getattr(self.view, 'form', None) or self.form
+        else:
+            form = None
 
         # A method form on the view or resource overrides the general case.
         # Method forms are attributes like `get_form` `post_form` `put_form`.
