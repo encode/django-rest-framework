@@ -179,7 +179,8 @@ class Serializer(object):
             stack = self.stack[:]
             stack.append(obj)
 
-        return related_serializer(depth=depth, stack=stack).serialize(obj)
+        return related_serializer(depth=depth, stack=stack).serialize(
+            obj, request=self.request)
 
     def serialize_max_depth(self, obj):
         """
@@ -253,10 +254,14 @@ class Serializer(object):
         """
         return smart_unicode(obj, strings_only=True)
 
-    def serialize(self, obj):
+    def serialize(self, obj, request=None):
         """
         Convert any object into a serializable representation.
         """
+
+        # Request from related serializer.
+        if request is not None:
+            self.request = request
 
         if isinstance(obj, (dict, models.Model)):
             # Model instances & dictionaries
