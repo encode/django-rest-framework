@@ -180,7 +180,7 @@ class Serializer(object):
             stack.append(obj)
 
         return related_serializer(depth=depth, stack=stack).serialize(
-            obj, request=self.request)
+            obj, request=getattr(self, 'request', None))
 
     def serialize_max_depth(self, obj):
         """
