@@ -3,27 +3,22 @@ The :mod:`mixins` module provides a set of reusable `mixin`
 classes that can be added to a `View`.
 """
 
-from django.contrib.auth.models import AnonymousUser
 from django.core.paginator import Paginator
 from django.db.models.fields.related import ForeignKey
-from django.http import HttpResponse
 from urlobject import URLObject
 
 from djangorestframework import status
 from djangorestframework.renderers import BaseRenderer
 from djangorestframework.resources import Resource, FormResource, ModelResource
-from djangorestframework.response import Response, ErrorResponse
-from djangorestframework.utils import as_tuple, MSIE_USER_AGENT_REGEX
-from djangorestframework.utils.mediatypes import is_form_media_type, order_by_precedence
-
-from StringIO import StringIO
+from djangorestframework.response import Response, ImmediateResponse
+from djangorestframework.request import Request
 
 
 __all__ = (
     # Base behavior mixins
     'RequestMixin',
     'ResponseMixin',
-    'AuthMixin',
+    'PermissionsMixin',
     'ResourceMixin',
     # Model behavior mixins
     'ReadModelMixin',
@@ -39,150 +34,21 @@ __all__ = (
 
 class RequestMixin(object):
     """
-    `Mixin` class to provide request parsing behavior.
+    `Mixin` class enabling the use of :class:`request.Request` in your views.
     """
 
-    _USE_FORM_OVERLOADING = True
-    _METHOD_PARAM = '_method'
-    _CONTENTTYPE_PARAM = '_content_type'
-    _CONTENT_PARAM = '_content'
-
-    parsers = ()
+    request_class = Request
     """
-    The set of request parsers that the view can handle.
-
-    Should be a tuple/list of classes as described in the :mod:`parsers` module.
+    The class to use as a wrapper for the original request object.
     """
 
-    @property
-    def method(self):
+    def create_request(self, request):
         """
-        Returns the HTTP method.
-
-        This should be used instead of just reading :const:`request.method`, as it allows the `method`
-        to be overridden by using a hidden `form` field on a form POST request.
+        Creates and returns an instance of :class:`request.Request`.
+        This new instance wraps the `request` passed as a parameter, and use
+        the  parsers set on the view.
         """
-        if not hasattr(self, '_method'):
-            self._load_method_and_content_type()
-        return self._method
-
-    @property
-    def content_type(self):
-        """
-        Returns the content type header.
-
-        This should be used instead of ``request.META.get('HTTP_CONTENT_TYPE')``,
-        as it allows the content type to be overridden by using a hidden form
-        field on a form POST request.
-        """
-        if not hasattr(self, '_content_type'):
-            self._load_method_and_content_type()
-        return self._content_type
-
-    @property
-    def DATA(self):
-        """
-        Parses the request body and returns the data.
-
-        Similar to ``request.POST``, except that it handles arbitrary parsers,
-        and also works on methods other than POST (eg PUT).
-        """
-        if not hasattr(self, '_data'):
-            self._load_data_and_files()
-        return self._data
-
-    @property
-    def FILES(self):
-        """
-        Parses the request body and returns the files.
-        Similar to ``request.FILES``, except that it handles arbitrary parsers,
-        and also works on methods other than POST (eg PUT).
-        """
-        if not hasattr(self, '_files'):
-            self._load_data_and_files()
-        return self._files
-
-    def _load_data_and_files(self):
-        """
-        Parse the request content into self.DATA and self.FILES.
-        """
-        if not hasattr(self, '_content_type'):
-            self._load_method_and_content_type()
-
-        if not hasattr(self, '_data'):
-            (self._data, self._files) = self._parse(self._get_stream(), self._content_type)
-
-    def _load_method_and_content_type(self):
-        """
-        Set the method and content_type, and then check if they've been overridden.
-        """
-        self._method = self.request.method
-        self._content_type = self.request.META.get('HTTP_CONTENT_TYPE', self.request.META.get('CONTENT_TYPE', ''))
-        self._perform_form_overloading()
-
-    def _get_stream(self):
-        """
-        Returns an object that may be used to stream the request content.
-        """
-        request = self.request
-
-        try:
-            content_length = int(request.META.get('CONTENT_LENGTH', request.META.get('HTTP_CONTENT_LENGTH')))
-        except (ValueError, TypeError):
-            content_length = 0
-
-        # TODO: Add 1.3's LimitedStream to compat and use that.
-        # NOTE: Currently only supports parsing request body as a stream with 1.3
-        if content_length == 0:
-            return None
-        elif hasattr(request, 'read'):
-            return request
-        return StringIO(request.raw_post_data)
-
-    def _perform_form_overloading(self):
-        """
-        If this is a form POST request, then we need to check if the method and content/content_type have been
-        overridden by setting them in hidden form fields or not.
-        """
-
-        # We only need to use form overloading on form POST requests.
-        if not self._USE_FORM_OVERLOADING or self._method != 'POST' or not is_form_media_type(self._content_type):
-            return
-
-        # At this point we're committed to parsing the request as form data.
-        self._data = data = self.request.POST.copy()
-        self._files = self.request.FILES
-
-        # Method overloading - change the method and remove the param from the content.
-        if self._METHOD_PARAM in data:
-            # NOTE: unlike `get`, `pop` on a `QueryDict` seems to return a list of values.
-            self._method = self._data.pop(self._METHOD_PARAM)[0].upper()
-
-        # Content overloading - modify the content type, and re-parse.
-        if self._CONTENT_PARAM in data and self._CONTENTTYPE_PARAM in data:
-            self._content_type = self._data.pop(self._CONTENTTYPE_PARAM)[0]
-            stream = StringIO(self._data.pop(self._CONTENT_PARAM)[0])
-            (self._data, self._files) = self._parse(stream, self._content_type)
-
-    def _parse(self, stream, content_type):
-        """
-        Parse the request content.
-
-        May raise a 415 ErrorResponse (Unsupported Media Type), or a 400 ErrorResponse (Bad Request).
-        """
-        if stream is None or content_type is None:
-            return (None, None)
-
-        parsers = as_tuple(self.parsers)
-
-        for parser_cls in parsers:
-            parser = parser_cls(self)
-            if parser.can_handle_request(content_type):
-                return parser.parse(stream)
-
-        raise ErrorResponse(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                            {'error': 'Unsupported media type in request \'%s\'.' % 
-                            content_type})
+        return self.request_class(request, parsers=self.parsers, authentication=self.authentication)
 
     @property
     def _parsed_media_types(self):
@@ -203,177 +69,63 @@ class RequestMixin(object):
 
 class ResponseMixin(object):
     """
-    Adds behavior for pluggable `Renderers` to a :class:`views.View` class.
-
-    Default behavior is to use standard HTTP Accept header content negotiation.
-    Also supports overriding the content type by specifying an ``_accept=`` parameter in the URL.
-    Ignores Accept headers from Internet Explorer user agents and uses a sensible browser Accept header instead.
+    `Mixin` class enabling the use of :class:`response.Response` in your views.
     """
-
-    _ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
-    _IGNORE_IE_ACCEPT_HEADER = True
 
     renderers = ()
     """
     The set of response renderers that the view can handle.
-
     Should be a tuple/list of classes as described in the :mod:`renderers` module.
     """
-
-    def get_renderers(self):
-        """
-        Return an iterable of available renderers. Override if you want to change
-        this list at runtime, say depending on what settings you have enabled.
-        """
-        return self.renderers
-
-    # TODO: wrap this behavior around dispatch(), ensuring it works
-    # out of the box with existing Django classes that use render_to_response.
-    def render(self, response):
-        """
-        Takes a :obj:`Response` object and returns an :obj:`HttpResponse`.
-        """
-        self.response = response
-
-        try:
-            renderer, media_type = self._determine_renderer(self.request)
-        except ErrorResponse, exc:
-            renderer = self._default_renderer(self)
-            media_type = renderer.media_type
-            response = exc.response
-
-        # Set the media type of the response
-        # Note that the renderer *could* override it in .render() if required.
-        response.media_type = renderer.media_type
-
-        # Serialize the response content
-        if response.has_content_body:
-            content = renderer.render(response.cleaned_content, media_type)
-        else:
-            content = renderer.render()
-
-        # Build the HTTP Response
-        resp = HttpResponse(content, mimetype=response.media_type, status=response.status)
-        for (key, val) in response.headers.items():
-            resp[key] = val
-
-        return resp
-
-    def _determine_renderer(self, request):
-        """
-        Determines the appropriate renderer for the output, given the client's 'Accept' header,
-        and the :attr:`renderers` set on this class.
-
-        Returns a 2-tuple of `(renderer, media_type)`
-
-        See: RFC 2616, Section 14 - http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-        """
-
-        if self._ACCEPT_QUERY_PARAM and request.GET.get(self._ACCEPT_QUERY_PARAM, None):
-            # Use _accept parameter override
-            accept_list = [request.GET.get(self._ACCEPT_QUERY_PARAM)]
-        elif (self._IGNORE_IE_ACCEPT_HEADER and
-              'HTTP_USER_AGENT' in request.META and
-              MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT'])):
-            # Ignore MSIE's broken accept behavior and do something sensible instead
-            accept_list = ['text/html', '*/*']
-        elif 'HTTP_ACCEPT' in request.META:
-            # Use standard HTTP Accept negotiation
-            accept_list = [token.strip() for token in request.META['HTTP_ACCEPT'].split(',')]
-        else:
-            # No accept header specified
-            accept_list = ['*/*']
-
-        # Check the acceptable media types against each renderer,
-        # attempting more specific media types first
-        # NB. The inner loop here isn't as bad as it first looks :)
-        #     Worst case is we're looping over len(accept_list) * len(self.renderers)
-        renderers = [renderer_cls(self) for renderer_cls in self.get_renderers()]
-
-        for accepted_media_type_lst in order_by_precedence(accept_list):
-            for renderer in renderers:
-                for accepted_media_type in accepted_media_type_lst:
-                    if renderer.can_handle_response(accepted_media_type):
-                        return renderer, accepted_media_type
-
-        # No acceptable renderers were found
-        raise ErrorResponse(status.HTTP_406_NOT_ACCEPTABLE,
-                                {'detail': 'Could not satisfy the client\'s Accept header',
-                                 'available_types': self._rendered_media_types})
 
     @property
     def _rendered_media_types(self):
         """
-        Return an list of all the media types that this view can render.
+        Return an list of all the media types that this response can render.
         """
         return [renderer.media_type for renderer in self.renderers]
 
     @property
     def _rendered_formats(self):
         """
-        Return a list of all the formats that this view can render.
+        Return a list of all the formats that this response can render.
         """
         return [renderer.format for renderer in self.renderers]
 
     @property
     def _default_renderer(self):
         """
-        Return the view's default renderer class.
+        Return the response's default renderer class.
         """
         return self.renderers[0]
 
 
-########## Auth Mixin ##########
+########## Permissions Mixin ##########
 
-class AuthMixin(object):
+class PermissionsMixin(object):
     """
-    Simple :class:`mixin` class to add authentication and permission checking to a :class:`View` class.
-    """
-
-    authentication = ()
-    """
-    The set of authentication types that this view can handle.
-
-    Should be a tuple/list of classes as described in the :mod:`authentication` module.
+    Simple :class:`mixin` class to add permission checking to a :class:`View` class.
     """
 
-    permissions = ()
+    permissions_classes = ()
     """
     The set of permissions that will be enforced on this view.
 
     Should be a tuple/list of classes as described in the :mod:`permissions` module.
     """
 
-    @property
-    def user(self):
+    def get_permissions(self):
         """
-        Returns the :obj:`user` for the current request, as determined by the set of
-        :class:`authentication` classes applied to the :class:`View`.
+        Instantiates and returns the list of permissions that this view requires.
         """
-        if not hasattr(self, '_user'):
-            self._user = self._authenticate()
-        return self._user
-
-    def _authenticate(self):
-        """
-        Attempt to authenticate the request using each authentication class in turn.
-        Returns a ``User`` object, which may be ``AnonymousUser``.
-        """
-        for authentication_cls in self.authentication:
-            authentication = authentication_cls(self)
-            user = authentication.authenticate(self.request)
-            if user:
-                return user
-        return AnonymousUser()
+        return [p(self) for p in self.permissions_classes]
 
     # TODO: wrap this behavior around dispatch()
-    def _check_permissions(self):
+    def check_permissions(self, user):
         """
-        Check user permissions and either raise an ``ErrorResponse`` or return.
+        Check user permissions and either raise an ``ImmediateResponse`` or return.
         """
-        user = self.user
-        for permission_cls in self.permissions:
-            permission = permission_cls(self)
+        for permission in self.get_permissions():
             permission.check_permission(user)
 
 
@@ -397,10 +149,10 @@ class ResourceMixin(object):
         """
         Returns the cleaned, validated request content.
 
-        May raise an :class:`response.ErrorResponse` with status code 400 (Bad Request).
+        May raise an :class:`response.ImmediateResponse` with status code 400 (Bad Request).
         """
         if not hasattr(self, '_content'):
-            self._content = self.validate_request(self.DATA, self.FILES)
+            self._content = self.validate_request(self.request.DATA, self.request.FILES)
         return self._content
 
     @property
@@ -408,7 +160,7 @@ class ResourceMixin(object):
         """
         Returns the cleaned, validated query parameters.
 
-        May raise an :class:`response.ErrorResponse` with status code 400 (Bad Request).
+        May raise an :class:`response.ImmediateResponse` with status code 400 (Bad Request).
         """
         return self.validate_request(self.request.GET)
 
@@ -420,14 +172,14 @@ class ResourceMixin(object):
             return ModelResource(self)
         elif getattr(self, 'form', None):
             return FormResource(self)
-        elif getattr(self, '%s_form' % self.method.lower(), None):
+        elif getattr(self, '%s_form' % self.request.method.lower(), None):
             return FormResource(self)
         return Resource(self)
 
     def validate_request(self, data, files=None):
         """
         Given the request *data* and optional *files*, return the cleaned, validated content.
-        May raise an :class:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
+        May raise an :class:`response.ImmediateResponse` with status code 400 (Bad Request) on failure.
         """
         return self._resource.validate_request(data, files)
 
@@ -534,9 +286,9 @@ class ReadModelMixin(ModelMixin):
         try:
             self.model_instance = self.get_instance(**query_kwargs)
         except model.DoesNotExist:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
+            raise ImmediateResponse(status=status.HTTP_404_NOT_FOUND)
 
-        return self.model_instance
+        return Response(self.model_instance)
 
 
 class CreateModelMixin(ModelMixin):
@@ -573,10 +325,12 @@ class CreateModelMixin(ModelMixin):
                     data[m2m_data[fieldname][0]] = related_item
                     manager.through(**data).save()
 
-        headers = {}
+        response = Response(instance, status=status.HTTP_201_CREATED)
+
+        # Set headers
         if hasattr(self.resource, 'url'):
-            headers['Location'] = self.resource(self).url(instance)
-        return Response(status.HTTP_201_CREATED, instance, headers)
+            response['Location'] = self.resource(self).url(instance)
+        return response
 
 
 class UpdateModelMixin(ModelMixin):
@@ -597,7 +351,7 @@ class UpdateModelMixin(ModelMixin):
         except model.DoesNotExist:
             self.model_instance = model(**self.get_instance_data(model, self.CONTENT, *args, **kwargs))
         self.model_instance.save()
-        return self.model_instance
+        return Response(self.model_instance)
 
 
 class DeleteModelMixin(ModelMixin):
@@ -611,10 +365,10 @@ class DeleteModelMixin(ModelMixin):
         try:
             instance = self.get_instance(**query_kwargs)
         except model.DoesNotExist:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
+            raise ImmediateResponse(status=status.HTTP_404_NOT_FOUND)
 
         instance.delete()
-        return
+        return Response()
 
 
 class ListModelMixin(ModelMixin):
@@ -631,7 +385,7 @@ class ListModelMixin(ModelMixin):
         if ordering:
             queryset = queryset.order_by(*ordering)
 
-        return queryset
+        return Response(queryset)
 
 
 ########## Pagination Mixins ##########
@@ -710,7 +464,7 @@ class PaginatorMixin(object):
         """
 
         # We don't want to paginate responses for anything other than GET requests
-        if self.method.upper() != 'GET':
+        if self.request.method.upper() != 'GET':
             return self._resource.filter_response(obj)
 
         paginator = Paginator(obj, self.get_limit())
@@ -718,12 +472,14 @@ class PaginatorMixin(object):
         try:
             page_num = int(self.request.GET.get('page', '1'))
         except ValueError:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND,
-                                {'detail': 'That page contains no results'})
+            raise ImmediateResponse(
+                {'detail': 'That page contains no results'},
+                status=status.HTTP_404_NOT_FOUND)
 
         if page_num not in paginator.page_range:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND,
-                                {'detail': 'That page contains no results'})
+            raise ImmediateResponse(
+                {'detail': 'That page contains no results'},
+                status=status.HTTP_404_NOT_FOUND)
 
         page = paginator.page(page_num)
 

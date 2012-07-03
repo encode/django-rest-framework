@@ -6,20 +6,18 @@ by serializing the output along with documentation regarding the View, output st
 and providing forms and links depending on the allowed methods, renderers and parsers on the View.
 """
 from django import forms
-from django.conf import settings
 from django.core.serializers.json import DateTimeAwareJSONEncoder
 from django.template import RequestContext, loader
 from django.utils import simplejson as json
 
-
 from djangorestframework.compat import yaml
-from djangorestframework.utils import dict2xml, url_resolves
+from djangorestframework.utils import dict2xml
 from djangorestframework.utils.breadcrumbs import get_breadcrumbs
 from djangorestframework.utils.mediatypes import get_media_type_params, add_media_type_param, media_type_matches
 from djangorestframework import VERSION
 
 import string
-from urllib import quote_plus
+
 
 __all__ = (
     'BaseRenderer',
@@ -45,7 +43,7 @@ class BaseRenderer(object):
     media_type = None
     format = None
 
-    def __init__(self, view):
+    def __init__(self, view=None):
         self.view = view
 
     def can_handle_response(self, accept):
@@ -60,9 +58,13 @@ class BaseRenderer(object):
         This may be overridden to provide for other behavior, but typically you'll
         instead want to just set the :attr:`media_type` attribute on the class.
         """
-        format = self.view.kwargs.get(self._FORMAT_QUERY_PARAM, None)
-        if format is None:
+        # TODO: format overriding must go out of here
+        format = None
+        if self.view is not None:
+            format = self.view.kwargs.get(self._FORMAT_QUERY_PARAM, None)
+        if format is None and self.view is not None:
             format = self.view.request.GET.get(self._FORMAT_QUERY_PARAM, None)
+
         if format is not None:
             return format == self.format
         return media_type_matches(self.media_type, accept)
@@ -211,7 +213,8 @@ class DocumentingTemplateRenderer(BaseRenderer):
         """
 
         # Find the first valid renderer and render the content. (Don't use another documenting renderer.)
-        renderers = [renderer for renderer in view.renderers if not issubclass(renderer, DocumentingTemplateRenderer)]
+        renderers = [renderer for renderer in view.renderers
+                     if not issubclass(renderer, DocumentingTemplateRenderer)]
         if not renderers:
             return '[No renderers were found]'
 
@@ -265,12 +268,12 @@ class DocumentingTemplateRenderer(BaseRenderer):
 
         # If we're not using content overloading there's no point in supplying a generic form,
         # as the view won't treat the form's value as the content of the request.
-        if not getattr(view, '_USE_FORM_OVERLOADING', False):
+        if not getattr(view.request, '_USE_FORM_OVERLOADING', False):
             return None
 
         # NB. http://jacobian.org/writing/dynamic-form-generation/
         class GenericContentForm(forms.Form):
-            def __init__(self, view):
+            def __init__(self, view, request):
                 """We don't know the names of the fields we want to set until the point the form is instantiated,
                 as they are determined by the Resource the form is being created against.
                 Add the fields dynamically."""
@@ -279,18 +282,18 @@ class DocumentingTemplateRenderer(BaseRenderer):
                 contenttype_choices = [(media_type, media_type) for media_type in view._parsed_media_types]
                 initial_contenttype = view._default_parser.media_type
 
-                self.fields[view._CONTENTTYPE_PARAM] = forms.ChoiceField(label='Content Type',
+                self.fields[request._CONTENTTYPE_PARAM] = forms.ChoiceField(label='Content Type',
                                                                          choices=contenttype_choices,
                                                                          initial=initial_contenttype)
-                self.fields[view._CONTENT_PARAM] = forms.CharField(label='Content',
+                self.fields[request._CONTENT_PARAM] = forms.CharField(label='Content',
                                                                    widget=forms.Textarea)
 
         # If either of these reserved parameters are turned off then content tunneling is not possible
-        if self.view._CONTENTTYPE_PARAM is None or self.view._CONTENT_PARAM is None:
+        if self.view.request._CONTENTTYPE_PARAM is None or self.view.request._CONTENT_PARAM is None:
             return None
 
         # Okey doke, let's do it
-        return GenericContentForm(view)
+        return GenericContentForm(view, view.request)
 
     def get_name(self):
         try:
@@ -319,13 +322,6 @@ class DocumentingTemplateRenderer(BaseRenderer):
         put_form_instance = self._get_form_instance(self.view, 'put')
         post_form_instance = self._get_form_instance(self.view, 'post')
 
-        if url_resolves(settings.LOGIN_URL) and url_resolves(settings.LOGOUT_URL):
-            login_url = "%s?next=%s" % (settings.LOGIN_URL, quote_plus(self.view.request.path))
-            logout_url = "%s?next=%s" % (settings.LOGOUT_URL, quote_plus(self.view.request.path))
-        else:
-            login_url = None
-            logout_url = None
-
         name = self.get_name()
         description = self.get_description()
 
@@ -341,6 +337,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
             'name': name,
             'version': VERSION,
             'breadcrumblist': breadcrumb_list,
+            'allowed_methods': self.view.allowed_methods,
             'available_formats': self.view._rendered_formats,
             'put_form': put_form_instance,
             'post_form': post_form_instance,
@@ -353,8 +350,8 @@ class DocumentingTemplateRenderer(BaseRenderer):
         # Munge DELETE Response code to allow us to return content
         # (Do this *after* we've rendered the template so that we include
         # the normal deletion response code in the output)
-        if self.view.response.status == 204:
-            self.view.response.status = 200
+        if self.view.response.status_code == 204:
+            self.view.response.status_code = 200
 
         return ret
 

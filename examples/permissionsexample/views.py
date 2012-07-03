@@ -1,4 +1,5 @@
 from djangorestframework.views import View
+from djangorestframework.response import Response
 from djangorestframework.permissions import PerUserThrottling, IsAuthenticated
 from djangorestframework.reverse import reverse
 
@@ -9,16 +10,16 @@ class PermissionsExampleView(View):
     """
 
     def get(self, request):
-        return [
+        return Response([
             {
                 'name': 'Throttling Example',
-                'url': reverse('throttled-resource', request=request)
+                'url': reverse('throttled-resource', request)
             },
             {
                 'name': 'Logged in example',
-                'url': reverse('loggedin-resource', request=request)
+                'url': reverse('loggedin-resource', request)
             },
-        ]
+        ])
 
 
 class ThrottlingExampleView(View):
@@ -29,14 +30,14 @@ class ThrottlingExampleView(View):
     throttle will be applied until 60 seconds have passed since the first request.
     """
 
-    permissions = (PerUserThrottling,)
+    permissions_classes = (PerUserThrottling,)
     throttle = '10/min'
 
     def get(self, request):
         """
         Handle GET requests.
         """
-        return "Successful response to GET request because throttle is not yet active."
+        return Response("Successful response to GET request because throttle is not yet active.")
 
 
 class LoggedInExampleView(View):
@@ -46,7 +47,7 @@ class LoggedInExampleView(View):
     `curl -X GET -H 'Accept: application/json' -u test:test http://localhost:8000/permissions-example`
     """
 
-    permissions = (IsAuthenticated, )
+    permissions_classes = (IsAuthenticated, )
 
     def get(self, request):
-        return 'You have permission to view this resource'
+        return Response('You have permission to view this resource')

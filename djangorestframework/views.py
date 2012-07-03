@@ -6,13 +6,12 @@ By setting or modifying class attributes on your view, you change it's predefine
 """
 
 import re
-from django.http import HttpResponse
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 
 from djangorestframework.compat import View as DjangoView, apply_markdown
-from djangorestframework.response import Response, ErrorResponse
+from djangorestframework.response import Response, ImmediateResponse
 from djangorestframework.mixins import *
 from djangorestframework import resources, renderers, parsers, authentication, permissions, status
 
@@ -68,7 +67,7 @@ _resource_classes = (
 )
 
 
-class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
+class View(ResourceMixin, RequestMixin, ResponseMixin, PermissionsMixin, DjangoView):
     """
     Handles incoming requests and maps them to REST operations.
     Performs request deserialization, response serialization, authentication and input validation.
@@ -82,16 +81,16 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
     renderers = renderers.DEFAULT_RENDERERS
     """
-    List of renderers the resource can serialize the response with, ordered by preference.
+    List of renderer classes the resource can serialize the response with, ordered by preference.
     """
 
     parsers = parsers.DEFAULT_PARSERS
     """
-    List of parsers the resource can parse the request with.
+    List of parser classes the resource can parse the request with.
     """
 
     authentication = (authentication.UserLoggedInAuthentication,
-                       authentication.BasicAuthentication)
+                      authentication.BasicAuthentication)
     """
     List of all authenticating methods to attempt.
     """
@@ -117,7 +116,15 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         """
         Return the list of allowed HTTP methods, uppercased.
         """
-        return [method.upper() for method in self.http_method_names if hasattr(self, method)]
+        return [method.upper() for method in self.http_method_names
+                if hasattr(self, method)]
+
+    @property
+    def default_response_headers(self):
+        return {
+            'Allow': ', '.join(self.allowed_methods),
+            'Vary': 'Authenticate, Accept'
+        }
 
     def get_name(self):
         """
@@ -161,6 +168,9 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         return description
 
     def markup_description(self, description):
+        """
+        Apply HTML markup to the description of this view.
+        """
         if apply_markdown:
             description = apply_markdown(description)
         else:
@@ -169,81 +179,73 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
-        Return an HTTP 405 error if an operation is called which does not have a handler method.
+        Return an HTTP 405 error if an operation is called which does not have
+        a handler method.
         """
-        raise ErrorResponse(status.HTTP_405_METHOD_NOT_ALLOWED,
-                            {'detail': 'Method \'%s\' not allowed on this resource.' % self.method})
+        content = {
+            'detail': "Method '%s' not allowed on this resource." % request.method
+        }
+        raise ImmediateResponse(content, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def initial(self, request, *args, **kargs):
         """
-        Hook for any code that needs to run prior to anything else.
-        Required if you want to do things like set `request.upload_handlers` before
-        the authentication and dispatch handling is run.
+        This method is a hook for any code that needs to run prior to
+        anything else.
+        Required if you want to do things like set `request.upload_handlers`
+        before the authentication and dispatch handling is run.
         """
         pass
 
     def final(self, request, response, *args, **kargs):
         """
-        Hook for any code that needs to run after everything else in the view.
+        This method is a hook for any code that needs to run after everything
+        else in the view.
+        Returns the final response object.
         """
-        # Always add these headers.
-        response.headers['Allow'] = ', '.join(self.allowed_methods)
-        # sample to allow caching using Vary http header
-        response.headers['Vary'] = 'Authenticate, Accept'
-
-        # merge with headers possibly set at some point in the view
-        response.headers.update(self.headers)
-        return self.render(response)
-
-    def add_header(self, field, value):
-        """
-        Add *field* and *value* to the :attr:`headers` attribute of the :class:`View` class.
-        """
-        self.headers[field] = value
+        response.view = self
+        response.request = request
+        response.renderers = self.renderers
+        for key, value in self.headers.items():
+            response[key] = value
+        return response
 
     # Note: session based authentication is explicitly CSRF validated,
     # all other authentication is CSRF exempt.
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
+        request = self.create_request(request)
         self.request = request
+
         self.args = args
         self.kwargs = kwargs
-        self.headers = {}
+        self.headers = self.default_response_headers
 
         try:
             self.initial(request, *args, **kwargs)
 
-            # Authenticate and check request has the relevant permissions
-            self._check_permissions()
+            # check that user has the relevant permissions
+            self.check_permissions(request.user)
 
             # Get the appropriate handler method
-            if self.method.lower() in self.http_method_names:
-                handler = getattr(self, self.method.lower(), self.http_method_not_allowed)
+            if request.method.lower() in self.http_method_names:
+                handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
             else:
                 handler = self.http_method_not_allowed
 
-            response_obj = handler(request, *args, **kwargs)
+            response = handler(request, *args, **kwargs)
 
-            # Allow return value to be either HttpResponse, Response, or an object, or None
-            if isinstance(response_obj, HttpResponse):
-                return response_obj
-            elif isinstance(response_obj, Response):
-                response = response_obj
-            elif response_obj is not None:
-                response = Response(status.HTTP_200_OK, response_obj)
-            else:
-                response = Response(status.HTTP_204_NO_CONTENT)
+            if isinstance(response, Response):
+                # Pre-serialize filtering (eg filter complex objects into natively serializable types)
+                response.raw_content = self.filter_response(response.raw_content)
 
-            # Pre-serialize filtering (eg filter complex objects into natively serializable types)
-            response.cleaned_content = self.filter_response(response.raw_content)
-
-        except ErrorResponse, exc:
+        except ImmediateResponse, exc:
             response = exc.response
 
-        return self.final(request, response, *args, **kwargs)
+        self.response = self.final(request, response, *args, **kwargs)
+        return self.response
 
     def options(self, request, *args, **kwargs):
-        response_obj = {
+        content = {
             'name': self.get_name(),
             'description': self.get_description(),
             'renders': self._rendered_media_types,
@@ -254,11 +256,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
             field_name_types = {}
             for name, field in form.fields.iteritems():
                 field_name_types[name] = field.__class__.__name__
-            response_obj['fields'] = field_name_types
-        # Note 'ErrorResponse' is misleading, it's just any response
-        # that should be rendered and returned immediately, without any
-        # response filtering.
-        raise ErrorResponse(status.HTTP_200_OK, response_obj)
+            content['fields'] = field_name_types
+        raise ImmediateResponse(content, status=status.HTTP_200_OK)
 
 
 class ModelView(View):

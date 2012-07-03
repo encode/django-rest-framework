@@ -17,7 +17,7 @@ from django.http.multipartparser import MultiPartParserError
 from django.utils import simplejson as json
 from djangorestframework import status
 from djangorestframework.compat import yaml
-from djangorestframework.response import ErrorResponse
+from djangorestframework.response import ImmediateResponse
 from djangorestframework.utils.mediatypes import media_type_matches
 from xml.etree import ElementTree as ET
 from djangorestframework.compat import ETParseError
@@ -45,13 +45,6 @@ class BaseParser(object):
 
     media_type = None
 
-    def __init__(self, view):
-        """
-        Initialize the parser with the ``View`` instance as state,
-        in case the parser needs to access any metadata on the :obj:`View` object.
-        """
-        self.view = view
-
     def can_handle_request(self, content_type):
         """
         Returns :const:`True` if this parser is able to deal with the given *content_type*.
@@ -65,12 +58,12 @@ class BaseParser(object):
         """
         return media_type_matches(self.media_type, content_type)
 
-    def parse(self, stream):
+    def parse(self, stream, meta, upload_handlers):
         """
         Given a *stream* to read from, return the deserialized output.
         Should return a 2-tuple of (data, files).
         """
-        raise NotImplementedError("BaseParser.parse() Must be overridden to be implemented.")
+        raise NotImplementedError(".parse() Must be overridden to be implemented.")
 
 
 class JSONParser(BaseParser):
@@ -80,7 +73,7 @@ class JSONParser(BaseParser):
 
     media_type = 'application/json'
 
-    def parse(self, stream):
+    def parse(self, stream, meta, upload_handlers):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -90,8 +83,9 @@ class JSONParser(BaseParser):
         try:
             return (json.load(stream), None)
         except ValueError, exc:
-            raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
-                                {'detail': 'JSON parse error - %s' % unicode(exc)})
+            raise ImmediateResponse(
+                {'detail': 'JSON parse error - %s' % unicode(exc)},
+                status=status.HTTP_400_BAD_REQUEST)
 
 
 class YAMLParser(BaseParser):
@@ -101,7 +95,7 @@ class YAMLParser(BaseParser):
 
     media_type = 'application/yaml'
 
-    def parse(self, stream):
+    def parse(self, stream, meta, upload_handlers):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -111,8 +105,9 @@ class YAMLParser(BaseParser):
         try:
             return (yaml.safe_load(stream), None)
         except (ValueError, yaml.parser.ParserError), exc:
-            content = {'detail': 'YAML parse error - %s' % unicode(exc)}
-            raise ErrorResponse(status.HTTP_400_BAD_REQUEST, content)
+            raise ImmediateResponse(
+                {'detail': 'YAML parse error - %s' % unicode(exc)},
+                status=status.HTTP_400_BAD_REQUEST)
 
 
 class PlainTextParser(BaseParser):
@@ -122,7 +117,7 @@ class PlainTextParser(BaseParser):
 
     media_type = 'text/plain'
 
-    def parse(self, stream):
+    def parse(self, stream, meta, upload_handlers):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -139,7 +134,7 @@ class FormParser(BaseParser):
 
     media_type = 'application/x-www-form-urlencoded'
 
-    def parse(self, stream):
+    def parse(self, stream, meta, upload_handlers):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -157,20 +152,20 @@ class MultiPartParser(BaseParser):
 
     media_type = 'multipart/form-data'
 
-    def parse(self, stream):
+    def parse(self, stream, meta, upload_handlers):
         """
         Returns a 2-tuple of `(data, files)`.
 
         `data` will be a :class:`QueryDict` containing all the form parameters.
         `files` will be a :class:`QueryDict` containing all the form files.
         """
-        upload_handlers = self.view.request._get_upload_handlers()
         try:
-            django_parser = DjangoMultiPartParser(self.view.request.META, stream, upload_handlers)
-            return django_parser.parse()
+            parser = DjangoMultiPartParser(meta, stream, upload_handlers)
+            return parser.parse()
         except MultiPartParserError, exc:
-            raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
-                                {'detail': 'multipart parse error - %s' % unicode(exc)})
+            raise ImmediateResponse(
+                {'detail': 'multipart parse error - %s' % unicode(exc)},
+                status=status.HTTP_400_BAD_REQUEST)
 
 
 class XMLParser(BaseParser):
@@ -180,7 +175,7 @@ class XMLParser(BaseParser):
 
     media_type = 'application/xml'
 
-    def parse(self, stream):
+    def parse(self, stream, meta, upload_handlers):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -188,10 +183,10 @@ class XMLParser(BaseParser):
         `files` will always be `None`.
         """
         try:
-          tree = ET.parse(stream)
+            tree = ET.parse(stream)
         except (ExpatError, ETParseError, ValueError), exc:
-          content = {'detail': 'XML parse error - %s' % unicode(exc)}
-          raise ErrorResponse(status.HTTP_400_BAD_REQUEST, content)
+            content = {'detail': 'XML parse error - %s' % unicode(exc)}
+            raise ImmediateResponse(content, status=status.HTTP_400_BAD_REQUEST)
         data = self._xml_convert(tree.getroot())
 
         return (data, None)
@@ -255,4 +250,3 @@ if yaml:
     DEFAULT_PARSERS += (YAMLParser, )
 else:
     YAMLParser = None
-

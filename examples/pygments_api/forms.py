@@ -6,6 +6,7 @@ from pygments.styles import get_all_styles
 LEXER_CHOICES = sorted([(item[1][0], item[0]) for item in get_all_lexers()])
 STYLE_CHOICES = sorted((item, item) for item in list(get_all_styles()))
 
+
 class PygmentsForm(forms.Form):
     """A simple form with some of the most important pygments settings.
     The code to be highlighted can be specified either in a text field, or by URL.
@@ -24,5 +25,3 @@ class PygmentsForm(forms.Form):
                               initial='python')
     style = forms.ChoiceField(choices=STYLE_CHOICES,
                               initial='friendly')
-
-

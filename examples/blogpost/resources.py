@@ -18,8 +18,8 @@ class BlogPostResource(ModelResource):
 
     def comments(self, instance):
         return reverse('comments',
-                       kwargs={'blogpost': instance.key},
-                       request=self.request)
+                        kwargs={'blogpost': instance.key},
+                        request=self.request)
 
 
 class CommentResource(ModelResource):

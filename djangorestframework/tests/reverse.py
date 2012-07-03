@@ -5,6 +5,7 @@ from django.utils import simplejson as json
 from djangorestframework.renderers import JSONRenderer
 from djangorestframework.reverse import reverse
 from djangorestframework.views import View
+from djangorestframework.response import Response
 
 
 class MyView(View):
@@ -15,7 +16,8 @@ class MyView(View):
     renderers = (JSONRenderer, )
 
     def get(self, request):
-        return reverse('myview', request=request)
+        return Response(reverse('myview', request=request))
+
 
 urlpatterns = patterns('',
     url(r'^myview$', MyView.as_view(), name='myview'),

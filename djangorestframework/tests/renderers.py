@@ -4,17 +4,18 @@ from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
 
 from djangorestframework import status
-from djangorestframework.views import View
 from djangorestframework.compat import View as DjangoView
+from djangorestframework.response import Response
+from djangorestframework.mixins import ResponseMixin
+from djangorestframework.views import View
 from djangorestframework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
     XMLRenderer, JSONPRenderer, DocumentingHTMLRenderer
-from djangorestframework.parsers import JSONParser, YAMLParser, XMLParser
-from djangorestframework.mixins import ResponseMixin
-from djangorestframework.response import Response
+from djangorestframework.parsers import YAMLParser, XMLParser
 
 from StringIO import StringIO
 import datetime
 from decimal import Decimal
+
 
 DUMMYSTATUS = status.HTTP_200_OK
 DUMMYCONTENT = 'dummycontent'
@@ -57,14 +58,14 @@ class HTMLView(View):
     renderers = (DocumentingHTMLRenderer, )
 
     def get(self, request, **kwargs):
-        return 'text' 
+        return 'text'
 
 
 class HTMLView1(View):
     renderers = (DocumentingHTMLRenderer, JSONRenderer)
 
     def get(self, request, **kwargs):
-        return 'text' 
+        return 'text'
 
 urlpatterns = patterns('',
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderers=[RendererA, RendererB])),
@@ -167,7 +168,7 @@ class RendererIntegrationTests(TestCase):
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEquals(resp.status_code, DUMMYSTATUS)
 
-    def test_bla(self):
+    def test_bla(self):  # What the f***?
         resp = self.client.get('/?format=formatb',
             HTTP_ACCEPT='text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
         self.assertEquals(resp['Content-Type'], RendererB.media_type)
@@ -184,6 +185,7 @@ def strip_trailing_whitespace(content):
     different versions of the json lib.
     """
     return re.sub(' +\n', '\n', content)
+
 
 class JSONRendererTests(TestCase):
     """
@@ -209,19 +211,17 @@ class JSONRendererTests(TestCase):
         content = renderer.render(obj, 'application/json; indent=2')
         self.assertEquals(strip_trailing_whitespace(content), _indented_repr)
 
-    def test_render_and_parse(self):
-        """
-        Test rendering and then parsing returns the original object.
-        IE obj -> render -> parse -> obj.
-        """
-        obj = {'foo': ['bar', 'baz']}
 
-        renderer = JSONRenderer(None)
-        parser = JSONParser(None)
+class MockGETView(View):
 
-        content = renderer.render(obj, 'application/json')
-        (data, files) = parser.parse(StringIO(content))
-        self.assertEquals(obj, data)
+    def get(self, request, *args, **kwargs):
+        return Response({'foo': ['bar', 'baz']})
+
+
+urlpatterns = patterns('',
+    url(r'^jsonp/jsonrenderer$', MockGETView.as_view(renderers=[JSONRenderer, JSONPRenderer])),
+    url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(renderers=[JSONPRenderer])),
+)
 
 
 class JSONPRendererTests(TestCase):
@@ -295,22 +295,21 @@ if YAMLRenderer:
             self.assertEquals(obj, data)
 
 
-
 class XMLRendererTestCase(TestCase):
     """
     Tests specific to the XML Renderer
     """
 
     _complex_data = {
-        "creation_date": datetime.datetime(2011, 12, 25, 12, 45, 00), 
-        "name": "name", 
+        "creation_date": datetime.datetime(2011, 12, 25, 12, 45, 00),
+        "name": "name",
         "sub_data_list": [
             {
-                "sub_id": 1, 
+                "sub_id": 1,
                 "sub_name": "first"
-            }, 
+            },
             {
-                "sub_id": 2, 
+                "sub_id": 2,
                 "sub_name": "second"
             }
         ]
@@ -365,12 +364,12 @@ class XMLRendererTestCase(TestCase):
         renderer = XMLRenderer(None)
         content = renderer.render({'field': None}, 'application/xml')
         self.assertXMLContains(content, '<field></field>')
-        
+
     def test_render_complex_data(self):
         """
         Test XML rendering.
         """
-        renderer = XMLRenderer(None)            
+        renderer = XMLRenderer(None)
         content = renderer.render(self._complex_data, 'application/xml')
         self.assertXMLContains(content, '<sub_name>first</sub_name>')
         self.assertXMLContains(content, '<sub_name>second</sub_name>')
@@ -379,11 +378,11 @@ class XMLRendererTestCase(TestCase):
         """
         Test XML rendering.
         """
-        renderer = XMLRenderer(None)            
+        renderer = XMLRenderer(None)
         content = StringIO(renderer.render(self._complex_data, 'application/xml'))
-        
-        parser = XMLParser(None)
-        complex_data_out, dummy = parser.parse(content)
+
+        parser = XMLParser()
+        complex_data_out, dummy = parser.parse(content, {}, [])
         error_msg = "complex data differs!IN:\n %s \n\n OUT:\n %s" % (repr(self._complex_data), repr(complex_data_out))
         self.assertEqual(self._complex_data, complex_data_out, error_msg)
 
@@ -391,22 +390,3 @@ class XMLRendererTestCase(TestCase):
         self.assertTrue(xml.startswith('<?xml version="1.0" encoding="utf-8"?>\n<root>'))
         self.assertTrue(xml.endswith('</root>'))
         self.assertTrue(string in xml, '%r not in %r' % (string, xml))
-
-
-class Issue122Tests(TestCase):
-    """
-    Tests that covers #122.
-    """
-    urls = 'djangorestframework.tests.renderers'
-
-    def test_only_html_renderer(self):
-        """
-        Test if no infinite recursion occurs.
-        """
-        resp = self.client.get('/html')
-        
-    def test_html_renderer_is_first(self):
-        """
-        Test if no infinite recursion occurs.
-        """
-        resp = self.client.get('/html1')

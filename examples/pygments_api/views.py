@@ -1,7 +1,6 @@
 from __future__ import with_statement  # for python 2.5
 from django.conf import settings
 
-from djangorestframework.resources import FormResource
 from djangorestframework.response import Response
 from djangorestframework.renderers import BaseRenderer
 from djangorestframework.reverse import reverse
@@ -64,8 +63,11 @@ class PygmentsRoot(View):
         """
         Return a list of all currently existing snippets.
         """
-        unique_ids = [os.path.split(f)[1] for f in list_dir_sorted_by_ctime(HIGHLIGHTED_CODE_DIR)]
-        return [reverse('pygments-instance', request=request, args=[unique_id]) for unique_id in unique_ids]
+        unique_ids = [os.path.split(f)[1]
+                      for f in list_dir_sorted_by_ctime(HIGHLIGHTED_CODE_DIR)]
+        urls = [reverse('pygments-instance', args=[unique_id], request=request)
+                for unique_id in unique_ids]
+        return Response(urls)
 
     def post(self, request):
         """
@@ -85,7 +87,8 @@ class PygmentsRoot(View):
 
         remove_oldest_files(HIGHLIGHTED_CODE_DIR, MAX_FILES)
 
-        return Response(status.HTTP_201_CREATED, headers={'Location': reverse('pygments-instance', request=request, args=[unique_id])})
+        location = reverse('pygments-instance', args=[unique_id], request=request)
+        return Response(status=status.HTTP_201_CREATED, headers={'Location': location})
 
 
 class PygmentsInstance(View):
@@ -93,7 +96,7 @@ class PygmentsInstance(View):
     Simply return the stored highlighted HTML file with the correct mime type.
     This Resource only renders HTML and uses a standard HTML renderer rather than the renderers.DocumentingHTMLRenderer class.
     """
-    renderers = (HTMLRenderer,)
+    renderers = (HTMLRenderer, )
 
     def get(self, request, unique_id):
         """
@@ -101,8 +104,8 @@ class PygmentsInstance(View):
         """
         pathname = os.path.join(HIGHLIGHTED_CODE_DIR, unique_id)
         if not os.path.exists(pathname):
-            return Response(status.HTTP_404_NOT_FOUND)
-        return open(pathname, 'r').read()
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(open(pathname, 'r').read())
 
     def delete(self, request, unique_id):
         """
@@ -110,6 +113,6 @@ class PygmentsInstance(View):
         """
         pathname = os.path.join(HIGHLIGHTED_CODE_DIR, unique_id)
         if not os.path.exists(pathname):
-            return Response(status.HTTP_404_NOT_FOUND)
-        return os.remove(pathname)
-
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        os.remove(pathname)
+        return Response()

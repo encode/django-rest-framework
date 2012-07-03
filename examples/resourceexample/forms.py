@@ -1,5 +1,6 @@
 from django import forms
 
+
 class MyForm(forms.Form):
     foo = forms.BooleanField(required=False)
     bar = forms.IntegerField(help_text='Must be an integer.')

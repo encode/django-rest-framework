@@ -1,6 +1,5 @@
 from django import forms
-
-from djangorestframework.response import ErrorResponse
+from djangorestframework.response import ImmediateResponse
 from djangorestframework.serializer import Serializer
 from djangorestframework.utils import as_tuple
 
@@ -16,14 +15,23 @@ class BaseResource(Serializer):
 
     def __init__(self, view=None, depth=None, stack=[], **kwargs):
         super(BaseResource, self).__init__(depth, stack, **kwargs)
-        self.view = view
-        self.request = getattr(view, 'request', None)
+        # If a view is passed, use that.  Otherwise traverse up the stack
+        # to find a view we can use
+        if view is not None:
+            self.view = view
+        else:
+            for serializer in stack[::-1]:
+                if hasattr(serializer, 'view') \
+                and getattr(serializer, 'view') != None:
+                    self.view = getattr(serializer, 'view')
+                    break
+        self.request = getattr(self.view, 'request', None)
 
     def validate_request(self, data, files=None):
         """
         Given the request content return the cleaned, validated content.
-        Typically raises a :exc:`response.ErrorResponse` with status code 400
-        (Bad Request) on failure.
+        Typically raises a :exc:`response.ImmediateResponse` with status code
+        400 (Bad Request) on failure.
         """
         return data
 
@@ -75,19 +83,19 @@ class FormResource(Resource):
     """
     Flag to check for unknown fields when validating a form. If set to false and
     we receive request data that is not expected by the form it raises an
-    :exc:`response.ErrorResponse` with status code 400. If set to true, only
+    :exc:`response.ImmediateResponse` with status code 400. If set to true, only
     expected fields are validated.
     """
 
     def validate_request(self, data, files=None):
         """
         Given some content as input return some cleaned, validated content.
-        Raises a :exc:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
+        Raises a :exc:`response.ImmediateResponse` with status code 400 (Bad Request) on failure.
 
         Validation is standard form validation, with an additional constraint that *no extra unknown fields* may be supplied
         if :attr:`self.allow_unknown_form_fields` is ``False``.
 
-        On failure the :exc:`response.ErrorResponse` content is a dict which may contain :obj:`'errors'` and :obj:`'field-errors'` keys.
+        On failure the :exc:`response.ImmediateResponse` content is a dict which may contain :obj:`'errors'` and :obj:`'field-errors'` keys.
         If the :obj:`'errors'` key exists it is a list of strings of non-field errors.
         If the :obj:`'field-errors'` key exists it is a dict of ``{'field name as string': ['errors as strings', ...]}``.
         """
@@ -176,7 +184,7 @@ class FormResource(Resource):
                 detail[u'field_errors'] = field_errors
 
         # Return HTTP 400 response (BAD REQUEST)
-        raise ErrorResponse(400, detail)
+        raise ImmediateResponse(detail, status=400)
 
     def get_form_class(self, method=None):
         """
@@ -272,14 +280,14 @@ class ModelResource(FormResource):
     def validate_request(self, data, files=None):
         """
         Given some content as input return some cleaned, validated content.
-        Raises a :exc:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
+        Raises a :exc:`response.ImmediateResponse` with status code 400 (Bad Request) on failure.
 
         Validation is standard form or model form validation,
         with an additional constraint that no extra unknown fields may be supplied,
         and that all fields specified by the fields class attribute must be supplied,
         even if they are not validated by the form/model form.
 
-        On failure the ErrorResponse content is a dict which may contain :obj:`'errors'` and :obj:`'field-errors'` keys.
+        On failure the ImmediateResponse content is a dict which may contain :obj:`'errors'` and :obj:`'field-errors'` keys.
         If the :obj:`'errors'` key exists it is a list of strings of non-field errors.
         If the ''field-errors'` key exists it is a dict of {field name as string: list of errors as strings}.
         """

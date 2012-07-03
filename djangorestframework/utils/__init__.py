@@ -1,18 +1,16 @@
-import django
 from django.utils.encoding import smart_unicode
 from django.utils.xmlutils import SimplerXMLGenerator
 from django.core.urlresolvers import resolve
-from django.conf import settings
 
 from djangorestframework.compat import StringIO
+from djangorestframework.compat import RequestFactory as DjangoRequestFactory
+from djangorestframework.request import Request
 
 import re
 import xml.etree.ElementTree as ET
 
-from mediatypes import media_type_matches, is_form_media_type
-from mediatypes import add_media_type_param, get_media_type_params, order_by_precedence
-
 MSIE_USER_AGENT_REGEX = re.compile(r'^Mozilla/[0-9]+\.[0-9]+ \([^)]*; MSIE [0-9]+\.[0-9]+[a-z]?;[^)]*\)(?!.* Opera )')
+
 
 def as_tuple(obj):
     """
@@ -55,23 +53,22 @@ class XML2Dict(object):
         # Save attrs and text, hope there will not be a child with same name
         if node.text:
             node_tree = node.text
-        for (k,v) in node.attrib.items():
-            k,v = self._namespace_split(k, v)
+        for (k, v) in node.attrib.items():
+            k, v = self._namespace_split(k, v)
             node_tree[k] = v
         #Save childrens
         for child in node.getchildren():
             tag, tree = self._namespace_split(child.tag, self._parse_node(child))
-            if  tag not in node_tree: # the first time, so store it in dict
+            if  tag not in node_tree:  # the first time, so store it in dict
                 node_tree[tag] = tree
                 continue
             old = node_tree[tag]
             if not isinstance(old, list):
                 node_tree.pop(tag)
-                node_tree[tag] = [old] # multi times, so change old dict to a list
-            node_tree[tag].append(tree) # add the new one
+                node_tree[tag] = [old]  # multi times, so change old dict to a list
+            node_tree[tag].append(tree)  # add the new one
 
         return  node_tree
-
 
     def _namespace_split(self, tag, value):
         """
@@ -135,5 +132,41 @@ class XMLRenderer():
         xml.endDocument()
         return stream.getvalue()
 
+
 def dict2xml(input):
     return XMLRenderer().dict2xml(input)
+
+
+class RequestFactory(DjangoRequestFactory):
+    """
+    Replicate RequestFactory, but return Request, not HttpRequest.
+    """
+    def get(self, *args, **kwargs):
+        parsers = kwargs.pop('parsers', None)
+        request = super(RequestFactory, self).get(*args, **kwargs)
+        return Request(request, parsers)
+
+    def post(self, *args, **kwargs):
+        parsers = kwargs.pop('parsers', None)
+        request = super(RequestFactory, self).post(*args, **kwargs)
+        return Request(request, parsers)
+
+    def put(self, *args, **kwargs):
+        parsers = kwargs.pop('parsers', None)
+        request = super(RequestFactory, self).put(*args, **kwargs)
+        return Request(request, parsers)
+
+    def delete(self, *args, **kwargs):
+        parsers = kwargs.pop('parsers', None)
+        request = super(RequestFactory, self).delete(*args, **kwargs)
+        return Request(request, parsers)
+
+    def head(self, *args, **kwargs):
+        parsers = kwargs.pop('parsers', None)
+        request = super(RequestFactory, self).head(*args, **kwargs)
+        return Request(request, parsers)
+
+    def options(self, *args, **kwargs):
+        parsers = kwargs.pop('parsers', None)
+        request = super(RequestFactory, self).options(*args, **kwargs)
+        return Request(request, parsers)
