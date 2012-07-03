@@ -50,6 +50,16 @@ class UserAgentMungingTest(TestCase):
             resp = self.view(req)
             self.assertEqual(resp['Content-Type'], 'text/html')
 
+    def test_dont_munge_msie_with_x_requested_with_header(self):
+        """Send MSIE user agent strings, and an X-Requested-With header, and
+        ensure that we get a JSON response if we set a */* Accept header."""
+        for user_agent in (MSIE_9_USER_AGENT,
+                           MSIE_8_USER_AGENT,
+                           MSIE_7_USER_AGENT):
+            req = self.req.get('/', HTTP_ACCEPT='*/*', HTTP_USER_AGENT=user_agent, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+            resp = self.view(req)
+            self.assertEqual(resp['Content-Type'], 'application/json')
+
     def test_dont_rewrite_msie_accept_header(self):
         """Turn off _IGNORE_IE_ACCEPT_HEADER, send MSIE user agent strings and ensure
         that we get a JSON response if we set a */* accept header."""
