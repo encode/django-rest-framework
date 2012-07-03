@@ -26,7 +26,7 @@ We also have a `Jenkins service <http://jenkins.tibold.nl/job/djangorestframewor
 Requirements:
 
 * Python (2.5, 2.6, 2.7 supported)
-* Django (1.2, 1.3, 1.4-alpha supported)
+* Django (1.2, 1.3, 1.4 supported)
 
 
 Installation Notes

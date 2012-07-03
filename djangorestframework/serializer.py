@@ -2,7 +2,7 @@
 Customizable serialization.
 """
 from django.db import models
-from django.db.models.query import QuerySet
+from django.db.models.query import QuerySet, RawQuerySet
 from django.utils.encoding import smart_unicode, is_protected_type, smart_str
 
 import inspect
@@ -180,7 +180,8 @@ class Serializer(object):
         else:
             stack = self.stack[:]
 
-        return related_serializer(depth=depth, stack=stack).serialize(obj)
+        return related_serializer(depth=depth, stack=stack).serialize(
+            obj, request=getattr(self, 'request', None))
 
     def serialize_max_depth(self, obj):
         """
@@ -254,15 +255,19 @@ class Serializer(object):
         """
         return smart_unicode(obj, strings_only=True)
 
-    def serialize(self, obj):
+    def serialize(self, obj, request=None):
         """
         Convert any object into a serializable representation.
         """
 
+        # Request from related serializer.
+        if request is not None:
+            self.request = request
+
         if isinstance(obj, (dict, models.Model)):
             # Model instances & dictionaries
             return self.serialize_model(obj)
-        elif isinstance(obj, (tuple, list, set, QuerySet, types.GeneratorType)):
+        elif isinstance(obj, (tuple, list, set, QuerySet, RawQuerySet, types.GeneratorType)):
             # basic iterables
             return self.serialize_iter(obj)
         elif isinstance(obj, models.Manager):
