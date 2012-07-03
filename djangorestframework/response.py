@@ -110,7 +110,8 @@ class Response(SimpleTemplateResponse):
             return [request.GET.get(self._ACCEPT_QUERY_PARAM)]
         elif (self._IGNORE_IE_ACCEPT_HEADER and
               'HTTP_USER_AGENT' in request.META and
-              MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT'])):
+              MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT']) and
+              request.META.get('HTTP_X_REQUESTED_WITH', '') != 'XMLHttpRequest'):
             # Ignore MSIE's broken accept behavior and do something sensible instead
             return ['text/html', '*/*']
         elif 'HTTP_ACCEPT' in request.META:
