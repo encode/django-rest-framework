@@ -186,9 +186,6 @@ except ImportError:
             #)
             return http.HttpResponseNotAllowed(allowed_methods)
 
-        def head(self, request, *args, **kwargs):
-            return self.get(request, *args, **kwargs)
-
 # PUT, DELETE do not require CSRF until 1.4.  They should.  Make it better.
 if django.VERSION >= (1, 4):
     from django.middleware.csrf import CsrfViewMiddleware
