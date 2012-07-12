@@ -68,12 +68,41 @@ except ImportError:
 # django.views.generic.View (Django >= 1.3)
 try:
     from django.views.generic import View
+    from django.utils.decorators import classonlymethod
+    from django.utils.functional import update_wrapper
+
     if not hasattr(View, 'head'):
         # First implementation of Django class-based views did not include head method
         # in base View class - https://code.djangoproject.com/ticket/15668
         class ViewPlusHead(View):
-            def head(self, request, *args, **kwargs):
-                return self.get(request, *args, **kwargs)
+            @classonlymethod
+            def as_view(cls, **initkwargs):
+                """
+                Main entry point for a request-response process.
+                """
+                # sanitize keyword arguments
+                for key in initkwargs:
+                    if key in cls.http_method_names:
+                        raise TypeError(u"You tried to pass in the %s method name as a "
+                                        u"keyword argument to %s(). Don't do that."
+                                        % (key, cls.__name__))
+                    if not hasattr(cls, key):
+                        raise TypeError(u"%s() received an invalid keyword %r" % (
+                            cls.__name__, key))
+
+                def view(request, *args, **kwargs):
+                    self = cls(**initkwargs)
+                    if hasattr(self, 'get') and not hasattr(self, 'head'):
+                        self.head = self.get
+                    return self.dispatch(request, *args, **kwargs)
+
+                # take name and docstring from class
+                update_wrapper(view, cls, updated=())
+
+                # and possible attributes set by decorators
+                # like csrf_exempt from dispatch
+                update_wrapper(view, cls.dispatch, assigned=())
+                return view
         View = ViewPlusHead
 
 except ImportError:
@@ -121,6 +150,8 @@ except ImportError:
 
             def view(request, *args, **kwargs):
                 self = cls(**initkwargs)
+                if hasattr(self, 'get') and not hasattr(self, 'head'):
+                    self.head = self.get
                 return self.dispatch(request, *args, **kwargs)
 
             # take name and docstring from class
