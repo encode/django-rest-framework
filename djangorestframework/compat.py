@@ -65,13 +65,14 @@ except ImportError:
             environ.update(request)
             return WSGIRequest(environ)
 
-# django.views.generic.View (Django >= 1.3)
+# django.views.generic.View (1.3 <= Django < 1.4)
 try:
     from django.views.generic import View
-    from django.utils.decorators import classonlymethod
-    from django.utils.functional import update_wrapper
 
-    if not hasattr(View, 'head'):
+    if django.VERSION < (1, 4):
+        from django.utils.decorators import classonlymethod
+        from django.utils.functional import update_wrapper
+
         # First implementation of Django class-based views did not include head method
         # in base View class - https://code.djangoproject.com/ticket/15668
         class ViewPlusHead(View):
