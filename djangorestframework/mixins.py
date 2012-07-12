@@ -835,6 +835,8 @@ class FilterMixin(object):
 
         desc = super(FilterMixin, self).get_description(html)
 
+        if not len(self.filter_fields): return desc
+
         filter_desc_req = u' (required)' if self.filter_required else u''
 
         # Sort fields and lookup suffixes in alphabetical order for readability.
