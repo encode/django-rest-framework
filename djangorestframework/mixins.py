@@ -7,6 +7,7 @@ from django.contrib.auth.models import AnonymousUser
 from django.core.paginator import Paginator
 from django.db.models.fields.related import ForeignKey
 from django.http import HttpResponse
+from django.utils.safestring import mark_safe
 from urlobject import URLObject
 
 from djangorestframework import status
@@ -31,7 +32,8 @@ __all__ = (
     'UpdateModelMixin',
     'DeleteModelMixin',
     'ListModelMixin',
-    'PaginatorMixin'
+    'PaginatorMixin',
+    'FilterMixin'
 )
 
 
@@ -734,3 +736,167 @@ class PaginatorMixin(object):
         serialized_page_info['results'] = serialized_object_list
 
         return serialized_page_info
+
+
+class FilterMixin(object):
+
+    """
+    `Mixin` class that allows to filter results based on the value of their fields,
+    by passing Django's `QuerySet` arguments in GET requests.
+    """
+
+    filter_fields = {}
+    """
+    Dictionary listing the names of the fields (dictionary's keys) that can be fetched,
+    according to a selection of Django's `QuerySet` field lookups
+    (see https://docs.djangoproject.com/en/1.4/ref/models/querysets/#field-lookups).
+
+    Querystring example: ?username__istartswith=joe&email__endswith=mydomain.com
+
+    Field lookups' declaration:
+
+    filter_fields = {
+        'username': True, # All field lookups are allowed.
+        'email': {'exclude': ('regex', 'iregex',)}, # All field lookups are allowed but 'regex' and 'iregex'.
+        'first_name': {'fields': ('exact', 'iexact',)}, # Only 'exact' and 'iexact' field lookups are allowed.
+    }
+    """
+
+    filter_required = True
+    """
+    Will return an empty `QuerySet` if set to True and filtering wasn't not properly triggered (via the GET request).
+    """
+
+    def __init__(self,  *args, **kwargs):
+
+        self._filter_lookups = {
+            'exact':       self._filter_lookup_value_orig,
+            'iexact':      self._filter_lookup_value_orig,
+            'contains':    self._filter_lookup_value_orig,
+            'icontains':   self._filter_lookup_value_orig,
+            'in':          self._filter_lookup_value_list,
+            'gt':          self._filter_lookup_value_field,
+            'gte':         self._filter_lookup_value_field,
+            'lt':          self._filter_lookup_value_field,
+            'lte':         self._filter_lookup_value_field,
+            'startswith':  self._filter_lookup_value_orig,
+            'istartswith': self._filter_lookup_value_orig,
+            'endswith':    self._filter_lookup_value_orig,
+            'iendswith':   self._filter_lookup_value_orig,
+            'range':       self._filter_lookup_value_list,
+            'year':        self._filter_lookup_value_int,
+            'month':       self._filter_lookup_value_int,
+            'day':         self._filter_lookup_value_int,
+            'week_day':    self._filter_lookup_value_int,
+            'isnull':      lambda field, value: value.lower() == 'true',
+            'search':      self._filter_lookup_value_orig,
+            'regex':       self._filter_lookup_value_re,
+            'iregex':      self._filter_lookup_value_re
+            }
+
+        for k, v in self.filter_fields.items():
+
+            if v == True: self.filter_fields[k] = set(self._filter_lookups.keys())
+
+            elif isinstance(v, dict):
+
+                fields = set()
+
+                if 'fields' in v: fields = set(v['fields'])
+                else: fields = set(self._filter_lookups.keys())
+
+                if 'exclude' in v: fields = fields - set(v['exclude'])
+
+                self.filter_fields[k] = fields
+
+        super(FilterMixin, self).__init__(*args, **kwargs)
+
+    def _filter_lookup_value_field(self, field, value):
+
+        return self.resource.model._meta.get_field(field).to_python(value)
+
+    def _filter_lookup_value_orig(self, field, value): return value
+
+    def _filter_lookup_value_int(self, field, value): return int(value)
+
+    def _filter_lookup_value_re(self, field, value): return r'%s' % value
+
+    def _filter_lookup_value_list(self, field, value):
+
+        split = value.split(',')
+        try: return map(lambda x: self._filter_lookup_value_field(field, x), split)
+        except TypeError: return split
+
+    def get_description(self, html):
+
+        """
+        Appends filter's documentation to the `Resource`'s description.
+        """ 
+
+        desc = super(FilterMixin, self).get_description(html)
+
+        filter_desc_req = u' (required)' if self.filter_required else u''
+
+        # Sort fields and lookup suffixes in alphabetical order for readability.
+        # Not using OrderedDict for Python <= 2.6 compatibility.
+        filter_fields_ordered_keys = list(self.filter_fields.keys())
+        filter_fields_ordered_keys.sort()
+        filter_fields_ordered_lookups = dict(map(lambda k: (k, list(self.filter_fields[k]),), filter_fields_ordered_keys))
+        map(lambda v: v.sort(), filter_fields_ordered_lookups.values())
+        filter_desc_example = u'%s__%s' % (filter_fields_ordered_keys[0], filter_fields_ordered_lookups[filter_fields_ordered_keys[0]][0])
+
+        if html:
+
+            filter_desc_fields_html = u''.join(map(lambda k: \
+                u'<li><code><strong>%s</strong></code> <em>+</em> <code>__</code> <em>+</em> <code>%s</code>.</li>' \
+                % (k, u'</code><em>,</em> <code>'.join(filter_fields_ordered_lookups[k])), filter_fields_ordered_keys))
+
+            filter_desc = u"""<h2 id="filter_options_title">Filter options%s</h2>
+<div id="filter_options">
+<p>The following fields can be used to filter results in GET requests,
+they should be extended by <a href="https://docs.djangoproject.com/en/1.4/ref/models/querysets/#field-lookups">lookup suffixes</a>
+with a double underscore (e.g. <a href="./?%s="><code>?%s=</code></a>)
+except for the <code>exact</code> suffix which is the default:</p>
+<ul>%s</ul>
+</div>
+"""  % (filter_desc_req, filter_desc_example, filter_desc_example, filter_desc_fields_html)
+
+            return mark_safe(u'%s\n%s' % (desc, filter_desc))
+
+        else:
+
+            filter_desc_fields_txt = u'\n'.join(map(lambda k: u'* %s: %s.' \
+                    % (k, u', '.join(filter_fields_ordered_lookups[k])), filter_fields_ordered_keys))
+
+            return u"""%s\n\nFilter options%s:\n\n%s""" % (desc, filter_desc_req, filter_desc_fields_txt)
+
+    def get_query_kwargs(self, *args, **kwargs):
+
+        """
+        Return the `QuerySet`'s args according to the GET request's arguments.
+        """
+
+        kwargs = super(FilterMixin, self).get_query_kwargs(*args, **kwargs)
+        self._filter_triggered = False
+
+        for k in self.request.GET:
+
+            field = k.split('__')
+            if len(field) == 2: lookup = field[1]
+            else: lookup = 'exact'
+            field = field[0]
+            value = self.request.GET[k]
+
+            if field in self.filter_fields and lookup in self.filter_fields[field]:
+
+                value = self._filter_lookups[lookup](field, value)
+                kwargs['%s__%s' % (field, lookup)] = value
+                self._filter_triggered = True
+
+        return kwargs
+
+    def get(self, *args, **kwargs):
+
+        queryset = super(FilterMixin, self).get(*args, **kwargs)
+        if self.filter_required and not self._filter_triggered: return self.resource.model.objects.none()
+        return queryset
