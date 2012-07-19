@@ -73,6 +73,7 @@ class BasicAuthentication(BaseAuthentication):
 
                 user = authenticate(username=uname, password=passwd)
                 if user is not None and user.is_active:
+                    request.user = user
                     return user
         return None
 
