@@ -156,6 +156,9 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
 
         description = _remove_leading_indent(description)
 
+        if not isinstance(description, unicode):
+            description = description.decode('UTF-8')
+
         if html:
             return self.markup_description(description)
         return description
