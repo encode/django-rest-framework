@@ -6,6 +6,7 @@ classes that can be added to a `View`.
 from django.contrib.auth.models import AnonymousUser
 from django.core.paginator import Paginator
 from django.db.models.fields.related import ForeignKey
+from django.db.models import Q
 from django.http import HttpResponse
 from django.utils.safestring import mark_safe
 from urlobject import URLObject
@@ -463,12 +464,13 @@ class ModelMixin(object):
 
     queryset = None
 
-    def get_query_kwargs(self, *args, **kwargs):
+    def get_query_args(self, *args, **kwargs):
         """
         Return a dict of kwargs that will be used to build the
         model instance retrieval or to filter querysets.
         """
 
+        args = list(args)
         kwargs = dict(kwargs)
 
         # If the URLconf includes a .(?P<format>\w+) pattern to match against
@@ -477,7 +479,7 @@ class ModelMixin(object):
         if BaseRenderer._FORMAT_QUERY_PARAM in kwargs:
             del kwargs[BaseRenderer._FORMAT_QUERY_PARAM]
 
-        return kwargs
+        return [], kwargs
 
     def get_instance_data(self, model, content, **kwargs):
         """
@@ -506,11 +508,11 @@ class ModelMixin(object):
 
         return all_kw_args
 
-    def get_instance(self, **kwargs):
+    def get_instance(self, *args, **kwargs):
         """
         Get a model instance for read/update/delete requests.
         """
-        return self.get_queryset().get(**kwargs)
+        return self.get_queryset().get(*args, **kwargs)
 
     def get_queryset(self):
         """
@@ -532,10 +534,10 @@ class ReadModelMixin(ModelMixin):
     """
     def get(self, request, *args, **kwargs):
         model = self.resource.model
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
+        query_args, query_kwargs = self.get_query_args(request, **kwargs)
 
         try:
-            self.model_instance = self.get_instance(**query_kwargs)
+            self.model_instance = self.get_instance(*query_args, **query_kwargs)
         except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
 
@@ -588,12 +590,12 @@ class UpdateModelMixin(ModelMixin):
     """
     def put(self, request, *args, **kwargs):
         model = self.resource.model
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
+        query_args, query_kwargs = self.get_query_args(request, **kwargs)
 
         # TODO: update on the url of a non-existing resource url doesn't work
         # correctly at the moment - will end up with a new url
         try:
-            self.model_instance = self.get_instance(**query_kwargs)
+            self.model_instance = self.get_instance(*query_args, **query_kwargs)
 
             for (key, val) in self.CONTENT.items():
                 setattr(self.model_instance, key, val)
@@ -609,10 +611,10 @@ class DeleteModelMixin(ModelMixin):
     """
     def delete(self, request, *args, **kwargs):
         model = self.resource.model
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
+        query_args, query_kwargs = self.get_query_args(request, **kwargs)
 
         try:
-            instance = self.get_instance(**query_kwargs)
+            instance = self.get_instance(*query_args, **query_kwargs)
         except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
 
@@ -628,9 +630,9 @@ class ListModelMixin(ModelMixin):
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         ordering = self.get_ordering()
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
+        query_args, query_kwargs = self.get_query_args(request, **kwargs)
 
-        queryset = queryset.filter(**query_kwargs)
+        queryset = queryset.filter(*query_args, **query_kwargs)
         if ordering:
             queryset = queryset.order_by(*ordering)
 
@@ -860,8 +862,11 @@ they should be extended by <a href="https://docs.djangoproject.com/en/1.4/ref/mo
 with a double underscore (e.g. <a href="./?%s="><code>?%s=</code></a>)
 except for the <code>exact</code> suffix which is the default:</p>
 <ul>%s</ul>
+<p>The default statement between multiple fields is <code>AND</code>, if the <code>or__</code> prefix is used then the statement will be <code>OR</code> (e.g. <a href="./?or__%s="><code>?or__%s=</code></a>)
+.</p>
 </div>
-"""  % (filter_desc_req, filter_desc_example, filter_desc_example, filter_desc_fields_html)
+"""  % (filter_desc_req, filter_desc_example, filter_desc_example,
+        filter_desc_fields_html, filter_desc_example, filter_desc_example,)
 
             return mark_safe(u'%s\n%s' % (desc, filter_desc))
 
@@ -872,33 +877,45 @@ except for the <code>exact</code> suffix which is the default:</p>
 
             return u"""%s\n\nFilter options%s:\n\n%s""" % (desc, filter_desc_req, filter_desc_fields_txt)
 
-    def get_query_kwargs(self, *args, **kwargs):
+    def get_query_args(self, *args, **kwargs):
 
         """
-        Return the `QuerySet`'s args according to the GET request's arguments.
+        Return the `QuerySet`'s args and kwargs according to the GET request's arguments.
         """
 
-        kwargs = super(FilterMixin, self).get_query_kwargs(*args, **kwargs)
+        args, kwargs = super(FilterMixin, self).get_query_args(self, *args, **kwargs)
         self._filter_triggered = False
+        q = None
 
-        for k in self.request.GET:
+        for k, v in self.request.GET.items():
+
+            if k.startswith('or__'):
+                q_or = True
+                k = k[4:]
+            else: q_or = False
 
             field = k.split('__')
             if len(field) == 2: lookup = field[1]
             else: lookup = 'exact'
             field = field[0]
-            value = self.request.GET[k]
 
-            if field in self.filter_fields and lookup in self.filter_fields[field]:
+            if v and field in self.filter_fields and lookup in self.filter_fields[field]:
 
-                value = self._filter_lookups[lookup](field, value)
-                kwargs['%s__%s' % (field, lookup)] = value
+                v = self._filter_lookups[lookup](field, v)
+                if not q_or: kwargs['%s__%s' % (field, lookup)] = v
+                else:
+                    q_this = Q(**{'%s__%s' % (field, lookup): v})
+                    if q: q = q | q_this
+                    else: q = q_this
                 self._filter_triggered = True
 
-        return kwargs
+        if q: args.append(q)
+
+        return args, kwargs
 
     def get(self, *args, **kwargs):
 
         queryset = super(FilterMixin, self).get(*args, **kwargs)
-        if self.filter_required and not self._filter_triggered: return self.resource.model.objects.none()
+        if self.filter_required and not self._filter_triggered:
+            return self.resource.model.objects.none()
         return queryset
