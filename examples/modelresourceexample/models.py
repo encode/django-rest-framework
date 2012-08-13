@@ -2,6 +2,7 @@ from django.db import models
 
 MAX_INSTANCES = 10
 
+
 class MyModel(models.Model):
     foo = models.BooleanField()
     bar = models.IntegerField(help_text='Must be an integer.')
@@ -15,5 +16,3 @@ class MyModel(models.Model):
         super(MyModel, self).save(*args, **kwargs)
         while MyModel.objects.all().count() > MAX_INSTANCES:
             MyModel.objects.all().order_by('-created')[0].delete()
-
-

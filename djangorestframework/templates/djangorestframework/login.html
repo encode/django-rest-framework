@@ -1,0 +1,44 @@
+{% load static %}
+<html>
+
+    <head>
+        <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}djangorestframework/css/style.css'/>
+    </head>
+
+    <body class="login">
+
+        <div id="container">
+
+            <div id="header">
+                <div id="branding">
+                    <h1 id="site-name">Django REST framework</h1>
+                </div>
+            </div>
+
+            <div id="content" class="colM">
+                <div id="content-main">
+                    <form method="post" action="{% url djangorestframework:login %}" id="login-form">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <label for="id_username">Username:</label> {{ form.username }}
+                        </div>
+                        <div class="form-row">
+                            <label for="id_password">Password:</label> {{ form.password }}
+                            <input type="hidden" name="next" value="{{ next }}" />
+                        </div>
+                        <div class="form-row">
+                            <label>&nbsp;</label><input type="submit" value="Log in">
+                        </div>
+                    </form>
+                    <script type="text/javascript">
+                        document.getElementById('id_username').focus()
+                    </script>
+                </div>
+                <br class="clear">
+            </div>
+
+            <div id="footer"></div>
+
+        </div>
+    </body>
+</html>

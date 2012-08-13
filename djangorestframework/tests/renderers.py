@@ -1,16 +1,20 @@
-from django.conf.urls.defaults import patterns, url
-from django import http
+import re
+
+from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
 
 from djangorestframework import status
+from djangorestframework.views import View
 from djangorestframework.compat import View as DjangoView
-from djangorestframework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer
-from djangorestframework.parsers import JSONParser, YAMLParser
+from djangorestframework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
+    XMLRenderer, JSONPRenderer, DocumentingHTMLRenderer
+from djangorestframework.parsers import JSONParser, YAMLParser, XMLParser
 from djangorestframework.mixins import ResponseMixin
 from djangorestframework.response import Response
-from djangorestframework.utils.mediatypes import add_media_type_param
 
 from StringIO import StringIO
+import datetime
+from decimal import Decimal
 
 DUMMYSTATUS = status.HTTP_200_OK
 DUMMYCONTENT = 'dummycontent'
@@ -18,19 +22,22 @@ DUMMYCONTENT = 'dummycontent'
 RENDERER_A_SERIALIZER = lambda x: 'Renderer A: %s' % x
 RENDERER_B_SERIALIZER = lambda x: 'Renderer B: %s' % x
 
+
 class RendererA(BaseRenderer):
     media_type = 'mock/renderera'
-    format="formata"
+    format = "formata"
 
     def render(self, obj=None, media_type=None):
         return RENDERER_A_SERIALIZER(obj)
 
+
 class RendererB(BaseRenderer):
     media_type = 'mock/rendererb'
-    format="formatb"
+    format = "formatb"
 
     def render(self, obj=None, media_type=None):
         return RENDERER_B_SERIALIZER(obj)
+
 
 class MockView(ResponseMixin, DjangoView):
     renderers = (RendererA, RendererB)
@@ -38,11 +45,35 @@ class MockView(ResponseMixin, DjangoView):
     def get(self, request, **kwargs):
         response = Response(DUMMYSTATUS, DUMMYCONTENT)
         return self.render(response)
-    
+
+
+class MockGETView(View):
+
+    def get(self, request, **kwargs):
+        return {'foo': ['bar', 'baz']}
+
+
+class HTMLView(View):
+    renderers = (DocumentingHTMLRenderer, )
+
+    def get(self, request, **kwargs):
+        return 'text' 
+
+
+class HTMLView1(View):
+    renderers = (DocumentingHTMLRenderer, JSONRenderer)
+
+    def get(self, request, **kwargs):
+        return 'text' 
 
 urlpatterns = patterns('',
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderers=[RendererA, RendererB])),
     url(r'^$', MockView.as_view(renderers=[RendererA, RendererB])),
+    url(r'^jsonp/jsonrenderer$', MockGETView.as_view(renderers=[JSONRenderer, JSONPRenderer])),
+    url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(renderers=[JSONPRenderer])),
+    url(r'^html$', HTMLView.as_view()),
+    url(r'^html1$', HTMLView1.as_view()),
+    url(r'^api', include('djangorestframework.urls', namespace='djangorestframework'))
 )
 
 
@@ -89,7 +120,7 @@ class RendererIntegrationTests(TestCase):
         self.assertEquals(resp['Content-Type'], RendererB.media_type)
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEquals(resp.status_code, DUMMYSTATUS)
-    
+
     def test_specified_renderer_serializes_content_on_accept_query(self):
         """The '_accept' query string should behave in the same way as the Accept header."""
         resp = self.client.get('/?_accept=%s' % RendererB.media_type)
@@ -144,14 +175,15 @@ class RendererIntegrationTests(TestCase):
         self.assertEquals(resp.status_code, DUMMYSTATUS)
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
+_indented_repr = '{\n  "foo": [\n    "bar",\n    "baz"\n  ]\n}'
 
-_indented_repr = """{
-  "foo": [
-    "bar", 
-    "baz"
-  ]
-}"""
 
+def strip_trailing_whitespace(content):
+    """
+    Seems to be some inconsistencies re. trailing whitespace with
+    different versions of the json lib.
+    """
+    return re.sub(' +\n', '\n', content)
 
 class JSONRendererTests(TestCase):
     """
@@ -162,65 +194,219 @@ class JSONRendererTests(TestCase):
         """
         Test basic JSON rendering.
         """
-        obj = {'foo':['bar','baz']}
+        obj = {'foo': ['bar', 'baz']}
         renderer = JSONRenderer(None)
         content = renderer.render(obj, 'application/json')
+        # Fix failing test case which depends on version of JSON library.
         self.assertEquals(content, _flat_repr)
 
     def test_with_content_type_args(self):
         """
-        Test JSON rendering with additional content type arguments supplied. 
+        Test JSON rendering with additional content type arguments supplied.
         """
-        obj = {'foo':['bar','baz']}
+        obj = {'foo': ['bar', 'baz']}
         renderer = JSONRenderer(None)
         content = renderer.render(obj, 'application/json; indent=2')
-        self.assertEquals(content, _indented_repr)
-    
+        self.assertEquals(strip_trailing_whitespace(content), _indented_repr)
+
     def test_render_and_parse(self):
         """
         Test rendering and then parsing returns the original object.
         IE obj -> render -> parse -> obj.
         """
-        obj = {'foo':['bar','baz']}
+        obj = {'foo': ['bar', 'baz']}
 
         renderer = JSONRenderer(None)
         parser = JSONParser(None)
 
         content = renderer.render(obj, 'application/json')
         (data, files) = parser.parse(StringIO(content))
-        self.assertEquals(obj, data)    
+        self.assertEquals(obj, data)
 
+
+class JSONPRendererTests(TestCase):
+    """
+    Tests specific to the JSONP Renderer
+    """
+
+    urls = 'djangorestframework.tests.renderers'
+
+    def test_without_callback_with_json_renderer(self):
+        """
+        Test JSONP rendering with View JSON Renderer.
+        """
+        resp = self.client.get('/jsonp/jsonrenderer',
+                               HTTP_ACCEPT='application/json-p')
+        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(resp['Content-Type'], 'application/json-p')
+        self.assertEquals(resp.content, 'callback(%s);' % _flat_repr)
+
+    def test_without_callback_without_json_renderer(self):
+        """
+        Test JSONP rendering without View JSON Renderer.
+        """
+        resp = self.client.get('/jsonp/nojsonrenderer',
+                               HTTP_ACCEPT='application/json-p')
+        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(resp['Content-Type'], 'application/json-p')
+        self.assertEquals(resp.content, 'callback(%s);' % _flat_repr)
+
+    def test_with_callback(self):
+        """
+        Test JSONP rendering with callback function name.
+        """
+        callback_func = 'myjsonpcallback'
+        resp = self.client.get('/jsonp/nojsonrenderer?callback=' + callback_func,
+                               HTTP_ACCEPT='application/json-p')
+        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(resp['Content-Type'], 'application/json-p')
+        self.assertEquals(resp.content, '%s(%s);' % (callback_func, _flat_repr))
 
 
 if YAMLRenderer:
     _yaml_repr = 'foo: [bar, baz]\n'
-    
-    
+
     class YAMLRendererTests(TestCase):
         """
         Tests specific to the JSON Renderer
         """
-    
+
         def test_render(self):
             """
             Test basic YAML rendering.
             """
-            obj = {'foo':['bar','baz']}
+            obj = {'foo': ['bar', 'baz']}
             renderer = YAMLRenderer(None)
             content = renderer.render(obj, 'application/yaml')
             self.assertEquals(content, _yaml_repr)
-    
-        
+
         def test_render_and_parse(self):
             """
             Test rendering and then parsing returns the original object.
             IE obj -> render -> parse -> obj.
             """
-            obj = {'foo':['bar','baz']}
-    
+            obj = {'foo': ['bar', 'baz']}
+
             renderer = YAMLRenderer(None)
             parser = YAMLParser(None)
-    
+
             content = renderer.render(obj, 'application/yaml')
             (data, files) = parser.parse(StringIO(content))
-            self.assertEquals(obj, data)    
+            self.assertEquals(obj, data)
+
+
+
+class XMLRendererTestCase(TestCase):
+    """
+    Tests specific to the XML Renderer
+    """
+
+    _complex_data = {
+        "creation_date": datetime.datetime(2011, 12, 25, 12, 45, 00), 
+        "name": "name", 
+        "sub_data_list": [
+            {
+                "sub_id": 1, 
+                "sub_name": "first"
+            }, 
+            {
+                "sub_id": 2, 
+                "sub_name": "second"
+            }
+        ]
+    }
+
+    def test_render_string(self):
+        """
+        Test XML rendering.
+        """
+        renderer = XMLRenderer(None)
+        content = renderer.render({'field': 'astring'}, 'application/xml')
+        self.assertXMLContains(content, '<field>astring</field>')
+
+    def test_render_integer(self):
+        """
+        Test XML rendering.
+        """
+        renderer = XMLRenderer(None)
+        content = renderer.render({'field': 111}, 'application/xml')
+        self.assertXMLContains(content, '<field>111</field>')
+
+    def test_render_datetime(self):
+        """
+        Test XML rendering.
+        """
+        renderer = XMLRenderer(None)
+        content = renderer.render({
+            'field': datetime.datetime(2011, 12, 25, 12, 45, 00)
+        }, 'application/xml')
+        self.assertXMLContains(content, '<field>2011-12-25 12:45:00</field>')
+
+    def test_render_float(self):
+        """
+        Test XML rendering.
+        """
+        renderer = XMLRenderer(None)
+        content = renderer.render({'field': 123.4}, 'application/xml')
+        self.assertXMLContains(content, '<field>123.4</field>')
+
+    def test_render_decimal(self):
+        """
+        Test XML rendering.
+        """
+        renderer = XMLRenderer(None)
+        content = renderer.render({'field': Decimal('111.2')}, 'application/xml')
+        self.assertXMLContains(content, '<field>111.2</field>')
+
+    def test_render_none(self):
+        """
+        Test XML rendering.
+        """
+        renderer = XMLRenderer(None)
+        content = renderer.render({'field': None}, 'application/xml')
+        self.assertXMLContains(content, '<field></field>')
+        
+    def test_render_complex_data(self):
+        """
+        Test XML rendering.
+        """
+        renderer = XMLRenderer(None)            
+        content = renderer.render(self._complex_data, 'application/xml')
+        self.assertXMLContains(content, '<sub_name>first</sub_name>')
+        self.assertXMLContains(content, '<sub_name>second</sub_name>')
+
+    def test_render_and_parse_complex_data(self):
+        """
+        Test XML rendering.
+        """
+        renderer = XMLRenderer(None)            
+        content = StringIO(renderer.render(self._complex_data, 'application/xml'))
+        
+        parser = XMLParser(None)
+        complex_data_out, dummy = parser.parse(content)
+        error_msg = "complex data differs!IN:\n %s \n\n OUT:\n %s" % (repr(self._complex_data), repr(complex_data_out))
+        self.assertEqual(self._complex_data, complex_data_out, error_msg)
+
+    def assertXMLContains(self, xml, string):
+        self.assertTrue(xml.startswith('<?xml version="1.0" encoding="utf-8"?>\n<root>'))
+        self.assertTrue(xml.endswith('</root>'))
+        self.assertTrue(string in xml, '%r not in %r' % (string, xml))
+
+
+class Issue122Tests(TestCase):
+    """
+    Tests that covers #122.
+    """
+    urls = 'djangorestframework.tests.renderers'
+
+    def test_only_html_renderer(self):
+        """
+        Test if no infinite recursion occurs.
+        """
+        resp = self.client.get('/html')
+        
+    def test_html_renderer_is_first(self):
+        """
+        Test if no infinite recursion occurs.
+        """
+        resp = self.client.get('/html1')

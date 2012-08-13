@@ -1,25 +1,29 @@
 from django.conf.urls.defaults import patterns, url
-from django.test import TestCase
 from django.forms import ModelForm
 from django.contrib.auth.models import Group, User
 from djangorestframework.resources import ModelResource
 from djangorestframework.views import ListOrCreateModelView, InstanceModelView
 from djangorestframework.tests.models import CustomUser
+from djangorestframework.tests.testcases import TestModelsTestCase
+
 
 class GroupResource(ModelResource):
     model = Group
+
 
 class UserForm(ModelForm):
     class Meta:
         model = User
         exclude = ('last_login', 'date_joined')
 
+
 class UserResource(ModelResource):
     model = User
     form = UserForm
-    
+
+
 class CustomUserResource(ModelResource):
-    model = CustomUser    
+    model = CustomUser
 
 urlpatterns = patterns('',
     url(r'^users/$', ListOrCreateModelView.as_view(resource=UserResource), name='users'),
@@ -31,9 +35,9 @@ urlpatterns = patterns('',
 )
 
 
-class ModelViewTests(TestCase):
+class ModelViewTests(TestModelsTestCase):
     """Test the model views djangorestframework provides"""
-    urls = 'djangorestframework.tests.modelviews'  
+    urls = 'djangorestframework.tests.modelviews'
 
     def test_creation(self):
         """Ensure that a model object can be created"""
@@ -52,18 +56,18 @@ class ModelViewTests(TestCase):
         self.assertEqual(0, User.objects.count())
 
         response = self.client.post('/users/', {'username': 'bar', 'password': 'baz', 'groups': [group.id]})
-        
+
         self.assertEqual(response.status_code, 201)
         self.assertEqual(1, User.objects.count())
-       
+
         user = User.objects.all()[0]
         self.assertEqual('bar', user.username)
         self.assertEqual('baz', user.password)
         self.assertEqual(1, user.groups.count())
-        
+
         group = user.groups.all()[0]
         self.assertEqual('foo', group.name)
-        
+
     def test_creation_with_m2m_relation_through(self):
         """
         Ensure that a model object with a m2m relation can be created where that
@@ -74,13 +78,13 @@ class ModelViewTests(TestCase):
         self.assertEqual(0, User.objects.count())
 
         response = self.client.post('/customusers/', {'username': 'bar', 'groups': [group.id]})
-        
+
         self.assertEqual(response.status_code, 201)
         self.assertEqual(1, CustomUser.objects.count())
-       
+
         user = CustomUser.objects.all()[0]
         self.assertEqual('bar', user.username)
         self.assertEqual(1, user.groups.count())
-        
+
         group = user.groups.all()[0]
-        self.assertEqual('foo', group.name)        
+        self.assertEqual('foo', group.name)

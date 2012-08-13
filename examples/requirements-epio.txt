@@ -1,0 +1,3 @@
+Pygments==1.4
+Markdown==2.0.3
+git+git://github.com/tomchristie/django-rest-framework.git

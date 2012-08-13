@@ -19,6 +19,11 @@ from djangorestframework import status
 from djangorestframework.compat import yaml
 from djangorestframework.response import ErrorResponse
 from djangorestframework.utils.mediatypes import media_type_matches
+from xml.etree import ElementTree as ET
+from djangorestframework.compat import ETParseError
+from xml.parsers.expat import ExpatError
+import datetime
+import decimal
 
 
 __all__ = (
@@ -28,6 +33,7 @@ __all__ = (
     'FormParser',
     'MultiPartParser',
     'YAMLParser',
+    'XMLParser'
 )
 
 
@@ -45,15 +51,15 @@ class BaseParser(object):
         in case the parser needs to access any metadata on the :obj:`View` object.
         """
         self.view = view
-    
+
     def can_handle_request(self, content_type):
         """
         Returns :const:`True` if this parser is able to deal with the given *content_type*.
-        
+
         The default implementation for this function is to check the *content_type*
         argument against the :attr:`media_type` attribute set on the class to see if
         they match.
-        
+
         This may be overridden to provide for other behavior, but typically you'll
         instead want to just set the :attr:`media_type` attribute on the class.
         """
@@ -88,28 +94,26 @@ class JSONParser(BaseParser):
                                 {'detail': 'JSON parse error - %s' % unicode(exc)})
 
 
-if yaml:
-    class YAMLParser(BaseParser):
+class YAMLParser(BaseParser):
+    """
+    Parses YAML-serialized data.
+    """
+
+    media_type = 'application/yaml'
+
+    def parse(self, stream):
         """
-        Parses YAML-serialized data.
+        Returns a 2-tuple of `(data, files)`.
+
+        `data` will be an object which is the parsed content of the response.
+        `files` will always be `None`.
         """
-    
-        media_type = 'application/yaml'
-    
-        def parse(self, stream):
-            """
-            Returns a 2-tuple of `(data, files)`.
-    
-            `data` will be an object which is the parsed content of the response.
-            `files` will always be `None`.
-            """
-            try:
-                return (yaml.safe_load(stream), None)
-            except ValueError, exc:
-                raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
-                                    {'detail': 'YAML parse error - %s' % unicode(exc)})
-else:
-    YAMLParser = None
+        try:
+            return (yaml.safe_load(stream), None)
+        except (ValueError, yaml.parser.ParserError), exc:
+            content = {'detail': 'YAML parse error - %s' % unicode(exc)}
+            raise ErrorResponse(status.HTTP_400_BAD_REQUEST, content)
+
 
 class PlainTextParser(BaseParser):
     """
@@ -121,7 +125,7 @@ class PlainTextParser(BaseParser):
     def parse(self, stream):
         """
         Returns a 2-tuple of `(data, files)`.
-        
+
         `data` will simply be a string representing the body of the request.
         `files` will always be `None`.
         """
@@ -138,7 +142,7 @@ class FormParser(BaseParser):
     def parse(self, stream):
         """
         Returns a 2-tuple of `(data, files)`.
-        
+
         `data` will be a :class:`QueryDict` containing all the form parameters.
         `files` will always be :const:`None`.
         """
@@ -156,21 +160,99 @@ class MultiPartParser(BaseParser):
     def parse(self, stream):
         """
         Returns a 2-tuple of `(data, files)`.
-        
+
         `data` will be a :class:`QueryDict` containing all the form parameters.
         `files` will be a :class:`QueryDict` containing all the form files.
         """
         upload_handlers = self.view.request._get_upload_handlers()
         try:
             django_parser = DjangoMultiPartParser(self.view.request.META, stream, upload_handlers)
+            return django_parser.parse()
         except MultiPartParserError, exc:
             raise ErrorResponse(status.HTTP_400_BAD_REQUEST,
                                 {'detail': 'multipart parse error - %s' % unicode(exc)})
-        return django_parser.parse()
 
-DEFAULT_PARSERS = ( JSONParser,
-                    FormParser,
-                    MultiPartParser )
 
-if YAMLParser:
-    DEFAULT_PARSERS += ( YAMLParser, )
+class XMLParser(BaseParser):
+    """
+    XML parser.
+    """
+
+    media_type = 'application/xml'
+
+    def parse(self, stream):
+        """
+        Returns a 2-tuple of `(data, files)`.
+
+        `data` will simply be a string representing the body of the request.
+        `files` will always be `None`.
+        """
+        try:
+          tree = ET.parse(stream)
+        except (ExpatError, ETParseError, ValueError), exc:
+          content = {'detail': 'XML parse error - %s' % unicode(exc)}
+          raise ErrorResponse(status.HTTP_400_BAD_REQUEST, content)
+        data = self._xml_convert(tree.getroot())
+
+        return (data, None)
+
+    def _xml_convert(self, element):
+        """
+        convert the xml `element` into the corresponding python object
+        """
+
+        children = element.getchildren()
+
+        if len(children) == 0:
+            return self._type_convert(element.text)
+        else:
+            # if the fist child tag is list-item means all children are list-item
+            if children[0].tag == "list-item":
+                data = []
+                for child in children:
+                    data.append(self._xml_convert(child))
+            else:
+                data = {}
+                for child in children:
+                    data[child.tag] = self._xml_convert(child)
+
+            return data
+
+    def _type_convert(self, value):
+        """
+        Converts the value returned by the XMl parse into the equivalent
+        Python type
+        """
+        if value is None:
+            return value
+
+        try:
+            return datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
+        except ValueError:
+            pass
+
+        try:
+            return int(value)
+        except ValueError:
+            pass
+
+        try:
+            return decimal.Decimal(value)
+        except decimal.InvalidOperation:
+            pass
+
+        return value
+
+
+DEFAULT_PARSERS = (
+    JSONParser,
+    FormParser,
+    MultiPartParser,
+    XMLParser
+)
+
+if yaml:
+    DEFAULT_PARSERS += (YAMLParser, )
+else:
+    YAMLParser = None
+

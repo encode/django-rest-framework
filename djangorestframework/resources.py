@@ -1,24 +1,14 @@
 from django import forms
-from django.core.urlresolvers import reverse, get_urlconf, get_resolver, NoReverseMatch
-from django.db import models
-from django.db.models.query import QuerySet
-from django.db.models.fields.related import RelatedField
-from django.utils.encoding import smart_unicode
 
 from djangorestframework.response import ErrorResponse
-from djangorestframework.serializer import Serializer, _SkipField
+from djangorestframework.serializer import Serializer
 from djangorestframework.utils import as_tuple
-
-import decimal
-import inspect
-import re
-
-
 
 
 class BaseResource(Serializer):
     """
-    Base class for all Resource classes, which simply defines the interface they provide.
+    Base class for all Resource classes, which simply defines the interface
+    they provide.
     """
     fields = None
     include = None
@@ -27,14 +17,16 @@ class BaseResource(Serializer):
     def __init__(self, view=None, depth=None, stack=[], **kwargs):
         super(BaseResource, self).__init__(depth, stack, **kwargs)
         self.view = view
+        self.request = getattr(view, 'request', None)
 
     def validate_request(self, data, files=None):
         """
         Given the request content return the cleaned, validated content.
-        Typically raises a :exc:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
+        Typically raises a :exc:`response.ErrorResponse` with status code 400
+        (Bad Request) on failure.
         """
         return data
-    
+
     def filter_response(self, obj):
         """
         Given the response content, filter it into a serializable object.
@@ -45,13 +37,14 @@ class BaseResource(Serializer):
 class Resource(BaseResource):
     """
     A Resource determines how a python object maps to some serializable data.
-    Objects that a resource can act on include plain Python object instances, Django Models, and Django QuerySets.
+    Objects that a resource can act on include plain Python object instances,
+    Django Models, and Django QuerySets.
     """
-    
+
     # The model attribute refers to the Django Model which this Resource maps to.
     # (The Model's class, rather than an instance of the Model)
     model = None
-    
+
     # By default the set of returned fields will be the set of:
     #
     # 0. All the fields on the model, excluding 'id'.
@@ -78,13 +71,21 @@ class FormResource(Resource):
     This can be overridden by a :attr:`form` attribute on the :class:`views.View`.
     """
 
+    allow_unknown_form_fields = False
+    """
+    Flag to check for unknown fields when validating a form. If set to false and
+    we receive request data that is not expected by the form it raises an
+    :exc:`response.ErrorResponse` with status code 400. If set to true, only
+    expected fields are validated.
+    """
 
     def validate_request(self, data, files=None):
         """
         Given some content as input return some cleaned, validated content.
         Raises a :exc:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
-        
-        Validation is standard form validation, with an additional constraint that *no extra unknown fields* may be supplied.
+
+        Validation is standard form validation, with an additional constraint that *no extra unknown fields* may be supplied
+        if :attr:`self.allow_unknown_form_fields` is ``False``.
 
         On failure the :exc:`response.ErrorResponse` content is a dict which may contain :obj:`'errors'` and :obj:`'field-errors'` keys.
         If the :obj:`'errors'` key exists it is a list of strings of non-field errors.
@@ -92,34 +93,33 @@ class FormResource(Resource):
         """
         return self._validate(data, files)
 
-
     def _validate(self, data, files, allowed_extra_fields=(), fake_data=None):
         """
         Wrapped by validate to hide the extra flags that are used in the implementation.
 
         allowed_extra_fields is a list of fields which are not defined by the form, but which we still
         expect to see on the input.
-        
+
         fake_data is a string that should be used as an extra key, as a kludge to force .errors
         to be populated when an empty dict is supplied in `data`
         """
-        
+
         # We'd like nice error messages even if no content is supplied.
         # Typically if an empty dict is given to a form Django will
         # return .is_valid() == False, but .errors == {}
         #
-        # To get around this case we revalidate with some fake data. 
+        # To get around this case we revalidate with some fake data.
         if fake_data:
             data[fake_data] = '_fake_data'
             allowed_extra_fields = tuple(allowed_extra_fields) + ('_fake_data',)
-        
+
         bound_form = self.get_bound_form(data, files)
 
         if bound_form is None:
             return data
-        
+
         self.view.bound_form_instance = bound_form
-        
+
         data = data and data or {}
         files = files and files or {}
 
@@ -130,9 +130,9 @@ class FormResource(Resource):
         # In addition to regular validation we also ensure no additional fields are being passed in...
         unknown_fields = seen_fields_set - (form_fields_set | allowed_extra_fields_set)
         unknown_fields = unknown_fields - set(('csrfmiddlewaretoken', '_accept', '_method'))  # TODO: Ugh.
-        
+
         # Check using both regular validation, and our stricter no additional fields rule
-        if bound_form.is_valid() and not unknown_fields:
+        if bound_form.is_valid() and (self.allow_unknown_form_fields or not unknown_fields):
             # Validation succeeded...
             cleaned_data = bound_form.cleaned_data
 
@@ -155,7 +155,7 @@ class FormResource(Resource):
             # If we've already set fake_dict and we're still here, fallback gracefully.
             detail = {u'errors': [u'No content was supplied.']}
 
-        else:       
+        else:
             # Add any non-field errors
             if bound_form.non_field_errors():
                 detail[u'errors'] = bound_form.non_field_errors()
@@ -171,13 +171,12 @@ class FormResource(Resource):
             # Add any unknown field errors
             for key in unknown_fields:
                 field_errors[key] = [u'This field does not exist.']
-       
+
             if field_errors:
-                detail[u'field-errors'] = field_errors
+                detail[u'field_errors'] = field_errors
 
         # Return HTTP 400 response (BAD REQUEST)
         raise ErrorResponse(400, detail)
-
 
     def get_form_class(self, method=None):
         """
@@ -199,7 +198,6 @@ class FormResource(Resource):
             form = getattr(self.view, '%s_form' % method.lower(), form)
 
         return form
-  
 
     def get_bound_form(self, data=None, files=None, method=None):
         """
@@ -217,28 +215,11 @@ class FormResource(Resource):
         return form()
 
 
-
-#class _RegisterModelResource(type):
-#    """
-#    Auto register new ModelResource classes into ``_model_to_resource``
-#    """
-#    def __new__(cls, name, bases, dct):
-#        resource_cls = type.__new__(cls, name, bases, dct)
-#        model_cls = dct.get('model', None)
-#        if model_cls:
-#            _model_to_resource[model_cls] = resource_cls
-#        return resource_cls
-
-
-
 class ModelResource(FormResource):
     """
     Resource class that uses forms for validation and otherwise falls back to a model form if no form is set.
     Also provides a :meth:`get_bound_form` method which may be used by some renderers.
     """
-
-    # Auto-register new ModelResource classes into _model_to_resource 
-    #__metaclass__ = _RegisterModelResource
 
     form = None
     """
@@ -258,23 +239,22 @@ class ModelResource(FormResource):
     fields = None
     """
     The list of fields to use on the output.
-    
+
     May be any of:
-    
+
     The name of a model field. To view nested resources, give the field as a tuple of ("fieldName", resource) where `resource` may be any of ModelResource reference, the name of a ModelResourc reference as a string or a tuple of strings representing fields on the nested model.
     The name of an attribute on the model.
     The name of an attribute on the resource.
     The name of a method on the model, with a signature like ``func(self)``.
     The name of a method on the resource, with a signature like ``func(self, instance)``.
     """
-    
+
     exclude = ('id', 'pk')
     """
     The list of fields to exclude.  This is only used if :attr:`fields` is not set.
     """
-    
 
-    include = ('url',)
+    include = ()
     """
     The list of extra fields to include.  This is only used if :attr:`fields` is not set.
     """
@@ -289,12 +269,11 @@ class ModelResource(FormResource):
 
         self.model = getattr(view, 'model', None) or self.model
 
-
     def validate_request(self, data, files=None):
         """
         Given some content as input return some cleaned, validated content.
         Raises a :exc:`response.ErrorResponse` with status code 400 (Bad Request) on failure.
-        
+
         Validation is standard form or model form validation,
         with an additional constraint that no extra unknown fields may be supplied,
         and that all fields specified by the fields class attribute must be supplied,
@@ -305,7 +284,6 @@ class ModelResource(FormResource):
         If the ''field-errors'` key exists it is a dict of {field name as string: list of errors as strings}.
         """
         return self._validate(data, files, allowed_extra_fields=self._property_fields_set)
-
 
     def get_bound_form(self, data=None, files=None, method=None):
         """
@@ -339,49 +317,6 @@ class ModelResource(FormResource):
 
         return form()
 
-
-    def url(self, instance):
-        """
-        Attempts to reverse resolve the url of the given model *instance* for this resource.
-
-        Requires a ``View`` with :class:`mixins.InstanceMixin` to have been created for this resource.
-        
-        This method can be overridden if you need to set the resource url reversing explicitly.
-        """
-
-        if not hasattr(self, 'view_callable'):
-            raise _SkipField        
-
-        # dis does teh magicks...
-        urlconf = get_urlconf()
-        resolver = get_resolver(urlconf)
-
-        possibilities = resolver.reverse_dict.getlist(self.view_callable[0])
-        for tuple_item in possibilities:
-            possibility = tuple_item[0]
-            # pattern = tuple_item[1]
-            # Note: defaults = tuple_item[2] for django >= 1.3
-            for result, params in possibility:
-
-                #instance_attrs = dict([ (param, getattr(instance, param)) for param in params if hasattr(instance, param) ])
-
-                instance_attrs = {}
-                for param in params:
-                    if not hasattr(instance, param):
-                        continue
-                    attr = getattr(instance, param)
-                    if isinstance(attr, models.Model):
-                        instance_attrs[param] = attr.pk
-                    else:
-                        instance_attrs[param] = attr
-
-                try:
-                    return reverse(self.view_callable[0], kwargs=instance_attrs)
-                except NoReverseMatch:
-                    pass
-        raise _SkipField
-
-
     @property
     def _model_fields_set(self):
         """
@@ -389,11 +324,11 @@ class ModelResource(FormResource):
         """
         model_fields = set(field.name for field in self.model._meta.fields)
 
-        if fields:
+        if self.fields:
             return model_fields & set(as_tuple(self.fields))
 
         return model_fields - set(as_tuple(self.exclude))
-    
+
     @property
     def _property_fields_set(self):
         """

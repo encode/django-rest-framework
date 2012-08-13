@@ -53,11 +53,6 @@ MEDIA_ROOT = ''
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = ''
 
-# URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
-# trailing slash.
-# Examples: "http://foo.com/media/", "/media/".    
-ADMIN_MEDIA_PREFIX = '/media/'
-
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'u@x-aj9(hoh#rb-^ymf#g2jx_hp0vj7u5#b@ag1n^seu9e!%cy'
 
@@ -95,8 +90,15 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     'djangorestframework',
-    'djangorestframework.tests',
 )
+
+STATIC_URL = '/static/'
+
+import django
+
+if django.VERSION < (1, 3):
+    INSTALLED_APPS += ('staticfiles',)
+
 
 # OAuth support is optional, so we only test oauth if it's installed.
 try:

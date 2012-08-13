@@ -1,13 +1,13 @@
 """Tests for the resource module"""
-from django.test import TestCase
-from djangorestframework.serializer import Serializer
-
 from django.db import models
+from django.test import TestCase
+from django.utils.translation import ugettext_lazy
+from djangorestframework.serializer import Serializer
 
 import datetime
 import decimal
 
-class TestObjectToData(TestCase): 
+class TestObjectToData(TestCase):
     """
     Tests for the Serializer class.
     """
@@ -34,9 +34,7 @@ class TestObjectToData(TestCase):
         self.assertEquals(self.serialize(Foo().foo), 1)
 
     def test_datetime(self):
-        """
-        datetime objects are left as-is.
-        """
+        """datetime objects are left as-is."""
         now = datetime.datetime.now()
         self.assertEquals(self.serialize(now), now)
 
@@ -45,6 +43,9 @@ class TestObjectToData(TestCase):
         self.assertEquals(self.serialize({'items': 'foo'}), {'items': u'foo'})
         self.assertEquals(self.serialize({'keys': 'foo'}), {'keys': u'foo'})
         self.assertEquals(self.serialize({'values': 'foo'}), {'values': u'foo'})
+
+    def test_ugettext_lazy(self):
+        self.assertEquals(self.serialize(ugettext_lazy('foobar')), u'foobar')
 
 
 class TestFieldNesting(TestCase):
@@ -56,8 +57,8 @@ class TestFieldNesting(TestCase):
         self.serialize = self.serializer.serialize
 
         class M1(models.Model):
-            field1 = models.CharField()
-            field2 = models.CharField()
+            field1 = models.CharField(max_length=256)
+            field2 = models.CharField(max_length=256)
 
         class M2(models.Model):
             field = models.OneToOneField(M1)
@@ -103,6 +104,27 @@ class TestFieldNesting(TestCase):
         self.assertEqual(SerializerM2().serialize(self.m2), {'field': {'field1': u'foo'}})
         self.assertEqual(SerializerM3().serialize(self.m3), {'field': {'field2': u'bar'}})
 
+    def test_serializer_no_fields(self):
+        """
+        Test related serializer works when the fields attr isn't present. Fix for
+        #178.
+        """
+        class NestedM2(Serializer):
+            fields = ('field1', )
+
+        class NestedM3(Serializer):
+            fields = ('field2', )
+
+        class SerializerM2(Serializer):
+            include = [('field', NestedM2)]
+            exclude = ('id', )
+
+        class SerializerM3(Serializer):
+            fields = [('field', NestedM3)]
+
+        self.assertEqual(SerializerM2().serialize(self.m2), {'field': {'field1': u'foo'}})
+        self.assertEqual(SerializerM3().serialize(self.m3), {'field': {'field2': u'bar'}})
+
     def test_serializer_classname_nesting(self):
         """
         Test related model serialization
@@ -121,3 +143,18 @@ class TestFieldNesting(TestCase):
 
         self.assertEqual(SerializerM2().serialize(self.m2), {'field': {'field1': u'foo'}})
         self.assertEqual(SerializerM3().serialize(self.m3), {'field': {'field2': u'bar'}})
+
+    def test_serializer_overridden_hook_method(self):
+        """
+        Test serializing a model instance which overrides a class method on the
+        serializer.  Checks for correct behaviour in odd edge case.
+        """
+        class SerializerM2(Serializer):
+            fields = ('overridden', )
+
+            def overridden(self):
+                return False
+
+        self.m2.overridden = True
+        self.assertEqual(SerializerM2().serialize_model(self.m2),
+                         {'overridden': True})

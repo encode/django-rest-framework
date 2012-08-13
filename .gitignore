@@ -1,7 +1,9 @@
 *.pyc
 *.db
-assetplatform.egg-info/*
 *~
+.*
+
+assetplatform.egg-info/*
 coverage.xml
 env
 docs/build
@@ -14,11 +16,5 @@ dist/*
 xmlrunner/*
 djangorestframework.egg-info/*
 MANIFEST
-.project
-.pydevproject
-.settings
-.cache
-.coverage
-.tox
-.DS_Store
-.idea/*
+
+!.gitignore

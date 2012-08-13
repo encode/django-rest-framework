@@ -1,23 +1,21 @@
 """
-The :mod:`mixins` module provides a set of reusable `mixin` 
+The :mod:`mixins` module provides a set of reusable `mixin`
 classes that can be added to a `View`.
 """
 
 from django.contrib.auth.models import AnonymousUser
-from django.db.models.query import QuerySet
+from django.core.paginator import Paginator
 from django.db.models.fields.related import ForeignKey
 from django.http import HttpResponse
+from urlobject import URLObject
 
 from djangorestframework import status
-from djangorestframework.parsers import FormParser, MultiPartParser
 from djangorestframework.renderers import BaseRenderer
 from djangorestframework.resources import Resource, FormResource, ModelResource
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.utils import as_tuple, MSIE_USER_AGENT_REGEX
 from djangorestframework.utils.mediatypes import is_form_media_type, order_by_precedence
 
-from decimal import Decimal
-import re
 from StringIO import StringIO
 
 
@@ -27,14 +25,13 @@ __all__ = (
     'ResponseMixin',
     'AuthMixin',
     'ResourceMixin',
-    # Reverse URL lookup behavior
-    'InstanceMixin',
     # Model behavior mixins
     'ReadModelMixin',
     'CreateModelMixin',
     'UpdateModelMixin',
     'DeleteModelMixin',
-    'ListModelMixin'
+    'ListModelMixin',
+    'PaginatorMixin'
 )
 
 
@@ -50,12 +47,12 @@ class RequestMixin(object):
     _CONTENTTYPE_PARAM = '_content_type'
     _CONTENT_PARAM = '_content'
 
+    parsers = ()
     """
     The set of request parsers that the view can handle.
-    
+
     Should be a tuple/list of classes as described in the :mod:`parsers` module.
     """
-    parsers = ()
 
     @property
     def method(self):
@@ -68,7 +65,6 @@ class RequestMixin(object):
         if not hasattr(self, '_method'):
             self._load_method_and_content_type()
         return self._method
-
 
     @property
     def content_type(self):
@@ -83,7 +79,6 @@ class RequestMixin(object):
             self._load_method_and_content_type()
         return self._content_type
 
-
     @property
     def DATA(self):
         """
@@ -96,7 +91,6 @@ class RequestMixin(object):
             self._load_data_and_files()
         return self._data
 
-
     @property
     def FILES(self):
         """
@@ -108,7 +102,6 @@ class RequestMixin(object):
             self._load_data_and_files()
         return self._files
 
-
     def _load_data_and_files(self):
         """
         Parse the request content into self.DATA and self.FILES.
@@ -119,7 +112,6 @@ class RequestMixin(object):
         if not hasattr(self, '_data'):
             (self._data, self._files) = self._parse(self._get_stream(), self._content_type)
 
-
     def _load_method_and_content_type(self):
         """
         Set the method and content_type, and then check if they've been overridden.
@@ -127,7 +119,6 @@ class RequestMixin(object):
         self._method = self.request.method
         self._content_type = self.request.META.get('HTTP_CONTENT_TYPE', self.request.META.get('CONTENT_TYPE', ''))
         self._perform_form_overloading()
-
 
     def _get_stream(self):
         """
@@ -145,9 +136,8 @@ class RequestMixin(object):
         if content_length == 0:
             return None
         elif hasattr(request, 'read'):
-             return request
+            return request
         return StringIO(request.raw_post_data)
-
 
     def _perform_form_overloading(self):
         """
@@ -158,7 +148,7 @@ class RequestMixin(object):
         # We only need to use form overloading on form POST requests.
         if not self._USE_FORM_OVERLOADING or self._method != 'POST' or not is_form_media_type(self._content_type):
             return
-        
+
         # At this point we're committed to parsing the request as form data.
         self._data = data = self.request.POST.copy()
         self._files = self.request.FILES
@@ -173,7 +163,6 @@ class RequestMixin(object):
             self._content_type = self._data.pop(self._CONTENTTYPE_PARAM)[0]
             stream = StringIO(self._data.pop(self._CONTENT_PARAM)[0])
             (self._data, self._files) = self._parse(stream, self._content_type)
-
 
     def _parse(self, stream, content_type):
         """
@@ -192,9 +181,8 @@ class RequestMixin(object):
                 return parser.parse(stream)
 
         raise ErrorResponse(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                            {'error': 'Unsupported media type in request \'%s\'.' %
+                            {'error': 'Unsupported media type in request \'%s\'.' % 
                             content_type})
-
 
     @property
     def _parsed_media_types(self):
@@ -203,14 +191,12 @@ class RequestMixin(object):
         """
         return [parser.media_type for parser in self.parsers]
 
-    
     @property
     def _default_parser(self):
         """
         Return the view's default parser class.
-        """        
+        """
         return self.parsers[0]
-
 
 
 ########## ResponseMixin ##########
@@ -218,7 +204,7 @@ class RequestMixin(object):
 class ResponseMixin(object):
     """
     Adds behavior for pluggable `Renderers` to a :class:`views.View` class.
-    
+
     Default behavior is to use standard HTTP Accept header content negotiation.
     Also supports overriding the content type by specifying an ``_accept=`` parameter in the URL.
     Ignores Accept headers from Internet Explorer user agents and uses a sensible browser Accept header instead.
@@ -227,13 +213,19 @@ class ResponseMixin(object):
     _ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
     _IGNORE_IE_ACCEPT_HEADER = True
 
+    renderers = ()
     """
     The set of response renderers that the view can handle.
-    
-    Should be a tuple/list of classes as described in the :mod:`renderers` module.    
-    """
-    renderers = ()
 
+    Should be a tuple/list of classes as described in the :mod:`renderers` module.
+    """
+
+    def get_renderers(self):
+        """
+        Return an iterable of available renderers. Override if you want to change
+        this list at runtime, say depending on what settings you have enabled.
+        """
+        return self.renderers
 
     # TODO: wrap this behavior around dispatch(), ensuring it works
     # out of the box with existing Django classes that use render_to_response.
@@ -253,7 +245,7 @@ class ResponseMixin(object):
         # Set the media type of the response
         # Note that the renderer *could* override it in .render() if required.
         response.media_type = renderer.media_type
-        
+
         # Serialize the response content
         if response.has_content_body:
             content = renderer.render(response.cleaned_content, media_type)
@@ -266,7 +258,6 @@ class ResponseMixin(object):
             resp[key] = val
 
         return resp
-
 
     def _determine_renderer(self, request):
         """
@@ -282,13 +273,14 @@ class ResponseMixin(object):
             # Use _accept parameter override
             accept_list = [request.GET.get(self._ACCEPT_QUERY_PARAM)]
         elif (self._IGNORE_IE_ACCEPT_HEADER and
-              request.META.has_key('HTTP_USER_AGENT') and
-              MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT'])):
+              'HTTP_USER_AGENT' in request.META and
+              MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT']) and
+              request.META.get('HTTP_X_REQUESTED_WITH', '') != 'XMLHttpRequest'):
             # Ignore MSIE's broken accept behavior and do something sensible instead
             accept_list = ['text/html', '*/*']
-        elif request.META.has_key('HTTP_ACCEPT'):
+        elif 'HTTP_ACCEPT' in request.META:
             # Use standard HTTP Accept negotiation
-            accept_list = [token.strip() for token in request.META["HTTP_ACCEPT"].split(',')]
+            accept_list = [token.strip() for token in request.META['HTTP_ACCEPT'].split(',')]
         else:
             # No accept header specified
             accept_list = ['*/*']
@@ -297,7 +289,7 @@ class ResponseMixin(object):
         # attempting more specific media types first
         # NB. The inner loop here isn't as bad as it first looks :)
         #     Worst case is we're looping over len(accept_list) * len(self.renderers)
-        renderers = [renderer_cls(self) for renderer_cls in self.renderers]
+        renderers = [renderer_cls(self) for renderer_cls in self.get_renderers()]
 
         for accepted_media_type_lst in order_by_precedence(accept_list):
             for renderer in renderers:
@@ -310,14 +302,13 @@ class ResponseMixin(object):
                                 {'detail': 'Could not satisfy the client\'s Accept header',
                                  'available_types': self._rendered_media_types})
 
-
     @property
     def _rendered_media_types(self):
         """
         Return an list of all the media types that this view can render.
         """
         return [renderer.media_type for renderer in self.renderers]
-    
+
     @property
     def _rendered_formats(self):
         """
@@ -339,32 +330,30 @@ class AuthMixin(object):
     """
     Simple :class:`mixin` class to add authentication and permission checking to a :class:`View` class.
     """
-    
+
+    authentication = ()
     """
     The set of authentication types that this view can handle.
-   
-    Should be a tuple/list of classes as described in the :mod:`authentication` module.    
-    """
-    authentication = ()
 
+    Should be a tuple/list of classes as described in the :mod:`authentication` module.
+    """
+
+    permissions = ()
     """
     The set of permissions that will be enforced on this view.
-    
-    Should be a tuple/list of classes as described in the :mod:`permissions` module.    
-    """
-    permissions = ()
 
+    Should be a tuple/list of classes as described in the :mod:`permissions` module.
+    """
 
     @property
     def user(self):
         """
         Returns the :obj:`user` for the current request, as determined by the set of
-        :class:`authentication` classes applied to the :class:`View`.  
+        :class:`authentication` classes applied to the :class:`View`.
         """
         if not hasattr(self, '_user'):
             self._user = self._authenticate()
         return self._user
-
 
     def _authenticate(self):
         """
@@ -377,7 +366,6 @@ class AuthMixin(object):
             if user:
                 return user
         return AnonymousUser()
-
 
     # TODO: wrap this behavior around dispatch()
     def _check_permissions(self):
@@ -451,60 +439,108 @@ class ResourceMixin(object):
         return self._resource.filter_response(obj)
 
     def get_bound_form(self, content=None, method=None):
-        return self._resource.get_bound_form(content, method=method)
-
-
-
-##########
-
-class InstanceMixin(object):
-    """
-    `Mixin` class that is used to identify a `View` class as being the canonical identifier
-    for the resources it is mapped to.
-    """
-
-    @classmethod
-    def as_view(cls, **initkwargs):
-        """
-        Store the callable object on the resource class that has been associated with this view.
-        """
-        view = super(InstanceMixin, cls).as_view(**initkwargs)
-        resource = getattr(cls(**initkwargs), 'resource', None)
-        if resource:
-            # We do a little dance when we store the view callable...
-            # we need to store it wrapped in a 1-tuple, so that inspect will treat it
-            # as a function when we later look it up (rather than turning it into a method).
-            # This makes sure our URL reversing works ok.
-            resource.view_callable = (view,)
-        return view
+        if hasattr(self._resource, 'get_bound_form'):
+            return self._resource.get_bound_form(content, method=method)
+        else:
+            return None
 
 
 ########## Model Mixins ##########
 
-class ReadModelMixin(object):
+class ModelMixin(object):
+    """ Implements mechanisms used by other classes (like *ModelMixin group) to
+    define a query that represents Model instances the Mixin is working with.
+
+    If a *ModelMixin is going to retrive an instance (or queryset) using args and kwargs
+    passed by as URL arguments, it should provied arguments to objects.get and objects.filter
+    methods wrapped in by `build_query`
+
+    If a *ModelMixin is going to create/update an instance get_instance_data
+    handles the instance data creation/preaparation.
+    """
+
+    queryset = None
+
+    def get_query_kwargs(self, *args, **kwargs):
+        """
+        Return a dict of kwargs that will be used to build the
+        model instance retrieval or to filter querysets.
+        """
+
+        kwargs = dict(kwargs)
+
+        # If the URLconf includes a .(?P<format>\w+) pattern to match against
+        # a .json, .xml suffix, then drop the 'format' kwarg before
+        # constructing the query.
+        if BaseRenderer._FORMAT_QUERY_PARAM in kwargs:
+            del kwargs[BaseRenderer._FORMAT_QUERY_PARAM]
+
+        return kwargs
+
+    def get_instance_data(self, model, content, **kwargs):
+        """
+        Returns the dict with the data for model instance creation/update.
+
+        Arguments:
+        - model: model class (django.db.models.Model subclass) to work with
+        - content: a dictionary with instance data
+        - kwargs: a dict of URL provided keyword arguments
+
+        The create/update queries are created basicly with the contet provided
+        with POST/PUT HTML methods and kwargs passed in the URL. This methods
+        simply merges the URL data and the content preaparing the ready-to-use
+        data dictionary.
+        """
+
+        tmp = dict(kwargs)
+
+        for field in model._meta.fields:
+            if isinstance(field, ForeignKey) and field.name in tmp:
+                # translate 'related_field' kwargs into 'related_field_id'
+                tmp[field.name + '_id'] = tmp[field.name]
+                del tmp[field.name]
+
+        all_kw_args = dict(content.items() + tmp.items())
+
+        return all_kw_args
+
+    def get_instance(self, **kwargs):
+        """
+        Get a model instance for read/update/delete requests.
+        """
+        return self.get_queryset().get(**kwargs)
+
+    def get_queryset(self):
+        """
+        Return the queryset for this view.
+        """
+        return getattr(self.resource, 'queryset',
+                       self.resource.model.objects.all())
+
+    def get_ordering(self):
+        """
+        Return the ordering for this view.
+        """
+        return getattr(self.resource, 'ordering', None)
+
+
+class ReadModelMixin(ModelMixin):
     """
     Behavior to read a `model` instance on GET requests
     """
     def get(self, request, *args, **kwargs):
         model = self.resource.model
+        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
 
         try:
-            if args:
-                # If we have any none kwargs then assume the last represents the primrary key
-                self.model_instance = model.objects.get(pk=args[-1], **kwargs)
-            else:
-                # Otherwise assume the kwargs uniquely identify the model
-                filtered_keywords = kwargs.copy()
-                if BaseRenderer._FORMAT_QUERY_PARAM in filtered_keywords:
-                    del filtered_keywords[BaseRenderer._FORMAT_QUERY_PARAM]
-                self.model_instance = model.objects.get(**filtered_keywords)
+            self.model_instance = self.get_instance(**query_kwargs)
         except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
 
         return self.model_instance
 
 
-class CreateModelMixin(object):
+class CreateModelMixin(ModelMixin):
     """
     Behavior to create a `model` instance on POST requests
     """
@@ -515,86 +551,66 @@ class CreateModelMixin(object):
         content = dict(self.CONTENT)
         m2m_data = {}
 
-        for field in model._meta.fields:
-            if isinstance(field, ForeignKey) and kwargs.has_key(field.name):
-                # translate 'related_field' kwargs into 'related_field_id'
-                kwargs[field.name + '_id'] = kwargs[field.name]
-                del kwargs[field.name]
-
         for field in model._meta.many_to_many:
-            if content.has_key(field.name):
+            if field.name in content:
                 m2m_data[field.name] = (
                     field.m2m_reverse_field_name(), content[field.name]
                 )
                 del content[field.name]
 
-        all_kw_args = dict(content.items() + kwargs.items())
-
-        if args:
-            instance = model(pk=args[-1], **all_kw_args)
-        else:
-            instance = model(**all_kw_args)
+        instance = model(**self.get_instance_data(model, content, *args, **kwargs))
         instance.save()
 
         for fieldname in m2m_data:
             manager = getattr(instance, fieldname)
-            
+
             if hasattr(manager, 'add'):
                 manager.add(*m2m_data[fieldname][1])
             else:
                 data = {}
                 data[manager.source_field_name] = instance
-                
+
                 for related_item in m2m_data[fieldname][1]:
                     data[m2m_data[fieldname][0]] = related_item
                     manager.through(**data).save()
 
         headers = {}
-        if hasattr(instance, 'get_absolute_url'):
+        if hasattr(self.resource, 'url'):
             headers['Location'] = self.resource(self).url(instance)
         return Response(status.HTTP_201_CREATED, instance, headers)
 
 
-class UpdateModelMixin(object):
+class UpdateModelMixin(ModelMixin):
     """
     Behavior to update a `model` instance on PUT requests
     """
     def put(self, request, *args, **kwargs):
         model = self.resource.model
-        
-        # TODO: update on the url of a non-existing resource url doesn't work correctly at the moment - will end up with a new url 
+        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
+
+        # TODO: update on the url of a non-existing resource url doesn't work
+        # correctly at the moment - will end up with a new url
         try:
-            if args:
-                # If we have any none kwargs then assume the last represents the primrary key
-                self.model_instance = model.objects.get(pk=args[-1], **kwargs)
-            else:
-                # Otherwise assume the kwargs uniquely identify the model
-                self.model_instance = model.objects.get(**kwargs)
+            self.model_instance = self.get_instance(**query_kwargs)
 
             for (key, val) in self.CONTENT.items():
                 setattr(self.model_instance, key, val)
         except model.DoesNotExist:
-            self.model_instance = model(**self.CONTENT)
-            self.model_instance.save()
-
+            self.model_instance = model(**self.get_instance_data(model, self.CONTENT, *args, **kwargs))
         self.model_instance.save()
         return self.model_instance
 
 
-class DeleteModelMixin(object):
+class DeleteModelMixin(ModelMixin):
     """
     Behavior to delete a `model` instance on DELETE requests
     """
     def delete(self, request, *args, **kwargs):
         model = self.resource.model
+        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
 
         try:
-            if args:
-                # If we have any none kwargs then assume the last represents the primrary key
-                instance = model.objects.get(pk=args[-1], **kwargs)
-            else:
-                # Otherwise assume the kwargs uniquely identify the model
-                instance = model.objects.get(**kwargs)
+            instance = self.get_instance(**query_kwargs)
         except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
 
@@ -602,38 +618,119 @@ class DeleteModelMixin(object):
         return
 
 
-class ListModelMixin(object):
+class ListModelMixin(ModelMixin):
     """
     Behavior to list a set of `model` instances on GET requests
     """
 
-    # NB. Not obvious to me if it would be better to set this on the resource?
-    #
-    # Presumably it's more useful to have on the view, because that way you can
-    # have multiple views across different querysets mapping to the same resource.
-    #
-    # Perhaps it ought to be:
-    #
-    # 1) View.queryset
-    # 2) if None fall back to Resource.queryset
-    # 3) if None fall back to Resource.model.objects.all()
-    #
-    # Any feedback welcomed.
-    queryset = None
-
     def get(self, request, *args, **kwargs):
-        model = self.resource.model
+        queryset = self.get_queryset()
+        ordering = self.get_ordering()
+        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
 
-        queryset = self.queryset if self.queryset is not None else model.objects.all()
-
-        if hasattr(self, 'resource'):
-            ordering = getattr(self.resource, 'ordering', None)
-        else:
-            ordering = None
-
+        queryset = queryset.filter(**query_kwargs)
         if ordering:
-            args = as_tuple(ordering)
-            queryset = queryset.order_by(*args)
-        return queryset.filter(**kwargs)
+            queryset = queryset.order_by(*ordering)
+
+        return queryset
 
 
+########## Pagination Mixins ##########
+
+class PaginatorMixin(object):
+    """
+    Adds pagination support to GET requests
+    Obviously should only be used on lists :)
+
+    A default limit can be set by setting `limit` on the object. This will also
+    be used as the maximum if the client sets the `limit` GET param
+    """
+    limit = 20
+
+    def get_limit(self):
+        """
+        Helper method to determine what the `limit` should be
+        """
+        try:
+            limit = int(self.request.GET.get('limit', self.limit))
+            return min(limit, self.limit)
+        except ValueError:
+            return self.limit
+
+    def url_with_page_number(self, page_number):
+        """
+        Constructs a url used for getting the next/previous urls
+        """
+        url = URLObject(self.request.get_full_path())
+        url = url.set_query_param('page', str(page_number))
+
+        limit = self.get_limit()
+        if limit != self.limit:
+            url = url.set_query_param('limit', str(limit))
+
+        return url
+
+    def next(self, page):
+        """
+        Returns a url to the next page of results (if any)
+        """
+        if not page.has_next():
+            return None
+
+        return self.url_with_page_number(page.next_page_number())
+
+    def previous(self, page):
+        """ Returns a url to the previous page of results (if any) """
+        if not page.has_previous():
+            return None
+
+        return self.url_with_page_number(page.previous_page_number())
+
+    def serialize_page_info(self, page):
+        """
+        This is some useful information that is added to the response
+        """
+        return {
+            'next': self.next(page),
+            'page': page.number,
+            'pages': page.paginator.num_pages,
+            'per_page': self.get_limit(),
+            'previous': self.previous(page),
+            'total': page.paginator.count,
+        }
+
+    def filter_response(self, obj):
+        """
+        Given the response content, paginate and then serialize.
+
+        The response is modified to include to useful data relating to the number
+        of objects, number of pages, next/previous urls etc. etc.
+
+        The serialised objects are put into `results` on this new, modified
+        response
+        """
+
+        # We don't want to paginate responses for anything other than GET requests
+        if self.method.upper() != 'GET':
+            return self._resource.filter_response(obj)
+
+        paginator = Paginator(obj, self.get_limit())
+
+        try:
+            page_num = int(self.request.GET.get('page', '1'))
+        except ValueError:
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND,
+                                {'detail': 'That page contains no results'})
+
+        if page_num not in paginator.page_range:
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND,
+                                {'detail': 'That page contains no results'})
+
+        page = paginator.page(page_num)
+
+        serialized_object_list = self._resource.filter_response(page.object_list)
+        serialized_page_info = self.serialize_page_info(page)
+
+        serialized_page_info['results'] = serialized_object_list
+
+        return serialized_page_info

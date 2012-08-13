@@ -2,6 +2,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 import uuid
 
+
 def uuid_str():
     return str(uuid.uuid1())
 
@@ -13,6 +14,7 @@ RATING_CHOICES = ((0, 'Awful'),
                   (4, 'Excellent'))
 
 MAX_POSTS = 10
+
 
 class BlogPost(models.Model):
     key = models.CharField(primary_key=True, max_length=64, default=uuid_str, editable=False)
@@ -37,4 +39,3 @@ class Comment(models.Model):
     comment = models.TextField()
     rating = models.IntegerField(blank=True, null=True, choices=RATING_CHOICES, help_text='How did you rate this post?')
     created = models.DateTimeField(auto_now_add=True)
-

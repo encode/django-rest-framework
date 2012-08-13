@@ -2,7 +2,7 @@
 from django.test import TestCase
 import djangorestframework
 
-class TestVersion(TestCase): 
+class TestVersion(TestCase):
     """Simple sanity test to check the VERSION exists"""
 
     def test_version(self):

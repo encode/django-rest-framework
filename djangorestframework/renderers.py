@@ -3,7 +3,7 @@ Renderers are used to serialize a View's output into specific media types.
 
 Django REST framework also provides HTML and PlainText renderers that help self-document the API,
 by serializing the output along with documentation regarding the View, output status and headers,
-and providing forms and links depending on the allowed methods, renderers and parsers on the View. 
+and providing forms and links depending on the allowed methods, renderers and parsers on the View.
 """
 from django import forms
 from django.conf import settings
@@ -12,10 +12,9 @@ from django.template import RequestContext, loader
 from django.utils import simplejson as json
 
 
-from djangorestframework.compat import apply_markdown, yaml
+from djangorestframework.compat import yaml
 from djangorestframework.utils import dict2xml, url_resolves
 from djangorestframework.utils.breadcrumbs import get_breadcrumbs
-from djangorestframework.utils.description import get_name, get_description
 from djangorestframework.utils.mediatypes import get_media_type_params, add_media_type_param, media_type_matches
 from djangorestframework import VERSION
 
@@ -26,6 +25,7 @@ __all__ = (
     'BaseRenderer',
     'TemplateRenderer',
     'JSONRenderer',
+    'JSONPRenderer',
     'DocumentingHTMLRenderer',
     'DocumentingXHTMLRenderer',
     'DocumentingPlainTextRenderer',
@@ -39,7 +39,7 @@ class BaseRenderer(object):
     All renderers must extend this class, set the :attr:`media_type` attribute,
     and override the :meth:`render` method.
     """
-    
+
     _FORMAT_QUERY_PARAM = 'format'
 
     media_type = None
@@ -81,7 +81,7 @@ class BaseRenderer(object):
         """
         if obj is None:
             return ''
-        
+
         return str(obj)
 
 
@@ -113,6 +113,28 @@ class JSONRenderer(BaseRenderer):
         return json.dumps(obj, cls=DateTimeAwareJSONEncoder, indent=indent, sort_keys=sort_keys)
 
 
+class JSONPRenderer(JSONRenderer):
+    """
+    Renderer which serializes to JSONP
+    """
+
+    media_type = 'application/json-p'
+    format = 'json-p'
+    renderer_class = JSONRenderer
+    callback_parameter = 'callback'
+
+    def _get_callback(self):
+        return self.view.request.GET.get(self.callback_parameter, self.callback_parameter)
+
+    def _get_renderer(self):
+        return self.renderer_class(self.view)
+
+    def render(self, obj=None, media_type=None):
+        callback = self._get_callback()
+        json = self._get_renderer().render(obj, media_type)
+        return "%s(%s);" % (callback, json)
+
+
 class XMLRenderer(BaseRenderer):
     """
     Renderer which serializes to XML.
@@ -130,25 +152,22 @@ class XMLRenderer(BaseRenderer):
         return dict2xml(obj)
 
 
-if yaml:
-    class YAMLRenderer(BaseRenderer):
-        """
-        Renderer which serializes to YAML.
-        """
-    
-        media_type = 'application/yaml'
-        format = 'yaml'
-    
-        def render(self, obj=None, media_type=None):
-            """
-            Renders *obj* into serialized YAML.
-            """
-            if obj is None:
-                return ''
+class YAMLRenderer(BaseRenderer):
+    """
+    Renderer which serializes to YAML.
+    """
 
-            return yaml.dump(obj)
-else:
-    YAMLRenderer = None
+    media_type = 'application/yaml'
+    format = 'yaml'
+
+    def render(self, obj=None, media_type=None):
+        """
+        Renders *obj* into serialized YAML.
+        """
+        if obj is None:
+            return ''
+
+        return yaml.safe_dump(obj)
 
 
 class TemplateRenderer(BaseRenderer):
@@ -192,7 +211,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
         """
 
         # Find the first valid renderer and render the content. (Don't use another documenting renderer.)
-        renderers = [renderer for renderer in view.renderers if not isinstance(renderer, DocumentingTemplateRenderer)]
+        renderers = [renderer for renderer in view.renderers if not issubclass(renderer, DocumentingTemplateRenderer)]
         if not renderers:
             return '[No renderers were found]'
 
@@ -200,9 +219,8 @@ class DocumentingTemplateRenderer(BaseRenderer):
         content = renderers[0](view).render(obj, media_type)
         if not all(char in string.printable for char in content):
             return '[%d bytes of binary content]'
-            
-        return content
 
+        return content
 
     def _get_form_instance(self, view, method):
         """
@@ -223,22 +241,21 @@ class DocumentingTemplateRenderer(BaseRenderer):
                     form_instance = view.get_bound_form(view.response.cleaned_content, method=method)
                     if form_instance and not form_instance.is_valid():
                         form_instance = None
-                except:
+                except Exception:
                     form_instance = None
 
         # If we still don't have a form instance then try to get an unbound form
         if not form_instance:
             try:
                 form_instance = view.get_bound_form(method=method)
-            except:
+            except Exception:
                 pass
 
         # If we still don't have a form instance then try to get an unbound form which can tunnel arbitrary content types
         if not form_instance:
             form_instance = self._get_generic_content_form(view)
-        
-        return form_instance
 
+        return form_instance
 
     def _get_generic_content_form(self, view):
         """
@@ -275,6 +292,19 @@ class DocumentingTemplateRenderer(BaseRenderer):
         # Okey doke, let's do it
         return GenericContentForm(view)
 
+    def get_name(self):
+        try:
+            return self.view.get_name()
+        except AttributeError:
+            return self.view.__doc__
+
+    def get_description(self, html=None):
+        if html is None:
+            html = bool('html' in self.format)
+        try:
+            return self.view.get_description(html)
+        except AttributeError:
+            return self.view.__doc__
 
     def render(self, obj=None, media_type=None):
         """
@@ -296,15 +326,8 @@ class DocumentingTemplateRenderer(BaseRenderer):
             login_url = None
             logout_url = None
 
-        name = get_name(self.view)
-        description = get_description(self.view)
-
-        markeddown = None
-        if apply_markdown:
-            try:
-                markeddown = apply_markdown(description)
-            except AttributeError:
-                markeddown = None
+        name = self.get_name()
+        description = self.get_description()
 
         breadcrumb_list = get_breadcrumbs(self.view.request.path)
 
@@ -312,23 +335,19 @@ class DocumentingTemplateRenderer(BaseRenderer):
         context = RequestContext(self.view.request, {
             'content': content,
             'view': self.view,
-            'request': self.view.request, # TODO: remove
+            'request': self.view.request,
             'response': self.view.response,
             'description': description,
             'name': name,
             'version': VERSION,
-            'markeddown': markeddown,
             'breadcrumblist': breadcrumb_list,
             'available_formats': self.view._rendered_formats,
             'put_form': put_form_instance,
             'post_form': post_form_instance,
-            'login_url': login_url,
-            'logout_url': logout_url,
             'FORMAT_PARAM': self._FORMAT_QUERY_PARAM,
             'METHOD_PARAM': getattr(self.view, '_METHOD_PARAM', None),
-            'ADMIN_MEDIA_PREFIX': settings.ADMIN_MEDIA_PREFIX
         })
-        
+
         ret = template.render(context)
 
         # Munge DELETE Response code to allow us to return content
@@ -348,7 +367,7 @@ class DocumentingHTMLRenderer(DocumentingTemplateRenderer):
 
     media_type = 'text/html'
     format = 'html'
-    template = 'renderer.html'
+    template = 'djangorestframework/api.html'
 
 
 class DocumentingXHTMLRenderer(DocumentingTemplateRenderer):
@@ -360,7 +379,7 @@ class DocumentingXHTMLRenderer(DocumentingTemplateRenderer):
 
     media_type = 'application/xhtml+xml'
     format = 'xhtml'
-    template = 'renderer.html'
+    template = 'djangorestframework/api.html'
 
 
 class DocumentingPlainTextRenderer(DocumentingTemplateRenderer):
@@ -372,14 +391,19 @@ class DocumentingPlainTextRenderer(DocumentingTemplateRenderer):
 
     media_type = 'text/plain'
     format = 'txt'
-    template = 'renderer.txt'
+    template = 'djangorestframework/api.txt'
 
 
-DEFAULT_RENDERERS = ( JSONRenderer,
-                      DocumentingHTMLRenderer,
-                      DocumentingXHTMLRenderer,
-                      DocumentingPlainTextRenderer,
-                      XMLRenderer )
+DEFAULT_RENDERERS = (
+    JSONRenderer,
+    JSONPRenderer,
+    DocumentingHTMLRenderer,
+    DocumentingXHTMLRenderer,
+    DocumentingPlainTextRenderer,
+    XMLRenderer
+)
 
-if YAMLRenderer:
-    DEFAULT_RENDERERS += (YAMLRenderer,)
+if yaml:
+    DEFAULT_RENDERERS += (YAMLRenderer, )
+else:
+    YAMLRenderer = None
