@@ -4,12 +4,12 @@ python:
   - "2.6"
   - "2.7"
 env:
-  - DJANGO=dev
-  - DJANGO=1.4.1
-  - DJANGO=1.3.3
+  - DJANGO=git+https://github.com/django/django.git
+  - DJANGO=django==1.4.1 --use-mirrors
+  - DJANGO=django==1.3.3 --use-mirrors
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
-  - pip install django==$DJANGO --use-mirrors
+  - pip install $DJANGO 
   - pip install -e . --use-mirrors
   - pip install -r requirements.txt
 
