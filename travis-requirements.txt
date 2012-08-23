@@ -1,8 +1,0 @@
-django==1.4.1
-django-staticfiles>=1.1.2
-coverage==3.4
-URLObject>=0.6.0
-unittest-xml-reporting==1.2
-Pyyaml==3.10
-# Optional packages:    
-markdown
