@@ -18,3 +18,4 @@ djangorestframework.egg-info/*
 MANIFEST
 
 !.gitignore
+!.travis.yml
