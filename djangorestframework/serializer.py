@@ -96,6 +96,11 @@ class Serializer(object):
     """
     The maximum depth to serialize to, or `None`.
     """
+    
+    parent = None
+    """
+    A reference to the root serializer when descending down into fields.
+    """
 
     def __init__(self, depth=None, stack=[], **kwargs):
         if depth is not None:
@@ -130,9 +135,12 @@ class Serializer(object):
         # If an element in `fields` is a 2-tuple of (str, tuple)
         # then the second element of the tuple is the fields to
         # set on the related serializer
+
+        class OnTheFlySerializer(self.__class__):
+            fields = info
+            parent = getattr(self, 'parent') or self
+
         if isinstance(info, (list, tuple)):
-            class OnTheFlySerializer(self.__class__):
-                fields = info
             return OnTheFlySerializer
 
         # If an element in `fields` is a 2-tuple of (str, Serializer)
@@ -150,8 +158,9 @@ class Serializer(object):
         elif isinstance(info, str) and info in _serializers:
             return _serializers[info]
 
-        # Otherwise use `related_serializer` or fall back to `Serializer`
-        return getattr(self, 'related_serializer') or Serializer
+        # Otherwise use `related_serializer` or fall back to
+        # `OnTheFlySerializer` preserve custom serialization methods.
+        return getattr(self, 'related_serializer') or OnTheFlySerializer
 
     def serialize_key(self, key):
         """
