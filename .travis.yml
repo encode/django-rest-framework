@@ -18,4 +18,5 @@ install:
   - pip install -r examples/requirements.txt
 
 # command to run tests, e.g. python setup.py test
-script:  $TESTS
+script:
+  - $TESTS
