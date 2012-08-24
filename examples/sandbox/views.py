@@ -62,6 +62,4 @@ class Sandbox(View):
              'url': reverse('blog-posts-root', request=request)},
             {'name': 'Permissions example',
              'url': reverse('permissions-example', request=request)},
-            {'name': 'Simple request mixin example',
-             'url': reverse('request-example', request=request)}
         ])
