@@ -6,7 +6,6 @@ from django.test import TestCase
 from djangorestframework import status
 from djangorestframework.compat import View as DjangoView
 from djangorestframework.response import Response
-from djangorestframework.mixins import ResponseMixin
 from djangorestframework.views import View
 from djangorestframework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
     XMLRenderer, JSONPRenderer, DocumentingHTMLRenderer
@@ -40,7 +39,7 @@ class RendererB(BaseRenderer):
         return RENDERER_B_SERIALIZER(obj)
 
 
-class MockView(ResponseMixin, DjangoView):
+class MockView(View):
     renderers = (RendererA, RendererB)
 
     def get(self, request, **kwargs):

@@ -11,13 +11,10 @@ from djangorestframework import status
 from djangorestframework.renderers import BaseRenderer
 from djangorestframework.resources import Resource, FormResource, ModelResource
 from djangorestframework.response import Response, ImmediateResponse
-from djangorestframework.request import Request
 
 
 __all__ = (
     # Base behavior mixins
-    'RequestMixin',
-    'ResponseMixin',
     'PermissionsMixin',
     'ResourceMixin',
     # Model behavior mixins
@@ -28,76 +25,6 @@ __all__ = (
     'ListModelMixin',
     'PaginatorMixin'
 )
-
-
-########## Request Mixin ##########
-
-class RequestMixin(object):
-    """
-    `Mixin` class enabling the use of :class:`request.Request` in your views.
-    """
-
-    request_class = Request
-    """
-    The class to use as a wrapper for the original request object.
-    """
-
-    def create_request(self, request):
-        """
-        Creates and returns an instance of :class:`request.Request`.
-        This new instance wraps the `request` passed as a parameter, and use
-        the  parsers set on the view.
-        """
-        return self.request_class(request, parsers=self.parsers, authentication=self.authentication)
-
-    @property
-    def _parsed_media_types(self):
-        """
-        Return a list of all the media types that this view can parse.
-        """
-        return [parser.media_type for parser in self.parsers]
-
-    @property
-    def _default_parser(self):
-        """
-        Return the view's default parser class.
-        """
-        return self.parsers[0]
-
-
-########## ResponseMixin ##########
-
-class ResponseMixin(object):
-    """
-    `Mixin` class enabling the use of :class:`response.Response` in your views.
-    """
-
-    renderers = ()
-    """
-    The set of response renderers that the view can handle.
-    Should be a tuple/list of classes as described in the :mod:`renderers` module.
-    """
-
-    @property
-    def _rendered_media_types(self):
-        """
-        Return an list of all the media types that this response can render.
-        """
-        return [renderer.media_type for renderer in self.renderers]
-
-    @property
-    def _rendered_formats(self):
-        """
-        Return a list of all the formats that this response can render.
-        """
-        return [renderer.format for renderer in self.renderers]
-
-    @property
-    def _default_renderer(self):
-        """
-        Return the response's default renderer class.
-        """
-        return self.renderers[0]
 
 
 ########## Permissions Mixin ##########

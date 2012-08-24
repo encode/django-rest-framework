@@ -12,6 +12,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from djangorestframework.compat import View as DjangoView, apply_markdown
 from djangorestframework.response import Response, ImmediateResponse
+from djangorestframework.request import Request
 from djangorestframework.mixins import *
 from djangorestframework import resources, renderers, parsers, authentication, permissions, status
 
@@ -67,7 +68,7 @@ _resource_classes = (
 )
 
 
-class View(ResourceMixin, RequestMixin, ResponseMixin, PermissionsMixin, DjangoView):
+class View(ResourceMixin, PermissionsMixin, DjangoView):
     """
     Handles incoming requests and maps them to REST operations.
     Performs request deserialization, response serialization, authentication and input validation.
@@ -187,6 +188,41 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, PermissionsMixin, DjangoV
         }
         raise ImmediateResponse(content, status.HTTP_405_METHOD_NOT_ALLOWED)
 
+    @property
+    def _parsed_media_types(self):
+        """
+        Return a list of all the media types that this view can parse.
+        """
+        return [parser.media_type for parser in self.parsers]
+
+    @property
+    def _default_parser(self):
+        """
+        Return the view's default parser class.
+        """
+        return self.parsers[0]
+
+    @property
+    def _rendered_media_types(self):
+        """
+        Return an list of all the media types that this response can render.
+        """
+        return [renderer.media_type for renderer in self.renderers]
+
+    @property
+    def _rendered_formats(self):
+        """
+        Return a list of all the formats that this response can render.
+        """
+        return [renderer.format for renderer in self.renderers]
+
+    @property
+    def _default_renderer(self):
+        """
+        Return the response's default renderer class.
+        """
+        return self.renderers[0]
+
     def initial(self, request, *args, **kargs):
         """
         This method is a hook for any code that needs to run prior to
@@ -213,7 +249,7 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, PermissionsMixin, DjangoV
     # all other authentication is CSRF exempt.
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
-        request = self.create_request(request)
+        request = Request(request, parsers=self.parsers, authentication=self.authentication)
         self.request = request
 
         self.args = args
