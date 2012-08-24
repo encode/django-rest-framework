@@ -18,7 +18,6 @@ __all__ = (
     'IsUserOrIsAnonReadOnly',
     'PerUserThrottling',
     'PerViewThrottling',
-    'PerResourceThrottling'
 )
 
 SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
@@ -253,16 +252,3 @@ class PerViewThrottling(BaseThrottle):
 
     def get_cache_key(self):
         return 'throttle_view_%s' % self.view.__class__.__name__
-
-
-class PerResourceThrottling(BaseThrottle):
-    """
-    Limits the rate of API calls that may be used against all views on
-    a given resource.
-
-    The class name of the resource is used as a unique identifier to
-    throttle against.
-    """
-
-    def get_cache_key(self):
-        return 'throttle_resource_%s' % self.view.resource.__class__.__name__

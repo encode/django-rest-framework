@@ -8,8 +8,7 @@ from django.core.cache import cache
 
 from djangorestframework.compat import RequestFactory
 from djangorestframework.views import View
-from djangorestframework.permissions import PerUserThrottling, PerViewThrottling, PerResourceThrottling
-from djangorestframework.resources import FormResource
+from djangorestframework.permissions import PerUserThrottling, PerViewThrottling
 from djangorestframework.response import Response
 
 
@@ -23,11 +22,6 @@ class MockView(View):
 
 class MockView_PerViewThrottling(MockView):
     permission_classes = (PerViewThrottling,)
-
-
-class MockView_PerResourceThrottling(MockView):
-    permission_classes = (PerResourceThrottling,)
-    resource = FormResource
 
 
 class MockView_MinuteThrottling(MockView):
@@ -97,12 +91,6 @@ class ThrottlingTests(TestCase):
         Ensure request rate is limited globally per View for PerViewThrottles
         """
         self.ensure_is_throttled(MockView_PerViewThrottling, 503)
-
-    def test_request_throttling_is_per_resource(self):
-        """
-        Ensure request rate is limited globally per Resource for PerResourceThrottles
-        """
-        self.ensure_is_throttled(MockView_PerResourceThrottling, 503)
 
     def ensure_response_header_contains_proper_throttle_field(self, view, expected_headers):
         """

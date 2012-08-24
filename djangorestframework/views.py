@@ -13,8 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from djangorestframework.compat import View as DjangoView, apply_markdown
 from djangorestframework.response import Response, ImmediateResponse
 from djangorestframework.request import Request
-from djangorestframework.mixins import *
-from djangorestframework import resources, renderers, parsers, authentication, permissions, status
+from djangorestframework import renderers, parsers, authentication, permissions, status
 
 
 __all__ = (
@@ -29,7 +28,7 @@ __all__ = (
 def _remove_trailing_string(content, trailing):
     """
     Strip trailing component `trailing` from `content` if it exists.
-    Used when generating names from view/resource classes.
+    Used when generating names from view classes.
     """
     if content.endswith(trailing) and content != trailing:
         return content[:-len(trailing)]
@@ -54,40 +53,26 @@ def _remove_leading_indent(content):
 def _camelcase_to_spaces(content):
     """
     Translate 'CamelCaseNames' to 'Camel Case Names'.
-    Used when generating names from view/resource classes.
+    Used when generating names from view classes.
     """
     camelcase_boundry = '(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))'
     return re.sub(camelcase_boundry, ' \\1', content).strip()
 
 
-_resource_classes = (
-    None,
-    resources.Resource,
-    resources.FormResource,
-    resources.ModelResource
-)
-
-
-class View(ResourceMixin, DjangoView):
+class View(DjangoView):
     """
     Handles incoming requests and maps them to REST operations.
     Performs request deserialization, response serialization, authentication and input validation.
     """
 
-    resource = None
-    """
-    The resource to use when validating requests and filtering responses,
-    or `None` to use default behaviour.
-    """
-
     renderers = renderers.DEFAULT_RENDERERS
     """
-    List of renderer classes the resource can serialize the response with, ordered by preference.
+    List of renderer classes the view can serialize the response with, ordered by preference.
     """
 
     parsers = parsers.DEFAULT_PARSERS
     """
-    List of parser classes the resource can parse the request with.
+    List of parser classes the view can parse the request with.
     """
 
     authentication = (authentication.UserLoggedInAuthentication,
@@ -132,17 +117,8 @@ class View(ResourceMixin, DjangoView):
         Return the resource or view class name for use as this view's name.
         Override to customize.
         """
-        # If this view has a resource that's been overridden, then use that resource for the name
-        if getattr(self, 'resource', None) not in _resource_classes:
-            name = self.resource.__name__
-            name = _remove_trailing_string(name, 'Resource')
-            name += getattr(self, '_suffix', '')
-
-        # If it's a view class with no resource then grok the name from the class name
-        else:
-            name = self.__class__.__name__
-            name = _remove_trailing_string(name, 'View')
-
+        name = self.__class__.__name__
+        name = _remove_trailing_string(name, 'View')
         return _camelcase_to_spaces(name)
 
     def get_description(self, html=False):
@@ -150,20 +126,8 @@ class View(ResourceMixin, DjangoView):
         Return the resource or view docstring for use as this view's description.
         Override to customize.
         """
-
-        description = None
-
-        # If this view has a resource that's been overridden,
-        # then try to use the resource's docstring
-        if getattr(self, 'resource', None) not in _resource_classes:
-            description = self.resource.__doc__
-
-        # Otherwise use the view docstring
-        if not description:
-            description = self.__doc__ or ''
-
+        description = self.__doc__ or ''
         description = _remove_leading_indent(description)
-
         if html:
             return self.markup_description(description)
         return description
@@ -184,7 +148,7 @@ class View(ResourceMixin, DjangoView):
         a handler method.
         """
         content = {
-            'detail': "Method '%s' not allowed on this resource." % request.method
+            'detail': "Method '%s' not allowed." % request.method
         }
         raise ImmediateResponse(content, status.HTTP_405_METHOD_NOT_ALLOWED)
 
@@ -283,10 +247,6 @@ class View(ResourceMixin, DjangoView):
 
             response = handler(request, *args, **kwargs)
 
-            if isinstance(response, Response):
-                # Pre-serialize filtering (eg filter complex objects into natively serializable types)
-                response.raw_content = self.filter_response(response.raw_content)
-
         except ImmediateResponse, exc:
             response = exc.response
 
@@ -307,31 +267,3 @@ class View(ResourceMixin, DjangoView):
                 field_name_types[name] = field.__class__.__name__
             content['fields'] = field_name_types
         raise ImmediateResponse(content, status=status.HTTP_200_OK)
-
-
-class ModelView(View):
-    """
-    A RESTful view that maps to a model in the database.
-    """
-    resource = resources.ModelResource
-
-
-class InstanceModelView(ReadModelMixin, UpdateModelMixin, DeleteModelMixin, ModelView):
-    """
-    A view which provides default operations for read/update/delete against a model instance.
-    """
-    _suffix = 'Instance'
-
-
-class ListModelView(ListModelMixin, ModelView):
-    """
-    A view which provides default operations for list, against a model in the database.
-    """
-    _suffix = 'List'
-
-
-class ListOrCreateModelView(ListModelMixin, CreateModelMixin, ModelView):
-    """
-    A view which provides default operations for list and create, against a model in the database.
-    """
-    _suffix = 'List'
