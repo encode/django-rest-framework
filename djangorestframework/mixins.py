@@ -15,7 +15,6 @@ from djangorestframework.response import Response, ImmediateResponse
 
 __all__ = (
     # Base behavior mixins
-    'PermissionsMixin',
     'ResourceMixin',
     # Model behavior mixins
     'ReadModelMixin',
@@ -25,35 +24,6 @@ __all__ = (
     'ListModelMixin',
     'PaginatorMixin'
 )
-
-
-########## Permissions Mixin ##########
-
-class PermissionsMixin(object):
-    """
-    Simple :class:`mixin` class to add permission checking to a :class:`View` class.
-    """
-
-    permissions_classes = ()
-    """
-    The set of permissions that will be enforced on this view.
-
-    Should be a tuple/list of classes as described in the :mod:`permissions` module.
-    """
-
-    def get_permissions(self):
-        """
-        Instantiates and returns the list of permissions that this view requires.
-        """
-        return [p(self) for p in self.permissions_classes]
-
-    # TODO: wrap this behavior around dispatch()
-    def check_permissions(self, user):
-        """
-        Check user permissions and either raise an ``ImmediateResponse`` or return.
-        """
-        for permission in self.get_permissions():
-            permission.check_permission(user)
 
 
 ########## Resource Mixin ##########

@@ -4,7 +4,6 @@ from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
 
 from djangorestframework import status
-from djangorestframework.compat import View as DjangoView
 from djangorestframework.response import Response
 from djangorestframework.views import View
 from djangorestframework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
