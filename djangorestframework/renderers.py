@@ -182,6 +182,10 @@ class TemplateRenderer(BaseRenderer):
     media_type = None
     template = None
 
+    def __init__(self, view):
+        super(TemplateRenderer, self).__init__(view)
+        self.template = getattr(self.view, "template", self.template)
+
     def render(self, obj=None, media_type=None):
         """
         Renders *obj* using the :attr:`template` specified on the class.
@@ -201,6 +205,10 @@ class DocumentingTemplateRenderer(BaseRenderer):
     """
 
     template = None
+
+    def __init__(self, view):
+        super(DocumentingTemplateRenderer, self).__init__(view)
+        self.template = getattr(self.view, "template", self.template)
 
     def _get_content(self, view, request, obj, media_type):
         """

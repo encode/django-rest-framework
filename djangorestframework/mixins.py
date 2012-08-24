@@ -181,7 +181,7 @@ class RequestMixin(object):
                 return parser.parse(stream)
 
         raise ErrorResponse(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                            {'error': 'Unsupported media type in request \'%s\'.' % 
+                            {'detail': 'Unsupported media type in request \'%s\'.' % 
                             content_type})
 
     @property
@@ -274,7 +274,8 @@ class ResponseMixin(object):
             accept_list = [request.GET.get(self._ACCEPT_QUERY_PARAM)]
         elif (self._IGNORE_IE_ACCEPT_HEADER and
               'HTTP_USER_AGENT' in request.META and
-              MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT'])):
+              MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT']) and
+              request.META.get('HTTP_X_REQUESTED_WITH', '') != 'XMLHttpRequest'):
             # Ignore MSIE's broken accept behavior and do something sensible instead
             accept_list = ['text/html', '*/*']
         elif 'HTTP_ACCEPT' in request.META:

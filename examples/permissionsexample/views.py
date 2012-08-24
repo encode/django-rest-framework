@@ -12,11 +12,11 @@ class PermissionsExampleView(View):
         return [
             {
                 'name': 'Throttling Example',
-                'url': reverse('throttled-resource', request)
+                'url': reverse('throttled-resource', request=request)
             },
             {
                 'name': 'Logged in example',
-                'url': reverse('loggedin-resource', request)
+                'url': reverse('loggedin-resource', request=request)
             },
         ]
 

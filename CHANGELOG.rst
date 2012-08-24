@@ -1,6 +1,11 @@
 Release Notes
 =============
 
+0.4.0-dev
+---------
+
+* Markdown < 2.0 is no longer supported.
+
 0.3.3
 -----
 

@@ -2,7 +2,7 @@
 Customizable serialization.
 """
 from django.db import models
-from django.db.models.query import QuerySet
+from django.db.models.query import QuerySet, RawQuerySet
 from django.utils.encoding import smart_unicode, is_protected_type, smart_str
 
 import inspect
@@ -25,16 +25,9 @@ def _field_to_tuple(field):
 
 def _fields_to_list(fields):
     """
-    Return a list of field names.
+    Return a list of field tuples.
     """
-    return [_field_to_tuple(field)[0] for field in fields or ()]
-
-
-def _fields_to_dict(fields):
-    """
-    Return a `dict` of field name -> None, or tuple of fields, or Serializer class
-    """
-    return dict([_field_to_tuple(field) for field in fields or ()])
+    return [_field_to_tuple(field) for field in fields or ()]
 
 
 class _SkipField(Exception):
@@ -103,6 +96,11 @@ class Serializer(object):
     """
     The maximum depth to serialize to, or `None`.
     """
+    
+    parent = None
+    """
+    A reference to the root serializer when descending down into fields.
+    """
 
     def __init__(self, depth=None, stack=[], **kwargs):
         if depth is not None:
@@ -110,9 +108,6 @@ class Serializer(object):
         self.stack = stack
 
     def get_fields(self, obj):
-        """
-        Return the set of field names/keys to use for a model instance/dict.
-        """
         fields = self.fields
 
         # If `fields` is not set, we use the default fields and modify
@@ -122,9 +117,6 @@ class Serializer(object):
             include = self.include or ()
             exclude = self.exclude or ()
             fields = set(default + list(include)) - set(exclude)
-
-        else:
-            fields = _fields_to_list(self.fields)
 
         return fields
 
@@ -139,15 +131,16 @@ class Serializer(object):
         else:
             return obj.keys()
 
-    def get_related_serializer(self, key):
-        info = _fields_to_dict(self.fields).get(key, None)
-
+    def get_related_serializer(self, info):
         # If an element in `fields` is a 2-tuple of (str, tuple)
         # then the second element of the tuple is the fields to
         # set on the related serializer
+
+        class OnTheFlySerializer(self.__class__):
+            fields = info
+            parent = getattr(self, 'parent') or self
+
         if isinstance(info, (list, tuple)):
-            class OnTheFlySerializer(self.__class__):
-                fields = info
             return OnTheFlySerializer
 
         # If an element in `fields` is a 2-tuple of (str, Serializer)
@@ -165,8 +158,9 @@ class Serializer(object):
         elif isinstance(info, str) and info in _serializers:
             return _serializers[info]
 
-        # Otherwise use `related_serializer` or fall back to `Serializer`
-        return getattr(self, 'related_serializer') or Serializer
+        # Otherwise use `related_serializer` or fall back to
+        # `OnTheFlySerializer` preserve custom serialization methods.
+        return getattr(self, 'related_serializer') or OnTheFlySerializer
 
     def serialize_key(self, key):
         """
@@ -175,11 +169,11 @@ class Serializer(object):
         """
         return self.rename.get(smart_str(key), smart_str(key))
 
-    def serialize_val(self, key, obj):
+    def serialize_val(self, key, obj, related_info):
         """
         Convert a model field or dict value into a serializable representation.
         """
-        related_serializer = self.get_related_serializer(key)
+        related_serializer = self.get_related_serializer(related_info)
 
         if self.depth is None:
             depth = None
@@ -194,7 +188,8 @@ class Serializer(object):
             stack = self.stack[:]
             stack.append(obj)
 
-        return related_serializer(depth=depth, stack=stack).serialize(obj)
+        return related_serializer(depth=depth, stack=stack).serialize(
+            obj, request=getattr(self, 'request', None))
 
     def serialize_max_depth(self, obj):
         """
@@ -219,7 +214,7 @@ class Serializer(object):
         fields = self.get_fields(instance)
 
         # serialize each required field
-        for fname in fields:
+        for fname, related_info in _fields_to_list(fields):
             try:
                 # we first check for a method 'fname' on self,
                 # 'fname's signature must be 'def fname(self, instance)'
@@ -237,7 +232,7 @@ class Serializer(object):
                     continue
 
                 key = self.serialize_key(fname)
-                val = self.serialize_val(fname, obj)
+                val = self.serialize_val(fname, obj, related_info)
                 data[key] = val
             except _SkipField:
                 pass
@@ -268,15 +263,19 @@ class Serializer(object):
         """
         return smart_unicode(obj, strings_only=True)
 
-    def serialize(self, obj):
+    def serialize(self, obj, request=None):
         """
         Convert any object into a serializable representation.
         """
 
+        # Request from related serializer.
+        if request is not None:
+            self.request = request
+
         if isinstance(obj, (dict, models.Model)):
             # Model instances & dictionaries
             return self.serialize_model(obj)
-        elif isinstance(obj, (tuple, list, set, QuerySet, types.GeneratorType)):
+        elif isinstance(obj, (tuple, list, set, QuerySet, RawQuerySet, types.GeneratorType)):
             # basic iterables
             return self.serialize_iter(obj)
         elif isinstance(obj, models.Manager):
