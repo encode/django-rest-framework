@@ -21,3 +21,4 @@ install:
 # command to run tests, e.g. python setup.py test
 script:
   - $TESTS
+
