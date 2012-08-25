@@ -504,12 +504,6 @@ class ModelMixin(object):
 
         return all_kw_args
 
-    def get_instance(self, **kwargs):
-        """
-        Get a model instance for read/update/delete requests.
-        """
-        return self.get_queryset().get(**kwargs)
-
     def get_queryset(self):
         """
         Return the queryset for this view.
@@ -524,20 +518,34 @@ class ModelMixin(object):
         return getattr(self.resource, 'ordering', None)
 
 
-class ReadModelMixin(ModelMixin):
+class ExistingInstanceMixin (object):
+    """
+    Assume a single instance for the view. Caches the instance object on self.
+    """
+    
+    def get_instance(self):
+        if not hasattr(self, 'model_instance'):
+            query_kwargs = self.get_query_kwargs(
+                self.request, *self.args, **self.kwargs)
+            self.model_instance = self.get_queryset().get(**query_kwargs)
+        return self.model_instance
+    
+    def get_instance_or_404(self):
+        model = self.resource.model
+
+        try:
+            return self.get_instance()
+        except model.DoesNotExist:
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
+
+    
+class ReadModelMixin(ModelMixin, ExistingInstanceMixin):
     """
     Behavior to read a `model` instance on GET requests
     """
     def get(self, request, *args, **kwargs):
-        model = self.resource.model
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
-
-        try:
-            self.model_instance = self.get_instance(**query_kwargs)
-        except model.DoesNotExist:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
-
-        return self.model_instance
+        instance = self.get_instance_or_404()
+        return instance
 
 
 class CreateModelMixin(ModelMixin):
@@ -580,18 +588,17 @@ class CreateModelMixin(ModelMixin):
         return Response(status.HTTP_201_CREATED, instance, headers)
 
 
-class UpdateModelMixin(ModelMixin):
+class UpdateModelMixin(ModelMixin, ExistingInstanceMixin):
     """
     Behavior to update a `model` instance on PUT requests
     """
     def put(self, request, *args, **kwargs):
         model = self.resource.model
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
 
         # TODO: update on the url of a non-existing resource url doesn't work
         # correctly at the moment - will end up with a new url
         try:
-            self.model_instance = self.get_instance(**query_kwargs)
+            self.model_instance = self.get_instance()
 
             for (key, val) in self.CONTENT.items():
                 setattr(self.model_instance, key, val)
@@ -601,19 +608,12 @@ class UpdateModelMixin(ModelMixin):
         return self.model_instance
 
 
-class DeleteModelMixin(ModelMixin):
+class DeleteModelMixin(ModelMixin, ExistingInstanceMixin):
     """
     Behavior to delete a `model` instance on DELETE requests
     """
     def delete(self, request, *args, **kwargs):
-        model = self.resource.model
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
-
-        try:
-            instance = self.get_instance(**query_kwargs)
-        except model.DoesNotExist:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
-
+        instance = self.get_instance_or_404()
         instance.delete()
         return
 

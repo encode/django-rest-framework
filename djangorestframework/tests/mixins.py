@@ -30,6 +30,10 @@ class TestModelRead(TestModelsTestCase):
         mixin = ReadModelMixin()
         mixin.resource = GroupResource
 
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {'id': group.id}
+        
         response = mixin.get(request, id=group.id)
         self.assertEquals(group.name, response.name)
 
@@ -41,6 +45,10 @@ class TestModelRead(TestModelsTestCase):
         mixin = ReadModelMixin()
         mixin.resource = GroupResource
 
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {'id': 12345}
+        
         self.assertRaises(ErrorResponse, mixin.get, request, id=12345)
 
 
