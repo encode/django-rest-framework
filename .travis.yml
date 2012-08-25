@@ -3,20 +3,24 @@ language: python
 python:
   - "2.6"
   - "2.7"
+
 env:
   - DJANGO=https://github.com/django/django/zipball/master TESTS='python setup.py test'
-  - DJANGO=https://github.com/django/django/zipball/master TESTS='python examples/runtests.py'
   - DJANGO=django==1.4.1 --use-mirrors TESTS='python setup.py test'
-  - DJANGO=django==1.4.1 --use-mirrors TESTS='python examples/runtests.py'
   - DJANGO=django==1.3.3 --use-mirrors TESTS='python setup.py test'
-  - DJANGO=django==1.3.3 --use-mirrors TESTS='python examples/runtests.py'
+
 # command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
   - pip install $DJANGO 
   - pip install -e . --use-mirrors
   - pip install -r requirements.txt
-  - pip install -r examples/requirements.txt
 
 # command to run tests, e.g. python setup.py test
 script:
   - $TESTS
+
+# Examples tests, currently dropped to keep the number of configurations sane
+#  - DJANGO=https://github.com/django/django/zipball/master TESTS='python examples/runtests.py'
+#  - DJANGO=django==1.4.1 --use-mirrors TESTS='python examples/runtests.py'
+#  - DJANGO=django==1.3.3 --use-mirrors TESTS='python examples/runtests.py'
+#  - pip install -r examples/requirements.txt
