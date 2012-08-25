@@ -85,9 +85,9 @@ class TestContentParsing(TestCase):
         """Ensure view.DATA returns content for POST request with non-form content."""
         self.ensure_determines_non_form_content_POST(RequestMixin())
 
-    def test_standard_behaviour_determines_form_content_PUT(self):
-        """Ensure view.DATA returns content for PUT request with form content."""
-        self.ensure_determines_form_content_PUT(RequestMixin())
+    # def test_standard_behaviour_determines_form_content_PUT(self):
+    #     """Ensure view.DATA returns content for PUT request with form content."""
+    #     self.ensure_determines_form_content_PUT(RequestMixin())
 
     def test_standard_behaviour_determines_non_form_content_PUT(self):
         """Ensure view.DATA returns content for PUT request with non-form content."""
