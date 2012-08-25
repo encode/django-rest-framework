@@ -518,7 +518,7 @@ class ModelMixin(object):
         return getattr(self.resource, 'ordering', None)
 
 
-class ExistingInstanceMixin (object):
+class InstanceReaderMixin (object):
     """
     Assume a single instance for the view. Caches the instance object on self.
     """
@@ -538,7 +538,7 @@ class ExistingInstanceMixin (object):
         except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
 
-class EditInstanceMixin (object):
+class InstanceWriterMixin (object):
     def _separate_m2m_data_from_content(self, model):
         model = self.resource.model
 
@@ -575,7 +575,7 @@ class EditInstanceMixin (object):
                     manager.through(**data).save()
 
 
-class ReadModelMixin(ModelMixin, ExistingInstanceMixin):
+class ReadModelMixin(ModelMixin, InstanceReaderMixin):
     """
     Behavior to read a `model` instance on GET requests
     """
@@ -584,7 +584,7 @@ class ReadModelMixin(ModelMixin, ExistingInstanceMixin):
         return instance
 
 
-class CreateModelMixin(ModelMixin, EditInstanceMixin):
+class CreateModelMixin(ModelMixin, InstanceWriterMixin):
     """
     Behavior to create a `model` instance on POST requests
     """
@@ -605,7 +605,7 @@ class CreateModelMixin(ModelMixin, EditInstanceMixin):
         return Response(status.HTTP_201_CREATED, instance, headers)
 
 
-class UpdateModelMixin(ModelMixin, ExistingInstanceMixin, EditInstanceMixin):
+class UpdateModelMixin(ModelMixin, InstanceReaderMixin, InstanceWriterMixin):
     """
     Behavior to update a `model` instance on PUT requests
     """
@@ -636,7 +636,7 @@ class UpdateModelMixin(ModelMixin, ExistingInstanceMixin, EditInstanceMixin):
             else instance)
 
 
-class DeleteModelMixin(ModelMixin, ExistingInstanceMixin):
+class DeleteModelMixin(ModelMixin, InstanceReaderMixin):
     """
     Behavior to delete a `model` instance on DELETE requests
     """
