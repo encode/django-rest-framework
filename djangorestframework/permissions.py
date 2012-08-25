@@ -7,6 +7,7 @@ Permission behavior is provided by mixing the :class:`mixins.PermissionsMixin` c
 
 from django.core.cache import cache
 from djangorestframework import status
+from djangorestframework.exceptions import PermissionDenied
 from djangorestframework.response import ImmediateResponse
 import time
 
@@ -22,11 +23,6 @@ __all__ = (
 
 SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
-
-_403_FORBIDDEN_RESPONSE = ImmediateResponse(
-    {'detail': 'You do not have permission to access this resource. ' +
-               'You may need to login or otherwise authenticate the request.'},
-    status=status.HTTP_403_FORBIDDEN)
 
 _503_SERVICE_UNAVAILABLE = ImmediateResponse(
     {'detail': 'request was throttled'},
@@ -66,7 +62,7 @@ class IsAuthenticated(BasePermission):
 
     def check_permission(self, user):
         if not user.is_authenticated():
-            raise _403_FORBIDDEN_RESPONSE
+            raise PermissionDenied()
 
 
 class IsAdminUser(BasePermission):
@@ -76,7 +72,7 @@ class IsAdminUser(BasePermission):
 
     def check_permission(self, user):
         if not user.is_staff:
-            raise _403_FORBIDDEN_RESPONSE
+            raise PermissionDenied()
 
 
 class IsUserOrIsAnonReadOnly(BasePermission):
@@ -87,7 +83,7 @@ class IsUserOrIsAnonReadOnly(BasePermission):
     def check_permission(self, user):
         if (not user.is_authenticated() and
             self.view.method not in SAFE_METHODS):
-            raise _403_FORBIDDEN_RESPONSE
+            raise PermissionDenied()
 
 
 class DjangoModelPermissions(BasePermission):
@@ -123,10 +119,7 @@ class DjangoModelPermissions(BasePermission):
             'app_label': model_cls._meta.app_label,
             'model_name':  model_cls._meta.module_name
         }
-        try:
-            return [perm % kwargs for perm in self.perms_map[method]]
-        except KeyError:
-            ImmediateResponse(status.HTTP_405_METHOD_NOT_ALLOWED)
+        return [perm % kwargs for perm in self.perms_map[method]]
 
     def check_permission(self, user):
         method = self.view.method
@@ -134,7 +127,7 @@ class DjangoModelPermissions(BasePermission):
         perms = self.get_required_permissions(method, model_cls)
 
         if not user.is_authenticated or not user.has_perms(perms):
-            raise _403_FORBIDDEN_RESPONSE
+            raise PermissionDenied()
 
 
 class BaseThrottle(BasePermission):

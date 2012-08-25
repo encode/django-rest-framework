@@ -249,8 +249,8 @@ class View(DjangoView):
 
         except ImmediateResponse, exc:
             response = exc.response
-        except exceptions.ParseError as exc:
-            response = Response({'detail': exc.detail}, status=status.HTTP_400_BAD_REQUEST)
+        except (exceptions.ParseError, exceptions.PermissionDenied) as exc:
+            response = Response({'detail': exc.detail}, status=exc.status_code)
 
         self.response = self.final(request, response, *args, **kwargs)
         return self.response
