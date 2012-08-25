@@ -15,9 +15,8 @@ from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError
 from django.utils import simplejson as json
-from djangorestframework import status
 from djangorestframework.compat import yaml
-from djangorestframework.response import ImmediateResponse
+from djangorestframework.exceptions import ParseError
 from djangorestframework.utils.mediatypes import media_type_matches
 from xml.etree import ElementTree as ET
 from djangorestframework.compat import ETParseError
@@ -83,9 +82,7 @@ class JSONParser(BaseParser):
         try:
             return (json.load(stream), None)
         except ValueError, exc:
-            raise ImmediateResponse(
-                {'detail': 'JSON parse error - %s' % unicode(exc)},
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ParseError('JSON parse error - %s' % unicode(exc))
 
 
 class YAMLParser(BaseParser):
@@ -105,9 +102,7 @@ class YAMLParser(BaseParser):
         try:
             return (yaml.safe_load(stream), None)
         except (ValueError, yaml.parser.ParserError), exc:
-            raise ImmediateResponse(
-                {'detail': 'YAML parse error - %s' % unicode(exc)},
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ParseError('YAML parse error - %s' % unicode(exc))
 
 
 class PlainTextParser(BaseParser):
@@ -163,9 +158,7 @@ class MultiPartParser(BaseParser):
             parser = DjangoMultiPartParser(meta, stream, upload_handlers)
             return parser.parse()
         except MultiPartParserError, exc:
-            raise ImmediateResponse(
-                {'detail': 'multipart parse error - %s' % unicode(exc)},
-                status=status.HTTP_400_BAD_REQUEST)
+            raise ParseError('Multipart form parse error - %s' % unicode(exc))
 
 
 class XMLParser(BaseParser):
@@ -185,8 +178,7 @@ class XMLParser(BaseParser):
         try:
             tree = ET.parse(stream)
         except (ExpatError, ETParseError, ValueError), exc:
-            content = {'detail': 'XML parse error - %s' % unicode(exc)}
-            raise ImmediateResponse(content, status=status.HTTP_400_BAD_REQUEST)
+            raise ParseError('XML parse error - %s' % unicode(exc))
         data = self._xml_convert(tree.getroot())
 
         return (data, None)

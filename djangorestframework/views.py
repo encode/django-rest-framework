@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from djangorestframework.compat import View as DjangoView, apply_markdown
 from djangorestframework.response import Response, ImmediateResponse
 from djangorestframework.request import Request
-from djangorestframework import renderers, parsers, authentication, permissions, status
+from djangorestframework import renderers, parsers, authentication, permissions, status, exceptions
 
 
 __all__ = (
@@ -249,6 +249,8 @@ class View(DjangoView):
 
         except ImmediateResponse, exc:
             response = exc.response
+        except exceptions.ParseError as exc:
+            response = Response({'detail': exc.detail}, status=status.HTTP_400_BAD_REQUEST)
 
         self.response = self.final(request, response, *args, **kwargs)
         return self.response
