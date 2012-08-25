@@ -538,21 +538,8 @@ class ExistingInstanceMixin (object):
         except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
 
-
-class ReadModelMixin(ModelMixin, ExistingInstanceMixin):
-    """
-    Behavior to read a `model` instance on GET requests
-    """
-    def get(self, request, *args, **kwargs):
-        instance = self.get_instance_or_404()
-        return instance
-
-
-class CreateModelMixin(ModelMixin):
-    """
-    Behavior to create a `model` instance on POST requests
-    """
-    def post(self, request, *args, **kwargs):
+class EditInstanceMixin (object):
+    def _separate_m2m_data_from_content(self, model):
         model = self.resource.model
 
         # Copy the dict to keep self.CONTENT intact
@@ -566,11 +553,16 @@ class CreateModelMixin(ModelMixin):
                 )
                 del content[field.name]
 
-        instance = model(**self.get_instance_data(model, content, *args, **kwargs))
-        instance.save()
+        return content, m2m_data
 
+    def _set_m2m_data(self, instance, m2m_data):
         for fieldname in m2m_data:
             manager = getattr(instance, fieldname)
+
+            # If we are updating an existing model, we want to clear out
+            # existing relationships.
+            if hasattr(manager, 'clear'):
+                manager.clear()
 
             if hasattr(manager, 'add'):
                 manager.add(*m2m_data[fieldname][1])
@@ -582,33 +574,66 @@ class CreateModelMixin(ModelMixin):
                     data[m2m_data[fieldname][0]] = related_item
                     manager.through(**data).save()
 
+
+class ReadModelMixin(ModelMixin, ExistingInstanceMixin):
+    """
+    Behavior to read a `model` instance on GET requests
+    """
+    def get(self, request, *args, **kwargs):
+        instance = self.get_instance_or_404()
+        return instance
+
+
+class CreateModelMixin(ModelMixin, EditInstanceMixin):
+    """
+    Behavior to create a `model` instance on POST requests
+    """
+    def post(self, request, *args, **kwargs):
+        model = self.resource.model
+
+        content, m2m_data = self._separate_m2m_data_from_content(model)
+        instance_data = self.get_instance_data(model, content, *args, **kwargs)
+
+        instance = model(**instance_data)
+        instance.save()
+
+        self._set_m2m_data(instance, m2m_data)
+
         headers = {}
         if hasattr(self.resource, 'url'):
             headers['Location'] = self.resource(self).url(instance)
         return Response(status.HTTP_201_CREATED, instance, headers)
 
 
-class UpdateModelMixin(ModelMixin, ExistingInstanceMixin):
+class UpdateModelMixin(ModelMixin, ExistingInstanceMixin, EditInstanceMixin):
     """
     Behavior to update a `model` instance on PUT requests
     """
     def put(self, request, *args, **kwargs):
         model = self.resource.model
 
+        instance_is_new = False
+
+        content, m2m_data = self._separate_m2m_data_from_content(model)
+        instance_data = self.get_instance_data(model, content, *args, **kwargs)
+
         # TODO: update on the url of a non-existing resource url doesn't work
         # correctly at the moment - will end up with a new url
         try:
-            self.model_instance = self.get_instance()
+            instance = self.get_instance()
 
-            for (key, val) in self.CONTENT.items():
-                setattr(self.model_instance, key, val)
+            for (key, val) in instance_data.items():
+                setattr(instance, key, val)
 
-            self.model_instance.save()
-            return self.model_instance
         except model.DoesNotExist:
-            self.model_instance = model(**self.get_instance_data(model, self.CONTENT, *args, **kwargs))
-            self.model_instance.save()
-            return Response(status.HTTP_201_CREATED, self.model_instance)
+            instance_is_new = True
+            instance = model(**instance_data)
+
+        instance.save()
+        self._set_m2m_data(instance, m2m_data)
+
+        return (Response(status.HTTP_201_CREATED, instance) if instance_is_new
+            else instance)
 
 
 class DeleteModelMixin(ModelMixin, ExistingInstanceMixin):
