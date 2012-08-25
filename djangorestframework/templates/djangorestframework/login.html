@@ -1,3 +1,4 @@
+{% load url from future %}
 {% load static %}
 <html>
 
@@ -17,7 +18,7 @@
 
             <div id="content" class="colM">
                 <div id="content-main">
-                    <form method="post" action="{% url djangorestframework:login %}" id="login-form">
+                    <form method="post" action="{% url 'djangorestframework:login' %}" id="login-form">
                         {% csrf_token %}
                         <div class="form-row">
                             <label for="id_username">Username:</label> {{ form.username }}
