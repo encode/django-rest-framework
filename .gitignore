@@ -3,7 +3,6 @@
 *~
 .*
 
-assetplatform.egg-info/*
 coverage.xml
 env
 docs/build
@@ -18,3 +17,4 @@ djangorestframework.egg-info/*
 MANIFEST
 
 !.gitignore
+!.travis.yml
