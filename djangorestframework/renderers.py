@@ -370,7 +370,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
 class DocumentingHTMLRenderer(DocumentingTemplateRenderer):
     """
     Renderer which provides a browsable HTML interface for an API.
-    See the examples at http://api.django-rest-framework.org to see this in action.
+    See the examples at http://shielded-mountain-6732.herokuapp.com to see this in action.
     """
 
     media_type = 'text/html'

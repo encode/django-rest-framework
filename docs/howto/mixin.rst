@@ -8,11 +8,11 @@ a browseable Web API, and much of the other goodness that Django REST framework 
 
     A live sandbox instance of this API is available for testing:
     
-    * http://rest.ep.io/mixin/
+    * http://shielded-mountain-6732.herokuapp.com/mixin/
 
     You can browse the API using a web browser, or from the command line::
 
-        curl -X GET http://rest.ep.io/mixin/
+        curl -X GET http://shielded-mountain-6732.herokuapp.com/mixin/
 
 
 URL configuration

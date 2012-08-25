@@ -16,7 +16,7 @@ Django REST framework is a lightweight REST framework for Django, that aims to m
 Features:
 ---------
 
-* Automatically provides an awesome Django admin style `browse-able self-documenting API <http://rest.ep.io>`_.
+* Automatically provides an awesome Django admin style `browse-able self-documenting API <http://shielded-mountain-6732.herokuapp.com>`_.
 * Clean, simple, views for Resources, using Django's new `class based views <http://docs.djangoproject.com/en/dev/topics/class-based-views/>`_.
 * Support for ModelResources with out-of-the-box default implementations and input validation.
 * Pluggable :mod:`.parsers`, :mod:`renderers`, :mod:`authentication` and :mod:`permissions` - Easy to customise.

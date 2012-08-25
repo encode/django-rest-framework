@@ -1,7 +1,7 @@
 Blog Posts API
 ==============
 
-* http://rest.ep.io/blog-post/
+* http://shielded-mountain-6732.herokuapp.com/blog-post/
 
 The models
 ----------

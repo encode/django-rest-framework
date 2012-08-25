@@ -9,7 +9,7 @@ There are a few real world web API examples included with Django REST framework.
 
 All the examples are freely available for testing in the sandbox:
 
-    http://rest.ep.io
+    http://shielded-mountain-6732.herokuapp.com
 
 (The :doc:`examples/sandbox` resource is also documented.)
 

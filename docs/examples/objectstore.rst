@@ -1,7 +1,7 @@
 Object Store API
 ================
 
-* http://rest.ep.io/object-store/
+* http://shielded-mountain-6732.herokuapp.com/object-store/
 
 This example shows an object store API that can be used to store arbitrary serializable content.
 

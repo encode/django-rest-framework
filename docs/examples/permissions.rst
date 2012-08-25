@@ -31,7 +31,7 @@ the example View below.:
 The `IsAuthenticated` permission will only let a user do a 'GET' if he is authenticated. Try it
 yourself on the live sandbox__
 
-__ http://rest.ep.io/permissions-example/loggedin
+__ http://shielded-mountain-6732.herokuapp.com/permissions-example/loggedin
 
 
 Throttling
@@ -53,7 +53,7 @@ may do on our view to 10 requests per minute.:
 
 Try it yourself on the live sandbox__.
 
-__ http://rest.ep.io/permissions-example/throttling
+__ http://shielded-mountain-6732.herokuapp.com/permissions-example/throttling
 
 Now if you want a view to require both aurhentication and throttling, you simply declare them
 both::

@@ -11,8 +11,8 @@ class Sandbox(View):
 
     All the example APIs allow anonymous access, and can be navigated either through the browser or from the command line...
 
-        bash: curl -X GET http://api.django-rest-framework.org/                           # (Use default renderer)
-        bash: curl -X GET http://api.django-rest-framework.org/ -H 'Accept: text/plain'   # (Use plaintext documentation renderer)
+        bash: curl -X GET http://shielded-mountain-6732.herokuapp.com/                           # (Use default renderer)
+        bash: curl -X GET http://shielded-mountain-6732.herokuapp.com/ -H 'Accept: text/plain'   # (Use plaintext documentation renderer)
 
     The examples provided:
 

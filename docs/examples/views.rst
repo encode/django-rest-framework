@@ -5,11 +5,11 @@ Getting Started - Views
 
     A live sandbox instance of this API is available:
     
-    http://rest.ep.io/resource-example/
+    http://shielded-mountain-6732.herokuapp.com/resource-example/
 
     You can browse the API using a web browser, or from the command line::
 
-        curl -X GET http://rest.ep.io/resource-example/ -H 'Accept: text/plain'
+        curl -X GET http://shielded-mountain-6732.herokuapp.com/resource-example/ -H 'Accept: text/plain'
 
 We're going to start off with a simple example, that demonstrates a few things:
 
@@ -41,16 +41,16 @@ Now we'll write our views.  The first is a read only view that links to three in
 
 That's us done.  Our API now provides both programmatic access using JSON and XML, as well a nice browseable HTML view, so we can now access it both from the browser:
 
-* http://rest.ep.io/resource-example/
+* http://shielded-mountain-6732.herokuapp.com/resource-example/
 
 And from the command line:
 
 .. code-block:: bash
 
     # Demonstrates API's input validation using form input
-    bash: curl -X POST --data 'foo=true' http://rest.ep.io/resource-example/1/
+    bash: curl -X POST --data 'foo=true' http://shielded-mountain-6732.herokuapp.com/resource-example/1/
     {"detail": {"bar": ["This field is required."], "baz": ["This field is required."]}}
 
     #  Demonstrates API's input validation using JSON input
-    bash: curl -X POST -H 'Content-Type: application/json' --data-binary '{"foo":true}' http://rest.ep.io/resource-example/1/
+    bash: curl -X POST -H 'Content-Type: application/json' --data-binary '{"foo":true}' http://shielded-mountain-6732.herokuapp.com/resource-example/1/
    {"detail": {"bar": ["This field is required."], "baz": ["This field is required."]}}
