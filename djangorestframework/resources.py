@@ -33,6 +33,16 @@ class BaseResource(Serializer):
         """
         return self.serialize(obj)
 
+    def serialize(self, obj, request=None, **kwargs):
+        """
+        Convert the resource into a serializable representation.
+        """
+        # Request from related serializer.
+        if request is not None:
+            self.request = request
+
+        return super(BaseResource, self).serialize(obj, request=request, **kwargs)
+
 
 class Resource(BaseResource):
     """
