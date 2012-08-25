@@ -181,7 +181,7 @@ class RequestMixin(object):
                 return parser.parse(stream)
 
         raise ErrorResponse(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                            {'detail': 'Unsupported media type in request \'%s\'.' % 
+                            {'detail': 'Unsupported media type in request \'%s\'.' %
                             content_type})
 
     @property
@@ -522,14 +522,14 @@ class ExistingInstanceMixin (object):
     """
     Assume a single instance for the view. Caches the instance object on self.
     """
-    
+
     def get_instance(self):
         if not hasattr(self, 'model_instance'):
             query_kwargs = self.get_query_kwargs(
                 self.request, *self.args, **self.kwargs)
             self.model_instance = self.get_queryset().get(**query_kwargs)
         return self.model_instance
-    
+
     def get_instance_or_404(self):
         model = self.resource.model
 
@@ -538,7 +538,7 @@ class ExistingInstanceMixin (object):
         except model.DoesNotExist:
             raise ErrorResponse(status.HTTP_404_NOT_FOUND)
 
-    
+
 class ReadModelMixin(ModelMixin, ExistingInstanceMixin):
     """
     Behavior to read a `model` instance on GET requests
@@ -602,10 +602,13 @@ class UpdateModelMixin(ModelMixin, ExistingInstanceMixin):
 
             for (key, val) in self.CONTENT.items():
                 setattr(self.model_instance, key, val)
+
+            self.model_instance.save()
+            return self.model_instance
         except model.DoesNotExist:
             self.model_instance = model(**self.get_instance_data(model, self.CONTENT, *args, **kwargs))
-        self.model_instance.save()
-        return self.model_instance
+            self.model_instance.save()
+            return Response(status.HTTP_201_CREATED, self.model_instance)
 
 
 class DeleteModelMixin(ModelMixin, ExistingInstanceMixin):
