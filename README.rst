@@ -5,7 +5,10 @@ Django REST framework
 
 **Author:** Tom Christie.  `Follow me on Twitter <https://twitter.com/_tomchristie>`_.
 
-https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master
+:build status: |build-image|
+
+.. |build-image| image:: https://secure.travis-ci.org/markotibold/django-rest-framework.png?branch=master
+                 :target: https://secure.travis-ci.org/markotibold/django-rest-framework
 
 Overview
 ========
