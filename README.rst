@@ -21,7 +21,14 @@ Full documentation for the project is available at http://django-rest-framework.
 Issue tracking is on `GitHub <https://github.com/tomchristie/django-rest-framework/issues>`_.
 General questions should be taken to the `discussion group <http://groups.google.com/group/django-rest-framework>`_.
 
-We also have a `Jenkins service <http://jenkins.tibold.nl/job/djangorestframework1/>`_ which runs our test suite. 
+Project
+=======
+
+:build status: |build-image|
+
+.. |build-image| image:: https://secure.travis-ci.org/markotibold/django-rest-framework.png?branch=master
+                 :target: https://secure.travis-ci.org/markotibold/django-rest-framework
+
 
 Requirements:
 
