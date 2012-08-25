@@ -23,10 +23,10 @@
 		  {% block userlinks %}
 		  {% if user.is_active %}
 		  	Welcome, {{ user }}.
-		  	<a href='{% url djangorestframework:logout %}?next={{ request.path }}'>Log out</a>
+		  	<a href='{% url 'djangorestframework:logout' %}?next={{ request.path }}'>Log out</a>
 		  {% else %}
 		    Anonymous
-		    <a href='{% url djangorestframework:login %}?next={{ request.path }}'>Log in</a>
+		    <a href='{% url 'djangorestframework:login' %}?next={{ request.path }}'>Log in</a>
 		  {% endif %}
 		  {% endblock %}
 		</div>
