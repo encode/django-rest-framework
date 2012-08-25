@@ -39,8 +39,8 @@ Any and all questions, thoughts, bug reports and contributions are *hugely appre
 Requirements
 ------------
 
-* Python (2.5, 2.6, 2.7 supported)
-* Django (1.2, 1.3, 1.4 supported)
+* Python (2.6+)
+* Django (1.3+)
 * `django.contrib.staticfiles`_ (or `django-staticfiles`_ for Django 1.2)
 * `URLObject`_ >= 2.0.0
 * `Markdown`_ >= 2.1.0 (Optional)
