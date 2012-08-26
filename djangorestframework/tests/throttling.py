@@ -45,7 +45,7 @@ class ThrottlingTests(TestCase):
         request = self.factory.get('/')
         for dummy in range(4):
             response = MockView.as_view()(request)
-        self.assertEqual(503, response.status_code)
+        self.assertEqual(429, response.status_code)
 
     def set_throttle_timer(self, view, value):
         """
@@ -62,7 +62,7 @@ class ThrottlingTests(TestCase):
         request = self.factory.get('/')
         for dummy in range(4):
             response = MockView.as_view()(request)
-        self.assertEqual(503, response.status_code)
+        self.assertEqual(429, response.status_code)
 
         # Advance the timer by one second
         self.set_throttle_timer(MockView, 1)
@@ -90,7 +90,7 @@ class ThrottlingTests(TestCase):
         """
         Ensure request rate is limited globally per View for PerViewThrottles
         """
-        self.ensure_is_throttled(MockView_PerViewThrottling, 503)
+        self.ensure_is_throttled(MockView_PerViewThrottling, 429)
 
     def ensure_response_header_contains_proper_throttle_field(self, view, expected_headers):
         """

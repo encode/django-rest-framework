@@ -4,7 +4,7 @@ import unittest
 from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
 
-from djangorestframework.response import Response, NotAcceptable, ImmediateResponse
+from djangorestframework.response import Response, NotAcceptable
 from djangorestframework.views import View
 from djangorestframework.compat import RequestFactory
 from djangorestframework import status

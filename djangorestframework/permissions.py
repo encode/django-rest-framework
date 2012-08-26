@@ -6,9 +6,7 @@ Permission behavior is provided by mixing the :class:`mixins.PermissionsMixin` c
 """
 
 from django.core.cache import cache
-from djangorestframework import status
-from djangorestframework.exceptions import PermissionDenied
-from djangorestframework.response import ImmediateResponse
+from djangorestframework.exceptions import PermissionDenied, Throttled
 import time
 
 __all__ = (
@@ -22,11 +20,6 @@ __all__ = (
 )
 
 SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
-
-
-_503_SERVICE_UNAVAILABLE = ImmediateResponse(
-    {'detail': 'request was throttled'},
-    status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
 class BasePermission(object):
@@ -192,7 +185,7 @@ class BaseThrottle(BasePermission):
         """
         self.history.insert(0, self.now)
         cache.set(self.key, self.history, self.duration)
-        header = 'status=SUCCESS; next=%s sec' % self.next()
+        header = 'status=SUCCESS; next=%.2f sec' % self.next()
         self.view.headers['X-Throttle'] = header
 
     def throttle_failure(self):
@@ -200,9 +193,10 @@ class BaseThrottle(BasePermission):
         Called when a request to the API has failed due to throttling.
         Raises a '503 service unavailable' response.
         """
-        header = 'status=FAILURE; next=%s sec' % self.next()
+        wait = self.next()
+        header = 'status=FAILURE; next=%.2f sec' % wait
         self.view.headers['X-Throttle'] = header
-        raise _503_SERVICE_UNAVAILABLE
+        raise Throttled(wait)
 
     def next(self):
         """
@@ -215,7 +209,7 @@ class BaseThrottle(BasePermission):
 
         available_requests = self.num_requests - len(self.history) + 1
 
-        return '%.2f' % (remaining_duration / float(available_requests))
+        return remaining_duration / float(available_requests)
 
 
 class PerUserThrottling(BaseThrottle):

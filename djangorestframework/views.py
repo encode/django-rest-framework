@@ -6,12 +6,14 @@ By setting or modifying class attributes on your view, you change it's predefine
 """
 
 import re
+from django.core.exceptions import PermissionDenied
+from django.http import Http404
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 
 from djangorestframework.compat import View as DjangoView, apply_markdown
-from djangorestframework.response import Response, ImmediateResponse
+from djangorestframework.response import Response
 from djangorestframework.request import Request
 from djangorestframework import renderers, parsers, authentication, permissions, status, exceptions
 
@@ -219,13 +221,27 @@ class View(DjangoView):
             response[key] = value
         return response
 
+    def handle_exception(self, exc):
+        """
+        Handle any exception that occurs, by returning an appropriate response,
+        or re-raising the error.
+        """
+        if isinstance(exc, exceptions.REST_FRAMEWORK_EXCEPTIONS):
+            return Response({'detail': exc.detail}, status=exc.status_code)
+        elif isinstance(exc, Http404):
+            return Response({'detail': 'Not found'},
+                            status=status.HTTP_404_NOT_FOUND)
+        elif isinstance(exc, PermissionDenied):
+            return Response({'detail': 'Permission denied'},
+                            status=status.HTTP_403_FORBIDDEN)
+        raise
+
     # Note: session based authentication is explicitly CSRF validated,
     # all other authentication is CSRF exempt.
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
         request = Request(request, parsers=self.parsers, authentication=self.authentication)
         self.request = request
-
         self.args = args
         self.kwargs = kwargs
         self.headers = self.default_response_headers
@@ -244,10 +260,8 @@ class View(DjangoView):
 
             response = handler(request, *args, **kwargs)
 
-        except ImmediateResponse, exc:
-            response = exc.response
-        except (exceptions.ParseError, exceptions.PermissionDenied) as exc:
-            response = Response({'detail': exc.detail}, status=exc.status_code)
+        except Exception as exc:
+            response = self.handle_exception(exc)
 
         self.response = self.final(request, response, *args, **kwargs)
         return self.response
@@ -265,4 +279,4 @@ class View(DjangoView):
             for name, field in form.fields.iteritems():
                 field_name_types[name] = field.__class__.__name__
             content['fields'] = field_name_types
-        raise ImmediateResponse(content, status=status.HTTP_200_OK)
+        raise Response(content, status=status.HTTP_200_OK)
