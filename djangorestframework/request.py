@@ -13,14 +13,18 @@ from StringIO import StringIO
 
 from django.contrib.auth.models import AnonymousUser
 
-from djangorestframework import status
+from djangorestframework.exceptions import UnsupportedMediaType
 from djangorestframework.utils.mediatypes import is_form_media_type
 
 
 __all__ = ('Request',)
 
 
-class Empty:
+class Empty(object):
+    """
+    Placeholder for unset attributes.
+    Cannot use `None`, as that may be a valid value.
+    """
     pass
 
 
@@ -34,8 +38,10 @@ class Request(object):
 
     Kwargs:
         - request(HttpRequest). The original request instance.
-        - parsers(list/tuple). The parsers to use for parsing the request content.
-        - authentications(list/tuple). The authentications used to try authenticating the request's user.
+        - parsers(list/tuple). The parsers to use for parsing the
+          request content.
+        - authentications(list/tuple). The authentications used to try
+          authenticating the request's user.
     """
 
     _USE_FORM_OVERLOADING = True
@@ -43,7 +49,7 @@ class Request(object):
     _CONTENTTYPE_PARAM = '_content_type'
     _CONTENT_PARAM = '_content'
 
-    def __init__(self, request=None, parsers=None, authentication=None):
+    def __init__(self, request, parsers=None, authentication=None):
         self._request = request
         self.parsers = parsers or ()
         self.authentication = authentication or ()
@@ -144,9 +150,11 @@ class Request(object):
 
     def _load_method_and_content_type(self):
         """
-        Sets the method and content_type, and then check if they've been overridden.
+        Sets the method and content_type, and then check if they've
+        been overridden.
         """
-        self._content_type = self.META.get('HTTP_CONTENT_TYPE', self.META.get('CONTENT_TYPE', ''))
+        self._content_type = self.META.get('HTTP_CONTENT_TYPE',
+                                           self.META.get('CONTENT_TYPE', ''))
         self._perform_form_overloading()
         # if the HTTP method was not overloaded, we take the raw HTTP method
         if not _hasattr(self, '_method'):
@@ -209,20 +217,8 @@ class Request(object):
             if parser.can_handle_request(self.content_type):
                 return parser.parse(self.stream, self.META, self.upload_handlers)
 
-        self._raise_415_response(self._content_type)
-
-    def _raise_415_response(self, content_type):
-        """
-        Raise a 415 response if we cannot parse the given content type.
-        """
-        from djangorestframework.response import ImmediateResponse
-
-        raise ImmediateResponse(
-            {
-                'error': 'Unsupported media type in request \'%s\'.'
-                % content_type
-            },
-            status=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE)
+        raise UnsupportedMediaType("Unsupported media type in request '%s'" %
+                                   self._content_type)
 
     def _authenticate(self):
         """
