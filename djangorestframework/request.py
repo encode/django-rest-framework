@@ -207,8 +207,7 @@ class Request(object):
         """
         Parse the request content.
 
-        May raise a 415 ImmediateResponse (Unsupported Media Type), or a
-        400 ImmediateResponse (Bad Request).
+        May raise an `UnsupportedMediaType`, or `ParseError` exception.
         """
         if self.stream is None or self.content_type is None:
             return (None, None)
@@ -217,8 +216,7 @@ class Request(object):
             if parser.can_handle_request(self.content_type):
                 return parser.parse(self.stream, self.META, self.upload_handlers)
 
-        raise UnsupportedMediaType("Unsupported media type in request '%s'" %
-                                   self._content_type)
+        raise UnsupportedMediaType(self._content_type)
 
     def _authenticate(self):
         """

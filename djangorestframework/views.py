@@ -147,10 +147,7 @@ class View(DjangoView):
         Return an HTTP 405 error if an operation is called which does not have
         a handler method.
         """
-        content = {
-            'detail': "Method '%s' not allowed." % request.method
-        }
-        raise ImmediateResponse(content, status.HTTP_405_METHOD_NOT_ALLOWED)
+        raise exceptions.MethodNotAllowed(request.method)
 
     @property
     def _parsed_media_types(self):
