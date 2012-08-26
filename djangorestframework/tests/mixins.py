@@ -235,7 +235,7 @@ class TestModelUpdate(TestModelsTestCase):
         group = Group(name='foo')
         group.save()
 
-        user = User.objects.create_user(username='bar', password='blah')
+        user = User.objects.create_user(username='bar', password='blah', email="bar@example.com")
         self.assertEquals(1, User.objects.count())
         self.assertEquals(0, user.groups.count())
 
