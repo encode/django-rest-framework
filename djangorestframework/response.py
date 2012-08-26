@@ -24,9 +24,6 @@ from djangorestframework.utils import MSIE_USER_AGENT_REGEX
 from djangorestframework import status
 
 
-__all__ = ('Response', 'ImmediateResponse')
-
-
 class NotAcceptable(Exception):
     pass
 
@@ -36,8 +33,9 @@ class Response(SimpleTemplateResponse):
     An HttpResponse that may include content that hasn't yet been serialized.
 
     Kwargs:
-        - content(object). The raw content, not yet serialized. This must be simple Python
-        data that renderers can handle (e.g.: `dict`, `str`, ...)
+        - content(object). The raw content, not yet serialized.
+        This must be native Python data that renderers can handle.
+        (e.g.: `dict`, `str`, ...)
         - renderers(list/tuple). The renderers to use for rendering the response content.
     """
 
