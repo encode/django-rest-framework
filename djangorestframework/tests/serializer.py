@@ -3,6 +3,7 @@ from django.db import models
 from django.test import TestCase
 from django.utils.translation import ugettext_lazy
 from djangorestframework.serializer import Serializer
+from djangorestframework.resources import Resource
 
 import datetime
 import decimal
@@ -143,6 +144,31 @@ class TestFieldNesting(TestCase):
 
         self.assertEqual(SerializerM2().serialize(self.m2), {'field': {'field1': u'foo'}})
         self.assertEqual(SerializerM3().serialize(self.m3), {'field': {'field2': u'bar'}})
+
+    def test_serializer_nesting_inherits_kwargs(self):
+        """
+        Test related model serializer inherits the parent serializer kwargs.
+        Specifically, tests that child resources will have the `view` as the
+        parent, addressing issue #214.
+        """
+        class NestedM2(Resource):
+            fields = ('field1', )
+            def field1(self, obj):
+                return self.view + obj.field1
+
+        class NestedM3(Resource):
+            fields = ('field2', )
+            def field2(self, obj):
+                return self.view + obj.field2
+
+        class SerializerM2(Resource):
+            fields = [('field', NestedM2)]
+
+        class SerializerM3(Resource):
+            fields = [('field', NestedM3)]
+
+        self.assertEqual(SerializerM2(view=u'hello').serialize(self.m2), {'field': {'field1': u'hellofoo'}})
+        self.assertEqual(SerializerM3(view=u'goodbye').serialize(self.m3), {'field': {'field2': u'goodbyebar'}})
 
     def test_serializer_overridden_hook_method(self):
         """

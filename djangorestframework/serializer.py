@@ -106,6 +106,7 @@ class Serializer(object):
         if depth is not None:
             self.depth = depth
         self.stack = stack
+        self.kwargs = kwargs
 
     def get_fields(self, obj):
         fields = self.fields
@@ -188,8 +189,8 @@ class Serializer(object):
             stack = self.stack[:]
             stack.append(obj)
 
-        return related_serializer(depth=depth, stack=stack).serialize(
-            obj, **kwargs)
+        return related_serializer(depth=depth, stack=stack,
+                                  **self.kwargs).serialize(obj, **kwargs)
 
     def serialize_max_depth(self, obj):
         """

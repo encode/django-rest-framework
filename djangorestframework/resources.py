@@ -15,7 +15,7 @@ class BaseResource(Serializer):
     exclude = None
 
     def __init__(self, view=None, depth=None, stack=[], **kwargs):
-        super(BaseResource, self).__init__(depth, stack, **kwargs)
+        super(BaseResource, self).__init__(depth, stack, view=view, **kwargs)
         self.view = view
         self.request = getattr(view, 'request', None)
 
