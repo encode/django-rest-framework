@@ -4,8 +4,9 @@ from django.utils import simplejson as json
 from djangorestframework import status
 from djangorestframework.compat import RequestFactory
 from django.contrib.auth.models import Group, User
-from djangorestframework.mixins import (CreateModelMixin, PaginatorMixin,
-                                        ReadModelMixin, UpdateModelMixin)
+from djangorestframework.mixins import (CreateModelMixin, DeleteModelMixin,
+                                        PaginatorMixin, ReadModelMixin,
+                                        UpdateModelMixin)
 from djangorestframework.resources import ModelResource
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.tests.models import CustomUser
@@ -331,6 +332,45 @@ class TestModelUpdate(TestModelsTestCase):
         self.assertEquals(2, response.groups.count())
         self.assertEquals('foo1', response.groups.all()[0].name)
         self.assertEquals('foo2', response.groups.all()[1].name)
+
+
+class TestModelDelete(TestModelsTestCase):
+    """Tests on DeleteModelMixin"""
+
+    def setUp(self):
+        super(TestModelsTestCase, self).setUp()
+        self.req = RequestFactory()
+
+    def test_delete(self):
+        group = Group.objects.create(name='my group')
+
+        self.assertEquals(1, Group.objects.count())
+
+        class GroupResource(ModelResource):
+            model = Group
+
+        # Delete existing
+        request = self.req.delete('/groups/' + str(group.pk))
+        mixin = DeleteModelMixin()
+        mixin.resource = GroupResource
+
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {'pk': group.pk}
+
+        response = mixin.delete(request, **mixin.kwargs)
+        self.assertEquals(0, Group.objects.count())
+
+        # Delete at non-existing
+        request = self.req.delete('/groups/' + str(group.pk))
+        mixin = DeleteModelMixin()
+        mixin.resource = GroupResource
+
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {'pk': group.pk}
+
+        self.assertRaises(ErrorResponse, mixin.delete, request, **mixin.kwargs)
 
 
 class MockPaginatorView(PaginatorMixin, View):

@@ -695,7 +695,7 @@ class DeleteModelMixin(ModelMixin, InstanceReaderMixin, InstanceWriterMixin):
     Behavior to delete a `model` instance on DELETE requests
     """
     def delete(self, request, *args, **kwargs):
-        self.delete_instance(instance)
+        self.delete_instance()
         return
 
 
