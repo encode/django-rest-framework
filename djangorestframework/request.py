@@ -214,7 +214,8 @@ class Request(object):
 
         for parser in self.get_parsers():
             if parser.can_handle_request(self.content_type):
-                return parser.parse(self.stream, self.META, self.upload_handlers)
+                return parser.parse(self.stream, meta=self.META,
+                                    upload_handlers=self.upload_handlers)
 
         raise UnsupportedMediaType(self._content_type)
 

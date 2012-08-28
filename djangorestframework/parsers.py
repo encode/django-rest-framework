@@ -57,7 +57,7 @@ class BaseParser(object):
         """
         return media_type_matches(self.media_type, content_type)
 
-    def parse(self, stream, meta, upload_handlers):
+    def parse(self, stream, **opts):
         """
         Given a *stream* to read from, return the deserialized output.
         Should return a 2-tuple of (data, files).
@@ -72,7 +72,7 @@ class JSONParser(BaseParser):
 
     media_type = 'application/json'
 
-    def parse(self, stream, meta, upload_handlers):
+    def parse(self, stream, **opts):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -92,7 +92,7 @@ class YAMLParser(BaseParser):
 
     media_type = 'application/yaml'
 
-    def parse(self, stream, meta, upload_handlers):
+    def parse(self, stream, **opts):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -112,7 +112,7 @@ class PlainTextParser(BaseParser):
 
     media_type = 'text/plain'
 
-    def parse(self, stream, meta, upload_handlers):
+    def parse(self, stream, **opts):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -129,7 +129,7 @@ class FormParser(BaseParser):
 
     media_type = 'application/x-www-form-urlencoded'
 
-    def parse(self, stream, meta, upload_handlers):
+    def parse(self, stream, **opts):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -147,13 +147,15 @@ class MultiPartParser(BaseParser):
 
     media_type = 'multipart/form-data'
 
-    def parse(self, stream, meta, upload_handlers):
+    def parse(self, stream, **opts):
         """
         Returns a 2-tuple of `(data, files)`.
 
         `data` will be a :class:`QueryDict` containing all the form parameters.
         `files` will be a :class:`QueryDict` containing all the form files.
         """
+        meta = opts['meta']
+        upload_handlers = opts['upload_handlers']
         try:
             parser = DjangoMultiPartParser(meta, stream, upload_handlers)
             return parser.parse()
@@ -168,7 +170,7 @@ class XMLParser(BaseParser):
 
     media_type = 'application/xml'
 
-    def parse(self, stream, meta, upload_handlers):
+    def parse(self, stream, **opts):
         """
         Returns a 2-tuple of `(data, files)`.
 
