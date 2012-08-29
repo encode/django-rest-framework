@@ -1,0 +1,6 @@
+Renderers
+=========
+
+.render(response)
+-----------------
+

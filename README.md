@@ -1,3 +1,51 @@
+# Django REST framework
+
+**A toolkit for building well-connected, self-describing web APIs.**
+
+**Author:** Tom Christie.  [Follow me on Twitter][twitter]
+
+# Overview
+
+This branch is the redesign of Django REST framework.  It is a work in progress.
+
+For more information, check out [the documentation][docs], in particular, the tutorial is recommended as the best place to get an overview of the redesign.
+
+# Requirements
+
+* Python (2.6, 2.7)
+* Django (1.3, 1.4, 1.5)
+* [URLObject] (>=2.0.0)
+
+**Optional:**
+
+* [Markdown] - Markdown support for the self describing API.
+* [PyYAML] - YAML content type support.
+
+# Installation
+
+**Leaving these instructions in for the moment, they'll be valid once this becomes the master version**
+
+Install using `pip`...
+
+    pip install djangorestframework
+
+...or clone the project from github.
+
+    git clone git@github.com:tomchristie/django-rest-framework.git
+    pip install -r requirements.txt
+
+# Quickstart
+
+**TODO**
+
+# Changelog
+
+## 2.0.0
+
+Redesign of core components.
+
+# License
+
 Copyright (c) 2011, Tom Christie
 All rights reserved.
 
@@ -20,3 +68,11 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+[twitter]: https://twitter.com/_tomchristie
+[docs]: docs/index.md
+[urlobject]: https://github.com/zacharyvoase/urlobject
+[markdown]: http://pypi.python.org/pypi/Markdown/
+[pyyaml]: http://pypi.python.org/pypi/PyYAML
+
