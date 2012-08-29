@@ -191,6 +191,41 @@ class TestPagination(TestCase):
 
         self.assertEqual(range(0, limit), content['results'])
 
+    def test_prev_and_next_link_urls(self):
+        """ Tests that the prev and next links are valid """
+        # For the first page...
+        request = self.req.get('/paginator')
+        response = MockPaginatorView.as_view(limit=10)(request)
+        content = json.loads(response.content)
+
+        self.assertIsNone(content['previous'])
+        self.assertEqual(content['next'], 'http://testserver/paginator?page=2')
+
+        # For the second page...
+        request = self.req.get('/paginator?page=2')
+        response = MockPaginatorView.as_view(limit=10)(request)
+        content = json.loads(response.content)
+
+        self.assertEqual(content['previous'], 'http://testserver/paginator?page=1')
+        self.assertEqual(content['next'], 'http://testserver/paginator?page=3')
+
+        # For the last page...
+        request = self.req.get('/paginator?page=6')
+        response = MockPaginatorView.as_view(limit=10)(request)
+        content = json.loads(response.content)
+
+        self.assertEqual(content['previous'], 'http://testserver/paginator?page=5')
+        self.assertIsNone(content['next'])
+
+    def test_prev_and_next_link_urls_with_other_params(self):
+        """ Tests that the prev and next links work with other query params """
+        request = self.req.get('/paginator/?page=2&filter_param=xyz')
+        response = MockPaginatorView.as_view(limit=10)(request)
+        content = json.loads(response.content)
+
+        self.assertEqual(content['previous'], 'http://testserver/paginator/?filter_param=xyz&page=1')
+        self.assertEqual(content['next'], 'http://testserver/paginator/?filter_param=xyz&page=3')
+
     def test_limit_param(self):
         """ Tests if the client can set the limit """
         from math import ceil

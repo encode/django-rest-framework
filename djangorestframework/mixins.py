@@ -668,7 +668,7 @@ class PaginatorMixin(object):
         if limit != self.limit:
             url = url.set_query_param('limit', str(limit))
 
-        return url
+        return self.request.build_absolute_uri(url)
 
     def next(self, page):
         """
