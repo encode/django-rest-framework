@@ -1,10 +1,18 @@
 Release Notes
 =============
 
-0.4.0-dev
----------
+0.4.0
+-----
 
-* Markdown < 2.0 is no longer supported.
+* Supports Django 1.5.
+* Fixes issues with 'HEAD' method.
+* Allow views to specify template used by TemplateRenderer
+* More consistent error responses
+* Some serializer fixes
+* Fix internet explorer ajax behaviour
+* Minor xml and yaml fixes
+* Improve setup (eg use staticfiles, not the defunct ADMIN_MEDIA_PREFIX)
+* Sensible absolute URL generation, not using hacky set_script_prefix
 
 0.3.3
 -----
