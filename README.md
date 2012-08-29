@@ -71,7 +71,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 [twitter]: https://twitter.com/_tomchristie
-[docs]: docs/index.md
+[docs]: https://github.com/tomchristie/django-rest-framework/blob/restframework2/docs/index.md
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [pyyaml]: http://pypi.python.org/pypi/PyYAML
