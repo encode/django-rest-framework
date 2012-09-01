@@ -96,7 +96,7 @@ class Serializer(object):
     """
     The maximum depth to serialize to, or `None`.
     """
-    
+
     parent = None
     """
     A reference to the root serializer when descending down into fields.
@@ -106,6 +106,7 @@ class Serializer(object):
         if depth is not None:
             self.depth = depth
         self.stack = stack
+        self.kwargs = kwargs
 
     def get_fields(self, obj):
         fields = self.fields
@@ -169,7 +170,7 @@ class Serializer(object):
         """
         return self.rename.get(smart_str(key), smart_str(key))
 
-    def serialize_val(self, key, obj, related_info):
+    def serialize_val(self, key, obj, related_info, **kwargs):
         """
         Convert a model field or dict value into a serializable representation.
         """
@@ -188,8 +189,8 @@ class Serializer(object):
             stack = self.stack[:]
             stack.append(obj)
 
-        return related_serializer(depth=depth, stack=stack).serialize(
-            obj, request=getattr(self, 'request', None))
+        return related_serializer(depth=depth, stack=stack,
+                                  **self.kwargs).serialize(obj, **kwargs)
 
     def serialize_max_depth(self, obj):
         """
@@ -205,7 +206,7 @@ class Serializer(object):
         """
         raise _SkipField
 
-    def serialize_model(self, instance):
+    def serialize_model(self, instance, **kwargs):
         """
         Given a model instance or dict, serialize it to a dict..
         """
@@ -232,7 +233,7 @@ class Serializer(object):
                     continue
 
                 key = self.serialize_key(fname)
-                val = self.serialize_val(fname, obj, related_info)
+                val = self.serialize_val(fname, obj, related_info, **kwargs)
                 data[key] = val
             except _SkipField:
                 pass
@@ -263,18 +264,14 @@ class Serializer(object):
         """
         return smart_unicode(obj, strings_only=True)
 
-    def serialize(self, obj, request=None):
+    def serialize(self, obj, **kwargs):
         """
         Convert any object into a serializable representation.
         """
 
-        # Request from related serializer.
-        if request is not None:
-            self.request = request
-
         if isinstance(obj, (dict, models.Model)):
             # Model instances & dictionaries
-            return self.serialize_model(obj)
+            return self.serialize_model(obj, **kwargs)
         elif isinstance(obj, (tuple, list, set, QuerySet, RawQuerySet, types.GeneratorType)):
             # basic iterables
             return self.serialize_iter(obj)
