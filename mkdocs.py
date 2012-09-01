@@ -3,16 +3,21 @@
 import markdown
 import os
 import re
+import shutil
+import sys
 
-root = os.path.dirname(__file__)
-local = True
+root_dir = os.path.dirname(__file__)
+docs_dir = os.path.join(root_dir, 'docs')
+html_dir = os.path.join(root_dir, 'html')
+
+local = not '--deploy' in sys.argv
 
 if local:
-    base_url = 'file://%s/html/' % os.path.normpath(os.path.join(os.getcwd(), root))
+    base_url = 'file://%s/' % os.path.normpath(os.path.join(os.getcwd(), html_dir))
     suffix = '.html'
     index = 'index.html'
 else:
-    base_url = 'http://tomchristie.github.com/restframeworkdocs/'
+    base_url = 'http://tomchristie.github.com/restframeworkdocs'
     suffix = ''
     index = ''
 
@@ -20,9 +25,17 @@ else:
 main_header = '<li class="main"><a href="#{{ anchor }}">{{ title }}</a></li>'
 sub_header = '<li><a href="#{{ anchor }}">{{ title }}</a></li>'
 
-page = open(os.path.join(root, 'template.html'), 'r').read()
+page = open(os.path.join(docs_dir, 'template.html'), 'r').read()
 
-for (dirpath, dirnames, filenames) in os.walk(root):
+# Copy static files
+for static in ['css', 'js']:
+    source = os.path.join(docs_dir, 'static', static)
+    target = os.path.join(html_dir, static)
+    if os.path.exists(target):
+        shutil.rmtree(target)
+    shutil.copytree(source, target)
+
+for (dirpath, dirnames, filenames) in os.walk(docs_dir):
     for filename in filenames:
         if not filename.endswith('.md'):
             continue
@@ -46,7 +59,7 @@ for (dirpath, dirnames, filenames) in os.walk(root):
 
         content = markdown.markdown(text, ['headerid'])
 
-        build_dir = os.path.join(root, 'html', dirpath)
+        build_dir = os.path.join(html_dir, dirpath.lstrip(docs_dir))
         build_file = os.path.join(build_dir, filename[:-3] + '.html')
 
         if not os.path.exists(build_dir):

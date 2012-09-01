@@ -87,6 +87,7 @@ General guides to using REST framework.
 
 * [CSRF][csrf]
 * [Form overloading][formoverloading]
+* [Credits][credits]
 
 ## License
 
@@ -138,3 +139,4 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [csrf]: topics/csrf.md
 [formoverloading]: topics/formoverloading.md
+[credits]: topics/credits.md
