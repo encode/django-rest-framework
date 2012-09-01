@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Django REST framework</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="http://tomchristie.github.com/restframeworkdocs/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+      .nav-list li.main {
+        font-weight: bold;
+      }
+      blockquote {
+font-family: Georgia, serif;
+font-size: 18px;
+font-style: italic;
+margin: 0.25em 0;
+padding: 0.25em 40px;
+line-height: 1.45;
+position: relative;
+color: #383838;
+border-left: none;
+}
+
+blockquote:before {
+display: block;
+content: "\201C";
+font-size: 80px;
+position: absolute;
+left: -10px;
+top: -20px;
+color: #7a7a7a;
+}
+
+blockquote p:last-child {
+color: #999999;
+font-size: 14px;
+display: block;
+margin-top: 5px;
+}
+    </style>
+    <link href="http://tomchristie.github.com/restframeworkdocs/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="http://tomchristie.github.com/restframeworkdocs">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li><a href="http://tomchristie.github.com/restframeworkdocs">Home</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/1-serialization">1 - Serialization</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/2-requests-and-responses">2 - Requests and responses</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/3-class-based-views">3 - Class based views</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/4-authentication-permissions-and-throttling">4 - Authentication, permissions and throttling</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/5-relationships-and-hyperlinked-apis">5 - Relationships and hyperlinked APIs</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/6-resource-orientated-projects">6 - Resource orientated projects</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/requests">Requests</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/responses">Responses</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/views">Views</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/parsers">Parsers</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/renderers">Renderers</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/serializers">Serializers</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/fields">Serializer fields</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/authentication">Authentication</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/permissions">Permissions</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/throttling">Throttling</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/exceptions">Exceptions</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/status-codes">Status codes</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/urls">Returning URLs</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/topics/csrf">Working with AJAX and CSRF</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/topics/formoverloading">Browser based PUT, PATCH and DELETE</a></li>
+                </ul>
+              </li>
+            </ul>
+            <ul class="nav pull-right">
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version: 2.0.0 <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                          <li><a href="#">Trunk</a></li>
+                          <li><a href="#">2.0.0</a></li>
+                        </ul>
+                      </li>
+                    </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row-fluid">
+          <div class="span3">
+            <div class="well affix span3">
+              <ul class="nav nav-list side-nav">
+<li class="main"><a href="#serializers">Serializers</a></li>
+<li><a href="#declaring-serializers">Declaring Serializers</a></li>
+<li><a href="#serializing-objects">Serializing objects</a></li>
+<li><a href="#deserializing-objects">Deserializing objects</a></li>
+<li><a href="#validation">Validation</a></li>
+<li><a href="#dealing-with-nested-objects">Dealing with nested objects</a></li>
+<li><a href="#creating-custom-fields">Creating custom fields</a></li>
+<li class="main"><a href="#modelserializers">ModelSerializers</a></li>
+<li><a href="#specifying-fields-explicitly">Specifying fields explicitly</a></li>
+<li><a href="#relational-fields">Relational fields</a></li>
+<li><a href="#specifying-which-fields-should-be-included">Specifying which fields should be included</a></li>
+<li><a href="#specifiying-nested-serialization">Specifiying nested serialization</a></li>
+<li><a href="#customising-the-default-fields-used-by-a-modelserializer">Customising the default fields used by a ModelSerializer</a></li>
+
+              </ul>
+            </div>
+        </div>
+
+        <div class="span9">
+<h1 id="serializers">Serializers</h1>
+<blockquote>
+<p>Expanding the usefulness of the serializers is something that we would
+like to address. However, it's not a trivial problem, and it
+will take some serious design work. Any offers to help out in this
+area would be gratefully accepted.</p>
+<p>&mdash; Russell Keith-Magee, <a href="https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion">Django users group</a></p>
+</blockquote>
+<p>Serializers allow complex data such as querysets and model instances to be converted to native python datatypes that can then be easily rendered into <code>JSON</code>, <code>XML</code> or other content types.  Serializers also provide deserialization, allowing parsed data to be converted back into complex types, after first validating the incoming data.</p>
+<p>REST framework's serializers work very similarly to Django's <code>Form</code> and <code>ModelForm</code> classes.  It provides a <code>Serializer</code> class which gives you a powerful, generic way to control the output of your responses, as well as a <code>ModelSerializer</code> class which provides a useful shortcut for creating serializers that deal with model instances and querysets.</p>
+<h2 id="declaring-serializers">Declaring Serializers</h2>
+<p>Let's start by creating a simple object we can use for example purposes:</p>
+<pre><code>class Comment(object):
+    def __init__(self, email, content, created=None):
+        self.email = email
+        self.content = content
+        self.created = created or datetime.datetime.now()
+
+comment = Comment(email='leila@example.com', content='foo bar')
+</code></pre>
+<p>We'll declare a serializer that we can use to serialize and deserialize <code>Comment</code> objects.
+Declaring a serializer looks very similar to declaring a form:</p>
+<pre><code>class CommentSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    content = serializers.CharField(max_length=200)
+    created = serializers.DateTimeField()
+
+    def restore_object(self, attrs, instance=None):
+        if instance:
+            instance.title = attrs['title']
+            instance.content = attrs['content']
+            instance.created = attrs['created']
+            return instance
+        return Comment(**attrs)
+</code></pre>
+<p>The first part of serializer class defines the fields that get serialized/deserialized.  The <code>restore_object</code> method defines how fully fledged instances get created when deserializing data.  The <code>restore_object</code> method is optional, and is only required if we want our serializer to support deserialization.</p>
+<h2 id="serializing-objects">Serializing objects</h2>
+<p>We can now use <code>CommentSerializer</code> to serialize a comment, or list of comments.  Again, using the <code>Serializer</code> class looks a lot like using a <code>Form</code> class.</p>
+<pre><code>serializer = CommentSerializer(instance=comment)
+serializer.data
+# {'email': u'leila@example.com', 'content': u'foo bar', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774)}
+</code></pre>
+<p>At this point we've translated the model instance into python native datatypes.  To finalise the serialization process we render the data into <code>json</code>.</p>
+<pre><code>stream = JSONRenderer().render(data)
+stream
+# '{"email": "leila@example.com", "content": "foo bar", "created": "2012-08-22T16:20:09.822"}'
+</code></pre>
+<h2 id="deserializing-objects">Deserializing objects</h2>
+<p>Deserialization is similar.  First we parse a stream into python native datatypes... </p>
+<pre><code>data = JSONParser().parse(stream)
+</code></pre>
+<p>...then we restore those native datatypes into a fully populated object instance.</p>
+<pre><code>serializer = CommentSerializer(data)
+serializer.is_valid()
+# True
+serializer.object
+# &lt;Comment object at 0x10633b2d0&gt;
+&gt;&gt;&gt; serializer.deserialize('json', stream)
+</code></pre>
+<h2 id="validation">Validation</h2>
+<p>When deserializing data, you always need to call <code>is_valid()</code> before attempting to access the deserialized object.  If any validation errors occur, the <code>.errors</code> and <code>.non_field_errors</code> properties will contain the resulting error messages.</p>
+<p><strong>TODO: Describe validation in more depth</strong></p>
+<h2 id="dealing-with-nested-objects">Dealing with nested objects</h2>
+<p>The previous example is fine for dealing with objects that only have simple datatypes, but sometimes we also need to be able to represent more complex objects,
+where some of the attributes of an object might not be simple datatypes such as strings, dates or integers.</p>
+<p>The <code>Serializer</code> class is itself a type of <code>Field</code>, and can be used to represent relationships where one object type is nested inside another.</p>
+<pre><code>class UserSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    username = serializers.CharField()
+
+    def restore_object(self, attrs, instance=None):
+        return User(**attrs)
+
+class CommentSerializer(serializers.Serializer):
+    user = serializers.UserSerializer()
+    title = serializers.CharField()
+    content = serializers.CharField(max_length=200)
+    created = serializers.DateTimeField()
+
+    def restore_object(self, attrs, instance=None):
+        return Comment(**attrs)
+</code></pre>
+<h2 id="creating-custom-fields">Creating custom fields</h2>
+<p>If you want to create a custom field, you'll probably want to override either one or both of the <code>.to_native()</code> and <code>.from_native()</code> methods.  These two methods are used to convert between the intial datatype, and a primative, serializable datatype.  Primative datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primative objects.</p>
+<p>The <code>.to_native()</code> method is called to convert the initial datatype into a primative, serializable datatype.  The <code>from_native()</code> method is called to restore a primative datatype into it's initial representation.</p>
+<p>Let's look at an example of serializing a class that represents an RGB color value:</p>
+<pre><code>class Color(object):
+    """
+    A color represented in the RGB colorspace.
+    """
+
+    def __init__(self, red, green, blue):
+        assert(red &gt;= 0 and green &gt;= 0 and blue &gt;= 0)
+        assert(red &lt; 256 and green &lt; 256 and blue &lt; 256)
+        self.red, self.green, self.blue = red, green, blue
+
+class ColourField(Field):
+    """
+    Color objects are serialized into "rgb(#, #, #)" notation.
+    """
+
+    def to_native(self, obj):
+        return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)
+
+    def from_native(self, data):
+        data = data.strip('rgb(').rstrip(')')
+        red, green, blue = [int(col) for col in data.split(',')]
+        return Color(red, green, blue)
+</code></pre>
+<p>By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override <code>.field_to_native()</code> and/or <code>.field_from_native()</code>.</p>
+<p>As an example, let's create a field that can be used represent the class name of the object being serialized:</p>
+<pre><code>class ClassNameField(Field):
+    def field_to_native(self, obj, field_name):
+        """
+        Serialize the object's class name, not an attribute of the object.
+        """
+        return obj.__class__.__name__
+
+    def field_from_native(self, data, field_name, into):
+        """
+        We don't want to set anything when we revert this field.
+        """
+        pass
+</code></pre>
+<hr />
+<h1 id="modelserializers">ModelSerializers</h1>
+<p>Often you'll want serializer classes that map closely to model definitions.
+The <code>ModelSerializer</code> class lets you automatically create a Serializer class with fields that corrospond to the Model fields.</p>
+<pre><code>class AccountSerializer(ModelSerializer):
+    class Meta:
+        model = Account
+</code></pre>
+<p><strong>[TODO: Explain model field to serializer field mapping in more detail]</strong></p>
+<h2 id="specifying-fields-explicitly">Specifying fields explicitly</h2>
+<p>You can add extra fields to a <code>ModelSerializer</code> or override the default fields by declaring fields on the class, just as you would for a <code>Serializer</code> class.</p>
+<pre><code>class AccountSerializer(ModelSerializer):
+    url = CharField(source='get_absolute_url', readonly=True)
+    group = NaturalKeyField()
+
+    class Meta:
+        model = Account
+</code></pre>
+<p>Extra fields can corrospond to any property or callable on the model.</p>
+<h2 id="relational-fields">Relational fields</h2>
+<p>When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation is to use the primary keys of the related instances.</p>
+<p>Alternative representations include serializing using natural keys, serializing complete nested representations, or serializing using a custom representation, such as a URL that uniquely identifies the model instances.</p>
+<p>The <code>PrimaryKeyField</code> and <code>NaturalKeyField</code> fields provide alternative flat representations.</p>
+<p>The <code>ModelSerializer</code> class can itself be used as a field, in order to serialize relationships using nested representations.</p>
+<p>The <code>RelatedField</code> class may be subclassed to create a custom represenation of a relationship.  The subclass should override <code>.to_native()</code>, and optionally <code>.from_native()</code> if deserialization is supported.</p>
+<p>All the relational fields may be used for any relationship or reverse relationship on a model.</p>
+<h2 id="specifying-which-fields-should-be-included">Specifying which fields should be included</h2>
+<p>If you only want a subset of the default fields to be used in a model serializer, you can do so using <code>fields</code> or <code>exclude</code> options, just as you would with a <code>ModelForm</code>.</p>
+<p>For example:</p>
+<pre><code>class AccountSerializer(ModelSerializer):
+    class Meta:
+        model = Account
+        exclude = ('id',)
+</code></pre>
+<p>The <code>fields</code> and <code>exclude</code> options may also be set by passing them to the <code>serialize()</code> method.</p>
+<p><strong>[TODO: Possibly only allow .serialize(fields=…) in FixtureSerializer for backwards compatability, but remove for ModelSerializer]</strong></p>
+<h2 id="specifiying-nested-serialization">Specifiying nested serialization</h2>
+<p>The default <code>ModelSerializer</code> uses primary keys for relationships, but you can also easily generate nested representations using the <code>nested</code> option:</p>
+<pre><code>class AccountSerializer(ModelSerializer):
+    class Meta:
+        model = Account
+        exclude = ('id',)
+        nested = True
+</code></pre>
+<p>The <code>nested</code> option may be set to either <code>True</code>, <code>False</code>, or an integer value.  If given an integer value it indicates the depth of relationships that should be traversed before reverting to a flat representation.</p>
+<p>When serializing objects using a nested representation any occurances of recursion will be recognised, and will fall back to using a flat representation.</p>
+<p>The <code>nested</code> option may also be set by passing it to the <code>serialize()</code> method.</p>
+<p><strong>[TODO: Possibly only allow .serialize(nested=…) in FixtureSerializer]</strong></p>
+<h2 id="customising-the-default-fields-used-by-a-modelserializer">Customising the default fields used by a ModelSerializer</h2>
+<pre><code>class AccountSerializer(ModelSerializer):
+    class Meta:
+        model = Account
+
+    def get_nested_field(self, model_field):
+        return ModelSerializer()
+
+    def get_related_field(self, model_field):
+        return NaturalKeyField()
+
+    def get_field(self, model_field):
+        return Field()
+</code></pre>
+        </div><!--/span-->
+      </div><!--/row-->
+    </div><!--/.fluid-container-->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://tomchristie.github.com/restframeworkdocs/js/jquery.js"></script>
+    <script src="http://tomchristie.github.com/restframeworkdocs/js/bootstrap-dropdown.js"></script>
+    <script src="http://tomchristie.github.com/restframeworkdocs/js/bootstrap-scrollspy.js"></script>
+    <script>
+    //$('.side-nav').scrollspy()
+    var shiftWindow = function() { scrollBy(0, -50) };
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+    </script>
+</body></html>

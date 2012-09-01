@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Django REST framework</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="http://tomchristie.github.com/restframeworkdocs/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+      .nav-list li.main {
+        font-weight: bold;
+      }
+      blockquote {
+font-family: Georgia, serif;
+font-size: 18px;
+font-style: italic;
+margin: 0.25em 0;
+padding: 0.25em 40px;
+line-height: 1.45;
+position: relative;
+color: #383838;
+border-left: none;
+}
+
+blockquote:before {
+display: block;
+content: "\201C";
+font-size: 80px;
+position: absolute;
+left: -10px;
+top: -20px;
+color: #7a7a7a;
+}
+
+blockquote p:last-child {
+color: #999999;
+font-size: 14px;
+display: block;
+margin-top: 5px;
+}
+    </style>
+    <link href="http://tomchristie.github.com/restframeworkdocs/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="http://tomchristie.github.com/restframeworkdocs">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li><a href="http://tomchristie.github.com/restframeworkdocs">Home</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/1-serialization">1 - Serialization</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/2-requests-and-responses">2 - Requests and responses</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/3-class-based-views">3 - Class based views</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/4-authentication-permissions-and-throttling">4 - Authentication, permissions and throttling</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/5-relationships-and-hyperlinked-apis">5 - Relationships and hyperlinked APIs</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/6-resource-orientated-projects">6 - Resource orientated projects</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/requests">Requests</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/responses">Responses</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/views">Views</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/parsers">Parsers</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/renderers">Renderers</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/serializers">Serializers</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/fields">Serializer fields</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/authentication">Authentication</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/permissions">Permissions</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/throttling">Throttling</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/exceptions">Exceptions</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/status-codes">Status codes</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/urls">Returning URLs</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/topics/csrf">Working with AJAX and CSRF</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/topics/formoverloading">Browser based PUT, PATCH and DELETE</a></li>
+                </ul>
+              </li>
+            </ul>
+            <ul class="nav pull-right">
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version: 2.0.0 <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                          <li><a href="#">Trunk</a></li>
+                          <li><a href="#">2.0.0</a></li>
+                        </ul>
+                      </li>
+                    </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row-fluid">
+          <div class="span3">
+            <div class="well affix span3">
+              <ul class="nav nav-list side-nav">
+<li class="main"><a href="#tutorial-2-request-and-response-objects">Tutorial 2: Request and Response objects</a></li>
+<li><a href="#request-objects">Request objects</a></li>
+<li><a href="#response-objects">Response objects</a></li>
+<li><a href="#status-codes">Status codes</a></li>
+<li><a href="#wrapping-api-views">Wrapping API views</a></li>
+<li><a href="#pulling-it-all-together">Pulling it all together</a></li>
+<li><a href="#adding-optional-format-suffixes-to-our-urls">Adding optional format suffixes to our URLs</a></li>
+<li><a href="#hows-it-looking">How's it looking?</a></li>
+<li><a href="#whats-next">What's next?</a></li>
+
+              </ul>
+            </div>
+        </div>
+
+        <div class="span9">
+<h1 id="tutorial-2-request-and-response-objects">Tutorial 2: Request and Response objects</h1>
+<p>From this point we're going to really start covering the core of REST framework.
+Let's introduce a couple of essential building blocks.</p>
+<h2 id="request-objects">Request objects</h2>
+<p>REST framework intoduces a <code>Request</code> object that extends the regular <code>HttpRequest</code>, and provides more flexible request parsing.  The core functionality of the <code>Request</code> object is the <code>request.DATA</code> attribute, which is similar to <code>request.POST</code>, but more useful for working with Web APIs.</p>
+<pre><code>request.POST  # Only handles form data.  Only works for 'POST' method.
+request.DATA  # Handles arbitrary data.  Works any HTTP request with content.
+</code></pre>
+<h2 id="response-objects">Response objects</h2>
+<p>REST framework also introduces a <code>Response</code> object, which is a type of <code>TemplateResponse</code> that takes unrendered content and uses content negotiation to determine the correct content type to return to the client.</p>
+<pre><code>return Response(data)  # Renders to content type as requested by the client.
+</code></pre>
+<h2 id="status-codes">Status codes</h2>
+<p>Using numeric HTTP status codes in your views doesn't always make for obvious reading, and it's easy to not notice if you get an error code wrong.  REST framework provides more explicit identifiers for each status code, such as <code>HTTP_400_BAD_REQUEST</code> in the <code>status</code> module.  It's a good idea to use these throughout rather than using numeric identifiers.</p>
+<h2 id="wrapping-api-views">Wrapping API views</h2>
+<p>REST framework provides two wrappers you can use to write API views.</p>
+<ol>
+<li>The <code>@api_view</code> decorator for working with function based views.</li>
+<li>The <code>APIView</code> class for working with class based views.</li>
+</ol>
+<p>These wrappers provide a few bits of functionality such as making sure you recieve <code>Request</code> instances in your view, and adding context to <code>Response</code> objects so that content negotiation can be performed.</p>
+<p>The wrappers also provide behaviour such as returning <code>405 Method Not Allowed</code> responses when appropriate, and handling any <code>ParseError</code> exception that occurs when accessing <code>request.DATA</code> with malformed input.</p>
+<h2 id="pulling-it-all-together">Pulling it all together</h2>
+<p>Okay, let's go ahead and start using these new components to write a few views. </p>
+<pre><code>from djangorestframework.decorators import api_view
+from djangorestframework.status import *
+
+@api_view(allow=['GET', 'POST'])
+def comment_root(request):
+    """
+    List all comments, or create a new comment.
+    """ 
+    if request.method == 'GET':
+        comments = Comment.objects.all()
+        serializer = CommentSerializer(instance=comments)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = CommentSerializer(request.DATA)
+        if serializer.is_valid():
+            comment = serializer.object
+            comment.save()
+            return Response(serializer.data, status=HTTP_201_CREATED)
+        else:
+            return Response(serializer.error_data, status=HTTP_400_BAD_REQUEST)
+</code></pre>
+<p>Our instance view is an improvement over the previous example.  It's slightly more concise, and the code now feels very similar to if we were working with the Forms API.</p>
+<pre><code>@api_view(allow=['GET', 'PUT', 'DELETE'])
+def comment_instance(request, pk):
+    """
+    Retrieve, update or delete a comment instance.
+    """              
+    try:
+        comment = Comment.objects.get(pk=pk)
+    except Comment.DoesNotExist:
+        return Response(status=HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = CommentSerializer(instance=comment)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = CommentSerializer(request.DATA, instance=comment)
+        if serializer.is_valid():
+            comment = serializer.object
+            comment.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.error_data, status=HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        comment.delete()
+        return Response(status=HTTP_204_NO_CONTENT)
+</code></pre>
+<p>This should all feel very familiar - it looks a lot like working with forms in regular Django views.</p>
+<p>Notice that we're no longer explicitly tying our requests or responses to a given content type.  <code>request.DATA</code> can handle incoming <code>json</code> requests, but it can also handle <code>yaml</code> and other formats.  Similarly we're returning response objects with data, but allowing REST framework to render the response into the correct content type for us.</p>
+<h2 id="adding-optional-format-suffixes-to-our-urls">Adding optional format suffixes to our URLs</h2>
+<p>To take advantage of that, let's add support for format suffixes to our API endpoints, so that we can use URLs that explicitly refer to a given format.  That means our API will be able to handle URLs such as <a href="http://example.com/api/items/4.json">http://example.com/api/items/4.json</a>.</p>
+<p>Start by adding a <code>format</code> keyword argument to both of the views, like so.</p>
+<pre><code>def comment_root(request, format=None):
+</code></pre>
+<p>and</p>
+<pre><code>def comment_instance(request, pk, format=None):
+</code></pre>
+<p>Now update the <code>urls.py</code> file slightly, to append a set of <code>format_suffix_patterns</code> in addition to the existing URLs.</p>
+<pre><code>from djangorestframework.urlpatterns import format_suffix_patterns
+
+urlpatterns = patterns('blogpost.views',
+    url(r'^$', 'comment_root'),
+    url(r'^(?P&lt;pk&gt;[0-9]+)$', 'comment_instance')
+)
+
+urlpatterns = format_suffix_patterns(urlpatterns)
+</code></pre>
+<p>We don't necessarily need to add these extra url patterns in, but it gives us a simple, clean way of refering to a specific format.</p>
+<h2 id="hows-it-looking">How's it looking?</h2>
+<p>Go ahead and test the API from the command line, as we did in <a href="1-serialization.html">tutorial part 1</a>.  Everything is working pretty similarly, although we've got some nicer error handling if we send invalid requests.</p>
+<p><strong>TODO: Describe using accept headers, content-type headers, and format suffixed URLs</strong></p>
+<p>Now go and open the API in a web browser, by visiting <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a>.</p>
+<p><strong>TODO: Describe browseable API awesomeness</strong></p>
+<h2 id="whats-next">What's next?</h2>
+<p>In <a href="3-class-based-views.html">tutorial part 3</a>, we'll start using class based views, and see how generic views reduce the amount of code we need to write.</p>
+        </div><!--/span-->
+      </div><!--/row-->
+    </div><!--/.fluid-container-->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://tomchristie.github.com/restframeworkdocs/js/jquery.js"></script>
+    <script src="http://tomchristie.github.com/restframeworkdocs/js/bootstrap-dropdown.js"></script>
+    <script src="http://tomchristie.github.com/restframeworkdocs/js/bootstrap-scrollspy.js"></script>
+    <script>
+    //$('.side-nav').scrollspy()
+    var shiftWindow = function() { scrollBy(0, -50) };
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+    </script>
+</body></html>

@@ -124,113 +124,14 @@ margin-top: 5px;
           <div class="span3">
             <div class="well affix span3">
               <ul class="nav nav-list side-nav">
-<li class="main"><a href="#django-rest-framework">Django REST framework</a></li>
-<li><a href="#requirements">Requirements</a></li>
-<li><a href="#installation">Installation</a></li>
-<li><a href="#quickstart">Quickstart</a></li>
-<li><a href="#tutorial">Tutorial</a></li>
-<li><a href="#api-guide">API Guide</a></li>
-<li><a href="#topics">Topics</a></li>
-<li><a href="#license">License</a></li>
+<li class="main"><a href="#exceptions">Exceptions</a></li>
 
               </ul>
             </div>
         </div>
 
         <div class="span9">
-<h1 id="django-rest-framework">Django REST framework</h1>
-<p><strong>A toolkit for building well-connected, self-describing Web APIs.</strong></p>
-<p><strong>WARNING: This documentation is for the 2.0 redesign of REST framework.  It is a work in progress.</strong></p>
-<p>Django REST framework is a lightweight library that makes it easy to build Web APIs.  It is designed as a modular and easy to customize architecture, based on Django's class based views.</p>
-<p>Web APIs built using REST framework are fully self-describing and web browseable - a huge useability win for your developers.  It also supports a wide range of media types, authentication and permission policies out of the box.</p>
-<h2 id="requirements">Requirements</h2>
-<p>REST framework requires the following:</p>
-<ul>
-<li>Python (2.6, 2.7)</li>
-<li>Django (1.3, 1.4, 1.5)</li>
-<li><a href="https://github.com/zacharyvoase/urlobject">URLObject</a> (2.0.0+)</li>
-</ul>
-<p>The following packages are optional:</p>
-<ul>
-<li><a href="http://pypi.python.org/pypi/Markdown/">Markdown</a> (2.1.0+) - Markdown support for the self describing API.</li>
-<li><a href="http://pypi.python.org/pypi/PyYAML">PyYAML</a> (3.10+) - YAML content type support.</li>
-</ul>
-<p>If you're installing using <code>pip</code>, all requirements and optional packages will be installed by default.</p>
-<h2 id="installation">Installation</h2>
-<p><strong>WARNING: These instructions will only become valid once this becomes the master version</strong></p>
-<p>Install using <code>pip</code>...</p>
-<pre><code>pip install djangorestframework
-</code></pre>
-<p>...or clone the project from github.</p>
-<pre><code>git clone git@github.com:tomchristie/django-rest-framework.git
-pip install -r requirements.txt
-</code></pre>
-<p>Add <code>djangorestframework</code> to your <code>INSTALLED_APPS</code>.</p>
-<pre><code>INSTALLED_APPS = (
-    ...
-    'djangorestframework',        
-)
-</code></pre>
-<p>If you're intending to use the browserable API you'll want to add REST framework's login and logout views.  Add the following to your root <code>urls.py</code> file.</p>
-<pre><code>urlpatterns = patterns('',
-    ...
-    url(r'^auth', include('djangorestframework.urls', namespace='djangorestframework'))
-)
-</code></pre>
-<h2 id="quickstart">Quickstart</h2>
-<p><strong>TODO</strong></p>
-<h2 id="tutorial">Tutorial</h2>
-<p>The tutorial will walk you through the building blocks that make up REST framework.   It'll take a little while to get through, but it'll give you a comprehensive understanding of how everything fits together, and is highly recommended reading.</p>
-<ul>
-<li><a href="tutorial/1-serialization.html">1 - Serialization</a></li>
-<li><a href="tutorial/2-requests-and-responses.html">2 - Requests &amp; Responses</a></li>
-<li><a href="tutorial/3-class-based-views.html">3 - Class based views</a></li>
-<li><a href="tutorial/4-authentication-permissions-and-throttling.html">4 - Authentication, permissions &amp; throttling</a></li>
-<li><a href="tutorial/5-relationships-and-hyperlinked-apis.html">5 - Relationships &amp; hyperlinked APIs</a></li>
-<li><a href="tutorial/6-resource-orientated-projects.html">6 - Resource orientated projects</a></li>
-</ul>
-<h2 id="api-guide">API Guide</h2>
-<p>The API guide is your complete reference manual to all the functionality provided by REST framework.</p>
-<ul>
-<li><a href="api-guide/requests.html">Requests</a></li>
-<li><a href="api-guide/responses.html">Responses</a></li>
-<li><a href="api-guide/views.html">Views</a></li>
-<li><a href="api-guide/parsers.html">Parsers</a></li>
-<li><a href="api-guide/renderers.html">Renderers</a></li>
-<li><a href="api-guide/serializers.html">Serializers</a></li>
-<li><a href="api-guide/authentication.html">Authentication</a></li>
-<li><a href="api-guide/permissions.html">Permissions</a></li>
-<li><a href="api-guide/exceptions.html">Exceptions</a></li>
-<li><a href="api-guide/status.html">Status codes</a></li>
-<li><a href="api-guide/urls.html">Returning URLs</a></li>
-</ul>
-<h2 id="topics">Topics</h2>
-<p>General guides to using REST framework.</p>
-<ul>
-<li><a href="topics/csrf.html">CSRF</a></li>
-<li><a href="topics/formoverloading.html">Form overloading</a></li>
-<li><a href="topics/credits.html">Credits</a></li>
-</ul>
-<h2 id="license">License</h2>
-<p>Copyright (c) 2011-2012, Tom Christie
-All rights reserved.</p>
-<p>Redistribution and use in source and binary forms, with or without 
-modification, are permitted provided that the following conditions are met:</p>
-<p>Redistributions of source code must retain the above copyright notice, this 
-list of conditions and the following disclaimer.
-Redistributions in binary form must reproduce the above copyright notice, this 
-list of conditions and the following disclaimer in the documentation and/or 
-other materials provided with the distribution.</p>
-<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+<h1 id="exceptions">Exceptions</h1>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->

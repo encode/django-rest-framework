@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Django REST framework</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Le styles -->
+    <link href="http://tomchristie.github.com/restframeworkdocs/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+      .nav-list li.main {
+        font-weight: bold;
+      }
+      blockquote {
+font-family: Georgia, serif;
+font-size: 18px;
+font-style: italic;
+margin: 0.25em 0;
+padding: 0.25em 40px;
+line-height: 1.45;
+position: relative;
+color: #383838;
+border-left: none;
+}
+
+blockquote:before {
+display: block;
+content: "\201C";
+font-size: 80px;
+position: absolute;
+left: -10px;
+top: -20px;
+color: #7a7a7a;
+}
+
+blockquote p:last-child {
+color: #999999;
+font-size: 14px;
+display: block;
+margin-top: 5px;
+}
+    </style>
+    <link href="http://tomchristie.github.com/restframeworkdocs/css/bootstrap-responsive.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="http://tomchristie.github.com/restframeworkdocs">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li><a href="http://tomchristie.github.com/restframeworkdocs">Home</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/1-serialization">1 - Serialization</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/2-requests-and-responses">2 - Requests and responses</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/3-class-based-views">3 - Class based views</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/4-authentication-permissions-and-throttling">4 - Authentication, permissions and throttling</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/5-relationships-and-hyperlinked-apis">5 - Relationships and hyperlinked APIs</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/tutorial/6-resource-orientated-projects">6 - Resource orientated projects</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/requests">Requests</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/responses">Responses</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/views">Views</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/parsers">Parsers</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/renderers">Renderers</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/serializers">Serializers</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/fields">Serializer fields</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/authentication">Authentication</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/permissions">Permissions</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/throttling">Throttling</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/exceptions">Exceptions</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/status-codes">Status codes</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/api-guide/urls">Returning URLs</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/topics/csrf">Working with AJAX and CSRF</a></li>
+                  <li><a href="http://tomchristie.github.com/restframeworkdocs/topics/formoverloading">Browser based PUT, PATCH and DELETE</a></li>
+                </ul>
+              </li>
+            </ul>
+            <ul class="nav pull-right">
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version: 2.0.0 <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                          <li><a href="#">Trunk</a></li>
+                          <li><a href="#">2.0.0</a></li>
+                        </ul>
+                      </li>
+                    </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row-fluid">
+          <div class="span3">
+            <div class="well affix span3">
+              <ul class="nav nav-list side-nav">
+<li class="main"><a href="#tutorial-1-serialization">Tutorial 1: Serialization</a></li>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#getting-started">Getting started</a></li>
+<li><a href="#creating-a-model-to-work-with">Creating a model to work with</a></li>
+<li><a href="#creating-a-serializer-class">Creating a Serializer class</a></li>
+<li><a href="#working-with-serializers">Working with Serializers</a></li>
+<li><a href="#writing-regular-django-views-using-our-serializers">Writing regular Django views using our Serializers</a></li>
+<li><a href="#testing-our-first-attempt-at-a-web-api">Testing our first attempt at a Web API</a></li>
+<li><a href="#where-are-we-now">Where are we now</a></li>
+
+              </ul>
+            </div>
+        </div>
+
+        <div class="span9">
+<h1 id="tutorial-1-serialization">Tutorial 1: Serialization</h1>
+<h2 id="introduction">Introduction</h2>
+<p>This tutorial will walk you through the building blocks that make up REST framework.   It'll take a little while to get through, but it'll give you a comprehensive understanding of how everything fits together.</p>
+<h2 id="getting-started">Getting started</h2>
+<p>To get started, let's create a new project to work with.</p>
+<pre><code>django-admin.py startproject tutorial
+cd tutorial
+</code></pre>
+<p>Once that's done we can create an app that we'll use to create a simple Web API.</p>
+<pre><code>python manage.py startapp blog
+</code></pre>
+<p>The simplest way to get up and running will probably be to use an <code>sqlite3</code> database for the tutorial.  Edit the <code>tutorial/settings.py</code> file, and set the default database <code>"ENGINE"</code> to <code>"sqlite3"</code>, and <code>"NAME"</code> to <code>"tmp.db"</code>.</p>
+<pre><code>DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'tmp.db',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': '',
+    }
+}
+</code></pre>
+<p>We'll also need to add our new <code>blog</code> app and the <code>djangorestframework</code> app to <code>INSTALLED_APPS</code>.</p>
+<pre><code>INSTALLED_APPS = (
+    ...
+    'djangorestframework',
+    'blog'
+)
+</code></pre>
+<p>We also need to wire up the root urlconf, in the <code>tutorial/urls.py</code> file, to include our blog views.</p>
+<pre><code>urlpatterns = patterns('',
+    url(r'^', include('blog.urls')),
+)
+</code></pre>
+<p>Okay, we're ready to roll.</p>
+<h2 id="creating-a-model-to-work-with">Creating a model to work with</h2>
+<p>For the purposes of this tutorial we're going to start by creating a simple <code>Comment</code> model that is used to store comments against a blog post.  Go ahead and edit the  <code>blog</code> app's <code>models.py</code> file.</p>
+<pre><code>from django.db import models
+
+class Comment(models.Model):
+    email = models.EmailField()
+    content = models.CharField(max_length=200)
+    created = models.DateTimeField(auto_now_add=True)
+</code></pre>
+<p>Don't forget to sync the database for the first time.</p>
+<pre><code>python manage.py syncdb
+</code></pre>
+<h2 id="creating-a-serializer-class">Creating a Serializer class</h2>
+<p>We're going to create a simple Web API that we can use to edit these comment objects with.  The first thing we need is a way of serializing and deserializing the objects into representations such as <code>json</code>.  We do this by declaring serializers, that work very similarly to Django's forms.  Create a file in the project named <code>serializers.py</code> and add the following.</p>
+<pre><code>from blog import models
+from djangorestframework import serializers
+
+class CommentSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    content = serializers.CharField(max_length=200)
+    created = serializers.DateTimeField()
+
+    def restore_object(self, attrs, instance=None):
+        """
+        Create or update a new comment instance.
+        """
+        if instance:
+            instance.email = attrs['email']
+            instance.content = attrs['content']
+            instance.created = attrs['created']
+            return instance
+        return models.Comment(**attrs)
+</code></pre>
+<p>The first part of serializer class defines the fields that get serialized/deserialized.  The <code>restore_object</code> method defines how fully fledged instances get created when deserializing data.</p>
+<p>We can actually also save ourselves some time by using the <code>ModelSerializer</code> class, as we'll see later, but for now we'll keep our serializer definition explicit.<br />
+</p>
+<h2 id="working-with-serializers">Working with Serializers</h2>
+<p>Before we go any further we'll familiarise ourselves with using our new Serializer class.  Let's drop into the Django shell.</p>
+<pre><code>python manage.py shell
+</code></pre>
+<p>Okay, once we've got a few imports out of the way, we'd better create a few comments to work with.</p>
+<pre><code>from blog.models import Comment
+from blog.serializers import CommentSerializer
+from djangorestframework.renderers import JSONRenderer
+from djangorestframework.parsers import JSONParser
+
+c1 = Comment(email='leila@example.com', content='nothing to say')
+c2 = Comment(email='tom@example.com', content='foo bar')
+c3 = Comment(email='anna@example.com', content='LOLZ!')
+c1.save()
+c2.save()
+c3.save()
+</code></pre>
+<p>We've now got a few comment instances to play with.  Let's take a look at serializing one of those instances.</p>
+<pre><code>serializer = CommentSerializer(instance=c1)
+serializer.data
+# {'email': u'leila@example.com', 'content': u'nothing to say', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774)}
+</code></pre>
+<p>At this point we've translated the model instance into python native datatypes.  To finalise the serialization process we render the data into <code>json</code>.</p>
+<pre><code>stream = JSONRenderer().render(serializer.data)
+stream
+# '{"email": "leila@example.com", "content": "nothing to say", "created": "2012-08-22T16:20:09.822"}'
+</code></pre>
+<p>Deserialization is similar.  First we parse a stream into python native datatypes... </p>
+<pre><code>data = JSONParser().parse(stream)
+</code></pre>
+<p>...then we restore those native datatypes into to a fully populated object instance.</p>
+<pre><code>serializer = CommentSerializer(data)
+serializer.is_valid()
+# True
+serializer.object
+# &lt;Comment object at 0x10633b2d0&gt;
+</code></pre>
+<p>Notice how similar the API is to working with forms.  The similarity should become even more apparent when we start writing views that use our serializer.</p>
+<h2 id="writing-regular-django-views-using-our-serializers">Writing regular Django views using our Serializers</h2>
+<p>Let's see how we can write some API views using our new Serializer class.
+We'll start off by creating a subclass of HttpResponse that we can use to render any data we return into <code>json</code>.</p>
+<p>Edit the <code>blog/views.py</code> file, and add the following.</p>
+<pre><code>from blog.models import Comment
+from blog.serializers import CommentSerializer
+from djangorestframework.renderers import JSONRenderer
+from djangorestframework.parsers import JSONParser
+from django.http import HttpResponse
+
+class JSONResponse(HttpResponse):
+    """
+    An HttpResponse that renders it's content into JSON.
+    """
+
+    def __init__(self, data, **kwargs):
+        content = JSONRenderer().render(data)
+        kwargs['content_type'] = 'application/json'
+        super(JSONResponse, self).__init__(content, **kwargs)
+</code></pre>
+<p>The root of our API is going to be a view that supports listing all the existing comments, or creating a new comment.</p>
+<pre><code>def comment_root(request):
+    """
+    List all comments, or create a new comment.
+    """
+    if request.method == 'GET':
+        comments = Comment.objects.all()
+        serializer = CommentSerializer(instance=comments)
+        return JSONResponse(serializer.data)
+
+    elif request.method == 'POST':
+        data = JSONParser().parse(request)
+        serializer = CommentSerializer(data)
+        if serializer.is_valid():
+            comment = serializer.object
+            comment.save()
+            return JSONResponse(serializer.data, status=201)
+        else:
+            return JSONResponse(serializer.error_data, status=400)
+</code></pre>
+<p>We'll also need a view which corrosponds to an individual comment, and can be used to retrieve, update or delete the comment.</p>
+<pre><code>def comment_instance(request, pk):
+    """
+    Retrieve, update or delete a comment instance.
+    """
+    try:
+        comment = Comment.objects.get(pk=pk)
+    except Comment.DoesNotExist:
+        return HttpResponse(status=404)
+
+    if request.method == 'GET':
+        serializer = CommentSerializer(instance=comment)
+        return JSONResponse(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = CommentSerializer(data, instance=comment)
+        if serializer.is_valid():
+            comment = serializer.object
+            comment.save()
+            return JSONResponse(serializer.data)
+        else:
+            return JSONResponse(serializer.error_data, status=400)
+
+    elif request.method == 'DELETE':
+        comment.delete()
+        return HttpResponse(status=204)
+</code></pre>
+<p>Finally we need to wire these views up, in the <code>tutorial/urls.py</code> file.</p>
+<pre><code>from django.conf.urls import patterns, url
+
+urlpatterns = patterns('blog.views',
+    url(r'^$', 'comment_root'),
+    url(r'^(?P&lt;pk&gt;[0-9]+)$', 'comment_instance')
+)
+</code></pre>
+<p>It's worth noting that there's a couple of edge cases we're not dealing with properly at the moment.  If we send malformed <code>json</code>, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.</p>
+<h2 id="testing-our-first-attempt-at-a-web-api">Testing our first attempt at a Web API</h2>
+<p><strong>TODO: Describe using runserver and making example requests from console</strong></p>
+<p><strong>TODO: Describe opening in a web browser and viewing json output</strong></p>
+<h2 id="where-are-we-now">Where are we now</h2>
+<p>We're doing okay so far, we've got a serialization API that feels pretty similar to Django's Forms API, and some regular Django views.</p>
+<p>Our API views don't do anything particularly special at the moment, beyond serve <code>json</code> responses, and there's some error handling edge cases we'd still like to clean up, but it's a functioning Web API.</p>
+<p>We'll see how we can start to improve things in <a href="2-requests-and-responses.html">part 2 of the tutorial</a>.</p>
+        </div><!--/span-->
+      </div><!--/row-->
+    </div><!--/.fluid-container-->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://tomchristie.github.com/restframeworkdocs/js/jquery.js"></script>
+    <script src="http://tomchristie.github.com/restframeworkdocs/js/bootstrap-dropdown.js"></script>
+    <script src="http://tomchristie.github.com/restframeworkdocs/js/bootstrap-scrollspy.js"></script>
+    <script>
+    //$('.side-nav').scrollspy()
+    var shiftWindow = function() { scrollBy(0, -50) };
+    if (location.hash) shiftWindow();
+    window.addEventListener("hashchange", shiftWindow);
+    </script>
+</body></html>
