@@ -32,7 +32,7 @@ Resources
 * The ``djangorestframework`` package is `available on PyPI <http://pypi.python.org/pypi/djangorestframework>`_.
 * We have an active `discussion group <http://groups.google.com/group/django-rest-framework>`_.
 * Bug reports are handled on the `issue tracker <https://github.com/tomchristie/django-rest-framework/issues>`_.
-* There is a `Jenkins CI server <http://jenkins.tibold.nl/job/djangorestframework/>`_ which tracks test status and coverage reporting.  (Thanks Marko!)
+* There's a comprehensive tutorial to using REST framework and Backbone JS on `10kblogger.wordpress.com <http://10kblogger.wordpress.com/2012/05/25/a-restful-password-locker-with-django-and-backbone-js/>`_.
 
 Any and all questions, thoughts, bug reports and contributions are *hugely appreciated*.
 
@@ -103,7 +103,6 @@ The following example exposes your `MyModel` model through an api. It will provi
 .. include:: howto.rst
 
 .. include:: library.rst
-
 
 .. include:: examples.rst
 
