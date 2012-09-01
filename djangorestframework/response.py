@@ -9,11 +9,6 @@ To determine the content type to which it must render, default behaviour is to u
 HTTP Accept header content negotiation. But `Response` also supports overriding the content type
 by specifying an ``_accept=`` parameter in the URL. Also, `Response` will ignore `Accept` headers
 from Internet Explorer user agents and use a sensible browser `Accept` header instead.
-
-
-`ImmediateResponse` is an exception that inherits from `Response`. It can be used
-to abort the request handling (i.e. ``View.get``, ``View.put``, ...),
-and immediately returning a response.
 """
 
 from django.template.response import SimpleTemplateResponse
