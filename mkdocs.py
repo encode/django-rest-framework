@@ -17,7 +17,7 @@ if local:
     suffix = '.html'
     index = 'index.html'
 else:
-    base_url = 'http://tomchristie.github.com/restframeworkdocs'
+    base_url = 'http://tomchristie.github.com/django-rest-framework'
     suffix = ''
     index = ''
 
