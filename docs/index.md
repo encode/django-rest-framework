@@ -21,8 +21,6 @@ The following packages are optional:
 * [Markdown][markdown] (2.1.0+) - Markdown support for the self describing API.
 * [PyYAML][yaml] (3.10+) - YAML content type support.
 
-If you're installing using `pip`, all requirements and optional packages will be installed by default.
-
 ## Installation
 
 **WARNING: These instructions will only become valid once this becomes the master version**
@@ -88,6 +86,18 @@ General guides to using REST framework.
 * [CSRF][csrf]
 * [Form overloading][formoverloading]
 * [Credits][credits]
+
+## Development
+
+If you want to work on REST framework itself, clone the repository, then...
+
+Build the docs:
+
+    ./mkdocs.py
+
+Run the tests:
+
+    ./djangorestframework/runtests/runtests.py
 
 ## License
 

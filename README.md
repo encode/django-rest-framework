@@ -38,6 +38,16 @@ Install using `pip`...
 
 **TODO**
 
+# Development
+
+To build the docs.
+
+    ./mkdocs.py
+
+To run the tests.
+
+    ./djangorestframework/runtests/runtests.py
+
 # Changelog
 
 ## 2.0.0
@@ -71,7 +81,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 [twitter]: https://twitter.com/_tomchristie
-[docs]: https://github.com/tomchristie/django-rest-framework/blob/restframework2/docs/index.md
+[docs]: http://tomchristie.github.com/django-rest-framework/
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [pyyaml]: http://pypi.python.org/pypi/PyYAML

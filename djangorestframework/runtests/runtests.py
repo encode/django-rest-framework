@@ -1,8 +1,5 @@
-'''
-Created on Mar 10, 2011
+#!/usr/bin/env python
 
-@author: tomchristie
-'''
 # http://ericholscher.com/blog/2009/jun/29/enable-setuppy-test-your-django-apps/
 # http://www.travisswicegood.com/2010/01/17/django-virtualenv-pip-and-fabric/
 # http://code.djangoproject.com/svn/django/trunk/tests/runtests.py
@@ -13,6 +10,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'djangorestframework.runtests.settings'
 from django.conf import settings
 from django.test.utils import get_runner
 
+
 def usage():
     return """
     Usage: python runtests.py [UnitTestClass].[method]
@@ -21,6 +19,7 @@ def usage():
 
     Append a method name if you only want to test a specific method of that class.
     """
+
 
 def main():
     TestRunner = get_runner(settings)
