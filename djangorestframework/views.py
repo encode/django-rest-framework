@@ -226,7 +226,7 @@ class View(DjangoView):
         Handle any exception that occurs, by returning an appropriate response,
         or re-raising the error.
         """
-        if isinstance(exc, exceptions.REST_FRAMEWORK_EXCEPTIONS):
+        if isinstance(exc, exceptions.APIException):
             return Response({'detail': exc.detail}, status=exc.status_code)
         elif isinstance(exc, Http404):
             return Response({'detail': 'Not found'},

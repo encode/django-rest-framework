@@ -1,5 +1,0 @@
-Parsers
-=======
-
-.parse(request)
----------------

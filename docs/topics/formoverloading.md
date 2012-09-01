@@ -1,12 +1,12 @@
-Supporting browser-based PUT & DELETE
-=====================================
+# Browser based PUT & DELETE
 
-> "There are two noncontroversial uses for overloaded POST.  The first is to *simulate* HTTP's uniform interface for clients like web browsers that don't support PUT or DELETE" - [RESTful Web Services](1), Leonard Richardson & Sam Ruby.
+> "There are two noncontroversial uses for overloaded POST.  The first is to *simulate* HTTP's uniform interface for clients like web browsers that don't support PUT or DELETE"
+>
+> &mdash; [RESTful Web Services](1), Leonard Richardson & Sam Ruby.
 
-This is the same strategy as is used in [Ruby on Rails](2).
+## Overloading the HTTP method
 
-Overloading the HTTP method
----------------------------
+**TODO: Preamble.**  Note that this is the same strategy as is used in [Ruby on Rails](2).
 
 For example, given the following form:
 
@@ -16,8 +16,7 @@ For example, given the following form:
 
 `request.method` would return `"DELETE"`.
 
-Overloading the HTTP content type
----------------------------------
+## Overloading the HTTP content type
 
 Browser-based submission of content types other than form are supported by using form fields named `_content` and `_content_type`:
 
@@ -30,13 +29,11 @@ For example, given the following form:
 
 `request.content_type` would return `"application/json"`, and `request.content` would return `"{'count': 1}"`
 
-Why not just use Javascript? 
-============================
+## Why not just use Javascript? 
 
 **[TODO]**
 
-Doesn't HTML5 support PUT and DELETE forms?
-===========================================
+## Doesn't HTML5 support PUT and DELETE forms?
 
 Nope.  It was at one point intended to support `PUT` and `DELETE` forms, but was later [dropped from the spec](3).  There remains [ongoing discussion](4) about adding support for `PUT` and `DELETE`, as well as how to support content-types other than form-encoded data.
 

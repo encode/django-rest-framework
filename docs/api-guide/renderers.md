@@ -1,0 +1,4 @@
+# Renderers
+
+## .render(response)
+

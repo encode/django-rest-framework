@@ -7,7 +7,15 @@ In addition Django's built in 403 and 404 exceptions are handled.
 from djangorestframework import status
 
 
-class ParseError(Exception):
+class APIException(Exception):
+    """
+    Base class for REST framework exceptions.
+    Subclasses should provide `.status_code` and `.detail` properties.
+    """
+    pass
+
+
+class ParseError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = 'Malformed request.'
 
@@ -15,7 +23,7 @@ class ParseError(Exception):
         self.detail = detail or self.default_detail
 
 
-class PermissionDenied(Exception):
+class PermissionDenied(APIException):
     status_code = status.HTTP_403_FORBIDDEN
     default_detail = 'You do not have permission to access this resource.'
 
@@ -23,7 +31,7 @@ class PermissionDenied(Exception):
         self.detail = detail or self.default_detail
 
 
-class MethodNotAllowed(Exception):
+class MethodNotAllowed(APIException):
     status_code = status.HTTP_405_METHOD_NOT_ALLOWED
     default_detail = "Method '%s' not allowed."
 
@@ -31,7 +39,7 @@ class MethodNotAllowed(Exception):
         self.detail = (detail or self.default_detail) % method
 
 
-class UnsupportedMediaType(Exception):
+class UnsupportedMediaType(APIException):
     status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
     default_detail = "Unsupported media type '%s' in request."
 
@@ -39,16 +47,10 @@ class UnsupportedMediaType(Exception):
         self.detail = (detail or self.default_detail) % media_type
 
 
-class Throttled(Exception):
+class Throttled(APIException):
     status_code = status.HTTP_429_TOO_MANY_REQUESTS
     default_detail = "Request was throttled. Expected available in %d seconds."
 
     def __init__(self, wait, detail=None):
         import math
         self.detail = (detail or self.default_detail) % int(math.ceil(wait))
-
-
-REST_FRAMEWORK_EXCEPTIONS = (
-    ParseError, PermissionDenied, MethodNotAllowed,
-    UnsupportedMediaType, Throttled
-)
