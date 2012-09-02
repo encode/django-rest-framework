@@ -26,8 +26,6 @@ Full documentation for the project is available at http://django-rest-framework.
 Issue tracking is on `GitHub <https://github.com/tomchristie/django-rest-framework/issues>`_.
 General questions should be taken to the `discussion group <http://groups.google.com/group/django-rest-framework>`_.
 
-We also have a `Jenkins service <http://jenkins.tibold.nl/job/djangorestframework1/>`_ which runs our test suite. 
-
 Requirements:
 
 * Python 2.6+
