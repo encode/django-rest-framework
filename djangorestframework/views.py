@@ -146,8 +146,8 @@ class View(DjangoView):
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
-        Return an HTTP 405 error if an operation is called which does not have
-        a handler method.
+        Called if `request.method` does not corrospond to a handler method.
+        We raise an exception, which is handled by `.handle_exception()`.
         """
         raise exceptions.MethodNotAllowed(request.method)
 

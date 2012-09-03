@@ -23,6 +23,7 @@ from djangorestframework.compat import ETParseError
 from xml.parsers.expat import ExpatError
 import datetime
 import decimal
+from io import BytesIO
 
 
 __all__ = (
@@ -63,12 +64,24 @@ class BaseParser(object):
         """
         return media_type_matches(self.media_type, content_type)
 
-    def parse(self, stream, **opts):
+    def parse(self, string_or_stream, **opts):
+        """
+        The main entry point to parsers.  This is a light wrapper around
+        `parse_stream`, that instead handles both string and stream objects.
+        """
+        if isinstance(string_or_stream, basestring):
+            stream = BytesIO(string_or_stream)
+        else:
+            stream = string_or_stream
+        return self.parse_stream(stream, **opts)
+
+    def parse_stream(self, stream, **opts):
         """
         Given a *stream* to read from, return the deserialized output.
-        Should return a 2-tuple of (data, files).
+        Should return parsed data, or a DataAndFiles object consisting of the
+        parsed data and files.
         """
-        raise NotImplementedError(".parse() Must be overridden to be implemented.")
+        raise NotImplementedError(".parse_stream() Must be overridden to be implemented.")
 
 
 class JSONParser(BaseParser):
@@ -78,7 +91,7 @@ class JSONParser(BaseParser):
 
     media_type = 'application/json'
 
-    def parse(self, stream, **opts):
+    def parse_stream(self, stream, **opts):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -98,7 +111,7 @@ class YAMLParser(BaseParser):
 
     media_type = 'application/yaml'
 
-    def parse(self, stream, **opts):
+    def parse_stream(self, stream, **opts):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -118,7 +131,7 @@ class PlainTextParser(BaseParser):
 
     media_type = 'text/plain'
 
-    def parse(self, stream, **opts):
+    def parse_stream(self, stream, **opts):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -135,7 +148,7 @@ class FormParser(BaseParser):
 
     media_type = 'application/x-www-form-urlencoded'
 
-    def parse(self, stream, **opts):
+    def parse_stream(self, stream, **opts):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -153,7 +166,7 @@ class MultiPartParser(BaseParser):
 
     media_type = 'multipart/form-data'
 
-    def parse(self, stream, **opts):
+    def parse_stream(self, stream, **opts):
         """
         Returns a DataAndFiles object.
 
@@ -177,7 +190,7 @@ class XMLParser(BaseParser):
 
     media_type = 'application/xml'
 
-    def parse(self, stream, **opts):
+    def parse_stream(self, stream, **opts):
         try:
             tree = ET.parse(stream)
         except (ExpatError, ETParseError, ValueError), exc:

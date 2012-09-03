@@ -14,6 +14,7 @@ from Internet Explorer user agents and use a sensible browser `Accept` header in
 from django.template.response import SimpleTemplateResponse
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
 
+from djangorestframework.settings import api_settings
 from djangorestframework.utils.mediatypes import order_by_precedence
 from djangorestframework.utils import MSIE_USER_AGENT_REGEX
 from djangorestframework import status
@@ -53,7 +54,12 @@ class Response(SimpleTemplateResponse):
         """
         Instantiates and returns the list of renderers the response will use.
         """
-        return [renderer(self.view) for renderer in self.renderers]
+        if self.renderers is None:
+            renderer_classes = api_settings.DEFAULT_RENDERERS
+        else:
+            renderer_classes = self.renderers
+
+        return [cls(self.view) for cls in renderer_classes]
 
     @property
     def rendered_content(self):

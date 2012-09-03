@@ -145,7 +145,7 @@ Deserialization is similar.  First we parse a stream into python native datatype
     serializer.is_valid()
     # True
     serializer.object
-    # <Comment object at 0x10633b2d0>
+    # <Comment: Comment object>
     
 Notice how similar the API is to working with forms.  The similarity should become even more apparent when we start writing views that use our serializer.
 
