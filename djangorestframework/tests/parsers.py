@@ -153,7 +153,7 @@ class TestFormParser(TestCase):
         parser = FormParser()
 
         stream = StringIO(self.string)
-        (data, files) = parser.parse(stream)
+        data = parser.parse(stream)
 
         self.assertEqual(Form(data).is_valid(), True)
 
@@ -203,10 +203,10 @@ class TestXMLParser(TestCase):
 
     def test_parse(self):
         parser = XMLParser()
-        (data, files) = parser.parse(self._input)
+        data = parser.parse(self._input)
         self.assertEqual(data, self._data)
 
     def test_complex_data_parse(self):
         parser = XMLParser()
-        (data, files) = parser.parse(self._complex_data_input)
+        data = parser.parse(self._complex_data_input)
         self.assertEqual(data, self._complex_data)

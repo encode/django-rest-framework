@@ -301,7 +301,7 @@ if YAMLRenderer:
             parser = YAMLParser()
 
             content = renderer.render(obj, 'application/yaml')
-            (data, files) = parser.parse(StringIO(content))
+            data = parser.parse(StringIO(content))
             self.assertEquals(obj, data)
 
 
@@ -392,7 +392,7 @@ class XMLRendererTestCase(TestCase):
         content = StringIO(renderer.render(self._complex_data, 'application/xml'))
 
         parser = XMLParser()
-        complex_data_out, dummy = parser.parse(content)
+        complex_data_out = parser.parse(content)
         error_msg = "complex data differs!IN:\n %s \n\n OUT:\n %s" % (repr(self._complex_data), repr(complex_data_out))
         self.assertEqual(self._complex_data, complex_data_out, error_msg)
 

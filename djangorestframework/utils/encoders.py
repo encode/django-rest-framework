@@ -1,3 +1,6 @@
+"""
+Helper classes for parsers.
+"""
 import datetime
 import decimal
 from django.utils import timezone
@@ -6,10 +9,12 @@ from django.utils import simplejson as json
 
 class JSONEncoder(json.JSONEncoder):
     """
-    JSONEncoder subclass that knows how to encode date/time and decimal types.
+    JSONEncoder subclass that knows how to encode date/time,
+    decimal types, and generators.
     """
     def default(self, o):
-        # See "Date Time String Format" in the ECMA-262 specification.
+        # For Date Time string spec, see ECMA 262
+        # http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
         if isinstance(o, datetime.datetime):
             r = o.isoformat()
             if o.microsecond:

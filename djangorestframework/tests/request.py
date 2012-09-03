@@ -4,7 +4,6 @@ Tests for content parsing, and form-overloaded content parsing.
 from django.conf.urls.defaults import patterns
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
-from django.utils import simplejson as json
 
 from djangorestframework import status
 from djangorestframework.authentication import UserLoggedInAuthentication
@@ -13,7 +12,6 @@ from djangorestframework.parsers import (
     FormParser,
     MultiPartParser,
     PlainTextParser,
-    JSONParser
 )
 from djangorestframework.request import Request
 from djangorestframework.response import Response

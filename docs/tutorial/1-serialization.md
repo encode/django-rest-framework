@@ -127,7 +127,7 @@ We've now got a few comment instances to play with.  Let's take a look at serial
 
     serializer = CommentSerializer(instance=c1)
     serializer.data
-    # {'email': u'leila@example.com', 'content': u'nothing to say', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774)}
+    # {'email': u'leila@example.com', 'content': u'nothing to say', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774, tzinfo=<UTC>)}
 
 At this point we've translated the model instance into python native datatypes.  To finalise the serialization process we render the data into `json`.
 

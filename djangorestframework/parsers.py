@@ -36,6 +36,12 @@ __all__ = (
 )
 
 
+class DataAndFiles(object):
+    def __init__(self, data, files):
+        self.data = data
+        self.files = files
+
+
 class BaseParser(object):
     """
     All parsers should extend :class:`BaseParser`, specifying a :attr:`media_type` attribute,
@@ -80,7 +86,7 @@ class JSONParser(BaseParser):
         `files` will always be `None`.
         """
         try:
-            return (json.load(stream), None)
+            return json.load(stream)
         except ValueError, exc:
             raise ParseError('JSON parse error - %s' % unicode(exc))
 
@@ -100,7 +106,7 @@ class YAMLParser(BaseParser):
         `files` will always be `None`.
         """
         try:
-            return (yaml.safe_load(stream), None)
+            return yaml.safe_load(stream)
         except (ValueError, yaml.parser.ParserError), exc:
             raise ParseError('YAML parse error - %s' % unicode(exc))
 
@@ -119,7 +125,7 @@ class PlainTextParser(BaseParser):
         `data` will simply be a string representing the body of the request.
         `files` will always be `None`.
         """
-        return (stream.read(), None)
+        return stream.read()
 
 
 class FormParser(BaseParser):
@@ -137,7 +143,7 @@ class FormParser(BaseParser):
         `files` will always be :const:`None`.
         """
         data = QueryDict(stream.read())
-        return (data, None)
+        return data
 
 
 class MultiPartParser(BaseParser):
@@ -149,16 +155,17 @@ class MultiPartParser(BaseParser):
 
     def parse(self, stream, **opts):
         """
-        Returns a 2-tuple of `(data, files)`.
+        Returns a DataAndFiles object.
 
-        `data` will be a :class:`QueryDict` containing all the form parameters.
-        `files` will be a :class:`QueryDict` containing all the form files.
+        `.data` will be a `QueryDict` containing all the form parameters.
+        `.files` will be a `QueryDict` containing all the form files.
         """
         meta = opts['meta']
         upload_handlers = opts['upload_handlers']
         try:
             parser = DjangoMultiPartParser(meta, stream, upload_handlers)
-            return parser.parse()
+            data, files = parser.parse()
+            return DataAndFiles(data, files)
         except MultiPartParserError, exc:
             raise ParseError('Multipart form parse error - %s' % unicode(exc))
 
@@ -171,19 +178,13 @@ class XMLParser(BaseParser):
     media_type = 'application/xml'
 
     def parse(self, stream, **opts):
-        """
-        Returns a 2-tuple of `(data, files)`.
-
-        `data` will simply be a string representing the body of the request.
-        `files` will always be `None`.
-        """
         try:
             tree = ET.parse(stream)
         except (ExpatError, ETParseError, ValueError), exc:
             raise ParseError('XML parse error - %s' % unicode(exc))
         data = self._xml_convert(tree.getroot())
 
-        return (data, None)
+        return data
 
     def _xml_convert(self, element):
         """

@@ -146,7 +146,7 @@ class Request(object):
             self._load_method_and_content_type()
 
         if not _hasattr(self, '_data'):
-            (self._data, self._files) = self._parse()
+            self._data, self._files = self._parse()
 
     def _load_method_and_content_type(self):
         """
@@ -201,11 +201,11 @@ class Request(object):
             self._CONTENTTYPE_PARAM in self._data):
             self._content_type = self._data.pop(self._CONTENTTYPE_PARAM)[0]
             self._stream = StringIO(self._data.pop(self._CONTENT_PARAM)[0])
-            (self._data, self._files) = self._parse()
+            self._data, self._files = self._parse()
 
     def _parse(self):
         """
-        Parse the request content.
+        Parse the request content, returning a two-tuple of (data, files)
 
         May raise an `UnsupportedMediaType`, or `ParseError` exception.
         """
@@ -214,8 +214,14 @@ class Request(object):
 
         for parser in self.get_parsers():
             if parser.can_handle_request(self.content_type):
-                return parser.parse(self.stream, meta=self.META,
-                                    upload_handlers=self.upload_handlers)
+                parsed = parser.parse(self.stream, meta=self.META,
+                                      upload_handlers=self.upload_handlers)
+                # Parser classes may return the raw data, or a
+                # DataAndFiles object.  Unpack the result as required.
+                try:
+                    return (parsed.data, parsed.files)
+                except AttributeError:
+                    return (parsed, None)
 
         raise UnsupportedMediaType(self._content_type)
 
