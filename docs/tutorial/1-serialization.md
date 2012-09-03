@@ -6,6 +6,18 @@ This tutorial will walk you through the building blocks that make up REST framew
 
 ## Getting started
 
+Before we do anything else we'll create a new virtual environment, using [virtualenv].  This will make sure our package configuration is keep nicely isolated from any other projects we're working on.
+
+    mkdir -p ~/.env
+    virtualenv --no-site-packages ~/.env/djangorestframework
+    source ~/.env/djangorestframework/env/bin/activate
+
+Now that we're inside a virtualenv environment, we can install our packages requirements.
+
+    pip install django
+    pip install djangorestframework
+
+Now we're ready to get coding.
 To get started, let's create a new project to work with.
 
     django-admin.py startproject tutorial
@@ -231,6 +243,7 @@ We're doing okay so far, we've got a serialization API that feels pretty similar
 
 Our API views don't do anything particularly special at the moment, beyond serve `json` responses, and there's some error handling edge cases we'd still like to clean up, but it's a functioning Web API.
 
-We'll see how we can start to improve things in [part 2 of the tutorial][1].
+We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 
-[1]: 2-requests-and-responses.md
+[virtualenv]: http://www.virtualenv.org/en/latest/index.html
+[tut-2]: 2-requests-and-responses.md
