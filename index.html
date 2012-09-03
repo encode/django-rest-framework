@@ -155,16 +155,20 @@ margin-top: 5px;
 <p>The following packages are optional:</p>
 <ul>
 <li><a href="http://pypi.python.org/pypi/Markdown/">Markdown</a> (2.1.0+) - Markdown support for the self describing API.</li>
-<li><a href="http://pypi.python.org/pypi/PyYAML">PyYAML</a> (3.10+) - YAML content type support.</li>
+<li><a href="http://pypi.python.org/pypi/PyYAML">PyYAML</a> (3.10+) - YAML content-type support.</li>
 </ul>
 <h2 id="installation">Installation</h2>
 <p><strong>WARNING: These instructions will only become valid once this becomes the master version</strong></p>
-<p>Install using <code>pip</code>...</p>
+<p>Install using <code>pip</code>, including any optional packages you want...</p>
 <pre><code>pip install djangorestframework
+pip install markdown  # Recommended if using the browseable API.
+pip install pyyaml    # Required for yaml content-type support.
 </code></pre>
 <p>...or clone the project from github.</p>
 <pre><code>git clone git@github.com:tomchristie/django-rest-framework.git
+cd django-rest-framework
 pip install -r requirements.txt
+pip install -r optionals.txt
 </code></pre>
 <p>Add <code>djangorestframework</code> to your <code>INSTALLED_APPS</code>.</p>
 <pre><code>INSTALLED_APPS = (
