@@ -23,10 +23,10 @@ DEFAULTS = {
     'DEFAULT_RENDERERS': (
         renderers.JSONRenderer,
         renderers.JSONPRenderer,
-        renderers.DocumentingHTMLRenderer,
-        renderers.DocumentingXHTMLRenderer,
+        # renderers.DocumentingHTMLRenderer,
+        # renderers.DocumentingXHTMLRenderer,
         renderers.DocumentingPlainTextRenderer,
-        renderers.XMLRenderer
+        # renderers.XMLRenderer
     )
 }
 
