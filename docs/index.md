@@ -19,20 +19,24 @@ REST framework requires the following:
 The following packages are optional:
 
 * [Markdown][markdown] (2.1.0+) - Markdown support for the self describing API.
-* [PyYAML][yaml] (3.10+) - YAML content type support.
+* [PyYAML][yaml] (3.10+) - YAML content-type support.
 
 ## Installation
 
 **WARNING: These instructions will only become valid once this becomes the master version**
 
-Install using `pip`...
+Install using `pip`, including any optional packages you want...
 
     pip install djangorestframework
+    pip install markdown  # Recommended if using the browseable API.
+    pip install pyyaml    # Required for yaml content-type support.
 
 ...or clone the project from github.
 
     git clone git@github.com:tomchristie/django-rest-framework.git
+    cd django-rest-framework
     pip install -r requirements.txt
+    pip install -r optionals.txt
 
 Add `djangorestframework` to your `INSTALLED_APPS`.
 

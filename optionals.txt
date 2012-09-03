@@ -1,0 +1,2 @@
+markdown>=2.1.0
+PyYAML>=3.10
