@@ -42,6 +42,14 @@ The following people have helped make REST framework great.
 
 Many thanks to everyone who's contributed to the project.
 
+## Additional thanks
+
+The documentation is built with [Bootstrap] and [Markdown].
+
+Project hosting is with [GitHub].
+
+Continuous integration testing is managed with [Travis CI][travis-ci].
+
 ## Contact
 
 To contact the author directly:
@@ -51,3 +59,7 @@ To contact the author directly:
  
 [email]: mailto:tom@tomchristie.com
 [twitter]: http://twitter.com/_tomchristie
+[bootstrap]: http://twitter.github.com/bootstrap/
+[markdown]: http://daringfireball.net/projects/markdown/
+[github]: github.com/tomchristie/django-rest-framework
+[travis-ci]: https://secure.travis-ci.org/tomchristie/django-rest-framework
