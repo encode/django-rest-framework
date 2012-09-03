@@ -9,8 +9,8 @@ This tutorial will walk you through the building blocks that make up REST framew
 Before we do anything else we'll create a new virtual environment, using [virtualenv].  This will make sure our package configuration is keep nicely isolated from any other projects we're working on.
 
     mkdir ~/env
-    virtualenv --no-site-packages ~/env/djangorestframework
-    source ~/env/djangorestframework/bin/activate
+    virtualenv --no-site-packages ~/env/tutorial
+    source ~/env/tutorial/bin/activate
 
 Now that we're inside a virtualenv environment, we can install our package requirements.
 
