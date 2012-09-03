@@ -12,10 +12,11 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 
-from djangorestframework.compat import View as DjangoView, apply_markdown
+from djangorestframework.compat import View, apply_markdown
 from djangorestframework.response import Response
 from djangorestframework.request import Request
-from djangorestframework import renderers, parsers, authentication, permissions, status, exceptions
+from djangorestframework.settings import api_settings
+from djangorestframework import parsers, authentication, permissions, status, exceptions
 
 
 __all__ = (
@@ -61,13 +62,13 @@ def _camelcase_to_spaces(content):
     return re.sub(camelcase_boundry, ' \\1', content).strip()
 
 
-class View(DjangoView):
+class APIView(View):
     """
     Handles incoming requests and maps them to REST operations.
     Performs request deserialization, response serialization, authentication and input validation.
     """
 
-    renderers = renderers.DEFAULT_RENDERERS
+    renderers = api_settings.DEFAULT_RENDERERS
     """
     List of renderer classes the view can serialize the response with, ordered by preference.
     """

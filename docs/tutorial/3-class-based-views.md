@@ -11,9 +11,9 @@ We'll start by rewriting the root view as a class based view.  All this involves
     from django.http import Http404
     from djangorestframework.views import APIView
     from djangorestframework.response import Response
-    from djangorestframework.status import *
+    from djangorestframework.status import status
 
-    class CommentRoot(views.APIView):
+    class CommentRoot(APIView):
         """
         List all comments, or create a new comment.
         """ 
@@ -28,20 +28,21 @@ We'll start by rewriting the root view as a class based view.  All this involves
                 comment = serializer.object
                 comment.save()
                 return Response(serializer.serialized, status=HTTP_201_CREATED)
-            else:
-                return Response(serializer.serialized_errors, status=HTTP_400_BAD_REQUEST)
+            return Response(serializer.serialized_errors, status=HTTP_400_BAD_REQUEST)
+
+     comment_root = CommentRoot.as_view()
 
 So far, so good.  It looks pretty similar to the previous case, but we've got better seperation between the different HTTP methods.  We'll also need to update the instance view. 
 
-    class CommentInstance(views.APIView):
+    class CommentInstance(APIView):
         """
         Retrieve, update or delete a comment instance.
         """
  
         def get_object(self, pk):
             try:
-                return Poll.objects.get(pk=pk)
-            except Poll.DoesNotExist:
+                return Comment.objects.get(pk=pk)
+            except Comment.DoesNotExist:
                 raise Http404
  
         def get(self, request, pk, format=None):
@@ -56,28 +57,16 @@ So far, so good.  It looks pretty similar to the previous case, but we've got be
                 comment = serializer.deserialized
                 comment.save()
                 return Response(serializer.data)
-            else:
-                return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         def delete(self, request, pk, format=None):
             comment = self.get_object(pk)
             comment.delete()
-            return Response(status=HTTP_204_NO_CONTENT)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
+        comment_instance = CommentInstance.as_view()
 
 That's looking good.  Again, it's still pretty similar to the function based view right now.
-
-Since we're now working with class based views, rather than function based views, we'll also need to update our urlconf slightly.
-
-    from blogpost import views
-    from djangorestframework.urlpatterns import format_suffix_patterns
-
-    urlpatterns = patterns('',
-        url(r'^$', views.CommentRoot.as_view()),
-        url(r'^(?P<id>[0-9]+)$', views.CommentInstance.as_view())
-    )
-    
-    urlpatterns = format_suffix_patterns(urlpatterns)
-
 Okay, we're done.  If you run the development server everything should be working just as before.
 
 ## Using mixins
