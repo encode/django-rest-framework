@@ -57,7 +57,7 @@ So far, so good.  It looks pretty similar to the previous case, but we've got be
                 comment = serializer.deserialized
                 comment.save()
                 return Response(serializer.data)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.error_data, status=status.HTTP_400_BAD_REQUEST)
 
         def delete(self, request, pk, format=None):
             comment = self.get_object(pk)
@@ -79,27 +79,38 @@ We can compose those mixin classes, to recreate our existing API behaviour with 
 
     from blog.models import Comment
     from blog.serializers import CommentSerializer
-    from djangorestframework import mixins, views
+    from djangorestframework import mixins
+    from djangorestframework import views
 
-    class CommentRoot(mixins.ListModelQuerysetMixin,
-                      mixins.CreateModelInstanceMixin,
-                      views.BaseRootAPIView):
+
+    class CommentRoot(mixins.ListModelMixin,
+                      mixins.CreateModelMixin,
+                      views.MultipleObjectBaseView):
         model = Comment
         serializer_class = CommentSerializer
 
-        get = list
-        post = create
+        def get(self, request, *args, **kwargs):
+            return self.list(request, *args, **kwargs)
 
-    class CommentInstance(mixins.RetrieveModelInstanceMixin,
-                          mixins.UpdateModelInstanceMixin,
-                          mixins.DestroyModelInstanceMixin,
-                          views.BaseInstanceAPIView):
+        def post(self, request, *args, **kwargs):
+            return self.create(request, *args, **kwargs)
+
+
+    class CommentInstance(mixins.RetrieveModelMixin,
+                          mixins.UpdateModelMixin,
+                          mixins.DestroyModelMixin,
+                          views.SingleObjectBaseView):
         model = Comment
         serializer_class = CommentSerializer
 
-        get = retrieve
-        put = update
-        delete = destroy
+        def get(self, request, *args, **kwargs):
+            return self.retrieve(request, *args, **kwargs)
+
+        def put(self, request, *args, **kwargs):
+            return self.update(request, *args, **kwargs)
+
+        def delete(self, request, *args, **kwargs):
+            return self.destroy(request, *args, **kwargs)
 
 ## Reusing generic class based views
 
@@ -109,11 +120,11 @@ That's a lot less code than before, but we can go one step further still.  REST 
     from blog.serializers import CommentSerializer
     from djangorestframework import views
 
-    class CommentRoot(views.RootAPIView):
+    class CommentRoot(views.RootModelView):
         model = Comment
         serializer_class = CommentSerializer
 
-    class CommentInstance(views.InstanceAPIView):
+    class CommentInstance(views.InstanceModelView):
         model = Comment
         serializer_class = CommentSerializer
 

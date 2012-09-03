@@ -11,12 +11,14 @@ from django.http import Http404
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.list import MultipleObjectMixin
 
 from djangorestframework.compat import View as _View, apply_markdown
 from djangorestframework.response import Response
 from djangorestframework.request import Request
 from djangorestframework.settings import api_settings
-from djangorestframework import parsers, authentication, permissions, status, exceptions
+from djangorestframework import parsers, authentication, permissions, status, exceptions, mixins
 
 
 __all__ = (
@@ -281,3 +283,71 @@ class APIView(_View):
                 field_name_types[name] = field.__class__.__name__
             content['fields'] = field_name_types
         raise Response(content, status=status.HTTP_200_OK)
+
+# TODO: .get_serializer()
+
+
+### Abstract view classes, that do not provide any method handlers ###
+
+class MultipleObjectBaseView(MultipleObjectMixin, APIView):
+    """
+    Base class for views onto a queryset.
+    """
+    pass
+
+
+class SingleObjectBaseView(SingleObjectMixin, APIView):
+    """
+    Base class for views onto a model instance.
+    """
+    pass
+
+
+### Concrete view classes, that provide existing method handlers ###
+
+class ListAPIView(mixins.ListModelMixin,
+                  MultipleObjectBaseView):
+    """
+    Concrete view for listing a queryset.
+    """
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+
+class RootAPIView(mixins.ListModelMixin,
+                  mixins.CreateModelMixin,
+                  MultipleObjectBaseView):
+    """
+    Concrete view for listing a queryset or creating a model instance.
+    """
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+
+class DetailAPIView(mixins.RetrieveModelMixin,
+                      SingleObjectBaseView):
+    """
+    Concrete view for retrieving a model instance.
+    """
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+
+class InstanceAPIView(mixins.RetrieveModelMixin,
+                      mixins.UpdateModelMixin,
+                      mixins.DestroyModelMixin,
+                      SingleObjectBaseView):
+    """
+    Concrete view for retrieving, updating or deleting a model instance.
+    """
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
