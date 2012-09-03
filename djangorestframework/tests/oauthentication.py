@@ -4,7 +4,7 @@ from django.conf.urls.defaults import patterns, url, include
 from django.contrib.auth.models import User
 from django.test import Client, TestCase
 
-from djangorestframework.views import View
+from djangorestframework.views import APIView
 
 # Since oauth2 / django-oauth-plus are optional dependancies, we don't want to
 # always run these tests.
@@ -20,7 +20,7 @@ except ImportError:
 
 else:
     # Alrighty, we're good to go here.
-    class ClientView(View):
+    class ClientView(APIView):
         def get(self, request):
             return {'resource': 'Protected!'}
 
@@ -29,7 +29,6 @@ else:
         url(r'^oauth/', include('oauth_provider.urls')),
         url(r'^restframework/', include('djangorestframework.urls', namespace='djangorestframework')),
     )
-
 
     class OAuthTests(TestCase):
         """
@@ -117,12 +116,12 @@ else:
 
             # Starting the test here
             self.client.login(username=self.username, password=self.password)
-            parameters = {'oauth_token': token.key,}
+            parameters = {'oauth_token': token.key}
             response = self.client.get("/oauth/authorize/", parameters)
             self.assertEqual(response.status_code, 200)
             self.failIf(not response.content.startswith('Fake authorize view for api.example.com with params: oauth_token='))
             self.assertEqual(token.is_approved, 0)
-            parameters['authorize_access'] = 1 # fake authorization by the user
+            parameters['authorize_access'] = 1  # fake authorization by the user
             response = self.client.post("/oauth/authorize/", parameters)
             self.assertEqual(response.status_code, 302)
             self.failIf(not response['Location'].startswith('http://api.example.com/request_token_ready?oauth_verifier='))

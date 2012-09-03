@@ -5,7 +5,7 @@ from django.test import TestCase
 
 from djangorestframework import status
 from djangorestframework.response import Response
-from djangorestframework.views import View
+from djangorestframework.views import APIView
 from djangorestframework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
     XMLRenderer, JSONPRenderer, DocumentingHTMLRenderer
 from djangorestframework.parsers import YAMLParser, XMLParser
@@ -50,7 +50,7 @@ class RendererB(BaseRenderer):
         return RENDERER_B_SERIALIZER(obj)
 
 
-class MockView(View):
+class MockView(APIView):
     renderers = (RendererA, RendererB)
 
     def get(self, request, **kwargs):
@@ -58,20 +58,20 @@ class MockView(View):
         return self.render(response)
 
 
-class MockGETView(View):
+class MockGETView(APIView):
 
     def get(self, request, **kwargs):
         return {'foo': ['bar', 'baz']}
 
 
-class HTMLView(View):
+class HTMLView(APIView):
     renderers = (DocumentingHTMLRenderer, )
 
     def get(self, request, **kwargs):
         return 'text'
 
 
-class HTMLView1(View):
+class HTMLView1(APIView):
     renderers = (DocumentingHTMLRenderer, JSONRenderer)
 
     def get(self, request, **kwargs):
@@ -222,7 +222,7 @@ class JSONRendererTests(TestCase):
         self.assertEquals(strip_trailing_whitespace(content), _indented_repr)
 
 
-class MockGETView(View):
+class MockGETView(APIView):
 
     def get(self, request, *args, **kwargs):
         return Response({'foo': ['bar', 'baz']})

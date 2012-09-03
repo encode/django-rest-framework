@@ -7,12 +7,12 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 
 from djangorestframework.compat import RequestFactory
-from djangorestframework.views import View
+from djangorestframework.views import APIView
 from djangorestframework.permissions import PerUserThrottling, PerViewThrottling
 from djangorestframework.response import Response
 
 
-class MockView(View):
+class MockView(APIView):
     permission_classes = (PerUserThrottling,)
     throttle = '3/sec'
 

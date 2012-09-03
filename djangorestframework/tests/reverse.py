@@ -4,11 +4,11 @@ from django.utils import simplejson as json
 
 from djangorestframework.renderers import JSONRenderer
 from djangorestframework.reverse import reverse
-from djangorestframework.views import View
+from djangorestframework.views import APIView
 from djangorestframework.response import Response
 
 
-class MyView(View):
+class MyView(APIView):
     """
     Mock resource which simply returns a URL, so that we can ensure
     that reversed URLs are fully qualified.

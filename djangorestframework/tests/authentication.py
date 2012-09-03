@@ -5,13 +5,13 @@ from django.test import Client, TestCase
 from django.utils import simplejson as json
 from django.http import HttpResponse
 
-from djangorestframework.views import View
+from djangorestframework.views import APIView
 from djangorestframework import permissions
 
 import base64
 
 
-class MockView(View):
+class MockView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):

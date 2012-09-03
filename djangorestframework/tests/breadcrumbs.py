@@ -1,21 +1,26 @@
 from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
 from djangorestframework.utils.breadcrumbs import get_breadcrumbs
-from djangorestframework.views import View
+from djangorestframework.views import APIView
 
-class Root(View):
+
+class Root(APIView):
     pass
 
-class ResourceRoot(View):
+
+class ResourceRoot(APIView):
     pass
 
-class ResourceInstance(View):
+
+class ResourceInstance(APIView):
     pass
 
-class NestedResourceRoot(View):
+
+class NestedResourceRoot(APIView):
     pass
 
-class NestedResourceInstance(View):
+
+class NestedResourceInstance(APIView):
     pass
 
 urlpatterns = patterns('',

@@ -2,7 +2,7 @@ from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
 
 from djangorestframework.compat import RequestFactory
-from djangorestframework.views import View
+from djangorestframework.views import APIView
 from djangorestframework.response import Response
 
 
@@ -32,12 +32,12 @@ class UserAgentMungingTest(TestCase):
 
     def setUp(self):
 
-        class MockView(View):
+        class MockView(APIView):
             permissions = ()
             response_class = Response
 
             def get(self, request):
-                return self.response_class({'a':1, 'b':2, 'c':3})
+                return self.response_class({'a': 1, 'b': 2, 'c': 3})
 
         self.req = RequestFactory()
         self.MockView = MockView
@@ -53,12 +53,12 @@ class UserAgentMungingTest(TestCase):
             resp = self.view(req)
             resp.render()
             self.assertEqual(resp['Content-Type'], 'text/html')
-    
+
     def test_dont_rewrite_msie_accept_header(self):
         """Turn off _IGNORE_IE_ACCEPT_HEADER, send MSIE user agent strings and ensure
         that we get a JSON response if we set a */* accept header."""
         class IgnoreIEAcceptResponse(Response):
-            _IGNORE_IE_ACCEPT_HEADER=False
+            _IGNORE_IE_ACCEPT_HEADER = False
         view = self.MockView.as_view(response_class=IgnoreIEAcceptResponse)
 
         for user_agent in (MSIE_9_USER_AGENT,
@@ -81,4 +81,3 @@ class UserAgentMungingTest(TestCase):
             resp = self.view(req)
             resp.render()
             self.assertEqual(resp['Content-Type'], 'application/json')
-

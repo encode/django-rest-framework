@@ -5,7 +5,7 @@ from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
 
 from djangorestframework.response import Response, NotAcceptable
-from djangorestframework.views import View
+from djangorestframework.views import APIView
 from djangorestframework.compat import RequestFactory
 from djangorestframework import status
 from djangorestframework.renderers import (
@@ -167,21 +167,21 @@ class RendererB(BaseRenderer):
         return RENDERER_B_SERIALIZER(obj)
 
 
-class MockView(View):
+class MockView(APIView):
     renderers = (RendererA, RendererB)
 
     def get(self, request, **kwargs):
         return Response(DUMMYCONTENT, status=DUMMYSTATUS)
 
 
-class HTMLView(View):
+class HTMLView(APIView):
     renderers = (DocumentingHTMLRenderer, )
 
     def get(self, request, **kwargs):
         return Response('text')
 
 
-class HTMLView1(View):
+class HTMLView1(APIView):
     renderers = (DocumentingHTMLRenderer, JSONRenderer)
 
     def get(self, request, **kwargs):

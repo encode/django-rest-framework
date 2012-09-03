@@ -15,7 +15,7 @@ from djangorestframework.parsers import (
 )
 from djangorestframework.request import Request
 from djangorestframework.response import Response
-from djangorestframework.views import View
+from djangorestframework.views import APIView
 
 
 factory = RequestFactory()
@@ -207,7 +207,7 @@ class TestContentParsing(TestCase):
     #     self.assertEqual(request.DATA.items(), data.items())
 
 
-class MockView(View):
+class MockView(APIView):
     authentication = (UserLoggedInAuthentication,)
 
     def post(self, request):

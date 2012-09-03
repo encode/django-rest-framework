@@ -12,7 +12,7 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 
-from djangorestframework.compat import View, apply_markdown
+from djangorestframework.compat import View as _View, apply_markdown
 from djangorestframework.response import Response
 from djangorestframework.request import Request
 from djangorestframework.settings import api_settings
@@ -62,7 +62,7 @@ def _camelcase_to_spaces(content):
     return re.sub(camelcase_boundry, ' \\1', content).strip()
 
 
-class APIView(View):
+class APIView(_View):
     """
     Handles incoming requests and maps them to REST operations.
     Performs request deserialization, response serialization, authentication and input validation.
@@ -96,7 +96,7 @@ class APIView(View):
         as an attribute on the callable function.  This allows us to discover
         information about the view when we do URL reverse lookups.
         """
-        view = super(View, cls).as_view(**initkwargs)
+        view = super(APIView, cls).as_view(**initkwargs)
         view.cls_instance = cls(**initkwargs)
         return view
 
