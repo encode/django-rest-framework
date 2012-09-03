@@ -4,20 +4,24 @@
 
 This tutorial will walk you through the building blocks that make up REST framework.   It'll take a little while to get through, but it'll give you a comprehensive understanding of how everything fits together.
 
-## Getting started
+## Setting up a new environment
 
 Before we do anything else we'll create a new virtual environment, using [virtualenv].  This will make sure our package configuration is keep nicely isolated from any other projects we're working on.
 
-    mkdir -p ~/.env
-    virtualenv --no-site-packages ~/.env/djangorestframework
-    source ~/.env/djangorestframework/env/bin/activate
+    mkdir ~/env
+    virtualenv --no-site-packages ~/env/djangorestframework
+    source ~/env/djangorestframework/bin/activate
 
-Now that we're inside a virtualenv environment, we can install our packages requirements.
+Now that we're inside a virtualenv environment, we can install our package requirements.
 
     pip install django
     pip install djangorestframework
 
-Now we're ready to get coding.
+***Note:** To exit the virtualenv environment at any time, just type `deactivate`.  For more information see the [virtualenv documentation][virtualenv].*
+
+## Getting started
+
+Okay, we're ready to get coding.
 To get started, let's create a new project to work with.
 
     django-admin.py startproject tutorial
