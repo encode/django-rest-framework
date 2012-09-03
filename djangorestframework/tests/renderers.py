@@ -22,6 +22,18 @@ RENDERER_A_SERIALIZER = lambda x: 'Renderer A: %s' % x
 RENDERER_B_SERIALIZER = lambda x: 'Renderer B: %s' % x
 
 
+expected_results = [
+    ((elem for elem in [1, 2, 3]), JSONRenderer, '[1, 2, 3]')  # Generator
+]
+
+
+class BasicRendererTests(TestCase):
+    def test_expected_results(self):
+        for value, renderer_cls, expected in expected_results:
+            output = renderer_cls().render(value)
+            self.assertEquals(output, expected)
+
+
 class RendererA(BaseRenderer):
     media_type = 'mock/renderera'
     format = "formata"
@@ -286,7 +298,7 @@ if YAMLRenderer:
             obj = {'foo': ['bar', 'baz']}
 
             renderer = YAMLRenderer(None)
-            parser = YAMLParser(None)
+            parser = YAMLParser()
 
             content = renderer.render(obj, 'application/yaml')
             (data, files) = parser.parse(StringIO(content))

@@ -6,12 +6,12 @@ by serializing the output along with documentation regarding the View, output st
 and providing forms and links depending on the allowed methods, renderers and parsers on the View.
 """
 from django import forms
-from django.core.serializers.json import DateTimeAwareJSONEncoder
 from django.template import RequestContext, loader
 from django.utils import simplejson as json
 
 from djangorestframework.compat import yaml
 from djangorestframework.utils import dict2xml
+from djangorestframework.utils import encoders
 from djangorestframework.utils.breadcrumbs import get_breadcrumbs
 from djangorestframework.utils.mediatypes import get_media_type_params, add_media_type_param, media_type_matches
 from djangorestframework import VERSION
@@ -94,6 +94,7 @@ class JSONRenderer(BaseRenderer):
 
     media_type = 'application/json'
     format = 'json'
+    encoder_class = encoders.JSONEncoder
 
     def render(self, obj=None, media_type=None):
         """
@@ -112,7 +113,7 @@ class JSONRenderer(BaseRenderer):
         except (ValueError, TypeError):
             indent = None
 
-        return json.dumps(obj, cls=DateTimeAwareJSONEncoder, indent=indent, sort_keys=sort_keys)
+        return json.dumps(obj, cls=self.encoder_class, indent=indent, sort_keys=sort_keys)
 
 
 class JSONPRenderer(JSONRenderer):

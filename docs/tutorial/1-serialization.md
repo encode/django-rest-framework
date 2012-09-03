@@ -17,7 +17,7 @@ Now that we're inside a virtualenv environment, we can install our package requi
     pip install django
     pip install djangorestframework
 
-***Note:** To exit the virtualenv environment at any time, just type `deactivate`.  For more information see the [virtualenv documentation][virtualenv].*
+**Note:** To exit the virtualenv environment at any time, just type `deactivate`.  For more information see the [virtualenv documentation][virtualenv].
 
 ## Getting started
 
