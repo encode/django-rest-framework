@@ -30,4 +30,3 @@ def get_breadcrumbs(url):
         return breadcrumbs_recursive(url[:url.rfind('/') + 1], breadcrumbs_list)
 
     return breadcrumbs_recursive(url, [])
-

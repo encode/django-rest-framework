@@ -1,6 +1,5 @@
 from django.utils.encoding import smart_unicode
 from django.utils.xmlutils import SimplerXMLGenerator
-from django.core.urlresolvers import resolve
 
 from djangorestframework.compat import StringIO
 from djangorestframework.compat import RequestFactory as DjangoRequestFactory
@@ -8,38 +7,6 @@ from djangorestframework.request import Request
 
 import re
 import xml.etree.ElementTree as ET
-
-MSIE_USER_AGENT_REGEX = re.compile(r'^Mozilla/[0-9]+\.[0-9]+ \([^)]*; MSIE [0-9]+\.[0-9]+[a-z]?;[^)]*\)(?!.* Opera )')
-
-
-def as_tuple(obj):
-    """
-    Given an object which may be a list/tuple, another object, or None,
-    return that object in list form.
-
-    IE:
-    If the object is already a list/tuple just return it.
-    If the object is not None, return it in a list with a single element.
-    If the object is None return an empty list.
-    """
-    if obj is None:
-        return ()
-    elif isinstance(obj, list):
-        return tuple(obj)
-    elif isinstance(obj, tuple):
-        return obj
-    return (obj,)
-
-
-def url_resolves(url):
-    """
-    Return True if the given URL is mapped to a view in the urlconf, False otherwise.
-    """
-    try:
-        resolve(url)
-    except Exception:
-        return False
-    return True
 
 
 # From xml2dict

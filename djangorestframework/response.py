@@ -11,13 +11,16 @@ by specifying an ``_accept=`` parameter in the URL. Also, `Response` will ignore
 from Internet Explorer user agents and use a sensible browser `Accept` header instead.
 """
 
+
+import re
 from django.template.response import SimpleTemplateResponse
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
-
 from djangorestframework.settings import api_settings
 from djangorestframework.utils.mediatypes import order_by_precedence
-from djangorestframework.utils import MSIE_USER_AGENT_REGEX
 from djangorestframework import status
+
+
+MSIE_USER_AGENT_REGEX = re.compile(r'^Mozilla/[0-9]+\.[0-9]+ \([^)]*; MSIE [0-9]+\.[0-9]+[a-z]?;[^)]*\)(?!.* Opera )')
 
 
 class NotAcceptable(Exception):
