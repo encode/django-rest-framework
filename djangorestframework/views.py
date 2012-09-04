@@ -80,7 +80,7 @@ class APIView(_View):
     List of parser classes the view can parse the request with.
     """
 
-    authentication = (authentication.UserLoggedInAuthentication,
+    authentication = (authentication.SessionAuthentication,
                       authentication.BasicAuthentication)
     """
     List of all authenticating methods to attempt.
@@ -217,11 +217,14 @@ class APIView(_View):
         else in the view.
         Returns the final response object.
         """
-        response.view = self
-        response.request = request
-        response.renderers = self.renderers
+        if isinstance(response, Response):
+            response.view = self
+            response.request = request
+            response.renderers = self.renderers
+
         for key, value in self.headers.items():
             response[key] = value
+
         return response
 
     def handle_exception(self, exc):
@@ -269,43 +272,43 @@ class APIView(_View):
         self.response = self.final(request, response, *args, **kwargs)
         return self.response
 
-    def options(self, request, *args, **kwargs):
-        content = {
-            'name': self.get_name(),
-            'description': self.get_description(),
-            'renders': self._rendered_media_types,
-            'parses': self._parsed_media_types,
+
+# Abstract view classes that do not provide any method handlers,
+# but which provide required behaviour for concrete views to build on.
+
+class BaseView(APIView):
+    """
+    Base class for all generic views.
+    """
+    serializer_class = None
+
+    def get_serializer(self, data=None, files=None, instance=None):
+        context = {
+            'request': self.request,
+            'format': self.kwargs.get('format', None)
         }
-        form = self.get_bound_form()
-        if form is not None:
-            field_name_types = {}
-            for name, field in form.fields.iteritems():
-                field_name_types[name] = field.__class__.__name__
-            content['fields'] = field_name_types
-        raise Response(content, status=status.HTTP_200_OK)
-
-# TODO: .get_serializer()
+        return self.serializer_class(data, context=context)
 
 
-### Abstract view classes, that do not provide any method handlers ###
-
-class MultipleObjectBaseView(MultipleObjectMixin, APIView):
+class MultipleObjectBaseView(MultipleObjectMixin, BaseView):
     """
-    Base class for views onto a queryset.
+    Base class for generic views onto a queryset.
     """
     pass
 
 
-class SingleObjectBaseView(SingleObjectMixin, APIView):
+class SingleObjectBaseView(SingleObjectMixin, BaseView):
     """
-    Base class for views onto a model instance.
+    Base class for generic views onto a model instance.
     """
     pass
 
 
-### Concrete view classes, that provide existing method handlers ###
+# Concrete view classes that provide method handlers
+# by composing the mixin classes with a base view.
 
 class ListAPIView(mixins.ListModelMixin,
+                  mixins.MetadataMixin,
                   MultipleObjectBaseView):
     """
     Concrete view for listing a queryset.
@@ -313,9 +316,13 @@ class ListAPIView(mixins.ListModelMixin,
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
+    def options(self, request, *args, **kwargs):
+        return self.metadata(request, *args, **kwargs)
+
 
 class RootAPIView(mixins.ListModelMixin,
                   mixins.CreateModelMixin,
+                  mixins.MetadataMixin,
                   MultipleObjectBaseView):
     """
     Concrete view for listing a queryset or creating a model instance.
@@ -326,19 +333,27 @@ class RootAPIView(mixins.ListModelMixin,
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
+    def options(self, request, *args, **kwargs):
+        return self.metadata(request, *args, **kwargs)
+
 
 class DetailAPIView(mixins.RetrieveModelMixin,
-                      SingleObjectBaseView):
+                    mixins.MetadataMixin,
+                    SingleObjectBaseView):
     """
     Concrete view for retrieving a model instance.
     """
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
+    def options(self, request, *args, **kwargs):
+        return self.metadata(request, *args, **kwargs)
+
 
 class InstanceAPIView(mixins.RetrieveModelMixin,
                       mixins.UpdateModelMixin,
                       mixins.DestroyModelMixin,
+                      mixins.MetadataMixin,
                       SingleObjectBaseView):
     """
     Concrete view for retrieving, updating or deleting a model instance.
@@ -351,3 +366,6 @@ class InstanceAPIView(mixins.RetrieveModelMixin,
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+    def options(self, request, *args, **kwargs):
+        return self.metadata(request, *args, **kwargs)

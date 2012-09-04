@@ -11,7 +11,7 @@ import base64
 __all__ = (
     'BaseAuthentication',
     'BasicAuthentication',
-    'UserLoggedInAuthentication'
+    'SessionAuthentication'
 )
 
 
@@ -68,7 +68,7 @@ class BasicAuthentication(BaseAuthentication):
         return None
 
 
-class UserLoggedInAuthentication(BaseAuthentication):
+class SessionAuthentication(BaseAuthentication):
     """
     Use Django's session framework for authentication.
     """

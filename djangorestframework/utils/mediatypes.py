@@ -53,7 +53,7 @@ def get_media_type_params(media_type):
 
 def order_by_precedence(media_type_lst):
     """
-    Returns a list of lists of media type strings, ordered by precedence.
+    Returns a list of sets of media type strings, ordered by precedence.
     Precedence is determined by how specific a media type is:
 
     3. 'type/subtype; param=val'
@@ -61,11 +61,11 @@ def order_by_precedence(media_type_lst):
     1. 'type/*'
     0. '*/*'
     """
-    ret = [[], [], [], []]
+    ret = [set(), set(), set(), set()]
     for media_type in media_type_lst:
         precedence = _MediaType(media_type).precedence
-        ret[3 - precedence].append(media_type)
-    return ret
+        ret[3 - precedence].add(media_type)
+    return [media_types for media_types in ret if media_types]
 
 
 class _MediaType(object):

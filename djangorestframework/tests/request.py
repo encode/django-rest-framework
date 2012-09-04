@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase, Client
 
 from djangorestframework import status
-from djangorestframework.authentication import UserLoggedInAuthentication
+from djangorestframework.authentication import SessionAuthentication
 from djangorestframework.utils import RequestFactory
 from djangorestframework.parsers import (
     FormParser,
@@ -208,7 +208,7 @@ class TestContentParsing(TestCase):
 
 
 class MockView(APIView):
-    authentication = (UserLoggedInAuthentication,)
+    authentication = (SessionAuthentication,)
 
     def post(self, request):
         if request.POST.get('example') is not None:
@@ -233,7 +233,7 @@ class TestContentParsingWithAuthentication(TestCase):
 
     def test_user_logged_in_authentication_has_POST_when_not_logged_in(self):
         """
-        Ensures request.POST exists after UserLoggedInAuthentication when user
+        Ensures request.POST exists after SessionAuthentication when user
         doesn't log in.
         """
         content = {'example': 'example'}
