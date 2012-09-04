@@ -8,24 +8,24 @@ from django.core.cache import cache
 
 from djangorestframework.compat import RequestFactory
 from djangorestframework.views import APIView
-from djangorestframework.permissions import PerUserThrottling, PerViewThrottling
+from djangorestframework.throttling import PerUserThrottling, PerViewThrottling
 from djangorestframework.response import Response
 
 
 class MockView(APIView):
-    permission_classes = (PerUserThrottling,)
-    throttle = '3/sec'
+    throttle_classes = (PerUserThrottling,)
+    rate = '3/sec'
 
     def get(self, request):
         return Response('foo')
 
 
 class MockView_PerViewThrottling(MockView):
-    permission_classes = (PerViewThrottling,)
+    throttle_classes = (PerViewThrottling,)
 
 
 class MockView_MinuteThrottling(MockView):
-    throttle = '3/min'
+    rate = '3/min'
 
 
 class ThrottlingTests(TestCase):
@@ -51,7 +51,7 @@ class ThrottlingTests(TestCase):
         """
         Explicitly set the timer, overriding time.time()
         """
-        view.permission_classes[0].timer = lambda self: value
+        view.throttle_classes[0].timer = lambda self: value
 
     def test_request_throttling_expires(self):
         """
@@ -101,17 +101,20 @@ class ThrottlingTests(TestCase):
         for timer, expect in expected_headers:
             self.set_throttle_timer(view, timer)
             response = view.as_view()(request)
-            self.assertEquals(response['X-Throttle'], expect)
+            if expect is not None:
+                self.assertEquals(response['X-Throttle-Wait-Seconds'], expect)
+            else:
+                self.assertFalse('X-Throttle-Wait-Seconds' in response.headers)
 
     def test_seconds_fields(self):
         """
         Ensure for second based throttles.
         """
         self.ensure_response_header_contains_proper_throttle_field(MockView,
-         ((0, 'status=SUCCESS; next=0.33 sec'),
-          (0, 'status=SUCCESS; next=0.50 sec'),
-          (0, 'status=SUCCESS; next=1.00 sec'),
-          (0, 'status=FAILURE; next=1.00 sec')
+         ((0, None),
+          (0, None),
+          (0, None),
+          (0, '1')
          ))
 
     def test_minutes_fields(self):
@@ -119,10 +122,10 @@ class ThrottlingTests(TestCase):
         Ensure for minute based throttles.
         """
         self.ensure_response_header_contains_proper_throttle_field(MockView_MinuteThrottling,
-         ((0, 'status=SUCCESS; next=20.00 sec'),
-          (0, 'status=SUCCESS; next=30.00 sec'),
-          (0, 'status=SUCCESS; next=60.00 sec'),
-          (0, 'status=FAILURE; next=60.00 sec')
+         ((0, None),
+          (0, None),
+          (0, None),
+          (0, '60')
          ))
 
     def test_next_rate_remains_constant_if_followed(self):
@@ -131,9 +134,9 @@ class ThrottlingTests(TestCase):
         the throttling rate should stay constant.
         """
         self.ensure_response_header_contains_proper_throttle_field(MockView_MinuteThrottling,
-         ((0, 'status=SUCCESS; next=20.00 sec'),
-          (20, 'status=SUCCESS; next=20.00 sec'),
-          (40, 'status=SUCCESS; next=20.00 sec'),
-          (60, 'status=SUCCESS; next=20.00 sec'),
-          (80, 'status=SUCCESS; next=20.00 sec')
+         ((0, None),
+          (20, None),
+          (40, None),
+          (60, None),
+          (80, None)
          ))

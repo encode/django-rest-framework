@@ -81,7 +81,7 @@ class BaseParser(object):
         Should return parsed data, or a DataAndFiles object consisting of the
         parsed data and files.
         """
-        raise NotImplementedError(".parse_stream() Must be overridden to be implemented.")
+        raise NotImplementedError(".parse_stream() must be overridden.")
 
 
 class JSONParser(BaseParser):

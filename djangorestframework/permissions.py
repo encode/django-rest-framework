@@ -5,10 +5,6 @@ for checking if a request passes a certain set of constraints.
 Permission behavior is provided by mixing the :class:`mixins.PermissionsMixin` class into a :class:`View` class.
 """
 
-from django.core.cache import cache
-from djangorestframework.exceptions import PermissionDenied, Throttled
-import time
-
 __all__ = (
     'BasePermission',
     'FullAnonAccess',
@@ -32,20 +28,11 @@ class BasePermission(object):
         """
         self.view = view
 
-    def check_permission(self, auth):
+    def check_permission(self, request, obj=None):
         """
         Should simply return, or raise an :exc:`response.ImmediateResponse`.
         """
-        pass
-
-
-class FullAnonAccess(BasePermission):
-    """
-    Allows full access.
-    """
-
-    def check_permission(self, user):
-        pass
+        raise NotImplementedError(".check_permission() must be overridden.")
 
 
 class IsAuthenticated(BasePermission):
@@ -53,9 +40,10 @@ class IsAuthenticated(BasePermission):
     Allows access only to authenticated users.
     """
 
-    def check_permission(self, user):
-        if not user.is_authenticated():
-            raise PermissionDenied()
+    def check_permission(self, request, obj=None):
+        if request.user.is_authenticated():
+            return True
+        return False
 
 
 class IsAdminUser(BasePermission):
@@ -63,20 +51,22 @@ class IsAdminUser(BasePermission):
     Allows access only to admin users.
     """
 
-    def check_permission(self, user):
-        if not user.is_staff:
-            raise PermissionDenied()
+    def check_permission(self, request, obj=None):
+        if request.user.is_staff:
+            return True
+        return False
 
 
-class IsUserOrIsAnonReadOnly(BasePermission):
+class IsAuthenticatedOrReadOnly(BasePermission):
     """
     The request is authenticated as a user, or is a read-only request.
     """
 
-    def check_permission(self, user):
-        if (not user.is_authenticated() and
-            self.view.method not in SAFE_METHODS):
-            raise PermissionDenied()
+    def check_permission(self, request, obj=None):
+        if (request.user.is_authenticated() or
+            request.method in SAFE_METHODS):
+            return True
+        return False
 
 
 class DjangoModelPermissions(BasePermission):
@@ -114,128 +104,10 @@ class DjangoModelPermissions(BasePermission):
         }
         return [perm % kwargs for perm in self.perms_map[method]]
 
-    def check_permission(self, user):
-        method = self.view.method
-        model_cls = self.view.resource.model
-        perms = self.get_required_permissions(method, model_cls)
+    def check_permission(self, request, obj=None):
+        model_cls = self.view.model
+        perms = self.get_required_permissions(request.method, model_cls)
 
-        if not user.is_authenticated or not user.has_perms(perms):
-            raise PermissionDenied()
-
-
-class BaseThrottle(BasePermission):
-    """
-    Rate throttling of requests.
-
-    The rate (requests / seconds) is set by a :attr:`throttle` attribute
-    on the :class:`.View` class.  The attribute is a string of the form 'number of
-    requests/period'.
-
-    Period should be one of: ('s', 'sec', 'm', 'min', 'h', 'hour', 'd', 'day')
-
-    Previous request information used for throttling is stored in the cache.
-    """
-
-    attr_name = 'throttle'
-    default = '0/sec'
-    timer = time.time
-
-    def get_cache_key(self):
-        """
-        Should return a unique cache-key which can be used for throttling.
-        Must be overridden.
-        """
-        pass
-
-    def check_permission(self, auth):
-        """
-        Check the throttling.
-        Return `None` or raise an :exc:`.ImmediateResponse`.
-        """
-        num, period = getattr(self.view, self.attr_name, self.default).split('/')
-        self.num_requests = int(num)
-        self.duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[period[0]]
-        self.auth = auth
-        self.check_throttle()
-
-    def check_throttle(self):
-        """
-        Implement the check to see if the request should be throttled.
-
-        On success calls :meth:`throttle_success`.
-        On failure calls :meth:`throttle_failure`.
-        """
-        self.key = self.get_cache_key()
-        self.history = cache.get(self.key, [])
-        self.now = self.timer()
-
-        # Drop any requests from the history which have now passed the
-        # throttle duration
-        while self.history and self.history[-1] <= self.now - self.duration:
-            self.history.pop()
-        if len(self.history) >= self.num_requests:
-            self.throttle_failure()
-        else:
-            self.throttle_success()
-
-    def throttle_success(self):
-        """
-        Inserts the current request's timestamp along with the key
-        into the cache.
-        """
-        self.history.insert(0, self.now)
-        cache.set(self.key, self.history, self.duration)
-        header = 'status=SUCCESS; next=%.2f sec' % self.next()
-        self.view.headers['X-Throttle'] = header
-
-    def throttle_failure(self):
-        """
-        Called when a request to the API has failed due to throttling.
-        Raises a '503 service unavailable' response.
-        """
-        wait = self.next()
-        header = 'status=FAILURE; next=%.2f sec' % wait
-        self.view.headers['X-Throttle'] = header
-        raise Throttled(wait)
-
-    def next(self):
-        """
-        Returns the recommended next request time in seconds.
-        """
-        if self.history:
-            remaining_duration = self.duration - (self.now - self.history[-1])
-        else:
-            remaining_duration = self.duration
-
-        available_requests = self.num_requests - len(self.history) + 1
-
-        return remaining_duration / float(available_requests)
-
-
-class PerUserThrottling(BaseThrottle):
-    """
-    Limits the rate of API calls that may be made by a given user.
-
-    The user id will be used as a unique identifier if the user is
-    authenticated. For anonymous requests, the IP address of the client will
-    be used.
-    """
-
-    def get_cache_key(self):
-        if self.auth.is_authenticated():
-            ident = self.auth.id
-        else:
-            ident = self.view.request.META.get('REMOTE_ADDR', None)
-        return 'throttle_user_%s' % ident
-
-
-class PerViewThrottling(BaseThrottle):
-    """
-    Limits the rate of API calls that may be used on a given view.
-
-    The class name of the view is used as a unique identifier to
-    throttle against.
-    """
-
-    def get_cache_key(self):
-        return 'throttle_view_%s' % self.view.__class__.__name__
+        if request.user.is_authenticated() and request.user.has_perms(perms, obj):
+            return True
+        return False

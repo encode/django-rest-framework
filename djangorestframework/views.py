@@ -18,7 +18,7 @@ from djangorestframework.compat import View as _View, apply_markdown
 from djangorestframework.response import Response
 from djangorestframework.request import Request
 from djangorestframework.settings import api_settings
-from djangorestframework import parsers, authentication, permissions, status, exceptions, mixins
+from djangorestframework import parsers, authentication, status, exceptions, mixins
 
 
 __all__ = (
@@ -86,7 +86,12 @@ class APIView(_View):
     List of all authenticating methods to attempt.
     """
 
-    permission_classes = (permissions.FullAnonAccess,)
+    throttle_classes = ()
+    """
+    List of all throttles to check.
+    """
+
+    permission_classes = ()
     """
     List of all permissions that must be checked.
     """
@@ -195,12 +200,27 @@ class APIView(_View):
         """
         return [permission(self) for permission in self.permission_classes]
 
-    def check_permissions(self, user):
+    def get_throttles(self):
         """
-        Check user permissions and either raise an ``ImmediateResponse`` or return.
+        Instantiates and returns the list of thottles that this view requires.
+        """
+        return [throttle(self) for throttle in self.throttle_classes]
+
+    def check_permissions(self, request, obj=None):
+        """
+        Check user permissions and either raise an ``PermissionDenied`` or return.
         """
         for permission in self.get_permissions():
-            permission.check_permission(user)
+            if not permission.check_permission(request, obj):
+                raise exceptions.PermissionDenied()
+
+    def check_throttles(self, request):
+        """
+        Check throttles and either raise a `Throttled` exception or return.
+        """
+        for throttle in self.get_throttles():
+            if not throttle.check_throttle(request):
+                raise exceptions.Throttled(throttle.wait())
 
     def initial(self, request, *args, **kargs):
         """
@@ -232,6 +252,9 @@ class APIView(_View):
         Handle any exception that occurs, by returning an appropriate response,
         or re-raising the error.
         """
+        if isinstance(exc, exceptions.Throttled):
+            self.headers['X-Throttle-Wait-Seconds'] = '%d' % exc.wait
+
         if isinstance(exc, exceptions.APIException):
             return Response({'detail': exc.detail}, status=exc.status_code)
         elif isinstance(exc, Http404):
@@ -255,8 +278,9 @@ class APIView(_View):
         try:
             self.initial(request, *args, **kwargs)
 
-            # check that user has the relevant permissions
-            self.check_permissions(request.user)
+            # Check that the request is allowed
+            self.check_permissions(request)
+            self.check_throttles(request)
 
             # Get the appropriate handler method
             if request.method.lower() in self.http_method_names:
@@ -283,11 +307,12 @@ class BaseView(APIView):
     serializer_class = None
 
     def get_serializer(self, data=None, files=None, instance=None):
+        # TODO: add support for files
         context = {
             'request': self.request,
             'format': self.kwargs.get('format', None)
         }
-        return self.serializer_class(data, context=context)
+        return self.serializer_class(data, instance=instance, context=context)
 
 
 class MultipleObjectBaseView(MultipleObjectMixin, BaseView):
@@ -301,7 +326,13 @@ class SingleObjectBaseView(SingleObjectMixin, BaseView):
     """
     Base class for generic views onto a model instance.
     """
-    pass
+
+    def get_object(self):
+        """
+        Override default to add support for object-level permissions.
+        """
+        super(self, SingleObjectBaseView).get_object()
+        self.check_permissions(self.request, self.object)
 
 
 # Concrete view classes that provide method handlers
