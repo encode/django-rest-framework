@@ -49,7 +49,7 @@ If you're intending to use the browserable API you'll want to add REST framework
 
     urlpatterns = patterns('',
         ...
-        url(r'^auth', include('djangorestframework.urls', namespace='djangorestframework'))
+        url(r'^api-auth/', include('djangorestframework.urls', namespace='djangorestframework'))
     )
  
 ## Quickstart
