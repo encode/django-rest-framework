@@ -70,24 +70,40 @@ Default: `djangorestframework.pagination.PaginationSerializer`
 
 ## FORMAT_SUFFIX_KWARG
 
-Default: `format`
+Default: `'format'`
 
-## UNAUTHENTICATED_USER_CLASS
+## UNAUTHENTICATED_USER
+
+The class that should be used to initialize `request.user` for unauthenticated requests.
 
 Default: `django.contrib.auth.models.AnonymousUser`
 
+## UNAUTHENTICATED_USER
+
+The class that should be used to initialize `request.auth` for unauthenticated requests.
+
+Default: `None`
+
 ## FORM_METHOD_OVERRIDE
 
-Default: `_method`
+The name of a form field that may be used to override the HTTP method of the form.
+
+Default: `'_method'`
 
 ## FORM_CONTENT_OVERRIDE
 
-Default: `_content`
+The name of a form field that may be used to override the content of the form payload.
+
+Default: `'_content'`
 
 ## FORM_CONTENTTYPE_OVERRIDE
 
-Default: `_content_type`
+The name of a form field that may be used to override the content type of the form payload.
+
+Default: `'_content_type'`
 
 ## URL_ACCEPT_OVERRIDE
 
-Default: `_accept`
+The name of a URL parameter that may be used to override the HTTP `Accept` header.
+
+Default: `'_accept'`

@@ -6,12 +6,21 @@ REST framework provides a number of authentication policies out of the box, and 
 
 Authentication will run the first time either the `request.user` or `request.auth` properties are accessed, and determines how those properties are initialized.
 
+## How authentication is determined
+
+Authentication is always set as a list of classes.  REST framework will attempt to authenticate with each class in the list, and will set `request.user` and `request.auth` using the return value of the first class that successfully authenticates.
+
+If no class authenticates, `request.user` will be set to an instance of `django.contrib.auth.models.AnonymousUser`, and `request.auth` will be set to `None`.
+
+The value of `request.user` and `request.auth` for unauthenticated requests can be modified using the [`UNAUTHENTICATED_USER`][UNAUTHENTICATED_USER] and [`UNAUTHENTICATED_TOKEN`][UNAUTHENTICATED_TOKEN] settings.
+
 ## Setting the authentication policy
 
-The default authentication policy may be set globally, using the `DEFAULT_AUTHENTICATION_CLASSES` setting.  For example.
+The default authentication policy may be set globally, using the `DEFAULT_AUTHENTICATION` setting.  For example.
 
     API_SETTINGS = {
-        'DEFAULT_AUTHENTICATION_CLASSES': (
+        'DEFAULT_AUTHENTICATION': (
+            'djangorestframework.authentication.UserBasicAuthentication',
             'djangorestframework.authentication.SessionAuthentication',
         )
     }
@@ -19,7 +28,7 @@ The default authentication policy may be set globally, using the `DEFAULT_AUTHEN
 You can also set the authentication policy on a per-view basis, using the `APIView` class based views.
 
     class ExampleView(APIView):
-        authentication_classes = (SessionAuthentication,)
+        authentication_classes = (SessionAuthentication, UserBasicAuthentication)
 
         def get(self, request, format=None):
             content = {
@@ -30,7 +39,10 @@ You can also set the authentication policy on a per-view basis, using the `APIVi
 
 Or, if you're using the `@api_view` decorator with function based views.
 
-    @api_view(allowed=('GET',), authentication_classes=(SessionAuthentication,))
+    @api_view(
+        allowed=('GET',),
+        authentication_classes=(SessionAuthentication, UserBasicAuthentication)
+    )
     def example_view(request, format=None):
         content = {
             'user': unicode(request.user),  # `django.contrib.auth.User` instance. 
@@ -86,3 +98,5 @@ To implement a custom authentication policy, subclass `BaseAuthentication` and o
 [oauth]: http://oauth.net/2/
 [permission]: permissions.md
 [throttling]: throttling.md
+[UNAUTHENTICATED_USER]: settings.md#UNAUTHENTICATED_USER
+[UNAUTHENTICATED_TOKEN]: settings.md#UNAUTHENTICATED_TOKEN
