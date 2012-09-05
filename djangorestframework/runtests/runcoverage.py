@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Useful tool to run the test suite for djangorestframework and generate a coverage report.
 """
@@ -10,7 +11,7 @@ import sys
 os.environ['DJANGO_SETTINGS_MODULE'] = 'djangorestframework.runtests.settings'
 
 from coverage import coverage
-from itertools import chain
+
 
 def main():
     """Run the tests for djangorestframework and generate a coverage report."""
@@ -57,7 +58,8 @@ def main():
         cov_files.extend([os.path.join(path, file) for file in files if file.endswith('.py')])
 
     cov.report(cov_files)
-    cov.xml_report(cov_files)
+    if '--html' in sys.argv:
+        cov.html_report(cov_files, directory='coverage')
     sys.exit(failures)
 
 if __name__ == '__main__':
