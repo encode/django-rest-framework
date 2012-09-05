@@ -3,15 +3,11 @@
 *~
 .*
 
-coverage.xml
-env
-docs/build
-html
-htmlcov
-build/*
-dist/*
-xmlrunner/*
-djangorestframework.egg-info/*
+html/
+coverage/
+build/
+dist/
+djangorestframework.egg-info/
 MANIFEST
 
 !.gitignore
