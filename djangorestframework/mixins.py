@@ -2,27 +2,6 @@ from djangorestframework import status
 from djangorestframework.response import Response
 
 
-class MetadataMixin(object):
-    """
-    Should be mixed in with any `BaseView`.
-    """
-    def metadata(self, request, *args, **kwargs):
-        content = {
-            'name': self.get_name(),
-            'description': self.get_description(),
-            'renders': self._rendered_media_types,
-            'parses': self._parsed_media_types,
-        }
-        #  TODO: Add 'fields', from serializer info.
-        # form = self.get_bound_form()
-        # if form is not None:
-        #     field_name_types = {}
-        #     for name, field in form.fields.iteritems():
-        #         field_name_types[name] = field.__class__.__name__
-        #     content['fields'] = field_name_types
-        raise Response(content, status=status.HTTP_200_OK)
-
-
 class CreateModelMixin(object):
     """
     Create a model instance.
@@ -83,3 +62,25 @@ class DestroyModelMixin(object):
         self.object = self.get_object()
         self.object.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class MetadataMixin(object):
+    """
+    Return a dicitonary of view metadata.
+    Should be mixed in with any `BaseView`.
+    """
+    def metadata(self, request, *args, **kwargs):
+        content = {
+            'name': self.get_name(),
+            'description': self.get_description(),
+            'renders': self._rendered_media_types,
+            'parses': self._parsed_media_types,
+        }
+        #  TODO: Add 'fields', from serializer info.
+        # form = self.get_bound_form()
+        # if form is not None:
+        #     field_name_types = {}
+        #     for name, field in form.fields.iteritems():
+        #         field_name_types[name] = field.__class__.__name__
+        #     content['fields'] = field_name_types
+        raise Response(content, status=status.HTTP_200_OK)

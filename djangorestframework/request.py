@@ -234,6 +234,9 @@ class Request(object):
             user = authentication.authenticate(self)
             if user:
                 return user
+        return self._not_authenticated()
+
+    def _not_authenticated(self):
         return AnonymousUser()
 
     def __getattr__(self, name):

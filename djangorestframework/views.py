@@ -224,18 +224,19 @@ class APIView(_View):
 
     def initial(self, request, *args, **kargs):
         """
-        This method is a hook for any code that needs to run prior to
-        anything else.
-        Required if you want to do things like set `request.upload_handlers`
-        before the authentication and dispatch handling is run.
+        This method runs prior to anything else in the view.
+        It should return the initial request object.
+
+        You may need to override this if you want to do things like set
+        `request.upload_handlers` before the authentication and dispatch
+        handling is run.
         """
-        pass
+        return Request(request, parsers=self.parsers, authentication=self.authentication)
 
     def final(self, request, response, *args, **kargs):
         """
-        This method is a hook for any code that needs to run after everything
-        else in the view.
-        Returns the final response object.
+        This method runs after everything else in the view.
+        It should return the final response object.
         """
         if isinstance(response, Response):
             response.view = self
@@ -269,14 +270,12 @@ class APIView(_View):
     # all other authentication is CSRF exempt.
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
-        request = Request(request, parsers=self.parsers, authentication=self.authentication)
-        self.request = request
         self.args = args
         self.kwargs = kwargs
         self.headers = self.default_response_headers
 
         try:
-            self.initial(request, *args, **kwargs)
+            self.request = self.initial(request, *args, **kwargs)
 
             # Check that the request is allowed
             self.check_permissions(request)
