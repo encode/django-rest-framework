@@ -91,6 +91,7 @@ General guides to using REST framework.
 
 * [CSRF][csrf]
 * [Form overloading][formoverloading]
+* [Contributing to REST framework][contributing]
 * [Credits][credits]
 
 ## Development
@@ -151,10 +152,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [permissions]: api-guide/permissions.md
 [throttling]: api-guide/throttling.md
 [exceptions]: api-guide/exceptions.md
-[status]: api-guide/status.md
+[status]: api-guide/status-codes.md
 [reverse]: api-guide/reverse.md
 [settings]: api-guide/settings.md
 
 [csrf]: topics/csrf.md
 [formoverloading]: topics/formoverloading.md
+[contributing]: topics/contributing.md
 [credits]: topics/credits.md
