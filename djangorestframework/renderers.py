@@ -121,8 +121,8 @@ class JSONPRenderer(JSONRenderer):
     Renderer which serializes to JSONP
     """
 
-    media_type = 'application/json-p'
-    format = 'json-p'
+    media_type = 'application/javascript'
+    format = 'jsonp'
     renderer_class = JSONRenderer
     callback_parameter = 'callback'
 
