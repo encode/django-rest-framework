@@ -127,6 +127,7 @@ margin-top: 5px;
             <div class="well affix span3">
               <ul class="nav nav-list side-nav">
 <li class="main"><a href="#authentication">Authentication</a></li>
+<li><a href="#how-authentication-is-determined">How authentication is determined</a></li>
 <li><a href="#setting-the-authentication-policy">Setting the authentication policy</a></li>
 <li><a href="#userbasicauthentication">UserBasicAuthentication</a></li>
 <li><a href="#tokenbasicauthentication">TokenBasicAuthentication</a></li>
@@ -143,17 +144,25 @@ margin-top: 5px;
 <p>Authentication is the mechanism of associating an incoming request with a set of identifying credentials, such as the user the request came from, or the token that it was signed with.  The <a href="permissions">permission</a> and <a href="throttling">throttling</a> policies can then use those credentials to determine if the request should be permitted.</p>
 <p>REST framework provides a number of authentication policies out of the box, and also allows you to implement custom policies.</p>
 <p>Authentication will run the first time either the <code>request.user</code> or <code>request.auth</code> properties are accessed, and determines how those properties are initialized.</p>
+<p>The <code>request.user</code> property will typically be set to an instance of the <code>contrib.auth</code> package's <code>User</code> class.</p>
+<p>The <code>request.auth</code> property is used for any additional authentication information, for example, it may be used to represent an authentication token that the request was signed with.<br />
+</p>
+<h2 id="how-authentication-is-determined">How authentication is determined</h2>
+<p>Authentication is always set as a list of classes.  REST framework will attempt to authenticate with each class in the list, and will set <code>request.user</code> and <code>request.auth</code> using the return value of the first class that successfully authenticates.</p>
+<p>If no class authenticates, <code>request.user</code> will be set to an instance of <code>django.contrib.auth.models.AnonymousUser</code>, and <code>request.auth</code> will be set to <code>None</code>.</p>
+<p>The value of <code>request.user</code> and <code>request.auth</code> for unauthenticated requests can be modified using the <code>UNAUTHENTICATED_USER</code> and <code>UNAUTHENTICATED_TOKEN</code> settings.</p>
 <h2 id="setting-the-authentication-policy">Setting the authentication policy</h2>
-<p>The default authentication policy may be set globally, using the <code>DEFAULT_AUTHENTICATION_CLASSES</code> setting.  For example.</p>
+<p>The default authentication policy may be set globally, using the <code>DEFAULT_AUTHENTICATION</code> setting.  For example.</p>
 <pre><code>API_SETTINGS = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION': (
+        'djangorestframework.authentication.UserBasicAuthentication',
         'djangorestframework.authentication.SessionAuthentication',
     )
 }
 </code></pre>
 <p>You can also set the authentication policy on a per-view basis, using the <code>APIView</code> class based views.</p>
 <pre><code>class ExampleView(APIView):
-    authentication_classes = (SessionAuthentication,)
+    authentication_classes = (SessionAuthentication, UserBasicAuthentication)
 
     def get(self, request, format=None):
         content = {
@@ -163,7 +172,10 @@ margin-top: 5px;
         return Response(content)
 </code></pre>
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
-<pre><code>@api_view(allowed=('GET',), authentication_classes=(SessionAuthentication,))
+<pre><code>@api_view(
+    allowed=('GET',),
+    authentication_classes=(SessionAuthentication, UserBasicAuthentication)
+)
 def example_view(request, format=None):
     content = {
         'user': unicode(request.user),  # `django.contrib.auth.User` instance. 

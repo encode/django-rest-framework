@@ -135,7 +135,8 @@ margin-top: 5px;
 <li><a href="#default_model_serializer">DEFAULT_MODEL_SERIALIZER</a></li>
 <li><a href="#default_pagination_serializer">DEFAULT_PAGINATION_SERIALIZER</a></li>
 <li><a href="#format_suffix_kwarg">FORMAT_SUFFIX_KWARG</a></li>
-<li><a href="#unauthenticated_user_class">UNAUTHENTICATED_USER_CLASS</a></li>
+<li><a href="#unauthenticated_user">UNAUTHENTICATED_USER</a></li>
+<li><a href="#unauthenticated_token">UNAUTHENTICATED_TOKEN</a></li>
 <li><a href="#form_method_override">FORM_METHOD_OVERRIDE</a></li>
 <li><a href="#form_content_override">FORM_CONTENT_OVERRIDE</a></li>
 <li><a href="#form_contenttype_override">FORM_CONTENTTYPE_OVERRIDE</a></li>
@@ -147,8 +148,8 @@ margin-top: 5px;
 
         <div class="span9">
 <h1 id="settings">Settings</h1>
-<p>Settings for REST framework are all namespaced in the <code>API_SETTINGS</code> setting.
-For example your project's <code>settings.py</code> file might look like this:</p>
+<p>Configuration for REST framework is all namespaced inside the <code>API_SETTINGS</code> setting.</p>
+<p>For example your project's <code>settings.py</code> file might look like this:</p>
 <pre><code>API_SETTINGS = {
     'DEFAULT_RENDERERS': (
         'djangorestframework.renderers.YAMLRenderer',
@@ -189,25 +190,39 @@ For example your project's <code>settings.py</code> file might look like this:</
 )
 </code></pre>
 <h2 id="default_permissions">DEFAULT_PERMISSIONS</h2>
+<p>A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view.</p>
 <p>Default: <code>()</code></p>
 <h2 id="default_throttles">DEFAULT_THROTTLES</h2>
+<p>A list or tuple of throttle classes, that determines the default set of throttles checked at the start of a view.</p>
 <p>Default: <code>()</code></p>
 <h2 id="default_model_serializer">DEFAULT_MODEL_SERIALIZER</h2>
 <p>Default: <code>djangorestframework.serializers.ModelSerializer</code></p>
 <h2 id="default_pagination_serializer">DEFAULT_PAGINATION_SERIALIZER</h2>
 <p>Default: <code>djangorestframework.pagination.PaginationSerializer</code></p>
 <h2 id="format_suffix_kwarg">FORMAT_SUFFIX_KWARG</h2>
-<p>Default: <code>format</code></p>
-<h2 id="unauthenticated_user_class">UNAUTHENTICATED_USER_CLASS</h2>
+<p>Default: <code>'format'</code></p>
+<h2 id="unauthenticated_user">UNAUTHENTICATED_USER</h2>
+<p>The class that should be used to initialize <code>request.user</code> for unauthenticated requests.</p>
 <p>Default: <code>django.contrib.auth.models.AnonymousUser</code></p>
+<h2 id="unauthenticated_token">UNAUTHENTICATED_TOKEN</h2>
+<p>The class that should be used to initialize <code>request.auth</code> for unauthenticated requests.</p>
+<p>Default: <code>None</code></p>
 <h2 id="form_method_override">FORM_METHOD_OVERRIDE</h2>
-<p>Default: <code>_method</code></p>
+<p>The name of a form field that may be used to override the HTTP method of the form.</p>
+<p>If the value of this setting is <code>None</code> then form method overloading will be disabled.</p>
+<p>Default: <code>'_method'</code></p>
 <h2 id="form_content_override">FORM_CONTENT_OVERRIDE</h2>
-<p>Default: <code>_content</code></p>
+<p>The name of a form field that may be used to override the content of the form payload.  Must be used together with <code>FORM_CONTENTTYPE_OVERRIDE</code>.</p>
+<p>If either setting is <code>None</code> then form content overloading will be disabled.</p>
+<p>Default: <code>'_content'</code></p>
 <h2 id="form_contenttype_override">FORM_CONTENTTYPE_OVERRIDE</h2>
-<p>Default: <code>_content_type</code></p>
+<p>The name of a form field that may be used to override the content type of the form payload.  Must be used together with <code>FORM_CONTENT_OVERRIDE</code>.</p>
+<p>If either setting is <code>None</code> then form content overloading will be disabled.</p>
+<p>Default: <code>'_content_type'</code></p>
 <h2 id="url_accept_override">URL_ACCEPT_OVERRIDE</h2>
-<p>Default: <code>_accept</code></p>
+<p>The name of a URL parameter that may be used to override the HTTP <code>Accept</code> header.</p>
+<p>If the value of this setting is <code>None</code> then URL accept overloading will be disabled.</p>
+<p>Default: <code>'_accept'</code></p>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->
