@@ -68,7 +68,7 @@ To add Django REST framework to a Django project:
 
     urlpatterns = patterns('',
         ...
-        url(r'^restframework', include('djangorestframework.urls', namespace='djangorestframework'))
+        url(r'^api-auth/', include('djangorestframework.urls', namespace='djangorestframework'))
     )
 
 For more information on settings take a look at the :ref:`setup` section.
