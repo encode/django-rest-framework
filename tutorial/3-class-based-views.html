@@ -94,7 +94,8 @@ margin-top: 5px;
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/throttling">Throttling</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/exceptions">Exceptions</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/status-codes">Status codes</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/urls">Returning URLs</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/reverse">Returning URLs</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/settings">Settings</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -102,6 +103,7 @@ margin-top: 5px;
                 <ul class="dropdown-menu">
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/csrf">Working with AJAX and CSRF</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/formoverloading">Browser based PUT, PATCH and DELETE</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/credits">Credits</a></li>
                 </ul>
               </li>
@@ -144,9 +146,9 @@ from blog.serializers import ComentSerializer
 from django.http import Http404
 from djangorestframework.views import APIView
 from djangorestframework.response import Response
-from djangorestframework.status import *
+from djangorestframework.status import status
 
-class CommentRoot(views.APIView):
+class CommentRoot(APIView):
     """
     List all comments, or create a new comment.
     """ 
@@ -161,19 +163,20 @@ class CommentRoot(views.APIView):
             comment = serializer.object
             comment.save()
             return Response(serializer.serialized, status=HTTP_201_CREATED)
-        else:
-            return Response(serializer.serialized_errors, status=HTTP_400_BAD_REQUEST)
+        return Response(serializer.serialized_errors, status=HTTP_400_BAD_REQUEST)
+
+ comment_root = CommentRoot.as_view()
 </code></pre>
 <p>So far, so good.  It looks pretty similar to the previous case, but we've got better seperation between the different HTTP methods.  We'll also need to update the instance view. </p>
-<pre><code>class CommentInstance(views.APIView):
+<pre><code>class CommentInstance(APIView):
     """
     Retrieve, update or delete a comment instance.
     """
 
     def get_object(self, pk):
         try:
-            return Poll.objects.get(pk=pk)
-        except Poll.DoesNotExist:
+            return Comment.objects.get(pk=pk)
+        except Comment.DoesNotExist:
             raise Http404
 
     def get(self, request, pk, format=None):
@@ -188,54 +191,53 @@ class CommentRoot(views.APIView):
             comment = serializer.deserialized
             comment.save()
             return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        return Response(serializer.error_data, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
         comment = self.get_object(pk)
         comment.delete()
-        return Response(status=HTTP_204_NO_CONTENT)
-</code></pre>
-<p>That's looking good.  Again, it's still pretty similar to the function based view right now.</p>
-<p>Since we're now working with class based views, rather than function based views, we'll also need to update our urlconf slightly.</p>
-<pre><code>from blogpost import views
-from djangorestframework.urlpatterns import format_suffix_patterns
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-urlpatterns = patterns('',
-    url(r'^$', views.CommentRoot.as_view()),
-    url(r'^(?P&lt;id&gt;[0-9]+)$', views.CommentInstance.as_view())
-)
-
-urlpatterns = format_suffix_patterns(urlpatterns)
+    comment_instance = CommentInstance.as_view()
 </code></pre>
-<p>Okay, we're done.  If you run the development server everything should be working just as before.</p>
+<p>That's looking good.  Again, it's still pretty similar to the function based view right now.
+Okay, we're done.  If you run the development server everything should be working just as before.</p>
 <h2 id="using-mixins">Using mixins</h2>
 <p>One of the big wins of using class based views is that it allows us to easily compose reusable bits of behaviour.</p>
 <p>The create/retrieve/update/delete operations that we've been using so far is going to be pretty simliar for any model-backed API views we create.  Those bits of common behaviour are implemented in REST framework's mixin classes.</p>
 <p>We can compose those mixin classes, to recreate our existing API behaviour with less code.</p>
 <pre><code>from blog.models import Comment
 from blog.serializers import CommentSerializer
-from djangorestframework import mixins, views
+from djangorestframework import mixins
+from djangorestframework import views
 
-class CommentRoot(mixins.ListModelQuerysetMixin,
-                  mixins.CreateModelInstanceMixin,
-                  views.BaseRootAPIView):
+class CommentRoot(mixins.ListModelMixin,
+                  mixins.CreateModelMixin,
+                  views.MultipleObjectBaseView):
     model = Comment
     serializer_class = CommentSerializer
 
-    get = list
-    post = create
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
-class CommentInstance(mixins.RetrieveModelInstanceMixin,
-                      mixins.UpdateModelInstanceMixin,
-                      mixins.DestroyModelInstanceMixin,
-                      views.BaseInstanceAPIView):
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+class CommentInstance(mixins.RetrieveModelMixin,
+                      mixins.UpdateModelMixin,
+                      mixins.DestroyModelMixin,
+                      views.SingleObjectBaseView):
     model = Comment
     serializer_class = CommentSerializer
 
-    get = retrieve
-    put = update
-    delete = destroy
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 </code></pre>
 <h2 id="reusing-generic-class-based-views">Reusing generic class based views</h2>
 <p>That's a lot less code than before, but we can go one step further still.  REST framework also provides a set of already mixed-in views.</p>
@@ -243,11 +245,11 @@ class CommentInstance(mixins.RetrieveModelInstanceMixin,
 from blog.serializers import CommentSerializer
 from djangorestframework import views
 
-class CommentRoot(views.RootAPIView):
+class CommentRoot(views.RootModelView):
     model = Comment
     serializer_class = CommentSerializer
 
-class CommentInstance(views.InstanceAPIView):
+class CommentInstance(views.InstanceModelView):
     model = Comment
     serializer_class = CommentSerializer
 </code></pre>

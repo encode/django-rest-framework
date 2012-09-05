@@ -94,7 +94,8 @@ margin-top: 5px;
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/throttling">Throttling</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/exceptions">Exceptions</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/status-codes">Status codes</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/urls">Returning URLs</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/reverse">Returning URLs</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/settings">Settings</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -102,6 +103,7 @@ margin-top: 5px;
                 <ul class="dropdown-menu">
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/csrf">Working with AJAX and CSRF</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/formoverloading">Browser based PUT, PATCH and DELETE</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/credits">Credits</a></li>
                 </ul>
               </li>
@@ -164,14 +166,18 @@ request.DATA  # Handles arbitrary data.  Works any HTTP request with content.
 <p>The wrappers also provide behaviour such as returning <code>405 Method Not Allowed</code> responses when appropriate, and handling any <code>ParseError</code> exception that occurs when accessing <code>request.DATA</code> with malformed input.</p>
 <h2 id="pulling-it-all-together">Pulling it all together</h2>
 <p>Okay, let's go ahead and start using these new components to write a few views. </p>
-<pre><code>from djangorestframework.decorators import api_view
-from djangorestframework.status import *
+<p>We don't need our <code>JSONResponse</code> class anymore, so go ahead and delete that.  Once that's done we can start refactoring our views slightly.</p>
+<pre><code>from blog.models import Comment
+from blog.serializers import CommentSerializer
+from djangorestframework import status
+from djangorestframework.decorators import api_view
+from djangorestframework.response import Response
 
-@api_view(allow=['GET', 'POST'])
+@api_view(['GET', 'POST'])
 def comment_root(request):
     """
     List all comments, or create a new comment.
-    """ 
+    """
     if request.method == 'GET':
         comments = Comment.objects.all()
         serializer = CommentSerializer(instance=comments)
@@ -182,12 +188,12 @@ def comment_root(request):
         if serializer.is_valid():
             comment = serializer.object
             comment.save()
-            return Response(serializer.data, status=HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            return Response(serializer.error_data, status=HTTP_400_BAD_REQUEST)
+            return Response(serializer.error_data, status=status.HTTP_400_BAD_REQUEST)
 </code></pre>
-<p>Our instance view is an improvement over the previous example.  It's slightly more concise, and the code now feels very similar to if we were working with the Forms API.</p>
-<pre><code>@api_view(allow=['GET', 'PUT', 'DELETE'])
+<p>Our instance view is an improvement over the previous example.  It's a little more concise, and the code now feels very similar to if we were working with the Forms API.  We're also using named status codes, which makes the response meanings more obvious.</p>
+<pre><code>@api_view(['GET', 'PUT', 'DELETE'])
 def comment_instance(request, pk):
     """
     Retrieve, update or delete a comment instance.
@@ -195,7 +201,7 @@ def comment_instance(request, pk):
     try:
         comment = Comment.objects.get(pk=pk)
     except Comment.DoesNotExist:
-        return Response(status=HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         serializer = CommentSerializer(instance=comment)
@@ -208,16 +214,16 @@ def comment_instance(request, pk):
             comment.save()
             return Response(serializer.data)
         else:
-            return Response(serializer.error_data, status=HTTP_400_BAD_REQUEST)
+            return Response(serializer.error_data, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
         comment.delete()
-        return Response(status=HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 </code></pre>
-<p>This should all feel very familiar - it looks a lot like working with forms in regular Django views.</p>
+<p>This should all feel very familiar - there's not a lot different to working with regular Django views.</p>
 <p>Notice that we're no longer explicitly tying our requests or responses to a given content type.  <code>request.DATA</code> can handle incoming <code>json</code> requests, but it can also handle <code>yaml</code> and other formats.  Similarly we're returning response objects with data, but allowing REST framework to render the response into the correct content type for us.</p>
 <h2 id="adding-optional-format-suffixes-to-our-urls">Adding optional format suffixes to our URLs</h2>
-<p>To take advantage of that, let's add support for format suffixes to our API endpoints, so that we can use URLs that explicitly refer to a given format.  That means our API will be able to handle URLs such as <a href="http://example.com/api/items/4.json">http://example.com/api/items/4.json</a>.</p>
+<p>To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints. Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as <a href="http://example.com/api/items/4.json">http://example.com/api/items/4.json</a>.</p>
 <p>Start by adding a <code>format</code> keyword argument to both of the views, like so.</p>
 <pre><code>def comment_root(request, format=None):
 </code></pre>
@@ -225,7 +231,8 @@ def comment_instance(request, pk):
 <pre><code>def comment_instance(request, pk, format=None):
 </code></pre>
 <p>Now update the <code>urls.py</code> file slightly, to append a set of <code>format_suffix_patterns</code> in addition to the existing URLs.</p>
-<pre><code>from djangorestframework.urlpatterns import format_suffix_patterns
+<pre><code>from django.conf.urls import patterns, url
+from djangorestframework.urlpatterns import format_suffix_patterns
 
 urlpatterns = patterns('blogpost.views',
     url(r'^$', 'comment_root'),

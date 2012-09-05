@@ -94,7 +94,8 @@ margin-top: 5px;
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/throttling">Throttling</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/exceptions">Exceptions</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/status-codes">Status codes</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/urls">Returning URLs</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/reverse">Returning URLs</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/settings">Settings</a></li>
                 </ul>
               </li>
               <li class="dropdown">
@@ -102,6 +103,7 @@ margin-top: 5px;
                 <ul class="dropdown-menu">
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/csrf">Working with AJAX and CSRF</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/formoverloading">Browser based PUT, PATCH and DELETE</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/credits">Credits</a></li>
                 </ul>
               </li>
@@ -179,7 +181,7 @@ pip install -r optionals.txt
 <p>If you're intending to use the browserable API you'll want to add REST framework's login and logout views.  Add the following to your root <code>urls.py</code> file.</p>
 <pre><code>urlpatterns = patterns('',
     ...
-    url(r'^auth', include('djangorestframework.urls', namespace='djangorestframework'))
+    url(r'^api-auth/', include('djangorestframework.urls', namespace='djangorestframework'))
 )
 </code></pre>
 <h2 id="quickstart">Quickstart</h2>
@@ -205,15 +207,18 @@ pip install -r optionals.txt
 <li><a href="api-guide/serializers.html">Serializers</a></li>
 <li><a href="api-guide/authentication.html">Authentication</a></li>
 <li><a href="api-guide/permissions.html">Permissions</a></li>
+<li><a href="api-guide/throttling.html">Throttling</a></li>
 <li><a href="api-guide/exceptions.html">Exceptions</a></li>
-<li><a href="api-guide/status.html">Status codes</a></li>
-<li><a href="api-guide/urls.html">Returning URLs</a></li>
+<li><a href="api-guide/status-codes.html">Status codes</a></li>
+<li><a href="api-guide/reverse.html">Returning URLs</a></li>
+<li><a href="api-guide/settings.html">Settings</a></li>
 </ul>
 <h2 id="topics">Topics</h2>
 <p>General guides to using REST framework.</p>
 <ul>
 <li><a href="topics/csrf.html">CSRF</a></li>
 <li><a href="topics/formoverloading.html">Form overloading</a></li>
+<li><a href="topics/contributing.html">Contributing to REST framework</a></li>
 <li><a href="topics/credits.html">Credits</a></li>
 </ul>
 <h2 id="development">Development</h2>
