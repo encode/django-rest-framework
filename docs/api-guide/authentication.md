@@ -6,13 +6,17 @@ REST framework provides a number of authentication policies out of the box, and 
 
 Authentication will run the first time either the `request.user` or `request.auth` properties are accessed, and determines how those properties are initialized.
 
+The `request.user` property will typically be set to an instance of the `contrib.auth` package's `User` class.
+
+The `request.auth` property is used for any additional authentication information, for example, it may be used to represent an authentication token that the request was signed with.  
+
 ## How authentication is determined
 
 Authentication is always set as a list of classes.  REST framework will attempt to authenticate with each class in the list, and will set `request.user` and `request.auth` using the return value of the first class that successfully authenticates.
 
 If no class authenticates, `request.user` will be set to an instance of `django.contrib.auth.models.AnonymousUser`, and `request.auth` will be set to `None`.
 
-The value of `request.user` and `request.auth` for unauthenticated requests can be modified using the [`UNAUTHENTICATED_USER`][UNAUTHENTICATED_USER] and [`UNAUTHENTICATED_TOKEN`][UNAUTHENTICATED_TOKEN] settings.
+The value of `request.user` and `request.auth` for unauthenticated requests can be modified using the `UNAUTHENTICATED_USER` and `UNAUTHENTICATED_TOKEN` settings.
 
 ## Setting the authentication policy
 
@@ -98,5 +102,3 @@ To implement a custom authentication policy, subclass `BaseAuthentication` and o
 [oauth]: http://oauth.net/2/
 [permission]: permissions.md
 [throttling]: throttling.md
-[UNAUTHENTICATED_USER]: settings.md#UNAUTHENTICATED_USER
-[UNAUTHENTICATED_TOKEN]: settings.md#UNAUTHENTICATED_TOKEN

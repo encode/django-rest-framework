@@ -11,7 +11,7 @@ The advantages of doing so are:
 * It's more explicit.
 * It leaves less work for your API clients.
 * There's no ambiguity about the meaning of the string when it's found in representations such as JSON that do not have a native URI type.
-* It allows use to easily do things like markup HTML representations with hyperlinks.
+* It makes it easy to do things like markup HTML representations with hyperlinks.
 
 REST framework provides two utility functions to make it more simple to return absolute URIs from your Web API.
 

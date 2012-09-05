@@ -1,6 +1,7 @@
 # Settings
 
-Settings for REST framework are all namespaced in the `API_SETTINGS` setting.
+Configuration for REST framework is all namespaced inside the `API_SETTINGS` setting.
+
 For example your project's `settings.py` file might look like this:
 
     API_SETTINGS = {
@@ -54,9 +55,13 @@ Default if `DEBUG` is `False`:
 
 ## DEFAULT_PERMISSIONS
 
+A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view.
+
 Default: `()`
 
 ## DEFAULT_THROTTLES
+
+A list or tuple of throttle classes, that determines the default set of throttles checked at the start of a view.
 
 Default: `()`
 
@@ -78,7 +83,7 @@ The class that should be used to initialize `request.user` for unauthenticated r
 
 Default: `django.contrib.auth.models.AnonymousUser`
 
-## UNAUTHENTICATED_USER
+## UNAUTHENTICATED_TOKEN
 
 The class that should be used to initialize `request.auth` for unauthenticated requests.
 
@@ -88,22 +93,30 @@ Default: `None`
 
 The name of a form field that may be used to override the HTTP method of the form.
 
+If the value of this setting is `None` then form method overloading will be disabled.
+
 Default: `'_method'`
 
 ## FORM_CONTENT_OVERRIDE
 
-The name of a form field that may be used to override the content of the form payload.
+The name of a form field that may be used to override the content of the form payload.  Must be used together with `FORM_CONTENTTYPE_OVERRIDE`.
+
+If either setting is `None` then form content overloading will be disabled.
 
 Default: `'_content'`
 
 ## FORM_CONTENTTYPE_OVERRIDE
 
-The name of a form field that may be used to override the content type of the form payload.
+The name of a form field that may be used to override the content type of the form payload.  Must be used together with `FORM_CONTENT_OVERRIDE`.
+
+If either setting is `None` then form content overloading will be disabled.
 
 Default: `'_content_type'`
 
 ## URL_ACCEPT_OVERRIDE
 
 The name of a URL parameter that may be used to override the HTTP `Accept` header.
+
+If the value of this setting is `None` then URL accept overloading will be disabled.
 
 Default: `'_accept'`
