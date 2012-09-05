@@ -79,9 +79,11 @@ The API guide is your complete reference manual to all the functionality provide
 * [Serializers][serializers]
 * [Authentication][authentication]
 * [Permissions][permissions]
+* [Throttling][throttling]
 * [Exceptions][exceptions]
 * [Status codes][status]
-* [Returning URLs][urls]
+* [Returning URLs][reverse]
+* [Settings][settings]
 
 ## Topics
 
@@ -147,9 +149,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [serializers]: api-guide/serializers.md
 [authentication]: api-guide/authentication.md
 [permissions]: api-guide/permissions.md
+[throttling]: api-guide/throttling.md
 [exceptions]: api-guide/exceptions.md
 [status]: api-guide/status.md
-[urls]: api-guide/urls.md
+[reverse]: api-guide/reverse.md
+[settings]: api-guide/settings.md
 
 [csrf]: topics/csrf.md
 [formoverloading]: topics/formoverloading.md
