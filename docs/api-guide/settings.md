@@ -40,17 +40,11 @@ Default:
 
 A list or tuple of authentication classes, that determines the default set of authenticators used when accessing the `request.user` or `request.auth` properties.
 
-Default if `DEBUG` is `True`:
+Default:
 
     (
         'djangorestframework.authentication.SessionAuthentication',
         'djangorestframework.authentication.UserBasicAuthentication'
-    )
-
-Default if `DEBUG` is `False`:
-
-    (
-        'djangorestframework.authentication.SessionAuthentication',
     )
 
 ## DEFAULT_PERMISSIONS

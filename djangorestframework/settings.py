@@ -29,6 +29,12 @@ DEFAULTS = {
         'djangorestframework.parsers.JSONParser',
         'djangorestframework.parsers.FormParser'
     ),
+    'DEFAULT_AUTHENTICATION': (
+        'djangorestframework.authentication.SessionAuthentication',
+        'djangorestframework.authentication.UserBasicAuthentication'
+    ),
+    'DEFAULT_PERMISSIONS': (),
+    'DEFAULT_THROTTLES': (),
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None
 }
@@ -40,6 +46,10 @@ if yaml:
 # List of settings that may be in string import notation.
 IMPORT_STRINGS = (
     'DEFAULT_RENDERERS',
+    'DEFAULT_PARSERS',
+    'DEFAULT_AUTHENTICATION',
+    'DEFAULT_PERMISSIONS',
+    'DEFAULT_THROTTLES',
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN'
 )
@@ -53,26 +63,26 @@ def perform_import(val, setting):
     if val is None or setting not in IMPORT_STRINGS:
         return val
 
-    try:
-        if isinstance(val, basestring):
-            return import_from_string(val)
-        elif isinstance(val, (list, tuple)):
-            return [import_from_string(item) for item in val]
-        return val
-    except:
-        msg = "Could not import '%s' for API setting '%s'" % (val, setting)
-        raise ImportError(msg)
+    if isinstance(val, basestring):
+        return import_from_string(val, setting)
+    elif isinstance(val, (list, tuple)):
+        return [import_from_string(item, setting) for item in val]
+    return val
 
 
-def import_from_string(val):
+def import_from_string(val, setting):
     """
     Attempt to import a class from a string representation.
     """
-    # Nod to tastypie's use of importlib.
-    parts = val.split('.')
-    module_path, class_name = '.'.join(parts[:-1]), parts[-1]
-    module = importlib.import_module(module_path)
-    return getattr(module, class_name)
+    try:
+        # Nod to tastypie's use of importlib.
+        parts = val.split('.')
+        module_path, class_name = '.'.join(parts[:-1]), parts[-1]
+        module = importlib.import_module(module_path)
+        return getattr(module, class_name)
+    except:
+        msg = "Could not import '%s' for API setting '%s'" % (val, setting)
+        raise ImportError(msg)
 
 
 class APISettings(object):
