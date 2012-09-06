@@ -127,6 +127,7 @@ margin-top: 5px;
             <div class="well affix span3">
               <ul class="nav nav-list side-nav">
 <li class="main"><a href="#settings">Settings</a></li>
+<li><a href="#accessing-settings">Accessing settings</a></li>
 <li><a href="#default_renderers">DEFAULT_RENDERERS</a></li>
 <li><a href="#default_parsers">DEFAULT_PARSERS</a></li>
 <li><a href="#default_authentication">DEFAULT_AUTHENTICATION</a></li>
@@ -159,6 +160,14 @@ margin-top: 5px;
     )
 }
 </code></pre>
+<h2 id="accessing-settings">Accessing settings</h2>
+<p>If you need to access the values of REST framework's API settings in your project,
+you should use the <code>api_settings</code> object.  For example.</p>
+<pre><code>from djangorestframework.settings import api_settings
+
+print api_settings.DEFAULT_AUTHENTICATION
+</code></pre>
+<p>The <code>api_settings</code> object will check for any user-defined settings, and otherwise fallback to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.</p>
 <h2 id="default_renderers">DEFAULT_RENDERERS</h2>
 <p>A list or tuple of renderer classes, that determines the default set of renderers that may be used when returning a <code>Response</code> object.</p>
 <p>Default:</p>
@@ -178,15 +187,10 @@ margin-top: 5px;
 </code></pre>
 <h2 id="default_authentication">DEFAULT_AUTHENTICATION</h2>
 <p>A list or tuple of authentication classes, that determines the default set of authenticators used when accessing the <code>request.user</code> or <code>request.auth</code> properties.</p>
-<p>Default if <code>DEBUG</code> is <code>True</code>:</p>
+<p>Default:</p>
 <pre><code>(
     'djangorestframework.authentication.SessionAuthentication',
     'djangorestframework.authentication.UserBasicAuthentication'
-)
-</code></pre>
-<p>Default if <code>DEBUG</code> is <code>False</code>:</p>
-<pre><code>(
-    'djangorestframework.authentication.SessionAuthentication',
 )
 </code></pre>
 <h2 id="default_permissions">DEFAULT_PERMISSIONS</h2>
@@ -196,10 +200,13 @@ margin-top: 5px;
 <p>A list or tuple of throttle classes, that determines the default set of throttles checked at the start of a view.</p>
 <p>Default: <code>()</code></p>
 <h2 id="default_model_serializer">DEFAULT_MODEL_SERIALIZER</h2>
+<p><strong>TODO</strong></p>
 <p>Default: <code>djangorestframework.serializers.ModelSerializer</code></p>
 <h2 id="default_pagination_serializer">DEFAULT_PAGINATION_SERIALIZER</h2>
+<p><strong>TODO</strong></p>
 <p>Default: <code>djangorestframework.pagination.PaginationSerializer</code></p>
 <h2 id="format_suffix_kwarg">FORMAT_SUFFIX_KWARG</h2>
+<p><strong>TODO</strong></p>
 <p>Default: <code>'format'</code></p>
 <h2 id="unauthenticated_user">UNAUTHENTICATED_USER</h2>
 <p>The class that should be used to initialize <code>request.user</code> for unauthenticated requests.</p>
