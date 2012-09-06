@@ -39,13 +39,14 @@ class BaseAuthentication(object):
 
 class BasicAuthentication(BaseAuthentication):
     """
-    Use HTTP Basic authentication.
+    Base class for HTTP Basic authentication.
+    Subclasses should implement `.authenticate_credentials()`.
     """
 
     def authenticate(self, request):
         """
-        Returns a :obj:`User` if a correct username and password have been supplied
-        using HTTP Basic authentication.  Otherwise returns :const:`None`.
+        Returns a `User` if a correct username and password have been supplied
+        using HTTP Basic authentication.  Otherwise returns `None`.
         """
         from django.utils.encoding import smart_unicode, DjangoUnicodeDecodeError
 
@@ -58,14 +59,29 @@ class BasicAuthentication(BaseAuthentication):
                     return None
 
                 try:
-                    uname, passwd = smart_unicode(auth_parts[0]), smart_unicode(auth_parts[2])
+                    userid, password = smart_unicode(auth_parts[0]), smart_unicode(auth_parts[2])
                 except DjangoUnicodeDecodeError:
                     return None
 
-                user = authenticate(username=uname, password=passwd)
-                if user is not None and user.is_active:
-                    return user
+                return self.authenticate_credentials(userid, password)
         return None
+
+    def authenticate_credentials(self, userid, password):
+        """
+        Given the Basic authentication userid and password, authenticate
+        and return a user instance.
+        """
+        raise NotImplementedError('.authenticate_credentials() must be overridden')
+
+
+class UserBasicAuthentication(BasicAuthentication):
+    def authenticate_credentials(self, userid, password):
+        """
+        Authenticate the userid and password against username and password.
+        """
+        user = authenticate(username=userid, password=password)
+        if user is not None and user.is_active:
+            return user
 
 
 class SessionAuthentication(BaseAuthentication):

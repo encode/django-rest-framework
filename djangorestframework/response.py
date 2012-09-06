@@ -144,9 +144,9 @@ class Response(SimpleTemplateResponse):
         # attempting more specific media types first
         # NB. The inner loop here isn't as bad as it first looks :)
         #     Worst case is we're looping over len(accept_list) * len(self.renderers)
-        for media_type_list in order_by_precedence(accepts):
+        for media_type_set in order_by_precedence(accepts):
             for renderer in renderers:
-                for media_type in media_type_list:
+                for media_type in media_type_set:
                     if renderer.can_handle_response(media_type):
                         return renderer, media_type
 

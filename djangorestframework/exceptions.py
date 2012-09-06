@@ -25,7 +25,7 @@ class ParseError(APIException):
 
 class PermissionDenied(APIException):
     status_code = status.HTTP_403_FORBIDDEN
-    default_detail = 'You do not have permission to access this resource.'
+    default_detail = 'You do not have permission to perform this action.'
 
     def __init__(self, detail=None):
         self.detail = detail or self.default_detail

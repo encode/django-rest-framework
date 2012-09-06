@@ -21,15 +21,6 @@ from djangorestframework.settings import api_settings
 from djangorestframework import parsers, authentication, status, exceptions, mixins
 
 
-__all__ = (
-    'View',
-    'ModelView',
-    'InstanceModelView',
-    'ListModelView',
-    'ListOrCreateModelView'
-)
-
-
 def _remove_trailing_string(content, trailing):
     """
     Strip trailing component `trailing` from `content` if it exists.
@@ -65,11 +56,6 @@ def _camelcase_to_spaces(content):
 
 
 class APIView(_View):
-    """
-    Handles incoming requests and maps them to REST operations.
-    Performs request deserialization, response serialization, authentication and input validation.
-    """
-
     renderers = api_settings.DEFAULT_RENDERERS
     """
     List of renderer classes the view can serialize the response with, ordered by preference.
@@ -81,7 +67,7 @@ class APIView(_View):
     """
 
     authentication = (authentication.SessionAuthentication,
-                      authentication.BasicAuthentication)
+                      authentication.UserBasicAuthentication)
     """
     List of all authenticating methods to attempt.
     """
@@ -155,9 +141,20 @@ class APIView(_View):
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
         Called if `request.method` does not corrospond to a handler method.
-        We raise an exception, which is handled by `.handle_exception()`.
         """
         raise exceptions.MethodNotAllowed(request.method)
+
+    def permission_denied(self, request):
+        """
+        If request is not permitted, determine what kind of exception to raise.
+        """
+        raise exceptions.PermissionDenied()
+
+    def throttled(self, request, wait):
+        """
+        If request is throttled, determine what kind of exception to raise.
+        """
+        raise exceptions.Throttled(wait)
 
     @property
     def _parsed_media_types(self):
@@ -208,35 +205,29 @@ class APIView(_View):
 
     def check_permissions(self, request, obj=None):
         """
-        Check user permissions and either raise an ``PermissionDenied`` or return.
+        Check if request should be permitted.
         """
         for permission in self.get_permissions():
             if not permission.check_permission(request, obj):
-                raise exceptions.PermissionDenied()
+                self.permission_denied(request)
 
     def check_throttles(self, request):
         """
-        Check throttles and either raise a `Throttled` exception or return.
+        Check if request should be throttled.
         """
         for throttle in self.get_throttles():
             if not throttle.check_throttle(request):
-                raise exceptions.Throttled(throttle.wait())
+                self.throttled(request, throttle.wait())
 
-    def initial(self, request, *args, **kargs):
+    def initialize_request(self, request, *args, **kargs):
         """
-        This method runs prior to anything else in the view.
-        It should return the initial request object.
-
-        You may need to override this if you want to do things like set
-        `request.upload_handlers` before the authentication and dispatch
-        handling is run.
+        Returns the initial request object.
         """
         return Request(request, parsers=self.parsers, authentication=self.authentication)
 
-    def final(self, request, response, *args, **kargs):
+    def finalize_response(self, request, response, *args, **kargs):
         """
-        This method runs after everything else in the view.
-        It should return the final response object.
+        Returns the final response object.
         """
         if isinstance(response, Response):
             response.view = self
@@ -247,6 +238,13 @@ class APIView(_View):
             response[key] = value
 
         return response
+
+    def initial(self, request, *args, **kwargs):
+        """
+        Runs anything that needs to occur prior to calling the method handlers.
+        """
+        self.check_permissions(request)
+        self.check_throttles(request)
 
     def handle_exception(self, exc):
         """
@@ -270,16 +268,24 @@ class APIView(_View):
     # all other authentication is CSRF exempt.
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
+        """
+        `APIView.dispatch()` is pretty much the same as Django's regular
+        `View.dispatch()`, except that it includes hooks to:
+
+        * Initialize the request object.
+        * Finalize the response object.
+        * Handle exceptions that occur in the handler method.
+        * An initial hook for code such as permission checking that should
+          occur prior to running the method handlers.
+        """
+        request = self.initialize_request(request, *args, **kwargs)
+        self.request = request
         self.args = args
         self.kwargs = kwargs
         self.headers = self.default_response_headers
 
         try:
-            self.request = self.initial(request, *args, **kwargs)
-
-            # Check that the request is allowed
-            self.check_permissions(request)
-            self.check_throttles(request)
+            self.initial(request, *args, **kwargs)
 
             # Get the appropriate handler method
             if request.method.lower() in self.http_method_names:
@@ -292,7 +298,7 @@ class APIView(_View):
         except Exception as exc:
             response = self.handle_exception(exc)
 
-        self.response = self.final(request, response, *args, **kwargs)
+        self.response = self.finalize_response(request, response, *args, **kwargs)
         return self.response
 
 

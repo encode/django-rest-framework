@@ -52,7 +52,7 @@ class IsAdminUser(BasePermission):
     """
 
     def check_permission(self, request, obj=None):
-        if request.user and request.user.is_staff():
+        if request.user and request.user.is_staff:
             return True
         return False
 
@@ -82,7 +82,7 @@ class DjangoModelPermissions(BasePermission):
     """
 
     # Map methods into required permission codes.
-    # Override this if you need to also provide 'read' permissions,
+    # Override this if you need to also provide 'view' permissions,
     # or if you want to provide custom permission codes.
     perms_map = {
         'GET': [],
