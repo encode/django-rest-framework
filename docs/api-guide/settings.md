@@ -13,6 +13,17 @@ For example your project's `settings.py` file might look like this:
         )
     }
 
+## Accessing settings
+
+If you need to access the values of REST framework's API settings in your project,
+you should use the `api_settings` object.  For example.
+
+    from djangorestframework.settings import api_settings
+    
+    print api_settings.DEFAULT_AUTHENTICATION
+
+The `api_settings` object will check for any user-defined settings, and otherwise fallback to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.
+
 ## DEFAULT_RENDERERS
 
 A list or tuple of renderer classes, that determines the default set of renderers that may be used when returning a `Response` object.
@@ -61,13 +72,19 @@ Default: `()`
 
 ## DEFAULT_MODEL_SERIALIZER
 
+**TODO**
+
 Default: `djangorestframework.serializers.ModelSerializer`
 
 ## DEFAULT_PAGINATION_SERIALIZER
 
+**TODO**
+
 Default: `djangorestframework.pagination.PaginationSerializer`
 
 ## FORMAT_SUFFIX_KWARG
+
+**TODO**
 
 Default: `'format'`
 
