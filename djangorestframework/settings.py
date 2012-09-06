@@ -36,7 +36,11 @@ DEFAULTS = {
     'DEFAULT_PERMISSIONS': (),
     'DEFAULT_THROTTLES': (),
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
-    'UNAUTHENTICATED_TOKEN': None
+    'UNAUTHENTICATED_TOKEN': None,
+    'FORM_METHOD_OVERRIDE': '_method',
+    'FORM_CONTENT_OVERRIDE': '_content',
+    'FORM_CONTENTTYPE_OVERRIDE': '_content_type',
+    'URL_ACCEPT_OVERRIDE': '_accept'
 }
 
 if yaml:

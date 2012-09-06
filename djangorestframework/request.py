@@ -43,10 +43,9 @@ class Request(object):
           authenticating the request's user.
     """
 
-    _USE_FORM_OVERLOADING = True
-    _METHOD_PARAM = '_method'
-    _CONTENTTYPE_PARAM = '_content_type'
-    _CONTENT_PARAM = '_content'
+    _METHOD_PARAM = api_settings.FORM_METHOD_OVERRIDE
+    _CONTENT_PARAM = api_settings.FORM_CONTENT_OVERRIDE
+    _CONTENTTYPE_PARAM = api_settings.FORM_CONTENTTYPE_OVERRIDE
 
     def __init__(self, request, parsers=None, authentication=None):
         self._request = request
@@ -194,8 +193,13 @@ class Request(object):
         form fields or not.
         """
 
+        USE_FORM_OVERLOADING = (
+            self._METHOD_PARAM or
+            (self._CONTENT_PARAM and self._CONTENTTYPE_PARAM)
+        )
+
         # We only need to use form overloading on form POST requests.
-        if (not self._USE_FORM_OVERLOADING
+        if (not USE_FORM_OVERLOADING
             or self._request.method != 'POST'
             or not is_form_media_type(self._content_type)):
             return
@@ -205,12 +209,15 @@ class Request(object):
         self._files = self._request.FILES
 
         # Method overloading - change the method and remove the param from the content.
-        if self._METHOD_PARAM in self._data:
+        if (self._METHOD_PARAM and
+            self._METHOD_PARAM in self._data):
             # NOTE: `pop` on a `QueryDict` returns a list of values.
             self._method = self._data.pop(self._METHOD_PARAM)[0].upper()
 
         # Content overloading - modify the content type, and re-parse.
-        if (self._CONTENT_PARAM in self._data and
+        if (self._CONTENT_PARAM and
+            self._CONTENTTYPE_PARAM and
+            self._CONTENT_PARAM in self._data and
             self._CONTENTTYPE_PARAM in self._data):
             self._content_type = self._data.pop(self._CONTENTTYPE_PARAM)[0]
             self._stream = StringIO(self._data.pop(self._CONTENT_PARAM)[0])

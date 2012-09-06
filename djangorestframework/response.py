@@ -38,7 +38,7 @@ class Response(SimpleTemplateResponse):
         - renderers(list/tuple). The renderers to use for rendering the response content.
     """
 
-    _ACCEPT_QUERY_PARAM = '_accept'        # Allow override of Accept header in URL query params
+    _ACCEPT_QUERY_PARAM = api_settings.URL_ACCEPT_OVERRIDE
     _IGNORE_IE_ACCEPT_HEADER = True
 
     def __init__(self, content=None, status=None, headers=None, view=None, request=None, renderers=None):
@@ -107,13 +107,16 @@ class Response(SimpleTemplateResponse):
         """
         request = self.request
 
-        if self._ACCEPT_QUERY_PARAM and request.GET.get(self._ACCEPT_QUERY_PARAM, None):
+        if (self._ACCEPT_QUERY_PARAM and
+            request.GET.get(self._ACCEPT_QUERY_PARAM, None)):
             # Use _accept parameter override
             return [request.GET.get(self._ACCEPT_QUERY_PARAM)]
         elif (self._IGNORE_IE_ACCEPT_HEADER and
               'HTTP_USER_AGENT' in request.META and
-              MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT'])):
-            # Ignore MSIE's broken accept behavior and do something sensible instead
+              MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT']) and
+              request.META.get('HTTP_X_REQUESTED_WITH', '') != 'XMLHttpRequest'):
+            # Ignore MSIE's broken accept behavior except for AJAX requests
+            # and do something sensible instead
             return ['text/html', '*/*']
         elif 'HTTP_ACCEPT' in request.META:
             # Use standard HTTP Accept negotiation
