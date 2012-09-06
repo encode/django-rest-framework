@@ -11,9 +11,8 @@ The wrapped request then offers a richer API, in particular :
 """
 from StringIO import StringIO
 
-from django.contrib.auth.models import AnonymousUser
-
 from djangorestframework import exceptions
+from djangorestframework.settings import api_settings
 from djangorestframework.utils.mediatypes import is_form_media_type
 
 
@@ -251,10 +250,26 @@ class Request(object):
         return self._not_authenticated()
 
     def _not_authenticated(self):
-        return (AnonymousUser(), None)
+        """
+        Return a two-tuple of (user, authtoken), representing an
+        unauthenticated request.
 
-    def __getattr__(self, name):
+        By default this will be (AnonymousUser, None).
+        """
+        if api_settings.UNAUTHENTICATED_USER:
+            user = api_settings.UNAUTHENTICATED_USER()
+        else:
+            user = None
+
+        if api_settings.UNAUTHENTICATED_TOKEN:
+            auth = api_settings.UNAUTHENTICATED_TOKEN()
+        else:
+            auth = None
+
+        return (user, auth)
+
+    def __getattr__(self, attr):
         """
         Proxy other attributes to the underlying HttpRequest object.
         """
-        return getattr(self._request, name)
+        return getattr(self._request, attr)
