@@ -13,7 +13,7 @@ from StringIO import StringIO
 
 from django.contrib.auth.models import AnonymousUser
 
-from djangorestframework.exceptions import UnsupportedMediaType
+from djangorestframework import exceptions
 from djangorestframework.utils.mediatypes import is_form_media_type
 
 
@@ -110,8 +110,8 @@ class Request(object):
         """
         Parses the request body and returns the data.
 
-        Similar to ``request.POST``, except that it handles arbitrary parsers,
-        and also works on methods other than POST (eg PUT).
+        Similar to usual behaviour of `request.POST`, except that it handles
+        arbitrary parsers, and also works on methods other than POST (eg PUT).
         """
         if not _hasattr(self, '_data'):
             self._load_data_and_files()
@@ -120,9 +120,10 @@ class Request(object):
     @property
     def FILES(self):
         """
-        Parses the request body and returns the files.
-        Similar to ``request.FILES``, except that it handles arbitrary parsers,
-        and also works on methods other than POST (eg PUT).
+        Parses the request body and returns any files uploaded in the request.
+
+        Similar to usual behaviour of `request.FILES`, except that it handles
+        arbitrary parsers, and also works on methods other than POST (eg PUT).
         """
         if not _hasattr(self, '_files'):
             self._load_data_and_files()
@@ -131,12 +132,22 @@ class Request(object):
     @property
     def user(self):
         """
-        Returns the :obj:`user` for the current request, authenticated
-        with the set of :class:`authentication` instances applied to the :class:`Request`.
+        Returns the user associated with the current request, as authenticated
+        by the authentication classes provided to the request.
         """
         if not hasattr(self, '_user'):
-            self._user = self._authenticate()
+            self._user, self._auth = self._authenticate()
         return self._user
+
+    @property
+    def auth(self):
+        """
+        Returns any non-user authentication information associated with the
+        request, such as an authentication token.
+        """
+        if not hasattr(self, '_auth'):
+            self._user, self._auth = self._authenticate()
+        return self._auth
 
     def _load_data_and_files(self):
         """
@@ -161,6 +172,9 @@ class Request(object):
             self._method = self._request.method
 
     def _load_stream(self):
+        """
+        Return the content body of the request, as a stream.
+        """
         try:
             content_length = int(self.META.get('CONTENT_LENGTH',
                                     self.META.get('HTTP_CONTENT_LENGTH')))
@@ -223,21 +237,21 @@ class Request(object):
                 except AttributeError:
                     return (parsed, None)
 
-        raise UnsupportedMediaType(self._content_type)
+        raise exceptions.UnsupportedMediaType(self._content_type)
 
     def _authenticate(self):
         """
         Attempt to authenticate the request using each authentication instance in turn.
-        Returns a ``User`` object, which may be ``AnonymousUser``.
+        Returns a two-tuple of (user, authtoken).
         """
         for authentication in self.get_authentications():
-            user = authentication.authenticate(self)
-            if user:
-                return user
+            user_auth_tuple = authentication.authenticate(self)
+            if not user_auth_tuple is None:
+                return user_auth_tuple
         return self._not_authenticated()
 
     def _not_authenticated(self):
-        return AnonymousUser()
+        return (AnonymousUser(), None)
 
     def __getattr__(self, name):
         """

@@ -64,7 +64,6 @@ class BasicAuthentication(BaseAuthentication):
                     return None
 
                 return self.authenticate_credentials(userid, password)
-        return None
 
     def authenticate_credentials(self, userid, password):
         """
@@ -81,7 +80,7 @@ class UserBasicAuthentication(BasicAuthentication):
         """
         user = authenticate(username=userid, password=password)
         if user is not None and user.is_active:
-            return user
+            return (user, None)
 
 
 class SessionAuthentication(BaseAuthentication):
@@ -101,8 +100,7 @@ class SessionAuthentication(BaseAuthentication):
             resp = CsrfViewMiddleware().process_view(request, None, (), {})
 
             if resp is None:  # csrf passed
-                return user
-        return None
+                return (user, None)
 
 
 # TODO: TokenAuthentication, DigestAuthentication, OAuthAuthentication
