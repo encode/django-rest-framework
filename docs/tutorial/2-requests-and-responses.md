@@ -129,7 +129,9 @@ Go ahead and test the API from the command line, as we did in [tutorial part 1][
 
 **TODO: Describe using accept headers, content-type headers, and format suffixed URLs**
 
-Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/][3].
+Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/][3]."
+
+**Note: Right now the Browseable API only works with the CBV's.  Need to fix that.**
 
 **TODO: Describe browseable API awesomeness**
 
