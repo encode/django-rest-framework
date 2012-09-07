@@ -1,4 +1,4 @@
-# Tutorial 2: Request and Response objects
+# Tutorial 2: Requests and Responses
 
 From this point we're going to really start covering the core of REST framework.
 Let's introduce a couple of essential building blocks.

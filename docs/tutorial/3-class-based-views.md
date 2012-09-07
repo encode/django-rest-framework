@@ -1,4 +1,4 @@
-# Tutorial 3: Using Class Based Views
+# Tutorial 3: Class Based Views
 
 We can also write our API views using class based views, rather than function based views.  As we'll see this is a powerful pattern that allows us to reuse common functionality, and helps us keep our code [DRY][1].
 
@@ -73,19 +73,18 @@ Okay, we're done.  If you run the development server everything should be workin
 
 One of the big wins of using class based views is that it allows us to easily compose reusable bits of behaviour.
 
-The create/retrieve/update/delete operations that we've been using so far is going to be pretty simliar for any model-backed API views we create.  Those bits of common behaviour are implemented in REST framework's mixin classes.
+The create/retrieve/update/delete operations that we've been using so far are going to be pretty simliar for any model-backed API views we create.  Those bits of common behaviour are implemented in REST framework's mixin classes.
 
-We can compose those mixin classes, to recreate our existing API behaviour with less code.
+Let's take a look at how we can compose our views by using the mixin classes.
 
     from blog.models import Comment
     from blog.serializers import CommentSerializer
     from djangorestframework import mixins
-    from djangorestframework import views
-
+    from djangorestframework import generics
 
     class CommentRoot(mixins.ListModelMixin,
                       mixins.CreateModelMixin,
-                      views.MultipleObjectBaseView):
+                      generics.MultipleObjectBaseView):
         model = Comment
         serializer_class = CommentSerializer
 
@@ -95,11 +94,16 @@ We can compose those mixin classes, to recreate our existing API behaviour with 
         def post(self, request, *args, **kwargs):
             return self.create(request, *args, **kwargs)
 
+    comment_root = CommentRoot.as_view()
+
+We'll take a moment to examine exactly what's happening here - We're building our view using `MultipleObjectBaseView`, and adding in `ListModelMixin` and `CreateModelMixin`.
+
+The base class provides the core functionality, and the mixin classes provide the `.list()` and `.create()` actions.  We're then explictly binding the `get` and `post` methods to the appropriate actions.  Simple enough stuff so far.
 
     class CommentInstance(mixins.RetrieveModelMixin,
                           mixins.UpdateModelMixin,
                           mixins.DestroyModelMixin,
-                          views.SingleObjectBaseView):
+                          generics.SingleObjectBaseView):
         model = Comment
         serializer_class = CommentSerializer
 
@@ -112,24 +116,34 @@ We can compose those mixin classes, to recreate our existing API behaviour with 
         def delete(self, request, *args, **kwargs):
             return self.destroy(request, *args, **kwargs)
 
-## Reusing generic class based views
+    comment_instance = CommentInstance.as_view()
 
-That's a lot less code than before, but we can go one step further still.  REST framework also provides a set of already mixed-in views.
+Pretty similar.  This time we're using the `SingleObjectBaseView` class to provide the core functionality, and adding in mixins to provide the `.retrieve()`, `.update()` and `.destroy()` actions.
+
+## Using generic class based views
+
+Using the mixin classes we've rewritten the views to use slightly less code than before, but we can go one step further.  REST framework provides a set of already mixed-in generic views that we can use.
 
     from blog.models import Comment
     from blog.serializers import CommentSerializer
-    from djangorestframework import views
+    from djangorestframework import generics
 
-    class CommentRoot(views.RootModelView):
+
+    class CommentRoot(generics.RootAPIView):
         model = Comment
         serializer_class = CommentSerializer
 
-    class CommentInstance(views.InstanceModelView):
+    comment_root = CommentRoot.as_view()
+
+
+    class CommentInstance(generics.InstanceAPIView):
         model = Comment
         serializer_class = CommentSerializer
 
-Wow, that's pretty concise.  We've got a huge amount for free, and our code looks like
-good, clean, idomatic Django.
+    comment_instance = CommentInstance.as_view()
+
+
+Wow, that's pretty concise.  We've got a huge amount for free, and our code looks like good, clean, idomatic Django.
 
 Next we'll move onto [part 4 of the tutorial][2], where we'll take a look at how we can  customize the behavior of our views to support a range of authentication, permissions, throttling and other aspects.
 
