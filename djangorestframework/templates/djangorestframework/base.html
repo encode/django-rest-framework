@@ -20,139 +20,149 @@
 
     </head>
 
-  <body class="{% block bodyclass %}{% endblock %}">
-  <div id="container">
+  <body class="{% block bodyclass %}{% endblock %} container">
 
-	<div id="header">
-		<div id="branding">
-		  <h1 id="site-name">{% block branding %}<a href='http://django-rest-framework.org'>Django REST framework</a> <span class="version"> v {{ version }}</span>{% endblock %}</h1>
-		</div>
-		<div id="user-tools">
-		  {% block userlinks %}
-			  {% if user.is_active %}
-			  	Welcome, {{ user }}.
-			  	{% optional_login %}
-			  {% else %}
-			    {% optional_logout %}
-			  {% endif %}
-		  {% endblock %}
-		</div>
-		{% block nav-global %}{% endblock %}
-	</div>
+    <div class="navbar">
+        <div class="navbar-inner">
+            <span class="brand" href="/">
+                {% block branding %}<a href='http://django-rest-framework.org'>Django REST framework</a> <span class="version"> v {{ version }}</span>{% endblock %}
+            </span>
+            {% block userlinks %}
+                <ul class="nav pull-right">
+                    {% if user.is_active %}
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                Welcome, {{ user }}
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>{% optional_logout %}</li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li>{% optional_login %}</li>
+                    {% endif %}
+                </ul>
+            {% endblock %}
+        </div>
+    </div>
 
-	<div class="breadcrumbs">
-	{% block breadcrumbs %}
-	{% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
-	<a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a> {% if not forloop.last %}&rsaquo;{% endif %}
-	{% endfor %}
-	{% endblock %}
-	</div>
+        {% block nav-global %}{% endblock %}
 
-	<!-- Content -->
-	<div id="content" class="{% block coltype %}colM{% endblock %}">
 
-		{% if 'OPTIONS' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
-				<form action="{{ request.get_full_path }}" method="post">
-					{% csrf_token %}
-					<input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
-					<input type="submit" value="OPTIONS" class="default" />
-				</form>
-		{% endif %}
+    <div class="breadcrumbs">
+    {% block breadcrumbs %}
+    {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
+    <a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a> {% if not forloop.last %}&rsaquo;{% endif %}
+    {% endfor %}
+    {% endblock %}
+    </div>
 
-	<div class='content-main'>
-	    <h1>{{ name }}</h1>
-	    <p>{{ description }}</p>
-	    <div class='module'>
-	    <pre><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
+    <!-- Content -->
+    <div id="content" class="{% block coltype %}colM{% endblock %}">
+
+        {% if 'OPTIONS' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
+                <form action="{{ request.get_full_path }}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
+                    <input type="submit" value="OPTIONS" class="default" />
+                </form>
+        {% endif %}
+
+    <div class='content-main'>
+        <h1>{{ name }}</h1>
+        <p>{{ description }}</p>
+        <div class='module'>
+        <pre><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
 {% for key, val in response.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
 {% endfor %}
 {{ content|urlize_quoted_links }}</pre>{% endautoescape %}</div>
 
-	{% if 'GET' in allowed_methods %}
-			<form>
-				<fieldset class='module aligned'>
-				<h2>GET {{ name }}</h2>
-				<div class='submit-row' style='margin: 0; border: 0'>
-				<a href='{{ request.get_full_path }}' rel="nofollow" style='float: left'>GET</a>
-				{% for format in available_formats %}
-				  {% with FORMAT_PARAM|add:"="|add:format as param %}
-				    [<a href='{{ request.get_full_path|add_query_param:param }}' rel="nofollow">{{ format }}</a>]
-				  {% endwith %}
-				{% endfor %}
-				</div>
-				</fieldset>
-			</form>
-	{% endif %}
+    {% if 'GET' in allowed_methods %}
+            <form>
+                <fieldset class='module aligned'>
+                <h2>GET {{ name }}</h2>
+                <div class='submit-row' style='margin: 0; border: 0'>
+                <a href='{{ request.get_full_path }}' rel="nofollow" style='float: left'>GET</a>
+                {% for format in available_formats %}
+                  {% with FORMAT_PARAM|add:"="|add:format as param %}
+                    [<a href='{{ request.get_full_path|add_query_param:param }}' rel="nofollow">{{ format }}</a>]
+                  {% endwith %}
+                {% endfor %}
+                </div>
+                </fieldset>
+            </form>
+    {% endif %}
 
-	{% comment %}
-		DROP POST/PUT/DELETE until the forms are working with REST framework 2
+    {% comment %}
+        DROP POST/PUT/DELETE until the forms are working with REST framework 2
 
-	{# Only display the POST/PUT/DELETE forms if method tunneling via POST forms is enabled and the user has permissions on this view. #}
-	{% if response.status_code != 403 %}
+    {# Only display the POST/PUT/DELETE forms if method tunneling via POST forms is enabled and the user has permissions on this view. #}
+    {% if response.status_code != 403 %}
 
-		{% if 'POST' in allowed_methods %}
-				<form action="{{ request.get_full_path }}" method="POST" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
-				<fieldset class='module aligned'>
-					<h2>POST {{ name }}</h2>
-					{% csrf_token %}
-					{{ post_form.non_field_errors }}
-					{% for field in post_form %}
-					<div class='form-row'>
-						{{ field.label_tag }}
-						{{ field }}
-						<span class='help'>{{ field.help_text }}</span>
-						{{ field.errors }}
-					</div>
-					{% endfor %}
-					<div class='submit-row' style='margin: 0; border: 0'>
-						<input type="submit" value="POST" class="default" />
-					</div>
-				</fieldset>
-				</form>
-		{% endif %}
+        {% if 'POST' in allowed_methods %}
+                <form action="{{ request.get_full_path }}" method="POST" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+                <fieldset class='module aligned'>
+                    <h2>POST {{ name }}</h2>
+                    {% csrf_token %}
+                    {{ post_form.non_field_errors }}
+                    {% for field in post_form %}
+                    <div class='form-row'>
+                        {{ field.label_tag }}
+                        {{ field }}
+                        <span class='help'>{{ field.help_text }}</span>
+                        {{ field.errors }}
+                    </div>
+                    {% endfor %}
+                    <div class='submit-row' style='margin: 0; border: 0'>
+                        <input type="submit" value="POST" class="default" />
+                    </div>
+                </fieldset>
+                </form>
+        {% endif %}
 
-		{% if 'PUT' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
-				<form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
-				<fieldset class='module aligned'>
-					<h2>PUT {{ name }}</h2>
-					<input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" />
-					{% csrf_token %}
-					{{ put_form.non_field_errors }}
-					{% for field in put_form %}
-					<div class='form-row'>
-						{{ field.label_tag }}
-						{{ field }}
-						<span class='help'>{{ field.help_text }}</span>
-						{{ field.errors }}
-					</div>
-					{% endfor %}
-					<div class='submit-row' style='margin: 0; border: 0'>
-						<input type="submit" value="PUT" class="default" />
-					</div>
-				</fieldset>
-				</form>
-		{% endif %}
+        {% if 'PUT' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
+                <form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+                <fieldset class='module aligned'>
+                    <h2>PUT {{ name }}</h2>
+                    <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" />
+                    {% csrf_token %}
+                    {{ put_form.non_field_errors }}
+                    {% for field in put_form %}
+                    <div class='form-row'>
+                        {{ field.label_tag }}
+                        {{ field }}
+                        <span class='help'>{{ field.help_text }}</span>
+                        {{ field.errors }}
+                    </div>
+                    {% endfor %}
+                    <div class='submit-row' style='margin: 0; border: 0'>
+                        <input type="submit" value="PUT" class="default" />
+                    </div>
+                </fieldset>
+                </form>
+        {% endif %}
 
-		{% if 'DELETE' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
-				<form action="{{ request.get_full_path }}" method="POST">
-				<fieldset class='module aligned'>
-					<h2>DELETE {{ name }}</h2>
-				    {% csrf_token %}
-					<input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
-					<div class='submit-row' style='margin: 0; border: 0'>
-						<input type="submit" value="DELETE" class="default" />
-					</div>
-				</fieldset>
-				</form>
-		{% endif %}
+        {% if 'DELETE' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
+                <form action="{{ request.get_full_path }}" method="POST">
+                <fieldset class='module aligned'>
+                    <h2>DELETE {{ name }}</h2>
+                    {% csrf_token %}
+                    <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
+                    <div class='submit-row' style='margin: 0; border: 0'>
+                        <input type="submit" value="DELETE" class="default" />
+                    </div>
+                </fieldset>
+                </form>
+        {% endif %}
 
-	{% endif %}
-	{% endcomment %}
-	</div>
-	<!-- END content-main -->
+    {% endif %}
+    {% endcomment %}
+    </div>
+    <!-- END content-main -->
 
-	</div>
-	<!-- END Content -->
+    </div>
+    <!-- END Content -->
 
     {% block footer %}<div id="footer"></div>{% endblock %}
     </div>
