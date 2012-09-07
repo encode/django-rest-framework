@@ -8,10 +8,10 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.db import DEFAULT_DB_ALIAS
 from django.db.models.related import RelatedObject
-from django.utils import timezone
-from django.utils.dateparse import parse_date, parse_datetime
 from django.utils.encoding import is_protected_type, smart_unicode
 from django.utils.translation import ugettext_lazy as _
+from djangorestframework.compat import parse_date, parse_datetime
+from djangorestframework.compat import timezone
 
 
 def is_simple_callable(obj):
@@ -317,7 +317,7 @@ class DateField(Field):
         if value is None:
             return value
         if isinstance(value, datetime.datetime):
-            if settings.USE_TZ and timezone.is_aware(value):
+            if timezone and settings.USE_TZ and timezone.is_aware(value):
                 # Convert aware datetimes to the default time zone
                 # before casting them to dates (#17742).
                 default_timezone = timezone.get_default_timezone()

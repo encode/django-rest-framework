@@ -88,7 +88,10 @@ def import_from_string(val, setting):
         module_path, class_name = '.'.join(parts[:-1]), parts[-1]
         module = importlib.import_module(module_path)
         return getattr(module, class_name)
-    except:
+    except Exception, e:
+        import traceback
+        tb = traceback.format_exc()
+        import pdb; pdb.set_trace()
         msg = "Could not import '%s' for API setting '%s'" % (val, setting)
         raise ImportError(msg)
 
