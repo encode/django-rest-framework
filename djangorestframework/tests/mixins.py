@@ -4,7 +4,9 @@ from django.utils import simplejson as json
 from djangorestframework import status
 from djangorestframework.compat import RequestFactory
 from django.contrib.auth.models import Group, User
-from djangorestframework.mixins import CreateModelMixin, PaginatorMixin, ReadModelMixin
+from djangorestframework.mixins import (CreateModelMixin, DeleteModelMixin,
+                                        PaginatorMixin, ReadModelMixin,
+                                        UpdateModelMixin)
 from djangorestframework.resources import ModelResource
 from djangorestframework.response import Response, ErrorResponse
 from djangorestframework.tests.models import CustomUser
@@ -30,6 +32,10 @@ class TestModelRead(TestModelsTestCase):
         mixin = ReadModelMixin()
         mixin.resource = GroupResource
 
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {'id': group.id}
+
         response = mixin.get(request, id=group.id)
         self.assertEquals(group.name, response.name)
 
@@ -40,6 +46,10 @@ class TestModelRead(TestModelsTestCase):
         request = self.req.get('/groups')
         mixin = ReadModelMixin()
         mixin.resource = GroupResource
+
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {'id': 12345}
 
         self.assertRaises(ErrorResponse, mixin.get, request, id=12345)
 
@@ -62,6 +72,10 @@ class TestModelCreation(TestModelsTestCase):
         mixin = CreateModelMixin()
         mixin.resource = GroupResource
         mixin.CONTENT = form_data
+
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {}
 
         response = mixin.post(request)
         self.assertEquals(1, Group.objects.count())
@@ -89,6 +103,10 @@ class TestModelCreation(TestModelsTestCase):
         mixin.resource = UserResource
         mixin.CONTENT = cleaned_data
 
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {}
+
         response = mixin.post(request)
         self.assertEquals(1, User.objects.count())
         self.assertEquals(1, response.cleaned_content.groups.count())
@@ -112,6 +130,10 @@ class TestModelCreation(TestModelsTestCase):
         mixin.resource = UserResource
         mixin.CONTENT = cleaned_data
 
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {}
+
         response = mixin.post(request)
         self.assertEquals(1, CustomUser.objects.count())
         self.assertEquals(0, response.cleaned_content.groups.count())
@@ -126,6 +148,10 @@ class TestModelCreation(TestModelsTestCase):
         mixin = CreateModelMixin()
         mixin.resource = UserResource
         mixin.CONTENT = cleaned_data
+
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {}
 
         response = mixin.post(request)
         self.assertEquals(2, CustomUser.objects.count())
@@ -143,11 +169,208 @@ class TestModelCreation(TestModelsTestCase):
         mixin.resource = UserResource
         mixin.CONTENT = cleaned_data
 
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {}
+
         response = mixin.post(request)
         self.assertEquals(3, CustomUser.objects.count())
         self.assertEquals(2, response.cleaned_content.groups.count())
         self.assertEquals('foo1', response.cleaned_content.groups.all()[0].name)
         self.assertEquals('foo2', response.cleaned_content.groups.all()[1].name)
+
+
+class TestModelUpdate(TestModelsTestCase):
+    """Tests on UpdateModelMixin"""
+
+    def setUp(self):
+        super(TestModelsTestCase, self).setUp()
+        self.req = RequestFactory()
+
+    def test_update(self):
+        group = Group.objects.create(name='my group')
+
+        self.assertEquals(1, Group.objects.count())
+
+        class GroupResource(ModelResource):
+            model = Group
+
+        # Update existing
+        form_data = {'name': 'my renamed group'}
+        request = self.req.put('/groups/' + str(group.pk), data=form_data)
+        mixin = UpdateModelMixin()
+        mixin.resource = GroupResource
+        mixin.CONTENT = form_data
+
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {'pk': group.pk}
+
+        response = mixin.put(request, **mixin.kwargs)
+        self.assertEquals(1, Group.objects.count())
+        self.assertEquals('my renamed group', response.name)
+
+        # Create new
+        form_data = {'name': 'other group'}
+        request = self.req.put('/groups/' + str(group.pk + 1), data=form_data)
+        mixin = UpdateModelMixin()
+        mixin.resource = GroupResource
+        mixin.CONTENT = form_data
+
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {'pk': group.pk + 1}
+
+        response = mixin.put(request, **mixin.kwargs)
+        self.assertEquals(2, Group.objects.count())
+        self.assertEquals('other group', response.cleaned_content.name)
+        self.assertEquals(201, response.status)
+
+    def test_update_with_m2m_relation(self):
+        class UserResource(ModelResource):
+            model = User
+
+            def url(self, instance):
+                return "/users/%i" % instance.id
+
+        group = Group(name='foo')
+        group.save()
+
+        user = User.objects.create_user(username='bar', password='blah', email="bar@example.com")
+        self.assertEquals(1, User.objects.count())
+        self.assertEquals(0, user.groups.count())
+
+        form_data = {
+            'password': 'baz',
+            'groups': [group.id]
+        }
+        request = self.req.post('/users/' + str(user.pk), data=form_data)
+        cleaned_data = dict(form_data)
+        cleaned_data['groups'] = [group]
+        mixin = UpdateModelMixin()
+        mixin.resource = UserResource
+        mixin.CONTENT = cleaned_data
+
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {'pk': user.pk}
+
+        response = mixin.put(request, **mixin.kwargs)
+        self.assertEquals(1, User.objects.count())
+        self.assertEquals(1, response.groups.count())
+        self.assertEquals('foo', response.groups.all()[0].name)
+        self.assertEquals('bar', response.username)
+
+    def test_update_with_m2m_relation_through(self):
+        """
+        Tests updating where the m2m relation uses a through table
+        """
+        class UserResource(ModelResource):
+            model = CustomUser
+
+            def url(self, instance):
+                return "/customusers/%i" % instance.id
+
+        user = CustomUser.objects.create(username='bar')
+
+        # Update existing resource with empty relation
+        form_data = {'username': 'bar0', 'groups': []}
+        request = self.req.put('/users/' + str(user.pk), data=form_data)
+        cleaned_data = dict(form_data)
+        cleaned_data['groups'] = []
+        mixin = UpdateModelMixin()
+        mixin.resource = UserResource
+        mixin.CONTENT = cleaned_data
+
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {'pk': user.pk}
+
+        response = mixin.put(request, **mixin.kwargs)
+        self.assertEquals(1, CustomUser.objects.count())
+        self.assertEquals(0, response.groups.count())
+
+        # Update existing resource with one relation
+        group = Group(name='foo1')
+        group.save()
+
+        form_data = {'username': 'bar1', 'groups': [group.id]}
+        request = self.req.put('/users/' + str(user.pk), data=form_data)
+        cleaned_data = dict(form_data)
+        cleaned_data['groups'] = [group]
+        mixin = UpdateModelMixin()
+        mixin.resource = UserResource
+        mixin.CONTENT = cleaned_data
+
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {'pk': user.pk}
+
+        response = mixin.put(request, **mixin.kwargs)
+        self.assertEquals(1, CustomUser.objects.count())
+        self.assertEquals(1, response.groups.count())
+        self.assertEquals('foo1', response.groups.all()[0].name)
+
+        # Update existing resource with more than one relation
+        group2 = Group(name='foo2')
+        group2.save()
+
+        form_data = {'username': 'bar2', 'groups': [group.id, group2.id]}
+        request = self.req.put('/users/' + str(user.pk), data=form_data)
+        cleaned_data = dict(form_data)
+        cleaned_data['groups'] = [group, group2]
+        mixin = UpdateModelMixin()
+        mixin.resource = UserResource
+        mixin.CONTENT = cleaned_data
+
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {'pk': user.pk}
+
+        response = mixin.put(request, **mixin.kwargs)
+        self.assertEquals(1, CustomUser.objects.count())
+        self.assertEquals(2, response.groups.count())
+        self.assertEquals('foo1', response.groups.all()[0].name)
+        self.assertEquals('foo2', response.groups.all()[1].name)
+
+
+class TestModelDelete(TestModelsTestCase):
+    """Tests on DeleteModelMixin"""
+
+    def setUp(self):
+        super(TestModelsTestCase, self).setUp()
+        self.req = RequestFactory()
+
+    def test_delete(self):
+        group = Group.objects.create(name='my group')
+
+        self.assertEquals(1, Group.objects.count())
+
+        class GroupResource(ModelResource):
+            model = Group
+
+        # Delete existing
+        request = self.req.delete('/groups/' + str(group.pk))
+        mixin = DeleteModelMixin()
+        mixin.resource = GroupResource
+
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {'pk': group.pk}
+
+        response = mixin.delete(request, **mixin.kwargs)
+        self.assertEquals(0, Group.objects.count())
+
+        # Delete at non-existing
+        request = self.req.delete('/groups/' + str(group.pk))
+        mixin = DeleteModelMixin()
+        mixin.resource = GroupResource
+
+        mixin.request = request
+        mixin.args = ()
+        mixin.kwargs = {'pk': group.pk}
+
+        self.assertRaises(ErrorResponse, mixin.delete, request, **mixin.kwargs)
 
 
 class MockPaginatorView(PaginatorMixin, View):

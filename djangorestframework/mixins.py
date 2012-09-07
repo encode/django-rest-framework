@@ -181,7 +181,7 @@ class RequestMixin(object):
                 return parser.parse(stream)
 
         raise ErrorResponse(status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-                            {'detail': 'Unsupported media type in request \'%s\'.' % 
+                            {'detail': 'Unsupported media type in request \'%s\'.' %
                             content_type})
 
     @property
@@ -454,9 +454,6 @@ class ModelMixin(object):
     If a *ModelMixin is going to retrive an instance (or queryset) using args and kwargs
     passed by as URL arguments, it should provied arguments to objects.get and objects.filter
     methods wrapped in by `build_query`
-
-    If a *ModelMixin is going to create/update an instance get_instance_data
-    handles the instance data creation/preaparation.
     """
 
     queryset = None
@@ -477,7 +474,104 @@ class ModelMixin(object):
 
         return kwargs
 
-    def get_instance_data(self, model, content, **kwargs):
+    def get_queryset(self):
+        """
+        Return the queryset for this view.
+        """
+        return getattr(self.resource, 'queryset',
+                       self.resource.model.objects.all())
+
+    def get_ordering(self):
+        """
+        Return the ordering for this view.
+        """
+        return getattr(self.resource, 'ordering', None)
+
+
+class InstanceReaderMixin (object):
+    """
+    Assume a single instance for the view. Caches the instance object on self.
+    """
+
+    def get_instance(self):
+        """
+        Return the instance for this view.  Raises a DoesNotExist error if
+        instance does not exist.
+        """
+        if not hasattr(self, 'model_instance'):
+            query_kwargs = self.get_query_kwargs(
+                self.request, *self.args, **self.kwargs)
+            self.model_instance = self.get_queryset().get(**query_kwargs)
+        return self.model_instance
+
+    def get_instance_or_404(self):
+        """
+        Return the instance for this view, or raise a 404 response if the
+        instance is not found.
+        """
+        model = self.resource.model
+
+        try:
+            return self.get_instance()
+        except model.DoesNotExist:
+            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
+
+class InstanceWriterMixin (object):
+    """
+    Abstracts out the logic for applying many-to-many data to a single instance.
+    """
+
+    def _separate_m2m_data_from_content(self, model, content):
+        """
+        Split the view's CONTENT into atomic data and many-to-many data.
+        Retrns a pair of (non_m2m_data, m2m_data)
+
+        Arguments:
+        - model: model class (django.db.models.Model subclass) to work with
+        - content: a dictionary with instance data
+        """
+        # Copy the dict to keep it intact
+        content = dict(content)
+        m2m_data = {}
+
+        for field in model._meta.many_to_many:
+            if field.name in content:
+                m2m_data[field.name] = (
+                    field.m2m_reverse_field_name(), content[field.name]
+                )
+                del content[field.name]
+
+        non_m2m_data = content
+        return non_m2m_data, m2m_data
+
+    def _set_m2m_data(self, instance, m2m_data):
+        """
+        Apply the many-to-many data to the given instance.
+
+        Arguments:
+        - instance: model instance to work with
+        - m2m_data: a mapping from fieldname to list of identifiers of related
+                    objects
+        """
+        for fieldname in m2m_data:
+            manager = getattr(instance, fieldname)
+
+            # If we are updating an existing model, we want to clear out
+            # existing relationships.
+            if hasattr(manager, 'clear'):
+                manager.clear()
+
+            if hasattr(manager, 'add'):
+                manager.add(*m2m_data[fieldname][1])
+            else:
+                data = {}
+                data[manager.source_field_name] = instance
+
+                for related_item in m2m_data[fieldname][1]:
+                    data[m2m_data[fieldname][0]] = related_item
+                    manager.through(**data).save()
+
+    def _get_instance_data(self, model, content, **kwargs):
         """
         Returns the dict with the data for model instance creation/update.
 
@@ -504,117 +598,104 @@ class ModelMixin(object):
 
         return all_kw_args
 
-    def get_instance(self, **kwargs):
+    def create_instance(self):
         """
-        Get a model instance for read/update/delete requests.
+        Create the instance for this view.
         """
-        return self.get_queryset().get(**kwargs)
-
-    def get_queryset(self):
-        """
-        Return the queryset for this view.
-        """
-        return getattr(self.resource, 'queryset',
-                       self.resource.model.objects.all())
-
-    def get_ordering(self):
-        """
-        Return the ordering for this view.
-        """
-        return getattr(self.resource, 'ordering', None)
-
-
-class ReadModelMixin(ModelMixin):
-    """
-    Behavior to read a `model` instance on GET requests
-    """
-    def get(self, request, *args, **kwargs):
-        model = self.resource.model
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
-
-        try:
-            self.model_instance = self.get_instance(**query_kwargs)
-        except model.DoesNotExist:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND)
-
-        return self.model_instance
-
-
-class CreateModelMixin(ModelMixin):
-    """
-    Behavior to create a `model` instance on POST requests
-    """
-    def post(self, request, *args, **kwargs):
         model = self.resource.model
 
-        # Copy the dict to keep self.CONTENT intact
-        content = dict(self.CONTENT)
-        m2m_data = {}
+        content, m2m_data = self._separate_m2m_data_from_content(model,
+                                                                 self.CONTENT)
+        instance_data = self._get_instance_data(model, content,
+                                               *self.args, **self.kwargs)
 
-        for field in model._meta.many_to_many:
-            if field.name in content:
-                m2m_data[field.name] = (
-                    field.m2m_reverse_field_name(), content[field.name]
-                )
-                del content[field.name]
-
-        instance = model(**self.get_instance_data(model, content, *args, **kwargs))
+        instance = model(**instance_data)
         instance.save()
 
-        for fieldname in m2m_data:
-            manager = getattr(instance, fieldname)
+        self._set_m2m_data(instance, m2m_data)
+        return instance
 
-            if hasattr(manager, 'add'):
-                manager.add(*m2m_data[fieldname][1])
-            else:
-                data = {}
-                data[manager.source_field_name] = instance
-
-                for related_item in m2m_data[fieldname][1]:
-                    data[m2m_data[fieldname][0]] = related_item
-                    manager.through(**data).save()
-
-        headers = {}
-        if hasattr(self.resource, 'url'):
-            headers['Location'] = self.resource(self).url(instance)
-        return Response(status.HTTP_201_CREATED, instance, headers)
-
-
-class UpdateModelMixin(ModelMixin):
-    """
-    Behavior to update a `model` instance on PUT requests
-    """
-    def put(self, request, *args, **kwargs):
+    def create_or_update_instance(self):
+        """
+        Update the instance for this view, or create it if it does not yet
+        exist.  Assumes the view is also an InstanceReaderMixin
+        """
         model = self.resource.model
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
+
+        instance_is_new = False
+        content, m2m_data = self._separate_m2m_data_from_content(model,
+                                                                 self.CONTENT)
+        instance_data = self._get_instance_data(model, content,
+                                               *self.args, **self.kwargs)
 
         # TODO: update on the url of a non-existing resource url doesn't work
         # correctly at the moment - will end up with a new url
         try:
-            self.model_instance = self.get_instance(**query_kwargs)
+            instance = self.get_instance()
 
-            for (key, val) in self.CONTENT.items():
-                setattr(self.model_instance, key, val)
+            for (key, val) in instance_data.items():
+                setattr(instance, key, val)
+
         except model.DoesNotExist:
-            self.model_instance = model(**self.get_instance_data(model, self.CONTENT, *args, **kwargs))
-        self.model_instance.save()
-        return self.model_instance
+            instance_is_new = True
+            instance = model(**instance_data)
+
+        instance.save()
+        self._set_m2m_data(instance, m2m_data)
+
+        return instance, instance_is_new
+
+    def delete_instance(self):
+        """
+        Delete the instance for this view.  Assumes the view is also an
+        InstanceReaderMixin.
+        """
+        instance = self.get_instance_or_404()
+        instance.delete()
 
 
-class DeleteModelMixin(ModelMixin):
+class ReadModelMixin(ModelMixin, InstanceReaderMixin):
+    """
+    Behavior to read a `model` instance on GET requests
+    """
+    def get(self, request, *args, **kwargs):
+        instance = self.get_instance_or_404()
+        return instance
+
+
+class CreateModelMixin(ModelMixin, InstanceWriterMixin):
+    """
+    Behavior to create a `model` instance on POST requests
+    """
+    def post(self, request, *args, **kwargs):
+        instance = self.create_instance()
+
+        headers = {}
+        if hasattr(self.resource, 'url'):
+            headers['Location'] = self.resource(self).url(instance)
+
+        return Response(status.HTTP_201_CREATED, instance, headers)
+
+
+class UpdateModelMixin(ModelMixin, InstanceReaderMixin, InstanceWriterMixin):
+    """
+    Behavior to update a `model` instance on PUT requests
+    """
+    def put(self, request, *args, **kwargs):
+        instance, instance_is_new = self.create_or_update_instance()
+
+        if instance_is_new:
+            return Response(status.HTTP_201_CREATED, instance)
+        else:
+            return instance
+
+
+class DeleteModelMixin(ModelMixin, InstanceReaderMixin, InstanceWriterMixin):
     """
     Behavior to delete a `model` instance on DELETE requests
     """
     def delete(self, request, *args, **kwargs):
-        model = self.resource.model
-        query_kwargs = self.get_query_kwargs(request, *args, **kwargs)
-
-        try:
-            instance = self.get_instance(**query_kwargs)
-        except model.DoesNotExist:
-            raise ErrorResponse(status.HTTP_404_NOT_FOUND, None, {})
-
-        instance.delete()
+        self.delete_instance()
         return
 
 
