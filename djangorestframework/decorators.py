@@ -6,6 +6,7 @@ from djangorestframework import exceptions
 from djangorestframework import status
 from djangorestframework.response import Response
 from djangorestframework.request import Request
+from djangorestframework.settings import api_settings
 
 
 def api_view(allowed_methods):
@@ -34,7 +35,8 @@ def api_view(allowed_methods):
 
                 if isinstance(response, Response):
                     response.request = request
-
+                    if api_settings.FORMAT_SUFFIX_KWARG:
+                        response.format = kwargs.get(api_settings.FORMAT_SUFFIX_KWARG, None)
                 return response
 
             except exceptions.APIException as exc:
