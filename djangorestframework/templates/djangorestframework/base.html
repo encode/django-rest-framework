@@ -65,11 +65,11 @@
     <div id="content" class="{% block coltype %}colM{% endblock %}">
 
         {% if 'OPTIONS' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
-                <form action="{{ request.get_full_path }}" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
-                    <input type="submit" value="OPTIONS" class="default" />
-                </form>
+            <form action="{{ request.get_full_path }}" method="post" class="pull-right">
+                {% csrf_token %}
+                <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
+                <button class="btn">OPTIONS</button>
+            </form>
         {% endif %}
 
     <div class='content-main'>
@@ -85,15 +85,17 @@
     {% if 'GET' in allowed_methods %}
             <form>
                 <fieldset class='module aligned'>
-                <h2>GET {{ name }}</h2>
-                <div class='submit-row' style='margin: 0; border: 0'>
-                <a href='{{ request.get_full_path }}' rel="nofollow" style='float: left'>GET</a>
-                {% for format in available_formats %}
-                  {% with FORMAT_PARAM|add:"="|add:format as param %}
-                    [<a href='{{ request.get_full_path|add_query_param:param }}' rel="nofollow">{{ format }}</a>]
-                  {% endwith %}
-                {% endfor %}
-                </div>
+                    <h2>GET: {{ name }}</h2>
+
+                    <div class="btn-group format-selection">
+                        <a class="btn btn-primary js-tooltip" href='{{ request.get_full_path }}' rel="nofollow" title="Do a GET request on the {{ name }} resource">GET</a>
+                        {% for format in available_formats %}
+                            {% with FORMAT_PARAM|add:"="|add:format as param %}
+                                <a class="btn js-tooltip" href='{{ request.get_full_path|add_query_param:param }}' rel="nofollow" title="Do a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
+                            {% endwith %}
+                        {% endfor %}
+                    </div>
+
                 </fieldset>
             </form>
     {% endif %}
@@ -107,7 +109,7 @@
         {% if 'POST' in allowed_methods %}
                 <form action="{{ request.get_full_path }}" method="POST" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
                 <fieldset class='module aligned'>
-                    <h2>POST {{ name }}</h2>
+                    <h2>POST: {{ name }}</h2>
                     {% csrf_token %}
                     {{ post_form.non_field_errors }}
                     {% for field in post_form %}
@@ -118,9 +120,8 @@
                         {{ field.errors }}
                     </div>
                     {% endfor %}
-                    <div class='submit-row' style='margin: 0; border: 0'>
-                        <input type="submit" value="POST" class="default" />
-                    </div>
+
+                    <button class="btn btn-primary">POST</button>
                 </fieldset>
                 </form>
         {% endif %}
@@ -128,7 +129,7 @@
         {% if 'PUT' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
                 <form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
                 <fieldset class='module aligned'>
-                    <h2>PUT {{ name }}</h2>
+                    <h2>PUT: {{ name }}</h2>
                     <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" />
                     {% csrf_token %}
                     {{ put_form.non_field_errors }}
@@ -140,9 +141,9 @@
                         {{ field.errors }}
                     </div>
                     {% endfor %}
-                    <div class='submit-row' style='margin: 0; border: 0'>
-                        <input type="submit" value="PUT" class="default" />
-                    </div>
+                    
+                    <button class="btn btn-primary">PUT</button>
+
                 </fieldset>
                 </form>
         {% endif %}
@@ -150,12 +151,10 @@
         {% if 'DELETE' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
                 <form action="{{ request.get_full_path }}" method="POST">
                 <fieldset class='module aligned'>
-                    <h2>DELETE {{ name }}</h2>
+                    <h2>DELETE: {{ name }}</h2>
                     {% csrf_token %}
                     <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
-                    <div class='submit-row' style='margin: 0; border: 0'>
-                        <input type="submit" value="DELETE" class="default" />
-                    </div>
+                    <button class="btn btn-danger">DELETE</button>
                 </fieldset>
                 </form>
         {% endif %}
@@ -172,5 +171,10 @@
     </div>
     <script src="{% get_static_prefix %}djangorestframework/js/jquery-1.8.1-min.js"></script>
     <script src="{% get_static_prefix %}djangorestframework/js/bootstrap.min.js"></script>
+    <script>
+        $('.js-tooltip').tooltip({
+            delay: 1000
+        });
+    </script>
   </body>
 </html>
