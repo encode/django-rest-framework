@@ -178,12 +178,6 @@ class RendererIntegrationTests(TestCase):
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEquals(resp.status_code, DUMMYSTATUS)
 
-    def test_bla(self):  # What the f***?
-        resp = self.client.get('/?format=formatb',
-            HTTP_ACCEPT='text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8')
-        self.assertEquals(resp['Content-Type'], RendererB.media_type)
-        self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
 _indented_repr = '{\n  "foo": [\n    "bar",\n    "baz"\n  ]\n}'
