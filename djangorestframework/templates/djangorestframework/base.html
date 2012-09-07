@@ -72,19 +72,19 @@
             </form>
         {% endif %}
 
-    <div class='content-main'>
-        <div class="page-header"><h1>{{ name }}</h1></div>
-        <p>{{ description }}</p>
-        <div class='module'>
-            <pre><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
+        <div class="content-main">
+            <div class="page-header"><h1>{{ name }}</h1></div>
+            <p>{{ description }}</p>
+            <div class="response-content">
+                <pre><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
 {% for key, val in response.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
 {% endfor %}
 {{ content|urlize_quoted_links }}</pre>{% endautoescape %}
-        </div>
+            </div>
 
-    {% if 'GET' in allowed_methods %}
+        {% if 'GET' in allowed_methods %}
             <form>
-                <fieldset class='module aligned'>
+                <fieldset>
                     <h2>GET: {{ name }}</h2>
 
                     <div class="btn-group format-selection">
@@ -98,71 +98,67 @@
 
                 </fieldset>
             </form>
-    {% endif %}
-
-    {% comment %}
-        DROP POST/PUT/DELETE until the forms are working with REST framework 2
-
-    {# Only display the POST/PUT/DELETE forms if method tunneling via POST forms is enabled and the user has permissions on this view. #}
-    {% if response.status_code != 403 %}
-
-        {% if 'POST' in allowed_methods %}
-                <form action="{{ request.get_full_path }}" method="POST" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
-                <fieldset class='module aligned'>
-                    <h2>POST: {{ name }}</h2>
-                    {% csrf_token %}
-                    {{ post_form.non_field_errors }}
-                    {% for field in post_form %}
-                    <div class='form-row'>
-                        {{ field.label_tag }}
-                        {{ field }}
-                        <span class='help'>{{ field.help_text }}</span>
-                        {{ field.errors }}
-                    </div>
-                    {% endfor %}
-
-                    <button class="btn btn-primary">POST</button>
-                </fieldset>
-                </form>
         {% endif %}
 
-        {% if 'PUT' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
-                <form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
-                <fieldset class='module aligned'>
-                    <h2>PUT: {{ name }}</h2>
-                    <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" />
-                    {% csrf_token %}
-                    {{ put_form.non_field_errors }}
-                    {% for field in put_form %}
-                    <div class='form-row'>
-                        {{ field.label_tag }}
-                        {{ field }}
-                        <span class='help'>{{ field.help_text }}</span>
-                        {{ field.errors }}
-                    </div>
-                    {% endfor %}
-                    
-                    <button class="btn btn-primary">PUT</button>
+        {% if response.status_code != 403 %}
 
-                </fieldset>
-                </form>
+            {% if 'POST' in allowed_methods %}
+                    <form action="{{ request.get_full_path }}" method="POST" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+                    <fieldset class='module aligned'>
+                        <h2>POST: {{ name }}</h2>
+                        {% csrf_token %}
+                        {{ post_form.non_field_errors }}
+                        {% for field in post_form %}
+                        <div class='form-row'>
+                            {{ field.label_tag }}
+                            {{ field }}
+                            <span class='help'>{{ field.help_text }}</span>
+                            {{ field.errors }}
+                        </div>
+                        {% endfor %}
+
+                        <button class="btn btn-primary" title="Do a POST request on the {{ name }} resource">POST</button>
+                    </fieldset>
+                    </form>
+            {% endif %}
+
+            {% if 'PUT' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
+                    <form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+                    <fieldset class='module aligned'>
+                        <h2>PUT: {{ name }}</h2>
+                        <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" />
+                        {% csrf_token %}
+                        {{ put_form.non_field_errors }}
+                        {% for field in put_form %}
+                        <div class='form-row'>
+                            {{ field.label_tag }}
+                            {{ field }}
+                            <span class='help'>{{ field.help_text }}</span>
+                            {{ field.errors }}
+                        </div>
+                        {% endfor %}
+                        
+                        <button class="btn btn-primary js-tooltip" title="Do a PUT request on the {{ name }} resource">PUT</button>
+
+                    </fieldset>
+                    </form>
+            {% endif %}
+
+            {% if 'DELETE' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
+                    <form action="{{ request.get_full_path }}" method="POST">
+                    <fieldset class='module aligned'>
+                        <h2>DELETE: {{ name }}</h2>
+                        {% csrf_token %}
+                        <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
+                        <button class="btn btn-danger js-tooltip" title="Do a DELETE request on the {{ name }} resource">DELETE</button>
+                    </fieldset>
+                    </form>
+            {% endif %}
+
         {% endif %}
 
-        {% if 'DELETE' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
-                <form action="{{ request.get_full_path }}" method="POST">
-                <fieldset class='module aligned'>
-                    <h2>DELETE: {{ name }}</h2>
-                    {% csrf_token %}
-                    <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
-                    <button class="btn btn-danger">DELETE</button>
-                </fieldset>
-                </form>
-        {% endif %}
-
-    {% endif %}
-    {% endcomment %}
-    </div>
-    <!-- END content-main -->
+        </div>
+        <!-- END content-main -->
 
     </div>
     <!-- END Content -->
