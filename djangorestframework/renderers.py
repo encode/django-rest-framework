@@ -10,6 +10,7 @@ from django.template import RequestContext, loader
 from django.utils import simplejson as json
 
 from djangorestframework.compat import yaml
+from djangorestframework.settings import api_settings
 from djangorestframework.utils import dict2xml
 from djangorestframework.utils import encoders
 from djangorestframework.utils.breadcrumbs import get_breadcrumbs
@@ -344,6 +345,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
             'post_form': post_form_instance,
             'FORMAT_PARAM': self._FORMAT_QUERY_PARAM,
             'METHOD_PARAM': getattr(self.view, '_METHOD_PARAM', None),
+            'api_settings': api_settings
         })
 
         ret = template.render(context)

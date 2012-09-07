@@ -2,7 +2,7 @@
 
 {{ description }}
 
-HTTP/1.0 {{ response.status }} {{ response.status_text }}
+HTTP {{ response.status }} {{ response.status_text }}
 {% for key, val in response.headers.items %}{{ key }}: {{ val }}
 {% endfor %}
 {{ content }}{% endautoescape %}
