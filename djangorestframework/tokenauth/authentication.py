@@ -15,19 +15,22 @@ class TokenAuthentication(BaseAuthentication):
     The BaseToken class is available as an abstract model to be derived from.
 
     The token key should be passed in as a string to the "Authorization" HTTP
-    header.
+    header.  For example:
+
+        Authorization: Token 0123456789abcdef0123456789abcdef
+
     """
     model = Token
 
     def authenticate(self, request):
-        key = request.META.get('HTTP_AUTHORIZATION', '').strip()
-        if not key:
-            return None
+        auth = request.META.get('HTTP_AUTHORIZATION', '').strip().split()
+        if len(auth) == 2 and auth[0].lower() == "token":
+            key = auth[1]
 
-        try:
-             token = self.model.objects.get(key=key)
-        except self.model.DoesNotExist:
-             return None
+            try:
+                 token = self.model.objects.get(key=key)
+            except self.model.DoesNotExist:
+                 return None
 
-        if token.user.is_active and not token.revoked:
-            return (token.user, token)
+            if token.user.is_active and not token.revoked:
+                return (token.user, token)
