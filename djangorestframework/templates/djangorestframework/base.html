@@ -25,29 +25,29 @@
     <div class="navbar">
         <div class="navbar-inner">
             <span class="brand" href="/">
-                {% block branding %}<a href='http://django-rest-framework.org'>Django REST framework</a> <span class="version"> v {{ version }}</span>{% endblock %}
+                {% block branding %}<a href='http://django-rest-framework.org'>Django REST framework</a> <span class="version">{{ version }}</span>{% endblock %}
             </span>
-            {% block userlinks %}
                 <ul class="nav pull-right">
-                    {% if user.is_active %}
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                Welcome, {{ user }}
-                                <b class="caret"></b>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li>{% optional_logout %}</li>
-                            </ul>
-                        </li>
-                    {% else %}
-                        <li>{% optional_login %}</li>
-                    {% endif %}
+                    {% block userlinks %}
+                        {% if user.is_active %}
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    Welcome, {{ user }}
+                                    <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>{% optional_logout %}</li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li>{% optional_login %}</li>
+                        {% endif %}
+                    {% endblock %}
                 </ul>
-            {% endblock %}
         </div>
     </div>
 
-        {% block nav-global %}{% endblock %}
+    {% block nav-global %}{% endblock %}
 
 
     {% block breadcrumbs %}
@@ -62,7 +62,7 @@
     {% endblock %}
 
     <!-- Content -->
-    <div id="content" class="{% block coltype %}colM{% endblock %}">
+    <div id="content">
 
         {% if 'OPTIONS' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
             <form action="{{ request.get_full_path }}" method="post" class="pull-right">
@@ -74,88 +74,95 @@
 
         <div class="content-main">
             <div class="page-header"><h1>{{ name }}</h1></div>
-            <p>{{ description }}</p>
-            <div class="response-content">
+            <p class="resource-description">{{ description }}</p>
+
+            <h2>Request / Response</h2>
+            <div class="request-info">
+                <pre><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
+            <div>
+            <div class="response-info">
                 <pre><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
 {% for key, val in response.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
 {% endfor %}
 {{ content|urlize_quoted_links }}</pre>{% endautoescape %}
             </div>
 
-        {% if 'GET' in allowed_methods %}
-            <form>
-                <fieldset>
-                    <h2>GET: {{ name }}</h2>
+            <h2>Available Methods &amp; Formats</h2>
 
-                    <div class="btn-group format-selection">
-                        <a class="btn btn-primary js-tooltip" href='{{ request.get_full_path }}' rel="nofollow" title="Do a GET request on the {{ name }} resource">GET</a>
-                        {% for format in available_formats %}
-                            {% with FORMAT_PARAM|add:"="|add:format as param %}
-                                <a class="btn js-tooltip" href='{{ request.get_full_path|add_query_param:param }}' rel="nofollow" title="Do a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
-                            {% endwith %}
-                        {% endfor %}
-                    </div>
+            {% if 'GET' in allowed_methods %}
+                <form>
+                    <fieldset>
+                        <h3>GET: {{ name }}</h3>
 
-                </fieldset>
-            </form>
-        {% endif %}
-
-        {% if response.status_code != 403 %}
-
-            {% if 'POST' in allowed_methods %}
-                    <form action="{{ request.get_full_path }}" method="POST" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
-                    <fieldset class='module aligned'>
-                        <h2>POST: {{ name }}</h2>
-                        {% csrf_token %}
-                        {{ post_form.non_field_errors }}
-                        {% for field in post_form %}
-                        <div class='form-row'>
-                            {{ field.label_tag }}
-                            {{ field }}
-                            <span class='help'>{{ field.help_text }}</span>
-                            {{ field.errors }}
+                        <div class="btn-group format-selection">
+                            <a class="btn btn-primary js-tooltip" href='{{ request.get_full_path }}' rel="nofollow" title="Do a GET request on the {{ name }} resource">GET</a>
+                            {% for format in available_formats %}
+                                {% with FORMAT_PARAM|add:"="|add:format as param %}
+                                    <a class="btn js-tooltip format-option" href='{{ request.get_full_path|add_query_param:param }}' rel="nofollow" title="Do a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
+                                {% endwith %}
+                            {% endfor %}
                         </div>
-                        {% endfor %}
-
-                        <button class="btn btn-primary" title="Do a POST request on the {{ name }} resource">POST</button>
-                    </fieldset>
-                    </form>
-            {% endif %}
-
-            {% if 'PUT' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
-                    <form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
-                    <fieldset class='module aligned'>
-                        <h2>PUT: {{ name }}</h2>
-                        <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" />
-                        {% csrf_token %}
-                        {{ put_form.non_field_errors }}
-                        {% for field in put_form %}
-                        <div class='form-row'>
-                            {{ field.label_tag }}
-                            {{ field }}
-                            <span class='help'>{{ field.help_text }}</span>
-                            {{ field.errors }}
-                        </div>
-                        {% endfor %}
-                        
-                        <button class="btn btn-primary js-tooltip" title="Do a PUT request on the {{ name }} resource">PUT</button>
 
                     </fieldset>
-                    </form>
+                </form>
             {% endif %}
 
-            {% if 'DELETE' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
-                    <form action="{{ request.get_full_path }}" method="POST">
-                    <fieldset class='module aligned'>
-                        <h2>DELETE: {{ name }}</h2>
-                        {% csrf_token %}
-                        <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
-                        <button class="btn btn-danger js-tooltip" title="Do a DELETE request on the {{ name }} resource">DELETE</button>
-                    </fieldset>
-                    </form>
-            {% endif %}
+            {% if response.status_code != 403 %}
 
-        {% endif %}
+                {% if 'POST' in allowed_methods %}
+                        <form action="{{ request.get_full_path }}" method="POST" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+                        <fieldset class='module aligned'>
+                            <h3>POST: {{ name }}</h3>
+                            {% csrf_token %}
+                            {{ post_form.non_field_errors }}
+                            {% for field in post_form %}
+                            <div class='form-row'>
+                                {{ field.label_tag }}
+                                {{ field }}
+                                <span class='help'>{{ field.help_text }}</span>
+                                {{ field.errors }}
+                            </div>
+                            {% endfor %}
+
+                            <button class="btn btn-primary" title="Do a POST request on the {{ name }} resource">POST</button>
+                        </fieldset>
+                        </form>
+                {% endif %}
+
+                {% if 'PUT' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
+                        <form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+                        <fieldset class='module aligned'>
+                            <h3>PUT: {{ name }}</h3>
+                            <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" />
+                            {% csrf_token %}
+                            {{ put_form.non_field_errors }}
+                            {% for field in put_form %}
+                            <div class='form-row'>
+                                {{ field.label_tag }}
+                                {{ field }}
+                                <span class='help'>{{ field.help_text }}</span>
+                                {{ field.errors }}
+                            </div>
+                            {% endfor %}
+                            
+                            <button class="btn btn-primary js-tooltip" title="Do a PUT request on the {{ name }} resource">PUT</button>
+
+                        </fieldset>
+                        </form>
+                {% endif %}
+
+                {% if 'DELETE' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
+                        <form action="{{ request.get_full_path }}" method="POST">
+                        <fieldset class='module aligned'>
+                            <h3>DELETE: {{ name }}</h3>
+                            {% csrf_token %}
+                            <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
+                            <button class="btn btn-danger js-tooltip" title="Do a DELETE request on the {{ name }} resource">DELETE</button>
+                        </fieldset>
+                        </form>
+                {% endif %}
+
+            {% endif %}
 
         </div>
         <!-- END content-main -->
@@ -163,7 +170,11 @@
     </div>
     <!-- END Content -->
 
-    {% block footer %}<div id="footer"></div>{% endblock %}
+    <div id="footer">
+        {% block footer %}
+            <a class="powered-by" href='http://django-rest-framework.org'>Django REST framework</a> <span class="version">{{ version }}</span>
+        {% endblock %}
+    </div>
     </div>
     <script src="{% get_static_prefix %}djangorestframework/js/jquery-1.8.1-min.js"></script>
     <script src="{% get_static_prefix %}djangorestframework/js/bootstrap.min.js"></script>

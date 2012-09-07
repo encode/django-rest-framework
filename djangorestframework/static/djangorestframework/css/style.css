@@ -1,8 +1,33 @@
 body {
     padding-top: 1em;
+    padding-bottom: 1em;
 }
 
-h2 {
+h1 {
+    font-weight: 500;
+}
+
+h2, h3 {
     font-weight: 300;
 }
 
+.resource-description, .response-info {
+    margin-bottom: 2em;
+}
+
+#footer {
+    border-top: 1px solid #eee;
+    margin-top: 2em;
+    padding-top: 1em;
+    text-align: right;
+}
+
+.version:before {
+    content: "v";
+    opacity: 0.6;
+    padding-right: 0.25em;
+}
+
+.format-option {
+    font-family: Menlo, Consolas, "Andale Mono", "Lucida Console", monospace;
+}
