@@ -7,7 +7,7 @@ We can also write our API views using class based views, rather than function ba
 We'll start by rewriting the root view as a class based view.  All this involves is a little bit of refactoring.
 
     from blog.models import Comment
-    from blog.serializers import ComentSerializer
+    from blog.serializers import CommentSerializer
     from django.http import Http404
     from djangorestframework.views import APIView
     from djangorestframework.response import Response
