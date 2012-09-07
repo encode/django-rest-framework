@@ -44,6 +44,6 @@ We've reached the end of our tutorial.  If you want to get more involved in the 
 
 * Contribute on GitHub by reviewing issues, and submitting issues or pull requests.
 * Join the REST framework group, and help build the community.
-* Follow me on Twitter and say hi.
+* Follow me [on Twitter](https://twitter.com/_tomchristie) and say hi.
 
 Now go build something great.
