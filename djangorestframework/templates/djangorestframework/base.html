@@ -3,16 +3,15 @@
 {% load add_query_param %}
 {% load optional_login %}
 {% load static %}
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 	<head>
 		<link rel="stylesheet" type="text/css" href='{% get_static_prefix %}djangorestframework/css/style.css'/>
 		{% block extrastyle %}{% endblock %}
 		<title>{% block title %}Django REST framework - {{ name }}{% endblock %}</title>
 		{% block extrahead %}{% endblock %}
 		{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
   	</head>
   <body class="{% block bodyclass %}{% endblock %}">
   <div id="container">
