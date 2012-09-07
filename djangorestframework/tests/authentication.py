@@ -9,7 +9,7 @@ from djangorestframework.views import APIView
 from djangorestframework import permissions
 
 from djangorestframework.tokenauth.models import BasicToken
-from djangorestframework.tokenauth.authentication import TokenAuthentication
+from djangorestframework.authentication import TokenAuthentication
 
 import base64
 
@@ -127,13 +127,13 @@ class TokenAuthTests(TestCase):
 
     def test_post_form_passing_token_auth(self):
         """Ensure POSTing json over token auth with correct credentials passes and does not require CSRF"""
-        auth = 'Token %s' % self.key
+        auth = self.key
         response = self.csrf_client.post('/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
     def test_post_json_passing_token_auth(self):
         """Ensure POSTing form over token auth with correct credentials passes and does not require CSRF"""
-        auth = 'Token %s' % self.key
+        auth = self.key
         response = self.csrf_client.post('/', json.dumps({'example': 'example'}), 'application/json', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 

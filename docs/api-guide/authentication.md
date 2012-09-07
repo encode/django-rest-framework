@@ -67,9 +67,9 @@ If successfully authenticated, `UserBasicAuthentication` provides the following 
 
 ## TokenAuthentication
 
-This policy uses [HTTP Authentication][basicauth] with a custom authentication scheme called "Token".  Token basic authentication is appropriate for client-server setups, such as native desktop and mobile clients.  The token key should be passed in as a string to the "Authorization" HTTP header.  For example:
+This policy uses [HTTP Authentication][basicauth] with no authentication scheme.  Token basic authentication is appropriate for client-server setups, such as native desktop and mobile clients.  The token key should be passed in as a string to the "Authorization" HTTP header.  For example:
 
-    curl http://my.api.org/ -X POST -H "Authorization: Token 0123456789abcdef0123456789abcdef"
+    curl http://my.api.org/ -X POST -H "Authorization: 0123456789abcdef0123456789abcdef"
 
 **Note:** If you run `TokenAuthentication` in production your API must be `https` only, or it will be completely insecure.
 
@@ -78,7 +78,7 @@ If successfully authenticated, `TokenAuthentication` provides the following cred
 * `request.user` will be a `django.contrib.auth.models.User` instance.
 * `request.auth` will be a `djangorestframework.tokenauth.models.BasicToken` instance.
 
-To use the `TokenAuthentication` scheme, you must have a token model.  Django REST Framework comes with a minimal default token model.  To use it, include `djangorestframework.tokenauth` in your installed applications.  To use your own token model, subclass the `djangorestframework.tokenauth.authentication.TokenAuthentication` class and specify a `model` attribute that references your custom token model.  The token model must provide `user`, `key`, and `revoked` attributes.  For convenience, the `djangorestframework.tokenauth.models.BaseToken` abstract model implements this minimum contract, and also randomly populates the key field when none is provided.
+To use the `TokenAuthentication` policy, you must have a token model.  Django REST Framework comes with a minimal default token model.  To use it, include `djangorestframework.tokenauth` in your installed applications and sync your database.  To use your own token model, subclass the `djangorestframework.tokenauth.TokenAuthentication` class and specify a `model` attribute that references your custom token model.  The token model must provide `user`, `key`, and `revoked` attributes.  For convenience, the `djangorestframework.tokenauth.models.BaseToken` abstract model implements this minimum contract, and also randomly populates the key field when none is provided.
 
 ## OAuthAuthentication
 
