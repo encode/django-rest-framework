@@ -1,7 +1,38 @@
+/* Set the body padding-top when above 980px to push the content down from
+   below the navbar, which is fixed at >980px screen widths. */
+@media (min-width: 980px) {
+  body {
+    padding-top: 71px;
+  }
+}
+
 body {
-  padding-top: 60px;
   padding-bottom: 40px;
 }
+
+
+
+/* Preserve the spacing of the navbar across different screen sizes. */
+.navbar-inner {
+  padding: 5px 0; 
+}
+
+@media (max-width: 979px) {
+  .navbar .brand {
+    margin-left: 0;
+    padding-left: 0;
+  }
+  .navbar-inner .container-fluid {
+    padding-left: 15px;
+  }
+}
+
+
+.nav-list li.main {
+  font-weight: bold;
+}
+
+
 
 /* Set the table of contents to static so it flows back into the content when
    viewed on tablets and smaller. */
@@ -11,9 +42,14 @@ body {
   }
 }
 
-.nav-list li.main {
-  font-weight: bold;
+/* When the page is in two-column layout, give the main content some room
+   to breath on the left. */
+@media (min-width: 768px) {
+  #main-content {
+    padding-left: 1em;
+  }
 }
+
 
 blockquote {
   font-family: Georgia, serif;
