@@ -50,13 +50,16 @@
         {% block nav-global %}{% endblock %}
 
 
-    <div class="breadcrumbs">
     {% block breadcrumbs %}
-    {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
-    <a href="{{ breadcrumb_url }}">{{ breadcrumb_name }}</a> {% if not forloop.last %}&rsaquo;{% endif %}
-    {% endfor %}
+    <ul class="breadcrumb">
+    
+        {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
+            <li>
+                <a href="{{ breadcrumb_url }}" {% if forloop.last %}class="active"{% endif %}>{{ breadcrumb_name }}</a> {% if not forloop.last %}<span class="divider">&rsaquo;</span>{% endif %}
+            </li>
+        {% endfor %}
+    </ul>
     {% endblock %}
-    </div>
 
     <!-- Content -->
     <div id="content" class="{% block coltype %}colM{% endblock %}">
@@ -70,13 +73,14 @@
         {% endif %}
 
     <div class='content-main'>
-        <h1>{{ name }}</h1>
+        <div class="page-header"><h1>{{ name }}</h1></div>
         <p>{{ description }}</p>
         <div class='module'>
-        <pre><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
+            <pre><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
 {% for key, val in response.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
 {% endfor %}
-{{ content|urlize_quoted_links }}</pre>{% endautoescape %}</div>
+{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
+        </div>
 
     {% if 'GET' in allowed_methods %}
             <form>
