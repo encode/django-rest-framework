@@ -41,7 +41,8 @@ class Response(SimpleTemplateResponse):
     _ACCEPT_QUERY_PARAM = api_settings.URL_ACCEPT_OVERRIDE
     _IGNORE_IE_ACCEPT_HEADER = True
 
-    def __init__(self, content=None, status=None, headers=None, view=None, request=None, renderers=None):
+    def __init__(self, content=None, status=None, headers=None, view=None,
+                 request=None, renderers=None, format=None):
         # First argument taken by `SimpleTemplateResponse.__init__` is template_name,
         # which we don't need
         super(Response, self).__init__(None, status=status)
@@ -52,6 +53,7 @@ class Response(SimpleTemplateResponse):
         self.view = view
         self.request = request
         self.renderers = renderers
+        self.format = format
 
     def get_renderers(self):
         """
@@ -62,6 +64,9 @@ class Response(SimpleTemplateResponse):
         else:
             renderer_classes = self.renderers
 
+        if self.format:
+            return [cls(self.view) for cls in renderer_classes
+                    if cls.format == self.format]
         return [cls(self.view) for cls in renderer_classes]
 
     @property

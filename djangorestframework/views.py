@@ -203,7 +203,7 @@ class APIView(_View):
         """
         return Request(request, parsers=self.parsers, authentication=self.authentication)
 
-    def finalize_response(self, request, response, *args, **kargs):
+    def finalize_response(self, request, response, *args, **kwargs):
         """
         Returns the final response object.
         """
@@ -211,6 +211,8 @@ class APIView(_View):
             response.view = self
             response.request = request
             response.renderers = self.renderers
+            if api_settings.FORMAT_SUFFIX_KWARG:
+                response.format = kwargs.get(api_settings.FORMAT_SUFFIX_KWARG, None)
 
         for key, value in self.headers.items():
             response[key] = value
