@@ -76,7 +76,7 @@ This policy uses [HTTP Authentication][basicauth] with a custom authentication s
 If successfully authenticated, `TokenAuthentication` provides the following credentials.
 
 * `request.user` will be a `django.contrib.auth.models.User` instance.
-* `request.auth` will be a `djangorestframework.tokenauth.models.Token` instance.
+* `request.auth` will be a `djangorestframework.tokenauth.models.BasicToken` instance.
 
 To use the `TokenAuthentication` scheme, you must have a token model.  Django REST Framework comes with a minimal default token model.  To use it, include `djangorestframework.tokenauth` in your installed applications.  To use your own token model, subclass the `djangorestframework.tokenauth.authentication.TokenAuthentication` class and specify a `model` attribute that references your custom token model.  The token model must provide `user`, `key`, and `revoked` attributes.  For convenience, the `djangorestframework.tokenauth.models.BaseToken` abstract model implements this minimum contract, and also randomly populates the key field when none is provided.
 

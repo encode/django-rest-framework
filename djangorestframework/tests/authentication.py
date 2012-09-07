@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from djangorestframework.views import APIView
 from djangorestframework import permissions
 
-from djangorestframework.tokenauth.models import Token
+from djangorestframework.tokenauth.models import BasicToken
 from djangorestframework.tokenauth.authentication import TokenAuthentication
 
 import base64
@@ -123,7 +123,7 @@ class TokenAuthTests(TestCase):
         self.user = User.objects.create_user(self.username, self.email, self.password)
 
         self.key = 'abcd1234'
-        self.token = Token.objects.create(key=self.key, user=self.user)
+        self.token = BasicToken.objects.create(key=self.key, user=self.user)
 
     def test_post_form_passing_token_auth(self):
         """Ensure POSTing json over token auth with correct credentials passes and does not require CSRF"""
@@ -149,5 +149,5 @@ class TokenAuthTests(TestCase):
 
     def test_token_has_auto_assigned_key_if_none_provided(self):
         """Ensure creating a token with no key will auto-assign a key"""
-        token = Token.objects.create(user=self.user)
+        token = BasicToken.objects.create(user=self.user)
         self.assertEqual(len(token.key), 32)

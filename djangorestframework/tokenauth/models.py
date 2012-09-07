@@ -18,7 +18,7 @@ class BaseToken(models.Model):
         return super(BaseToken, self).save(*args, **kwargs)
 
 
-class Token(BaseToken):
+class BasicToken(BaseToken):
     """
     The default authorization token model class.
     """

@@ -1,5 +1,5 @@
 from djangorestframework.authentication import BaseAuthentication
-from .models import Token
+from .models import BasicToken
 
 class TokenAuthentication(BaseAuthentication):
     """
@@ -20,7 +20,7 @@ class TokenAuthentication(BaseAuthentication):
         Authorization: Token 0123456789abcdef0123456789abcdef
 
     """
-    model = Token
+    model = BasicToken
 
     def authenticate(self, request):
         auth = request.META.get('HTTP_AUTHORIZATION', '').strip().split()
