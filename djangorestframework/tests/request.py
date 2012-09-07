@@ -4,7 +4,6 @@ Tests for content parsing, and form-overloaded content parsing.
 from django.conf.urls.defaults import patterns
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
-from django.test.client import MULTIPART_CONTENT, BOUNDARY, encode_multipart
 
 from djangorestframework import status
 from djangorestframework.authentication import SessionAuthentication
@@ -95,8 +94,16 @@ class TestContentParsing(TestCase):
         """
         data = {'qwerty': 'uiop'}
         parsers = (FormParser, MultiPartParser)
-        request = factory.put('/', encode_multipart(BOUNDARY, data), parsers=parsers,
-                              content_type=MULTIPART_CONTENT)
+
+        from django import VERSION
+
+        if VERSION >= (1, 5):
+            from django.test.client import MULTIPART_CONTENT, BOUNDARY, encode_multipart
+            request = factory.put('/', encode_multipart(BOUNDARY, data), parsers=parsers,
+                                  content_type=MULTIPART_CONTENT)
+        else:
+            request = factory.put('/', data, parsers=parsers)
+
         self.assertEqual(request.DATA.items(), data.items())
 
     def test_standard_behaviour_determines_non_form_content_PUT(self):
