@@ -55,27 +55,27 @@ class MockView(APIView):
 
     def get(self, request, **kwargs):
         response = Response(DUMMYCONTENT, status=DUMMYSTATUS)
-        return self.render(response)
+        return response
 
 
 class MockGETView(APIView):
 
     def get(self, request, **kwargs):
-        return {'foo': ['bar', 'baz']}
+        return Response({'foo': ['bar', 'baz']})
 
 
 class HTMLView(APIView):
     renderers = (DocumentingHTMLRenderer, )
 
     def get(self, request, **kwargs):
-        return 'text'
+        return Response('text')
 
 
 class HTMLView1(APIView):
     renderers = (DocumentingHTMLRenderer, JSONRenderer)
 
     def get(self, request, **kwargs):
-        return 'text'
+        return Response('text')
 
 urlpatterns = patterns('',
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderers=[RendererA, RendererB])),
@@ -88,7 +88,7 @@ urlpatterns = patterns('',
 )
 
 
-class RendererIntegrationTests(TestCase):
+class RendererEndToEndTests(TestCase):
     """
     End-to-end testing of renderers using an RendererMixin on a generic view.
     """
@@ -214,18 +214,6 @@ class JSONRendererTests(TestCase):
         renderer = JSONRenderer(None)
         content = renderer.render(obj, 'application/json; indent=2')
         self.assertEquals(strip_trailing_whitespace(content), _indented_repr)
-
-
-class MockGETView(APIView):
-
-    def get(self, request, *args, **kwargs):
-        return Response({'foo': ['bar', 'baz']})
-
-
-urlpatterns = patterns('',
-    url(r'^jsonp/jsonrenderer$', MockGETView.as_view(renderers=[JSONRenderer, JSONPRenderer])),
-    url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(renderers=[JSONPRenderer])),
-)
 
 
 class JSONPRendererTests(TestCase):
