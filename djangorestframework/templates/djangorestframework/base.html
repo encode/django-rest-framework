@@ -4,6 +4,7 @@
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 {% load urlize_quoted_links %}
 {% load add_query_param %}
+{% load optional_login %}
 {% load static %}
 <html xmlns="http://www.w3.org/1999/xhtml">
   	<head>
@@ -24,10 +25,9 @@
 		  {% block userlinks %}
 			  {% if user.is_active %}
 			  	Welcome, {{ user }}.
-			  	<a href='{% url 'djangorestframework:logout' %}?next={{ request.path }}'>Log out</a>
+			  	{% optional_login %}
 			  {% else %}
-			    Anonymous
-			    <a href='{% url 'djangorestframework:login' %}?next={{ request.path }}'>Log in</a>
+			    {% optional_logout %}
 			  {% endif %}
 		  {% endblock %}
 		</div>

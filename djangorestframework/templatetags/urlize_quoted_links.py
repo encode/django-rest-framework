@@ -1,22 +1,23 @@
-"""Adds the custom filter 'urlize_quoted_links'
+"""
+Adds the custom filter 'urlize_quoted_links'
 
 This is identical to the built-in filter 'urlize' with the exception that
 single and double quotes are permitted as leading or trailing punctuation.
+
+Almost all of this code is copied verbatim from django.utils.html
+LEADING_PUNCTUATION and TRAILING_PUNCTUATION have been modified
 """
 
-# Almost all of this code is copied verbatim from django.utils.html
-# LEADING_PUNCTUATION and TRAILING_PUNCTUATION have been modified
 import re
 import string
 
 from django.utils.safestring import SafeData, mark_safe
 from django.utils.encoding import force_unicode
-from django.utils.http import urlquote
 from django.utils.html import escape
 from django import template
 
 # Configuration for urlize() function.
-LEADING_PUNCTUATION  = ['(', '<', '&lt;', '"', "'"]
+LEADING_PUNCTUATION = ['(', '<', '&lt;', '"', "'"]
 TRAILING_PUNCTUATION = ['.', ',', ')', '>', '\n', '&gt;', '"', "'"]
 
 # List of possible strings used for bullets in bulleted lists.
@@ -32,6 +33,7 @@ link_target_attribute_re = re.compile(r'(<a [^>]*?)target=[^\s>]+')
 html_gunk_re = re.compile(r'(?:<br clear="all">|<i><\/i>|<b><\/b>|<em><\/em>|<strong><\/strong>|<\/?smallcaps>|<\/?uppercase>)', re.IGNORECASE)
 hard_coded_bullets_re = re.compile(r'((?:<p>(?:%s).*?[a-zA-Z].*?</p>\s*)+)' % '|'.join([re.escape(x) for x in DOTS]), re.DOTALL)
 trailing_empty_content_re = re.compile(r'(?:<p>(?:&nbsp;|\s|<br \/>)*?</p>\s*)+\Z')
+
 
 def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=True):
     """
