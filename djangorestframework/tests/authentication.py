@@ -146,3 +146,8 @@ class TokenAuthTests(TestCase):
         """Ensure POSTing json over token auth without correct credentials fails"""
         response = self.csrf_client.post('/', json.dumps({'example': 'example'}), 'application/json')
         self.assertEqual(response.status_code, 403)
+
+    def test_token_has_auto_assigned_key_if_none_provided(self):
+        """Ensure creating a token with no key will auto-assign a key"""
+        token = Token.objects.create(user=self.user)
+        self.assertEqual(len(token.key), 32)
