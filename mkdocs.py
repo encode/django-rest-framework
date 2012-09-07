@@ -28,7 +28,7 @@ sub_header = '<li><a href="#{{ anchor }}">{{ title }}</a></li>'
 page = open(os.path.join(docs_dir, 'template.html'), 'r').read()
 
 # Copy static files
-for static in ['css', 'js']:
+for static in ['css', 'js', 'img']:
     source = os.path.join(docs_dir, 'static', static)
     target = os.path.join(html_dir, static)
     if os.path.exists(target):
