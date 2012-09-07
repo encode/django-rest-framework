@@ -5,14 +5,21 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
-	<head>
-		<link rel="stylesheet" type="text/css" href='{% get_static_prefix %}djangorestframework/css/style.css'/>
-		{% block extrastyle %}{% endblock %}
-		<title>{% block title %}Django REST framework - {{ name }}{% endblock %}</title>
-		{% block extrahead %}{% endblock %}
-		{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-  	</head>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+        <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}djangorestframework/css/bootstrap.min.css'/>
+        <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}djangorestframework/css/style.css'/>
+        {% block extrastyle %}{% endblock %}
+
+        <title>{% block title %}Django REST framework - {{ name }}{% endblock %}</title>
+
+        {% block extrahead %}{% endblock %}
+
+        {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
+
+    </head>
+
   <body class="{% block bodyclass %}{% endblock %}">
   <div id="container">
 
@@ -148,6 +155,8 @@
 	<!-- END Content -->
 
     {% block footer %}<div id="footer"></div>{% endblock %}
-	</div>
+    </div>
+    <script src="{% get_static_prefix %}djangorestframework/js/jquery-1.8.1-min.js"></script>
+    <script src="{% get_static_prefix %}djangorestframework/js/bootstrap.min.js"></script>
   </body>
 </html>
