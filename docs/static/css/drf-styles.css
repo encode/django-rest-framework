@@ -1,0 +1,46 @@
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+
+/* Set the table of contents to static so it flows back into the content when
+   viewed on tablets and smaller. */
+@media (max-width: 767px) {
+  #table-of-contents {
+    position: static;
+  }
+}
+
+.nav-list li.main {
+  font-weight: bold;
+}
+
+blockquote {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-style: italic;
+  margin: 0.25em 0;
+  padding: 0.25em 40px;
+  line-height: 1.45;
+  position: relative;
+  color: #383838;
+  border-left: none;
+}
+
+  blockquote:before {
+  display: block;
+  content: "\201C";
+  font-size: 80px;
+  position: absolute;
+  left: -10px;
+  top: -20px;
+  color: #7a7a7a;
+}
+
+  blockquote p:last-child {
+  color: #999999;
+  font-size: 14px;
+  display: block;
+  margin-top: 5px;
+}
+
