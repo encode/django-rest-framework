@@ -8,6 +8,9 @@ from django.http import HttpResponse
 from djangorestframework.views import APIView
 from djangorestframework import permissions
 
+from djangorestframework.tokenauth.models import Token
+from djangorestframework.tokenauth.authentication import TokenAuthentication
+
 import base64
 
 
@@ -19,6 +22,8 @@ class MockView(APIView):
 
     def put(self, request):
         return HttpResponse({'a': 1, 'b': 2, 'c': 3})
+
+MockView.authentication += (TokenAuthentication,)
 
 urlpatterns = patterns('',
     (r'^$', MockView.as_view()),
@@ -103,4 +108,41 @@ class SessionAuthTests(TestCase):
         Ensure POSTing form over session authentication without logged in user fails.
         """
         response = self.csrf_client.post('/', {'example': 'example'})
+        self.assertEqual(response.status_code, 403)
+
+
+class TokenAuthTests(TestCase):
+    """Token authentication"""
+    urls = 'djangorestframework.tests.authentication'
+
+    def setUp(self):
+        self.csrf_client = Client(enforce_csrf_checks=True)
+        self.username = 'john'
+        self.email = 'lennon@thebeatles.com'
+        self.password = 'password'
+        self.user = User.objects.create_user(self.username, self.email, self.password)
+
+        self.key = 'abcd1234'
+        self.token = Token.objects.create(key=self.key, user=self.user)
+
+    def test_post_form_passing_token_auth(self):
+        """Ensure POSTing json over token auth with correct credentials passes and does not require CSRF"""
+        auth = self.key
+        response = self.csrf_client.post('/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_json_passing_token_auth(self):
+        """Ensure POSTing form over token auth with correct credentials passes and does not require CSRF"""
+        auth = self.key
+        response = self.csrf_client.post('/', json.dumps({'example': 'example'}), 'application/json', HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_form_failing_token_auth(self):
+        """Ensure POSTing form over token auth without correct credentials fails"""
+        response = self.csrf_client.post('/', {'example': 'example'})
+        self.assertEqual(response.status_code, 403)
+
+    def test_post_json_failing_token_auth(self):
+        """Ensure POSTing json over token auth without correct credentials fails"""
+        response = self.csrf_client.post('/', json.dumps({'example': 'example'}), 'application/json')
         self.assertEqual(response.status_code, 403)
