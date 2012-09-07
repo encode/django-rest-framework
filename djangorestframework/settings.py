@@ -25,6 +25,7 @@ DEFAULTS = {
     'DEFAULT_RENDERERS': (
         'djangorestframework.renderers.JSONRenderer',
         'djangorestframework.renderers.JSONPRenderer',
+        'djangorestframework.renderers.DocumentingHTMLRenderer',
         'djangorestframework.renderers.DocumentingPlainTextRenderer',
     ),
     'DEFAULT_PARSERS': (
@@ -44,7 +45,9 @@ DEFAULTS = {
     'FORM_METHOD_OVERRIDE': '_method',
     'FORM_CONTENT_OVERRIDE': '_content',
     'FORM_CONTENTTYPE_OVERRIDE': '_content_type',
-    'URL_ACCEPT_OVERRIDE': '_accept'
+    'URL_ACCEPT_OVERRIDE': '_accept',
+
+    'FORMAT_SUFFIX_KWARG': 'format'
 }
 
 
