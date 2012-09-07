@@ -1,3 +1,12 @@
+"""
+Basic building blocks for generic class based views.
+
+We don't bind behaviour to http method handlers yet,
+which allows mixin classes to be composed in interesting ways.
+
+Eg. Use mixins to build a Resource class, and have a Router class
+    perform the binding of http methods to actions for us.
+"""
 from djangorestframework import status
 from djangorestframework.response import Response
 
@@ -68,6 +77,8 @@ class MetadataMixin(object):
     """
     Return a dicitonary of view metadata.
     Should be mixed in with any `BaseView`.
+
+    This mixin is typically used for the HTTP 'OPTIONS' method.
     """
     def metadata(self, request, *args, **kwargs):
         content = {

@@ -13,10 +13,12 @@ API_SETTINGS = {
     )
 }
 
+This module provides the `api_setting` object, that is used to access
+REST framework settings, checking for user settings first, then falling
+back to the defaults.
 """
 from django.conf import settings
 from django.utils import importlib
-from djangorestframework.compat import yaml
 
 
 DEFAULTS = {
@@ -35,16 +37,15 @@ DEFAULTS = {
     ),
     'DEFAULT_PERMISSIONS': (),
     'DEFAULT_THROTTLES': (),
+
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
+
     'FORM_METHOD_OVERRIDE': '_method',
     'FORM_CONTENT_OVERRIDE': '_content',
     'FORM_CONTENTTYPE_OVERRIDE': '_content_type',
     'URL_ACCEPT_OVERRIDE': '_accept'
 }
-
-if yaml:
-    DEFAULTS['DEFAULT_RENDERERS'] += ('djangorestframework.renderers.YAMLRenderer', )
 
 
 # List of settings that may be in string import notation.
@@ -97,7 +98,8 @@ class APISettings(object):
         from djangorestframework.settings import api_settings
         print api_settings.DEFAULT_RENDERERS
 
-    Any setting with string import paths will be resolved.
+    Any setting with string import paths will be automatically resolved
+    and return the class, rather than the string literal.
     """
     def __getattr__(self, attr):
         if attr not in DEFAULTS.keys():
