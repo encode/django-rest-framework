@@ -1,161 +1,117 @@
-# """Tests for the resource module"""
-# from django.db import models
-# from django.test import TestCase
-# from django.utils.translation import ugettext_lazy
-# from djangorestframework.serializer import Serializer
-
-# import datetime
-# import decimal
+import datetime
+from django.test import TestCase
+from djangorestframework import serializers
 
 
-# class TestObjectToData(TestCase):
-#     """
-#     Tests for the Serializer class.
-#     """
+class Comment(object):
+    def __init__(self, email, content, created):
+        self.email = email
+        self.content = content
+        self.created = created or datetime.datetime.now()
 
-#     def setUp(self):
-#         self.serializer = Serializer()
-#         self.serialize = self.serializer.serialize
-
-#     def test_decimal(self):
-#         """Decimals need to be converted to a string representation."""
-#         self.assertEquals(self.serialize(decimal.Decimal('1.5')), decimal.Decimal('1.5'))
-
-#     def test_function(self):
-#         """Functions with no arguments should be called."""
-#         def foo():
-#             return 1
-#         self.assertEquals(self.serialize(foo), 1)
-
-#     def test_method(self):
-#         """Methods with only a ``self`` argument should be called."""
-#         class Foo(object):
-#             def foo(self):
-#                 return 1
-#         self.assertEquals(self.serialize(Foo().foo), 1)
-
-#     def test_datetime(self):
-#         """datetime objects are left as-is."""
-#         now = datetime.datetime.now()
-#         self.assertEquals(self.serialize(now), now)
-
-#     def test_dict_method_name_collision(self):
-#         """dict with key that collides with dict method name"""
-#         self.assertEquals(self.serialize({'items': 'foo'}), {'items': u'foo'})
-#         self.assertEquals(self.serialize({'keys': 'foo'}), {'keys': u'foo'})
-#         self.assertEquals(self.serialize({'values': 'foo'}), {'values': u'foo'})
-
-#     def test_ugettext_lazy(self):
-#         self.assertEquals(self.serialize(ugettext_lazy('foobar')), u'foobar')
+    def __eq__(self, other):
+        return all([getattr(self, attr) == getattr(other, attr)
+                    for attr in ('email', 'content', 'created')])
 
 
-# class TestFieldNesting(TestCase):
-#     """
-#     Test nesting the fields in the Serializer class
-#     """
-#     def setUp(self):
-#         self.serializer = Serializer()
-#         self.serialize = self.serializer.serialize
+class CommentSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    content = serializers.CharField(max_length=1000)
+    created = serializers.DateTimeField()
 
-#         class M1(models.Model):
-#             field1 = models.CharField(max_length=256)
-#             field2 = models.CharField(max_length=256)
-
-#         class M2(models.Model):
-#             field = models.OneToOneField(M1)
-
-#         class M3(models.Model):
-#             field = models.ForeignKey(M1)
-
-#         self.m1 = M1(field1='foo', field2='bar')
-#         self.m2 = M2(field=self.m1)
-#         self.m3 = M3(field=self.m1)
+    def restore_object(self, data, instance=None):
+        if instance is None:
+            return Comment(**data)
+        for key, val in data.items():
+            setattr(instance, key, val)
+        return instance
 
 
-#     def test_tuple_nesting(self):
-#         """
-#         Test tuple nesting on `fields` attr
-#         """
-#         class SerializerM2(Serializer):
-#             fields = (('field', ('field1',)),)
+class BasicTests(TestCase):
+    def setUp(self):
+        self.comment = Comment(
+            'tom@example.com',
+            'Happy new year!',
+            datetime.datetime(2012, 1, 1)
+        )
+        self.data = {
+            'email': 'tom@example.com',
+            'content': 'Happy new year!',
+            'created': datetime.datetime(2012, 1, 1)
+        }
 
-#         class SerializerM3(Serializer):
-#             fields = (('field', ('field2',)),)
+    def test_empty(self):
+        serializer = CommentSerializer()
+        expected = {
+            'email': '',
+            'content': '',
+            'created': None
+        }
+        self.assertEquals(serializer.data, expected)
 
-#         self.assertEqual(SerializerM2().serialize(self.m2), {'field': {'field1': u'foo'}})
-#         self.assertEqual(SerializerM3().serialize(self.m3), {'field': {'field2': u'bar'}})
+    def test_serialization(self):
+        serializer = CommentSerializer(instance=self.comment)
+        expected = self.data
+        self.assertEquals(serializer.data, expected)
+
+    def test_deserialization_for_create(self):
+        serializer = CommentSerializer(self.data)
+        expected = self.comment
+        self.assertEquals(serializer.is_valid(), True)
+        self.assertEquals(serializer.object, expected)
+        self.assertFalse(serializer.object is expected)
+
+    def test_deserialization_for_update(self):
+        serializer = CommentSerializer(self.data, instance=self.comment)
+        expected = self.comment
+        self.assertEquals(serializer.is_valid(), True)
+        self.assertEquals(serializer.object, expected)
+        self.assertTrue(serializer.object is expected)
 
 
-#     def test_serializer_class_nesting(self):
-#         """
-#         Test related model serialization
-#         """
-#         class NestedM2(Serializer):
-#             fields = ('field1', )
+class ValidationTests(TestCase):
+    def setUp(self):
+        self.comment = Comment(
+            'tom@example.com',
+            'Happy new year!',
+            datetime.datetime(2012, 1, 1)
+        )
+        self.data = {
+            'email': 'tom@example.com',
+            'content': 'x' * 1001,
+            'created': datetime.datetime(2012, 1, 1)
+        }
 
-#         class NestedM3(Serializer):
-#             fields = ('field2', )
+    def test_deserialization_for_create(self):
+        serializer = CommentSerializer(self.data)
+        self.assertEquals(serializer.is_valid(), False)
+        self.assertEquals(serializer.errors, {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
 
-#         class SerializerM2(Serializer):
-#             fields = [('field', NestedM2)]
+    def test_deserialization_for_update(self):
+        serializer = CommentSerializer(self.data, instance=self.comment)
+        self.assertEquals(serializer.is_valid(), False)
+        self.assertEquals(serializer.errors, {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
 
-#         class SerializerM3(Serializer):
-#             fields = [('field', NestedM3)]
 
-#         self.assertEqual(SerializerM2().serialize(self.m2), {'field': {'field1': u'foo'}})
-#         self.assertEqual(SerializerM3().serialize(self.m3), {'field': {'field2': u'bar'}})
+class MetadataTests(TestCase):
+    # def setUp(self):
+    #     self.comment = Comment(
+    #         'tomchristie',
+    #         'Happy new year!',
+    #         datetime.datetime(2012, 1, 1)
+    #     )
+    #     self.data = {
+    #         'email': 'tomchristie',
+    #         'content': 'Happy new year!',
+    #         'created': datetime.datetime(2012, 1, 1)
+    #     }
 
-#     def test_serializer_no_fields(self):
-#         """
-#         Test related serializer works when the fields attr isn't present. Fix for
-#         #178.
-#         """
-#         class NestedM2(Serializer):
-#             fields = ('field1', )
-
-#         class NestedM3(Serializer):
-#             fields = ('field2', )
-
-#         class SerializerM2(Serializer):
-#             include = [('field', NestedM2)]
-#             exclude = ('id', )
-
-#         class SerializerM3(Serializer):
-#             fields = [('field', NestedM3)]
-
-#         self.assertEqual(SerializerM2().serialize(self.m2), {'field': {'field1': u'foo'}})
-#         self.assertEqual(SerializerM3().serialize(self.m3), {'field': {'field2': u'bar'}})
-
-#     def test_serializer_classname_nesting(self):
-#         """
-#         Test related model serialization
-#         """
-#         class SerializerM2(Serializer):
-#             fields = [('field', 'NestedM2')]
-
-#         class SerializerM3(Serializer):
-#             fields = [('field', 'NestedM3')]
-
-#         class NestedM2(Serializer):
-#             fields = ('field1', )
-
-#         class NestedM3(Serializer):
-#             fields = ('field2', )
-
-#         self.assertEqual(SerializerM2().serialize(self.m2), {'field': {'field1': u'foo'}})
-#         self.assertEqual(SerializerM3().serialize(self.m3), {'field': {'field2': u'bar'}})
-
-#     def test_serializer_overridden_hook_method(self):
-#         """
-#         Test serializing a model instance which overrides a class method on the
-#         serializer.  Checks for correct behaviour in odd edge case.
-#         """
-#         class SerializerM2(Serializer):
-#             fields = ('overridden', )
-
-#             def overridden(self):
-#                 return False
-
-#         self.m2.overridden = True
-#         self.assertEqual(SerializerM2().serialize_model(self.m2),
-#                          {'overridden': True})
+    def test_empty(self):
+        serializer = CommentSerializer()
+        expected = {
+            'email': serializers.CharField,
+            'content': serializers.CharField,
+            'created': serializers.DateTimeField
+        }
+        for field_name, field in expected.items():
+            self.assertTrue(isinstance(serializer.data.fields[field_name], field))

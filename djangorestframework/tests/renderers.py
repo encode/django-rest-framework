@@ -54,7 +54,7 @@ class MockView(APIView):
     renderers = (RendererA, RendererB)
 
     def get(self, request, **kwargs):
-        response = Response(DUMMYSTATUS, DUMMYCONTENT)
+        response = Response(DUMMYCONTENT, status=DUMMYSTATUS)
         return self.render(response)
 
 

@@ -12,7 +12,7 @@ env:
 install:
   - pip install $DJANGO 
   - pip install -e . --use-mirrors
-  - pip install -r requirements.txt
+  - pip install -r requirements.txt --use-mirrors
   - pip install coverage==3.5.1 --use-mirrors
 
 script:
