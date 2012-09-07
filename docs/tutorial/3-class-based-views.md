@@ -7,30 +7,31 @@ We can also write our API views using class based views, rather than function ba
 We'll start by rewriting the root view as a class based view.  All this involves is a little bit of refactoring.
 
     from blog.models import Comment
-    from blog.serializers import ComentSerializer
+    from blog.serializers import CommentSerializer
     from django.http import Http404
     from djangorestframework.views import APIView
     from djangorestframework.response import Response
-    from djangorestframework.status import status
+    from djangorestframework import status
+
 
     class CommentRoot(APIView):
         """
         List all comments, or create a new comment.
-        """ 
+        """
         def get(self, request, format=None):
             comments = Comment.objects.all()
-            serializer = ComentSerializer(instance=comments)
+            serializer = CommentSerializer(instance=comments)
             return Response(serializer.data)
 
-        def post(self, request, format=None)
-            serializer = ComentSerializer(request.DATA)
+        def post(self, request, format=None):
+            serializer = CommentSerializer(request.DATA)
             if serializer.is_valid():
                 comment = serializer.object
                 comment.save()
-                return Response(serializer.serialized, status=HTTP_201_CREATED)
-            return Response(serializer.serialized_errors, status=HTTP_400_BAD_REQUEST)
+                return Response(serializer.serialized, status=status.HTTP_201_CREATED)
+            return Response(serializer.serialized_errors, status=status.HTTP_400_BAD_REQUEST)
 
-     comment_root = CommentRoot.as_view()
+    comment_root = CommentRoot.as_view()
 
 So far, so good.  It looks pretty similar to the previous case, but we've got better seperation between the different HTTP methods.  We'll also need to update the instance view. 
 
@@ -38,18 +39,18 @@ So far, so good.  It looks pretty similar to the previous case, but we've got be
         """
         Retrieve, update or delete a comment instance.
         """
- 
+
         def get_object(self, pk):
             try:
                 return Comment.objects.get(pk=pk)
             except Comment.DoesNotExist:
                 raise Http404
- 
+
         def get(self, request, pk, format=None):
             comment = self.get_object(pk)
             serializer = CommentSerializer(instance=comment)
             return Response(serializer.data)
-    
+
         def put(self, request, pk, format=None):
             comment = self.get_object(pk)
             serializer = CommentSerializer(request.DATA, instance=comment)
@@ -64,7 +65,7 @@ So far, so good.  It looks pretty similar to the previous case, but we've got be
             comment.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-        comment_instance = CommentInstance.as_view()
+    comment_instance = CommentInstance.as_view()
 
 That's looking good.  Again, it's still pretty similar to the function based view right now.
 Okay, we're done.  If you run the development server everything should be working just as before.
