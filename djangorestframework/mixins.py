@@ -94,4 +94,4 @@ class MetadataMixin(object):
         #     for name, field in form.fields.iteritems():
         #         field_name_types[name] = field.__class__.__name__
         #     content['fields'] = field_name_types
-        raise Response(content, status=status.HTTP_200_OK)
+        return Response(content, status=status.HTTP_200_OK)
