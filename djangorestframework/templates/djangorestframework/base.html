@@ -78,8 +78,6 @@
 			</form>
 	{% endif %}
 
-	{% comment %}
-		DROP POST/PUT/DELETE until the forms are working with REST framework 2
 
 	{# Only display the POST/PUT/DELETE forms if method tunneling via POST forms is enabled and the user has permissions on this view. #}
 	{% if response.status_code != 403 %}
@@ -90,7 +88,7 @@
 					<h2>POST {{ name }}</h2>
 					{% csrf_token %}
 					{{ post_form.non_field_errors }}
-					{% for field in post_form %}
+                    {% for field in post_form %}
 					<div class='form-row'>
 						{{ field.label_tag }}
 						{{ field }}
@@ -141,7 +139,6 @@
 		{% endif %}
 
 	{% endif %}
-	{% endcomment %}
 	</div>
 	<!-- END content-main -->
 
