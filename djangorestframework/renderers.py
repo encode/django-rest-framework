@@ -234,7 +234,8 @@ class DocumentingTemplateRenderer(BaseRenderer):
         In the absence on of the Resource having an associated form then
         provide a form that can be used to submit arbitrary content.
         """
-
+        if not hasattr(self.view, 'get_serializer'):  # No serializer, no form.
+            return
         #  We need to map our Fields to Django's Fields.
         field_mapping = dict([
          [FloatField.__name__, forms.FloatField],
