@@ -17,9 +17,11 @@ resources.py
 
 urls.py
 
-    from resources import router
+    from resources import api
 
-    urlpatterns = api.urlpatterns
+    urlpatterns = patterns('',
+        url('^', import(api.urls))
+    )
 
 ### Do you need a resource at all?
 
@@ -32,9 +34,9 @@ description. The preceding example could be simplified to:
     from djangorestframework.routers import DefaultResourceRouter
     from models import BlogPost
 
-    router = DefaultResourceRouter()
-    router.register(BlogPost)
-    router.register(CommentPost)
+    api = DefaultResourceRouter()
+    api.register(BlogPost)
+    api.register(CommentPost)
 
 ## ModelResource options
 
