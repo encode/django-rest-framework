@@ -7,6 +7,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    <link href="{{ base_url }}/css/prettify.css" rel="stylesheet">
     <link href="{{ base_url }}/css/bootstrap.css" rel="stylesheet">
     <link href="{{ base_url }}/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="{{ base_url }}/css/drf-styles.css" rel="stylesheet">
@@ -15,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body>
+  <body onload="prettyPrint()">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -102,6 +103,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="{{ base_url }}/js/jquery-1.8.1-min.js"></script>
+    <script src="{{ base_url }}/js/prettify.js"></script>
     <script src="{{ base_url }}/js/bootstrap-dropdown.js"></script>
     <script src="{{ base_url }}/js/bootstrap-scrollspy.js"></script>
     <script src="{{ base_url }}/js/bootstrap-collapse.js"></script>
