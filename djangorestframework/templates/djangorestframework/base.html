@@ -64,11 +64,14 @@
     <!-- Content -->
     <div id="content">
 
-        {% if 'OPTIONS' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
-            <form action="{{ request.get_full_path }}" method="post" class="pull-right">
+        {% if api_settings.FORM_METHOD_OVERRIDE %}
+            <form id="options-form" action="{{ request.get_full_path }}" method="post" class="pull-right">
                 {% csrf_token %}
                 <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
-                <button class="btn">OPTIONS</button>
+                <button class="btn js-tooltip" {% if 'OPTIONS' in allowed_methods %} title="Do an OPTIONS request on the {{ name }} resource"{% else %} disabled{% endif %}>OPTIONS</button>
+                {% if not 'OPTIONS' in allowed_methods %}
+                    <div class="js-tooltip disabled-tooltip-shield" title="OPTIONS request not allowed for resource {{ name }}"></div>
+                {% endif %}
             </form>
         {% endif %}
 

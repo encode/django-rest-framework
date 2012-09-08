@@ -31,3 +31,16 @@ h2, h3 {
 .format-option {
     font-family: Menlo, Consolas, "Andale Mono", "Lucida Console", monospace;
 }
+
+#options-form {
+    position: relative;
+}
+
+/* To allow tooltips to work on disabled elements */
+.disabled-tooltip-shield {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
