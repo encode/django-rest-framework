@@ -14,6 +14,14 @@ pre {
   font-size: 12px;
 }
 
+a.github {
+  float: right;
+  margin-top: -12px;
+}
+
+a.github:hover {
+  text-decoration: none;
+}
 
 /* Preserve the spacing of the navbar across different screen sizes. */
 .navbar-inner {
@@ -66,7 +74,7 @@ blockquote {
   border-left: none;
 }
 
-  blockquote:before {
+blockquote:before {
   display: block;
   content: "\201C";
   font-size: 80px;
@@ -76,7 +84,7 @@ blockquote {
   color: #7a7a7a;
 }
 
-  blockquote p:last-child {
+blockquote p:last-child {
   color: #999999;
   font-size: 14px;
   display: block;

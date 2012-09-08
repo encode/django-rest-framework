@@ -102,7 +102,8 @@
         </div>
 
         <div id="main-content" class="span9">
-          <h1 id="authentication">Authentication</h1>
+          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/authentication.py"><span class="label label-info">authentication.py</span></a></p>
+<h1 id="authentication">Authentication</h1>
 <p>Authentication is the mechanism of associating an incoming request with a set of identifying credentials, such as the user the request came from, or the token that it was signed with.  The <a href="permissions">permission</a> and <a href="throttling">throttling</a> policies can then use those credentials to determine if the request should be permitted.</p>
 <p>REST framework provides a number of authentication policies out of the box, and also allows you to implement custom policies.</p>
 <p>Authentication will run the first time either the <code>request.user</code> or <code>request.auth</code> properties are accessed, and determines how those properties are initialized.</p>
