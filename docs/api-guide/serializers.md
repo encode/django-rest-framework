@@ -1,3 +1,5 @@
+<a class="github" href="serializers.py"></a>
+
 # Serializers
 
 > Expanding the usefulness of the serializers is something that we would

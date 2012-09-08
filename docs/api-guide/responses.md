@@ -1,3 +1,5 @@
+<a class="github" href="response.py"></a>
+
 # Responses
 
 > Unlike basic HttpResponse objects, TemplateResponse objects retain the details of the context that was provided by the view to compute the response. The final output of the response is not computed until it is needed, later in the response process.

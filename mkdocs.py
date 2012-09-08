@@ -24,6 +24,7 @@ else:
 
 main_header = '<li class="main"><a href="#{{ anchor }}">{{ title }}</a></li>'
 sub_header = '<li><a href="#{{ anchor }}">{{ title }}</a></li>'
+code_label = r'<a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/\1"><span class="label label-info">\1</span></a>'
 
 page = open(os.path.join(docs_dir, 'template.html'), 'r').read()
 
@@ -68,4 +69,5 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
         output = re.sub(r'a href="([^"]*)\.md"', r'a href="\1%s"' % suffix, output)
         output = re.sub(r'<pre><code>:::bash', r'<pre class="prettyprint lang-bsh">', output)
         output = re.sub(r'<pre>', r'<pre class="prettyprint lang-py">', output)
+        output = re.sub(r'<a class="github" href="([^"]*)"></a>', code_label, output)
         open(build_file, 'w').write(output.encode('utf-8'))

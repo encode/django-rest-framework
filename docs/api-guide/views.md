@@ -1,3 +1,5 @@
+<a class="github" href="views.py"></a>
+
 > Django's class based views are a welcome departure from the old-style views.
 >
 > &mdash; [Reinout van Rees][cite]
