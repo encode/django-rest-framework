@@ -23,6 +23,10 @@ a.github:hover {
   text-decoration: none;
 }
 
+#table-of-contents {
+    overflow: hidden;
+}
+
 /* Preserve the spacing of the navbar across different screen sizes. */
 .navbar-inner {
   padding: 5px 0; 
