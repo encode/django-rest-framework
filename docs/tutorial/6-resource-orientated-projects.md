@@ -1,36 +1,70 @@
-serializers.py
-
-    class BlogPostSerializer(URLModelSerializer):
-        class Meta:
-            model = BlogPost
-
-    class CommentSerializer(URLModelSerializer):
-        class Meta:
-            model = Comment
+## Registering Resources
 
 resources.py
 
-    class BlogPostResource(ModelResource):
-        serializer_class = BlogPostSerializer
-        model = BlogPost
-        permissions = [AdminOrAnonReadonly()]
-        throttles = [AnonThrottle(rate='5/min')]
+    from djangorestframework.routers import DefaultResourceRouter
+    from models import BlogPost
 
-    class CommentResource(ModelResource):
-        serializer_class = CommentSerializer
-        model = Comment
-        permissions = [AdminOrAnonReadonly()]
-        throttles = [AnonThrottle(rate='5/min')]
+    class BlogPostResource (ModelResource):
+        pass
 
-Now that we're using Resources rather than Views, we don't need to design the urlconf ourselves.  The conventions for wiring up resources into views and urls are handled automatically.  All we need to do is register the appropriate resources with a router, and let it do the rest.  Here's our re-wired `urls.py` file.
+    class CommentResource (ModelResource):
+        pass
 
-    from blog import resources
-    from djangorestframework.routers import DefaultRouter
+    api = DefaultResourceRouter()
+    api.register(BlogPost, BlogPostResource)
+    api.register(Comment, CommentResource)
 
-    router = DefaultRouter()
-    router.register(resources.BlogPostResource)
-    router.register(resources.CommentResource)
-    urlpatterns = router.urlpatterns
+urls.py
+
+    from resources import router
+
+    urlpatterns = api.urlpatterns
+
+### Do you need a serializer at all?
+
+In the preceding example, the `Serializer` classes don't define any custom values
+(yet). As a result, the default model serializer will be provided. If you are
+happy with the default serializer, you don't need to define a `Serializer`
+object at all -- you can register the resource without providing a `Serializer`
+description. The preceding example could be simplified to:
+
+    from djangorestframework.routers import DefaultResourceRouter
+    from models import BlogPost
+
+    router = DefaultResourceRouter()
+    router.register(BlogPost)
+    router.register(CommentPost)
+
+## ModelResource options
+
+*ModelResource.serializer_class*
+
+Defaults to `ModelSerializer`.
+
+*ModelResource.permissions*
+
+Defaults to `DEFAULT_PERMISSIONS`.
+
+*ModelResource.throttles*
+
+Defaults to `DEFAULT_THROTTLES`.
+
+*ModelResource.list_view_class*
+
+Defaults to `RootAPIView`.  Set to `ListAPIView` for read-only.
+
+*ModelResource.instance_view_class*
+
+Defaults to `InstanceAPIView`.  Set to `DetailAPIView` for read-only.
+
+*ModelResource.collection_name*
+
+If `None`, the model's `verbose_name_plural` will be used.
+
+*ModelResource.id_field_name*
+
+Defaults to `'pk'`.
 
 ## Trade-offs between views vs resources.
 
