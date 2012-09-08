@@ -21,12 +21,12 @@ urls.py
 
     urlpatterns = api.urlpatterns
 
-### Do you need a serializer at all?
+### Do you need a resource at all?
 
-In the preceding example, the `Serializer` classes don't define any custom values
-(yet). As a result, the default model serializer will be provided. If you are
-happy with the default serializer, you don't need to define a `Serializer`
-object at all -- you can register the resource without providing a `Serializer`
+In the preceding example, the `Resource` classes don't define any custom values
+(yet). As a result, the default model resource will be provided. If you are
+happy with the default resource, you don't need to define a `Resource`
+object at all -- you can register the resource without providing a `Resource`
 description. The preceding example could be simplified to:
 
     from djangorestframework.routers import DefaultResourceRouter
