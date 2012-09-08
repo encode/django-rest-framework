@@ -111,6 +111,9 @@
                 </form>
             {% endif %}
 
+            {% comment %}
+            {# These are disabled since the forms don't work with 2.0.0 yet #}
+
             {% if response.status_code != 403 %}
 
                 {% if 'POST' in allowed_methods %}
@@ -168,6 +171,8 @@
 
             {% endif %}
 
+
+            {% endcomment %}
         </div>
         <!-- END content-main -->
 
