@@ -39,6 +39,7 @@ The following people have helped make REST framework great.
 * Daniel Izquierdo <izquierdo>
 * Can Yavuz <tschan>
 * Shawn Lewis <shawnlewis>
+* Alec Perkins <alecperkins>
 
 Many thanks to everyone who's contributed to the project.
 
