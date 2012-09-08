@@ -255,7 +255,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
         for k, v in serializer.fields.items():
             fields[k] = field_mapping[v.__class__.__name__]()
         OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
-        if object:
+        if object and not self.view.request.method == 'DELETE':  # Don't fill in the form when the object is deleted
             data = serializer.data
         form_instance = OnTheFlyForm(data)
         return form_instance
