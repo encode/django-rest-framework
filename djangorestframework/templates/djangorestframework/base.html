@@ -84,9 +84,10 @@
                 <pre><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
             <div>
             <div class="response-info">
-                <pre><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
+                <pre><div class="meta"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
 {% for key, val in response.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
 {% endfor %}
+</div>
 {{ content|urlize_quoted_links }}</pre>{% endautoescape %}
             </div>
 

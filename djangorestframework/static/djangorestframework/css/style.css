@@ -44,3 +44,7 @@ h2, h3 {
     bottom: 0;
     left: 0;
 }
+
+.response-info .meta {
+    border-bottom: 1px solid #ccc;
+}
