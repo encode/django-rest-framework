@@ -248,11 +248,16 @@ class DocumentingTemplateRenderer(BaseRenderer):
 
         # Creating an on the fly form see: http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
         fields = {}
-        for k, v in self.view.get_serializer().fields.items():
+        object, data = None, None
+        if hasattr(self.view, 'object'):
+            object = self.view.object
+        serializer = self.view.get_serializer(instance=object)
+        for k, v in serializer.fields.items():
             fields[k] = field_mapping[v.__class__.__name__]()
         OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
-
-        form_instance = OnTheFlyForm(self.view.get_serializer().data)
+        if object:
+            data = serializer.data
+        form_instance = OnTheFlyForm(data)
         return form_instance
 
     def _get_generic_content_form(self, view):
