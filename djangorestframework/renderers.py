@@ -16,6 +16,7 @@ from djangorestframework.utils import encoders
 from djangorestframework.utils.breadcrumbs import get_breadcrumbs
 from djangorestframework.utils.mediatypes import get_media_type_params, add_media_type_param, media_type_matches
 from djangorestframework import VERSION
+from djangorestframework.fields import FloatField, IntegerField, DateTimeField, DateField, EmailField, CharField, BooleanField
 
 import string
 
@@ -234,32 +235,24 @@ class DocumentingTemplateRenderer(BaseRenderer):
         provide a form that can be used to submit arbitrary content.
         """
 
-        # Get the form instance if we have one bound to the input
-        form_instance = None
-        if method == getattr(view, 'method', view.request.method).lower():
-            form_instance = getattr(view, 'bound_form_instance', None)
+        #  We need to map our Fields to Django's Fields.
+        field_mapping = dict([
+         [FloatField.__name__, forms.FloatField],
+         [IntegerField.__name__, forms.IntegerField],
+         [DateTimeField.__name__, forms.DateTimeField],
+         [DateField.__name__, forms.DateField],
+         [EmailField.__name__, forms.EmailField],
+         [CharField.__name__, forms.CharField],
+         [BooleanField.__name__, forms.BooleanField]
+        ])
 
-        if not form_instance and hasattr(view, 'get_bound_form'):
-            # Otherwise if we have a response that is valid against the form then use that
-            if view.response.has_content_body:
-                try:
-                    form_instance = view.get_bound_form(view.response.cleaned_content, method=method)
-                    if form_instance and not form_instance.is_valid():
-                        form_instance = None
-                except Exception:
-                    form_instance = None
+        # Creating an on the fly form see: http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
+        fields = {}
+        for k, v in self.view.get_serializer().fields.items():
+            fields[k] = field_mapping[v.__class__.__name__]()
+        OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
 
-        # If we still don't have a form instance then try to get an unbound form
-        if not form_instance:
-            try:
-                form_instance = view.get_bound_form(method=method)
-            except Exception:
-                pass
-
-        # If we still don't have a form instance then try to get an unbound form which can tunnel arbitrary content types
-        if not form_instance:
-            form_instance = self._get_generic_content_form(view)
-
+        form_instance = OnTheFlyForm(self.view.get_serializer().data)
         return form_instance
 
     def _get_generic_content_form(self, view):
