@@ -1,4 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls.defaults import patterns, url
+# Note, these live in django.conf.urls since 1.4, and will no longer be
+# available from django.conf.urls.defaults in 1.6.
+
 from djangorestframework.resources import ModelResource
 
 class DefaultResourceRouter (object):
