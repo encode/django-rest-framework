@@ -7,6 +7,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    <link href="http://tomchristie.github.com/django-rest-framework/css/prettify.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
@@ -15,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body>
+  <body onload="prettyPrint()">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -122,24 +123,24 @@
 <h2 id="installation">Installation</h2>
 <p><strong>WARNING: These instructions will only become valid once this becomes the master version</strong></p>
 <p>Install using <code>pip</code>, including any optional packages you want...</p>
-<pre><code>pip install djangorestframework
+<pre class="prettyprint lang-py"><code>pip install djangorestframework
 pip install markdown  # Recommended if using the browseable API.
 pip install pyyaml    # Required for yaml content-type support.
 </code></pre>
 <p>...or clone the project from github.</p>
-<pre><code>git clone git@github.com:tomchristie/django-rest-framework.git
+<pre class="prettyprint lang-py"><code>git clone git@github.com:tomchristie/django-rest-framework.git
 cd django-rest-framework
 pip install -r requirements.txt
 pip install -r optionals.txt
 </code></pre>
 <p>Add <code>djangorestframework</code> to your <code>INSTALLED_APPS</code>.</p>
-<pre><code>INSTALLED_APPS = (
+<pre class="prettyprint lang-py"><code>INSTALLED_APPS = (
     ...
     'djangorestframework',        
 )
 </code></pre>
 <p>If you're intending to use the browserable API you'll want to add REST framework's login and logout views.  Add the following to your root <code>urls.py</code> file.</p>
-<pre><code>urlpatterns = patterns('',
+<pre class="prettyprint lang-py"><code>urlpatterns = patterns('',
     ...
     url(r'^api-auth/', include('djangorestframework.urls', namespace='djangorestframework'))
 )
@@ -184,10 +185,10 @@ pip install -r optionals.txt
 <h2 id="development">Development</h2>
 <p>If you want to work on REST framework itself, clone the repository, then...</p>
 <p>Build the docs:</p>
-<pre><code>./mkdocs.py
+<pre class="prettyprint lang-py"><code>./mkdocs.py
 </code></pre>
 <p>Run the tests:</p>
-<pre><code>./djangorestframework/runtests/runtests.py
+<pre class="prettyprint lang-py"><code>./djangorestframework/runtests/runtests.py
 </code></pre>
 <h2 id="license">License</h2>
 <p>Copyright (c) 2011-2012, Tom Christie
@@ -217,6 +218,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>

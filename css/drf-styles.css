@@ -10,6 +10,9 @@ body {
   padding-bottom: 40px;
 }
 
+pre {
+  font-size: 12px;
+}
 
 
 /* Preserve the spacing of the navbar across different screen sizes. */

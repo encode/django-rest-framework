@@ -7,6 +7,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    <link href="http://tomchristie.github.com/django-rest-framework/css/prettify.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
@@ -15,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body>
+  <body onload="prettyPrint()">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -118,7 +119,7 @@ area would be gratefully accepted.</p>
 <p>REST framework's serializers work very similarly to Django's <code>Form</code> and <code>ModelForm</code> classes.  It provides a <code>Serializer</code> class which gives you a powerful, generic way to control the output of your responses, as well as a <code>ModelSerializer</code> class which provides a useful shortcut for creating serializers that deal with model instances and querysets.</p>
 <h2 id="declaring-serializers">Declaring Serializers</h2>
 <p>Let's start by creating a simple object we can use for example purposes:</p>
-<pre><code>class Comment(object):
+<pre class="prettyprint lang-py"><code>class Comment(object):
     def __init__(self, email, content, created=None):
         self.email = email
         self.content = content
@@ -128,7 +129,7 @@ comment = Comment(email='leila@example.com', content='foo bar')
 </code></pre>
 <p>We'll declare a serializer that we can use to serialize and deserialize <code>Comment</code> objects.
 Declaring a serializer looks very similar to declaring a form:</p>
-<pre><code>class CommentSerializer(serializers.Serializer):
+<pre class="prettyprint lang-py"><code>class CommentSerializer(serializers.Serializer):
     email = serializers.EmailField()
     content = serializers.CharField(max_length=200)
     created = serializers.DateTimeField()
@@ -144,21 +145,21 @@ Declaring a serializer looks very similar to declaring a form:</p>
 <p>The first part of serializer class defines the fields that get serialized/deserialized.  The <code>restore_object</code> method defines how fully fledged instances get created when deserializing data.  The <code>restore_object</code> method is optional, and is only required if we want our serializer to support deserialization.</p>
 <h2 id="serializing-objects">Serializing objects</h2>
 <p>We can now use <code>CommentSerializer</code> to serialize a comment, or list of comments.  Again, using the <code>Serializer</code> class looks a lot like using a <code>Form</code> class.</p>
-<pre><code>serializer = CommentSerializer(instance=comment)
+<pre class="prettyprint lang-py"><code>serializer = CommentSerializer(instance=comment)
 serializer.data
 # {'email': u'leila@example.com', 'content': u'foo bar', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774)}
 </code></pre>
 <p>At this point we've translated the model instance into python native datatypes.  To finalise the serialization process we render the data into <code>json</code>.</p>
-<pre><code>stream = JSONRenderer().render(data)
+<pre class="prettyprint lang-py"><code>stream = JSONRenderer().render(data)
 stream
 # '{"email": "leila@example.com", "content": "foo bar", "created": "2012-08-22T16:20:09.822"}'
 </code></pre>
 <h2 id="deserializing-objects">Deserializing objects</h2>
 <p>Deserialization is similar.  First we parse a stream into python native datatypes... </p>
-<pre><code>data = JSONParser().parse(stream)
+<pre class="prettyprint lang-py"><code>data = JSONParser().parse(stream)
 </code></pre>
 <p>...then we restore those native datatypes into a fully populated object instance.</p>
-<pre><code>serializer = CommentSerializer(data)
+<pre class="prettyprint lang-py"><code>serializer = CommentSerializer(data)
 serializer.is_valid()
 # True
 serializer.object
@@ -172,7 +173,7 @@ serializer.object
 <p>The previous example is fine for dealing with objects that only have simple datatypes, but sometimes we also need to be able to represent more complex objects,
 where some of the attributes of an object might not be simple datatypes such as strings, dates or integers.</p>
 <p>The <code>Serializer</code> class is itself a type of <code>Field</code>, and can be used to represent relationships where one object type is nested inside another.</p>
-<pre><code>class UserSerializer(serializers.Serializer):
+<pre class="prettyprint lang-py"><code>class UserSerializer(serializers.Serializer):
     email = serializers.EmailField()
     username = serializers.CharField()
 
@@ -192,7 +193,7 @@ class CommentSerializer(serializers.Serializer):
 <p>If you want to create a custom field, you'll probably want to override either one or both of the <code>.to_native()</code> and <code>.from_native()</code> methods.  These two methods are used to convert between the intial datatype, and a primative, serializable datatype.  Primative datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primative objects.</p>
 <p>The <code>.to_native()</code> method is called to convert the initial datatype into a primative, serializable datatype.  The <code>from_native()</code> method is called to restore a primative datatype into it's initial representation.</p>
 <p>Let's look at an example of serializing a class that represents an RGB color value:</p>
-<pre><code>class Color(object):
+<pre class="prettyprint lang-py"><code>class Color(object):
     """
     A color represented in the RGB colorspace.
     """
@@ -217,7 +218,7 @@ class ColourField(Field):
 </code></pre>
 <p>By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override <code>.field_to_native()</code> and/or <code>.field_from_native()</code>.</p>
 <p>As an example, let's create a field that can be used represent the class name of the object being serialized:</p>
-<pre><code>class ClassNameField(Field):
+<pre class="prettyprint lang-py"><code>class ClassNameField(Field):
     def field_to_native(self, obj, field_name):
         """
         Serialize the object's class name, not an attribute of the object.
@@ -234,14 +235,14 @@ class ColourField(Field):
 <h1 id="modelserializers">ModelSerializers</h1>
 <p>Often you'll want serializer classes that map closely to model definitions.
 The <code>ModelSerializer</code> class lets you automatically create a Serializer class with fields that corrospond to the Model fields.</p>
-<pre><code>class AccountSerializer(ModelSerializer):
+<pre class="prettyprint lang-py"><code>class AccountSerializer(ModelSerializer):
     class Meta:
         model = Account
 </code></pre>
 <p><strong>[TODO: Explain model field to serializer field mapping in more detail]</strong></p>
 <h2 id="specifying-fields-explicitly">Specifying fields explicitly</h2>
 <p>You can add extra fields to a <code>ModelSerializer</code> or override the default fields by declaring fields on the class, just as you would for a <code>Serializer</code> class.</p>
-<pre><code>class AccountSerializer(ModelSerializer):
+<pre class="prettyprint lang-py"><code>class AccountSerializer(ModelSerializer):
     url = CharField(source='get_absolute_url', readonly=True)
     group = NaturalKeyField()
 
@@ -259,7 +260,7 @@ The <code>ModelSerializer</code> class lets you automatically create a Serialize
 <h2 id="specifying-which-fields-should-be-included">Specifying which fields should be included</h2>
 <p>If you only want a subset of the default fields to be used in a model serializer, you can do so using <code>fields</code> or <code>exclude</code> options, just as you would with a <code>ModelForm</code>.</p>
 <p>For example:</p>
-<pre><code>class AccountSerializer(ModelSerializer):
+<pre class="prettyprint lang-py"><code>class AccountSerializer(ModelSerializer):
     class Meta:
         model = Account
         exclude = ('id',)
@@ -268,7 +269,7 @@ The <code>ModelSerializer</code> class lets you automatically create a Serialize
 <p><strong>[TODO: Possibly only allow .serialize(fields=…) in FixtureSerializer for backwards compatability, but remove for ModelSerializer]</strong></p>
 <h2 id="specifiying-nested-serialization">Specifiying nested serialization</h2>
 <p>The default <code>ModelSerializer</code> uses primary keys for relationships, but you can also easily generate nested representations using the <code>nested</code> option:</p>
-<pre><code>class AccountSerializer(ModelSerializer):
+<pre class="prettyprint lang-py"><code>class AccountSerializer(ModelSerializer):
     class Meta:
         model = Account
         exclude = ('id',)
@@ -279,7 +280,7 @@ The <code>ModelSerializer</code> class lets you automatically create a Serialize
 <p>The <code>nested</code> option may also be set by passing it to the <code>serialize()</code> method.</p>
 <p><strong>[TODO: Possibly only allow .serialize(nested=…) in FixtureSerializer]</strong></p>
 <h2 id="customising-the-default-fields-used-by-a-modelserializer">Customising the default fields used by a ModelSerializer</h2>
-<pre><code>class AccountSerializer(ModelSerializer):
+<pre class="prettyprint lang-py"><code>class AccountSerializer(ModelSerializer):
     class Meta:
         model = Account
 
@@ -300,6 +301,7 @@ The <code>ModelSerializer</code> class lets you automatically create a Serialize
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>

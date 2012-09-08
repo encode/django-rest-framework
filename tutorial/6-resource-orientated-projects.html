@@ -7,6 +7,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    <link href="http://tomchristie.github.com/django-rest-framework/css/prettify.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
@@ -15,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body>
+  <body onload="prettyPrint()">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -96,7 +97,7 @@
 
         <div id="main-content" class="span9">
           <p>serializers.py</p>
-<pre><code>class BlogPostSerializer(URLModelSerializer):
+<pre class="prettyprint lang-py"><code>class BlogPostSerializer(URLModelSerializer):
     class Meta:
         model = BlogPost
 
@@ -105,7 +106,7 @@ class CommentSerializer(URLModelSerializer):
         model = Comment
 </code></pre>
 <p>resources.py</p>
-<pre><code>class BlogPostResource(ModelResource):
+<pre class="prettyprint lang-py"><code>class BlogPostResource(ModelResource):
     serializer_class = BlogPostSerializer
     model = BlogPost
     permissions = [AdminOrAnonReadonly()]
@@ -118,7 +119,7 @@ class CommentResource(ModelResource):
     throttles = [AnonThrottle(rate='5/min')]
 </code></pre>
 <p>Now that we're using Resources rather than Views, we don't need to design the urlconf ourselves.  The conventions for wiring up resources into views and urls are handled automatically.  All we need to do is register the appropriate resources with a router, and let it do the rest.  Here's our re-wired <code>urls.py</code> file.</p>
-<pre><code>from blog import resources
+<pre class="prettyprint lang-py"><code>from blog import resources
 from djangorestframework.routers import DefaultRouter
 
 router = DefaultRouter()
@@ -145,6 +146,7 @@ urlpatterns = router.urlpatterns
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>

@@ -7,6 +7,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    <link href="http://tomchristie.github.com/django-rest-framework/css/prettify.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
@@ -15,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body>
+  <body onload="prettyPrint()">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -113,7 +114,7 @@
 <p>There's no requirement for you to use them, but if you do then the self-describing API will be able to automatically hyperlink it's output for you, which makes browsing the API much easier.</p>
 <h2 id="reverseviewname-request-args-kwargs">reverse(viewname, request, <em>args, </em>*kwargs)</h2>
 <p>Has the same behavior as <a href="https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse"><code>django.core.urlresolvers.reverse</code></a>, except that it returns a fully qualified URL, using the request to determine the host and port.</p>
-<pre><code>from djangorestframework.utils import reverse
+<pre class="prettyprint lang-py"><code>from djangorestframework.utils import reverse
 from djangorestframework.views import APIView
 
 class MyView(APIView):
@@ -134,6 +135,7 @@ class MyView(APIView):
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>

@@ -7,6 +7,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    <link href="http://tomchristie.github.com/django-rest-framework/css/prettify.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
@@ -15,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body>
+  <body onload="prettyPrint()">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -107,12 +108,12 @@
 Let's introduce a couple of essential building blocks.</p>
 <h2 id="request-objects">Request objects</h2>
 <p>REST framework intoduces a <code>Request</code> object that extends the regular <code>HttpRequest</code>, and provides more flexible request parsing.  The core functionality of the <code>Request</code> object is the <code>request.DATA</code> attribute, which is similar to <code>request.POST</code>, but more useful for working with Web APIs.</p>
-<pre><code>request.POST  # Only handles form data.  Only works for 'POST' method.
+<pre class="prettyprint lang-py"><code>request.POST  # Only handles form data.  Only works for 'POST' method.
 request.DATA  # Handles arbitrary data.  Works any HTTP request with content.
 </code></pre>
 <h2 id="response-objects">Response objects</h2>
 <p>REST framework also introduces a <code>Response</code> object, which is a type of <code>TemplateResponse</code> that takes unrendered content and uses content negotiation to determine the correct content type to return to the client.</p>
-<pre><code>return Response(data)  # Renders to content type as requested by the client.
+<pre class="prettyprint lang-py"><code>return Response(data)  # Renders to content type as requested by the client.
 </code></pre>
 <h2 id="status-codes">Status codes</h2>
 <p>Using numeric HTTP status codes in your views doesn't always make for obvious reading, and it's easy to not notice if you get an error code wrong.  REST framework provides more explicit identifiers for each status code, such as <code>HTTP_400_BAD_REQUEST</code> in the <code>status</code> module.  It's a good idea to use these throughout rather than using numeric identifiers.</p>
@@ -127,7 +128,7 @@ request.DATA  # Handles arbitrary data.  Works any HTTP request with content.
 <h2 id="pulling-it-all-together">Pulling it all together</h2>
 <p>Okay, let's go ahead and start using these new components to write a few views. </p>
 <p>We don't need our <code>JSONResponse</code> class anymore, so go ahead and delete that.  Once that's done we can start refactoring our views slightly.</p>
-<pre><code>from blog.models import Comment
+<pre class="prettyprint lang-py"><code>from blog.models import Comment
 from blog.serializers import CommentSerializer
 from djangorestframework import status
 from djangorestframework.decorators import api_view
@@ -153,7 +154,7 @@ def comment_root(request):
             return Response(serializer.error_data, status=status.HTTP_400_BAD_REQUEST)
 </code></pre>
 <p>Our instance view is an improvement over the previous example.  It's a little more concise, and the code now feels very similar to if we were working with the Forms API.  We're also using named status codes, which makes the response meanings more obvious.</p>
-<pre><code>@api_view(['GET', 'PUT', 'DELETE'])
+<pre class="prettyprint lang-py"><code>@api_view(['GET', 'PUT', 'DELETE'])
 def comment_instance(request, pk):
     """
     Retrieve, update or delete a comment instance.
@@ -185,13 +186,13 @@ def comment_instance(request, pk):
 <h2 id="adding-optional-format-suffixes-to-our-urls">Adding optional format suffixes to our URLs</h2>
 <p>To take advantage of the fact that our responses are no longer hardwired to a single content type let's add support for format suffixes to our API endpoints. Using format suffixes gives us URLs that explicitly refer to a given format, and means our API will be able to handle URLs such as <a href="http://example.com/api/items/4.json">http://example.com/api/items/4.json</a>.</p>
 <p>Start by adding a <code>format</code> keyword argument to both of the views, like so.</p>
-<pre><code>def comment_root(request, format=None):
+<pre class="prettyprint lang-py"><code>def comment_root(request, format=None):
 </code></pre>
 <p>and</p>
-<pre><code>def comment_instance(request, pk, format=None):
+<pre class="prettyprint lang-py"><code>def comment_instance(request, pk, format=None):
 </code></pre>
 <p>Now update the <code>urls.py</code> file slightly, to append a set of <code>format_suffix_patterns</code> in addition to the existing URLs.</p>
-<pre><code>from django.conf.urls import patterns, url
+<pre class="prettyprint lang-py"><code>from django.conf.urls import patterns, url
 from djangorestframework.urlpatterns import format_suffix_patterns
 
 urlpatterns = patterns('blogpost.views',
@@ -218,6 +219,7 @@ urlpatterns = format_suffix_patterns(urlpatterns)
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>

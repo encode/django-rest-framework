@@ -7,6 +7,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    <link href="http://tomchristie.github.com/django-rest-framework/css/prettify.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
@@ -15,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body>
+  <body onload="prettyPrint()">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -101,7 +102,7 @@
 <p>We can also write our API views using class based views, rather than function based views.  As we'll see this is a powerful pattern that allows us to reuse common functionality, and helps us keep our code <a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself">DRY</a>.</p>
 <h2 id="rewriting-our-api-using-class-based-views">Rewriting our API using class based views</h2>
 <p>We'll start by rewriting the root view as a class based view.  All this involves is a little bit of refactoring.</p>
-<pre><code>from blog.models import Comment
+<pre class="prettyprint lang-py"><code>from blog.models import Comment
 from blog.serializers import CommentSerializer
 from django.http import Http404
 from djangorestframework.views import APIView
@@ -128,7 +129,7 @@ class CommentRoot(APIView):
 comment_root = CommentRoot.as_view()
 </code></pre>
 <p>So far, so good.  It looks pretty similar to the previous case, but we've got better seperation between the different HTTP methods.  We'll also need to update the instance view. </p>
-<pre><code>class CommentInstance(APIView):
+<pre class="prettyprint lang-py"><code>class CommentInstance(APIView):
     """
     Retrieve, update or delete a comment instance.
     """
@@ -166,7 +167,7 @@ Okay, we're done.  If you run the development server everything should be workin
 <p>One of the big wins of using class based views is that it allows us to easily compose reusable bits of behaviour.</p>
 <p>The create/retrieve/update/delete operations that we've been using so far are going to be pretty simliar for any model-backed API views we create.  Those bits of common behaviour are implemented in REST framework's mixin classes.</p>
 <p>Let's take a look at how we can compose our views by using the mixin classes.</p>
-<pre><code>from blog.models import Comment
+<pre class="prettyprint lang-py"><code>from blog.models import Comment
 from blog.serializers import CommentSerializer
 from djangorestframework import mixins
 from djangorestframework import generics
@@ -187,7 +188,7 @@ comment_root = CommentRoot.as_view()
 </code></pre>
 <p>We'll take a moment to examine exactly what's happening here - We're building our view using <code>MultipleObjectBaseView</code>, and adding in <code>ListModelMixin</code> and <code>CreateModelMixin</code>.</p>
 <p>The base class provides the core functionality, and the mixin classes provide the <code>.list()</code> and <code>.create()</code> actions.  We're then explictly binding the <code>get</code> and <code>post</code> methods to the appropriate actions.  Simple enough stuff so far.</p>
-<pre><code>class CommentInstance(mixins.RetrieveModelMixin,
+<pre class="prettyprint lang-py"><code>class CommentInstance(mixins.RetrieveModelMixin,
                       mixins.UpdateModelMixin,
                       mixins.DestroyModelMixin,
                       generics.SingleObjectBaseView):
@@ -208,7 +209,7 @@ comment_instance = CommentInstance.as_view()
 <p>Pretty similar.  This time we're using the <code>SingleObjectBaseView</code> class to provide the core functionality, and adding in mixins to provide the <code>.retrieve()</code>, <code>.update()</code> and <code>.destroy()</code> actions.</p>
 <h2 id="using-generic-class-based-views">Using generic class based views</h2>
 <p>Using the mixin classes we've rewritten the views to use slightly less code than before, but we can go one step further.  REST framework provides a set of already mixed-in generic views that we can use.</p>
-<pre><code>from blog.models import Comment
+<pre class="prettyprint lang-py"><code>from blog.models import Comment
 from blog.serializers import CommentSerializer
 from djangorestframework import generics
 
@@ -234,6 +235,7 @@ comment_instance = CommentInstance.as_view()
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>

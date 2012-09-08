@@ -7,6 +7,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    <link href="http://tomchristie.github.com/django-rest-framework/css/prettify.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
@@ -15,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body>
+  <body onload="prettyPrint()">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -108,26 +109,27 @@
 <p>This tutorial will walk you through the building blocks that make up REST framework.   It'll take a little while to get through, but it'll give you a comprehensive understanding of how everything fits together.</p>
 <h2 id="setting-up-a-new-environment">Setting up a new environment</h2>
 <p>Before we do anything else we'll create a new virtual environment, using <a href="http://www.virtualenv.org/en/latest/index.html">virtualenv</a>.  This will make sure our package configuration is keep nicely isolated from any other projects we're working on.</p>
-<pre><code>mkdir ~/env
+<pre class="prettyprint lang-bsh">
+mkdir ~/env
 virtualenv --no-site-packages ~/env/tutorial
 source ~/env/tutorial/bin/activate
 </code></pre>
 <p>Now that we're inside a virtualenv environment, we can install our package requirements.</p>
-<pre><code>pip install django
+<pre class="prettyprint lang-py"><code>pip install django
 pip install djangorestframework
 </code></pre>
 <p><strong>Note:</strong> To exit the virtualenv environment at any time, just type <code>deactivate</code>.  For more information see the <a href="http://www.virtualenv.org/en/latest/index.html">virtualenv documentation</a>.</p>
 <h2 id="getting-started">Getting started</h2>
 <p>Okay, we're ready to get coding.
 To get started, let's create a new project to work with.</p>
-<pre><code>django-admin.py startproject tutorial
+<pre class="prettyprint lang-py"><code>django-admin.py startproject tutorial
 cd tutorial
 </code></pre>
 <p>Once that's done we can create an app that we'll use to create a simple Web API.</p>
-<pre><code>python manage.py startapp blog
+<pre class="prettyprint lang-py"><code>python manage.py startapp blog
 </code></pre>
 <p>The simplest way to get up and running will probably be to use an <code>sqlite3</code> database for the tutorial.  Edit the <code>tutorial/settings.py</code> file, and set the default database <code>"ENGINE"</code> to <code>"sqlite3"</code>, and <code>"NAME"</code> to <code>"tmp.db"</code>.</p>
-<pre><code>DATABASES = {
+<pre class="prettyprint lang-py"><code>DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': 'tmp.db',
@@ -139,21 +141,21 @@ cd tutorial
 }
 </code></pre>
 <p>We'll also need to add our new <code>blog</code> app and the <code>djangorestframework</code> app to <code>INSTALLED_APPS</code>.</p>
-<pre><code>INSTALLED_APPS = (
+<pre class="prettyprint lang-py"><code>INSTALLED_APPS = (
     ...
     'djangorestframework',
     'blog'
 )
 </code></pre>
 <p>We also need to wire up the root urlconf, in the <code>tutorial/urls.py</code> file, to include our blog views.</p>
-<pre><code>urlpatterns = patterns('',
+<pre class="prettyprint lang-py"><code>urlpatterns = patterns('',
     url(r'^', include('blog.urls')),
 )
 </code></pre>
 <p>Okay, we're ready to roll.</p>
 <h2 id="creating-a-model-to-work-with">Creating a model to work with</h2>
 <p>For the purposes of this tutorial we're going to start by creating a simple <code>Comment</code> model that is used to store comments against a blog post.  Go ahead and edit the  <code>blog</code> app's <code>models.py</code> file.</p>
-<pre><code>from django.db import models
+<pre class="prettyprint lang-py"><code>from django.db import models
 
 class Comment(models.Model):
     email = models.EmailField()
@@ -161,11 +163,11 @@ class Comment(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 </code></pre>
 <p>Don't forget to sync the database for the first time.</p>
-<pre><code>python manage.py syncdb
+<pre class="prettyprint lang-py"><code>python manage.py syncdb
 </code></pre>
 <h2 id="creating-a-serializer-class">Creating a Serializer class</h2>
 <p>We're going to create a simple Web API that we can use to edit these comment objects with.  The first thing we need is a way of serializing and deserializing the objects into representations such as <code>json</code>.  We do this by declaring serializers, that work very similarly to Django's forms.  Create a file in the project named <code>serializers.py</code> and add the following.</p>
-<pre><code>from blog import models
+<pre class="prettyprint lang-py"><code>from blog import models
 from djangorestframework import serializers
 
 class CommentSerializer(serializers.Serializer):
@@ -189,10 +191,10 @@ class CommentSerializer(serializers.Serializer):
 </p>
 <h2 id="working-with-serializers">Working with Serializers</h2>
 <p>Before we go any further we'll familiarise ourselves with using our new Serializer class.  Let's drop into the Django shell.</p>
-<pre><code>python manage.py shell
+<pre class="prettyprint lang-py"><code>python manage.py shell
 </code></pre>
 <p>Okay, once we've got a few imports out of the way, we'd better create a few comments to work with.</p>
-<pre><code>from blog.models import Comment
+<pre class="prettyprint lang-py"><code>from blog.models import Comment
 from blog.serializers import CommentSerializer
 from djangorestframework.renderers import JSONRenderer
 from djangorestframework.parsers import JSONParser
@@ -205,20 +207,20 @@ c2.save()
 c3.save()
 </code></pre>
 <p>We've now got a few comment instances to play with.  Let's take a look at serializing one of those instances.</p>
-<pre><code>serializer = CommentSerializer(instance=c1)
+<pre class="prettyprint lang-py"><code>serializer = CommentSerializer(instance=c1)
 serializer.data
 # {'email': u'leila@example.com', 'content': u'nothing to say', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774, tzinfo=&lt;UTC&gt;)}
 </code></pre>
 <p>At this point we've translated the model instance into python native datatypes.  To finalise the serialization process we render the data into <code>json</code>.</p>
-<pre><code>stream = JSONRenderer().render(serializer.data)
+<pre class="prettyprint lang-py"><code>stream = JSONRenderer().render(serializer.data)
 stream
 # '{"email": "leila@example.com", "content": "nothing to say", "created": "2012-08-22T16:20:09.822"}'
 </code></pre>
 <p>Deserialization is similar.  First we parse a stream into python native datatypes... </p>
-<pre><code>data = JSONParser().parse(stream)
+<pre class="prettyprint lang-py"><code>data = JSONParser().parse(stream)
 </code></pre>
 <p>...then we restore those native datatypes into to a fully populated object instance.</p>
-<pre><code>serializer = CommentSerializer(data)
+<pre class="prettyprint lang-py"><code>serializer = CommentSerializer(data)
 serializer.is_valid()
 # True
 serializer.object
@@ -229,7 +231,7 @@ serializer.object
 <p>Let's see how we can write some API views using our new Serializer class.
 We'll start off by creating a subclass of HttpResponse that we can use to render any data we return into <code>json</code>.</p>
 <p>Edit the <code>blog/views.py</code> file, and add the following.</p>
-<pre><code>from blog.models import Comment
+<pre class="prettyprint lang-py"><code>from blog.models import Comment
 from blog.serializers import CommentSerializer
 from djangorestframework.renderers import JSONRenderer
 from djangorestframework.parsers import JSONParser
@@ -246,7 +248,7 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
 </code></pre>
 <p>The root of our API is going to be a view that supports listing all the existing comments, or creating a new comment.</p>
-<pre><code>def comment_root(request):
+<pre class="prettyprint lang-py"><code>def comment_root(request):
     """
     List all comments, or create a new comment.
     """
@@ -266,7 +268,7 @@ class JSONResponse(HttpResponse):
             return JSONResponse(serializer.error_data, status=400)
 </code></pre>
 <p>We'll also need a view which corrosponds to an individual comment, and can be used to retrieve, update or delete the comment.</p>
-<pre><code>def comment_instance(request, pk):
+<pre class="prettyprint lang-py"><code>def comment_instance(request, pk):
     """
     Retrieve, update or delete a comment instance.
     """
@@ -294,7 +296,7 @@ class JSONResponse(HttpResponse):
         return HttpResponse(status=204)
 </code></pre>
 <p>Finally we need to wire these views up, in the <code>tutorial/urls.py</code> file.</p>
-<pre><code>from django.conf.urls import patterns, url
+<pre class="prettyprint lang-py"><code>from django.conf.urls import patterns, url
 
 urlpatterns = patterns('blog.views',
     url(r'^$', 'comment_root'),
@@ -317,6 +319,7 @@ urlpatterns = patterns('blog.views',
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>

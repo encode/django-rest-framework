@@ -7,6 +7,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    <link href="http://tomchristie.github.com/django-rest-framework/css/prettify.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
@@ -15,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body>
+  <body onload="prettyPrint()">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -112,7 +113,7 @@
           <h1 id="settings">Settings</h1>
 <p>Configuration for REST framework is all namespaced inside the <code>API_SETTINGS</code> setting.</p>
 <p>For example your project's <code>settings.py</code> file might look like this:</p>
-<pre><code>API_SETTINGS = {
+<pre class="prettyprint lang-py"><code>API_SETTINGS = {
     'DEFAULT_RENDERERS': (
         'djangorestframework.renderers.YAMLRenderer',
     )
@@ -124,7 +125,7 @@
 <h2 id="accessing-settings">Accessing settings</h2>
 <p>If you need to access the values of REST framework's API settings in your project,
 you should use the <code>api_settings</code> object.  For example.</p>
-<pre><code>from djangorestframework.settings import api_settings
+<pre class="prettyprint lang-py"><code>from djangorestframework.settings import api_settings
 
 print api_settings.DEFAULT_AUTHENTICATION
 </code></pre>
@@ -132,7 +133,7 @@ print api_settings.DEFAULT_AUTHENTICATION
 <h2 id="default_renderers">DEFAULT_RENDERERS</h2>
 <p>A list or tuple of renderer classes, that determines the default set of renderers that may be used when returning a <code>Response</code> object.</p>
 <p>Default:</p>
-<pre><code>(
+<pre class="prettyprint lang-py"><code>(
     'djangorestframework.renderers.JSONRenderer',
     'djangorestframework.renderers.DocumentingHTMLRenderer'
     'djangorestframework.renderers.TemplateHTMLRenderer'
@@ -141,7 +142,7 @@ print api_settings.DEFAULT_AUTHENTICATION
 <h2 id="default_parsers">DEFAULT_PARSERS</h2>
 <p>A list or tuple of parser classes, that determines the default set of parsers used when accessing the <code>request.DATA</code> property.</p>
 <p>Default:</p>
-<pre><code>(
+<pre class="prettyprint lang-py"><code>(
     'djangorestframework.parsers.JSONParser',
     'djangorestframework.parsers.FormParser'
 )
@@ -149,7 +150,7 @@ print api_settings.DEFAULT_AUTHENTICATION
 <h2 id="default_authentication">DEFAULT_AUTHENTICATION</h2>
 <p>A list or tuple of authentication classes, that determines the default set of authenticators used when accessing the <code>request.user</code> or <code>request.auth</code> properties.</p>
 <p>Default:</p>
-<pre><code>(
+<pre class="prettyprint lang-py"><code>(
     'djangorestframework.authentication.SessionAuthentication',
     'djangorestframework.authentication.UserBasicAuthentication'
 )
@@ -199,6 +200,7 @@ print api_settings.DEFAULT_AUTHENTICATION
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>

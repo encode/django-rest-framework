@@ -7,6 +7,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    <link href="http://tomchristie.github.com/django-rest-framework/css/prettify.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
@@ -15,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body>
+  <body onload="prettyPrint()">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -99,43 +100,44 @@
           <h1 id="credits">Credits</h1>
 <p>The following people have helped make REST framework great.</p>
 <ul>
-<li>Tom Christie <tomchristie> </li>
-<li>Marko Tibold <markotibold></li>
-<li>Paul Bagwell <pbgwl></li>
-<li>Sébastien Piquemal <sebpiq></li>
-<li>Carmen Wick <cwick></li>
-<li>Alex Ehlke <aehlke></li>
-<li>Alen Mujezinovic <flashingpumpkin></li>
-<li>Carles Barrobés <txels></li>
-<li>Michael Fötsch <mfoetsch></li>
-<li>David Larlet <david></li>
-<li>Andrew Straw <astraw></li>
-<li>Zeth <zeth></li>
-<li>Fernando Zunino <fzunino></li>
-<li>Jens Alm <ulmus></li>
-<li>Craig Blaszczyk <jakul></li>
-<li>Garcia Solero <garciasolero></li>
-<li>Tom Drummond <devioustree></li>
-<li>Danilo Bargen <gwrtheyrn></li>
-<li>Andrew McCloud <amccloud></li>
-<li>Thomas Steinacher <thomasst></li>
-<li>Meurig Freeman <meurig></li>
-<li>Anthony Nemitz <anemitz></li>
-<li>Ewoud Kohl van Wijngaarden <ekohl></li>
-<li>Michael Ding <yandy></li>
-<li>Mjumbe Poe <mjumbewu></li>
-<li>Natim <natim></li>
-<li>Sebastian Żurek <sebzur></li>
-<li>Benoit C <dzen></li>
-<li>Chris Pickett <bunchesofdonald></li>
-<li>Ben Timby <btimby></li>
-<li>Michele Lazzeri <michelelazzeri-nextage></li>
-<li>Camille Harang <mammique></li>
-<li>Paul Oswald <poswald></li>
-<li>Sean C. Farley <scfarley></li>
-<li>Daniel Izquierdo <izquierdo></li>
-<li>Can Yavuz <tschan></li>
-<li>Shawn Lewis <shawnlewis></li>
+<li>Tom Christie - <a href="https://github.com/tomchristie">tomchristie</a> </li>
+<li>Marko Tibold - <a href="https://github.com/markotibold">markotibold</a></li>
+<li>Paul Bagwell - <a href="https://github.com/pbgwl">pbgwl</a></li>
+<li>Sébastien Piquemal - <a href="https://github.com/sebpiq">sebpiq</a></li>
+<li>Carmen Wick - <a href="https://github.com/cwick">cwick</a></li>
+<li>Alex Ehlke - <a href="https://github.com/aehlke">aehlke</a></li>
+<li>Alen Mujezinovic - <a href="https://github.com/flashingpumpkin">flashingpumpkin</a></li>
+<li>Carles Barrobés - <a href="https://github.com/txels">txels</a></li>
+<li>Michael Fötsch - <a href="https://github.com/mfoetsch">mfoetsch</a></li>
+<li>David Larlet - <a href="https://github.com/david">david</a></li>
+<li>Andrew Straw - <a href="https://github.com/astraw">astraw</a></li>
+<li>Zeth - <a href="https://github.com/zeth">zeth</a></li>
+<li>Fernando Zunino - <a href="https://github.com/fzunino">fzunino</a></li>
+<li>Jens Alm - <a href="https://github.com/ulmus">ulmus</a></li>
+<li>Craig Blaszczyk - <a href="https://github.com/jakul">jakul</a></li>
+<li>Garcia Solero - <a href="https://github.com/garciasolero">garciasolero</a></li>
+<li>Tom Drummond - <a href="https://github.com/devioustree">devioustree</a></li>
+<li>Danilo Bargen - <a href="https://github.com/gwrtheyrn">gwrtheyrn</a></li>
+<li>Andrew McCloud - <a href="https://github.com/amccloud">amccloud</a></li>
+<li>Thomas Steinacher - <a href="https://github.com/thomasst">thomasst</a></li>
+<li>Meurig Freeman - <a href="https://github.com/meurig">meurig</a></li>
+<li>Anthony Nemitz - <a href="https://github.com/anemitz">anemitz</a></li>
+<li>Ewoud Kohl van Wijngaarden - <a href="https://github.com/ekohl">ekohl</a></li>
+<li>Michael Ding - <a href="https://github.com/yandy">yandy</a></li>
+<li>Mjumbe Poe - <a href="https://github.com/mjumbewu">mjumbewu</a></li>
+<li>Natim - <a href="https://github.com/natim">natim</a></li>
+<li>Sebastian Żurek - <a href="https://github.com/sebzur">sebzur</a></li>
+<li>Benoit C - <a href="https://github.com/dzen">dzen</a></li>
+<li>Chris Pickett - <a href="https://github.com/bunchesofdonald">bunchesofdonald</a></li>
+<li>Ben Timby - <a href="https://github.com/btimby">btimby</a></li>
+<li>Michele Lazzeri - <a href="https://github.com/michelelazzeri-nextage">michelelazzeri-nextage</a></li>
+<li>Camille Harang - <a href="https://github.com/mammique">mammique</a></li>
+<li>Paul Oswald - <a href="https://github.com/poswald">poswald</a></li>
+<li>Sean C. Farley - <a href="https://github.com/scfarley">scfarley</a></li>
+<li>Daniel Izquierdo - <a href="https://github.com/izquierdo">izquierdo</a></li>
+<li>Can Yavuz - <a href="https://github.com/tschan">tschan</a></li>
+<li>Shawn Lewis - <a href="https://github.com/shawnlewis">shawnlewis</a></li>
+<li>Alec Perkins - <a href="https://github.com/alecperkins">alecperkins</a></li>
 </ul>
 <p>Many thanks to everyone who's contributed to the project.</p>
 <h2 id="additional-thanks">Additional thanks</h2>
@@ -146,7 +148,7 @@
 <p>To contact the author directly:</p>
 <ul>
 <li>twitter: <a href="http://twitter.com/_tomchristie">@_tomchristie</a></li>
-<li>mail: <a href="mailto:tom@tomchristie.com">tom@tomchristie.com</a></li>
+<li>email: <a href="mailto:tom@tomchristie.com">tom@tomchristie.com</a></li>
 </ul>
         </div><!--/span-->
       </div><!--/row-->
@@ -156,6 +158,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>

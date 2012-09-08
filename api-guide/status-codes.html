@@ -7,6 +7,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    <link href="http://tomchristie.github.com/django-rest-framework/css/prettify.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
@@ -15,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body>
+  <body onload="prettyPrint()">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -105,7 +106,7 @@
 <p>&mdash; <a href="http://www.ietf.org/rfc/rfc2324.txt">RFC 2324</a>, Hyper Text Coffee Pot Control Protocol</p>
 </blockquote>
 <p>Using bare status codes in your responses isn't recommended.  REST framework includes a set of named constants that you can use to make more code more obvious and readable.</p>
-<pre><code>from djangorestframework import status
+<pre class="prettyprint lang-py"><code>from djangorestframework import status
 
 def empty_view(self):
     content = {'please move along': 'nothing to see here'}
@@ -116,12 +117,12 @@ def empty_view(self):
 and <a href="http://tools.ietf.org/html/rfc6585">RFC 6585</a>.</p>
 <h2 id="informational-1xx">Informational - 1xx</h2>
 <p>This class of status code indicates a provisional response.  There are no 1xx status codes used in REST framework by default.</p>
-<pre><code>HTTP_100_CONTINUE
+<pre class="prettyprint lang-py"><code>HTTP_100_CONTINUE
 HTTP_101_SWITCHING_PROTOCOLS
 </code></pre>
 <h2 id="successful-2xx">Successful - 2xx</h2>
 <p>This class of status code indicates that the client's request was successfully received, understood, and accepted.</p>
-<pre><code>HTTP_200_OK
+<pre class="prettyprint lang-py"><code>HTTP_200_OK
 HTTP_201_CREATED
 HTTP_202_ACCEPTED
 HTTP_203_NON_AUTHORITATIVE_INFORMATION
@@ -131,7 +132,7 @@ HTTP_206_PARTIAL_CONTENT
 </code></pre>
 <h2 id="redirection-3xx">Redirection - 3xx</h2>
 <p>This class of status code indicates that further action needs to be taken by the user agent in order to fulfill the request.</p>
-<pre><code>HTTP_300_MULTIPLE_CHOICES
+<pre class="prettyprint lang-py"><code>HTTP_300_MULTIPLE_CHOICES
 HTTP_301_MOVED_PERMANENTLY
 HTTP_302_FOUND
 HTTP_303_SEE_OTHER
@@ -142,7 +143,7 @@ HTTP_307_TEMPORARY_REDIRECT
 </code></pre>
 <h2 id="client-error-4xx">Client Error - 4xx</h2>
 <p>The 4xx class of status code is intended for cases in which the client seems to have erred. Except when responding to a HEAD request, the server SHOULD include an entity containing an explanation of the error situation, and whether it is a temporary or permanent condition.</p>
-<pre><code>HTTP_400_BAD_REQUEST
+<pre class="prettyprint lang-py"><code>HTTP_400_BAD_REQUEST
 HTTP_401_UNAUTHORIZED
 HTTP_402_PAYMENT_REQUIRED
 HTTP_403_FORBIDDEN
@@ -166,7 +167,7 @@ HTTP_431_REQUEST_HEADER_FIELDS_TOO_LARGE
 </code></pre>
 <h2 id="server-error-5xx">Server Error - 5xx</h2>
 <p>Response status codes beginning with the digit "5" indicate cases in which the server is aware that it has erred or is incapable of performing the request. Except when responding to a HEAD request, the server SHOULD include an entity containing an explanation of the error situation, and whether it is a temporary or permanent condition.</p>
-<pre><code>HTTP_500_INTERNAL_SERVER_ERROR
+<pre class="prettyprint lang-py"><code>HTTP_500_INTERNAL_SERVER_ERROR
 HTTP_501_NOT_IMPLEMENTED
 HTTP_502_BAD_GATEWAY
 HTTP_503_SERVICE_UNAVAILABLE
@@ -182,6 +183,7 @@ HTTP_511_NETWORD_AUTHENTICATION_REQUIRED
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>

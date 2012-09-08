@@ -7,6 +7,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    <link href="http://tomchristie.github.com/django-rest-framework/css/prettify.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
@@ -15,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body>
+  <body onload="prettyPrint()">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -105,7 +106,7 @@
 <h2 id="overloading-the-http-method">Overloading the HTTP method</h2>
 <p><strong>TODO: Preamble.</strong>  Note that this is the same strategy as is used in <a href="2">Ruby on Rails</a>.</p>
 <p>For example, given the following form:</p>
-<pre><code>&lt;form action="/news-items/5" method="POST"&gt;
+<pre class="prettyprint lang-py"><code>&lt;form action="/news-items/5" method="POST"&gt;
     &lt;input type="hidden" name="_method" value="DELETE"&gt;
 &lt;/form&gt;
 </code></pre>
@@ -113,7 +114,7 @@
 <h2 id="overloading-the-http-content-type">Overloading the HTTP content type</h2>
 <p>Browser-based submission of content types other than form are supported by using form fields named <code>_content</code> and <code>_content_type</code>:</p>
 <p>For example, given the following form:</p>
-<pre><code>&lt;form action="/news-items/5" method="PUT"&gt;
+<pre class="prettyprint lang-py"><code>&lt;form action="/news-items/5" method="PUT"&gt;
     &lt;input type="hidden" name="_content_type" value="application/json"&gt;
     &lt;input name="_content" value="{'count': 1}"&gt;
 &lt;/form&gt;
@@ -131,6 +132,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>

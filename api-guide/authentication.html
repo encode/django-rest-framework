@@ -7,6 +7,7 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    <link href="http://tomchristie.github.com/django-rest-framework/css/prettify.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
@@ -15,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body>
+  <body onload="prettyPrint()">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -113,7 +114,7 @@
 <p>The value of <code>request.user</code> and <code>request.auth</code> for unauthenticated requests can be modified using the <code>UNAUTHENTICATED_USER</code> and <code>UNAUTHENTICATED_TOKEN</code> settings.</p>
 <h2 id="setting-the-authentication-policy">Setting the authentication policy</h2>
 <p>The default authentication policy may be set globally, using the <code>DEFAULT_AUTHENTICATION</code> setting.  For example.</p>
-<pre><code>API_SETTINGS = {
+<pre class="prettyprint lang-py"><code>API_SETTINGS = {
     'DEFAULT_AUTHENTICATION': (
         'djangorestframework.authentication.UserBasicAuthentication',
         'djangorestframework.authentication.SessionAuthentication',
@@ -121,7 +122,7 @@
 }
 </code></pre>
 <p>You can also set the authentication policy on a per-view basis, using the <code>APIView</code> class based views.</p>
-<pre><code>class ExampleView(APIView):
+<pre class="prettyprint lang-py"><code>class ExampleView(APIView):
     authentication_classes = (SessionAuthentication, UserBasicAuthentication)
 
     def get(self, request, format=None):
@@ -132,7 +133,7 @@
         return Response(content)
 </code></pre>
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
-<pre><code>@api_view(
+<pre class="prettyprint lang-py"><code>@api_view(
     allowed=('GET',),
     authentication_classes=(SessionAuthentication, UserBasicAuthentication)
 )
@@ -153,7 +154,7 @@ def example_view(request, format=None):
 </ul>
 <h2 id="tokenauthentication">TokenAuthentication</h2>
 <p>This policy uses <a href="http://tools.ietf.org/html/rfc2617">HTTP Authentication</a> with no authentication scheme.  Token basic authentication is appropriate for client-server setups, such as native desktop and mobile clients.  The token key should be passed in as a string to the "Authorization" HTTP header.  For example:</p>
-<pre><code>curl http://my.api.org/ -X POST -H "Authorization: 0123456789abcdef0123456789abcdef"
+<pre class="prettyprint lang-py"><code>curl http://my.api.org/ -X POST -H "Authorization: 0123456789abcdef0123456789abcdef"
 </code></pre>
 <p><strong>Note:</strong> If you run <code>TokenAuthentication</code> in production your API must be <code>https</code> only, or it will be completely insecure.</p>
 <p>If successfully authenticated, <code>TokenAuthentication</code> provides the following credentials.</p>
@@ -186,6 +187,7 @@ def example_view(request, format=None):
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>
