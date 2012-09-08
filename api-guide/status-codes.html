@@ -8,47 +8,8 @@
 
     <!-- Le styles -->
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-      .nav-list li.main {
-        font-weight: bold;
-      }
-      blockquote {
-font-family: Georgia, serif;
-font-size: 18px;
-font-style: italic;
-margin: 0.25em 0;
-padding: 0.25em 40px;
-line-height: 1.45;
-position: relative;
-color: #383838;
-border-left: none;
-}
-
-blockquote:before {
-display: block;
-content: "\201C";
-font-size: 80px;
-position: absolute;
-left: -10px;
-top: -20px;
-color: #7a7a7a;
-}
-
-blockquote p:last-child {
-color: #999999;
-font-size: 14px;
-display: block;
-margin-top: 5px;
-}
-    </style>
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -108,14 +69,14 @@ margin-top: 5px;
               </li>
             </ul>
             <ul class="nav pull-right">
-                      <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version: 2.0.0 <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                          <li><a href="#">Trunk</a></li>
-                          <li><a href="#">2.0.0</a></li>
-                        </ul>
-                      </li>
-                    </ul>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version: 2.0.0 <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#">Trunk</a></li>
+                  <li><a href="#">2.0.0</a></li>
+                </ul>
+              </li>
+            </ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>
@@ -123,22 +84,22 @@ margin-top: 5px;
 
     <div class="container-fluid">
       <div class="row-fluid">
-          <div class="span3">
-            <div class="well affix span3">
-              <ul class="nav nav-list side-nav">
-<li class="main"><a href="#status-codes">Status Codes</a></li>
+        <div class="span3">
+          <div id="table-of-contents" class="well affix span3">
+            <ul class="nav nav-list side-nav">
+              <li class="main"><a href="#status-codes">Status Codes</a></li>
 <li><a href="#informational---1xx">Informational - 1xx</a></li>
 <li><a href="#successful---2xx">Successful - 2xx</a></li>
 <li><a href="#redirection---3xx">Redirection - 3xx</a></li>
 <li><a href="#client-error---4xx">Client Error - 4xx</a></li>
 <li><a href="#server-error---5xx">Server Error - 5xx</a></li>
 
-              </ul>
-            </div>
+            </ul>
+          </div>
         </div>
 
-        <div class="span9">
-<h1 id="status-codes">Status Codes</h1>
+        <div id="main-content" class="span9">
+          <h1 id="status-codes">Status Codes</h1>
 <blockquote>
 <p>418 I'm a teapot - Any attempt to brew coffee with a teapot should result in the error code "418 I'm a teapot". The resulting entity body MAY be short and stout.</p>
 <p>&mdash; <a href="http://www.ietf.org/rfc/rfc2324.txt">RFC 2324</a>, Hyper Text Coffee Pot Control Protocol</p>
@@ -220,13 +181,14 @@ HTTP_511_NETWORD_AUTHENTICATION_REQUIRED
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="http://tomchristie.github.com/django-rest-framework/js/jquery.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>
     <script>
-    //$('.side-nav').scrollspy()
-    var shiftWindow = function() { scrollBy(0, -50) };
-    if (location.hash) shiftWindow();
-    window.addEventListener("hashchange", shiftWindow);
+      //$('.side-nav').scrollspy()
+      var shiftWindow = function() { scrollBy(0, -50) };
+      if (location.hash) shiftWindow();
+      window.addEventListener("hashchange", shiftWindow);
     </script>
 </body></html>

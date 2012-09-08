@@ -8,47 +8,8 @@
 
     <!-- Le styles -->
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-      .nav-list li.main {
-        font-weight: bold;
-      }
-      blockquote {
-font-family: Georgia, serif;
-font-size: 18px;
-font-style: italic;
-margin: 0.25em 0;
-padding: 0.25em 40px;
-line-height: 1.45;
-position: relative;
-color: #383838;
-border-left: none;
-}
-
-blockquote:before {
-display: block;
-content: "\201C";
-font-size: 80px;
-position: absolute;
-left: -10px;
-top: -20px;
-color: #7a7a7a;
-}
-
-blockquote p:last-child {
-color: #999999;
-font-size: 14px;
-display: block;
-margin-top: 5px;
-}
-    </style>
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -108,14 +69,14 @@ margin-top: 5px;
               </li>
             </ul>
             <ul class="nav pull-right">
-                      <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version: 2.0.0 <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                          <li><a href="#">Trunk</a></li>
-                          <li><a href="#">2.0.0</a></li>
-                        </ul>
-                      </li>
-                    </ul>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version: 2.0.0 <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#">Trunk</a></li>
+                  <li><a href="#">2.0.0</a></li>
+                </ul>
+              </li>
+            </ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>
@@ -123,48 +84,48 @@ margin-top: 5px;
 
     <div class="container-fluid">
       <div class="row-fluid">
-          <div class="span3">
-            <div class="well affix span3">
-              <ul class="nav nav-list side-nav">
-<li class="main"><a href="#tutorial-3-class-based-views">Tutorial 3: Class Based Views</a></li>
+        <div class="span3">
+          <div id="table-of-contents" class="well affix span3">
+            <ul class="nav nav-list side-nav">
+              <li class="main"><a href="#tutorial-3-class-based-views">Tutorial 3: Class Based Views</a></li>
 <li><a href="#rewriting-our-api-using-class-based-views">Rewriting our API using class based views</a></li>
 <li><a href="#using-mixins">Using mixins</a></li>
 <li><a href="#using-generic-class-based-views">Using generic class based views</a></li>
 
-              </ul>
-            </div>
+            </ul>
+          </div>
         </div>
 
-        <div class="span9">
-<h1 id="tutorial-3-class-based-views">Tutorial 3: Class Based Views</h1>
+        <div id="main-content" class="span9">
+          <h1 id="tutorial-3-class-based-views">Tutorial 3: Class Based Views</h1>
 <p>We can also write our API views using class based views, rather than function based views.  As we'll see this is a powerful pattern that allows us to reuse common functionality, and helps us keep our code <a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself">DRY</a>.</p>
 <h2 id="rewriting-our-api-using-class-based-views">Rewriting our API using class based views</h2>
 <p>We'll start by rewriting the root view as a class based view.  All this involves is a little bit of refactoring.</p>
 <pre><code>from blog.models import Comment
-from blog.serializers import ComentSerializer
+from blog.serializers import CommentSerializer
 from django.http import Http404
 from djangorestframework.views import APIView
 from djangorestframework.response import Response
-from djangorestframework.status import status
+from djangorestframework import status
 
 class CommentRoot(APIView):
     """
     List all comments, or create a new comment.
-    """ 
+    """
     def get(self, request, format=None):
         comments = Comment.objects.all()
-        serializer = ComentSerializer(instance=comments)
+        serializer = CommentSerializer(instance=comments)
         return Response(serializer.data)
 
-    def post(self, request, format=None)
-        serializer = ComentSerializer(request.DATA)
+    def post(self, request, format=None):
+        serializer = CommentSerializer(request.DATA)
         if serializer.is_valid():
             comment = serializer.object
             comment.save()
-            return Response(serializer.serialized, status=HTTP_201_CREATED)
-        return Response(serializer.serialized_errors, status=HTTP_400_BAD_REQUEST)
+            return Response(serializer.serialized, status=status.HTTP_201_CREATED)
+        return Response(serializer.serialized_errors, status=status.HTTP_400_BAD_REQUEST)
 
- comment_root = CommentRoot.as_view()
+comment_root = CommentRoot.as_view()
 </code></pre>
 <p>So far, so good.  It looks pretty similar to the previous case, but we've got better seperation between the different HTTP methods.  We'll also need to update the instance view. </p>
 <pre><code>class CommentInstance(APIView):
@@ -197,7 +158,7 @@ class CommentRoot(APIView):
         comment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    comment_instance = CommentInstance.as_view()
+comment_instance = CommentInstance.as_view()
 </code></pre>
 <p>That's looking good.  Again, it's still pretty similar to the function based view right now.
 Okay, we're done.  If you run the development server everything should be working just as before.</p>
@@ -272,13 +233,14 @@ comment_instance = CommentInstance.as_view()
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="http://tomchristie.github.com/django-rest-framework/js/jquery.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>
     <script>
-    //$('.side-nav').scrollspy()
-    var shiftWindow = function() { scrollBy(0, -50) };
-    if (location.hash) shiftWindow();
-    window.addEventListener("hashchange", shiftWindow);
+      //$('.side-nav').scrollspy()
+      var shiftWindow = function() { scrollBy(0, -50) };
+      if (location.hash) shiftWindow();
+      window.addEventListener("hashchange", shiftWindow);
     </script>
 </body></html>

@@ -8,47 +8,8 @@
 
     <!-- Le styles -->
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-      .nav-list li.main {
-        font-weight: bold;
-      }
-      blockquote {
-font-family: Georgia, serif;
-font-size: 18px;
-font-style: italic;
-margin: 0.25em 0;
-padding: 0.25em 40px;
-line-height: 1.45;
-position: relative;
-color: #383838;
-border-left: none;
-}
-
-blockquote:before {
-display: block;
-content: "\201C";
-font-size: 80px;
-position: absolute;
-left: -10px;
-top: -20px;
-color: #7a7a7a;
-}
-
-blockquote p:last-child {
-color: #999999;
-font-size: 14px;
-display: block;
-margin-top: 5px;
-}
-    </style>
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -108,14 +69,14 @@ margin-top: 5px;
               </li>
             </ul>
             <ul class="nav pull-right">
-                      <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version: 2.0.0 <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                          <li><a href="#">Trunk</a></li>
-                          <li><a href="#">2.0.0</a></li>
-                        </ul>
-                      </li>
-                    </ul>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version: 2.0.0 <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#">Trunk</a></li>
+                  <li><a href="#">2.0.0</a></li>
+                </ul>
+              </li>
+            </ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>
@@ -123,10 +84,10 @@ margin-top: 5px;
 
     <div class="container-fluid">
       <div class="row-fluid">
-          <div class="span3">
-            <div class="well affix span3">
-              <ul class="nav nav-list side-nav">
-<li class="main"><a href="#django-rest-framework">Django REST framework</a></li>
+        <div class="span3">
+          <div id="table-of-contents" class="well affix span3">
+            <ul class="nav nav-list side-nav">
+              <li class="main"><a href="#django-rest-framework">Django REST framework</a></li>
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#quickstart">Quickstart</a></li>
@@ -136,12 +97,12 @@ margin-top: 5px;
 <li><a href="#development">Development</a></li>
 <li><a href="#license">License</a></li>
 
-              </ul>
-            </div>
+            </ul>
+          </div>
         </div>
 
-        <div class="span9">
-<h1 id="django-rest-framework">Django REST framework</h1>
+        <div id="main-content" class="span9">
+          <h1 id="django-rest-framework">Django REST framework</h1>
 <p><strong>A toolkit for building well-connected, self-describing Web APIs.</strong></p>
 <p><strong>WARNING: This documentation is for the 2.0 redesign of REST framework.  It is a work in progress.</strong></p>
 <p>Django REST framework is a lightweight library that makes it easy to build Web APIs.  It is designed as a modular and easy to customize architecture, based on Django's class based views.</p>
@@ -255,13 +216,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="http://tomchristie.github.com/django-rest-framework/js/jquery.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
     <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>
     <script>
-    //$('.side-nav').scrollspy()
-    var shiftWindow = function() { scrollBy(0, -50) };
-    if (location.hash) shiftWindow();
-    window.addEventListener("hashchange", shiftWindow);
+      //$('.side-nav').scrollspy()
+      var shiftWindow = function() { scrollBy(0, -50) };
+      if (location.hash) shiftWindow();
+      window.addEventListener("hashchange", shiftWindow);
     </script>
 </body></html>
