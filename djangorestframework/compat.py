@@ -366,6 +366,59 @@ else:
 
             return self._accept(request)
 
+# timezone support is new in Django 1.4
+try:
+    from django.utils import timezone
+except ImportError:
+    timezone = None
+
+# dateparse is ALSO new in Django 1.4
+try:
+    from django.utils.dateparse import parse_date, parse_datetime
+except ImportError:
+    import datetime
+    import re
+
+    date_re = re.compile(
+        r'(?P<year>\d{4})-(?P<month>\d{1,2})-(?P<day>\d{1,2})$'
+    )
+
+    datetime_re = re.compile(
+        r'(?P<year>\d{4})-(?P<month>\d{1,2})-(?P<day>\d{1,2})'
+        r'[T ](?P<hour>\d{1,2}):(?P<minute>\d{1,2})'
+        r'(?::(?P<second>\d{1,2})(?:\.(?P<microsecond>\d{1,6})\d{0,6})?)?'
+        r'(?P<tzinfo>Z|[+-]\d{1,2}:\d{1,2})?$'
+    )
+
+    time_re = re.compile(
+        r'(?P<hour>\d{1,2}):(?P<minute>\d{1,2})'
+        r'(?::(?P<second>\d{1,2})(?:\.(?P<microsecond>\d{1,6})\d{0,6})?)?'
+    )
+
+    def parse_date(value):
+        match = date_re.match(value)
+        if match:
+            kw = dict((k, int(v)) for k, v in match.groupdict().iteritems())
+            return datetime.date(**kw)
+
+    def parse_time(value):
+        match = time_re.match(value)
+        if match:
+            kw = match.groupdict()
+            if kw['microsecond']:
+                kw['microsecond'] = kw['microsecond'].ljust(6, '0')
+            kw = dict((k, int(v)) for k, v in kw.iteritems() if v is not None)
+            return datetime.time(**kw)
+
+    def parse_datetime(value):
+        """Parse datetime, but w/o the timezone awareness in 1.4"""
+        match = datetime_re.match(value)
+        if match:
+            kw = match.groupdict()
+            if kw['microsecond']:
+                kw['microsecond'] = kw['microsecond'].ljust(6, '0')
+            kw = dict((k, int(v)) for k, v in kw.iteritems() if v is not None)
+            return datetime.datetime(**kw)
 
 # Markdown is optional
 try:
