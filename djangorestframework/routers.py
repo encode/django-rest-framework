@@ -3,58 +3,52 @@ from djangorestframework.resources import ModelResource
 
 class DefaultResourceRouter (object):
 
-    def __init__(self, resource=ModelResource):
-        self.resource = resource
+    def __init__(self, default_resource=ModelResource):
+        self.default_resource = default_resource
         self._registry = []
 
     @property
     def urls(self):
-        return self.get_urls()
+        """
+        Return a urlpatterns object suitable for including.  I.e.:
+
+            urlpatterns = patterns('',
+                ...
+                url('^api/', include(router.urls, namespace=...)),
+                ...
+            )
+        """
+        return patterns('', *self.get_urls())
 
     def get_urls(self):
+        """
+        Return a list of urls for all registered resources.
+        """
         urls = []
+
         for model, resource in self._registry:
-            urls += self.make_patterns(model, resource,
-                                       id_field_name=resource.id_field_name,
-                                       collection_name=resource.collection_name,
-                                       instance_name=resource.instance_name)
-        return patterns('', *urls)
+            urls += self.make_patterns(
+                model, resource, resource.id_field_name,
+                resource.collection_name, resource.instance_name
+            )
+
+        return urls
 
     def make_patterns(self, model, resource, id_field_name=None,
                       collection_name=None, instance_name=None):
+        """
+        Get the URL patterns for the given model and resource.  By default,
+        this will return pair of urls -- one for the collection of resources
+        representing the model, and one for individual instances of the model.
+        """
         patterns = []
 
-        # The collection_name is the path at the root of the resource.  For
-        # example, say we have a Dog model, and a dog with id=1:
-        #
-        #     http://api.example.com/dogs/1/
-        #
-        # The collection name is 'dogs'.  This will default to the plural name
-        # for the model.
-        #
         if collection_name is None:
             collection_name = unicode(model._meta.verbose_name_plural)
 
-        # The instance_name is the name of one model instance, and is used as a
-        # prefix for internal URL names.  For example, for out Dog model with
-        # instance_name 'dog', may have the following urls:
-        #
-        #     url('dogs/', collection_view, name='dog_collection'),
-        #     url('dogs/(P<pk>[^/])/)', instance_view, name='dog_instance'),
-        #
         if instance_name is None:
             instance_name = unicode(model._meta.verbose_name)
 
-        # The id_field_name is the name of the field that will identify a
-        # resource in the collection.  For example, if we wanted our dogs
-        # identified by a 'slug' field, we would have:
-        #
-        #     url('dogs/(P<slug>[^/])/)', instance_view, name='dog_instance'),
-        #
-        # and:
-        #
-        #     http://api.example.com/dogs/fido/
-        #
         if id_field_name is None:
             id_field_name = u'pk'
 
@@ -87,5 +81,9 @@ class DefaultResourceRouter (object):
         return patterns
 
     def register(self, model, resource=None):
-        resource = resource or self.resource
+        """
+        Register a new resource with the API.  By default a generic
+        ModelResource will be used for the given model.
+        """
+        resource = resource or self.default_resource
         self._registry.append((model, resource))
