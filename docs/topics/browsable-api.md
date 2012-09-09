@@ -78,8 +78,8 @@ The context that's available to the template:
 * `response`            : The response object
 * `version`             : The version of Django REST Framework
 * `view`                : The view handling the request
-* `FORMAT_PARAM`        : self._FORMAT_QUERY_PARAM
-* `METHOD_PARAM`        : getattr(self.view, '_METHOD_PARAM', None)
+* `FORMAT_PARAM`        : The view can accept a format override
+* `METHOD_PARAM`        : The view can accept a method override
 
 #### Not using base.html
 
