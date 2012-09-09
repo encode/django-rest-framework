@@ -56,3 +56,9 @@ h2, h3 {
 .errorlist {
     margin-top: 0.5em;
 }
+
+pre {
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
+}
