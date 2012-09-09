@@ -1,6 +1,14 @@
 body {
-    padding-top: 1em;
+    padding-top: 0;
     padding-bottom: 1em;
+}
+
+/* The navbar is fixed at >= 980px wide, so add padding to the body to prevent
+content running up underneath it. */
+@media (min-width:980px) {
+    body {
+        padding-top: 60px;
+    }
 }
 
 h1 {

@@ -11,3 +11,11 @@ a single block in the template.
     background: transparent;
     border-top-color: transparent;
 }
+
+.navbar-inverse .brand a {
+    color: #999;
+}
+.navbar-inverse .brand:hover a {
+    color: white;
+    text-decoration: none;
+}

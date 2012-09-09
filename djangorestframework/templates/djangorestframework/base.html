@@ -27,11 +27,12 @@
 
   <body class="{% block bodyclass %}{% endblock %} container">
 
-    <div class="navbar">
+    <div class="navbar navbar-fixed-top {% block bootstrap_navbar_variant %}navbar-inverse{% endblock %}">
         <div class="navbar-inner">
-            <span class="brand" href="/">
-                {% block branding %}<a href='http://django-rest-framework.org'>Django REST framework</a> <span class="version">{{ version }}</span>{% endblock %}
-            </span>
+            <div class="container">
+                <span class="brand" href="/">
+                    {% block branding %}<a href='http://django-rest-framework.org'>Django REST framework <span class="version">{{ version }}</span></a>{% endblock %}
+                </span>
                 <ul class="nav pull-right">
                     {% block userlinks %}
                         {% if user.is_active %}
@@ -49,10 +50,11 @@
                         {% endif %}
                     {% endblock %}
                 </ul>
+            </div>
         </div>
     </div>
 
-    {% block nav-global %}{% endblock %}
+    {% block global_heading %}{% endblock %}
 
 
     {% block breadcrumbs %}
@@ -73,9 +75,9 @@
             <form id="get-form" class="pull-right">
                 <fieldset>
                     <div class="btn-group format-selection">
-                        <a class="btn btn-info js-tooltip" href='{{ request.get_full_path }}' rel="nofollow" title="Do a GET request on the {{ name }} resource">GET</a>
+                        <a class="btn btn-primary js-tooltip" href='{{ request.get_full_path }}' rel="nofollow" title="Do a GET request on the {{ name }} resource">GET</a>
 
-                        <button class="btn btn-info dropdown-toggle js-tooltip" data-toggle="dropdown" title="Specify a format for the GET request">
+                        <button class="btn btn-primary dropdown-toggle js-tooltip" data-toggle="dropdown" title="Specify a format for the GET request">
                             <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
@@ -97,7 +99,7 @@
             <form id="options-form" action="{{ request.get_full_path }}" method="post" class="pull-right">
                 {% csrf_token %}
                 <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
-                <button class="btn js-tooltip" {% if 'OPTIONS' in allowed_methods %} title="Do an OPTIONS request on the {{ name }} resource"{% else %} disabled{% endif %}>OPTIONS</button>
+                <button class="btn btn-info js-tooltip" {% if 'OPTIONS' in allowed_methods %} title="Do an OPTIONS request on the {{ name }} resource"{% else %} disabled{% endif %}>OPTIONS</button>
                 {% if not 'OPTIONS' in allowed_methods %}
                     <div class="js-tooltip disabled-tooltip-shield" title="OPTIONS request not allowed for resource {{ name }}"></div>
                 {% endif %}
