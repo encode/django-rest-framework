@@ -48,3 +48,7 @@ h2, h3 {
 .response-info .meta {
     border-bottom: 1px solid #ccc;
 }
+
+#options-form {
+    margin-right: 1em;
+}

@@ -66,6 +66,30 @@
     <!-- Content -->
     <div id="content">
 
+        {% if 'GET' in allowed_methods %}
+            <form id="get-form" class="pull-right">
+                <fieldset>
+                    <div class="btn-group format-selection">
+                        <a class="btn btn-info js-tooltip" href='{{ request.get_full_path }}' rel="nofollow" title="Do a GET request on the {{ name }} resource">GET</a>
+
+                        <button class="btn btn-info dropdown-toggle js-tooltip" data-toggle="dropdown" title="Specify a format for the GET request">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            {% for format in available_formats %}
+                                {% with FORMAT_PARAM|add:"="|add:format as param %}
+                                    <li>
+                                        <a class="js-tooltip format-option" href='{{ request.get_full_path|add_query_param:param }}' rel="nofollow" title="Do a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
+                                    </li>
+                                {% endwith %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                </fieldset>
+            </form>
+        {% endif %}
+
         {% if api_settings.FORM_METHOD_OVERRIDE %}
             <form id="options-form" action="{{ request.get_full_path }}" method="post" class="pull-right">
                 {% csrf_token %}
@@ -81,7 +105,6 @@
             <div class="page-header"><h1>{{ name }}</h1></div>
             <p class="resource-description">{{ description }}</p>
 
-            <h2>Request / Response</h2>
             <div class="request-info">
                 <pre><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
             <div>
@@ -93,25 +116,6 @@
 {{ content|urlize_quoted_links }}</pre>{% endautoescape %}
             </div>
 
-            <h2>Available Methods &amp; Formats</h2>
-
-            {% if 'GET' in allowed_methods %}
-                <form>
-                    <fieldset>
-                        <h3>GET: {{ name }}</h3>
-
-                        <div class="btn-group format-selection">
-                            <a class="btn btn-primary js-tooltip" href='{{ request.get_full_path }}' rel="nofollow" title="Do a GET request on the {{ name }} resource">GET</a>
-                            {% for format in available_formats %}
-                                {% with FORMAT_PARAM|add:"="|add:format as param %}
-                                    <a class="btn js-tooltip format-option" href='{{ request.get_full_path|add_query_param:param }}' rel="nofollow" title="Do a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
-                                {% endwith %}
-                            {% endfor %}
-                        </div>
-
-                    </fieldset>
-                </form>
-            {% endif %}
 
             {% comment %}
             {# These are disabled since the forms don't work with 2.0.0 yet #}
@@ -121,7 +125,7 @@
                 {% if 'POST' in allowed_methods %}
                         <form action="{{ request.get_full_path }}" method="POST" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
                         <fieldset class='module aligned'>
-                            <h3>POST: {{ name }}</h3>
+                            <h2>POST: {{ name }}</h2>
                             {% csrf_token %}
                             {{ post_form.non_field_errors }}
                             {% for field in post_form %}
@@ -141,7 +145,7 @@
                 {% if 'PUT' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
                         <form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
                         <fieldset class='module aligned'>
-                            <h3>PUT: {{ name }}</h3>
+                            <h2>PUT: {{ name }}</h2>
                             <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" />
                             {% csrf_token %}
                             {{ put_form.non_field_errors }}
@@ -163,7 +167,7 @@
                 {% if 'DELETE' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
                         <form action="{{ request.get_full_path }}" method="POST">
                         <fieldset class='module aligned'>
-                            <h3>DELETE: {{ name }}</h3>
+                            <h2>DELETE: {{ name }}</h2>
                             {% csrf_token %}
                             <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
                             <button class="btn btn-danger js-tooltip" title="Do a DELETE request on the {{ name }} resource">DELETE</button>
