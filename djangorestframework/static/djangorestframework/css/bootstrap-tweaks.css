@@ -10,6 +10,7 @@ a single block in the template.
 .form-actions {
     background: transparent;
     border-top-color: transparent;
+    padding-top: 0;
 }
 
 .navbar-inverse .brand a {
