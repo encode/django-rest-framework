@@ -91,6 +91,9 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'djangorestframework',
     'djangorestframework.tokenauth',
+
+    # Load up the models
+    'djangorestframework.tests'
 )
 
 STATIC_URL = '/static/'

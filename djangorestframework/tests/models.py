@@ -19,10 +19,18 @@ class CustomUser(models.Model):
 
 class UserGroupMap(models.Model):
     user = models.ForeignKey(to=CustomUser)
-    group = models.ForeignKey(to=Group)      
-    
+    group = models.ForeignKey(to=Group)
+
     @models.permalink
     def get_absolute_url(self):
         return ('user_group_map', (), {
             'pk': self.id
         })
+
+
+class Company(models.Model):
+    name = models.CharField(max_length=20)
+
+
+class Employee(models.Model):
+    employee_id = models.CharField(max_length=20, primary_key=True)
