@@ -103,4 +103,38 @@ class SessionAuthentication(BaseAuthentication):
                 return (user, None)
 
 
-# TODO: TokenAuthentication, DigestAuthentication, OAuthAuthentication
+class TokenAuthentication(BaseAuthentication):
+    """
+    Use a token model for authentication.
+
+    A custom token model may be used here, but must have the following minimum
+    properties:
+
+    * key -- The string identifying the token
+    * user -- The user to which the token belongs
+    * revoked -- The status of the token
+
+    The token key should be passed in as a string to the "Authorization" HTTP
+    header.  For example:
+
+        Authorization: 0123456789abcdef0123456789abcdef
+
+    """
+    model = None
+
+    def authenticate(self, request):
+        key = request.META.get('HTTP_AUTHORIZATION', '').strip()
+
+        if self.model is None:
+            from djangorestframework.tokenauth.models import BasicToken
+            self.model = BasicToken
+
+        try:
+             token = self.model.objects.get(key=key)
+        except self.model.DoesNotExist:
+             return None
+
+        if token.user.is_active and not token.revoked:
+            return (token.user, token)
+
+# TODO: DigestAuthentication, OAuthAuthentication

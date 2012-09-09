@@ -22,7 +22,7 @@ class CreateModelMixin(object):
             self.object = serializer.object
             self.object.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.error_data, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ListModelMixin(object):

@@ -1,0 +1,126 @@
+/* Set the body padding-top when above 980px to push the content down from
+   below the navbar, which is fixed at >980px screen widths. */
+@media (min-width: 980px) {
+  body {
+    padding-top: 71px;
+  }
+}
+
+body {
+  padding-bottom: 40px;
+}
+
+pre {
+  font-size: 12px;
+}
+
+a.github {
+  float: right;
+  margin-top: -12px;
+}
+
+a.github:hover {
+  text-decoration: none;
+}
+
+.dropdown .dropdown-menu {
+    display: none;
+}
+
+.dropdown.open .dropdown-menu {
+    display: block;
+}
+
+body.index #main-content iframe {
+    float: right;
+}
+
+body.index #main-content iframe {
+    float: right;
+    margin-right: -15px;
+}
+
+body.index #main-content p:first-of-type {
+    float: right;
+    margin-right: 8px;
+    margin-top: -1px;
+}
+
+#table-of-contents {
+    overflow: hidden;
+}
+
+pre {
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
+}
+
+/* Preserve the spacing of the navbar across different screen sizes. */
+.navbar-inner {
+  padding: 5px 0; 
+}
+
+@media (max-width: 979px) {
+  .navbar .brand {
+    margin-left: 0;
+    padding-left: 0;
+  }
+  .navbar-inner .container-fluid {
+    padding-left: 15px;
+  }
+}
+
+
+.nav-list li.main {
+  font-weight: bold;
+}
+
+
+
+/* Set the table of contents to static so it flows back into the content when
+   viewed on tablets and smaller. */
+@media (max-width: 767px) {
+  #table-of-contents {
+    position: static;
+  }
+}
+
+/* When the page is in two-column layout, give the main content some room
+   to breath on the left. */
+@media (min-width: 768px) {
+  #main-content {
+    padding-left: 1em;
+  }
+}
+
+
+blockquote {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-style: italic;
+  margin: 0.25em 0;
+  padding: 0.25em 40px;
+  line-height: 1.45;
+  position: relative;
+  color: #383838;
+  border-left: none;
+}
+
+blockquote:before {
+  display: block;
+  content: "\201C";
+  font-size: 80px;
+  position: absolute;
+  left: -10px;
+  top: -20px;
+  color: #7a7a7a;
+}
+
+blockquote p:last-child {
+  color: #999999;
+  font-size: 14px;
+  display: block;
+  margin-top: 5px;
+}
+

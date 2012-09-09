@@ -1,3 +1,5 @@
+<a class="github" href="settings.py"></a>
+
 # Settings
 
 Configuration for REST framework is all namespaced inside the `API_SETTINGS` setting.

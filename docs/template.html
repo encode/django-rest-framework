@@ -7,54 +7,16 @@
     <meta name="author" content="">
 
     <!-- Le styles -->
+    <link href="{{ base_url }}/css/prettify.css" rel="stylesheet">
     <link href="{{ base_url }}/css/bootstrap.css" rel="stylesheet">
-    <style type="text/css">
-      body {
-        padding-top: 60px;
-        padding-bottom: 40px;
-      }
-      .sidebar-nav {
-        padding: 9px 0;
-      }
-      .nav-list li.main {
-        font-weight: bold;
-      }
-      blockquote {
-font-family: Georgia, serif;
-font-size: 18px;
-font-style: italic;
-margin: 0.25em 0;
-padding: 0.25em 40px;
-line-height: 1.45;
-position: relative;
-color: #383838;
-border-left: none;
-}
-
-blockquote:before {
-display: block;
-content: "\201C";
-font-size: 80px;
-position: absolute;
-left: -10px;
-top: -20px;
-color: #7a7a7a;
-}
-
-blockquote p:last-child {
-color: #999999;
-font-size: 14px;
-display: block;
-margin-top: 5px;
-}
-    </style>
     <link href="{{ base_url }}/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="{{ base_url }}/css/drf-styles.css" rel="stylesheet">
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body>
+  <body onload="prettyPrint()" class="{{ page_id }}">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -108,14 +70,14 @@ margin-top: 5px;
               </li>
             </ul>
             <ul class="nav pull-right">
-                      <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version: 2.0.0 <b class="caret"></b></a>
-                        <ul class="dropdown-menu">
-                          <li><a href="#">Trunk</a></li>
-                          <li><a href="#">2.0.0</a></li>
-                        </ul>
-                      </li>
-                    </ul>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version: 2.0.0 <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#">Trunk</a></li>
+                  <li><a href="#">2.0.0</a></li>
+                </ul>
+              </li>
+            </ul>
           </div><!--/.nav-collapse -->
         </div>
       </div>
@@ -123,16 +85,16 @@ margin-top: 5px;
 
     <div class="container-fluid">
       <div class="row-fluid">
-          <div class="span3">
-            <div class="well affix span3">
-              <ul class="nav nav-list side-nav">
-{{ toc }}
-              </ul>
-            </div>
+        <div class="span3">
+          <div id="table-of-contents" class="well affix span3">
+            <ul class="nav nav-list side-nav">
+              {{ toc }}
+            </ul>
+          </div>
         </div>
 
-        <div class="span9">
-{{ content }}
+        <div id="main-content" class="span9">
+          {{ content }}
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->
@@ -140,13 +102,15 @@ margin-top: 5px;
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="{{ base_url }}/js/jquery.js"></script>
+    <script src="{{ base_url }}/js/jquery-1.8.1-min.js"></script>
+    <script src="{{ base_url }}/js/prettify.js"></script>
     <script src="{{ base_url }}/js/bootstrap-dropdown.js"></script>
     <script src="{{ base_url }}/js/bootstrap-scrollspy.js"></script>
+    <script src="{{ base_url }}/js/bootstrap-collapse.js"></script>
     <script>
-    //$('.side-nav').scrollspy()
-    var shiftWindow = function() { scrollBy(0, -50) };
-    if (location.hash) shiftWindow();
-    window.addEventListener("hashchange", shiftWindow);
+      //$('.side-nav').scrollspy()
+      var shiftWindow = function() { scrollBy(0, -50) };
+      if (location.hash) shiftWindow();
+      window.addEventListener("hashchange", shiftWindow);
     </script>
 </body></html>

@@ -1,3 +1,5 @@
+<a class="github" href="authentication.py"></a>
+
 # Authentication
 
 Authentication is the mechanism of associating an incoming request with a set of identifying credentials, such as the user the request came from, or the token that it was signed with.  The [permission] and [throttling] policies can then use those credentials to determine if the request should be permitted.
@@ -8,7 +10,7 @@ Authentication will run the first time either the `request.user` or `request.aut
 
 The `request.user` property will typically be set to an instance of the `contrib.auth` package's `User` class.
 
-The `request.auth` property is used for any additional authentication information, for example, it may be used to represent an authentication token that the request was signed with.  
+The `request.auth` property is used for any additional authentication information, for example, it may be used to represent an authentication token that the request was signed with.
 
 ## How authentication is determined
 
@@ -36,7 +38,7 @@ You can also set the authentication policy on a per-view basis, using the `APIVi
 
         def get(self, request, format=None):
             content = {
-                'user': unicode(request.user),  # `django.contrib.auth.User` instance. 
+                'user': unicode(request.user),  # `django.contrib.auth.User` instance.
                 'auth': unicode(request.auth),  # None
             }
             return Response(content)
@@ -49,7 +51,7 @@ Or, if you're using the `@api_view` decorator with function based views.
     )
     def example_view(request, format=None):
         content = {
-            'user': unicode(request.user),  # `django.contrib.auth.User` instance. 
+            'user': unicode(request.user),  # `django.contrib.auth.User` instance.
             'auth': unicode(request.auth),  # None
         }
         return Response(content)
@@ -65,16 +67,20 @@ If successfully authenticated, `UserBasicAuthentication` provides the following 
 * `request.user` will be a `django.contrib.auth.models.User` instance.
 * `request.auth` will be `None`.
 
-## TokenBasicAuthentication
+## TokenAuthentication
 
-This policy uses [HTTP Basic Authentication][basicauth], signed against a token key and secret.  Token basic authentication is appropriate for client-server setups, such as native desktop and mobile clients.
+This policy uses [HTTP Authentication][basicauth] with no authentication scheme.  Token basic authentication is appropriate for client-server setups, such as native desktop and mobile clients.  The token key should be passed in as a string to the "Authorization" HTTP header.  For example:
 
-**Note:** If you run `TokenBasicAuthentication` in production your API must be `https` only, or it will be completely insecure.
+    curl http://my.api.org/ -X POST -H "Authorization: 0123456789abcdef0123456789abcdef"
 
-If successfully authenticated, `TokenBasicAuthentication` provides the following credentials.
+**Note:** If you run `TokenAuthentication` in production your API must be `https` only, or it will be completely insecure.
+
+If successfully authenticated, `TokenAuthentication` provides the following credentials.
 
 * `request.user` will be a `django.contrib.auth.models.User` instance.
-* `request.auth` will be a `djangorestframework.models.BasicToken` instance.
+* `request.auth` will be a `djangorestframework.tokenauth.models.BasicToken` instance.
+
+To use the `TokenAuthentication` policy, you must have a token model.  Django REST Framework comes with a minimal default token model.  To use it, include `djangorestframework.tokenauth` in your installed applications and sync your database.  To use your own token model, subclass the `djangorestframework.tokenauth.TokenAuthentication` class and specify a `model` attribute that references your custom token model.  The token model must provide `user`, `key`, and `revoked` attributes.  Refer to the `djangorestframework.tokenauth.models.BasicToken` model as an example.
 
 ## OAuthAuthentication
 

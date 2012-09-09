@@ -3,8 +3,8 @@ Helper classes for parsers.
 """
 import datetime
 import decimal
-from django.utils import timezone
 from django.utils import simplejson as json
+from djangorestframework.compat import timezone
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -25,7 +25,7 @@ class JSONEncoder(json.JSONEncoder):
         elif isinstance(o, datetime.date):
             return o.isoformat()
         elif isinstance(o, datetime.time):
-            if timezone.is_aware(o):
+            if timezone and timezone.is_aware(o):
                 raise ValueError("JSON can't represent timezone-aware times.")
             r = o.isoformat()
             if o.microsecond:

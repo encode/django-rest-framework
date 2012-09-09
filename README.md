@@ -4,6 +4,8 @@
 
 **Author:** Tom Christie.  [Follow me on Twitter][twitter]
 
+[![Build Status](https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=restframework2)][travis]
+
 # Overview
 
 This branch is the redesign of Django REST framework.  It is a work in progress.
@@ -79,7 +81,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
+[travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=restframework2
 [twitter]: https://twitter.com/_tomchristie
 [docs]: http://tomchristie.github.com/django-rest-framework/
 [urlobject]: https://github.com/zacharyvoase/urlobject

@@ -1,3 +1,6 @@
+<iframe src="http://ghbtns.com/github-btn.html?user=tomchristie&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
+[![Build Status](https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=restframework2)][travis]
+
 # Django REST framework
 
 **A toolkit for building well-connected, self-describing Web APIs.**
@@ -131,6 +134,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+[travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=restframework2
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [yaml]: http://pypi.python.org/pypi/PyYAML

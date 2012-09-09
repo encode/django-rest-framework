@@ -1,8 +1,10 @@
+<a class="github" href="views.py"></a>
+
+# Views
+
 > Django's class based views are a welcome departure from the old-style views.
 >
 > &mdash; [Reinout van Rees][cite]
-
-# Views
 
 REST framework provides a simple `APIView` class, built on Django's `django.generics.views.View`.  The `APIView` class ensures five main things:
 
