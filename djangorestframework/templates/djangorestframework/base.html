@@ -13,6 +13,7 @@
             <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}djangorestframework/css/bootstrap.min.css"/>
             <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}djangorestframework/css/bootstrap-tweaks.css"/>
         {% endblock %}
+        <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}djangorestframework/css/prettify.css'/>
         <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}djangorestframework/css/style.css'/>
         {% block extrastyle %}{% endblock %}
 
@@ -108,14 +109,13 @@
             <p class="resource-description">{{ description }}</p>
 
             <div class="request-info">
-                <pre><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
+                <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
             <div>
             <div class="response-info">
-                <pre><div class="meta"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
-{% for key, val in response.items %}<b>{{ key }}:</b> {{ val|urlize_quoted_links }}
+                <pre class="prettyprint"><div class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
+{% for key, val in response.items %}<b>{{ key }}:</b> <span class="lit">{{ val|urlize_quoted_links }}</span>
 {% endfor %}
-</div>
-{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
+</div>{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
             </div>
 
             {% if response.status_code != 403 %}
@@ -197,7 +197,10 @@
     </div>
     <script src="{% get_static_prefix %}djangorestframework/js/jquery-1.8.1-min.js"></script>
     <script src="{% get_static_prefix %}djangorestframework/js/bootstrap.min.js"></script>
+    <script src="{% get_static_prefix %}djangorestframework/js/prettify-min.js"></script>
     <script>
+        prettyPrint();
+
         $('.js-tooltip').tooltip({
             delay: 1000
         });
