@@ -23,8 +23,37 @@ a.github:hover {
   text-decoration: none;
 }
 
+.dropdown .dropdown-menu {
+    display: none;
+}
+
+.dropdown.open .dropdown-menu {
+    display: block;
+}
+
+body.index #main-content iframe {
+    float: right;
+}
+
+body.index #main-content iframe {
+    float: right;
+    margin-right: -15px;
+}
+
+body.index #main-content p:first-of-type {
+    float: right;
+    margin-right: 8px;
+    margin-top: -1px;
+}
+
 #table-of-contents {
     overflow: hidden;
+}
+
+pre {
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
 }
 
 /* Preserve the spacing of the navbar across different screen sizes. */

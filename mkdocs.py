@@ -66,6 +66,7 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
         if not os.path.exists(build_dir):
             os.makedirs(build_dir)
         output = page.replace('{{ content }}', content).replace('{{ toc }}', toc).replace('{{ base_url }}', base_url).replace('{{ suffix }}', suffix).replace('{{ index }}', index)
+        output = output.replace('{{ page_id }}', filename[:-3])
         output = re.sub(r'a href="([^"]*)\.md"', r'a href="\1%s"' % suffix, output)
         output = re.sub(r'<pre><code>:::bash', r'<pre class="prettyprint lang-bsh">', output)
         output = re.sub(r'<pre>', r'<pre class="prettyprint lang-py">', output)
