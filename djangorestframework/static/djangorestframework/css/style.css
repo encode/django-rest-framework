@@ -52,3 +52,7 @@ h2, h3 {
 #options-form {
     margin-right: 1em;
 }
+
+.errorlist {
+    margin-top: 0.5em;
+}

@@ -1,6 +1,7 @@
 {% load url from future %}
 {% load urlize_quoted_links %}
 {% load add_query_param %}
+{% load add_class %}
 {% load optional_login %}
 {% load static %}
 <!DOCTYPE html>
@@ -9,7 +10,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
         {% block bootstrap_theme %}
-            <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}djangorestframework/css/bootstrap.min.css'/>
+            <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}djangorestframework/css/bootstrap.min.css"/>
+            <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}djangorestframework/css/bootstrap-tweaks.css"/>
         {% endblock %}
         <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}djangorestframework/css/style.css'/>
         {% block extrastyle %}{% endblock %}
@@ -116,69 +118,71 @@
 {{ content|urlize_quoted_links }}</pre>{% endautoescape %}
             </div>
 
-
-            {% comment %}
-            {# These are disabled since the forms don't work with 2.0.0 yet #}
-
             {% if response.status_code != 403 %}
 
                 {% if 'POST' in allowed_methods %}
-                        <form action="{{ request.get_full_path }}" method="POST" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
-                        <fieldset class='module aligned'>
+                    <form action="{{ request.get_full_path }}" method="POST" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
+                        <fieldset>
                             <h2>POST: {{ name }}</h2>
                             {% csrf_token %}
                             {{ post_form.non_field_errors }}
                             {% for field in post_form %}
-                            <div class='form-row'>
-                                {{ field.label_tag }}
-                                {{ field }}
-                                <span class='help'>{{ field.help_text }}</span>
-                                {{ field.errors }}
-                            </div>
+                                <div class="control-group {% if field.errors %}error{% endif %}">
+                                    {{ field.label_tag|add_class:"control-label" }}
+                                    <div class="controls">
+                                        {{ field }}
+                                        <span class="help-inline">{{ field.help_text }}</span>
+                                        {{ field.errors|add_class:"help-block" }}
+                                    </div>
+                                </div>
                             {% endfor %}
-
-                            <button class="btn btn-primary" title="Do a POST request on the {{ name }} resource">POST</button>
+                            <div class="form-actions">
+                                <button class="btn btn-primary" title="Do a POST request on the {{ name }} resource">POST</button>
+                            </div>
                         </fieldset>
-                        </form>
+                    </form>
                 {% endif %}
 
                 {% if 'PUT' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
-                        <form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %}>
-                        <fieldset class='module aligned'>
+                    <form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
+                        <fieldset>
                             <h2>PUT: {{ name }}</h2>
                             <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" />
                             {% csrf_token %}
                             {{ put_form.non_field_errors }}
                             {% for field in put_form %}
-                            <div class='form-row'>
-                                {{ field.label_tag }}
-                                {{ field }}
-                                <span class='help'>{{ field.help_text }}</span>
-                                {{ field.errors }}
-                            </div>
+                                <div class="control-group {% if field.errors %}error{% endif %}">
+                                    {{ field.label_tag|add_class:"control-label" }}
+                                    <div class="controls">
+                                        {{ field }}
+                                        <span class='help-inline'>{{ field.help_text }}</span>
+                                        {{ field.errors|add_class:"help-block" }}
+                                    </div>
+                                </div>
                             {% endfor %}
-                            
-                            <button class="btn btn-primary js-tooltip" title="Do a PUT request on the {{ name }} resource">PUT</button>
+                            <div class="form-actions">
+                                <button class="btn btn-primary js-tooltip" title="Do a PUT request on the {{ name }} resource">PUT</button>
+                            </div>
 
                         </fieldset>
-                        </form>
+                    </form>
                 {% endif %}
 
                 {% if 'DELETE' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
-                        <form action="{{ request.get_full_path }}" method="POST">
-                        <fieldset class='module aligned'>
+                    <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
+                        <fieldset>
                             <h2>DELETE: {{ name }}</h2>
                             {% csrf_token %}
                             <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
-                            <button class="btn btn-danger js-tooltip" title="Do a DELETE request on the {{ name }} resource">DELETE</button>
+                            <div class="form-actions">
+                                <button class="btn btn-danger js-tooltip" title="Do a DELETE request on the {{ name }} resource">DELETE</button>
+                            </div>
                         </fieldset>
-                        </form>
+                    </form>
                 {% endif %}
 
             {% endif %}
 
-
-            {% endcomment %}
         </div>
         <!-- END content-main -->
 
