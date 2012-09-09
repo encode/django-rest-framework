@@ -4,19 +4,19 @@ API may stand for Application *Programming* Interface, but humans have to be abl
 
 ## URLs
 
-If you include fully-qualified URLs in your resource output, they will be 'urlized' and made clickable for easy browsing by humans. The `djangorestframework` package includes a [`reverse`](../api-guide/reverse.md) helper for this purpose.
+If you include fully-qualified URLs in your resource output, they will be 'urlized' and made clickable for easy browsing by humans. The `djangorestframework` package includes a [`reverse`][drfreverse] helper for this purpose.
 
 
 ## Formats
 
-By default, the API will return the format specified by the headers, which in the case of the browser is HTML. The format can be specified using `?format=` in the request, so you can look at the raw JSON response in a browser by adding `?format=json` to the URL. There are helpful extensions for viewing JSON in [Firefox](https://addons.mozilla.org/en-US/firefox/addon/jsonview/) and [Chrome](https://chrome.google.com/webstore/detail/chklaanhfefbnpoihckbnefhakgolnmc).
+By default, the API will return the format specified by the headers, which in the case of the browser is HTML. The format can be specified using `?format=` in the request, so you can look at the raw JSON response in a browser by adding `?format=json` to the URL. There are helpful extensions for viewing JSON in [Firefox][ffjsonview] and [Chrome][chromejsonview].
 
 
 ## Customizing
 
 To customize the look-and-feel, create a template called `api.html` and add it to your project, eg: `templates/djangorestframework/api.html`, that extends the `djangorestframework/base.html` template.
 
-The included browsable API template is built with [Bootstrap (2.1.1)](http://getbootstrap.com), making it easy to customize the look-and-feel.
+The included browsable API template is built with [Bootstrap (2.1.1)][bootstrap], making it easy to customize the look-and-feel.
 
 ### Theme
 
@@ -26,7 +26,7 @@ To replace the theme wholesale, add a `bootstrap_theme` block to your `api.html`
         <link rel="stylesheet" href="/path/to/my/bootstrap.css" type="text/css">
     {% endblock %}
 
-A suitable replacement theme can be generated using Bootstrap's [Customize Tool](http://twitter.github.com/bootstrap/customize.html#variables). Also, there are pre-made themes available at [Bootswatch](http://bootswatch.com/), which are even hosted by [Bootstrap CDN](http://www.bootstrapcdn.com/). To use any of the Bootswatch themes, simply download the theme's `bootstrap.min.css` file, add it to your project, and replace the default one as described above.
+A suitable replacement theme can be generated using Bootstrap's [Customize Tool][bcustomize]. Also, there are pre-made themes available at [Bootswatch][bswatch]. To use any of the Bootswatch themes, simply download the theme's `bootstrap.min.css` file, add it to your project, and replace the default one as described above.
 
 You can also change the navbar variant, which by default is `navbar-inverse`, using the `bootstrap_navbar_variant` block. The empty `{% block bootstrap_navbar_variant %}{% endblock %}` will use the original Bootstrap navbar style.
 
@@ -41,7 +41,7 @@ All of the blocks available in the browsable API base template that can be used 
 * `bodyclass`                  - (empty) class attribute for the `<body>`
 * `bootstrap_theme`            - CSS for the Bootstrap theme
 * `bootstrap_navbar_variant`   - CSS class for the navbar
-* `branding`                   - section of the navbar, see [Bootstrap components](http://twitter.github.com/bootstrap/components.html#navbar)
+* `branding`                   - section of the navbar, see [Bootstrap components][bcomponentsnav]
 * `breadcrumbs`                - Links showing resource nesting, allowing the user to go back up the resources. It's recommended to preserve these, but they can be overridden using the breadcrumbs block.
 * `extrastyle`                 - (empty) extra CSS for the page
 * `extrahead`                  - (empty) extra markup for the page `<head>`
@@ -52,7 +52,7 @@ All of the blocks available in the browsable API base template that can be used 
 
 #### Components
 
-All of the [Bootstrap components](http://twitter.github.com/bootstrap/components.html) are available.
+All of the [Bootstrap components][bcomponents] are available.
 
 ##### Tooltips
 
@@ -84,3 +84,14 @@ The context that's available to the template:
 #### Not using base.html
 
 For more advanced customization, such as not having a Bootstrap basis or tighter integration with the rest of your site, you can simply choose not to have `api.html` extend `base.html`. Then the page content and capabilities are entirely up to you.
+
+
+[drfreverse]: ../api-guide/reverse.md
+[ffjsonview]: https://addons.mozilla.org/en-US/firefox/addon/jsonview/
+[chromejsonview]: https://chrome.google.com/webstore/detail/chklaanhfefbnpoihckbnefhakgolnmc
+[bootstrap]: http://getbootstrap.com
+[bcustomize]: http://twitter.github.com/bootstrap/customize.html#variables
+[bswatch]: http://bootswatch.com/
+[bcomponents]: http://twitter.github.com/bootstrap/components.html
+[bcomponentsnav]: http://twitter.github.com/bootstrap/components.html#navbar
+
