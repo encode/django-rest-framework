@@ -256,7 +256,8 @@ class View(ResourceMixin, RequestMixin, ResponseMixin, AuthMixin, DjangoView):
         if form is not None:
             field_name_types = {}
             for name, field in form.fields.iteritems():
-                field_name_types[name] = field.__class__.__name__
+                if not field.widget.is_hidden:
+                    field_name_types[name] = field.__class__.__name__
             response_obj['fields'] = field_name_types
         # Note 'ErrorResponse' is misleading, it's just any response
         # that should be rendered and returned immediately, without any
