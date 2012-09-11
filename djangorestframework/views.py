@@ -54,9 +54,9 @@ def _camelcase_to_spaces(content):
 
 
 class APIView(_View):
-    renderers = api_settings.DEFAULT_RENDERERS
-    parsers = api_settings.DEFAULT_PARSERS
-    authentication = api_settings.DEFAULT_AUTHENTICATION
+    renderer_classes = api_settings.DEFAULT_RENDERERS
+    parser_classes = api_settings.DEFAULT_PARSERS
+    authentication_classes = api_settings.DEFAULT_AUTHENTICATION
     throttle_classes = api_settings.DEFAULT_THROTTLES
     permission_classes = api_settings.DEFAULT_PERMISSIONS
 
@@ -139,35 +139,35 @@ class APIView(_View):
         """
         Return a list of all the media types that this view can parse.
         """
-        return [parser.media_type for parser in self.parsers]
+        return [parser.media_type for parser in self.parser_classes]
 
     @property
     def _default_parser(self):
         """
         Return the view's default parser class.
         """
-        return self.parsers[0]
+        return self.parser_classes[0]
 
     @property
     def _rendered_media_types(self):
         """
         Return an list of all the media types that this response can render.
         """
-        return [renderer.media_type for renderer in self.renderers]
+        return [renderer.media_type for renderer in self.renderer_classes]
 
     @property
     def _rendered_formats(self):
         """
         Return a list of all the formats that this response can render.
         """
-        return [renderer.format for renderer in self.renderers]
+        return [renderer.format for renderer in self.renderer_classes]
 
     @property
     def _default_renderer(self):
         """
         Return the response's default renderer class.
         """
-        return self.renderers[0]
+        return self.renderer_classes[0]
 
     def get_permissions(self):
         """
@@ -201,7 +201,7 @@ class APIView(_View):
         """
         Returns the initial request object.
         """
-        return Request(request, parsers=self.parsers, authentication=self.authentication)
+        return Request(request, parser_classes=self.parser_classes, authentication_classes=self.authentication_classes)
 
     def finalize_response(self, request, response, *args, **kwargs):
         """
@@ -210,7 +210,7 @@ class APIView(_View):
         if isinstance(response, Response):
             response.view = self
             response.request = request
-            response.renderers = self.renderers
+            response.renderer_classes = self.renderer_classes
             if api_settings.FORMAT_SUFFIX_KWARG:
                 response.format = kwargs.get(api_settings.FORMAT_SUFFIX_KWARG, None)
 

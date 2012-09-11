@@ -37,9 +37,9 @@ class Request(object):
 
     Kwargs:
         - request(HttpRequest). The original request instance.
-        - parsers(list/tuple). The parsers to use for parsing the
+        - parsers_classes(list/tuple). The parsers to use for parsing the
           request content.
-        - authentications(list/tuple). The authentications used to try
+        - authentication_classes(list/tuple). The authentications used to try
           authenticating the request's user.
     """
 
@@ -47,10 +47,10 @@ class Request(object):
     _CONTENT_PARAM = api_settings.FORM_CONTENT_OVERRIDE
     _CONTENTTYPE_PARAM = api_settings.FORM_CONTENTTYPE_OVERRIDE
 
-    def __init__(self, request, parsers=None, authentication=None):
+    def __init__(self, request, parser_classes=None, authentication_classes=None):
         self._request = request
-        self.parsers = parsers or ()
-        self.authentication = authentication or ()
+        self.parser_classes = parser_classes or ()
+        self.authentication_classes = authentication_classes or ()
         self._data = Empty
         self._files = Empty
         self._method = Empty
@@ -61,13 +61,13 @@ class Request(object):
         """
         Instantiates and returns the list of parsers the request will use.
         """
-        return [parser() for parser in self.parsers]
+        return [parser() for parser in self.parser_classes]
 
     def get_authentications(self):
         """
         Instantiates and returns the list of parsers the request will use.
         """
-        return [authentication() for authentication in self.authentication]
+        return [authentication() for authentication in self.authentication_classes]
 
     @property
     def method(self):
