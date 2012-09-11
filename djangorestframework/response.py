@@ -35,14 +35,14 @@ class Response(SimpleTemplateResponse):
         - content(object). The raw content, not yet serialized.
         This must be native Python data that renderers can handle.
         (e.g.: `dict`, `str`, ...)
-        - renderers(list/tuple). The renderers to use for rendering the response content.
+        - renderer_classes(list/tuple). The renderers to use for rendering the response content.
     """
 
     _ACCEPT_QUERY_PARAM = api_settings.URL_ACCEPT_OVERRIDE
     _IGNORE_IE_ACCEPT_HEADER = True
 
     def __init__(self, content=None, status=None, headers=None, view=None,
-                 request=None, renderers=None, format=None):
+                 request=None, renderer_classes=None, format=None):
         # First argument taken by `SimpleTemplateResponse.__init__` is template_name,
         # which we don't need
         super(Response, self).__init__(None, status=status)
@@ -52,17 +52,17 @@ class Response(SimpleTemplateResponse):
         self.headers = headers and headers[:] or []
         self.view = view
         self.request = request
-        self.renderers = renderers
+        self.renderer_classes = renderer_classes
         self.format = format
 
     def get_renderers(self):
         """
         Instantiates and returns the list of renderers the response will use.
         """
-        if self.renderers is None:
+        if self.renderer_classes is None:
             renderer_classes = api_settings.DEFAULT_RENDERERS
         else:
-            renderer_classes = self.renderers
+            renderer_classes = self.renderer_classes
 
         if self.format:
             return [cls(self.view) for cls in renderer_classes
@@ -133,7 +133,7 @@ class Response(SimpleTemplateResponse):
     def _determine_renderer(self):
         """
         Determines the appropriate renderer for the output, given the list of
-        accepted media types, and the :attr:`renderers` set on this class.
+        accepted media types, and the :attr:`renderer_classes` set on this class.
 
         Returns a 2-tuple of `(renderer, media_type)`
 
@@ -162,12 +162,12 @@ class Response(SimpleTemplateResponse):
         raise NotAcceptable
 
     def _get_406_response(self):
-        renderer = self.renderers[0]
+        renderer = self.renderer_classes[0]
         return Response(
             {
                 'detail': 'Could not satisfy the client\'s Accept header',
                 'available_types': [renderer.media_type
-                                    for renderer in self.renderers]
+                                    for renderer in self.renderer_classes]
             },
             status=status.HTTP_406_NOT_ACCEPTABLE,
-            view=self.view, request=self.request, renderers=[renderer])
+            view=self.view, request=self.request, renderer_classes=[renderer])

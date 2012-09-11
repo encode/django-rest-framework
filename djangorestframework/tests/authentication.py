@@ -23,7 +23,7 @@ class MockView(APIView):
     def put(self, request):
         return HttpResponse({'a': 1, 'b': 2, 'c': 3})
 
-MockView.authentication += (TokenAuthentication,)
+MockView.authentication_classes += (TokenAuthentication,)
 
 urlpatterns = patterns('',
     (r'^$', MockView.as_view()),
