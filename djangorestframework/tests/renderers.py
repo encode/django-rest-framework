@@ -51,7 +51,7 @@ class RendererB(BaseRenderer):
 
 
 class MockView(APIView):
-    renderers = (RendererA, RendererB)
+    renderer_classes = (RendererA, RendererB)
 
     def get(self, request, **kwargs):
         response = Response(DUMMYCONTENT, status=DUMMYSTATUS)
@@ -65,23 +65,23 @@ class MockGETView(APIView):
 
 
 class HTMLView(APIView):
-    renderers = (DocumentingHTMLRenderer, )
+    renderer_classes = (DocumentingHTMLRenderer, )
 
     def get(self, request, **kwargs):
         return Response('text')
 
 
 class HTMLView1(APIView):
-    renderers = (DocumentingHTMLRenderer, JSONRenderer)
+    renderer_classes = (DocumentingHTMLRenderer, JSONRenderer)
 
     def get(self, request, **kwargs):
         return Response('text')
 
 urlpatterns = patterns('',
-    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderers=[RendererA, RendererB])),
-    url(r'^$', MockView.as_view(renderers=[RendererA, RendererB])),
-    url(r'^jsonp/jsonrenderer$', MockGETView.as_view(renderers=[JSONRenderer, JSONPRenderer])),
-    url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(renderers=[JSONPRenderer])),
+    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
+    url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
+    url(r'^jsonp/jsonrenderer$', MockGETView.as_view(renderer_classes=[JSONRenderer, JSONPRenderer])),
+    url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(renderer_classes=[JSONPRenderer])),
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
     url(r'^api', include('djangorestframework.urls', namespace='djangorestframework'))

@@ -26,12 +26,12 @@ class MockJsonRenderer(BaseRenderer):
 
 class TestResponseDetermineRenderer(TestCase):
 
-    def get_response(self, url='', accept_list=[], renderers=[]):
+    def get_response(self, url='', accept_list=[], renderer_classes=[]):
         kwargs = {}
         if accept_list is not None:
             kwargs['HTTP_ACCEPT'] = ','.join(accept_list)
         request = RequestFactory().get(url, **kwargs)
-        return Response(request=request, renderers=renderers)
+        return Response(request=request, renderer_classes=renderer_classes)
 
     def test_determine_accept_list_accept_header(self):
         """
@@ -62,14 +62,14 @@ class TestResponseDetermineRenderer(TestCase):
         Test that right renderer is chosen, in the order of Accept list.
         """
         accept_list = ['application/pickle', 'application/json']
-        renderers = (MockPickleRenderer, MockJsonRenderer)
-        response = self.get_response(accept_list=accept_list, renderers=renderers)
+        renderer_classes = (MockPickleRenderer, MockJsonRenderer)
+        response = self.get_response(accept_list=accept_list, renderer_classes=renderer_classes)
         renderer, media_type = response._determine_renderer()
         self.assertEqual(media_type, 'application/pickle')
         self.assertTrue(isinstance(renderer, MockPickleRenderer))
 
-        renderers = (MockJsonRenderer, )
-        response = self.get_response(accept_list=accept_list, renderers=renderers)
+        renderer_classes = (MockJsonRenderer, )
+        response = self.get_response(accept_list=accept_list, renderer_classes=renderer_classes)
         renderer, media_type = response._determine_renderer()
         self.assertEqual(media_type, 'application/json')
         self.assertTrue(isinstance(renderer, MockJsonRenderer))
@@ -78,8 +78,8 @@ class TestResponseDetermineRenderer(TestCase):
         """
         Test determine renderer when Accept was not specified.
         """
-        renderers = (MockPickleRenderer, )
-        response = self.get_response(accept_list=None, renderers=renderers)
+        renderer_classes = (MockPickleRenderer, )
+        response = self.get_response(accept_list=None, renderer_classes=renderer_classes)
         renderer, media_type = response._determine_renderer()
         self.assertEqual(media_type, '*/*')
         self.assertTrue(isinstance(renderer, MockPickleRenderer))
@@ -89,15 +89,15 @@ class TestResponseDetermineRenderer(TestCase):
         Test determine renderer when no renderer can satisfy the Accept list.
         """
         accept_list = ['application/json']
-        renderers = (MockPickleRenderer, )
-        response = self.get_response(accept_list=accept_list, renderers=renderers)
+        renderer_classes = (MockPickleRenderer, )
+        response = self.get_response(accept_list=accept_list, renderer_classes=renderer_classes)
         self.assertRaises(NotAcceptable, response._determine_renderer)
 
 
 class TestResponseRenderContent(TestCase):
-    def get_response(self, url='', accept_list=[], content=None, renderers=None):
+    def get_response(self, url='', accept_list=[], content=None, renderer_classes=None):
         request = RequestFactory().get(url, HTTP_ACCEPT=','.join(accept_list))
-        return Response(request=request, content=content, renderers=renderers or DEFAULT_RENDERERS)
+        return Response(request=request, content=content, renderer_classes=renderer_classes or DEFAULT_RENDERERS)
 
     def test_render(self):
         """
@@ -168,29 +168,29 @@ class RendererB(BaseRenderer):
 
 
 class MockView(APIView):
-    renderers = (RendererA, RendererB)
+    renderer_classes = (RendererA, RendererB)
 
     def get(self, request, **kwargs):
         return Response(DUMMYCONTENT, status=DUMMYSTATUS)
 
 
 class HTMLView(APIView):
-    renderers = (DocumentingHTMLRenderer, )
+    renderer_classes = (DocumentingHTMLRenderer, )
 
     def get(self, request, **kwargs):
         return Response('text')
 
 
 class HTMLView1(APIView):
-    renderers = (DocumentingHTMLRenderer, JSONRenderer)
+    renderer_classes = (DocumentingHTMLRenderer, JSONRenderer)
 
     def get(self, request, **kwargs):
         return Response('text')
 
 
 urlpatterns = patterns('',
-    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderers=[RendererA, RendererB])),
-    url(r'^$', MockView.as_view(renderers=[RendererA, RendererB])),
+    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
+    url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
     url(r'^restframework', include('djangorestframework.urls', namespace='djangorestframework'))

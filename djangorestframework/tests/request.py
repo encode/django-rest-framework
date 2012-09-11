@@ -217,7 +217,7 @@ class TestContentParsing(TestCase):
 
 
 class MockView(APIView):
-    authentication = (SessionAuthentication,)
+    authentication_classes = (SessionAuthentication,)
 
     def post(self, request):
         if request.POST.get('example') is not None:
