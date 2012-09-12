@@ -60,33 +60,40 @@ Or, if you're using the `@api_view` decorator with function based views.
         }
         return Response(content)
 
-## UserBasicAuthentication
+## BasicAuthentication
 
-This policy uses [HTTP Basic Authentication][basicauth], signed against a user's username and password.  User basic authentication is generally only appropriate for testing.
+This policy uses [HTTP Basic Authentication][basicauth], signed against a user's username and password.  Basic authentication is generally only appropriate for testing.
 
-**Note:** If you run `UserBasicAuthentication` in production your API should be `https` only.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.
-
-If successfully authenticated, `UserBasicAuthentication` provides the following credentials.
+If successfully authenticated, `BasicAuthentication` provides the following credentials.
 
 * `request.user` will be a `django.contrib.auth.models.User` instance.
 * `request.auth` will be `None`.
 
+**Note:** If you use `BasicAuthentication` in production you must ensure that your API is only available over `https` only.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.
+
 ## TokenAuthentication
 
-This policy uses simple token-based HTTP Authentication.  Token basic authentication is appropriate for client-server setups, such as native desktop and mobile clients.
+This policy uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.
 
-The token key should be passed in as a string to the "Authorization" HTTP header.  For example:
+To use the `TokenAuthentication` policy, include `djangorestframework.authtoken` in your `INSTALLED_APPS` setting.
 
-    curl http://my.api.org/ -X POST -H "Authorization: 0123456789abcdef0123456789abcdef"
+You'll also need to create tokens for your users.
 
-**Note:** If you run `TokenAuthentication` in production your API should be `https` only.
+    from djangorestframework.authtoken.models import Token
+
+    token = Token.objects.create(user=...)
+    print token.key
+
+For clients to authenticate, the token key should be included in the `Authorization` HTTP header.  The key should be prefixed by the string literal "Token", with whitespace seperating the two strings.  For example:
+
+    Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
 
 If successfully authenticated, `TokenAuthentication` provides the following credentials.
 
 * `request.user` will be a `django.contrib.auth.models.User` instance.
 * `request.auth` will be a `djangorestframework.tokenauth.models.BasicToken` instance.
 
-To use the `TokenAuthentication` policy, you must have a token model.  Django REST Framework comes with a minimal default token model.  To use it, include `djangorestframework.tokenauth` in your installed applications and sync your database.  To use your own token model, subclass the `djangorestframework.tokenauth.TokenAuthentication` class and specify a `model` attribute that references your custom token model.  The token model must provide `user`, `key`, and `revoked` attributes.  Refer to the `djangorestframework.tokenauth.models.BasicToken` model as an example.
+**Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https` only.
 
 ## OAuthAuthentication
 

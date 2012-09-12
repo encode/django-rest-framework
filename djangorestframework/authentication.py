@@ -6,13 +6,8 @@ Authentication behavior is provided by mixing the :class:`mixins.RequestMixin` c
 
 from django.contrib.auth import authenticate
 from djangorestframework.compat import CsrfViewMiddleware
+from djangorestframework.authtoken.models import Token
 import base64
-
-__all__ = (
-    'BaseAuthentication',
-    'BasicAuthentication',
-    'SessionAuthentication'
-)
 
 
 class BaseAuthentication(object):
@@ -105,36 +100,33 @@ class SessionAuthentication(BaseAuthentication):
 
 class TokenAuthentication(BaseAuthentication):
     """
-    Use a token model for authentication.
+    Simple token based authentication.
 
-    A custom token model may be used here, but must have the following minimum
-    properties:
+    Clients should authenticate by passing the token key in the "Authorization"
+    HTTP header, prepended with the string "Token ".  For example:
+
+        Authorization: Token 401f7ac837da42b97f613d789819ff93537bee6a
+    """
+
+    model = Token
+    """
+    A custom token model may be used, but must have the following properties.
 
     * key -- The string identifying the token
     * user -- The user to which the token belongs
-    * revoked -- The status of the token
-
-    The token key should be passed in as a string to the "Authorization" HTTP
-    header.  For example:
-
-        Authorization: 0123456789abcdef0123456789abcdef
-
     """
-    model = None
 
     def authenticate(self, request):
-        key = request.META.get('HTTP_AUTHORIZATION', '').strip()
+        auth = request.META.get('HTTP_AUTHORIZATION', '').split()
 
-        if self.model is None:
-            from djangorestframework.tokenauth.models import BasicToken
-            self.model = BasicToken
+        if len(auth) == 2 and auth[0].lower() == "token":
+            key = auth[1]
+            try:
+                token = self.model.objects.get(key=key)
+            except self.model.DoesNotExist:
+                return None
 
-        try:
-             token = self.model.objects.get(key=key)
-        except self.model.DoesNotExist:
-             return None
+            if token.user.is_active and not getattr(token, 'revoked', False):
+                return (token.user, token)
 
-        if token.user.is_active and not token.revoked:
-            return (token.user, token)
-
-# TODO: DigestAuthentication, OAuthAuthentication
+# TODO: OAuthAuthentication

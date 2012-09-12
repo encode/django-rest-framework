@@ -4,16 +4,6 @@ from hashlib import sha1
 from django.db import models
 
 
-class TokenManager(models.Manager):
-    """
-    Manager class to provide `Token.objects.create_token(user=user)`.
-    """
-    def create_token(self, user):
-        token = Token(user=user)
-        token.save()
-        return token
-
-
 class Token(models.Model):
     """
     The default authorization token model.
@@ -22,7 +12,6 @@ class Token(models.Model):
     user = models.ForeignKey('auth.User')
     revoked = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
-    objects = TokenManager()
 
     def save(self, *args, **kwargs):
         if not self.key:

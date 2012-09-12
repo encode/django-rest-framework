@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from djangorestframework.views import APIView
 from djangorestframework import permissions
 
-from djangorestframework.tokenauth.models import BasicToken
+from djangorestframework.authtoken.models import Token
 from djangorestframework.authentication import TokenAuthentication
 
 import base64
@@ -123,17 +123,17 @@ class TokenAuthTests(TestCase):
         self.user = User.objects.create_user(self.username, self.email, self.password)
 
         self.key = 'abcd1234'
-        self.token = BasicToken.objects.create(key=self.key, user=self.user)
+        self.token = Token.objects.create(key=self.key, user=self.user)
 
     def test_post_form_passing_token_auth(self):
         """Ensure POSTing json over token auth with correct credentials passes and does not require CSRF"""
-        auth = self.key
+        auth = "Token " + self.key
         response = self.csrf_client.post('/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
     def test_post_json_passing_token_auth(self):
         """Ensure POSTing form over token auth with correct credentials passes and does not require CSRF"""
-        auth = self.key
+        auth = "Token " + self.key
         response = self.csrf_client.post('/', json.dumps({'example': 'example'}), 'application/json', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
@@ -149,5 +149,5 @@ class TokenAuthTests(TestCase):
 
     def test_token_has_auto_assigned_key_if_none_provided(self):
         """Ensure creating a token with no key will auto-assign a key"""
-        token = BasicToken.objects.create(user=self.user)
-        self.assertEqual(len(token.key), 32)
+        token = Token.objects.create(user=self.user)
+        self.assertTrue(bool(token.key))
