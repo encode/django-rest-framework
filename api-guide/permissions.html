@@ -21,6 +21,7 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
+            <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/restframework2">GitHub</a>
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -115,7 +116,7 @@
 <p>Together with <a href="authentication">authentication</a> and <a href="throttling">throttling</a>, permissions determine wheter a request should be granted or denied access.</p>
 <p>Permission checks are always run at the very start of the view, before any other code is allowed to proceed.  Permission checks will typically use the authentication information in the <code>request.user</code> and <code>request.auth</code> properties to determine if the incoming request should be permitted.</p>
 <h2 id="how-permissions-are-determined">How permissions are determined</h2>
-<p>Permissions in REST framework are always defined as a list of permission classes.  Before running the main body of the view, each permission in the list is checked.</p>
+<p>Permissions in REST framework are always defined as a list of permission classes.  Before running the main body of the view each permission in the list is checked.</p>
 <p>If any permission check fails an <code>exceptions.PermissionDenied</code> exception will be raised, and the main body of the view will not run.</p>
 <h2 id="object-level-permissions">Object level permissions</h2>
 <p>REST framework permissions also support object-level permissioning.  Object level permissions are used to determine if a user should be allowed to act on a particular object, which will typically be a model instance.</p>
@@ -157,7 +158,15 @@ def example_view(request, format=None):
 <p>The <code>IsAuthenticatedOrReadOnly</code> will allow authenticated users to perform any request.  Requests for unauthorised users will only be permitted if the request method is one of the "safe" methods; <code>GET</code>, <code>HEAD</code> or <code>OPTIONS</code>.</p>
 <p>This permission is suitable if you want to your API to allow read permissions to anonymous users, and only allow write permissions to authenticated users.</p>
 <h2 id="djangomodelpermissions">DjangoModelPermissions</h2>
-<p>This permission class ties into Django's standard <code>django.contrib.auth</code> model permissions.  When applied to a view that has a <code>.model</code> property, permission will only be granted if the user</p>
+<p>This permission class ties into Django's standard <code>django.contrib.auth</code> <a href="https://docs.djangoproject.com/en/1.0/topics/auth/#permissions">model permissions</a>.  When applied to a view that has a <code>.model</code> property, authorization will only be granted if the user has the relevant model permissions assigned.</p>
+<ul>
+<li><code>POST</code> requests require the user to have the <code>add</code> permission on the model.</li>
+<li><code>PUT</code> and <code>PATCH</code> requests require the user to have the <code>change</code> permission on the model.</li>
+<li><code>DELETE</code> requests require the user to have the <code>delete</code> permission on the model.</li>
+</ul>
+<p>The default behaviour can also be overridden to support custom model permissions.  For example, you might want to include a <code>view</code> model permission for <code>GET</code> requests.</p>
+<p>To use custom model permissions, override <code>DjangoModelPermissions</code> and set the <code>.perms_map</code> property.  Refer to the source code for details.</p>
+<p>The <code>DjangoModelPermissions</code> class also supports object-level permissions.  Third-party authorization backends such as <a href="https://github.com/lukaszb/django-guardian">django-guardian</a> should work just fine with <code>DjangoModelPermissions</code> without any custom configuration required.</p>
 <h2 id="custom-permissions">Custom permissions</h2>
 <p>To implement a custom permission, override <code>BasePermission</code> and implement the <code>.check_permission(self, request, obj=None)</code> method.</p>
 <p>The method should return <code>True</code> if the request should be granted access, and <code>False</code> otherwise.</p>
