@@ -8,7 +8,7 @@
 
 ## Exception handling in REST framework views
 
-REST framework's views handle various exceptions, and deal with returning appropriate error responses for you.
+REST framework's views handle various exceptions, and deal with returning appropriate error responses.
 
 The handled exceptions are:
 
@@ -16,9 +16,9 @@ The handled exceptions are:
 * Django's `Http404` exception.
 * Django's `PermissionDenied` exception.
 
-In each case, REST framework will return a response, rendering it to an appropriate content-type.
+In each case, REST framework will return a response with an appropriate status code and content-type.  The body of the response will include any additional details regarding the nature of the error.
 
-By default all error messages will include a key `details` in the body of the response, but other keys may also be included.
+By default all error responses will include a key `details` in the body of the response, but other keys may also be included.
 
 For example, the following request:
 

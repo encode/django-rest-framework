@@ -12,7 +12,7 @@ Permission checks are always run at the very start of the view, before any other
 
 ## How permissions are determined
 
-Permissions in REST framework are always defined as a list of permission classes.  Before running the main body of the view, each permission in the list is checked.
+Permissions in REST framework are always defined as a list of permission classes.  Before running the main body of the view each permission in the list is checked.
 
 If any permission check fails an `exceptions.PermissionDenied` exception will be raised, and the main body of the view will not run.
 
@@ -73,7 +73,18 @@ This permission is suitable if you want to your API to allow read permissions to
 
 ## DjangoModelPermissions
 
-This permission class ties into Django's standard `django.contrib.auth` model permissions.  When applied to a view that has a `.model` property, permission will only be granted if the user
+This permission class ties into Django's standard `django.contrib.auth` [model permissions][contribauth].  When applied to a view that has a `.model` property, authorization will only be granted if the user has the relevant model permissions assigned.
+
+* `POST` requests require the user to have the `add` permission on the model.
+* `PUT` and `PATCH` requests require the user to have the `change` permission on the model.
+* `DELETE` requests require the user to have the `delete` permission on the model.
+ 
+The default behaviour can also be overridden to support custom model permissions.  For example, you might want to include a `view` model permission for `GET` requests.
+
+To use custom model permissions, override `DjangoModelPermissions` and set the `.perms_map` property.  Refer to the source code for details.
+
+The `DjangoModelPermissions` class also supports object-level permissions.  Third-party authorization backends such as [django-guardian][guardian] should work just fine with `DjangoModelPermissions` without any custom configuration required.
+
 
 ## Custom permissions
 
@@ -85,3 +96,5 @@ The method should return `True` if the request should be granted access, and `Fa
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
 [throttling]: throttling.md
+[contribauth]: https://docs.djangoproject.com/en/1.0/topics/auth/#permissions
+[guardian]: https://github.com/lukaszb/django-guardian
