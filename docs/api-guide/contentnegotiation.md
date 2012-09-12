@@ -1,1 +1,0 @@
-> HTTP has provisions for several mechanisms for "content negotiation" -- the process of selecting the best representation for a given response when there are multiple representations available. -- RFC 2616, Fielding et al.

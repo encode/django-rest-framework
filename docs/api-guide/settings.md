@@ -2,9 +2,13 @@
 
 # Settings
 
-Configuration for REST framework is all namespaced inside the `API_SETTINGS` setting.
+> Namespaces are one honking great idea - let's do more of those!
+>
+> &mdash; [The Zen of Python][cite]
 
-For example your project's `settings.py` file might look like this:
+Configuration for REST framework is all namespaced inside a single Django setting, named `API_SETTINGS`.
+
+For example your project's `settings.py` file might include something like this:
 
     API_SETTINGS = {
         'DEFAULT_RENDERERS': (
@@ -133,3 +137,5 @@ The name of a URL parameter that may be used to override the HTTP `Accept` heade
 If the value of this setting is `None` then URL accept overloading will be disabled.
 
 Default: `'_accept'`
+
+[cite]: http://www.python.org/dev/peps/pep-0020/

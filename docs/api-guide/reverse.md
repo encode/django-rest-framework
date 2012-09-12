@@ -1,12 +1,12 @@
 <a class="github" href="reverse.py"></a>
 
-# Returning URIs from your Web APIs
+# Returning URLs
 
 > The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on a uniform interface between components.
 >
 > &mdash; Roy Fielding, [Architectural Styles and the Design of Network-based Software Architectures][cite]
 
-As a rule, it's probably better practice to return absolute URIs from you web APIs, such as `http://example.com/foobar`, rather than returning relative URIs, such as `/foobar`.
+As a rule, it's probably better practice to return absolute URIs from you Web APIs, such as `http://example.com/foobar`, rather than returning relative URIs, such as `/foobar`.
 
 The advantages of doing so are:
 

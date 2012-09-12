@@ -47,15 +47,18 @@
                   <li><a href="{{ base_url }}/api-guide/requests{{ suffix }}">Requests</a></li>
                   <li><a href="{{ base_url }}/api-guide/responses{{ suffix }}">Responses</a></li>
                   <li><a href="{{ base_url }}/api-guide/views{{ suffix }}">Views</a></li>
+                  <li><a href="{{ base_url }}/api-guide/generic-views{{ suffix }}">Generic views</a></li>
                   <li><a href="{{ base_url }}/api-guide/parsers{{ suffix }}">Parsers</a></li>
                   <li><a href="{{ base_url }}/api-guide/renderers{{ suffix }}">Renderers</a></li>
                   <li><a href="{{ base_url }}/api-guide/serializers{{ suffix }}">Serializers</a></li>
                   <li><a href="{{ base_url }}/api-guide/authentication{{ suffix }}">Authentication</a></li>
                   <li><a href="{{ base_url }}/api-guide/permissions{{ suffix }}">Permissions</a></li>
                   <li><a href="{{ base_url }}/api-guide/throttling{{ suffix }}">Throttling</a></li>
+                  <li><a href="{{ base_url }}/api-guide/content-negotiation{{ suffix }}">Content negotiation</a></li>
+                  <li><a href="{{ base_url }}/api-guide/format-suffixes{{ suffix }}">Format suffixes</a></li>
+                  <li><a href="{{ base_url }}/api-guide/reverse{{ suffix }}">Returning URLs</a></li>
                   <li><a href="{{ base_url }}/api-guide/exceptions{{ suffix }}">Exceptions</a></li>
                   <li><a href="{{ base_url }}/api-guide/status-codes{{ suffix }}">Status codes</a></li>
-                  <li><a href="{{ base_url }}/api-guide/reverse{{ suffix }}">Returning URLs</a></li>
                   <li><a href="{{ base_url }}/api-guide/settings{{ suffix }}">Settings</a></li>
                 </ul>
               </li>
@@ -112,5 +115,9 @@
       var shiftWindow = function() { scrollBy(0, -50) };
       if (location.hash) shiftWindow();
       window.addEventListener("hashchange", shiftWindow);
+
+      $('.dropdown-menu').click(function(event) {
+        event.stopPropagation();
+      });
     </script>
 </body></html>

@@ -14,15 +14,6 @@ pre {
   font-size: 12px;
 }
 
-a.github {
-  float: right;
-  margin-top: -12px;
-}
-
-a.github:hover {
-  text-decoration: none;
-}
-
 .dropdown .dropdown-menu {
     display: none;
 }
@@ -31,25 +22,38 @@ a.github:hover {
     display: block;
 }
 
+/* GitHub 'Star' badge */
 body.index #main-content iframe {
     float: right;
-}
-
-body.index #main-content iframe {
-    float: right;
+    margin-top: -12px;
     margin-right: -15px;
 }
 
+/* Travis CI badge */
 body.index #main-content p:first-of-type {
     float: right;
     margin-right: 8px;
-    margin-top: -1px;
+    margin-top: -14px;
+    margin-bottom: 0px;
 }
 
+/* Github source file badges */
+a.github {
+  float: right;
+  margin-top: -12px;
+  margin-right: 12px;
+}
+
+a.github:hover {
+  text-decoration: none;
+}
+
+/* Force TOC text to not overrun */
 #table-of-contents {
     overflow: hidden;
 }
 
+/* Code blocks should scroll horizontally */
 pre {
   overflow: auto;
   word-wrap: normal;
@@ -71,12 +75,9 @@ pre {
   }
 }
 
-
 .nav-list li.main {
   font-weight: bold;
 }
-
-
 
 /* Set the table of contents to static so it flows back into the content when
    viewed on tablets and smaller. */
@@ -94,7 +95,7 @@ pre {
   }
 }
 
-
+/* Cutesy quote styling */
 blockquote {
   font-family: Georgia, serif;
   font-size: 18px;

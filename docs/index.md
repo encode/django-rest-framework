@@ -77,15 +77,18 @@ The API guide is your complete reference manual to all the functionality provide
 * [Requests][request]
 * [Responses][response]
 * [Views][views]
+* [Generic views][generic-views]
 * [Parsers][parsers]
 * [Renderers][renderers]
 * [Serializers][serializers]
 * [Authentication][authentication]
 * [Permissions][permissions]
 * [Throttling][throttling]
+* [Content negotiation][contentnegotiation]
+* [Format suffixes][formatsuffixes]
+* [Returning URLs][reverse]
 * [Exceptions][exceptions]
 * [Status codes][status]
-* [Returning URLs][reverse]
 * [Settings][settings]
 
 ## Topics
@@ -149,15 +152,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [request]: api-guide/requests.md
 [response]: api-guide/responses.md
 [views]: api-guide/views.md
+[generic-views]: api-guide/generic-views.md
 [parsers]: api-guide/parsers.md
 [renderers]: api-guide/renderers.md
 [serializers]: api-guide/serializers.md
 [authentication]: api-guide/authentication.md
 [permissions]: api-guide/permissions.md
 [throttling]: api-guide/throttling.md
+[contentnegotiation]: api-guide/content-negotiation.md
+[formatsuffixes]: api-guide/format-suffixes.md
+[reverse]: api-guide/reverse.md
 [exceptions]: api-guide/exceptions.md
 [status]: api-guide/status-codes.md
-[reverse]: api-guide/reverse.md
 [settings]: api-guide/settings.md
 
 [csrf]: topics/csrf.md

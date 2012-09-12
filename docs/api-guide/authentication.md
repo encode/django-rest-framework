@@ -2,6 +2,10 @@
 
 # Authentication
 
+> Auth needs to be pluggable.
+>
+> &mdash; Jacob Kaplan-Moss, ["REST worst practices"][cite]
+
 Authentication is the mechanism of associating an incoming request with a set of identifying credentials, such as the user the request came from, or the token that it was signed with.  The [permission] and [throttling] policies can then use those credentials to determine if the request should be permitted.
 
 REST framework provides a number of authentication policies out of the box, and also allows you to implement custom policies.
@@ -60,7 +64,7 @@ Or, if you're using the `@api_view` decorator with function based views.
 
 This policy uses [HTTP Basic Authentication][basicauth], signed against a user's username and password.  User basic authentication is generally only appropriate for testing.
 
-**Note:** If you run `UserBasicAuthentication` in production your API must be `https` only, or it will be completely insecure.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.
+**Note:** If you run `UserBasicAuthentication` in production your API should be `https` only.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.
 
 If successfully authenticated, `UserBasicAuthentication` provides the following credentials.
 
@@ -69,11 +73,13 @@ If successfully authenticated, `UserBasicAuthentication` provides the following 
 
 ## TokenAuthentication
 
-This policy uses [HTTP Authentication][basicauth] with no authentication scheme.  Token basic authentication is appropriate for client-server setups, such as native desktop and mobile clients.  The token key should be passed in as a string to the "Authorization" HTTP header.  For example:
+This policy uses simple token-based HTTP Authentication.  Token basic authentication is appropriate for client-server setups, such as native desktop and mobile clients.
+
+The token key should be passed in as a string to the "Authorization" HTTP header.  For example:
 
     curl http://my.api.org/ -X POST -H "Authorization: 0123456789abcdef0123456789abcdef"
 
-**Note:** If you run `TokenAuthentication` in production your API must be `https` only, or it will be completely insecure.
+**Note:** If you run `TokenAuthentication` in production your API should be `https` only.
 
 If successfully authenticated, `TokenAuthentication` provides the following credentials.
 
@@ -102,8 +108,9 @@ If successfully authenticated, `SessionAuthentication` provides the following cr
 
 ## Custom authentication policies
 
-To implement a custom authentication policy, subclass `BaseAuthentication` and override the `authenticate(self, request)` method.  The method should return a two-tuple of `(user, auth)` if authentication succeeds, or `None` otherwise.
+To implement a custom authentication policy, subclass `BaseAuthentication` and override the `.authenticate(self, request)` method.  The method should return a two-tuple of `(user, auth)` if authentication succeeds, or `None` otherwise.
 
+[cite]: http://jacobian.org/writing/rest-worst-practices/
 [basicauth]: http://tools.ietf.org/html/rfc2617
 [oauth]: http://oauth.net/2/
 [permission]: permissions.md
