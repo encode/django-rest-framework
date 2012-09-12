@@ -47,15 +47,18 @@
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/requests">Requests</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/responses">Responses</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/views">Views</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/generic-views">Generic views</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/parsers">Parsers</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/renderers">Renderers</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/serializers">Serializers</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/authentication">Authentication</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/permissions">Permissions</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/throttling">Throttling</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/content-negotiation">Content negotiation</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/format-suffixes">Format suffixes</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/reverse">Returning URLs</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/exceptions">Exceptions</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/status-codes">Status codes</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/reverse">Returning URLs</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/settings">Settings</a></li>
                 </ul>
               </li>
@@ -89,6 +92,13 @@
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
               <li class="main"><a href="#exceptions">Exceptions</a></li>
+<li><a href="#exception-handling-in-rest-framework-views">Exception handling in REST framework views</a></li>
+<li><a href="#apiexception">APIException</a></li>
+<li><a href="#parseerror">ParseError</a></li>
+<li><a href="#permissiondenied">PermissionDenied</a></li>
+<li><a href="#methodnotallowed">MethodNotAllowed</a></li>
+<li><a href="#unsupportedmediatype">UnsupportedMediaType</a></li>
+<li><a href="#throttled">Throttled</a></li>
 
             </ul>
           </div>
@@ -97,6 +107,55 @@
         <div id="main-content" class="span9">
           <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/exceptions.py"><span class="label label-info">exceptions.py</span></a></p>
 <h1 id="exceptions">Exceptions</h1>
+<blockquote>
+<p>Exceptions… allow error handling to be organized cleanly in a central or high-level place within the program structure.</p>
+<p>&mdash; Doug Hellmann, <a href="http://www.doughellmann.com/articles/how-tos/python-exception-handling/index.html">Python Exception Handling Techniques</a></p>
+</blockquote>
+<h2 id="exception-handling-in-rest-framework-views">Exception handling in REST framework views</h2>
+<p>REST framework's views handle various exceptions, and deal with returning appropriate error responses for you.</p>
+<p>The handled exceptions are:</p>
+<ul>
+<li>Subclasses of <code>APIException</code> raised inside REST framework.</li>
+<li>Django's <code>Http404</code> exception.</li>
+<li>Django's <code>PermissionDenied</code> exception.</li>
+</ul>
+<p>In each case, REST framework will return a response, rendering it to an appropriate content-type.</p>
+<p>By default all error messages will include a key <code>details</code> in the body of the response, but other keys may also be included.</p>
+<p>For example, the following request:</p>
+<pre class="prettyprint lang-py"><code>DELETE http://api.example.com/foo/bar HTTP/1.1
+Accept: application/json
+</code></pre>
+<p>Might recieve an error response indicating that the <code>DELETE</code> method is not allowed on that resource:</p>
+<pre class="prettyprint lang-py"><code>HTTP/1.1 405 Method Not Allowed
+Content-Type: application/json; charset=utf-8
+Content-Length: 42
+
+{"detail": "Method 'DELETE' not allowed."}
+</code></pre>
+<h2 id="apiexception">APIException</h2>
+<p><strong>Signature:</strong> <code>APIException(detail=None)</code></p>
+<p>The base class for all exceptions raised inside REST framework.</p>
+<p>To provide a custom exception, subclass <code>APIException</code> and set the <code>.status_code</code> and <code>.detail</code> properties on the class.</p>
+<h2 id="parseerror">ParseError</h2>
+<p><strong>Signature:</strong> <code>ParseError(detail=None)</code></p>
+<p>Raised if the request contains malformed data when accessing <code>request.DATA</code> or <code>request.FILES</code>.</p>
+<p>By default this exception results in a response with the HTTP status code "400 Bad Request".</p>
+<h2 id="permissiondenied">PermissionDenied</h2>
+<p><strong>Signature:</strong> <code>PermissionDenied(detail=None)</code></p>
+<p>Raised when an incoming request fails the permission checks.</p>
+<p>By default this exception results in a response with the HTTP status code "403 Forbidden".</p>
+<h2 id="methodnotallowed">MethodNotAllowed</h2>
+<p><strong>Signature:</strong> <code>MethodNotAllowed(method, detail=None)</code></p>
+<p>Raised when an incoming request occurs that does not map to a handler method on the view.</p>
+<p>By default this exception results in a response with the HTTP status code "405 Method Not Allowed".</p>
+<h2 id="unsupportedmediatype">UnsupportedMediaType</h2>
+<p><strong>Signature:</strong> <code>UnsupportedMediaType(media_type, detail=None)</code></p>
+<p>Raised if there are no parsers that can handle the content type of the request data when accessing <code>request.DATA</code> or <code>request.FILES</code>.</p>
+<p>By default this exception results in a response with the HTTP status code "415 Unsupported Media Type".</p>
+<h2 id="throttled">Throttled</h2>
+<p><strong>Signature:</strong> <code>Throttled(wait=None, detail=None)</code></p>
+<p>Raised when an incoming request fails the throttling checks.</p>
+<p>By default this exception results in a response with the HTTP status code "429 Too Many Requests".</p>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->
@@ -114,5 +173,9 @@
       var shiftWindow = function() { scrollBy(0, -50) };
       if (location.hash) shiftWindow();
       window.addEventListener("hashchange", shiftWindow);
+
+      $('.dropdown-menu').click(function(event) {
+        event.stopPropagation();
+      });
     </script>
 </body></html>

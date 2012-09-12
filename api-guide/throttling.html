@@ -47,15 +47,18 @@
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/requests">Requests</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/responses">Responses</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/views">Views</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/generic-views">Generic views</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/parsers">Parsers</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/renderers">Renderers</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/serializers">Serializers</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/authentication">Authentication</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/permissions">Permissions</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/throttling">Throttling</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/content-negotiation">Content negotiation</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/format-suffixes">Format suffixes</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/reverse">Returning URLs</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/exceptions">Exceptions</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/status-codes">Status codes</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/reverse">Returning URLs</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/settings">Settings</a></li>
                 </ul>
               </li>
@@ -89,6 +92,9 @@
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
               <li class="main"><a href="#throttling">Throttling</a></li>
+<li><a href="#peruserthrottle">PerUserThrottle</a></li>
+<li><a href="#perviewthrottle">PerViewThrottle</a></li>
+<li><a href="#custom-throttles">Custom throttles</a></li>
 
             </ul>
           </div>
@@ -97,6 +103,13 @@
         <div id="main-content" class="span9">
           <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/throttling.py"><span class="label label-info">throttling.py</span></a></p>
 <h1 id="throttling">Throttling</h1>
+<blockquote>
+<p>HTTP/1.1 420 Enhance Your Calm</p>
+<p><a href="https://dev.twitter.com/docs/error-codes-responses">Twitter API rate limiting response</a></p>
+</blockquote>
+<h2 id="peruserthrottle">PerUserThrottle</h2>
+<h2 id="perviewthrottle">PerViewThrottle</h2>
+<h2 id="custom-throttles">Custom throttles</h2>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->
@@ -114,5 +127,9 @@
       var shiftWindow = function() { scrollBy(0, -50) };
       if (location.hash) shiftWindow();
       window.addEventListener("hashchange", shiftWindow);
+
+      $('.dropdown-menu').click(function(event) {
+        event.stopPropagation();
+      });
     </script>
 </body></html>

@@ -16,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body onload="prettyPrint()" class="formoverloading">
+  <body onload="prettyPrint()" class="format-suffixes">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -91,42 +91,20 @@
         <div class="span3">
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
-              <li class="main"><a href="#browser-based-put-&-delete">Browser based PUT & DELETE</a></li>
-<li><a href="#overloading-the-http-method">Overloading the HTTP method</a></li>
-<li><a href="#overloading-the-http-content-type">Overloading the HTTP content type</a></li>
-<li><a href="#doesnt-html5-support-put-and-delete-forms">Doesn't HTML5 support PUT and DELETE forms?</a></li>
+              <li class="main"><a href="#format-suffixes">Format suffixes</a></li>
 
             </ul>
           </div>
         </div>
 
         <div id="main-content" class="span9">
-          <h1 id="browser-based-put-delete">Browser based PUT &amp; DELETE</h1>
+          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/urlpatterns.py"><span class="label label-info">urlpatterns.py</span></a></p>
+<h1 id="format-suffixes">Format suffixes</h1>
 <blockquote>
-<p>"There are two noncontroversial uses for overloaded POST.  The first is to <em>simulate</em> HTTP's uniform interface for clients like web browsers that don't support PUT or DELETE"</p>
-<p>&mdash; <a href="1">RESTful Web Services</a>, Leonard Richardson &amp; Sam Ruby.</p>
+<p>Section 6.2.1 does not say that content negotiation should be
+used all the time.</p>
+<p>&mdash; Roy Fielding, <a href="http://tech.groups.yahoo.com/group/rest-discuss/message/5857">REST discuss mailing list</a></p>
 </blockquote>
-<h2 id="overloading-the-http-method">Overloading the HTTP method</h2>
-<p><strong>TODO: Preamble.</strong>  Note that this is the same strategy as is used in <a href="2">Ruby on Rails</a>.</p>
-<p>For example, given the following form:</p>
-<pre class="prettyprint lang-py"><code>&lt;form action="/news-items/5" method="POST"&gt;
-    &lt;input type="hidden" name="_method" value="DELETE"&gt;
-&lt;/form&gt;
-</code></pre>
-<p><code>request.method</code> would return <code>"DELETE"</code>.</p>
-<h2 id="overloading-the-http-content-type">Overloading the HTTP content type</h2>
-<p>Browser-based submission of content types other than form are supported by using form fields named <code>_content</code> and <code>_content_type</code>:</p>
-<p>For example, given the following form:</p>
-<pre class="prettyprint lang-py"><code>&lt;form action="/news-items/5" method="PUT"&gt;
-    &lt;input type="hidden" name="_content_type" value="application/json"&gt;
-    &lt;input name="_content" value="{'count': 1}"&gt;
-&lt;/form&gt;
-</code></pre>
-<p><code>request.content_type</code> would return <code>"application/json"</code>, and <code>request.content</code> would return <code>"{'count': 1}"</code></p>
-<h2 id="why-not-just-use-javascript">Why not just use Javascript?</h2>
-<p><strong>[TODO]</strong></p>
-<h2 id="doesnt-html5-support-put-and-delete-forms">Doesn't HTML5 support PUT and DELETE forms?</h2>
-<p>Nope.  It was at one point intended to support <code>PUT</code> and <code>DELETE</code> forms, but was later <a href="3">dropped from the spec</a>.  There remains <a href="4">ongoing discussion</a> about adding support for <code>PUT</code> and <code>DELETE</code>, as well as how to support content-types other than form-encoded data.</p>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->

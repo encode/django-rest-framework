@@ -47,15 +47,18 @@
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/requests">Requests</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/responses">Responses</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/views">Views</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/generic-views">Generic views</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/parsers">Parsers</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/renderers">Renderers</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/serializers">Serializers</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/authentication">Authentication</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/permissions">Permissions</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/throttling">Throttling</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/content-negotiation">Content negotiation</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/format-suffixes">Format suffixes</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/reverse">Returning URLs</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/exceptions">Exceptions</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/status-codes">Status codes</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/reverse">Returning URLs</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/settings">Settings</a></li>
                 </ul>
               </li>
@@ -112,8 +115,12 @@
         <div id="main-content" class="span9">
           <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/settings.py"><span class="label label-info">settings.py</span></a></p>
 <h1 id="settings">Settings</h1>
-<p>Configuration for REST framework is all namespaced inside the <code>API_SETTINGS</code> setting.</p>
-<p>For example your project's <code>settings.py</code> file might look like this:</p>
+<blockquote>
+<p>Namespaces are one honking great idea - let's do more of those!</p>
+<p>&mdash; <a href="http://www.python.org/dev/peps/pep-0020/">The Zen of Python</a></p>
+</blockquote>
+<p>Configuration for REST framework is all namespaced inside a single Django setting, named <code>API_SETTINGS</code>.</p>
+<p>For example your project's <code>settings.py</code> file might include something like this:</p>
 <pre class="prettyprint lang-py"><code>API_SETTINGS = {
     'DEFAULT_RENDERERS': (
         'djangorestframework.renderers.YAMLRenderer',
@@ -210,5 +217,9 @@ print api_settings.DEFAULT_AUTHENTICATION
       var shiftWindow = function() { scrollBy(0, -50) };
       if (location.hash) shiftWindow();
       window.addEventListener("hashchange", shiftWindow);
+
+      $('.dropdown-menu').click(function(event) {
+        event.stopPropagation();
+      });
     </script>
 </body></html>
