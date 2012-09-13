@@ -12,8 +12,9 @@ Permission checks are always run at the very start of the view, before any other
 
 ## How permissions are determined
 
-Permissions in REST framework are always defined as a list of permission classes.  Before running the main body of the view each permission in the list is checked.
+Permissions in REST framework are always defined as a list of permission classes.  
 
+Before running the main body of the view each permission in the list is checked.
 If any permission check fails an `exceptions.PermissionDenied` exception will be raised, and the main body of the view will not run.
 
 ## Object level permissions
