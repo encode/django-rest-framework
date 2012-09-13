@@ -10,7 +10,7 @@
     <link href="http://tomchristie.github.com/django-rest-framework/css/prettify.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
-    <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
+    <link href="http://tomchristie.github.com/django-rest-framework/css/default.css" rel="stylesheet">
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -93,8 +93,11 @@
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
               <li class="main"><a href="#throttling">Throttling</a></li>
-<li><a href="#peruserthrottle">PerUserThrottle</a></li>
-<li><a href="#perviewthrottle">PerViewThrottle</a></li>
+<li><a href="#how-throttling-is-determined">How throttling is determined</a></li>
+<li><a href="#setting-the-throttling-policy">Setting the throttling policy</a></li>
+<li><a href="#anonthrottle">AnonThrottle</a></li>
+<li><a href="#userthrottle">UserThrottle</a></li>
+<li><a href="#scopedthrottle">ScopedThrottle</a></li>
 <li><a href="#custom-throttles">Custom throttles</a></li>
 
             </ul>
@@ -108,8 +111,52 @@
 <p>HTTP/1.1 420 Enhance Your Calm</p>
 <p><a href="https://dev.twitter.com/docs/error-codes-responses">Twitter API rate limiting response</a></p>
 </blockquote>
-<h2 id="peruserthrottle">PerUserThrottle</h2>
-<h2 id="perviewthrottle">PerViewThrottle</h2>
+<p>Throttling is similar to <a href="permissions">permissions</a>, in that it determines if a request should be authorized.  Throttles indicate a temporary state, and are used to control the rate of requests that clients can make to an API.</p>
+<p>As with permissions, multiple throttles may be used.  Your API might have a restrictive throttle for unauthenticated requests, and a less restrictive throttle for authenticated requests.</p>
+<p>Another scenario where you might want to use multiple throttles would be if you need to impose different constraints on different parts of the API, due ato some services being particularly resource-intensive.</p>
+<p>Throttles do not necessarily only refer to rate-limiting requests.  For example a storage service might also need to throttle against bandwidth.</p>
+<h2 id="how-throttling-is-determined">How throttling is determined</h2>
+<p>As with permissions and authentication, throttling in REST framework is always defined as a list of classes.</p>
+<p>Before running the main body of the view each throttle in the list is checked.
+If any throttle check fails an <code>exceptions.Throttled</code> exception will be raised, and the main body of the view will not run.</p>
+<h2 id="setting-the-throttling-policy">Setting the throttling policy</h2>
+<p>The default throttling policy may be set globally, using the <code>DEFAULT_THROTTLES</code> setting.  For example.</p>
+<pre class="prettyprint lang-py"><code>API_SETTINGS = {
+    'DEFAULT_THROTTLES': (
+        'djangorestframework.throttles.AnonThrottle',
+        'djangorestframework.throttles.UserThrottle',
+    )
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day'
+    }        
+}
+</code></pre>
+<p>You can also set the throttling policy on a per-view basis, using the <code>APIView</code> class based views.</p>
+<pre class="prettyprint lang-py"><code>class ExampleView(APIView):
+    throttle_classes = (UserThrottle,)
+
+    def get(self, request, format=None):
+        content = {
+            'status': 'request was permitted'
+        }
+        return Response(content)
+</code></pre>
+<p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
+<pre class="prettyprint lang-py"><code>@api_view('GET')
+@throttle_classes(UserThrottle)
+def example_view(request, format=None):
+    content = {
+        'status': 'request was permitted'
+    }
+    return Response(content)
+</code></pre>
+<h2 id="anonthrottle">AnonThrottle</h2>
+<p>The <code>AnonThrottle</code> will only ever throttle unauthenticated users.  The IP address of the incoming request is used to identify </p>
+<p><code>AnonThrottle</code> is suitable if you want to restrict the rate of requests from unknown sources.</p>
+<h2 id="userthrottle">UserThrottle</h2>
+<p><code>UserThrottle</code> is suitable if you want a simple restriction</p>
+<h2 id="scopedthrottle">ScopedThrottle</h2>
 <h2 id="custom-throttles">Custom throttles</h2>
         </div><!--/span-->
       </div><!--/row-->

@@ -10,7 +10,7 @@
     <link href="http://tomchristie.github.com/django-rest-framework/css/prettify.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap.css" rel="stylesheet">
     <link href="http://tomchristie.github.com/django-rest-framework/css/bootstrap-responsive.css" rel="stylesheet">
-    <link href="http://tomchristie.github.com/django-rest-framework/css/drf-styles.css" rel="stylesheet">
+    <link href="http://tomchristie.github.com/django-rest-framework/css/default.css" rel="stylesheet">
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
     <!--[if lt IE 9]>
@@ -95,7 +95,7 @@
               <li class="main"><a href="#authentication">Authentication</a></li>
 <li><a href="#how-authentication-is-determined">How authentication is determined</a></li>
 <li><a href="#setting-the-authentication-policy">Setting the authentication policy</a></li>
-<li><a href="#userbasicauthentication">UserBasicAuthentication</a></li>
+<li><a href="#basicauthentication">BasicAuthentication</a></li>
 <li><a href="#tokenauthentication">TokenAuthentication</a></li>
 <li><a href="#oauthauthentication">OAuthAuthentication</a></li>
 <li><a href="#sessionauthentication">SessionAuthentication</a></li>
@@ -118,7 +118,7 @@
 <p>The <code>request.user</code> property will typically be set to an instance of the <code>contrib.auth</code> package's <code>User</code> class.</p>
 <p>The <code>request.auth</code> property is used for any additional authentication information, for example, it may be used to represent an authentication token that the request was signed with.</p>
 <h2 id="how-authentication-is-determined">How authentication is determined</h2>
-<p>Authentication is always set as a list of classes.  REST framework will attempt to authenticate with each class in the list, and will set <code>request.user</code> and <code>request.auth</code> using the return value of the first class that successfully authenticates.</p>
+<p>The authentication policy is always defined as a list of classes.  REST framework will attempt to authenticate with each class in the list, and will set <code>request.user</code> and <code>request.auth</code> using the return value of the first class that successfully authenticates.</p>
 <p>If no class authenticates, <code>request.user</code> will be set to an instance of <code>django.contrib.auth.models.AnonymousUser</code>, and <code>request.auth</code> will be set to <code>None</code>.</p>
 <p>The value of <code>request.user</code> and <code>request.auth</code> for unauthenticated requests can be modified using the <code>UNAUTHENTICATED_USER</code> and <code>UNAUTHENTICATED_TOKEN</code> settings.</p>
 <h2 id="setting-the-authentication-policy">Setting the authentication policy</h2>
@@ -153,26 +153,32 @@ def example_view(request, format=None):
     }
     return Response(content)
 </code></pre>
-<h2 id="userbasicauthentication">UserBasicAuthentication</h2>
-<p>This policy uses <a href="http://tools.ietf.org/html/rfc2617">HTTP Basic Authentication</a>, signed against a user's username and password.  User basic authentication is generally only appropriate for testing.</p>
-<p><strong>Note:</strong> If you run <code>UserBasicAuthentication</code> in production your API should be <code>https</code> only.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.</p>
-<p>If successfully authenticated, <code>UserBasicAuthentication</code> provides the following credentials.</p>
+<h2 id="basicauthentication">BasicAuthentication</h2>
+<p>This policy uses <a href="http://tools.ietf.org/html/rfc2617">HTTP Basic Authentication</a>, signed against a user's username and password.  Basic authentication is generally only appropriate for testing.</p>
+<p>If successfully authenticated, <code>BasicAuthentication</code> provides the following credentials.</p>
 <ul>
 <li><code>request.user</code> will be a <code>django.contrib.auth.models.User</code> instance.</li>
 <li><code>request.auth</code> will be <code>None</code>.</li>
 </ul>
+<p><strong>Note:</strong> If you use <code>BasicAuthentication</code> in production you must ensure that your API is only available over <code>https</code> only.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.</p>
 <h2 id="tokenauthentication">TokenAuthentication</h2>
-<p>This policy uses simple token-based HTTP Authentication.  Token basic authentication is appropriate for client-server setups, such as native desktop and mobile clients.</p>
-<p>The token key should be passed in as a string to the "Authorization" HTTP header.  For example:</p>
-<pre class="prettyprint lang-py"><code>curl http://my.api.org/ -X POST -H "Authorization: 0123456789abcdef0123456789abcdef"
+<p>This policy uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.</p>
+<p>To use the <code>TokenAuthentication</code> policy, include <code>djangorestframework.authtoken</code> in your <code>INSTALLED_APPS</code> setting.</p>
+<p>You'll also need to create tokens for your users.</p>
+<pre class="prettyprint lang-py"><code>from djangorestframework.authtoken.models import Token
+
+token = Token.objects.create(user=...)
+print token.key
 </code></pre>
-<p><strong>Note:</strong> If you run <code>TokenAuthentication</code> in production your API should be <code>https</code> only.</p>
+<p>For clients to authenticate, the token key should be included in the <code>Authorization</code> HTTP header.  The key should be prefixed by the string literal "Token", with whitespace seperating the two strings.  For example:</p>
+<pre class="prettyprint lang-py"><code>Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
+</code></pre>
 <p>If successfully authenticated, <code>TokenAuthentication</code> provides the following credentials.</p>
 <ul>
 <li><code>request.user</code> will be a <code>django.contrib.auth.models.User</code> instance.</li>
 <li><code>request.auth</code> will be a <code>djangorestframework.tokenauth.models.BasicToken</code> instance.</li>
 </ul>
-<p>To use the <code>TokenAuthentication</code> policy, you must have a token model.  Django REST Framework comes with a minimal default token model.  To use it, include <code>djangorestframework.tokenauth</code> in your installed applications and sync your database.  To use your own token model, subclass the <code>djangorestframework.tokenauth.TokenAuthentication</code> class and specify a <code>model</code> attribute that references your custom token model.  The token model must provide <code>user</code>, <code>key</code>, and <code>revoked</code> attributes.  Refer to the <code>djangorestframework.tokenauth.models.BasicToken</code> model as an example.</p>
+<p><strong>Note:</strong> If you use <code>TokenAuthentication</code> in production you must ensure that your API is only available over <code>https</code> only.</p>
 <h2 id="oauthauthentication">OAuthAuthentication</h2>
 <p>This policy uses the <a href="http://oauth.net/2/">OAuth 2.0</a> protocol to authenticate requests.  OAuth is appropriate for server-server setups, such as when you want to allow a third-party service to access your API on a user's behalf.</p>
 <p>If successfully authenticated, <code>OAuthAuthentication</code> provides the following credentials.</p>
