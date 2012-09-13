@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>Django REST framework</title>
+    <title>{{ project_title }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -18,6 +18,8 @@
     <![endif]-->
   <body onload="prettyPrint()" class="{{ page_id }}">
 
+    {{ navigation }}
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -26,7 +28,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </a>
-          <a class="brand" href="{{ base_url }}{{ index }}">Django REST framework</a>
+          <a class="brand" href="{{ base_url }}{{ index }}">{{ project_title }}</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li><a href="{{ base_url }}{{ index }}">Home</a></li>
@@ -74,10 +76,10 @@
             </ul>
             <ul class="nav pull-right">
               <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version: 2.0.0 <b class="caret"></b></a>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version: {{ version_number }} <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li><a href="#">Trunk</a></li>
-                  <li><a href="#">2.0.0</a></li>
+                  <li><a href="#">{{ version_number }}</a></li>
                 </ul>
               </li>
             </ul>

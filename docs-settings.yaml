@@ -1,0 +1,42 @@
+# Documentation settings for django rest framework
+language: python
+
+docs_dir: docs
+html_dir: docs/html
+
+base_url: http://tomchristie.github.com/django-rest-framework
+
+project_title: Django REST framework
+
+index_file: index.md
+
+version_number: 2.0.0
+
+static_dirs:
+    -   source: docs/static/css
+        target: css
+    -   source: docs/static/js
+        target: js
+    -   source: docs/static/img
+        target: img
+
+
+#navigation and files
+nav:
+    -   section:
+        title: Home
+        file: index.md
+    -   section:
+        title: Tutorial
+        pages:
+        -   file: tutorial/1-serialization.md
+            title: 1 - Serialization
+        -   file: tutorial/2-requests-and-responses.md
+            title: 2 - Requests and responses
+    -   section:
+        title: API Guide
+        pages:
+        -   file: api-guide/requests.md
+            title: Requests
+        -   file: api-guide/responses.md
+            title: Responses
