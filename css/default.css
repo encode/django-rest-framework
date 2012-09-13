@@ -22,6 +22,12 @@ pre {
     display: block;
 }
 
+@media (max-width: 480px) {
+  .repo-link {
+    display: none;
+  }
+}
+
 /* Header link to GitHub */
 .repo-link {
     float: right;
