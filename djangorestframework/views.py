@@ -186,7 +186,7 @@ class APIView(_View):
         Check if request should be permitted.
         """
         for permission in self.get_permissions():
-            if not permission.check_permission(request, obj):
+            if not permission.has_permission(request, obj):
                 self.permission_denied(request)
 
     def check_throttles(self, request):
@@ -194,7 +194,7 @@ class APIView(_View):
         Check if request should be throttled.
         """
         for throttle in self.get_throttles():
-            if not throttle.check_throttle(request):
+            if not throttle.allow_request(request):
                 self.throttled(request, throttle.wait())
 
     def initialize_request(self, request, *args, **kargs):

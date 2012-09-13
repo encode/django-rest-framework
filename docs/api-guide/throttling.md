@@ -12,9 +12,11 @@ Throttling is similar to [permissions], in that it determines if a request shoul
 
 As with permissions, multiple throttles may be used.  Your API might have a restrictive throttle for unauthenticated requests, and a less restrictive throttle for authenticated requests.
 
-Another scenario where you might want to use multiple throttles would be if you need to impose different constraints on different parts of the API, due ato some services being particularly resource-intensive.
+Another scenario where you might want to use multiple throttles would be if you need to impose different constraints on different parts of the API, due to some services being particularly resource-intensive.
 
-Throttles do not necessarily only refer to rate-limiting requests.  For example a storage service might also need to throttle against bandwidth.
+Multiple throttles can also be used if you want to impose both burst throttling  rates, and sustained throttling rates.  For example, you might want to limit a user to a maximum of 60 requests per minute, and 1000 requests per day.
+
+Throttles do not necessarily only refer to rate-limiting requests.  For example a storage service might also need to throttle against bandwidth, and a paid data service might want to throttle against a certain number of a records being accessed.
 
 ## How throttling is determined
 
@@ -25,7 +27,7 @@ If any throttle check fails an `exceptions.Throttled` exception will be raised, 
 
 ## Setting the throttling policy
 
-The default throttling policy may be set globally, using the `DEFAULT_THROTTLES` setting.  For example.
+The default throttling policy may be set globally, using the `DEFAULT_THROTTLES` and `DEFAULT_THROTTLE_RATES` settings.  For example.
 
     API_SETTINGS = {
         'DEFAULT_THROTTLES': (
@@ -37,6 +39,8 @@ The default throttling policy may be set globally, using the `DEFAULT_THROTTLES`
             'user': '1000/day'
         }        
     }
+
+The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `minute`, `hour` or `day` as the throttle period.
 
 You can also set the throttling policy on a per-view basis, using the `APIView` class based views.
 
@@ -59,18 +63,67 @@ Or, if you're using the `@api_view` decorator with function based views.
         }
         return Response(content)
 
-## AnonThrottle
+## AnonRateThrottle
 
-The `AnonThrottle` will only ever throttle unauthenticated users.  The IP address of the incoming request is used to identify 
+The `AnonThrottle` will only ever throttle unauthenticated users.  The IP address of the incoming request is used to generate a unique key to throttle against.
+
+The allowed request rate is determined from one of the following (in order of preference).
+
+* The `rate` property on the class, which may be provided by overriding `AnonThrottle` and setting the property.
+* The `DEFAULT_THROTTLE_RATES['anon']` setting.
 
 `AnonThrottle` is suitable if you want to restrict the rate of requests from unknown sources.
 
-## UserThrottle
+## UserRateThrottle
 
-`UserThrottle` is suitable if you want a simple restriction
+The `UserThrottle` will throttle users to a given rate of requests across the API.  The user id is used to generate a unique key to throttle against.  Unauthenticted requests will fall back to using the IP address of the incoming request is used to generate a unique key to throttle against.
 
-## ScopedThrottle
+The allowed request rate is determined from one of the following (in order of preference).
+
+* The `rate` property on the class, which may be provided by overriding `UserThrottle` and setting the property.
+* The `DEFAULT_THROTTLE_RATES['user']` setting.
+
+`UserThrottle` is suitable if you want a simple global rate restriction per-user.
+
+## ScopedRateThrottle
+
+The `ScopedThrottle` class can be used to restrict access to specific parts of the API.  This throttle will only be applied if the view that is being accessed includes a `.throttle_scope` property.  The unique throttle key will then be formed by concatenating the "scope" of the request with the unqiue user id or IP address.
+
+The allowed request rate is determined by the `DEFAULT_THROTTLE_RATES` setting using a key from the request "scope".
+
+For example, given the following views...
+
+    class ContactListView(APIView):
+        throttle_scope = 'contacts'
+        ...
+    
+    class ContactDetailView(ApiView):
+        throttle_scope = 'contacts'
+        ...
+
+
+    class UploadView(APIView):        
+        throttle_scope = 'uploads'
+        ...
+    
+...and the following settings.
+
+    API_SETTINGS = {
+        'DEFAULT_THROTTLES': (
+            'djangorestframework.throttles.ScopedRateThrottle',
+        )
+        'DEFAULT_THROTTLE_RATES': {
+            'contacts': '1000/day',
+            'uploads': '20/day'
+        }
+    }
+
+User requests to either `ContactListView` or `ContactDetailView` would be restricted to a total of 1000 requests per-day.  User requests to `UploadView` would be restricted to 20 requests per day.
 
 ## Custom throttles
+
+To implement a custom throttle, override `BaseThrottle` and implement `.allow_request(request)`.  The method should return `True` if the request should be allowed, and `False` otherwise.
+
+Optionally you may also override the `.wait()` method.  If implemented, `.wait()` should return a recomended number of seconds to wait before attempting the next request, or `None`.  The `.wait()` method will only be called if `.check_throttle()` has previously returned `False`.
 
 [permissions]: permissions.md

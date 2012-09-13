@@ -8,24 +8,30 @@ from django.core.cache import cache
 
 from djangorestframework.compat import RequestFactory
 from djangorestframework.views import APIView
-from djangorestframework.throttling import PerUserThrottling, PerViewThrottling
+from djangorestframework.throttling import UserRateThrottle
 from djangorestframework.response import Response
 
 
-class MockView(APIView):
-    throttle_classes = (PerUserThrottling,)
+class User3SecRateThrottle(UserRateThrottle):
     rate = '3/sec'
+
+
+class User3MinRateThrottle(UserRateThrottle):
+    rate = '3/min'
+
+
+class MockView(APIView):
+    throttle_classes = (User3SecRateThrottle,)
 
     def get(self, request):
         return Response('foo')
 
 
-class MockView_PerViewThrottling(MockView):
-    throttle_classes = (PerViewThrottling,)
+class MockView_MinuteThrottling(APIView):
+    throttle_classes = (User3MinRateThrottle,)
 
-
-class MockView_MinuteThrottling(MockView):
-    rate = '3/min'
+    def get(self, request):
+        return Response('foo')
 
 
 class ThrottlingTests(TestCase):
@@ -85,12 +91,6 @@ class ThrottlingTests(TestCase):
         PerUserThrottles
         """
         self.ensure_is_throttled(MockView, 200)
-
-    def test_request_throttling_is_per_view(self):
-        """
-        Ensure request rate is limited globally per View for PerViewThrottles
-        """
-        self.ensure_is_throttled(MockView_PerViewThrottling, 429)
 
     def ensure_response_header_contains_proper_throttle_field(self, view, expected_headers):
         """

@@ -28,11 +28,11 @@ class BasePermission(object):
         """
         self.view = view
 
-    def check_permission(self, request, obj=None):
+    def has_permission(self, request, obj=None):
         """
         Should simply return, or raise an :exc:`response.ImmediateResponse`.
         """
-        raise NotImplementedError(".check_permission() must be overridden.")
+        raise NotImplementedError(".has_permission() must be overridden.")
 
 
 class IsAuthenticated(BasePermission):
@@ -40,7 +40,7 @@ class IsAuthenticated(BasePermission):
     Allows access only to authenticated users.
     """
 
-    def check_permission(self, request, obj=None):
+    def has_permission(self, request, obj=None):
         if request.user and request.user.is_authenticated():
             return True
         return False
@@ -51,7 +51,7 @@ class IsAdminUser(BasePermission):
     Allows access only to admin users.
     """
 
-    def check_permission(self, request, obj=None):
+    def has_permission(self, request, obj=None):
         if request.user and request.user.is_staff:
             return True
         return False
@@ -62,7 +62,7 @@ class IsAuthenticatedOrReadOnly(BasePermission):
     The request is authenticated as a user, or is a read-only request.
     """
 
-    def check_permission(self, request, obj=None):
+    def has_permission(self, request, obj=None):
         if (request.method in SAFE_METHODS or
             request.user and
             request.user.is_authenticated()):
@@ -105,7 +105,7 @@ class DjangoModelPermissions(BasePermission):
         }
         return [perm % kwargs for perm in self.perms_map[method]]
 
-    def check_permission(self, request, obj=None):
+    def has_permission(self, request, obj=None):
         model_cls = self.view.model
         perms = self.get_required_permissions(request.method, model_cls)
 
