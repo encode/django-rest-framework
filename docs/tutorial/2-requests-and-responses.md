@@ -133,7 +133,12 @@ Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/][3
 
 **Note: Right now the Browseable API only works with the CBV's.  Need to fix that.**
 
-**TODO: Describe browseable API awesomeness**
+### Browsability
+
+Because the API chooses a return format based on what the client asks for, it will, by default, return an HTML-formatted representation of the resource when that resource is requested by a browser. This allows for the API to be easily browsable and usable by humans.
+
+See the [browsable api][4] topic for more information about the browsable API feature and how to customize it.
+
 
 ## What's next?
 
@@ -142,4 +147,5 @@ In [tutorial part 3][4], we'll start using class based views, and see how generi
 [json-url]: http://example.com/api/items/4.json
 [2]: 1-serialization.md
 [3]: http://127.0.0.1:8000/
-[4]: 3-class-based-views.md
+[4]: ../topics/browsable-api.md
+[5]: 3-class-based-views.md
