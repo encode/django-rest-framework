@@ -54,11 +54,14 @@ def _camelcase_to_spaces(content):
 
 
 class APIView(_View):
+    settings = api_settings
+
     renderer_classes = api_settings.DEFAULT_RENDERERS
     parser_classes = api_settings.DEFAULT_PARSERS
     authentication_classes = api_settings.DEFAULT_AUTHENTICATION
     throttle_classes = api_settings.DEFAULT_THROTTLES
     permission_classes = api_settings.DEFAULT_PERMISSIONS
+    content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -169,6 +172,27 @@ class APIView(_View):
         """
         return self.renderer_classes[0]
 
+    def get_format_suffix(self, **kwargs):
+        """
+        Determine if the request includes a '.json' style format suffix
+        """
+        if self.settings.FORMAT_SUFFIX_KWARG:
+            return kwargs.get(self.settings.FORMAT_SUFFIX_KWARG)
+
+    def get_renderers(self, format=None):
+        """
+        Instantiates and returns the list of renderers that this view can use.
+        """
+        return [renderer(self) for renderer in self.renderer_classes]
+
+    def filter_renderers(self, renderers, format=None):
+        """
+        If format suffix such as '.json' is supplied, filter the
+        list of valid renderers for this request.
+        """
+        return [renderer for renderer in renderers
+                if renderer.can_handle_format(format)]
+
     def get_permissions(self):
         """
         Instantiates and returns the list of permissions that this view requires.
@@ -177,9 +201,27 @@ class APIView(_View):
 
     def get_throttles(self):
         """
-        Instantiates and returns the list of thottles that this view requires.
+        Instantiates and returns the list of thottles that this view uses.
         """
         return [throttle(self) for throttle in self.throttle_classes]
+
+    def content_negotiation(self, request):
+        """
+        Determine which renderer and media type to use render the response.
+        """
+        renderers = self.get_renderers()
+
+        if self.format:
+            # If there is a '.json' style format suffix, only use
+            # renderers that accept that format.
+            fallback = renderers[0]
+            renderers = self.filter_renderers(renderers, self.format)
+            if not renderers:
+                self.format404 = True
+                return (fallback, fallback.media_type)
+
+        conneg = self.content_negotiation_class()
+        return conneg.negotiate(request, renderers)
 
     def check_permissions(self, request, obj=None):
         """
@@ -204,35 +246,43 @@ class APIView(_View):
         return Request(request, parser_classes=self.parser_classes,
                        authentication_classes=self.authentication_classes)
 
+    def initial(self, request, *args, **kwargs):
+        """
+        Runs anything that needs to occur prior to calling the method handlers.
+        """
+        self.format = self.get_format_suffix(**kwargs)
+        self.renderer, self.media_type = self.content_negotiation(request)
+        self.check_permissions(request)
+        self.check_throttles(request)
+        # If the request included a non-existant .format URL suffix,
+        # raise 404, but only after first making permission checks.
+        if getattr(self, 'format404', None):
+            raise Http404()
+
     def finalize_response(self, request, response, *args, **kwargs):
         """
         Returns the final response object.
         """
         if isinstance(response, Response):
-            response.view = self
-            response.request = request
-            response.renderer_classes = self.renderer_classes
-            if api_settings.FORMAT_SUFFIX_KWARG:
-                response.format = kwargs.get(api_settings.FORMAT_SUFFIX_KWARG, None)
+            response.renderer = self.renderer
+            response.media_type = self.media_type
 
         for key, value in self.headers.items():
             response[key] = value
 
         return response
 
-    def initial(self, request, *args, **kwargs):
-        """
-        Runs anything that needs to occur prior to calling the method handlers.
-        """
-        self.check_permissions(request)
-        self.check_throttles(request)
-
     def handle_exception(self, exc):
         """
         Handle any exception that occurs, by returning an appropriate response,
         or re-raising the error.
         """
-        if isinstance(exc, exceptions.Throttled):
+        if isinstance(exc, exceptions.NotAcceptable):
+            # Fall back to default renderer
+            self.renderer = exc.available_renderers[0]
+            self.media_type = exc.available_renderers[0].media_type
+        elif isinstance(exc, exceptions.Throttled):
+            # Throttle wait header
             self.headers['X-Throttle-Wait-Seconds'] = '%d' % exc.wait
 
         if isinstance(exc, exceptions.APIException):
@@ -250,14 +300,8 @@ class APIView(_View):
     @csrf_exempt
     def dispatch(self, request, *args, **kwargs):
         """
-        `APIView.dispatch()` is pretty much the same as Django's regular
-        `View.dispatch()`, except that it includes hooks to:
-
-        * Initialize the request object.
-        * Finalize the response object.
-        * Handle exceptions that occur in the handler method.
-        * An initial hook for code such as permission checking that should
-          occur prior to running the method handlers.
+        `.dispatch()` is pretty much the same as Django's regular dispatch,
+        but with extra hooks for startup, finalize, and exception handling.
         """
         request = self.initialize_request(request, *args, **kwargs)
         self.request = request
@@ -270,7 +314,8 @@ class APIView(_View):
 
             # Get the appropriate handler method
             if request.method.lower() in self.http_method_names:
-                handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
+                handler = getattr(self, request.method.lower(),
+                                  self.http_method_not_allowed)
             else:
                 handler = self.http_method_not_allowed
 

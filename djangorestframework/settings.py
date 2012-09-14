@@ -38,6 +38,7 @@ DEFAULTS = {
     ),
     'DEFAULT_PERMISSIONS': (),
     'DEFAULT_THROTTLES': (),
+    'DEFAULT_CONTENT_NEGOTIATION': 'djangorestframework.contentnegotiation.DefaultContentNegotiation',
 
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
@@ -45,7 +46,8 @@ DEFAULTS = {
     'FORM_METHOD_OVERRIDE': '_method',
     'FORM_CONTENT_OVERRIDE': '_content',
     'FORM_CONTENTTYPE_OVERRIDE': '_content_type',
-    'URL_ACCEPT_OVERRIDE': '_accept',
+    'URL_ACCEPT_OVERRIDE': 'accept',
+    'IGNORE_MSIE_ACCEPT_HEADER': True,
 
     'FORMAT_SUFFIX_KWARG': 'format'
 }
@@ -58,8 +60,9 @@ IMPORT_STRINGS = (
     'DEFAULT_AUTHENTICATION',
     'DEFAULT_PERMISSIONS',
     'DEFAULT_THROTTLES',
+    'DEFAULT_CONTENT_NEGOTIATION',
     'UNAUTHENTICATED_USER',
-    'UNAUTHENTICATED_TOKEN'
+    'UNAUTHENTICATED_TOKEN',
 )
 
 
@@ -68,7 +71,7 @@ def perform_import(val, setting):
     If the given setting is a string import notation,
     then perform the necessary import or imports.
     """
-    if val is None or setting not in IMPORT_STRINGS:
+    if val is None or not setting in IMPORT_STRINGS:
         return val
 
     if isinstance(val, basestring):
@@ -88,10 +91,7 @@ def import_from_string(val, setting):
         module_path, class_name = '.'.join(parts[:-1]), parts[-1]
         module = importlib.import_module(module_path)
         return getattr(module, class_name)
-    except Exception, e:
-        import traceback
-        tb = traceback.format_exc()
-        import pdb; pdb.set_trace()
+    except:
         msg = "Could not import '%s' for API setting '%s'" % (val, setting)
         raise ImportError(msg)
 

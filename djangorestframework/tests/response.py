@@ -4,10 +4,10 @@ import unittest
 from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
 
-from djangorestframework.response import Response, NotAcceptable
+from djangorestframework.response import Response
 from djangorestframework.views import APIView
 from djangorestframework.compat import RequestFactory
-from djangorestframework import status
+from djangorestframework import status, exceptions
 from djangorestframework.renderers import (
     BaseRenderer,
     JSONRenderer,
@@ -91,7 +91,7 @@ class TestResponseDetermineRenderer(TestCase):
         accept_list = ['application/json']
         renderer_classes = (MockPickleRenderer, )
         response = self.get_response(accept_list=accept_list, renderer_classes=renderer_classes)
-        self.assertRaises(NotAcceptable, response._determine_renderer)
+        self.assertRaises(exceptions.NotAcceptable, response._determine_renderer)
 
 
 class TestResponseRenderContent(TestCase):

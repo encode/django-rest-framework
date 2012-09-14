@@ -48,28 +48,22 @@ class BaseRenderer(object):
     def __init__(self, view=None):
         self.view = view
 
-    def can_handle_response(self, accept):
-        """
-        Returns :const:`True` if this renderer is able to deal with the given
-        *accept* media type.
+    def can_handle_format(self, format):
+        return format == self.format
 
-        The default implementation for this function is to check the *accept*
-        argument against the :attr:`media_type` attribute set on the class to see if
+    def can_handle_media_type(self, media_type):
+        """
+        Returns `True` if this renderer is able to deal with the given
+        media type.
+
+        The default implementation for this function is to check the media type
+        argument against the media_type attribute set on the class to see if
         they match.
 
-        This may be overridden to provide for other behavior, but typically you'll
-        instead want to just set the :attr:`media_type` attribute on the class.
+        This may be overridden to provide for other behavior, but typically
+        you'll instead want to just set the `media_type` attribute on the class.
         """
-        # TODO: format overriding must go out of here
-        format = None
-        if self.view is not None:
-            format = self.view.kwargs.get(self._FORMAT_QUERY_PARAM, None)
-        if format is None and self.view is not None:
-            format = self.view.request.GET.get(self._FORMAT_QUERY_PARAM, None)
-
-        if format is not None:
-            return format == self.format
-        return media_type_matches(self.media_type, accept)
+        return media_type_matches(self.media_type, media_type)
 
     def render(self, obj=None, media_type=None):
         """

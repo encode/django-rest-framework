@@ -1,97 +1,34 @@
-"""
-The :mod:`response` module provides :class:`Response` and :class:`ImmediateResponse` classes.
-
-`Response` is a subclass of `HttpResponse`, and can be similarly instantiated and returned
-from any view. It is a bit smarter than Django's `HttpResponse`, for it renders automatically
-its content to a serial format by using a list of :mod:`renderers`.
-
-To determine the content type to which it must render, default behaviour is to use standard
-HTTP Accept header content negotiation. But `Response` also supports overriding the content type
-by specifying an ``_accept=`` parameter in the URL. Also, `Response` will ignore `Accept` headers
-from Internet Explorer user agents and use a sensible browser `Accept` header instead.
-"""
-
-
-import re
 from django.template.response import SimpleTemplateResponse
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
-from djangorestframework.settings import api_settings
-from djangorestframework.utils.mediatypes import order_by_precedence
-from djangorestframework import status
-
-
-MSIE_USER_AGENT_REGEX = re.compile(r'^Mozilla/[0-9]+\.[0-9]+ \([^)]*; MSIE [0-9]+\.[0-9]+[a-z]?;[^)]*\)(?!.* Opera )')
-
-
-class NotAcceptable(Exception):
-    pass
 
 
 class Response(SimpleTemplateResponse):
     """
-    An HttpResponse that may include content that hasn't yet been serialized.
-
-    Kwargs:
-        - content(object). The raw content, not yet serialized.
-        This must be native Python data that renderers can handle.
-        (e.g.: `dict`, `str`, ...)
-        - renderer_classes(list/tuple). The renderers to use for rendering the response content.
+    An HttpResponse that allows it's data to be rendered into
+    arbitrary media types.
     """
 
-    _ACCEPT_QUERY_PARAM = api_settings.URL_ACCEPT_OVERRIDE
-    _IGNORE_IE_ACCEPT_HEADER = True
+    def __init__(self, data=None, status=None, headers=None,
+                 renderer=None, media_type=None):
+        """
+        Alters the init arguments slightly.
+        For example, drop 'template_name', and instead use 'data'.
 
-    def __init__(self, content=None, status=None, headers=None, view=None,
-                 request=None, renderer_classes=None, format=None):
-        # First argument taken by `SimpleTemplateResponse.__init__` is template_name,
-        # which we don't need
+        Setting 'renderer' and 'media_type' will typically be defered,
+        For example being set automatically by the `APIView`.
+        """
         super(Response, self).__init__(None, status=status)
-
-        self.raw_content = content
-        self.has_content_body = content is not None
+        self.data = data
         self.headers = headers and headers[:] or []
-        self.view = view
-        self.request = request
-        self.renderer_classes = renderer_classes
-        self.format = format
-
-    def get_renderers(self):
-        """
-        Instantiates and returns the list of renderers the response will use.
-        """
-        if self.renderer_classes is None:
-            renderer_classes = api_settings.DEFAULT_RENDERERS
-        else:
-            renderer_classes = self.renderer_classes
-
-        if self.format:
-            return [cls(self.view) for cls in renderer_classes
-                    if cls.format == self.format]
-        return [cls(self.view) for cls in renderer_classes]
+        self.renderer = renderer
+        self.media_type = media_type
 
     @property
     def rendered_content(self):
-        """
-        The final rendered content. Accessing this attribute triggers the
-        complete rendering cycle: selecting suitable renderer, setting
-        response's actual content type, rendering data.
-        """
-        renderer, media_type = self._determine_renderer()
-
-        # Set the media type of the response
-        self['Content-Type'] = renderer.media_type
-
-        # Render the response content
-        if self.has_content_body:
-            return renderer.render(self.raw_content, media_type)
-        return renderer.render()
-
-    def render(self):
-        try:
-            return super(Response, self).render()
-        except NotAcceptable:
-            response = self._get_406_response()
-            return response.render()
+        self['Content-Type'] = self.media_type
+        if self.data is None:
+            return self.renderer.render()
+        return self.renderer.render(self.data, self.media_type)
 
     @property
     def status_text(self):
@@ -100,74 +37,3 @@ class Response(SimpleTemplateResponse):
         Provided for convenience.
         """
         return STATUS_CODE_TEXT.get(self.status_code, '')
-
-    def _determine_accept_list(self):
-        """
-        Returns a list of accepted media types. This list is determined from :
-
-            1. overload with `_ACCEPT_QUERY_PARAM`
-            2. `Accept` header of the request
-
-        If those are useless, a default value is returned instead.
-        """
-        request = self.request
-
-        if (self._ACCEPT_QUERY_PARAM and
-            request.GET.get(self._ACCEPT_QUERY_PARAM, None)):
-            # Use _accept parameter override
-            return [request.GET.get(self._ACCEPT_QUERY_PARAM)]
-        elif (self._IGNORE_IE_ACCEPT_HEADER and
-              'HTTP_USER_AGENT' in request.META and
-              MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT']) and
-              request.META.get('HTTP_X_REQUESTED_WITH', '') != 'XMLHttpRequest'):
-            # Ignore MSIE's broken accept behavior except for AJAX requests
-            # and do something sensible instead
-            return ['text/html', '*/*']
-        elif 'HTTP_ACCEPT' in request.META:
-            # Use standard HTTP Accept negotiation
-            return [token.strip() for token in request.META['HTTP_ACCEPT'].split(',')]
-        else:
-            # No accept header specified
-            return ['*/*']
-
-    def _determine_renderer(self):
-        """
-        Determines the appropriate renderer for the output, given the list of
-        accepted media types, and the :attr:`renderer_classes` set on this class.
-
-        Returns a 2-tuple of `(renderer, media_type)`
-
-        See: RFC 2616, Section 14
-        http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
-        """
-
-        renderers = self.get_renderers()
-        accepts = self._determine_accept_list()
-
-        # Not acceptable response - Ignore accept header.
-        if self.status_code == 406:
-            return (renderers[0], renderers[0].media_type)
-
-        # Check the acceptable media types against each renderer,
-        # attempting more specific media types first
-        # NB. The inner loop here isn't as bad as it first looks :)
-        #     Worst case is we're looping over len(accept_list) * len(self.renderers)
-        for media_type_set in order_by_precedence(accepts):
-            for renderer in renderers:
-                for media_type in media_type_set:
-                    if renderer.can_handle_response(media_type):
-                        return renderer, media_type
-
-        # No acceptable renderers were found
-        raise NotAcceptable
-
-    def _get_406_response(self):
-        renderer = self.renderer_classes[0]
-        return Response(
-            {
-                'detail': 'Could not satisfy the client\'s Accept header',
-                'available_types': [renderer.media_type
-                                    for renderer in self.renderer_classes]
-            },
-            status=status.HTTP_406_NOT_ACCEPTABLE,
-            view=self.view, request=self.request, renderer_classes=[renderer])

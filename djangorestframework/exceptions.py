@@ -39,6 +39,15 @@ class MethodNotAllowed(APIException):
         self.detail = (detail or self.default_detail) % method
 
 
+class NotAcceptable(APIException):
+    status_code = status.HTTP_406_NOT_ACCEPTABLE
+    default_detail = "Could not satisfy the request's Accept header"
+
+    def __init__(self, detail=None, available_renderers=None):
+        self.detail = detail or self.default_detail
+        self.available_renderers = available_renderers
+
+
 class UnsupportedMediaType(APIException):
     status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
     default_detail = "Unsupported media type '%s' in request."
