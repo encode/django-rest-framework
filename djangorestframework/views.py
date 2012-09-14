@@ -197,24 +197,13 @@ class APIView(_View):
         """
         return [throttle(self) for throttle in self.throttle_classes]
 
-    def content_negotiation(self, request):
+    def content_negotiation(self, request, force=False):
         """
         Determine which renderer and media type to use render the response.
         """
         renderers = self.get_renderers()
-
-        if self.format:
-            # If there is a '.json' style format suffix, only use
-            # renderers that accept that format.
-            fallback = renderers[0]
-            renderers = [renderer for renderer in renderers
-                         if renderer.can_handle_format(self.format)]
-            if not renderers:
-                self.format404 = True
-                return (fallback, fallback.media_type)
-
         conneg = self.content_negotiation_class()
-        return conneg.negotiate(request, renderers)
+        return conneg.negotiate(request, renderers, self.format, force)
 
     def check_permissions(self, request, obj=None):
         """
@@ -244,19 +233,17 @@ class APIView(_View):
         Runs anything that needs to occur prior to calling the method handlers.
         """
         self.format = self.get_format_suffix(**kwargs)
-        self.renderer, self.media_type = self.content_negotiation(request)
         self.check_permissions(request)
         self.check_throttles(request)
-        # If the request included a non-existant .format URL suffix,
-        # raise 404, but only after first making permission checks.
-        if getattr(self, 'format404', None):
-            raise Http404()
+        self.renderer, self.media_type = self.content_negotiation(request)
 
     def finalize_response(self, request, response, *args, **kwargs):
         """
         Returns the final response object.
         """
         if isinstance(response, Response):
+            if not getattr(self, 'renderer', None):
+                self.renderer, self.media_type = self.content_negotiation(request, force=True)
             response.renderer = self.renderer
             response.media_type = self.media_type
 
@@ -270,11 +257,7 @@ class APIView(_View):
         Handle any exception that occurs, by returning an appropriate response,
         or re-raising the error.
         """
-        if isinstance(exc, exceptions.NotAcceptable):
-            # Fall back to default renderer
-            self.renderer = exc.available_renderers[0]
-            self.media_type = exc.available_renderers[0].media_type
-        elif isinstance(exc, exceptions.Throttled):
+        if isinstance(exc, exceptions.Throttled):
             # Throttle wait header
             self.headers['X-Throttle-Wait-Seconds'] = '%d' % exc.wait
 
