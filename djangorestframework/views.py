@@ -201,7 +201,8 @@ class APIView(_View):
         """
         Returns the initial request object.
         """
-        return Request(request, parser_classes=self.parser_classes, authentication_classes=self.authentication_classes)
+        return Request(request, parser_classes=self.parser_classes,
+                       authentication_classes=self.authentication_classes)
 
     def finalize_response(self, request, response, *args, **kwargs):
         """
