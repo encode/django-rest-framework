@@ -16,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body onload="prettyPrint()" class="6-resource-orientated-projects">
+  <body onload="prettyPrint()" class="changelog">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -92,79 +92,138 @@
         <div class="span3">
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
-              <li><a href="#using-routers">Using Routers</a></li>
-<li><a href="#trade-offs-between-views-vs-resources">Trade-offs between views vs resources.</a></li>
-<li><a href="#onwards-and-upwards">Onwards and upwards.</a></li>
+              <li><a href="#200">2.0.0</a></li>
+<li><a href="#040">0.4.0</a></li>
+<li><a href="#033">0.3.3</a></li>
+<li><a href="#032">0.3.2</a></li>
+<li><a href="#031">0.3.1</a></li>
+<li><a href="#030">0.3.0</a></li>
+<li><a href="#024">0.2.4</a></li>
+<li><a href="#023">0.2.3</a></li>
+<li><a href="#022">0.2.2</a></li>
+<li><a href="#021">0.2.1</a></li>
+<li><a href="#020">0.2.0</a></li>
+<li><a href="#011">0.1.1</a></li>
+<li><a href="#010">0.1.0</a></li>
 
             </ul>
           </div>
         </div>
 
         <div id="main-content" class="span9">
-          <p>In REST framework Resources classes are just View classes that don't have any handler methods bound to them.  This allows us to seperate out the behaviour of the classes from how that behaviour should be bound to a set of URLs.</p>
-<p>For instance, given our serializers</p>
-<p>serializers.py</p>
-<pre class="prettyprint lang-py"><code>class BlogPostSerializer(URLModelSerializer):
-    class Meta:
-        model = BlogPost
-
-class CommentSerializer(URLModelSerializer):
-    class Meta:
-        model = Comment
-</code></pre>
-<p>We can re-write our 4 sets of views into something more compact...</p>
-<p>resources.py</p>
-<pre class="prettyprint lang-py"><code>class BlogPostResource(ModelResource):
-    serializer_class = BlogPostSerializer
-    model = BlogPost
-    permissions_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    throttle_classes = (throttles.UserRateThrottle,)
-
-class CommentResource(ModelResource):
-    serializer_class = CommentSerializer
-    model = Comment
-    permissions_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    throttle_classes = (throttles.UserRateThrottle,)
-</code></pre>
-<p>The handler methods only get bound to the actions when we define the URLConf. Here's our urls.py:</p>
-<pre class="prettyprint lang-py"><code>comment_root = CommentResource.as_view(actions={
-    'get': 'list',
-    'post': 'create'
-})
-comment_instance = CommentInstance.as_view(actions={
-    'get': 'retrieve',
-    'put': 'update',
-    'delete': 'destroy'
-})
-... # And for blog post
-
-urlpatterns = patterns('blogpost.views',
-    url(r'^$', comment_root),
-    url(r'^(?P&lt;pk&gt;[0-9]+)$', comment_instance)
-    ...  # And for blog post  
-)
-</code></pre>
-<h2 id="using-routers">Using Routers</h2>
-<p>Right now that hasn't really saved us a lot of code.  However, now that we're using Resources rather than Views, we actually don't need to design the urlconf ourselves.  The conventions for wiring up resources into views and urls can be handled automatically, using <code>Router</code> classes.  All we need to do is register the appropriate resources with a router, and let it do the rest.  Here's our re-wired <code>urls.py</code> file.</p>
-<pre class="prettyprint lang-py"><code>from blog import resources
-from djangorestframework.routers import DefaultRouter
-
-router = DefaultRouter()
-router.register(resources.BlogPostResource)
-router.register(resources.CommentResource)
-urlpatterns = router.urlpatterns
-</code></pre>
-<h2 id="trade-offs-between-views-vs-resources">Trade-offs between views vs resources.</h2>
-<p>Writing resource-orientated code can be a good thing.  It helps ensure that URL conventions will be consistent across your APIs, and minimises the amount of code you need to write.</p>
-<p>The trade-off is that the behaviour is less explict.  It can be more difficult to determine what code path is being followed, or where to override some behaviour.</p>
-<h2 id="onwards-and-upwards">Onwards and upwards.</h2>
-<p>We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here's a few places you can start:</p>
+          <h1 id="release-notes">Release Notes</h1>
+<h2 id="200">2.0.0</h2>
+<p><strong>TODO:</strong> Explain REST framework 2.0</p>
+<h2 id="040">0.4.0</h2>
 <ul>
-<li>Contribute on GitHub by reviewing issues, and submitting issues or pull requests.</li>
-<li>Join the REST framework group, and help build the community.</li>
-<li>Follow me <a href="https://twitter.com/_tomchristie">on Twitter</a> and say hi.</li>
+<li>Supports Django 1.5.</li>
+<li>Fixes issues with 'HEAD' method.</li>
+<li>Allow views to specify template used by TemplateRenderer</li>
+<li>More consistent error responses</li>
+<li>Some serializer fixes</li>
+<li>Fix internet explorer ajax behaviour</li>
+<li>Minor xml and yaml fixes</li>
+<li>Improve setup (eg use staticfiles, not the defunct ADMIN_MEDIA_PREFIX)</li>
+<li>Sensible absolute URL generation, not using hacky set_script_prefix</li>
 </ul>
-<p>Now go build something great.</p>
+<h2 id="033">0.3.3</h2>
+<ul>
+<li>Added DjangoModelPermissions class to support <code>django.contrib.auth</code> style permissions.</li>
+<li>Use <code>staticfiles</code> for css files.</li>
+<li>Easier to override.  Won't conflict with customised admin styles (eg grappelli)</li>
+<li>Templates are now nicely namespaced.</li>
+<li>Allows easier overriding.</li>
+<li>Drop implied 'pk' filter if last arg in urlconf is unnamed.</li>
+<li>Too magical.  Explict is better than implicit.</li>
+<li>Saner template variable autoescaping.</li>
+<li>Tider setup.py</li>
+<li>Updated for URLObject 2.0</li>
+<li>Bugfixes:</li>
+<li>Bug with PerUserThrottling when user contains unicode chars.</li>
+</ul>
+<h2 id="032">0.3.2</h2>
+<ul>
+<li>Bugfixes:</li>
+<li>Fix 403 for POST and PUT from the UI with UserLoggedInAuthentication (#115)</li>
+<li>serialize_model method in serializer.py may cause wrong value (#73)</li>
+<li>Fix Error when clicking OPTIONS button (#146)</li>
+<li>And many other fixes</li>
+<li>Remove short status codes</li>
+<li>Zen of Python: "There should be one-- and preferably only one --obvious way to do it."</li>
+<li>get_name, get_description become methods on the view - makes them overridable.</li>
+<li>Improved model mixin API - Hooks for build_query, get_instance_data, get_model, get_queryset, get_ordering</li>
+</ul>
+<h2 id="031">0.3.1</h2>
+<ul>
+<li>[not documented]</li>
+</ul>
+<h2 id="030">0.3.0</h2>
+<ul>
+<li>JSONP Support</li>
+<li>Bugfixes, including support for latest markdown release</li>
+</ul>
+<h2 id="024">0.2.4</h2>
+<ul>
+<li>Fix broken IsAdminUser permission.</li>
+<li>OPTIONS support.</li>
+<li>XMLParser.</li>
+<li>Drop mentions of Blog, BitBucket.</li>
+</ul>
+<h2 id="023">0.2.3</h2>
+<ul>
+<li>Fix some throttling bugs.</li>
+<li><code>X-Throttle</code> header on throttling.</li>
+<li>Support for nesting resources on related models.</li>
+</ul>
+<h2 id="022">0.2.2</h2>
+<ul>
+<li>Throttling support complete.</li>
+</ul>
+<h2 id="021">0.2.1</h2>
+<ul>
+<li>Couple of simple bugfixes over 0.2.0</li>
+</ul>
+<h2 id="020">0.2.0</h2>
+<ul>
+<li>
+<p>Big refactoring changes since 0.1.0, ask on the discussion group if anything isn't clear.
+  The public API has been massively cleaned up.  Expect it to be fairly stable from here on in.</p>
+</li>
+<li>
+<p><code>Resource</code> becomes decoupled into <code>View</code> and <code>Resource</code>, your views should now inherit from <code>View</code>, not <code>Resource</code>.</p>
+</li>
+<li>
+<p>The handler functions on views <code>.get() .put() .post()</code> etc, no longer have the <code>content</code> and <code>auth</code> args.
+  Use <code>self.CONTENT</code> inside a view to access the deserialized, validated content.
+  Use <code>self.user</code> inside a view to access the authenticated user.</p>
+</li>
+<li>
+<p><code>allowed_methods</code> and <code>anon_allowed_methods</code> are now defunct.  if a method is defined, it's available.
+  The <code>permissions</code> attribute on a <code>View</code> is now used to provide generic permissions checking.
+  Use permission classes such as <code>FullAnonAccess</code>, <code>IsAuthenticated</code> or <code>IsUserOrIsAnonReadOnly</code> to set the permissions.</p>
+</li>
+<li>
+<p>The <code>authenticators</code> class becomes <code>authentication</code>.  Class names change to <code>Authentication</code>.</p>
+</li>
+<li>
+<p>The <code>emitters</code> class becomes <code>renderers</code>.  Class names change to <code>Renderers</code>.</p>
+</li>
+<li>
+<p><code>ResponseException</code> becomes <code>ErrorResponse</code>.</p>
+</li>
+<li>
+<p>The mixin classes have been nicely refactored, the basic mixins are now <code>RequestMixin</code>, <code>ResponseMixin</code>, <code>AuthMixin</code>, and <code>ResourceMixin</code>
+  You can reuse these mixin classes individually without using the <code>View</code> class.</p>
+</li>
+</ul>
+<h2 id="011">0.1.1</h2>
+<ul>
+<li>Final build before pulling in all the refactoring changes for 0.2, in case anyone needs to hang on to 0.1.</li>
+</ul>
+<h2 id="010">0.1.0</h2>
+<ul>
+<li>Initial release.</li>
+</ul>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->

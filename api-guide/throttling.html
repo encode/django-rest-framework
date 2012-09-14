@@ -162,7 +162,7 @@ def example_view(request, format=None):
 </ul>
 <p><code>AnonThrottle</code> is suitable if you want to restrict the rate of requests from unknown sources.</p>
 <h2 id="userratethrottle">UserRateThrottle</h2>
-<p>The <code>UserThrottle</code> will throttle users to a given rate of requests across the API.  The user id is used to generate a unique key to throttle against.  Unauthenticted requests will fall back to using the IP address of the incoming request is used to generate a unique key to throttle against.</p>
+<p>The <code>UserThrottle</code> will throttle users to a given rate of requests across the API.  The user id is used to generate a unique key to throttle against.  Unauthenticted requests will fall back to using the IP address of the incoming request to generate a unique key to throttle against.</p>
 <p>The allowed request rate is determined from one of the following (in order of preference).</p>
 <ul>
 <li>The <code>rate</code> property on the class, which may be provided by overriding <code>UserThrottle</code> and setting the property.</li>
@@ -188,7 +188,7 @@ class SustainedRateThrottle(UserRateThrottle):
     }
 }
 </code></pre>
-<p><code>UserThrottle</code> is suitable if you want a simple global rate restriction per-user.</p>
+<p><code>UserThrottle</code> is suitable if you want simple global rate restrictions per-user.</p>
 <h2 id="scopedratethrottle">ScopedRateThrottle</h2>
 <p>The <code>ScopedThrottle</code> class can be used to restrict access to specific parts of the API.  This throttle will only be applied if the view that is being accessed includes a <code>.throttle_scope</code> property.  The unique throttle key will then be formed by concatenating the "scope" of the request with the unqiue user id or IP address.</p>
 <p>The allowed request rate is determined by the <code>DEFAULT_THROTTLE_RATES</code> setting using a key from the request "scope".</p>
