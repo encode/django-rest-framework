@@ -14,10 +14,12 @@ from djangorestframework.response import Response
 
 class User3SecRateThrottle(UserRateThrottle):
     rate = '3/sec'
+    scope = 'seconds'
 
 
 class User3MinRateThrottle(UserRateThrottle):
     rate = '3/min'
+    scope = 'minutes'
 
 
 class MockView(APIView):

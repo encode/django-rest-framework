@@ -44,7 +44,7 @@ class SimpleRateThottle(BaseThrottle):
 
     timer = time.time
     settings = api_settings
-    cache_format = '%(class)s_%(scope)s_%(ident)s'
+    cache_format = 'throtte_%(scope)s_%(ident)s'
     scope = None
 
     def __init__(self, view):
@@ -144,7 +144,6 @@ class AnonRateThrottle(SimpleRateThottle):
         ident = request.META.get('REMOTE_ADDR', None)
 
         return self.cache_format % {
-            'class': self.__class__.__name__,
             'scope': self.scope,
             'ident': ident
         }
@@ -167,7 +166,6 @@ class UserRateThrottle(SimpleRateThottle):
             ident = request.META.get('REMOTE_ADDR', None)
 
         return self.cache_format % {
-            'class': self.__class__.__name__,
             'scope': self.scope,
             'ident': ident
         }
@@ -181,11 +179,13 @@ class ScopedRateThrottle(SimpleRateThottle):
     user id of the request, and the scope of the view being accessed.
     """
 
+    scope_attr = 'throttle_scope'
+
     def __init__(self, view):
         """
         Scope is determined from the view being accessed.
         """
-        self.scope = getattr(self.view, 'throttle_scope', None)
+        self.scope = getattr(self.view, self.scope_attr, None)
         super(ScopedRateThrottle, self).__init__(view)
 
     def parse_rate_description(self, rate):
@@ -204,7 +204,7 @@ class ScopedRateThrottle(SimpleRateThottle):
         with the '.throttle_scope` property of the view.
         """
         if not self.scope:
-            return None  # Only throttle views with `.throttle_scope` set.
+            return None  # Only throttle views if `.throttle_scope` is set.
 
         if request.user.is_authenticated():
             ident = request.user.id
@@ -212,7 +212,6 @@ class ScopedRateThrottle(SimpleRateThottle):
             ident = request.META.get('REMOTE_ADDR', None)
 
         return self.cache_format % {
-            'class': self.__class__.__name__,
             'scope': self.scope,
             'ident': ident
         }

@@ -83,6 +83,29 @@ The allowed request rate is determined from one of the following (in order of pr
 * The `rate` property on the class, which may be provided by overriding `UserThrottle` and setting the property.
 * The `DEFAULT_THROTTLE_RATES['user']` setting.
 
+An API may have multiple `UserRateThrottles` in place at the same time.  To do so, override `UserRateThrottle` and set a unique "scope" for each class.
+
+For example, multiple user throttle rates could be implemented by using the following classes...
+
+    class BurstRateThrottle(UserRateThrottle):
+        scope = 'burst'
+
+    class SustainedRateThrottle(UserRateThrottle):
+        scope = 'sustained'
+
+...and the following settings.
+
+    API_SETTINGS = {
+        'DEFAULT_THROTTLES': (
+            'example.throttles.BurstRateThrottle',
+            'example.throttles.SustainedRateThrottle',
+        )
+        'DEFAULT_THROTTLE_RATES': {
+            'burst': '60/min',
+            'sustained': '1000/day'
+        }
+    }
+
 `UserThrottle` is suitable if you want a simple global rate restriction per-user.
 
 ## ScopedRateThrottle
