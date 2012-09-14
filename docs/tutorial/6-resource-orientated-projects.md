@@ -1,3 +1,7 @@
+In REST framework Resources classes are just View classes that don't have any handler methods bound to them.  This allows us to seperate out the behaviour of the classes from how that behaviour should be bound to a set of URLs.
+
+For instance, given our serializers
+
 serializers.py
 
     class BlogPostSerializer(URLModelSerializer):
@@ -8,21 +12,44 @@ serializers.py
         class Meta:
             model = Comment
 
+We can re-write our 4 sets of views into something more compact...
+
 resources.py
 
     class BlogPostResource(ModelResource):
         serializer_class = BlogPostSerializer
         model = BlogPost
-        permissions = [AdminOrAnonReadonly()]
-        throttles = [AnonThrottle(rate='5/min')]
+        permissions_classes = (permissions.IsAuthenticatedOrReadOnly,)
+        throttle_classes = (throttles.UserRateThrottle,)
 
     class CommentResource(ModelResource):
         serializer_class = CommentSerializer
         model = Comment
-        permissions = [AdminOrAnonReadonly()]
-        throttles = [AnonThrottle(rate='5/min')]
+        permissions_classes = (permissions.IsAuthenticatedOrReadOnly,)
+        throttle_classes = (throttles.UserRateThrottle,)
 
-Now that we're using Resources rather than Views, we don't need to design the urlconf ourselves.  The conventions for wiring up resources into views and urls are handled automatically.  All we need to do is register the appropriate resources with a router, and let it do the rest.  Here's our re-wired `urls.py` file.
+The handler methods only get bound to the actions when we define the URLConf. Here's our urls.py:
+
+    comment_root = CommentResource.as_view(actions={
+        'get': 'list',
+        'post': 'create'
+    })
+    comment_instance = CommentInstance.as_view(actions={
+        'get': 'retrieve',
+        'put': 'update',
+        'delete': 'destroy'
+    })
+    ... # And for blog post 
+    
+    urlpatterns = patterns('blogpost.views',
+        url(r'^$', comment_root),
+        url(r'^(?P<pk>[0-9]+)$', comment_instance)
+        ...  # And for blog post  
+    )
+
+## Using Routers
+
+Right now that hasn't really saved us a lot of code.  However, now that we're using Resources rather than Views, we actually don't need to design the urlconf ourselves.  The conventions for wiring up resources into views and urls can be handled automatically, using `Router` classes.  All we need to do is register the appropriate resources with a router, and let it do the rest.  Here's our re-wired `urls.py` file.
 
     from blog import resources
     from djangorestframework.routers import DefaultRouter

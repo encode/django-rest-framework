@@ -76,7 +76,7 @@ The allowed request rate is determined from one of the following (in order of pr
 
 ## UserRateThrottle
 
-The `UserThrottle` will throttle users to a given rate of requests across the API.  The user id is used to generate a unique key to throttle against.  Unauthenticted requests will fall back to using the IP address of the incoming request is used to generate a unique key to throttle against.
+The `UserThrottle` will throttle users to a given rate of requests across the API.  The user id is used to generate a unique key to throttle against.  Unauthenticted requests will fall back to using the IP address of the incoming request to generate a unique key to throttle against.
 
 The allowed request rate is determined from one of the following (in order of preference).
 
@@ -106,7 +106,7 @@ For example, multiple user throttle rates could be implemented by using the foll
         }
     }
 
-`UserThrottle` is suitable if you want a simple global rate restriction per-user.
+`UserThrottle` is suitable if you want simple global rate restrictions per-user.
 
 ## ScopedRateThrottle
 
@@ -123,7 +123,6 @@ For example, given the following views...
     class ContactDetailView(ApiView):
         throttle_scope = 'contacts'
         ...
-
 
     class UploadView(APIView):        
         throttle_scope = 'uploads'
