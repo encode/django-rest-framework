@@ -53,10 +53,6 @@ h2, h3 {
     left: 0;
 }
 
-.response-info .meta {
-    border-bottom: 1px solid #ccc;
-}
-
 #options-form {
     margin-right: 1em;
 }
@@ -69,4 +65,10 @@ pre {
   overflow: auto;
   word-wrap: normal;
   white-space: pre;
+  font-size: 12px;
+}
+
+.page-header {
+    border-bottom: none;
+    padding-bottom: 0px;
 }
