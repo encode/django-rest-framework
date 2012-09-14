@@ -16,7 +16,6 @@ For more information, check out [the documentation][docs], in particular, the tu
 
 * Python (2.6, 2.7)
 * Django (1.3, 1.4, 1.5)
-* [URLObject][urlobject] (2.0.0+)
 
 **Optional:**
 
