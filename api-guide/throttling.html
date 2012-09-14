@@ -168,6 +168,26 @@ def example_view(request, format=None):
 <li>The <code>rate</code> property on the class, which may be provided by overriding <code>UserThrottle</code> and setting the property.</li>
 <li>The <code>DEFAULT_THROTTLE_RATES['user']</code> setting.</li>
 </ul>
+<p>An API may have multiple <code>UserRateThrottles</code> in place at the same time.  To do so, override <code>UserRateThrottle</code> and set a unique "scope" for each class.</p>
+<p>For example, multiple user throttle rates could be implemented by using the following classes...</p>
+<pre class="prettyprint lang-py"><code>class BurstRateThrottle(UserRateThrottle):
+    scope = 'burst'
+
+class SustainedRateThrottle(UserRateThrottle):
+    scope = 'sustained'
+</code></pre>
+<p>...and the following settings.</p>
+<pre class="prettyprint lang-py"><code>API_SETTINGS = {
+    'DEFAULT_THROTTLES': (
+        'example.throttles.BurstRateThrottle',
+        'example.throttles.SustainedRateThrottle',
+    )
+    'DEFAULT_THROTTLE_RATES': {
+        'burst': '60/min',
+        'sustained': '1000/day'
+    }
+}
+</code></pre>
 <p><code>UserThrottle</code> is suitable if you want a simple global rate restriction per-user.</p>
 <h2 id="scopedratethrottle">ScopedRateThrottle</h2>
 <p>The <code>ScopedThrottle</code> class can be used to restrict access to specific parts of the API.  This throttle will only be applied if the view that is being accessed includes a <code>.throttle_scope</code> property.  The unique throttle key will then be formed by concatenating the "scope" of the request with the unqiue user id or IP address.</p>
