@@ -97,6 +97,7 @@ General guides to using REST framework.
 
 * [CSRF][csrf]
 * [Form overloading][formoverloading]
+* [Working with the Browsable API][browsableapi]
 * [Contributing to REST framework][contributing]
 * [Credits][credits]
 
@@ -168,5 +169,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [csrf]: topics/csrf.md
 [formoverloading]: topics/formoverloading.md
+[browsableapi]: topics/browsable-api.md
 [contributing]: topics/contributing.md
 [credits]: topics/credits.md
