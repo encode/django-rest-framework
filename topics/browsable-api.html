@@ -16,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body onload="prettyPrint()" class="generic-views">
+  <body onload="prettyPrint()" class="browsable-api">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -93,20 +93,76 @@
         <div class="span3">
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
-              <li class="main"><a href="#generic-views">Generic views</a></li>
+              <li class="main"><a href="#working-with-the-browsable-api">Working with the Browsable API</a></li>
+<li><a href="#urls">URLs</a></li>
+<li><a href="#formats">Formats</a></li>
+<li><a href="#customizing">Customizing</a></li>
 
             </ul>
           </div>
         </div>
 
         <div id="main-content" class="span9">
-          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/mixins.py"><span class="label label-info">mixins.py</span></a>
-<a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/generics.py"><span class="label label-info">generics.py</span></a></p>
-<h1 id="generic-views">Generic views</h1>
-<blockquote>
-<p>Django’s generic views... were developed as a shortcut for common usage patterns... They take certain common idioms and patterns found in view development and abstract them so that you can quickly write common views of data without having to repeat yourself.</p>
-<p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/class-based-views/#base-vs-generic-views">Django Documentation</a></p>
-</blockquote>
+          <h1 id="working-with-the-browsable-api">Working with the Browsable API</h1>
+<p>API may stand for Application <em>Programming</em> Interface, but humans have to be able to read the APIs, too; someone has to do the programming. Django REST Framework supports generating human-friendly HTML output for each resource when the <code>HTML</code> format is requested. These pages allow for easy browsing of resources, as well as forms for submitting data to the resources using <code>POST</code>, <code>PUT</code>, and <code>DELETE</code>.</p>
+<h2 id="urls">URLs</h2>
+<p>If you include fully-qualified URLs in your resource output, they will be 'urlized' and made clickable for easy browsing by humans. The <code>djangorestframework</code> package includes a <a href="../api-guide/reverse"><code>reverse</code></a> helper for this purpose.</p>
+<h2 id="formats">Formats</h2>
+<p>By default, the API will return the format specified by the headers, which in the case of the browser is HTML. The format can be specified using <code>?format=</code> in the request, so you can look at the raw JSON response in a browser by adding <code>?format=json</code> to the URL. There are helpful extensions for viewing JSON in <a href="https://addons.mozilla.org/en-US/firefox/addon/jsonview/">Firefox</a> and <a href="https://chrome.google.com/webstore/detail/chklaanhfefbnpoihckbnefhakgolnmc">Chrome</a>.</p>
+<h2 id="customizing">Customizing</h2>
+<p>To customize the look-and-feel, create a template called <code>api.html</code> and add it to your project, eg: <code>templates/djangorestframework/api.html</code>, that extends the <code>djangorestframework/base.html</code> template.</p>
+<p>The included browsable API template is built with <a href="http://getbootstrap.com">Bootstrap (2.1.1)</a>, making it easy to customize the look-and-feel.</p>
+<h3 id="theme">Theme</h3>
+<p>To replace the theme wholesale, add a <code>bootstrap_theme</code> block to your <code>api.html</code> and insert a <code>link</code> to the desired Bootstrap theme css file. This will completely replace the included theme.</p>
+<pre class="prettyprint lang-py"><code>{% block bootstrap_theme %}
+    &lt;link rel="stylesheet" href="/path/to/my/bootstrap.css" type="text/css"&gt;
+{% endblock %}
+</code></pre>
+<p>A suitable replacement theme can be generated using Bootstrap's <a href="http://twitter.github.com/bootstrap/customize.html#variables">Customize Tool</a>. Also, there are pre-made themes available at <a href="http://bootswatch.com/">Bootswatch</a>. To use any of the Bootswatch themes, simply download the theme's <code>bootstrap.min.css</code> file, add it to your project, and replace the default one as described above.</p>
+<p>You can also change the navbar variant, which by default is <code>navbar-inverse</code>, using the <code>bootstrap_navbar_variant</code> block. The empty <code>{% block bootstrap_navbar_variant %}{% endblock %}</code> will use the original Bootstrap navbar style.</p>
+<p>For more specific CSS tweaks, use the <code>extra_style</code> block instead.</p>
+<h3 id="blocks">Blocks</h3>
+<p>All of the blocks available in the browsable API base template that can be used in your <code>api.html</code>.</p>
+<ul>
+<li><code>blockbots</code>                  - <code>&lt;meta&gt;</code> tag that blocks crawlers</li>
+<li><code>bodyclass</code>                  - (empty) class attribute for the <code>&lt;body&gt;</code></li>
+<li><code>bootstrap_theme</code>            - CSS for the Bootstrap theme</li>
+<li><code>bootstrap_navbar_variant</code>   - CSS class for the navbar</li>
+<li><code>branding</code>                   - section of the navbar, see <a href="http://twitter.github.com/bootstrap/components.html#navbar">Bootstrap components</a></li>
+<li><code>breadcrumbs</code>                - Links showing resource nesting, allowing the user to go back up the resources. It's recommended to preserve these, but they can be overridden using the breadcrumbs block.</li>
+<li><code>extrastyle</code>                 - (empty) extra CSS for the page</li>
+<li><code>extrahead</code>                  - (empty) extra markup for the page <code>&lt;head&gt;</code></li>
+<li><code>footer</code>                     - Any copyright notices or similar footer materials can go here (by default right-aligned)</li>
+<li><code>global_heading</code>             - (empty) Use to insert content below the header but before the breadcrumbs.</li>
+<li><code>title</code>                      - title of the page</li>
+<li><code>userlinks</code>                  - This is a list of links on the right of the header, by default containing login/logout links. To add links instead of replace, use {{ block.super }} to preserve the authentication links.</li>
+</ul>
+<h4 id="components">Components</h4>
+<p>All of the <a href="http://twitter.github.com/bootstrap/components.html">Bootstrap components</a> are available.</p>
+<h5 id="tooltips">Tooltips</h5>
+<p>The browsable API makes use of the Bootstrap tooltips component. Any element with the <code>js-tooltip</code> class and a <code>title</code> attribute has that title content displayed in a tooltip on hover after a 1000ms delay.</p>
+<h3 id="advanced-customization">Advanced Customization</h3>
+<h4 id="context">Context</h4>
+<p>The context that's available to the template:</p>
+<ul>
+<li><code>allowed_methods</code>     : A list of methods allowed by the resource</li>
+<li><code>api_settings</code>        : The API settings</li>
+<li><code>available_formats</code>   : A list of formats allowed by the resource</li>
+<li><code>breadcrumblist</code>      : The list of links following the chain of nested resources</li>
+<li><code>content</code>             : The content of the API response</li>
+<li><code>description</code>         : The description of the resource, generated from its docstring</li>
+<li><code>name</code>                : The name of the resource</li>
+<li><code>post_form</code>           : A form instance for use by the POST form (if allowed)</li>
+<li><code>put_form</code>            : A form instance for use by the PUT form (if allowed)</li>
+<li><code>request</code>             : The request object</li>
+<li><code>response</code>            : The response object</li>
+<li><code>version</code>             : The version of Django REST Framework</li>
+<li><code>view</code>                : The view handling the request</li>
+<li><code>FORMAT_PARAM</code>        : The view can accept a format override</li>
+<li><code>METHOD_PARAM</code>        : The view can accept a method override</li>
+</ul>
+<h4 id="not-using-basehtml">Not using base.html</h4>
+<p>For more advanced customization, such as not having a Bootstrap basis or tighter integration with the rest of your site, you can simply choose not to have <code>api.html</code> extend <code>base.html</code>. Then the page content and capabilities are entirely up to you.</p>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->

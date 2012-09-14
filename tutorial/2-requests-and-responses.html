@@ -68,6 +68,7 @@
                 <ul class="dropdown-menu">
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/csrf">Working with AJAX and CSRF</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/formoverloading">Browser based PUT, PATCH and DELETE</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/browsable-api">Working with the browsable API</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/credits">Credits</a></li>
                 </ul>
@@ -212,9 +213,11 @@ urlpatterns = format_suffix_patterns(urlpatterns)
 <p><strong>TODO: Describe using accept headers, content-type headers, and format suffixed URLs</strong></p>
 <p>Now go and open the API in a web browser, by visiting <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a>."</p>
 <p><strong>Note: Right now the Browseable API only works with the CBV's.  Need to fix that.</strong></p>
-<p><strong>TODO: Describe browseable API awesomeness</strong></p>
+<h3 id="browsability">Browsability</h3>
+<p>Because the API chooses a return format based on what the client asks for, it will, by default, return an HTML-formatted representation of the resource when that resource is requested by a browser. This allows for the API to be easily browsable and usable by humans.</p>
+<p>See the <a href="../topics/browsable-api">browsable api</a> topic for more information about the browsable API feature and how to customize it.</p>
 <h2 id="whats-next">What's next?</h2>
-<p>In <a href="3-class-based-views">tutorial part 3</a>, we'll start using class based views, and see how generic views reduce the amount of code we need to write.</p>
+<p>In <a href="../topics/browsable-api">tutorial part 3</a>, we'll start using class based views, and see how generic views reduce the amount of code we need to write.</p>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->
