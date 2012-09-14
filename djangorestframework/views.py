@@ -185,14 +185,6 @@ class APIView(_View):
         """
         return [renderer(self) for renderer in self.renderer_classes]
 
-    def filter_renderers(self, renderers, format=None):
-        """
-        If format suffix such as '.json' is supplied, filter the
-        list of valid renderers for this request.
-        """
-        return [renderer for renderer in renderers
-                if renderer.can_handle_format(format)]
-
     def get_permissions(self):
         """
         Instantiates and returns the list of permissions that this view requires.
@@ -215,7 +207,8 @@ class APIView(_View):
             # If there is a '.json' style format suffix, only use
             # renderers that accept that format.
             fallback = renderers[0]
-            renderers = self.filter_renderers(renderers, self.format)
+            renderers = [renderer for renderer in renderers
+                         if renderer.can_handle_format(self.format)]
             if not renderers:
                 self.format404 = True
                 return (fallback, fallback.media_type)
