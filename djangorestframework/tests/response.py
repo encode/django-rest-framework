@@ -1,18 +1,15 @@
-import json
 import unittest
 
 from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
 
-from djangorestframework.response import Response, NotAcceptable
+from djangorestframework.response import Response
 from djangorestframework.views import APIView
-from djangorestframework.compat import RequestFactory
 from djangorestframework import status
 from djangorestframework.renderers import (
     BaseRenderer,
     JSONRenderer,
-    DocumentingHTMLRenderer,
-    DEFAULT_RENDERERS
+    DocumentingHTMLRenderer
 )
 
 
@@ -22,126 +19,6 @@ class MockPickleRenderer(BaseRenderer):
 
 class MockJsonRenderer(BaseRenderer):
     media_type = 'application/json'
-
-
-class TestResponseDetermineRenderer(TestCase):
-
-    def get_response(self, url='', accept_list=[], renderer_classes=[]):
-        kwargs = {}
-        if accept_list is not None:
-            kwargs['HTTP_ACCEPT'] = ','.join(accept_list)
-        request = RequestFactory().get(url, **kwargs)
-        return Response(request=request, renderer_classes=renderer_classes)
-
-    def test_determine_accept_list_accept_header(self):
-        """
-        Test that determine_accept_list takes the Accept header.
-        """
-        accept_list = ['application/pickle', 'application/json']
-        response = self.get_response(accept_list=accept_list)
-        self.assertEqual(response._determine_accept_list(), accept_list)
-
-    def test_determine_accept_list_default(self):
-        """
-        Test that determine_accept_list takes the default renderer if Accept is not specified.
-        """
-        response = self.get_response(accept_list=None)
-        self.assertEqual(response._determine_accept_list(), ['*/*'])
-
-    def test_determine_accept_list_overriden_header(self):
-        """
-        Test Accept header overriding.
-        """
-        accept_list = ['application/pickle', 'application/json']
-        response = self.get_response(url='?_accept=application/x-www-form-urlencoded',
-            accept_list=accept_list)
-        self.assertEqual(response._determine_accept_list(), ['application/x-www-form-urlencoded'])
-
-    def test_determine_renderer(self):
-        """
-        Test that right renderer is chosen, in the order of Accept list.
-        """
-        accept_list = ['application/pickle', 'application/json']
-        renderer_classes = (MockPickleRenderer, MockJsonRenderer)
-        response = self.get_response(accept_list=accept_list, renderer_classes=renderer_classes)
-        renderer, media_type = response._determine_renderer()
-        self.assertEqual(media_type, 'application/pickle')
-        self.assertTrue(isinstance(renderer, MockPickleRenderer))
-
-        renderer_classes = (MockJsonRenderer, )
-        response = self.get_response(accept_list=accept_list, renderer_classes=renderer_classes)
-        renderer, media_type = response._determine_renderer()
-        self.assertEqual(media_type, 'application/json')
-        self.assertTrue(isinstance(renderer, MockJsonRenderer))
-
-    def test_determine_renderer_default(self):
-        """
-        Test determine renderer when Accept was not specified.
-        """
-        renderer_classes = (MockPickleRenderer, )
-        response = self.get_response(accept_list=None, renderer_classes=renderer_classes)
-        renderer, media_type = response._determine_renderer()
-        self.assertEqual(media_type, '*/*')
-        self.assertTrue(isinstance(renderer, MockPickleRenderer))
-
-    def test_determine_renderer_no_renderer(self):
-        """
-        Test determine renderer when no renderer can satisfy the Accept list.
-        """
-        accept_list = ['application/json']
-        renderer_classes = (MockPickleRenderer, )
-        response = self.get_response(accept_list=accept_list, renderer_classes=renderer_classes)
-        self.assertRaises(NotAcceptable, response._determine_renderer)
-
-
-class TestResponseRenderContent(TestCase):
-    def get_response(self, url='', accept_list=[], content=None, renderer_classes=None):
-        request = RequestFactory().get(url, HTTP_ACCEPT=','.join(accept_list))
-        return Response(request=request, content=content, renderer_classes=renderer_classes or DEFAULT_RENDERERS)
-
-    def test_render(self):
-        """
-        Test rendering simple data to json.
-        """
-        content = {'a': 1, 'b': [1, 2, 3]}
-        content_type = 'application/json'
-        response = self.get_response(accept_list=[content_type], content=content)
-        response = response.render()
-        self.assertEqual(json.loads(response.content), content)
-        self.assertEqual(response['Content-Type'], content_type)
-
-    def test_render_no_renderer(self):
-        """
-        Test rendering response when no renderer can satisfy accept.
-        """
-        content = 'bla'
-        content_type = 'weirdcontenttype'
-        response = self.get_response(accept_list=[content_type], content=content)
-        response = response.render()
-        self.assertEqual(response.status_code, 406)
-        self.assertIsNotNone(response.content)
-
-    # def test_render_renderer_raises_ImmediateResponse(self):
-    #     """
-    #     Test rendering response when renderer raises ImmediateResponse
-    #     """
-    #     class PickyJSONRenderer(BaseRenderer):
-    #         """
-    #         A renderer that doesn't make much sense, just to try
-    #         out raising an ImmediateResponse
-    #         """
-    #         media_type = 'application/json'
-
-    #         def render(self, obj=None, media_type=None):
-    #             raise ImmediateResponse({'error': '!!!'}, status=400)
-
-    #     response = self.get_response(
-    #         accept_list=['application/json'],
-    #         renderers=[PickyJSONRenderer, JSONRenderer]
-    #     )
-    #     response = response.render()
-    #     self.assertEqual(response.status_code, 400)
-    #     self.assertEqual(response.content, json.dumps({'error': '!!!'}))
 
 
 DUMMYSTATUS = status.HTTP_200_OK
@@ -276,15 +153,6 @@ class RendererIntegrationTests(TestCase):
         the renderer with the matching format attribute should serialize the response."""
         resp = self.client.get('/?format=%s' % RendererB.format,
                                HTTP_ACCEPT=RendererB.media_type)
-        self.assertEquals(resp['Content-Type'], RendererB.media_type)
-        self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
-
-    def test_conflicting_format_query_and_accept_ignores_accept(self):
-        """If a 'format' query is specified that does not match the Accept
-        header, we should only honor the 'format' query string."""
-        resp = self.client.get('/?format=%s' % RendererB.format,
-                               HTTP_ACCEPT='dummy')
         self.assertEquals(resp['Content-Type'], RendererB.media_type)
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEquals(resp.status_code, DUMMYSTATUS)

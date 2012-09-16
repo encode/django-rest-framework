@@ -7,7 +7,7 @@ from django.test import TestCase, Client
 
 from djangorestframework import status
 from djangorestframework.authentication import SessionAuthentication
-from djangorestframework.utils import RequestFactory
+from djangorestframework.compat import RequestFactory
 from djangorestframework.parsers import (
     FormParser,
     MultiPartParser,
@@ -22,33 +22,21 @@ factory = RequestFactory()
 
 
 class TestMethodOverloading(TestCase):
-    def test_GET_method(self):
+    def test_method(self):
         """
-        GET requests identified.
+        Request methods should be same as underlying request.
         """
-        request = factory.get('/')
+        request = Request(factory.get('/'))
         self.assertEqual(request.method, 'GET')
-
-    def test_POST_method(self):
-        """
-        POST requests identified.
-        """
-        request = factory.post('/')
+        request = Request(factory.post('/'))
         self.assertEqual(request.method, 'POST')
-
-    def test_HEAD_method(self):
-        """
-        HEAD requests identified.
-        """
-        request = factory.head('/')
-        self.assertEqual(request.method, 'HEAD')
 
     def test_overloaded_method(self):
         """
         POST requests can be overloaded to another method by setting a
         reserved form field
         """
-        request = factory.post('/', {Request._METHOD_PARAM: 'DELETE'})
+        request = Request(factory.post('/', {Request._METHOD_PARAM: 'DELETE'}))
         self.assertEqual(request.method, 'DELETE')
 
 
@@ -57,14 +45,14 @@ class TestContentParsing(TestCase):
         """
         Ensure request.DATA returns None for GET request with no content.
         """
-        request = factory.get('/')
+        request = Request(factory.get('/'))
         self.assertEqual(request.DATA, None)
 
     def test_standard_behaviour_determines_no_content_HEAD(self):
         """
         Ensure request.DATA returns None for HEAD request.
         """
-        request = factory.head('/')
+        request = Request(factory.head('/'))
         self.assertEqual(request.DATA, None)
 
     def test_standard_behaviour_determines_form_content_POST(self):
@@ -72,8 +60,8 @@ class TestContentParsing(TestCase):
         Ensure request.DATA returns content for POST request with form content.
         """
         data = {'qwerty': 'uiop'}
-        parsers = (FormParser, MultiPartParser)
-        request = factory.post('/', data, parser=parsers)
+        request = Request(factory.post('/', data))
+        request.parser_classes = (FormParser, MultiPartParser)
         self.assertEqual(request.DATA.items(), data.items())
 
     def test_standard_behaviour_determines_non_form_content_POST(self):
@@ -83,9 +71,8 @@ class TestContentParsing(TestCase):
         """
         content = 'qwerty'
         content_type = 'text/plain'
-        parsers = (PlainTextParser,)
-        request = factory.post('/', content, content_type=content_type,
-                               parsers=parsers)
+        request = Request(factory.post('/', content, content_type=content_type))
+        request.parser_classes = (PlainTextParser,)
         self.assertEqual(request.DATA, content)
 
     def test_standard_behaviour_determines_form_content_PUT(self):
@@ -93,17 +80,17 @@ class TestContentParsing(TestCase):
         Ensure request.DATA returns content for PUT request with form content.
         """
         data = {'qwerty': 'uiop'}
-        parsers = (FormParser, MultiPartParser)
 
         from django import VERSION
 
         if VERSION >= (1, 5):
             from django.test.client import MULTIPART_CONTENT, BOUNDARY, encode_multipart
-            request = factory.put('/', encode_multipart(BOUNDARY, data), parsers=parsers,
-                                  content_type=MULTIPART_CONTENT)
+            request = Request(factory.put('/', encode_multipart(BOUNDARY, data),
+                                  content_type=MULTIPART_CONTENT))
         else:
-            request = factory.put('/', data, parsers=parsers)
+            request = Request(factory.put('/', data))
 
+        request.parser_classes = (FormParser, MultiPartParser)
         self.assertEqual(request.DATA.items(), data.items())
 
     def test_standard_behaviour_determines_non_form_content_PUT(self):
@@ -113,9 +100,8 @@ class TestContentParsing(TestCase):
         """
         content = 'qwerty'
         content_type = 'text/plain'
-        parsers = (PlainTextParser, )
-        request = factory.put('/', content, content_type=content_type,
-                              parsers=parsers)
+        request = Request(factory.put('/', content, content_type=content_type))
+        request.parser_classes = (PlainTextParser, )
         self.assertEqual(request.DATA, content)
 
     def test_overloaded_behaviour_allows_content_tunnelling(self):
@@ -128,8 +114,8 @@ class TestContentParsing(TestCase):
             Request._CONTENT_PARAM: content,
             Request._CONTENTTYPE_PARAM: content_type
         }
-        parsers = (PlainTextParser, )
-        request = factory.post('/', data, parsers=parsers)
+        request = Request(factory.post('/', data))
+        request.parser_classes = (PlainTextParser, )
         self.assertEqual(request.DATA, content)
 
     # def test_accessing_post_after_data_form(self):

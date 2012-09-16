@@ -31,12 +31,29 @@ class PermissionDenied(APIException):
         self.detail = detail or self.default_detail
 
 
+class InvalidFormat(APIException):
+    status_code = status.HTTP_404_NOT_FOUND
+    default_detail = "Format suffix '.%s' not found."
+
+    def __init__(self, format, detail=None):
+        self.detail = (detail or self.default_detail) % format
+
+
 class MethodNotAllowed(APIException):
     status_code = status.HTTP_405_METHOD_NOT_ALLOWED
     default_detail = "Method '%s' not allowed."
 
     def __init__(self, method, detail=None):
         self.detail = (detail or self.default_detail) % method
+
+
+class NotAcceptable(APIException):
+    status_code = status.HTTP_406_NOT_ACCEPTABLE
+    default_detail = "Could not satisfy the request's Accept header"
+
+    def __init__(self, detail=None, available_renderers=None):
+        self.detail = detail or self.default_detail
+        self.available_renderers = available_renderers
 
 
 class UnsupportedMediaType(APIException):
