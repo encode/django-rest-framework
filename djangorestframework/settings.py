@@ -38,7 +38,7 @@ DEFAULTS = {
     ),
     'DEFAULT_PERMISSIONS': (),
     'DEFAULT_THROTTLES': (),
-    'DEFAULT_CONTENT_NEGOTIATION': 'djangorestframework.contentnegotiation.DefaultContentNegotiation',
+    'DEFAULT_CONTENT_NEGOTIATION': 'djangorestframework.negotiation.DefaultContentNegotiation',
 
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
@@ -46,8 +46,8 @@ DEFAULTS = {
     'FORM_METHOD_OVERRIDE': '_method',
     'FORM_CONTENT_OVERRIDE': '_content',
     'FORM_CONTENTTYPE_OVERRIDE': '_content_type',
-    'URL_ACCEPT_OVERRIDE': 'accept',
-    'IGNORE_MSIE_ACCEPT_HEADER': True,
+    'URL_ACCEPT_OVERRIDE': '_accept',
+    'URL_FORMAT_OVERRIDE': 'format',
 
     'FORMAT_SUFFIX_KWARG': 'format'
 }

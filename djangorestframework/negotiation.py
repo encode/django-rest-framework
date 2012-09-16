@@ -1,10 +1,6 @@
 from djangorestframework import exceptions
 from djangorestframework.settings import api_settings
 from djangorestframework.utils.mediatypes import order_by_precedence
-from django.http import Http404
-import re
-
-MSIE_USER_AGENT_REGEX = re.compile(r'^Mozilla/[0-9]+\.[0-9]+ \([^)]*; MSIE [0-9]+\.[0-9]+[a-z]?;[^)]*\)(?!.* Opera )')
 
 
 class BaseContentNegotiation(object):
@@ -24,17 +20,23 @@ class DefaultContentNegotiation(object):
         fallback renderer and media_type.
         """
         try:
-            return self._negotiate(request, renderers, format)
-        except (Http404, exceptions.NotAcceptable):
+            return self.unforced_negotiate(request, renderers, format)
+        except (exceptions.InvalidFormat, exceptions.NotAcceptable):
             if force:
                 return (renderers[0], renderers[0].media_type)
             raise
 
-    def _negotiate(self, request, renderers, format=None):
+    def unforced_negotiate(self, request, renderers, format=None):
         """
-        Actual implementation of negotiate, inside the 'force' wrapper.
+        As `.negotiate()`, but does not take the optional `force` agument,
+        or suppress exceptions.
         """
-        renderers = self.filter_renderers(renderers, format)
+        # Allow URL style format override.  eg. "?format=json
+        format = format or request.GET.get(self.settings.URL_FORMAT_OVERRIDE)
+
+        if format:
+            renderers = self.filter_renderers(renderers, format)
+
         accepts = self.get_accept_list(request)
 
         # Check the acceptable media types against each renderer,
@@ -51,42 +53,22 @@ class DefaultContentNegotiation(object):
 
     def filter_renderers(self, renderers, format):
         """
-        If there is a '.json' style format suffix, only use
-        renderers that accept that format.
+        If there is a '.json' style format suffix, filter the renderers
+        so that we only negotiation against those that accept that format.
         """
-        if not format:
-            return renderers
-
         renderers = [renderer for renderer in renderers
                      if renderer.can_handle_format(format)]
         if not renderers:
-            raise Http404()
+            raise exceptions.InvalidFormat(format)
+        return renderers
 
     def get_accept_list(self, request):
         """
-        Given the incoming request, return a tokenised list of
-        media type strings.
+        Given the incoming request, return a tokenised list of media
+        type strings.
+
+        Allows URL style accept override.  eg. "?accept=application/json"
         """
-        if self.settings.URL_ACCEPT_OVERRIDE:
-            # URL style accept override.  eg.  "?accept=application/json"
-            override = request.GET.get(self.settings.URL_ACCEPT_OVERRIDE)
-            if override:
-                return [override]
-
-        if (self.settings.IGNORE_MSIE_ACCEPT_HEADER and
-            'HTTP_USER_AGENT' in request.META and
-            MSIE_USER_AGENT_REGEX.match(request.META['HTTP_USER_AGENT']) and
-            request.META.get('HTTP_X_REQUESTED_WITH', '').lower() != 'xmlhttprequest'):
-            # Ignore MSIE's broken accept behavior except for AJAX requests
-            # and do something sensible instead
-            return ['text/html', '*/*']
-
-        if 'HTTP_ACCEPT' in request.META:
-            # Standard HTTP Accept negotiation
-            # Accept header specified
-            tokens = request.META['HTTP_ACCEPT'].split(',')
-            return [token.strip() for token in tokens]
-
-        # Standard HTTP Accept negotiation
-        # No accept header specified
-        return ['*/*']
+        header = request.META.get('HTTP_ACCEPT', '*/*')
+        header = request.GET.get(self.settings.URL_ACCEPT_OVERRIDE, header)
+        return [token.strip() for token in header.split(',')]

@@ -25,7 +25,7 @@ class Response(SimpleTemplateResponse):
 
     @property
     def rendered_content(self):
-        self['Content-Type'] = self.media_type
+        self['Content-Type'] = self.renderer.media_type
         if self.data is None:
             return self.renderer.render()
         return self.renderer.render(self.data, self.media_type)
