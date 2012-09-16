@@ -1,9 +1,6 @@
 from django.utils.encoding import smart_unicode
 from django.utils.xmlutils import SimplerXMLGenerator
-
 from djangorestframework.compat import StringIO
-from djangorestframework.compat import RequestFactory as DjangoRequestFactory
-from djangorestframework.request import Request
 
 import re
 import xml.etree.ElementTree as ET
@@ -102,38 +99,3 @@ class XMLRenderer():
 
 def dict2xml(input):
     return XMLRenderer().dict2xml(input)
-
-
-class RequestFactory(DjangoRequestFactory):
-    """
-    Replicate RequestFactory, but return Request, not HttpRequest.
-    """
-    def get(self, *args, **kwargs):
-        parsers = kwargs.pop('parsers', None)
-        request = super(RequestFactory, self).get(*args, **kwargs)
-        return Request(request, parsers)
-
-    def post(self, *args, **kwargs):
-        parsers = kwargs.pop('parsers', None)
-        request = super(RequestFactory, self).post(*args, **kwargs)
-        return Request(request, parsers)
-
-    def put(self, *args, **kwargs):
-        parsers = kwargs.pop('parsers', None)
-        request = super(RequestFactory, self).put(*args, **kwargs)
-        return Request(request, parsers)
-
-    def delete(self, *args, **kwargs):
-        parsers = kwargs.pop('parsers', None)
-        request = super(RequestFactory, self).delete(*args, **kwargs)
-        return Request(request, parsers)
-
-    def head(self, *args, **kwargs):
-        parsers = kwargs.pop('parsers', None)
-        request = super(RequestFactory, self).head(*args, **kwargs)
-        return Request(request, parsers)
-
-    def options(self, *args, **kwargs):
-        parsers = kwargs.pop('parsers', None)
-        request = super(RequestFactory, self).options(*args, **kwargs)
-        return Request(request, parsers)

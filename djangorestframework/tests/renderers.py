@@ -169,15 +169,6 @@ class RendererEndToEndTests(TestCase):
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEquals(resp.status_code, DUMMYSTATUS)
 
-    def test_conflicting_format_query_and_accept_ignores_accept(self):
-        """If a 'format' query is specified that does not match the Accept
-        header, we should only honor the 'format' query string."""
-        resp = self.client.get('/?format=%s' % RendererB.format,
-                               HTTP_ACCEPT='dummy')
-        self.assertEquals(resp['Content-Type'], RendererB.media_type)
-        self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
-
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
 _indented_repr = '{\n  "foo": [\n    "bar",\n    "baz"\n  ]\n}'
