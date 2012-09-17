@@ -130,8 +130,6 @@ class CommentRoot(APIView):
             comment.save()
             return Response(serializer.serialized, status=status.HTTP_201_CREATED)
         return Response(serializer.serialized_errors, status=status.HTTP_400_BAD_REQUEST)
-
-comment_root = CommentRoot.as_view()
 </code></pre>
 <p>So far, so good.  It looks pretty similar to the previous case, but we've got better seperation between the different HTTP methods.  We'll also need to update the instance view. </p>
 <pre class="prettyprint lang-py"><code>class CommentInstance(APIView):
@@ -157,17 +155,27 @@ comment_root = CommentRoot.as_view()
             comment = serializer.deserialized
             comment.save()
             return Response(serializer.data)
-        return Response(serializer.error_data, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
         comment = self.get_object(pk)
         comment.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-comment_instance = CommentInstance.as_view()
 </code></pre>
-<p>That's looking good.  Again, it's still pretty similar to the function based view right now.
-Okay, we're done.  If you run the development server everything should be working just as before.</p>
+<p>That's looking good.  Again, it's still pretty similar to the function based view right now.</p>
+<p>We'll also need to refactor our URLconf slightly now we're using class based views.</p>
+<pre class="prettyprint lang-py"><code>from django.conf.urls import patterns, url
+from djangorestframework.urlpatterns import format_suffix_patterns
+from blogpost import views
+
+urlpatterns = patterns('',
+    url(r'^$', views.CommentRoot.as_view()),
+    url(r'^(?P&lt;pk&gt;[0-9]+)$', views.CommentInstance.as_view())
+)
+
+urlpatterns = format_suffix_patterns(urlpatterns)
+</code></pre>
+<p>Okay, we're done.  If you run the development server everything should be working just as before.</p>
 <h2 id="using-mixins">Using mixins</h2>
 <p>One of the big wins of using class based views is that it allows us to easily compose reusable bits of behaviour.</p>
 <p>The create/retrieve/update/delete operations that we've been using so far are going to be pretty simliar for any model-backed API views we create.  Those bits of common behaviour are implemented in REST framework's mixin classes.</p>
@@ -188,8 +196,6 @@ class CommentRoot(mixins.ListModelMixin,
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
-
-comment_root = CommentRoot.as_view()
 </code></pre>
 <p>We'll take a moment to examine exactly what's happening here - We're building our view using <code>MultipleObjectBaseView</code>, and adding in <code>ListModelMixin</code> and <code>CreateModelMixin</code>.</p>
 <p>The base class provides the core functionality, and the mixin classes provide the <code>.list()</code> and <code>.create()</code> actions.  We're then explictly binding the <code>get</code> and <code>post</code> methods to the appropriate actions.  Simple enough stuff so far.</p>
@@ -208,8 +214,6 @@ comment_root = CommentRoot.as_view()
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
-
-comment_instance = CommentInstance.as_view()
 </code></pre>
 <p>Pretty similar.  This time we're using the <code>SingleObjectBaseView</code> class to provide the core functionality, and adding in mixins to provide the <code>.retrieve()</code>, <code>.update()</code> and <code>.destroy()</code> actions.</p>
 <h2 id="using-generic-class-based-views">Using generic class based views</h2>
@@ -222,13 +226,9 @@ class CommentRoot(generics.RootAPIView):
     model = Comment
     serializer_class = CommentSerializer
 
-comment_root = CommentRoot.as_view()
-
 class CommentInstance(generics.InstanceAPIView):
     model = Comment
     serializer_class = CommentSerializer
-
-comment_instance = CommentInstance.as_view()
 </code></pre>
 <p>Wow, that's pretty concise.  We've got a huge amount for free, and our code looks like good, clean, idomatic Django.</p>
 <p>Next we'll move onto <a href="4-authentication-permissions-and-throttling">part 4 of the tutorial</a>, where we'll take a look at how we can  customize the behavior of our views to support a range of authentication, permissions, throttling and other aspects.</p>
@@ -250,7 +250,7 @@ comment_instance = CommentInstance.as_view()
       if (location.hash) shiftWindow();
       window.addEventListener("hashchange", shiftWindow);
 
-      $('.dropdown-menu').click(function(event) {
+      $('.dropdown-menu').on('click touchstart', function(event) {
         event.stopPropagation();
       });
     </script>

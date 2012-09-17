@@ -100,7 +100,8 @@
         </div>
 
         <div id="main-content" class="span9">
-          <h1 id="content-negotiation">Content negotiation</h1>
+          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/negotiation.py"><span class="label label-info">negotiation.py</span></a></p>
+<h1 id="content-negotiation">Content negotiation</h1>
 <blockquote>
 <p>HTTP has provisions for several mechanisms for "content negotiation" - the process of selecting the best representation for a given response when there are multiple representations available.</p>
 <p>&mdash; <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec12.html">RFC 2616</a>, Fielding et al.</p>
@@ -123,7 +124,7 @@
       if (location.hash) shiftWindow();
       window.addEventListener("hashchange", shiftWindow);
 
-      $('.dropdown-menu').click(function(event) {
+      $('.dropdown-menu').on('click touchstart', function(event) {
         event.stopPropagation();
       });
     </script>

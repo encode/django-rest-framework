@@ -191,7 +191,7 @@ def example_view(request, format=None):
       if (location.hash) shiftWindow();
       window.addEventListener("hashchange", shiftWindow);
 
-      $('.dropdown-menu').click(function(event) {
+      $('.dropdown-menu').on('click touchstart', function(event) {
         event.stopPropagation();
       });
     </script>

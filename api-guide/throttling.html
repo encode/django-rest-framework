@@ -239,7 +239,7 @@ class UploadView(APIView):
       if (location.hash) shiftWindow();
       window.addEventListener("hashchange", shiftWindow);
 
-      $('.dropdown-menu').click(function(event) {
+      $('.dropdown-menu').on('click touchstart', function(event) {
         event.stopPropagation();
       });
     </script>

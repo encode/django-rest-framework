@@ -317,7 +317,7 @@ The <code>ModelSerializer</code> class lets you automatically create a Serialize
       if (location.hash) shiftWindow();
       window.addEventListener("hashchange", shiftWindow);
 
-      $('.dropdown-menu').click(function(event) {
+      $('.dropdown-menu').on('click touchstart', function(event) {
         event.stopPropagation();
       });
     </script>

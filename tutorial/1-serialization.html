@@ -270,7 +270,7 @@ class JSONResponse(HttpResponse):
             comment.save()
             return JSONResponse(serializer.data, status=201)
         else:
-            return JSONResponse(serializer.error_data, status=400)
+            return JSONResponse(serializer.errors, status=400)
 </code></pre>
 <p>We'll also need a view which corrosponds to an individual comment, and can be used to retrieve, update or delete the comment.</p>
 <pre class="prettyprint lang-py"><code>def comment_instance(request, pk):
@@ -294,7 +294,7 @@ class JSONResponse(HttpResponse):
             comment.save()
             return JSONResponse(serializer.data)
         else:
-            return JSONResponse(serializer.error_data, status=400)
+            return JSONResponse(serializer.errors, status=400)
 
     elif request.method == 'DELETE':
         comment.delete()
@@ -334,7 +334,7 @@ urlpatterns = patterns('blog.views',
       if (location.hash) shiftWindow();
       window.addEventListener("hashchange", shiftWindow);
 
-      $('.dropdown-menu').click(function(event) {
+      $('.dropdown-menu').on('click touchstart', function(event) {
         event.stopPropagation();
       });
     </script>
