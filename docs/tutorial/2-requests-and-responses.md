@@ -61,7 +61,7 @@ We don't need our `JSONResponse` class anymore, so go ahead and delete that.  On
                 comment.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
-                return Response(serializer.error_data, status=status.HTTP_400_BAD_REQUEST)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 Our instance view is an improvement over the previous example.  It's a little more concise, and the code now feels very similar to if we were working with the Forms API.  We're also using named status codes, which makes the response meanings more obvious.
@@ -87,7 +87,7 @@ Our instance view is an improvement over the previous example.  It's a little mo
                 comment.save()
                 return Response(serializer.data)
             else:
-                return Response(serializer.error_data, status=status.HTTP_400_BAD_REQUEST)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         elif request.method == 'DELETE':
             comment.delete()

@@ -1,8 +1,8 @@
+# REST, Hypermedia & HATEOAS
+
 > You keep using that word "REST". I do not think it means what you think it means.
 >
-> &mdash; Mike Amundsen, [talking at REST fest 2012][cite].
-
-# REST, Hypermedia & HATEOAS
+> &mdash; Mike Amundsen, [REST fest 2012 keynote][cite].
 
 First off, the disclaimer.  The name "Django REST framework" was choosen with a view to making sure the project would be easily found by developers.  Throughout the documentation we try to use the more simple and technically correct terminology of "Web APIs".
 

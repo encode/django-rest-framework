@@ -59,7 +59,7 @@ class UpdateModelMixin(object):
             self.object = serializer.object
             self.object.save()
             return Response(serializer.data)
-        return Response(serializer.error_data, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class DestroyModelMixin(object):

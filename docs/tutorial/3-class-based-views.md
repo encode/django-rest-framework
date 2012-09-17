@@ -31,8 +31,6 @@ We'll start by rewriting the root view as a class based view.  All this involves
                 return Response(serializer.serialized, status=status.HTTP_201_CREATED)
             return Response(serializer.serialized_errors, status=status.HTTP_400_BAD_REQUEST)
 
-    comment_root = CommentRoot.as_view()
-
 So far, so good.  It looks pretty similar to the previous case, but we've got better seperation between the different HTTP methods.  We'll also need to update the instance view. 
 
     class CommentInstance(APIView):
@@ -58,16 +56,28 @@ So far, so good.  It looks pretty similar to the previous case, but we've got be
                 comment = serializer.deserialized
                 comment.save()
                 return Response(serializer.data)
-            return Response(serializer.error_data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         def delete(self, request, pk, format=None):
             comment = self.get_object(pk)
             comment.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-    comment_instance = CommentInstance.as_view()
-
 That's looking good.  Again, it's still pretty similar to the function based view right now.
+
+We'll also need to refactor our URLconf slightly now we're using class based views.
+
+    from django.conf.urls import patterns, url
+    from djangorestframework.urlpatterns import format_suffix_patterns
+    from blogpost import views
+
+    urlpatterns = patterns('',
+        url(r'^$', views.CommentRoot.as_view()),
+        url(r'^(?P<pk>[0-9]+)$', views.CommentInstance.as_view())
+    )
+    
+    urlpatterns = format_suffix_patterns(urlpatterns)
+
 Okay, we're done.  If you run the development server everything should be working just as before.
 
 ## Using mixins
@@ -95,8 +105,6 @@ Let's take a look at how we can compose our views by using the mixin classes.
         def post(self, request, *args, **kwargs):
             return self.create(request, *args, **kwargs)
 
-    comment_root = CommentRoot.as_view()
-
 We'll take a moment to examine exactly what's happening here - We're building our view using `MultipleObjectBaseView`, and adding in `ListModelMixin` and `CreateModelMixin`.
 
 The base class provides the core functionality, and the mixin classes provide the `.list()` and `.create()` actions.  We're then explictly binding the `get` and `post` methods to the appropriate actions.  Simple enough stuff so far.
@@ -117,8 +125,6 @@ The base class provides the core functionality, and the mixin classes provide th
         def delete(self, request, *args, **kwargs):
             return self.destroy(request, *args, **kwargs)
 
-    comment_instance = CommentInstance.as_view()
-
 Pretty similar.  This time we're using the `SingleObjectBaseView` class to provide the core functionality, and adding in mixins to provide the `.retrieve()`, `.update()` and `.destroy()` actions.
 
 ## Using generic class based views
@@ -134,15 +140,10 @@ Using the mixin classes we've rewritten the views to use slightly less code than
         model = Comment
         serializer_class = CommentSerializer
 
-    comment_root = CommentRoot.as_view()
-
 
     class CommentInstance(generics.InstanceAPIView):
         model = Comment
         serializer_class = CommentSerializer
-
-    comment_instance = CommentInstance.as_view()
-
 
 Wow, that's pretty concise.  We've got a huge amount for free, and our code looks like good, clean, idomatic Django.
 

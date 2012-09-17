@@ -194,7 +194,7 @@ The root of our API is going to be a view that supports listing all the existing
                 comment.save()
                 return JSONResponse(serializer.data, status=201)
             else:
-                return JSONResponse(serializer.error_data, status=400)
+                return JSONResponse(serializer.errors, status=400)
 
 We'll also need a view which corrosponds to an individual comment, and can be used to retrieve, update or delete the comment.
 
@@ -219,7 +219,7 @@ We'll also need a view which corrosponds to an individual comment, and can be us
                 comment.save()
                 return JSONResponse(serializer.data)
             else:
-                return JSONResponse(serializer.error_data, status=400)
+                return JSONResponse(serializer.errors, status=400)
 
         elif request.method == 'DELETE':
             comment.delete()
