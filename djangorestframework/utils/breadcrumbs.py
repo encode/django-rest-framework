@@ -29,6 +29,6 @@ def get_breadcrumbs(url):
         # Drop trailing non-slash off the end and continue to try to resolve more breadcrumbs
         return breadcrumbs_recursive(url[:url.rfind('/') + 1], breadcrumbs_list, prefix)
 
-    prefix = get_script_prefix()
+    prefix = get_script_prefix().rstrip('/')
     url = url[len(prefix):]
     return breadcrumbs_recursive(url, [], prefix)
