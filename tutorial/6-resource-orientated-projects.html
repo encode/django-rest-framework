@@ -93,7 +93,10 @@
         <div class="span3">
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
-              <li><a href="#using-routers">Using Routers</a></li>
+              <li class="main"><a href="#tutorial-6---resources">Tutorial 6 - Resources</a></li>
+<li><a href="#refactoring-to-use-resources,-not-views">Refactoring to use Resources, not Views</a></li>
+<li><a href="#binding-resources-to-urls-explicitly">Binding Resources to URLs explicitly</a></li>
+<li><a href="#using-routers">Using Routers</a></li>
 <li><a href="#trade-offs-between-views-vs-resources">Trade-offs between views vs resources.</a></li>
 <li><a href="#onwards-and-upwards">Onwards and upwards.</a></li>
 
@@ -102,18 +105,15 @@
         </div>
 
         <div id="main-content" class="span9">
-          <p>In REST framework Resources classes are just View classes that don't have any handler methods bound to them.  This allows us to seperate out the behaviour of the classes from how that behaviour should be bound to a set of URLs.</p>
-<p>For instance, given our serializers</p>
-<p>serializers.py</p>
-<pre class="prettyprint lang-py"><code>class BlogPostSerializer(URLModelSerializer):
-    class Meta:
-        model = BlogPost
-
-class CommentSerializer(URLModelSerializer):
-    class Meta:
-        model = Comment
-</code></pre>
-<p>We can re-write our 4 sets of views into something more compact...</p>
+          <h1 id="tutorial-6-resources">Tutorial 6 - Resources</h1>
+<p>Resource classes are just View classes that don't have any handler methods bound to them.  The actions on a resource are defined, </p>
+<p>This allows us to:</p>
+<ul>
+<li>Encapsulate common behaviour accross a class of views, in a single Resource class.</li>
+<li>Seperate out the actions of a Resource from the specfics of how those actions should be bound to a particular set of URLs.</li>
+</ul>
+<h2 id="refactoring-to-use-resources-not-views">Refactoring to use Resources, not Views</h2>
+<p>For instance, we can re-write our 4 sets of views into something more compact...</p>
 <p>resources.py</p>
 <pre class="prettyprint lang-py"><code>class BlogPostResource(ModelResource):
     serializer_class = BlogPostSerializer
@@ -127,6 +127,7 @@ class CommentResource(ModelResource):
     permissions_classes = (permissions.IsAuthenticatedOrReadOnly,)
     throttle_classes = (throttles.UserRateThrottle,)
 </code></pre>
+<h2 id="binding-resources-to-urls-explicitly">Binding Resources to URLs explicitly</h2>
 <p>The handler methods only get bound to the actions when we define the URLConf. Here's our urls.py:</p>
 <pre class="prettyprint lang-py"><code>comment_root = CommentResource.as_view(actions={
     'get': 'list',
@@ -165,7 +166,7 @@ urlpatterns = router.urlpatterns
 <li>Join the REST framework group, and help build the community.</li>
 <li>Follow me <a href="https://twitter.com/_tomchristie">on Twitter</a> and say hi.</li>
 </ul>
-<p>Now go build something great.</p>
+<p><strong>Now go build some awesome things.</strong></p>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->
