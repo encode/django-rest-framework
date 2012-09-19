@@ -182,7 +182,7 @@ class Serializer(object):
         else:
             depth = self.depth - 1
 
-        if any([obj is elem for elem in self.stack]):
+        if obj in self.stack:
             return self.serialize_recursion(obj)
         else:
             stack = self.stack[:]
