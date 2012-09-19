@@ -1,9 +1,11 @@
+# Tutorial 5 - Relationships & Hyperlinked APIs
+
 **TODO**
 
 * Create BlogPost model
 * Demonstrate nested relationships
 * Demonstrate and describe hyperlinked relationships
 
-[part 6][1]
+Onwards to [part 6][tut-6].
 
-[1]: 6-resource-orientated-projects.md
+[tut-6]: 6-resource-orientated-projects.md

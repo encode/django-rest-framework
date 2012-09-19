@@ -1,6 +1,6 @@
 # Tutorial 3: Class Based Views
 
-We can also write our API views using class based views, rather than function based views.  As we'll see this is a powerful pattern that allows us to reuse common functionality, and helps us keep our code [DRY][1].
+We can also write our API views using class based views, rather than function based views.  As we'll see this is a powerful pattern that allows us to reuse common functionality, and helps us keep our code [DRY][dry].
 
 ## Rewriting our API using class based views
 
@@ -147,7 +147,7 @@ Using the mixin classes we've rewritten the views to use slightly less code than
 
 Wow, that's pretty concise.  We've got a huge amount for free, and our code looks like good, clean, idomatic Django.
 
-Next we'll move onto [part 4 of the tutorial][2], where we'll take a look at how we can  customize the behavior of our views to support a range of authentication, permissions, throttling and other aspects.
+Next we'll move onto [part 4 of the tutorial][tut-4], where we'll take a look at how we can  customize the behavior of our views to support a range of authentication, permissions, throttling and other aspects.
 
-[1]: http://en.wikipedia.org/wiki/Don't_repeat_yourself
-[2]: 4-authentication-permissions-and-throttling.md
+[dry]: http://en.wikipedia.org/wiki/Don't_repeat_yourself
+[tut-4]: 4-authentication-permissions-and-throttling.md

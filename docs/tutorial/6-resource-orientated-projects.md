@@ -1,18 +1,15 @@
-In REST framework Resources classes are just View classes that don't have any handler methods bound to them.  This allows us to seperate out the behaviour of the classes from how that behaviour should be bound to a set of URLs.
+# Tutorial 6 - Resources
 
-For instance, given our serializers
+Resource classes are just View classes that don't have any handler methods bound to them.  The actions on a resource are defined, 
 
-serializers.py
+This allows us to:
 
-    class BlogPostSerializer(URLModelSerializer):
-        class Meta:
-            model = BlogPost
+* Encapsulate common behaviour accross a class of views, in a single Resource class.
+* Seperate out the actions of a Resource from the specfics of how those actions should be bound to a particular set of URLs.
 
-    class CommentSerializer(URLModelSerializer):
-        class Meta:
-            model = Comment
+## Refactoring to use Resources, not Views
 
-We can re-write our 4 sets of views into something more compact...
+For instance, we can re-write our 4 sets of views into something more compact...
 
 resources.py
 
@@ -28,6 +25,7 @@ resources.py
         permissions_classes = (permissions.IsAuthenticatedOrReadOnly,)
         throttle_classes = (throttles.UserRateThrottle,)
 
+## Binding Resources to URLs explicitly
 The handler methods only get bound to the actions when we define the URLConf. Here's our urls.py:
 
     comment_root = CommentResource.as_view(actions={
@@ -71,6 +69,8 @@ We've reached the end of our tutorial.  If you want to get more involved in the 
 
 * Contribute on GitHub by reviewing issues, and submitting issues or pull requests.
 * Join the REST framework group, and help build the community.
-* Follow me [on Twitter](https://twitter.com/_tomchristie) and say hi.
+* Follow me [on Twitter][twitter] and say hi.
 
-Now go build something great.
+**Now go build some awesome things.**
+
+[twitter]: https://twitter.com/_tomchristie
