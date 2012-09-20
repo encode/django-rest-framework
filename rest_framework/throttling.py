@@ -1,6 +1,6 @@
+import time
 from django.core.cache import cache
 from rest_framework.settings import api_settings
-import time
 
 
 class BaseThrottle(object):

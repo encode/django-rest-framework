@@ -4,6 +4,7 @@ from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
 
 from rest_framework import status
+from rest_framework.compat import yaml
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
@@ -246,7 +247,7 @@ class JSONPRendererTests(TestCase):
         self.assertEquals(resp.content, '%s(%s);' % (callback_func, _flat_repr))
 
 
-if YAMLRenderer:
+if yaml:
     _yaml_repr = 'foo: [bar, baz]\n'
 
     class YAMLRendererTests(TestCase):

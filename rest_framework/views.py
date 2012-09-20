@@ -11,12 +11,11 @@ from django.http import Http404
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
-
-from rest_framework.compat import View as _View, apply_markdown
+from rest_framework import status, exceptions
+from rest_framework.compat import View, apply_markdown
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
-from rest_framework import status, exceptions
 
 
 def _remove_trailing_string(content, trailing):
@@ -53,7 +52,7 @@ def _camelcase_to_spaces(content):
     return re.sub(camelcase_boundry, ' \\1', content).strip()
 
 
-class APIView(_View):
+class APIView(View):
     settings = api_settings
 
     renderer_classes = api_settings.DEFAULT_RENDERERS
@@ -86,7 +85,7 @@ class APIView(_View):
     def default_response_headers(self):
         return {
             'Allow': ', '.join(self.allowed_methods),
-            'Vary': 'Authenticate, Accept'
+            'Vary': 'Accept'
         }
 
     def get_name(self):

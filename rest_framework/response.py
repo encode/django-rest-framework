@@ -1,5 +1,5 @@
-from django.template.response import SimpleTemplateResponse
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
+from django.template.response import SimpleTemplateResponse
 
 
 class Response(SimpleTemplateResponse):

@@ -4,26 +4,28 @@
 <!DOCTYPE html>
 <html>
     <head>
+    {% block head %}
+
+        {% block meta %}
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-
-        {% block bootstrap_theme %}
-            <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}rest_framework/css/bootstrap.min.css"/>
-            <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}rest_framework/css/bootstrap-tweaks.css"/>
+        <meta name="robots" content="NONE,NOARCHIVE" />
         {% endblock %}
+
+        <title>{% block title %}Django REST framework{% endblock %}</title>
+
+        {% block style %}
+        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}rest_framework/css/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}rest_framework/css/bootstrap-tweaks.css"/>
         <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}rest_framework/css/prettify.css'/>
-        <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}rest_framework/css/style.css'/>
-        {% block extrastyle %}{% endblock %}
+        <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}rest_framework/css/default.css'/>
+        {% endblock %}
 
-        <title>{% block title %}Django REST framework - {{ name }}{% endblock %}</title>
-
-        {% block extrahead %}{% endblock %}
-
-        {% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE" />{% endblock %}
-
+    {% endblock %}
     </head>
 
   <body class="{% block bodyclass %}{% endblock %} container">
 
+    {% block navbar %}
     <div class="navbar navbar-fixed-top {% block bootstrap_navbar_variant %}navbar-inverse{% endblock %}">
         <div class="navbar-inner">
             <div class="container">
@@ -32,31 +34,28 @@
                 </span>
                 <ul class="nav pull-right">
                     {% block userlinks %}
-                        {% if user.is_active %}
+                        {% if user.is_authenticated %}
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                                     Welcome, {{ user }}
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li>{% optional_logout %}</li>
+                                    <li>{% optional_logout request %}</li>
                                 </ul>
                             </li>
                         {% else %}
-                            <li>{% optional_login %}</li>
+                            <li>{% optional_login request %}</li>
                         {% endif %}
                     {% endblock %}
                 </ul>
             </div>
         </div>
     </div>
-
-    {% block global_heading %}{% endblock %}
-
+    {% endblock %}
 
     {% block breadcrumbs %}
     <ul class="breadcrumb">
-    
         {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
             <li>
                 <a href="{{ breadcrumb_url }}" {% if forloop.last %}class="active"{% endif %}>{{ breadcrumb_name }}</a> {% if not forloop.last %}<span class="divider">&rsaquo;</span>{% endif %}
@@ -79,11 +78,9 @@
                         </button>
                         <ul class="dropdown-menu">
                             {% for format in available_formats %}
-                                {% with FORMAT_PARAM|add:"="|add:format as param %}
-                                    <li>
-                                        <a class="js-tooltip format-option" href='{{ request.get_full_path|add_query_param:param }}' rel="nofollow" title="Do a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
-                                    </li>
-                                {% endwith %}
+                                <li>
+                                    <a class="js-tooltip format-option" href='{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}' rel="nofollow" title="Do a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
+                                </li>
                             {% endfor %}
                         </ul>
                     </div>
@@ -188,24 +185,19 @@
     </div>
     <!-- END Content -->
 
+    {% block footer %}
     <div id="footer">
-        {% block footer %}
-            <a class="powered-by" href='http://django-rest-framework.org'>Django REST framework</a> <span class="version">{{ version }}</span>
-        {% endblock %}
+        <a class="powered-by" href='http://django-rest-framework.org'>Django REST framework</a> <span class="version">{{ version }}</span>
     </div>
+    {% endblock %}
+
     </div>
+
+    {% block script %}
     <script src="{% get_static_prefix %}rest_framework/js/jquery-1.8.1-min.js"></script>
     <script src="{% get_static_prefix %}rest_framework/js/bootstrap.min.js"></script>
     <script src="{% get_static_prefix %}rest_framework/js/prettify-min.js"></script>
-    <script>
-        prettyPrint();
-
-        $('.js-tooltip').tooltip({
-            delay: 1000
-        });
-    </script>
-
-    {% block extrabody %}{% endblock %}
-
+    <script src="{% get_static_prefix %}rest_framework/js/default.js"></script>
+    {% endblock %}
   </body>
 </html>

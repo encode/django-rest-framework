@@ -24,9 +24,7 @@ from django.utils import importlib
 DEFAULTS = {
     'DEFAULT_RENDERERS': (
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.JSONPRenderer',
         'rest_framework.renderers.DocumentingHTMLRenderer',
-        'rest_framework.renderers.DocumentingPlainTextRenderer',
     ),
     'DEFAULT_PARSERS': (
         'rest_framework.parsers.JSONParser',
@@ -38,7 +36,8 @@ DEFAULTS = {
     ),
     'DEFAULT_PERMISSIONS': (),
     'DEFAULT_THROTTLES': (),
-    'DEFAULT_CONTENT_NEGOTIATION': 'rest_framework.negotiation.DefaultContentNegotiation',
+    'DEFAULT_CONTENT_NEGOTIATION':
+        'rest_framework.negotiation.DefaultContentNegotiation',
 
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,

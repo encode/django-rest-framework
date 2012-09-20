@@ -5,10 +5,10 @@ Django REST framework also provides HTML and PlainText renderers that help self-
 by serializing the output along with documentation regarding the View, output status and headers,
 and providing forms and links depending on the allowed methods, renderers and parsers on the View.
 """
+import string
 from django import forms
 from django.template import RequestContext, loader
 from django.utils import simplejson as json
-
 from rest_framework.compat import yaml
 from rest_framework.settings import api_settings
 from rest_framework.utils import dict2xml
@@ -16,9 +16,7 @@ from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework.utils.mediatypes import get_media_type_params, add_media_type_param, media_type_matches
 from rest_framework import VERSION
-from rest_framework.fields import FloatField, IntegerField, DateTimeField, DateField, EmailField, CharField, BooleanField
-
-import string
+from rest_framework import serializers
 
 
 class BaseRenderer(object):
@@ -26,8 +24,6 @@ class BaseRenderer(object):
     All renderers must extend this class, set the :attr:`media_type` attribute,
     and override the :meth:`render` method.
     """
-
-    _FORMAT_QUERY_PARAM = 'format'
 
     media_type = None
     format = None
@@ -72,7 +68,7 @@ class BaseRenderer(object):
 
 class JSONRenderer(BaseRenderer):
     """
-    Renderer which serializes to JSON
+    Renderer which serializes to json.
     """
 
     media_type = 'application/json'
@@ -81,7 +77,7 @@ class JSONRenderer(BaseRenderer):
 
     def render(self, obj=None, media_type=None):
         """
-        Renders *obj* into serialized JSON.
+        Render `obj` into json.
         """
         if obj is None:
             return ''
@@ -96,28 +92,37 @@ class JSONRenderer(BaseRenderer):
         except (ValueError, TypeError):
             indent = None
 
-        return json.dumps(obj, cls=self.encoder_class, indent=indent, sort_keys=sort_keys)
+        return json.dumps(obj, cls=self.encoder_class,
+                          indent=indent, sort_keys=sort_keys)
 
 
 class JSONPRenderer(JSONRenderer):
     """
-    Renderer which serializes to JSONP
+    Renderer which serializes to json,
+    wrapping the json output in a callback function.
     """
 
     media_type = 'application/javascript'
     format = 'jsonp'
-    renderer_class = JSONRenderer
     callback_parameter = 'callback'
+    default_callback = 'callback'
 
-    def _get_callback(self):
-        return self.view.request.GET.get(self.callback_parameter, self.callback_parameter)
-
-    def _get_renderer(self):
-        return self.renderer_class(self.view)
+    def get_callback(self):
+        """
+        Determine the name of the callback to wrap around the json output.
+        """
+        params = self.view.request.GET
+        return params.get(self.callback_parameter, self.default_callback)
 
     def render(self, obj=None, media_type=None):
-        callback = self._get_callback()
-        json = self._get_renderer().render(obj, media_type)
+        """
+        Renders into jsonp, wrapping the json output in a callback function.
+
+        Clients may set the callback function name using a query parameter
+        on the URL, for example: ?callback=exampleCallbackName
+        """
+        callback = self.get_callback()
+        json = super(JSONPRenderer, self).render(obj, media_type)
         return "%s(%s);" % (callback, json)
 
 
@@ -180,13 +185,13 @@ class TemplateRenderer(BaseRenderer):
         return template.render(context)
 
 
-class DocumentingTemplateRenderer(BaseRenderer):
+class DocumentingHTMLRenderer(BaseRenderer):
     """
-    Base class for renderers used to self-document the API.
-    Implementing classes should extend this class and set the template attribute.
+    HTML renderer used to self-document the API.
     """
-
-    template = None
+    media_type = 'text/html'
+    format = 'html'
+    template = 'rest_framework/api.html'
 
     def _get_content(self, view, request, obj, media_type):
         """
@@ -198,7 +203,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
 
         # Find the first valid renderer and render the content. (Don't use another documenting renderer.)
         renderers = [renderer for renderer in view.renderer_classes
-                     if not issubclass(renderer, DocumentingTemplateRenderer)]
+                     if not issubclass(renderer, DocumentingHTMLRenderer)]
         if not renderers:
             return '[No renderers were found]'
 
@@ -219,13 +224,13 @@ class DocumentingTemplateRenderer(BaseRenderer):
             return
         #  We need to map our Fields to Django's Fields.
         field_mapping = dict([
-         [FloatField.__name__, forms.FloatField],
-         [IntegerField.__name__, forms.IntegerField],
-         [DateTimeField.__name__, forms.DateTimeField],
-         [DateField.__name__, forms.DateField],
-         [EmailField.__name__, forms.EmailField],
-         [CharField.__name__, forms.CharField],
-         [BooleanField.__name__, forms.BooleanField]
+         [serializers.FloatField.__name__, forms.FloatField],
+         [serializers.IntegerField.__name__, forms.IntegerField],
+         [serializers.DateTimeField.__name__, forms.DateTimeField],
+         [serializers.DateField.__name__, forms.DateField],
+         [serializers.EmailField.__name__, forms.EmailField],
+         [serializers.CharField.__name__, forms.CharField],
+         [serializers.BooleanField.__name__, forms.BooleanField]
         ])
 
         # Creating an on the fly form see: http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
@@ -299,8 +304,11 @@ class DocumentingTemplateRenderer(BaseRenderer):
         The context used in the template contains all the information
         needed to self-document the response to this request.
         """
+        view = self.view
+        request = view.request
+        response = view.response
 
-        content = self._get_content(self.view, self.view.request, obj, media_type)
+        content = self._get_content(view, request, obj, media_type)
 
         put_form_instance = self._get_form_instance(self.view, 'put')
         post_form_instance = self._get_form_instance(self.view, 'post')
@@ -313,9 +321,9 @@ class DocumentingTemplateRenderer(BaseRenderer):
         template = loader.get_template(self.template)
         context = RequestContext(self.view.request, {
             'content': content,
-            'view': self.view,
-            'request': self.view.request,
-            'response': self.view.response,
+            'view': view,
+            'request': request,
+            'response': response,
             'description': description,
             'name': name,
             'version': VERSION,
@@ -324,8 +332,6 @@ class DocumentingTemplateRenderer(BaseRenderer):
             'available_formats': [renderer.format for renderer in self.view.renderer_classes],
             'put_form': put_form_instance,
             'post_form': post_form_instance,
-            'FORMAT_PARAM': self._FORMAT_QUERY_PARAM,
-            'METHOD_PARAM': getattr(self.view, '_METHOD_PARAM', None),
             'api_settings': api_settings
         })
 
@@ -338,53 +344,3 @@ class DocumentingTemplateRenderer(BaseRenderer):
             self.view.response.status_code = 200
 
         return ret
-
-
-class DocumentingHTMLRenderer(DocumentingTemplateRenderer):
-    """
-    Renderer which provides a browsable HTML interface for an API.
-    See the examples at http://api.django-rest-framework.org to see this in action.
-    """
-
-    media_type = 'text/html'
-    format = 'html'
-    template = 'rest_framework/api.html'
-
-
-class DocumentingXHTMLRenderer(DocumentingTemplateRenderer):
-    """
-    Identical to DocumentingHTMLRenderer, except with an xhtml media type.
-    We need this to be listed in preference to xml in order to return HTML to WebKit based browsers,
-    given their Accept headers.
-    """
-
-    media_type = 'application/xhtml+xml'
-    format = 'xhtml'
-    template = 'rest_framework/api.html'
-
-
-class DocumentingPlainTextRenderer(DocumentingTemplateRenderer):
-    """
-    Renderer that serializes the object with the default renderer, but also provides plain-text
-    documentation of the returned status and headers, and of the resource's name and description.
-    Useful for browsing an API with command line tools.
-    """
-
-    media_type = 'text/plain'
-    format = 'txt'
-    template = 'rest_framework/api.txt'
-
-
-DEFAULT_RENDERERS = (
-    JSONRenderer,
-    JSONPRenderer,
-    DocumentingHTMLRenderer,
-    DocumentingXHTMLRenderer,
-    DocumentingPlainTextRenderer,
-    XMLRenderer
-)
-
-if yaml:
-    DEFAULT_RENDERERS += (YAMLRenderer, )
-else:
-    YAMLRenderer = None

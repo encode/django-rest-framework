@@ -46,8 +46,8 @@ def replace_query_param(url, key, val):
 
 # And the template tags themselves...
 
-@register.simple_tag(takes_context=True)
-def optional_login(context):
+@register.simple_tag
+def optional_login(request):
     """
     Include a login snippet if REST framework's login view is in the URLconf.
     """
@@ -56,13 +56,12 @@ def optional_login(context):
     except NoReverseMatch:
         return ''
 
-    request = context['request']
     snippet = "<a href='%s?next=%s'>Log in</a>" % (login_url, request.path)
     return snippet
 
 
-@register.simple_tag(takes_context=True)
-def optional_logout(context):
+@register.simple_tag
+def optional_logout(request):
     """
     Include a logout snippet if REST framework's logout view is in the URLconf.
     """
@@ -71,17 +70,16 @@ def optional_logout(context):
     except NoReverseMatch:
         return ''
 
-    request = context['request']
     snippet = "<a href='%s?next=%s'>Log out</a>" % (logout_url, request.path)
     return snippet
 
 
-@register.filter
-def add_query_param(url, param):
+@register.simple_tag
+def add_query_param(request, key, val):
     """
+    Add a query parameter to the current request url, and return the new url.
     """
-    key, val = param.split('=')
-    return replace_query_param(url, key, val)
+    return replace_query_param(request.get_full_path(), key, val)
 
 
 @register.filter
@@ -114,7 +112,7 @@ def add_class(value, css_class):
     return value
 
 
-@register.filter(is_safe=True)
+@register.filter
 def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=True):
     """
     Converts any URLs in text into clickable links.
@@ -170,4 +168,4 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
             words[i] = mark_safe(word)
         elif autoescape:
             words[i] = escape(word)
-    return u''.join(words)
+    return mark_safe(u''.join(words))
