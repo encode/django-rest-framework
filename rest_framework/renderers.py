@@ -21,19 +21,6 @@ from rest_framework.fields import FloatField, IntegerField, DateTimeField, DateF
 import string
 
 
-__all__ = (
-    'BaseRenderer',
-    'TemplateRenderer',
-    'JSONRenderer',
-    'JSONPRenderer',
-    'DocumentingHTMLRenderer',
-    'DocumentingXHTMLRenderer',
-    'DocumentingPlainTextRenderer',
-    'XMLRenderer',
-    'YAMLRenderer'
-)
-
-
 class BaseRenderer(object):
     """
     All renderers must extend this class, set the :attr:`media_type` attribute,

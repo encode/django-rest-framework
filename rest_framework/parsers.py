@@ -26,17 +26,6 @@ import decimal
 from io import BytesIO
 
 
-__all__ = (
-    'BaseParser',
-    'JSONParser',
-    'PlainTextParser',
-    'FormParser',
-    'MultiPartParser',
-    'YAMLParser',
-    'XMLParser'
-)
-
-
 class DataAndFiles(object):
     def __init__(self, data, files):
         self.data = data

@@ -16,9 +16,6 @@ from rest_framework.settings import api_settings
 from rest_framework.utils.mediatypes import is_form_media_type
 
 
-__all__ = ('Request',)
-
-
 class Empty(object):
     """
     Placeholder for unset attributes.

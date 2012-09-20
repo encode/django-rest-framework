@@ -5,15 +5,6 @@ for checking if a request passes a certain set of constraints.
 Permission behavior is provided by mixing the :class:`mixins.PermissionsMixin` class into a :class:`View` class.
 """
 
-__all__ = (
-    'BasePermission',
-    'FullAnonAccess',
-    'IsAuthenticated',
-    'IsAdminUser',
-    'IsUserOrIsAnonReadOnly',
-    'PerUserThrottling',
-    'PerViewThrottling',
-)
 
 SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
