@@ -261,8 +261,9 @@ class DocumentingTemplateRenderer(BaseRenderer):
                 Add the fields dynamically."""
                 super(GenericContentForm, self).__init__()
 
-                contenttype_choices = [(media_type, media_type) for media_type in view._parsed_media_types]
-                initial_contenttype = view._default_parser.media_type
+                parsed_media_types = [parser.media_type for parser in view.parser_classes]
+                contenttype_choices = [(media_type, media_type) for media_type in parsed_media_types]
+                initial_contenttype = parsed_media_types[0]
 
                 self.fields[request._CONTENTTYPE_PARAM] = forms.ChoiceField(label='Content Type',
                                                                          choices=contenttype_choices,
@@ -320,7 +321,7 @@ class DocumentingTemplateRenderer(BaseRenderer):
             'version': VERSION,
             'breadcrumblist': breadcrumb_list,
             'allowed_methods': self.view.allowed_methods,
-            'available_formats': self.view._rendered_formats,
+            'available_formats': [renderer.format for renderer in self.view.renderer_classes],
             'put_form': put_form_instance,
             'post_form': post_form_instance,
             'FORMAT_PARAM': self._FORMAT_QUERY_PARAM,

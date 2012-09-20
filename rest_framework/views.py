@@ -137,41 +137,6 @@ class APIView(_View):
         """
         raise exceptions.Throttled(wait)
 
-    @property
-    def _parsed_media_types(self):
-        """
-        Return a list of all the media types that this view can parse.
-        """
-        return [parser.media_type for parser in self.parser_classes]
-
-    @property
-    def _default_parser(self):
-        """
-        Return the view's default parser class.
-        """
-        return self.parser_classes[0]
-
-    @property
-    def _rendered_media_types(self):
-        """
-        Return an list of all the media types that this response can render.
-        """
-        return [renderer.media_type for renderer in self.renderer_classes]
-
-    @property
-    def _rendered_formats(self):
-        """
-        Return a list of all the formats that this response can render.
-        """
-        return [renderer.format for renderer in self.renderer_classes]
-
-    @property
-    def _default_renderer(self):
-        """
-        Return the response's default renderer class.
-        """
-        return self.renderer_classes[0]
-
     def get_format_suffix(self, **kwargs):
         """
         Determine if the request includes a '.json' style format suffix

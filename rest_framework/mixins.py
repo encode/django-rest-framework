@@ -84,8 +84,8 @@ class MetadataMixin(object):
         content = {
             'name': self.get_name(),
             'description': self.get_description(),
-            'renders': self._rendered_media_types,
-            'parses': self._parsed_media_types,
+            'renders': [renderer.media_type for renderer in self.renderer_classes],
+            'parses': [parser.media_type for parser in self.parser_classes],
         }
         #  TODO: Add 'fields', from serializer info.
         # form = self.get_bound_form()
