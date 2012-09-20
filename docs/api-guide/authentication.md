@@ -28,10 +28,10 @@ The value of `request.user` and `request.auth` for unauthenticated requests can 
 
 The default authentication policy may be set globally, using the `DEFAULT_AUTHENTICATION` setting.  For example.
 
-    API_SETTINGS = {
+    REST_FRAMEWORK = {
         'DEFAULT_AUTHENTICATION': (
-            'djangorestframework.authentication.UserBasicAuthentication',
-            'djangorestframework.authentication.SessionAuthentication',
+            'rest_framework.authentication.UserBasicAuthentication',
+            'rest_framework.authentication.SessionAuthentication',
         )
     }
 
@@ -75,11 +75,11 @@ If successfully authenticated, `BasicAuthentication` provides the following cred
 
 This policy uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.
 
-To use the `TokenAuthentication` policy, include `djangorestframework.authtoken` in your `INSTALLED_APPS` setting.
+To use the `TokenAuthentication` policy, include `rest_framework.authtoken` in your `INSTALLED_APPS` setting.
 
 You'll also need to create tokens for your users.
 
-    from djangorestframework.authtoken.models import Token
+    from rest_framework.authtoken.models import Token
 
     token = Token.objects.create(user=...)
     print token.key
@@ -91,7 +91,7 @@ For clients to authenticate, the token key should be included in the `Authorizat
 If successfully authenticated, `TokenAuthentication` provides the following credentials.
 
 * `request.user` will be a `django.contrib.auth.models.User` instance.
-* `request.auth` will be a `djangorestframework.tokenauth.models.BasicToken` instance.
+* `request.auth` will be a `rest_framework.tokenauth.models.BasicToken` instance.
 
 **Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https` only.
 
@@ -102,7 +102,7 @@ This policy uses the [OAuth 2.0][oauth] protocol to authenticate requests.  OAut
 If successfully authenticated, `OAuthAuthentication` provides the following credentials.
 
 * `request.user` will be a `django.contrib.auth.models.User` instance.
-* `request.auth` will be a `djangorestframework.models.OAuthToken` instance.
+* `request.auth` will be a `rest_framework.models.OAuthToken` instance.
 
 ## SessionAuthentication
 

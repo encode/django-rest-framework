@@ -4,7 +4,7 @@ API may stand for Application *Programming* Interface, but humans have to be abl
 
 ## URLs
 
-If you include fully-qualified URLs in your resource output, they will be 'urlized' and made clickable for easy browsing by humans. The `djangorestframework` package includes a [`reverse`][drfreverse] helper for this purpose.
+If you include fully-qualified URLs in your resource output, they will be 'urlized' and made clickable for easy browsing by humans. The `rest_framework` package includes a [`reverse`][drfreverse] helper for this purpose.
 
 
 ## Formats
@@ -14,7 +14,7 @@ By default, the API will return the format specified by the headers, which in th
 
 ## Customizing
 
-To customize the look-and-feel, create a template called `api.html` and add it to your project, eg: `templates/djangorestframework/api.html`, that extends the `djangorestframework/base.html` template.
+To customize the look-and-feel, create a template called `api.html` and add it to your project, eg: `templates/rest_framework/api.html`, that extends the `rest_framework/base.html` template.
 
 The included browsable API template is built with [Bootstrap (2.1.1)][bootstrap], making it easy to customize the look-and-feel.
 

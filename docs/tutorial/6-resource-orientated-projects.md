@@ -50,7 +50,7 @@ The handler methods only get bound to the actions when we define the URLConf. He
 Right now that hasn't really saved us a lot of code.  However, now that we're using Resources rather than Views, we actually don't need to design the urlconf ourselves.  The conventions for wiring up resources into views and urls can be handled automatically, using `Router` classes.  All we need to do is register the appropriate resources with a router, and let it do the rest.  Here's our re-wired `urls.py` file.
 
     from blog import resources
-    from djangorestframework.routers import DefaultRouter
+    from rest_framework.routers import DefaultRouter
 
     router = DefaultRouter()
     router.register(resources.BlogPostResource)

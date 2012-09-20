@@ -40,7 +40,7 @@ def get_package_data(package):
     return {package: filepaths}
 
 
-version = get_version('djangorestframework')
+version = get_version('rest_framework')
 
 
 if sys.argv[-1] == 'publish':
@@ -52,17 +52,17 @@ if sys.argv[-1] == 'publish':
 
 
 setup(
-    name='djangorestframework',
+    name='rest_framework',
     version=version,
     url='http://django-rest-framework.org',
-    download_url='http://pypi.python.org/pypi/djangorestframework/',
+    download_url='http://pypi.python.org/pypi/rest_framework/',
     license='BSD',
     description='A lightweight REST framework for Django.',
     author='Tom Christie',
     author_email='tom@tomchristie.com',
-    packages=get_packages('djangorestframework'),
-    package_data=get_package_data('djangorestframework'),
-    test_suite='djangorestframework.runtests.runcoverage.main',
+    packages=get_packages('rest_framework'),
+    package_data=get_package_data('rest_framework'),
+    test_suite='rest_framework.runtests.runcoverage.main',
     install_requires=[],
     classifiers=[
         'Development Status :: 4 - Beta',

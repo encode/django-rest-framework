@@ -40,20 +40,22 @@ Install using `pip`, including any optional packages you want...
     pip install -r requirements.txt
     pip install -r optionals.txt
 
-Add `djangorestframework` to your `INSTALLED_APPS`.
+Add `rest_framework` to your `INSTALLED_APPS`.
 
     INSTALLED_APPS = (
         ...
-        'djangorestframework',        
+        'rest_framework',        
     )
 
 If you're intending to use the browserable API you'll want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
 
     urlpatterns = patterns('',
         ...
-        url(r'^api-auth/', include('djangorestframework.urls', namespace='djangorestframework'))
+        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     )
- 
+
+Note that the base URL can be whatever you want, but you must include `rest_framework.urls` with the `rest_framework` namespace.
+
 ## Quickstart
 
 **TODO**
@@ -110,7 +112,7 @@ Build the docs:
 
 Run the tests:
 
-    ./djangorestframework/runtests/runtests.py
+    ./rest_framework/runtests/runtests.py
 
 ## License
 

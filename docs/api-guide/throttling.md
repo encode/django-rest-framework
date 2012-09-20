@@ -29,10 +29,10 @@ If any throttle check fails an `exceptions.Throttled` exception will be raised, 
 
 The default throttling policy may be set globally, using the `DEFAULT_THROTTLES` and `DEFAULT_THROTTLE_RATES` settings.  For example.
 
-    API_SETTINGS = {
+    REST_FRAMEWORK = {
         'DEFAULT_THROTTLES': (
-            'djangorestframework.throttles.AnonThrottle',
-            'djangorestframework.throttles.UserThrottle',
+            'rest_framework.throttles.AnonThrottle',
+            'rest_framework.throttles.UserThrottle',
         )
         'DEFAULT_THROTTLE_RATES': {
             'anon': '100/day',
@@ -95,7 +95,7 @@ For example, multiple user throttle rates could be implemented by using the foll
 
 ...and the following settings.
 
-    API_SETTINGS = {
+    REST_FRAMEWORK = {
         'DEFAULT_THROTTLES': (
             'example.throttles.BurstRateThrottle',
             'example.throttles.SustainedRateThrottle',
@@ -130,9 +130,9 @@ For example, given the following views...
     
 ...and the following settings.
 
-    API_SETTINGS = {
+    REST_FRAMEWORK = {
         'DEFAULT_THROTTLES': (
-            'djangorestframework.throttles.ScopedRateThrottle',
+            'rest_framework.throttles.ScopedRateThrottle',
         )
         'DEFAULT_THROTTLE_RATES': {
             'contacts': '1000/day',

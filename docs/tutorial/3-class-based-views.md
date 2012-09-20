@@ -9,9 +9,9 @@ We'll start by rewriting the root view as a class based view.  All this involves
     from blog.models import Comment
     from blog.serializers import CommentSerializer
     from django.http import Http404
-    from djangorestframework.views import APIView
-    from djangorestframework.response import Response
-    from djangorestframework import status
+    from rest_framework.views import APIView
+    from rest_framework.response import Response
+    from rest_framework import status
 
 
     class CommentRoot(APIView):
@@ -68,7 +68,7 @@ That's looking good.  Again, it's still pretty similar to the function based vie
 We'll also need to refactor our URLconf slightly now we're using class based views.
 
     from django.conf.urls import patterns, url
-    from djangorestframework.urlpatterns import format_suffix_patterns
+    from rest_framework.urlpatterns import format_suffix_patterns
     from blogpost import views
 
     urlpatterns = patterns('',
@@ -90,8 +90,8 @@ Let's take a look at how we can compose our views by using the mixin classes.
 
     from blog.models import Comment
     from blog.serializers import CommentSerializer
-    from djangorestframework import mixins
-    from djangorestframework import generics
+    from rest_framework import mixins
+    from rest_framework import generics
 
     class CommentRoot(mixins.ListModelMixin,
                       mixins.CreateModelMixin,
@@ -133,7 +133,7 @@ Using the mixin classes we've rewritten the views to use slightly less code than
 
     from blog.models import Comment
     from blog.serializers import CommentSerializer
-    from djangorestframework import generics
+    from rest_framework import generics
 
 
     class CommentRoot(generics.RootAPIView):

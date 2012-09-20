@@ -6,16 +6,16 @@
 >
 > &mdash; [The Zen of Python][cite]
 
-Configuration for REST framework is all namespaced inside a single Django setting, named `API_SETTINGS`.
+Configuration for REST framework is all namespaced inside a single Django setting, named `REST_FRAMEWORK`.
 
 For example your project's `settings.py` file might include something like this:
 
-    API_SETTINGS = {
+    REST_FRAMEWORK = {
         'DEFAULT_RENDERERS': (
-            'djangorestframework.renderers.YAMLRenderer',
+            'rest_framework.renderers.YAMLRenderer',
         )
         'DEFAULT_PARSERS': (
-            'djangorestframework.parsers.YAMLParser',
+            'rest_framework.parsers.YAMLParser',
         )
     }
 
@@ -24,7 +24,7 @@ For example your project's `settings.py` file might include something like this:
 If you need to access the values of REST framework's API settings in your project,
 you should use the `api_settings` object.  For example.
 
-    from djangorestframework.settings import api_settings
+    from rest_framework.settings import api_settings
     
     print api_settings.DEFAULT_AUTHENTICATION
 
@@ -37,9 +37,9 @@ A list or tuple of renderer classes, that determines the default set of renderer
 Default:
 
     (
-        'djangorestframework.renderers.JSONRenderer',
-        'djangorestframework.renderers.DocumentingHTMLRenderer'
-        'djangorestframework.renderers.TemplateHTMLRenderer'
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.DocumentingHTMLRenderer'
+        'rest_framework.renderers.TemplateHTMLRenderer'
     )
 
 ## DEFAULT_PARSERS
@@ -49,8 +49,8 @@ A list or tuple of parser classes, that determines the default set of parsers us
 Default:
 
     (
-        'djangorestframework.parsers.JSONParser',
-        'djangorestframework.parsers.FormParser'
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser'
     )
 
 ## DEFAULT_AUTHENTICATION
@@ -60,8 +60,8 @@ A list or tuple of authentication classes, that determines the default set of au
 Default:
 
     (
-        'djangorestframework.authentication.SessionAuthentication',
-        'djangorestframework.authentication.UserBasicAuthentication'
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.UserBasicAuthentication'
     )
 
 ## DEFAULT_PERMISSIONS
@@ -80,13 +80,13 @@ Default: `()`
 
 **TODO**
 
-Default: `djangorestframework.serializers.ModelSerializer`
+Default: `rest_framework.serializers.ModelSerializer`
 
 ## DEFAULT_PAGINATION_SERIALIZER
 
 **TODO**
 
-Default: `djangorestframework.pagination.PaginationSerializer`
+Default: `rest_framework.pagination.PaginationSerializer`
 
 ## FORMAT_SUFFIX_KWARG
 

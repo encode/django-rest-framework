@@ -40,9 +40,9 @@ We don't need our `JSONResponse` class anymore, so go ahead and delete that.  On
 
     from blog.models import Comment
     from blog.serializers import CommentSerializer
-    from djangorestframework import status
-    from djangorestframework.decorators import api_view
-    from djangorestframework.response import Response
+    from rest_framework import status
+    from rest_framework.decorators import api_view
+    from rest_framework.response import Response
 
     @api_view(['GET', 'POST'])
     def comment_root(request):
@@ -112,7 +112,7 @@ and
 Now update the `urls.py` file slightly, to append a set of `format_suffix_patterns` in addition to the existing URLs.
 
     from django.conf.urls import patterns, url
-    from djangorestframework.urlpatterns import format_suffix_patterns
+    from rest_framework.urlpatterns import format_suffix_patterns
 
     urlpatterns = patterns('blogpost.views',
         url(r'^$', 'comment_root'),

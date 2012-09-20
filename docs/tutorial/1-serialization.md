@@ -45,11 +45,11 @@ The simplest way to get up and running will probably be to use an `sqlite3` data
         }
     }
 
-We'll also need to add our new `blog` app and the `djangorestframework` app to `INSTALLED_APPS`.
+We'll also need to add our new `blog` app and the `rest_framework` app to `INSTALLED_APPS`.
 
     INSTALLED_APPS = (
         ...
-        'djangorestframework',
+        'rest_framework',
         'blog'
     )
 
@@ -81,7 +81,7 @@ Don't forget to sync the database for the first time.
 We're going to create a simple Web API that we can use to edit these comment objects with.  The first thing we need is a way of serializing and deserializing the objects into representations such as `json`.  We do this by declaring serializers, that work very similarly to Django's forms.  Create a file in the project named `serializers.py` and add the following.
 
     from blog import models
-    from djangorestframework import serializers
+    from rest_framework import serializers
 
 
     class CommentSerializer(serializers.Serializer):
@@ -114,8 +114,8 @@ Okay, once we've got a few imports out of the way, we'd better create a few comm
 
     from blog.models import Comment
     from blog.serializers import CommentSerializer
-    from djangorestframework.renderers import JSONRenderer
-    from djangorestframework.parsers import JSONParser
+    from rest_framework.renderers import JSONRenderer
+    from rest_framework.parsers import JSONParser
 
     c1 = Comment(email='leila@example.com', content='nothing to say')
     c2 = Comment(email='tom@example.com', content='foo bar')
@@ -159,8 +159,8 @@ Edit the `blog/views.py` file, and add the following.
 
     from blog.models import Comment
     from blog.serializers import CommentSerializer
-    from djangorestframework.renderers import JSONRenderer
-    from djangorestframework.parsers import JSONParser
+    from rest_framework.renderers import JSONRenderer
+    from rest_framework.parsers import JSONParser
     from django.http import HttpResponse
 
 

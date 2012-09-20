@@ -23,8 +23,8 @@ There's no requirement for you to use them, but if you do then the self-describi
 
 Has the same behavior as [`django.core.urlresolvers.reverse`][reverse], except that it returns a fully qualified URL, using the request to determine the host and port.
 
-    from djangorestframework.utils import reverse
-    from djangorestframework.views import APIView
+    from rest_framework.utils import reverse
+    from rest_framework.views import APIView
    
 	class MyView(APIView):
 	    def get(self, request):
