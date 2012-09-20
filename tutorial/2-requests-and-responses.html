@@ -135,9 +135,9 @@ request.DATA  # Handles arbitrary data.  Works any HTTP request with content.
 <p>We don't need our <code>JSONResponse</code> class anymore, so go ahead and delete that.  Once that's done we can start refactoring our views slightly.</p>
 <pre class="prettyprint lang-py"><code>from blog.models import Comment
 from blog.serializers import CommentSerializer
-from djangorestframework import status
-from djangorestframework.decorators import api_view
-from djangorestframework.response import Response
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 @api_view(['GET', 'POST'])
 def comment_root(request):
@@ -198,7 +198,7 @@ def comment_instance(request, pk):
 </code></pre>
 <p>Now update the <code>urls.py</code> file slightly, to append a set of <code>format_suffix_patterns</code> in addition to the existing URLs.</p>
 <pre class="prettyprint lang-py"><code>from django.conf.urls import patterns, url
-from djangorestframework.urlpatterns import format_suffix_patterns
+from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = patterns('blogpost.views',
     url(r'^$', 'comment_root'),

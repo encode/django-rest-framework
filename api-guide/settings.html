@@ -115,27 +115,27 @@
         </div>
 
         <div id="main-content" class="span9">
-          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/settings.py"><span class="label label-info">settings.py</span></a></p>
+          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/settings.py"><span class="label label-info">settings.py</span></a></p>
 <h1 id="settings">Settings</h1>
 <blockquote>
 <p>Namespaces are one honking great idea - let's do more of those!</p>
 <p>&mdash; <a href="http://www.python.org/dev/peps/pep-0020/">The Zen of Python</a></p>
 </blockquote>
-<p>Configuration for REST framework is all namespaced inside a single Django setting, named <code>API_SETTINGS</code>.</p>
+<p>Configuration for REST framework is all namespaced inside a single Django setting, named <code>REST_FRAMEWORK</code>.</p>
 <p>For example your project's <code>settings.py</code> file might include something like this:</p>
-<pre class="prettyprint lang-py"><code>API_SETTINGS = {
+<pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
     'DEFAULT_RENDERERS': (
-        'djangorestframework.renderers.YAMLRenderer',
+        'rest_framework.renderers.YAMLRenderer',
     )
     'DEFAULT_PARSERS': (
-        'djangorestframework.parsers.YAMLParser',
+        'rest_framework.parsers.YAMLParser',
     )
 }
 </code></pre>
 <h2 id="accessing-settings">Accessing settings</h2>
 <p>If you need to access the values of REST framework's API settings in your project,
 you should use the <code>api_settings</code> object.  For example.</p>
-<pre class="prettyprint lang-py"><code>from djangorestframework.settings import api_settings
+<pre class="prettyprint lang-py"><code>from rest_framework.settings import api_settings
 
 print api_settings.DEFAULT_AUTHENTICATION
 </code></pre>
@@ -144,25 +144,25 @@ print api_settings.DEFAULT_AUTHENTICATION
 <p>A list or tuple of renderer classes, that determines the default set of renderers that may be used when returning a <code>Response</code> object.</p>
 <p>Default:</p>
 <pre class="prettyprint lang-py"><code>(
-    'djangorestframework.renderers.JSONRenderer',
-    'djangorestframework.renderers.DocumentingHTMLRenderer'
-    'djangorestframework.renderers.TemplateHTMLRenderer'
+    'rest_framework.renderers.JSONRenderer',
+    'rest_framework.renderers.DocumentingHTMLRenderer'
+    'rest_framework.renderers.TemplateHTMLRenderer'
 )
 </code></pre>
 <h2 id="default_parsers">DEFAULT_PARSERS</h2>
 <p>A list or tuple of parser classes, that determines the default set of parsers used when accessing the <code>request.DATA</code> property.</p>
 <p>Default:</p>
 <pre class="prettyprint lang-py"><code>(
-    'djangorestframework.parsers.JSONParser',
-    'djangorestframework.parsers.FormParser'
+    'rest_framework.parsers.JSONParser',
+    'rest_framework.parsers.FormParser'
 )
 </code></pre>
 <h2 id="default_authentication">DEFAULT_AUTHENTICATION</h2>
 <p>A list or tuple of authentication classes, that determines the default set of authenticators used when accessing the <code>request.user</code> or <code>request.auth</code> properties.</p>
 <p>Default:</p>
 <pre class="prettyprint lang-py"><code>(
-    'djangorestframework.authentication.SessionAuthentication',
-    'djangorestframework.authentication.UserBasicAuthentication'
+    'rest_framework.authentication.SessionAuthentication',
+    'rest_framework.authentication.UserBasicAuthentication'
 )
 </code></pre>
 <h2 id="default_permissions">DEFAULT_PERMISSIONS</h2>
@@ -173,10 +173,10 @@ print api_settings.DEFAULT_AUTHENTICATION
 <p>Default: <code>()</code></p>
 <h2 id="default_model_serializer">DEFAULT_MODEL_SERIALIZER</h2>
 <p><strong>TODO</strong></p>
-<p>Default: <code>djangorestframework.serializers.ModelSerializer</code></p>
+<p>Default: <code>rest_framework.serializers.ModelSerializer</code></p>
 <h2 id="default_pagination_serializer">DEFAULT_PAGINATION_SERIALIZER</h2>
 <p><strong>TODO</strong></p>
-<p>Default: <code>djangorestframework.pagination.PaginationSerializer</code></p>
+<p>Default: <code>rest_framework.pagination.PaginationSerializer</code></p>
 <h2 id="format_suffix_kwarg">FORMAT_SUFFIX_KWARG</h2>
 <p><strong>TODO</strong></p>
 <p>Default: <code>'format'</code></p>

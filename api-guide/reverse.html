@@ -102,7 +102,7 @@
         </div>
 
         <div id="main-content" class="span9">
-          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/reverse.py"><span class="label label-info">reverse.py</span></a></p>
+          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/reverse.py"><span class="label label-info">reverse.py</span></a></p>
 <h1 id="returning-urls">Returning URLs</h1>
 <blockquote>
 <p>The central feature that distinguishes the REST architectural style from other network-based styles is its emphasis on a uniform interface between components.</p>
@@ -120,8 +120,8 @@
 <p>There's no requirement for you to use them, but if you do then the self-describing API will be able to automatically hyperlink it's output for you, which makes browsing the API much easier.</p>
 <h2 id="reverseviewname-request-args-kwargs">reverse(viewname, request, <em>args, </em>*kwargs)</h2>
 <p>Has the same behavior as <a href="https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse"><code>django.core.urlresolvers.reverse</code></a>, except that it returns a fully qualified URL, using the request to determine the host and port.</p>
-<pre class="prettyprint lang-py"><code>from djangorestframework.utils import reverse
-from djangorestframework.views import APIView
+<pre class="prettyprint lang-py"><code>from rest_framework.utils import reverse
+from rest_framework.views import APIView
 
 class MyView(APIView):
     def get(self, request):

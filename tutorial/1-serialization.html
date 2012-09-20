@@ -145,10 +145,10 @@ cd tutorial
     }
 }
 </code></pre>
-<p>We'll also need to add our new <code>blog</code> app and the <code>djangorestframework</code> app to <code>INSTALLED_APPS</code>.</p>
+<p>We'll also need to add our new <code>blog</code> app and the <code>rest_framework</code> app to <code>INSTALLED_APPS</code>.</p>
 <pre class="prettyprint lang-py"><code>INSTALLED_APPS = (
     ...
-    'djangorestframework',
+    'rest_framework',
     'blog'
 )
 </code></pre>
@@ -173,7 +173,7 @@ class Comment(models.Model):
 <h2 id="creating-a-serializer-class">Creating a Serializer class</h2>
 <p>We're going to create a simple Web API that we can use to edit these comment objects with.  The first thing we need is a way of serializing and deserializing the objects into representations such as <code>json</code>.  We do this by declaring serializers, that work very similarly to Django's forms.  Create a file in the project named <code>serializers.py</code> and add the following.</p>
 <pre class="prettyprint lang-py"><code>from blog import models
-from djangorestframework import serializers
+from rest_framework import serializers
 
 class CommentSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -201,8 +201,8 @@ class CommentSerializer(serializers.Serializer):
 <p>Okay, once we've got a few imports out of the way, we'd better create a few comments to work with.</p>
 <pre class="prettyprint lang-py"><code>from blog.models import Comment
 from blog.serializers import CommentSerializer
-from djangorestframework.renderers import JSONRenderer
-from djangorestframework.parsers import JSONParser
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
 
 c1 = Comment(email='leila@example.com', content='nothing to say')
 c2 = Comment(email='tom@example.com', content='foo bar')
@@ -238,8 +238,8 @@ We'll start off by creating a subclass of HttpResponse that we can use to render
 <p>Edit the <code>blog/views.py</code> file, and add the following.</p>
 <pre class="prettyprint lang-py"><code>from blog.models import Comment
 from blog.serializers import CommentSerializer
-from djangorestframework.renderers import JSONRenderer
-from djangorestframework.parsers import JSONParser
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
 from django.http import HttpResponse
 
 class JSONResponse(HttpResponse):

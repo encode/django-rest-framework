@@ -109,7 +109,7 @@
         </div>
 
         <div id="main-content" class="span9">
-          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/request.py"><span class="label label-info">request.py</span></a></p>
+          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/request.py"><span class="label label-info">request.py</span></a></p>
 <h1 id="requests">Requests</h1>
 <blockquote>
 <p>If you're doing REST-based web service stuff ... you should ignore request.POST.</p>
@@ -137,14 +137,14 @@
 <h2 id="parsers">.parsers</h2>
 <p><code>request.parsers</code> should be set to a list of <code>Parser</code> instances that can be used to parse the content of the request body.</p>
 <p><code>request.parsers</code> may no longer be altered once <code>request.DATA</code>, <code>request.FILES</code> or <code>request.POST</code> have been accessed.</p>
-<p>If you're using the <code>djangorestframework.views.View</code> class... <strong>[TODO]</strong></p>
+<p>If you're using the <code>rest_framework.views.View</code> class... <strong>[TODO]</strong></p>
 <h2 id="stream">.stream</h2>
 <p><code>request.stream</code> returns a stream representing the content of the request body.</p>
 <p>You will not typically need to access <code>request.stream</code>, unless you're writing a <code>Parser</code> class.</p>
 <h2 id="authentication">.authentication</h2>
 <p><code>request.authentication</code> should be set to a list of <code>Authentication</code> instances that can be used to authenticate the request.</p>
 <p><code>request.authentication</code> may no longer be altered once <code>request.user</code> or <code>request.auth</code> have been accessed.</p>
-<p>If you're using the <code>djangorestframework.views.View</code> class... <strong>[TODO]</strong></p>
+<p>If you're using the <code>rest_framework.views.View</code> class... <strong>[TODO]</strong></p>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->

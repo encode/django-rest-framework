@@ -106,11 +106,11 @@
           <h1 id="working-with-the-browsable-api">Working with the Browsable API</h1>
 <p>API may stand for Application <em>Programming</em> Interface, but humans have to be able to read the APIs, too; someone has to do the programming. Django REST Framework supports generating human-friendly HTML output for each resource when the <code>HTML</code> format is requested. These pages allow for easy browsing of resources, as well as forms for submitting data to the resources using <code>POST</code>, <code>PUT</code>, and <code>DELETE</code>.</p>
 <h2 id="urls">URLs</h2>
-<p>If you include fully-qualified URLs in your resource output, they will be 'urlized' and made clickable for easy browsing by humans. The <code>djangorestframework</code> package includes a <a href="../api-guide/reverse"><code>reverse</code></a> helper for this purpose.</p>
+<p>If you include fully-qualified URLs in your resource output, they will be 'urlized' and made clickable for easy browsing by humans. The <code>rest_framework</code> package includes a <a href="../api-guide/reverse"><code>reverse</code></a> helper for this purpose.</p>
 <h2 id="formats">Formats</h2>
 <p>By default, the API will return the format specified by the headers, which in the case of the browser is HTML. The format can be specified using <code>?format=</code> in the request, so you can look at the raw JSON response in a browser by adding <code>?format=json</code> to the URL. There are helpful extensions for viewing JSON in <a href="https://addons.mozilla.org/en-US/firefox/addon/jsonview/">Firefox</a> and <a href="https://chrome.google.com/webstore/detail/chklaanhfefbnpoihckbnefhakgolnmc">Chrome</a>.</p>
 <h2 id="customizing">Customizing</h2>
-<p>To customize the look-and-feel, create a template called <code>api.html</code> and add it to your project, eg: <code>templates/djangorestframework/api.html</code>, that extends the <code>djangorestframework/base.html</code> template.</p>
+<p>To customize the look-and-feel, create a template called <code>api.html</code> and add it to your project, eg: <code>templates/rest_framework/api.html</code>, that extends the <code>rest_framework/base.html</code> template.</p>
 <p>The included browsable API template is built with <a href="http://getbootstrap.com">Bootstrap (2.1.1)</a>, making it easy to customize the look-and-feel.</p>
 <h3 id="theme">Theme</h3>
 <p>To replace the theme wholesale, add a <code>bootstrap_theme</code> block to your <code>api.html</code> and insert a <code>link</code> to the desired Bootstrap theme css file. This will completely replace the included theme.</p>

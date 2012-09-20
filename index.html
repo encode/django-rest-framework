@@ -140,18 +140,19 @@ cd django-rest-framework
 pip install -r requirements.txt
 pip install -r optionals.txt
 </code></pre>
-<p>Add <code>djangorestframework</code> to your <code>INSTALLED_APPS</code>.</p>
+<p>Add <code>rest_framework</code> to your <code>INSTALLED_APPS</code>.</p>
 <pre class="prettyprint lang-py"><code>INSTALLED_APPS = (
     ...
-    'djangorestframework',        
+    'rest_framework',        
 )
 </code></pre>
 <p>If you're intending to use the browserable API you'll want to add REST framework's login and logout views.  Add the following to your root <code>urls.py</code> file.</p>
 <pre class="prettyprint lang-py"><code>urlpatterns = patterns('',
     ...
-    url(r'^api-auth/', include('djangorestframework.urls', namespace='djangorestframework'))
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
 )
 </code></pre>
+<p>Note that the base URL can be whatever you want, but you must include <code>rest_framework.urls</code> with the <code>rest_framework</code> namespace.</p>
 <h2 id="quickstart">Quickstart</h2>
 <p><strong>TODO</strong></p>
 <h2 id="tutorial">Tutorial</h2>
@@ -199,7 +200,7 @@ pip install -r optionals.txt
 <pre class="prettyprint lang-py"><code>./mkdocs.py
 </code></pre>
 <p>Run the tests:</p>
-<pre class="prettyprint lang-py"><code>./djangorestframework/runtests/runtests.py
+<pre class="prettyprint lang-py"><code>./rest_framework/runtests/runtests.py
 </code></pre>
 <h2 id="license">License</h2>
 <p>Copyright (c) 2011-2012, Tom Christie

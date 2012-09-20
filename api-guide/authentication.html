@@ -107,7 +107,7 @@
         </div>
 
         <div id="main-content" class="span9">
-          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/authentication.py"><span class="label label-info">authentication.py</span></a></p>
+          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/authentication.py"><span class="label label-info">authentication.py</span></a></p>
 <h1 id="authentication">Authentication</h1>
 <blockquote>
 <p>Auth needs to be pluggable.</p>
@@ -124,10 +124,10 @@
 <p>The value of <code>request.user</code> and <code>request.auth</code> for unauthenticated requests can be modified using the <code>UNAUTHENTICATED_USER</code> and <code>UNAUTHENTICATED_TOKEN</code> settings.</p>
 <h2 id="setting-the-authentication-policy">Setting the authentication policy</h2>
 <p>The default authentication policy may be set globally, using the <code>DEFAULT_AUTHENTICATION</code> setting.  For example.</p>
-<pre class="prettyprint lang-py"><code>API_SETTINGS = {
+<pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION': (
-        'djangorestframework.authentication.UserBasicAuthentication',
-        'djangorestframework.authentication.SessionAuthentication',
+        'rest_framework.authentication.UserBasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     )
 }
 </code></pre>
@@ -164,9 +164,9 @@ def example_view(request, format=None):
 <p><strong>Note:</strong> If you use <code>BasicAuthentication</code> in production you must ensure that your API is only available over <code>https</code> only.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.</p>
 <h2 id="tokenauthentication">TokenAuthentication</h2>
 <p>This policy uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.</p>
-<p>To use the <code>TokenAuthentication</code> policy, include <code>djangorestframework.authtoken</code> in your <code>INSTALLED_APPS</code> setting.</p>
+<p>To use the <code>TokenAuthentication</code> policy, include <code>rest_framework.authtoken</code> in your <code>INSTALLED_APPS</code> setting.</p>
 <p>You'll also need to create tokens for your users.</p>
-<pre class="prettyprint lang-py"><code>from djangorestframework.authtoken.models import Token
+<pre class="prettyprint lang-py"><code>from rest_framework.authtoken.models import Token
 
 token = Token.objects.create(user=...)
 print token.key
@@ -177,7 +177,7 @@ print token.key
 <p>If successfully authenticated, <code>TokenAuthentication</code> provides the following credentials.</p>
 <ul>
 <li><code>request.user</code> will be a <code>django.contrib.auth.models.User</code> instance.</li>
-<li><code>request.auth</code> will be a <code>djangorestframework.tokenauth.models.BasicToken</code> instance.</li>
+<li><code>request.auth</code> will be a <code>rest_framework.tokenauth.models.BasicToken</code> instance.</li>
 </ul>
 <p><strong>Note:</strong> If you use <code>TokenAuthentication</code> in production you must ensure that your API is only available over <code>https</code> only.</p>
 <h2 id="oauthauthentication">OAuthAuthentication</h2>
@@ -185,7 +185,7 @@ print token.key
 <p>If successfully authenticated, <code>OAuthAuthentication</code> provides the following credentials.</p>
 <ul>
 <li><code>request.user</code> will be a <code>django.contrib.auth.models.User</code> instance.</li>
-<li><code>request.auth</code> will be a <code>djangorestframework.models.OAuthToken</code> instance.</li>
+<li><code>request.auth</code> will be a <code>rest_framework.models.OAuthToken</code> instance.</li>
 </ul>
 <h2 id="sessionauthentication">SessionAuthentication</h2>
 <p>This policy uses Django's default session backend for authentication.  Session authentication is appropriate for AJAX clients that are running in the same session context as your website.</p>

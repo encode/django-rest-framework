@@ -108,7 +108,7 @@
         </div>
 
         <div id="main-content" class="span9">
-          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/permissions.py"><span class="label label-info">permissions.py</span></a></p>
+          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/permissions.py"><span class="label label-info">permissions.py</span></a></p>
 <h1 id="permissions">Permissions</h1>
 <blockquote>
 <p>Authentication or identification by itself is not usually sufficient to gain access to information or code. For that, the entity requesting access must have authorization.</p>
@@ -126,9 +126,9 @@ If any permission check fails an <code>exceptions.PermissionDenied</code> except
 <p>Object level permissions are run by REST framework's generic views when <code>.get_object()</code> is called.  As with view level permissions, an <code>exceptions.PermissionDenied</code> exception will be raised if the user is not allowed to act on the given object.</p>
 <h2 id="setting-the-permission-policy">Setting the permission policy</h2>
 <p>The default permission policy may be set globally, using the <code>DEFAULT_PERMISSIONS</code> setting.  For example.</p>
-<pre class="prettyprint lang-py"><code>API_SETTINGS = {
+<pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
     'DEFAULT_PERMISSIONS': (
-        'djangorestframework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticated',
     )
 }
 </code></pre>

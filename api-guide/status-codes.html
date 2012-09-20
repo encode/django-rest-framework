@@ -105,14 +105,14 @@
         </div>
 
         <div id="main-content" class="span9">
-          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/status.py"><span class="label label-info">status.py</span></a></p>
+          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/status.py"><span class="label label-info">status.py</span></a></p>
 <h1 id="status-codes">Status Codes</h1>
 <blockquote>
 <p>418 I'm a teapot - Any attempt to brew coffee with a teapot should result in the error code "418 I'm a teapot". The resulting entity body MAY be short and stout.</p>
 <p>&mdash; <a href="http://www.ietf.org/rfc/rfc2324.txt">RFC 2324</a>, Hyper Text Coffee Pot Control Protocol</p>
 </blockquote>
 <p>Using bare status codes in your responses isn't recommended.  REST framework includes a set of named constants that you can use to make more code more obvious and readable.</p>
-<pre class="prettyprint lang-py"><code>from djangorestframework import status
+<pre class="prettyprint lang-py"><code>from rest_framework import status
 
 def empty_view(self):
     content = {'please move along': 'nothing to see here'}
