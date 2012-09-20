@@ -1,28 +1,24 @@
-"""
-Adds the custom filter 'urlize_quoted_links'
-
-This is identical to the built-in filter 'urlize' with the exception that
-single and double quotes are permitted as leading or trailing punctuation.
-
-Almost all of this code is copied verbatim from django.utils.html
-LEADING_PUNCTUATION and TRAILING_PUNCTUATION have been modified
-"""
-
+from django import template
+from django.core.urlresolvers import reverse, NoReverseMatch
+from django.http import QueryDict
+from django.utils.encoding import force_unicode
+from django.utils.html import escape
+from django.utils.safestring import SafeData, mark_safe
+from urlparse import urlsplit, urlunsplit
 import re
 import string
 
-from django.utils.safestring import SafeData, mark_safe
-from django.utils.encoding import force_unicode
-from django.utils.html import escape
-from django import template
+register = template.Library()
 
-# Configuration for urlize() function.
+
+# Regex for adding classes to html snippets
+class_re = re.compile(r'(?<=class=["\'])(.*)(?=["\'])')
+
+
+# Bunch of stuff cloned from urlize
 LEADING_PUNCTUATION = ['(', '<', '&lt;', '"', "'"]
 TRAILING_PUNCTUATION = ['.', ',', ')', '>', '\n', '&gt;', '"', "'"]
-
-# List of possible strings used for bullets in bulleted lists.
 DOTS = ['&middot;', '*', '\xe2\x80\xa2', '&#149;', '&bull;', '&#8226;']
-
 unencoded_ampersands_re = re.compile(r'&(?!(\w+|#\d+);)')
 word_split_re = re.compile(r'(\s+)')
 punctuation_re = re.compile('^(?P<lead>(?:%s)*)(?P<middle>.*?)(?P<trail>(?:%s)*)$' % \
@@ -35,6 +31,90 @@ hard_coded_bullets_re = re.compile(r'((?:<p>(?:%s).*?[a-zA-Z].*?</p>\s*)+)' % '|
 trailing_empty_content_re = re.compile(r'(?:<p>(?:&nbsp;|\s|<br \/>)*?</p>\s*)+\Z')
 
 
+# Helper function for 'add_query_param'
+def replace_query_param(url, key, val):
+    """
+    Given a URL and a key/val pair, set or replace an item in the query
+    parameters of the URL, and return the new URL.
+    """
+    (scheme, netloc, path, query, fragment) = urlsplit(url)
+    query_dict = QueryDict(query).copy()
+    query_dict[key] = val
+    query = query_dict.urlencode()
+    return urlunsplit((scheme, netloc, path, query, fragment))
+
+
+# And the template tags themselves...
+
+@register.simple_tag(takes_context=True)
+def optional_login(context):
+    """
+    Include a login snippet if REST framework's login view is in the URLconf.
+    """
+    try:
+        login_url = reverse('rest_framework:login')
+    except NoReverseMatch:
+        return ''
+
+    request = context['request']
+    snippet = "<a href='%s?next=%s'>Log in</a>" % (login_url, request.path)
+    return snippet
+
+
+@register.simple_tag(takes_context=True)
+def optional_logout(context):
+    """
+    Include a logout snippet if REST framework's logout view is in the URLconf.
+    """
+    try:
+        logout_url = reverse('rest_framework:logout')
+    except NoReverseMatch:
+        return ''
+
+    request = context['request']
+    snippet = "<a href='%s?next=%s'>Log out</a>" % (logout_url, request.path)
+    return snippet
+
+
+@register.filter
+def add_query_param(url, param):
+    """
+    """
+    key, val = param.split('=')
+    return replace_query_param(url, key, val)
+
+
+@register.filter
+def add_class(value, css_class):
+    """
+    http://stackoverflow.com/questions/4124220/django-adding-css-classes-when-rendering-form-fields-in-a-template
+
+    Inserts classes into template variables that contain HTML tags,
+    useful for modifying forms without needing to change the Form objects.
+
+    Usage:
+
+        {{ field.label_tag|add_class:"control-label" }}
+
+    In the case of REST Framework, the filter is used to add Bootstrap-specific
+    classes to the forms.
+    """
+    html = unicode(value)
+    match = class_re.search(html)
+    if match:
+        m = re.search(r'^%s$|^%s\s|\s%s\s|\s%s$' % (css_class, css_class,
+                                                    css_class, css_class),
+                      match.group(1))
+        print match.group(1)
+        if not m:
+            return mark_safe(class_re.sub(match.group(1) + " " + css_class,
+                                          html))
+    else:
+        return mark_safe(html.replace('>', ' class="%s">' % css_class, 1))
+    return value
+
+
+@register.filter(is_safe=True)
 def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=True):
     """
     Converts any URLs in text into clickable links.
@@ -91,12 +171,3 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
         elif autoescape:
             words[i] = escape(word)
     return u''.join(words)
-
-
-#urlize_quoted_links.needs_autoescape = True
-urlize_quoted_links.is_safe = True
-
-# Register urlize_quoted_links as a custom filter
-# http://docs.djangoproject.com/en/dev/howto/custom-template-tags/
-register = template.Library()
-register.filter(urlize_quoted_links)
