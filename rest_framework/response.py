@@ -9,7 +9,7 @@ class Response(SimpleTemplateResponse):
     """
 
     def __init__(self, data=None, status=None, headers=None,
-                 renderer=None, media_type=None):
+                 renderer=None, accepted_media_type=None):
         """
         Alters the init arguments slightly.
         For example, drop 'template_name', and instead use 'data'.
@@ -21,14 +21,15 @@ class Response(SimpleTemplateResponse):
         self.data = data
         self.headers = headers and headers[:] or []
         self.renderer = renderer
-        self.media_type = media_type
+        self.accepted_media_type = accepted_media_type
 
     @property
     def rendered_content(self):
         self['Content-Type'] = self.renderer.media_type
         if self.data is None:
             return self.renderer.render()
-        return self.renderer.render(self.data, self.media_type)
+        render_media_type = self.accepted_media_type or self.renderer.media_type
+        return self.renderer.render(self.data, render_media_type)
 
     @property
     def status_text(self):

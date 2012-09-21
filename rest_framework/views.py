@@ -161,7 +161,7 @@ class APIView(View):
         """
         return [throttle(self) for throttle in self.throttle_classes]
 
-    def content_negotiation(self, request, force=False):
+    def perform_content_negotiation(self, request, force=False):
         """
         Determine which renderer and media type to use render the response.
         """
@@ -199,7 +199,7 @@ class APIView(View):
         self.format = self.get_format_suffix(**kwargs)
         self.check_permissions(request)
         self.check_throttles(request)
-        self.renderer, self.media_type = self.content_negotiation(request)
+        self.renderer, self.accepted_media_type = self.perform_content_negotiation(request)
 
     def finalize_response(self, request, response, *args, **kwargs):
         """
@@ -207,9 +207,9 @@ class APIView(View):
         """
         if isinstance(response, Response):
             if not getattr(self, 'renderer', None):
-                self.renderer, self.media_type = self.content_negotiation(request, force=True)
+                self.renderer, self.accepted_media_type = self.perform_content_negotiation(request, force=True)
             response.renderer = self.renderer
-            response.media_type = self.media_type
+            response.accepted_media_type = self.accepted_media_type
 
         for key, value in self.headers.items():
             response[key] = value
