@@ -24,7 +24,7 @@ class Response(SimpleTemplateResponse):
 
         # Accepted media type is the portion of the request Accept header
         # that the renderer satisfied.  It could be '*/*', or somthing like
-        # 'application/json; indent=4'
+        # application/json; indent=4
         #
         # This is NOT the value that will be returned in the 'Content-Type'
         # header, but we do need to know the value in case there are
