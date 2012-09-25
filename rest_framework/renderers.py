@@ -240,6 +240,8 @@ class DocumentingHTMLRenderer(BaseRenderer):
             object = self.view.object
         serializer = self.view.get_serializer(instance=object)
         for k, v in serializer.fields.items():
+            if v.readonly:
+                continue
             fields[k] = field_mapping[v.__class__.__name__]()
         OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
         if object and not self.view.request.method == 'DELETE':  # Don't fill in the form when the object is deleted
