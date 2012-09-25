@@ -67,7 +67,7 @@ For the purposes of this tutorial we're going to start by creating a simple `Com
 
     from django.db import models
 
-    class Comment(models.Model):
+    class Comment(models.Model):        
         email = models.EmailField()
         content = models.CharField(max_length=200)
         created = models.DateTimeField(auto_now_add=True)
@@ -85,6 +85,7 @@ We're going to create a simple Web API that we can use to edit these comment obj
 
 
     class CommentSerializer(serializers.Serializer):
+        id = serializers.IntegerField(readonly=True)
         email = serializers.EmailField()
         content = serializers.CharField(max_length=200)
         created = serializers.DateTimeField()
@@ -128,13 +129,13 @@ We've now got a few comment instances to play with.  Let's take a look at serial
 
     serializer = CommentSerializer(instance=c1)
     serializer.data
-    # {'email': u'leila@example.com', 'content': u'nothing to say', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774, tzinfo=<UTC>)}
+    # {'id': 1, 'email': u'leila@example.com', 'content': u'nothing to say', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774, tzinfo=<UTC>)}
 
 At this point we've translated the model instance into python native datatypes.  To finalise the serialization process we render the data into `json`.
 
     stream = JSONRenderer().render(serializer.data)
     stream
-    # '{"email": "leila@example.com", "content": "nothing to say", "created": "2012-08-22T16:20:09.822"}'
+    # '{"id": 1, "email": "leila@example.com", "content": "nothing to say", "created": "2012-08-22T16:20:09.822"}'
 
 Deserialization is similar.  First we parse a stream into python native datatypes... 
 
