@@ -40,8 +40,9 @@ h2, h3 {
     font-family: Menlo, Consolas, "Andale Mono", "Lucida Console", monospace;
 }
 
-#options-form {
-    position: relative;
+.button-form {
+    float: right;
+    margin-right: 1em;
 }
 
 /* To allow tooltips to work on disabled elements */
@@ -51,10 +52,6 @@ h2, h3 {
     right: 0;
     bottom: 0;
     left: 0;
-}
-
-#options-form {
-    margin-right: 1em;
 }
 
 .errorlist {

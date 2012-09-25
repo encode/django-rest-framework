@@ -71,7 +71,7 @@
             <form id="get-form" class="pull-right">
                 <fieldset>
                     <div class="btn-group format-selection">
-                        <a class="btn btn-primary js-tooltip" href='{{ request.get_full_path }}' rel="nofollow" title="Do a GET request on the {{ name }} resource">GET</a>
+                        <a class="btn btn-primary js-tooltip" href='{{ request.get_full_path }}' rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
 
                         <button class="btn btn-primary dropdown-toggle js-tooltip" data-toggle="dropdown" title="Specify a format for the GET request">
                             <span class="caret"></span>
@@ -79,7 +79,7 @@
                         <ul class="dropdown-menu">
                             {% for format in available_formats %}
                                 <li>
-                                    <a class="js-tooltip format-option" href='{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}' rel="nofollow" title="Do a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
+                                    <a class="js-tooltip format-option" href='{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}' rel="nofollow" title="Make a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
                                 </li>
                             {% endfor %}
                         </ul>
@@ -89,14 +89,19 @@
             </form>
         {% endif %}
 
-        {% if api_settings.FORM_METHOD_OVERRIDE %}
-            <form id="options-form" action="{{ request.get_full_path }}" method="post" class="pull-right">
+        {% if 'OPTIONS' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
+            <form class="button-form" action="{{ request.get_full_path }}" method="POST" class="pull-right">
                 {% csrf_token %}
                 <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
-                <button class="btn btn-info js-tooltip" {% if 'OPTIONS' in allowed_methods %} title="Do an OPTIONS request on the {{ name }} resource"{% else %} disabled{% endif %}>OPTIONS</button>
-                {% if not 'OPTIONS' in allowed_methods %}
-                    <div class="js-tooltip disabled-tooltip-shield" title="OPTIONS request not allowed for resource {{ name }}"></div>
-                {% endif %}
+                <button class="btn btn-info js-tooltip" title="Make an OPTIONS request on the {{ name }} resource">OPTIONS</button>
+            </form>
+        {% endif %}
+
+        {% if 'DELETE' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
+            <form class="button-form" action="{{ request.get_full_path }}" method="POST" class="pull-right">
+                {% csrf_token %}
+                <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
+                <button class="btn btn-danger js-tooltip" title="Make a DELETE request on the {{ name }} resource">DELETE</button>
             </form>
         {% endif %}
 
@@ -133,7 +138,7 @@
                                 </div>
                             {% endfor %}
                             <div class="form-actions">
-                                <button class="btn btn-primary" title="Do a POST request on the {{ name }} resource">POST</button>
+                                <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
                             </div>
                         </fieldset>
                     </form>
@@ -157,22 +162,9 @@
                                 </div>
                             {% endfor %}
                             <div class="form-actions">
-                                <button class="btn btn-primary js-tooltip" title="Do a PUT request on the {{ name }} resource">PUT</button>
+                                <button class="btn btn-primary js-tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>
                             </div>
 
-                        </fieldset>
-                    </form>
-                {% endif %}
-
-                {% if 'DELETE' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
-                    <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
-                        <fieldset>
-                            <h2>DELETE: {{ name }}</h2>
-                            {% csrf_token %}
-                            <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
-                            <div class="form-actions">
-                                <button class="btn btn-danger js-tooltip" title="Do a DELETE request on the {{ name }} resource">DELETE</button>
-                            </div>
                         </fieldset>
                     </form>
                 {% endif %}
