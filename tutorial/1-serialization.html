@@ -162,7 +162,7 @@ cd tutorial
 <p>For the purposes of this tutorial we're going to start by creating a simple <code>Comment</code> model that is used to store comments against a blog post.  Go ahead and edit the  <code>blog</code> app's <code>models.py</code> file.</p>
 <pre class="prettyprint lang-py"><code>from django.db import models
 
-class Comment(models.Model):
+class Comment(models.Model):        
     email = models.EmailField()
     content = models.CharField(max_length=200)
     created = models.DateTimeField(auto_now_add=True)
@@ -176,6 +176,7 @@ class Comment(models.Model):
 from rest_framework import serializers
 
 class CommentSerializer(serializers.Serializer):
+    id = serializers.IntegerField(readonly=True)
     email = serializers.EmailField()
     content = serializers.CharField(max_length=200)
     created = serializers.DateTimeField()
@@ -214,12 +215,12 @@ c3.save()
 <p>We've now got a few comment instances to play with.  Let's take a look at serializing one of those instances.</p>
 <pre class="prettyprint lang-py"><code>serializer = CommentSerializer(instance=c1)
 serializer.data
-# {'email': u'leila@example.com', 'content': u'nothing to say', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774, tzinfo=&lt;UTC&gt;)}
+# {'id': 1, 'email': u'leila@example.com', 'content': u'nothing to say', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774, tzinfo=&lt;UTC&gt;)}
 </code></pre>
 <p>At this point we've translated the model instance into python native datatypes.  To finalise the serialization process we render the data into <code>json</code>.</p>
 <pre class="prettyprint lang-py"><code>stream = JSONRenderer().render(serializer.data)
 stream
-# '{"email": "leila@example.com", "content": "nothing to say", "created": "2012-08-22T16:20:09.822"}'
+# '{"id": 1, "email": "leila@example.com", "content": "nothing to say", "created": "2012-08-22T16:20:09.822"}'
 </code></pre>
 <p>Deserialization is similar.  First we parse a stream into python native datatypes... </p>
 <pre class="prettyprint lang-py"><code>data = JSONParser().parse(stream)
@@ -238,9 +239,10 @@ We'll start off by creating a subclass of HttpResponse that we can use to render
 <p>Edit the <code>blog/views.py</code> file, and add the following.</p>
 <pre class="prettyprint lang-py"><code>from blog.models import Comment
 from blog.serializers import CommentSerializer
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
-from django.http import HttpResponse
 
 class JSONResponse(HttpResponse):
     """
@@ -253,7 +255,8 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
 </code></pre>
 <p>The root of our API is going to be a view that supports listing all the existing comments, or creating a new comment.</p>
-<pre class="prettyprint lang-py"><code>def comment_root(request):
+<pre class="prettyprint lang-py"><code>@csrf_exempt
+def comment_root(request):
     """
     List all comments, or create a new comment.
     """
@@ -272,8 +275,10 @@ class JSONResponse(HttpResponse):
         else:
             return JSONResponse(serializer.errors, status=400)
 </code></pre>
+<p>Note that because we want to be able to POST to this view from clients that won't have a CSRF token we need to mark the view as <code>csrf_exempt</code>.  This isn't something that you'd normally want to do, and REST framework views actually use more sensible behavior than this, but it'll do for our purposes right now. </p>
 <p>We'll also need a view which corrosponds to an individual comment, and can be used to retrieve, update or delete the comment.</p>
-<pre class="prettyprint lang-py"><code>def comment_instance(request, pk):
+<pre class="prettyprint lang-py"><code>@csrf_exempt
+def comment_instance(request, pk):
     """
     Retrieve, update or delete a comment instance.
     """
