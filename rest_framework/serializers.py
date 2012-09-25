@@ -95,7 +95,7 @@ class BaseSerializer(Field):
         self.context = context or {}
 
         self.init_data = data
-        self.instance = instance
+        self.object = instance
 
         self._data = None
         self._errors = None
@@ -247,7 +247,7 @@ class BaseSerializer(Field):
         self._errors = {}
         attrs = self.restore_fields(data)
         if not self._errors:
-            return self.restore_object(attrs, instance=getattr(self, 'instance', None))
+            return self.restore_object(attrs, instance=getattr(self, 'object', None))
 
     @property
     def errors(self):
@@ -267,7 +267,7 @@ class BaseSerializer(Field):
     @property
     def data(self):
         if self._data is None:
-            self._data = self.to_native(self.instance)
+            self._data = self.to_native(self.object)
         return self._data
 
 

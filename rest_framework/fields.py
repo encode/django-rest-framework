@@ -42,7 +42,11 @@ class Field(object):
 
         self.source = source
         self.readonly = readonly
-        self.required = not(readonly)
+        if required is None:
+            self.required = not(readonly)
+        else:
+            assert not readonly, "Cannot set required=True and readonly=True"
+            self.required = required
 
         messages = {}
         for c in reversed(self.__class__.__mro__):
@@ -66,9 +70,8 @@ class Field(object):
             self.model_field = model_field
 
     def validate(self, value):
-        pass
-        # if value in validators.EMPTY_VALUES and self.required:
-        #     raise ValidationError(self.error_messages['required'])
+        if value in validators.EMPTY_VALUES and self.required:
+            raise ValidationError(self.error_messages['required'])
 
     def run_validators(self, value):
         if value in validators.EMPTY_VALUES:
