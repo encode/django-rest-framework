@@ -53,7 +53,7 @@ So far, so good.  It looks pretty similar to the previous case, but we've got be
             comment = self.get_object(pk)
             serializer = CommentSerializer(request.DATA, instance=comment)
             if serializer.is_valid():
-                comment = serializer.deserialized
+                comment = serializer.object
                 comment.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
