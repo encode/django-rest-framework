@@ -159,9 +159,10 @@ Edit the `blog/views.py` file, and add the following.
 
     from blog.models import Comment
     from blog.serializers import CommentSerializer
+    from django.http import HttpResponse
+    from django.views.decorators.csrf import csrf_exempt
     from rest_framework.renderers import JSONRenderer
     from rest_framework.parsers import JSONParser
-    from django.http import HttpResponse
 
 
     class JSONResponse(HttpResponse):
@@ -177,6 +178,7 @@ Edit the `blog/views.py` file, and add the following.
 
 The root of our API is going to be a view that supports listing all the existing comments, or creating a new comment.
 
+    @csrf_exempt
     def comment_root(request):
         """
         List all comments, or create a new comment.
@@ -196,8 +198,11 @@ The root of our API is going to be a view that supports listing all the existing
             else:
                 return JSONResponse(serializer.errors, status=400)
 
+Note that because we want to be able to POST to this view from clients that won't have a CSRF token we need to mark the view as `csrf_exempt`.  This isn't something that you'd normally want to do, and REST framework views actually use more sensible behavior than this, but it'll do for our purposes right now. 
+
 We'll also need a view which corrosponds to an individual comment, and can be used to retrieve, update or delete the comment.
 
+    @csrf_exempt
     def comment_instance(request, pk):
         """
         Retrieve, update or delete a comment instance.
