@@ -1,7 +1,7 @@
 from functools import update_wrapper
 import inspect
 from django.utils.decorators import classonlymethod
-from djanorestframework import views, generics
+from rest_framework import views, generics
 
 
 def wrapped(source, dest):
