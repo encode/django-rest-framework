@@ -50,34 +50,34 @@ def api_view(http_method_names):
 
 def renderer_classes(renderer_classes):
     def decorator(func):
-        setattr(func, 'renderer_classes', renderer_classes)
+        func.renderer_classes = renderer_classes
         return func
     return decorator
 
 
 def parser_classes(parser_classes):
     def decorator(func):
-        setattr(func, 'parser_classes', parser_classes)
+        func.parser_classes = parser_classes
         return func
     return decorator
 
 
 def authentication_classes(authentication_classes):
     def decorator(func):
-        setattr(func, 'authentication_classes', authentication_classes)
+        func.authentication_classes = authentication_classes
         return func
     return decorator
 
 
 def throttle_classes(throttle_classes):
     def decorator(func):
-        setattr(func, 'throttle_classes', throttle_classes)
+        func.throttle_classes = throttle_classes
         return func
     return decorator
 
 
 def permission_classes(permission_classes):
     def decorator(func):
-        setattr(func, 'permission_classes', permission_classes)
+        func.permission_classes = permission_classes
         return func
     return decorator
