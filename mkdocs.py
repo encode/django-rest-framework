@@ -6,7 +6,7 @@ import re
 import shutil
 import sys
 
-root_dir = os.path.dirname(__file__)
+root_dir = os.path.abspath(os.path.split(__file__)[0])
 docs_dir = os.path.join(root_dir, 'docs')
 html_dir = os.path.join(root_dir, 'html')
 
@@ -60,7 +60,7 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
 
         content = markdown.markdown(text, ['headerid'])
 
-        build_dir = os.path.join(html_dir, dirpath.lstrip(docs_dir))
+        build_dir = os.path.join(html_dir, dirpath.partition(docs_dir)[2].lstrip("/"))
         build_file = os.path.join(build_dir, filename[:-3] + '.html')
 
         if not os.path.exists(build_dir):
