@@ -39,6 +39,10 @@ DEFAULTS = {
     'DEFAULT_THROTTLES': (),
     'DEFAULT_CONTENT_NEGOTIATION':
         'rest_framework.negotiation.DefaultContentNegotiation',
+    'DEFAULT_THROTTLE_RATES': {
+        'user': None,
+        'anon': None,
+    },
 
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,

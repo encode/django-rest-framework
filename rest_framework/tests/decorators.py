@@ -1,10 +1,11 @@
 from django.test import TestCase
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.compat import RequestFactory
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.authentication import BasicAuthentication
-from rest_framework.throttling import SimpleRateThottle
+from rest_framework.throttling import UserRateThrottle
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.decorators import (
@@ -23,7 +24,6 @@ class DecoratorTestCase(TestCase):
         self.factory = RequestFactory()
 
     def _finalize_response(self, request, response, *args, **kwargs):
-        print "HAI"
         response.request = request
         return APIView.finalize_response(self, request, response, *args, **kwargs)
 
@@ -87,21 +87,24 @@ class DecoratorTestCase(TestCase):
         @api_view(['GET'])
         @permission_classes([IsAuthenticated])
         def view(request):
-            self.assertEqual(request.permission_classes, [IsAuthenticated])
             return Response({})
 
         request = self.factory.get('/')
-        view(request)
+        response = view(request)
+        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
 
-# Doesn't look like this bits are working quite yet
+    def test_throttle_classes(self):
+        class OncePerDayUserThrottle(UserRateThrottle):
+            rate = '1/day'
 
-#    def test_throttle_classes(self):
+        @api_view(['GET'])
+        @throttle_classes([OncePerDayUserThrottle])
+        def view(request):
+            return Response({})
 
-#        @api_view(['GET'])
-#        @throttle_classes([SimpleRateThottle])
-#        def view(request):
-#            self.assertEqual(request.throttle_classes, [SimpleRateThottle])
-#            return Response({})
+        request = self.factory.get('/')
+        response = view(request)
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
 
-#        request = self.factory.get('/')
-#        view(request)
+        response = view(request)
+        self.assertEquals(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
