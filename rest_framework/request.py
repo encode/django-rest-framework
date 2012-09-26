@@ -101,6 +101,13 @@ class Request(object):
         return self._stream
 
     @property
+    def QUERY_PARAMS(self):
+        """
+        More semantically correct name for request.GET.
+        """
+        return self._request.GET
+
+    @property
     def DATA(self):
         """
         Parses the request body and returns the data.
