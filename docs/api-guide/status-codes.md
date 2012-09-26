@@ -8,7 +8,7 @@
 
 Using bare status codes in your responses isn't recommended.  REST framework includes a set of named constants that you can use to make more code more obvious and readable.
 
-    from djangorestframework import status
+    from rest_framework import status
 
     def empty_view(self):
         content = {'please move along': 'nothing to see here'}

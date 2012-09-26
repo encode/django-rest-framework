@@ -40,6 +40,7 @@ The following people have helped make REST framework great.
 * Can Yavuz - [tschan]
 * Shawn Lewis - [shawnlewis]
 * Alec Perkins - [alecperkins]
+* Michael Barrett - [phobologic]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -102,3 +103,4 @@ To contact the author directly:
 [tschan]: https://github.com/tschan
 [shawnlewis]: https://github.com/shawnlewis
 [alecperkins]: https://github.com/alecperkins
+[phobologic]: https://github.com/phobologic

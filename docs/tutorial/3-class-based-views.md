@@ -1,6 +1,6 @@
 # Tutorial 3: Class Based Views
 
-We can also write our API views using class based views, rather than function based views.  As we'll see this is a powerful pattern that allows us to reuse common functionality, and helps us keep our code [DRY][1].
+We can also write our API views using class based views, rather than function based views.  As we'll see this is a powerful pattern that allows us to reuse common functionality, and helps us keep our code [DRY][dry].
 
 ## Rewriting our API using class based views
 
@@ -9,9 +9,9 @@ We'll start by rewriting the root view as a class based view.  All this involves
     from blog.models import Comment
     from blog.serializers import CommentSerializer
     from django.http import Http404
-    from djangorestframework.views import APIView
-    from djangorestframework.response import Response
-    from djangorestframework import status
+    from rest_framework.views import APIView
+    from rest_framework.response import Response
+    from rest_framework import status
 
 
     class CommentRoot(APIView):
@@ -30,8 +30,6 @@ We'll start by rewriting the root view as a class based view.  All this involves
                 comment.save()
                 return Response(serializer.serialized, status=status.HTTP_201_CREATED)
             return Response(serializer.serialized_errors, status=status.HTTP_400_BAD_REQUEST)
-
-    comment_root = CommentRoot.as_view()
 
 So far, so good.  It looks pretty similar to the previous case, but we've got better seperation between the different HTTP methods.  We'll also need to update the instance view. 
 
@@ -55,19 +53,31 @@ So far, so good.  It looks pretty similar to the previous case, but we've got be
             comment = self.get_object(pk)
             serializer = CommentSerializer(request.DATA, instance=comment)
             if serializer.is_valid():
-                comment = serializer.deserialized
+                comment = serializer.object
                 comment.save()
                 return Response(serializer.data)
-            return Response(serializer.error_data, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         def delete(self, request, pk, format=None):
             comment = self.get_object(pk)
             comment.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-    comment_instance = CommentInstance.as_view()
-
 That's looking good.  Again, it's still pretty similar to the function based view right now.
+
+We'll also need to refactor our URLconf slightly now we're using class based views.
+
+    from django.conf.urls import patterns, url
+    from rest_framework.urlpatterns import format_suffix_patterns
+    from blogpost import views
+
+    urlpatterns = patterns('',
+        url(r'^$', views.CommentRoot.as_view()),
+        url(r'^(?P<pk>[0-9]+)$', views.CommentInstance.as_view())
+    )
+    
+    urlpatterns = format_suffix_patterns(urlpatterns)
+
 Okay, we're done.  If you run the development server everything should be working just as before.
 
 ## Using mixins
@@ -80,8 +90,8 @@ Let's take a look at how we can compose our views by using the mixin classes.
 
     from blog.models import Comment
     from blog.serializers import CommentSerializer
-    from djangorestframework import mixins
-    from djangorestframework import generics
+    from rest_framework import mixins
+    from rest_framework import generics
 
     class CommentRoot(mixins.ListModelMixin,
                       mixins.CreateModelMixin,
@@ -94,8 +104,6 @@ Let's take a look at how we can compose our views by using the mixin classes.
 
         def post(self, request, *args, **kwargs):
             return self.create(request, *args, **kwargs)
-
-    comment_root = CommentRoot.as_view()
 
 We'll take a moment to examine exactly what's happening here - We're building our view using `MultipleObjectBaseView`, and adding in `ListModelMixin` and `CreateModelMixin`.
 
@@ -117,8 +125,6 @@ The base class provides the core functionality, and the mixin classes provide th
         def delete(self, request, *args, **kwargs):
             return self.destroy(request, *args, **kwargs)
 
-    comment_instance = CommentInstance.as_view()
-
 Pretty similar.  This time we're using the `SingleObjectBaseView` class to provide the core functionality, and adding in mixins to provide the `.retrieve()`, `.update()` and `.destroy()` actions.
 
 ## Using generic class based views
@@ -127,26 +133,21 @@ Using the mixin classes we've rewritten the views to use slightly less code than
 
     from blog.models import Comment
     from blog.serializers import CommentSerializer
-    from djangorestframework import generics
+    from rest_framework import generics
 
 
     class CommentRoot(generics.RootAPIView):
         model = Comment
         serializer_class = CommentSerializer
 
-    comment_root = CommentRoot.as_view()
-
 
     class CommentInstance(generics.InstanceAPIView):
         model = Comment
         serializer_class = CommentSerializer
 
-    comment_instance = CommentInstance.as_view()
-
-
 Wow, that's pretty concise.  We've got a huge amount for free, and our code looks like good, clean, idomatic Django.
 
-Next we'll move onto [part 4 of the tutorial][2], where we'll take a look at how we can  customize the behavior of our views to support a range of authentication, permissions, throttling and other aspects.
+Next we'll move onto [part 4 of the tutorial][tut-4], where we'll take a look at how we can  customize the behavior of our views to support a range of authentication, permissions, throttling and other aspects.
 
-[1]: http://en.wikipedia.org/wiki/Don't_repeat_yourself
-[2]: 4-authentication-permissions-and-throttling.md
+[dry]: http://en.wikipedia.org/wiki/Don't_repeat_yourself
+[tut-4]: 4-authentication-permissions-and-throttling.md

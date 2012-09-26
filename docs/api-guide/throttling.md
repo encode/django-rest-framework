@@ -29,10 +29,10 @@ If any throttle check fails an `exceptions.Throttled` exception will be raised, 
 
 The default throttling policy may be set globally, using the `DEFAULT_THROTTLES` and `DEFAULT_THROTTLE_RATES` settings.  For example.
 
-    API_SETTINGS = {
+    REST_FRAMEWORK = {
         'DEFAULT_THROTTLES': (
-            'djangorestframework.throttles.AnonThrottle',
-            'djangorestframework.throttles.UserThrottle',
+            'rest_framework.throttles.AnonThrottle',
+            'rest_framework.throttles.UserThrottle',
         )
         'DEFAULT_THROTTLE_RATES': {
             'anon': '100/day',
@@ -76,7 +76,7 @@ The allowed request rate is determined from one of the following (in order of pr
 
 ## UserRateThrottle
 
-The `UserThrottle` will throttle users to a given rate of requests across the API.  The user id is used to generate a unique key to throttle against.  Unauthenticted requests will fall back to using the IP address of the incoming request is used to generate a unique key to throttle against.
+The `UserThrottle` will throttle users to a given rate of requests across the API.  The user id is used to generate a unique key to throttle against.  Unauthenticted requests will fall back to using the IP address of the incoming request to generate a unique key to throttle against.
 
 The allowed request rate is determined from one of the following (in order of preference).
 
@@ -95,7 +95,7 @@ For example, multiple user throttle rates could be implemented by using the foll
 
 ...and the following settings.
 
-    API_SETTINGS = {
+    REST_FRAMEWORK = {
         'DEFAULT_THROTTLES': (
             'example.throttles.BurstRateThrottle',
             'example.throttles.SustainedRateThrottle',
@@ -106,7 +106,7 @@ For example, multiple user throttle rates could be implemented by using the foll
         }
     }
 
-`UserThrottle` is suitable if you want a simple global rate restriction per-user.
+`UserThrottle` is suitable if you want simple global rate restrictions per-user.
 
 ## ScopedRateThrottle
 
@@ -124,16 +124,15 @@ For example, given the following views...
         throttle_scope = 'contacts'
         ...
 
-
     class UploadView(APIView):        
         throttle_scope = 'uploads'
         ...
     
 ...and the following settings.
 
-    API_SETTINGS = {
+    REST_FRAMEWORK = {
         'DEFAULT_THROTTLES': (
-            'djangorestframework.throttles.ScopedRateThrottle',
+            'rest_framework.throttles.ScopedRateThrottle',
         )
         'DEFAULT_THROTTLE_RATES': {
             'contacts': '1000/day',

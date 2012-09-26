@@ -24,7 +24,7 @@ else:
 
 main_header = '<li class="main"><a href="#{{ anchor }}">{{ title }}</a></li>'
 sub_header = '<li><a href="#{{ anchor }}">{{ title }}</a></li>'
-code_label = r'<a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/djangorestframework/\1"><span class="label label-info">\1</span></a>'
+code_label = r'<a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/\1"><span class="label label-info">\1</span></a>'
 
 page = open(os.path.join(docs_dir, 'template.html'), 'r').read()
 

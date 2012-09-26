@@ -1,3 +1,5 @@
-[part 5][5]
+# Tutorial 4: Authentication & Permissions
 
-[5]: 5-relationships-and-hyperlinked-apis.md
+Nothing to see here.  Onwards to [part 5][tut-5].
+
+[tut-5]: 5-relationships-and-hyperlinked-apis.md

@@ -1,0 +1,71 @@
+body {
+    padding-top: 0;
+    padding-bottom: 1em;
+}
+
+/* The navbar is fixed at >= 980px wide, so add padding to the body to prevent
+content running up underneath it. */
+@media (min-width:980px) {
+    body {
+        padding-top: 60px;
+    }
+}
+
+h1 {
+    font-weight: 500;
+}
+
+h2, h3 {
+    font-weight: 300;
+}
+
+.resource-description, .response-info {
+    margin-bottom: 2em;
+}
+
+#footer {
+    border-top: 1px solid #eee;
+    margin-top: 2em;
+    padding-top: 1em;
+    text-align: right;
+}
+
+.version:before {
+    content: "v";
+    opacity: 0.6;
+    padding-right: 0.25em;
+}
+
+.format-option {
+    font-family: Menlo, Consolas, "Andale Mono", "Lucida Console", monospace;
+}
+
+.button-form {
+    float: right;
+    margin-right: 1em;
+}
+
+/* To allow tooltips to work on disabled elements */
+.disabled-tooltip-shield {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.errorlist {
+    margin-top: 0.5em;
+}
+
+pre {
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
+  font-size: 12px;
+}
+
+.page-header {
+    border-bottom: none;
+    padding-bottom: 0px;
+}

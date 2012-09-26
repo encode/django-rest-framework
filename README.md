@@ -16,7 +16,6 @@ For more information, check out [the documentation][docs], in particular, the tu
 
 * Python (2.6, 2.7)
 * Django (1.3, 1.4, 1.5)
-* [URLObject][urlobject] (2.0.0+)
 
 **Optional:**
 
@@ -29,7 +28,7 @@ For more information, check out [the documentation][docs], in particular, the tu
 
 Install using `pip`...
 
-    pip install djangorestframework
+    pip install rest_framework
 
 ...or clone the project from github.
 
@@ -48,7 +47,7 @@ To build the docs.
 
 To run the tests.
 
-    ./djangorestframework/runtests/runtests.py
+    ./rest_framework/runtests/runtests.py
 
 # Changelog
 

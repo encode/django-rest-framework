@@ -27,9 +27,9 @@ Object level permissions are run by REST framework's generic views when `.get_ob
 
 The default permission policy may be set globally, using the `DEFAULT_PERMISSIONS` setting.  For example.
 
-    API_SETTINGS = {
+    REST_FRAMEWORK = {
         'DEFAULT_PERMISSIONS': (
-            'djangorestframework.permissions.IsAuthenticated',
+            'rest_framework.permissions.IsAuthenticated',
         )
     }
 

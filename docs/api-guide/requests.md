@@ -49,7 +49,7 @@ This allows you to support file uploads from multiple content-types.  For exampl
 
 `request.parsers` may no longer be altered once `request.DATA`, `request.FILES` or `request.POST` have been accessed.
 
-If you're using the `djangorestframework.views.View` class... **[TODO]**
+If you're using the `rest_framework.views.View` class... **[TODO]**
 
 ## .stream
 
@@ -63,6 +63,6 @@ You will not typically need to access `request.stream`, unless you're writing a 
 
 `request.authentication` may no longer be altered once `request.user` or `request.auth` have been accessed.
 
-If you're using the `djangorestframework.views.View` class... **[TODO]**
+If you're using the `rest_framework.views.View` class... **[TODO]**
 
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion

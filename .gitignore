@@ -7,7 +7,7 @@ html/
 coverage/
 build/
 dist/
-djangorestframework.egg-info/
+rest_framework.egg-info/
 MANIFEST
 
 !.gitignore

@@ -17,7 +17,6 @@ REST framework requires the following:
 
 * Python (2.6, 2.7)
 * Django (1.3, 1.4, 1.5)
-* [URLObject][urlobject] (2.0.0+)
 
 The following packages are optional:
 
@@ -41,20 +40,22 @@ Install using `pip`, including any optional packages you want...
     pip install -r requirements.txt
     pip install -r optionals.txt
 
-Add `djangorestframework` to your `INSTALLED_APPS`.
+Add `rest_framework` to your `INSTALLED_APPS`.
 
     INSTALLED_APPS = (
         ...
-        'djangorestframework',        
+        'rest_framework',        
     )
 
 If you're intending to use the browserable API you'll want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
 
     urlpatterns = patterns('',
         ...
-        url(r'^api-auth/', include('djangorestframework.urls', namespace='djangorestframework'))
+        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     )
- 
+
+Note that the base URL can be whatever you want, but you must include `rest_framework.urls` with the `rest_framework` namespace.
+
 ## Quickstart
 
 **TODO**
@@ -97,6 +98,7 @@ General guides to using REST framework.
 
 * [CSRF][csrf]
 * [Form overloading][formoverloading]
+* [Working with the Browsable API][browsableapi]
 * [Contributing to REST framework][contributing]
 * [Credits][credits]
 
@@ -110,7 +112,7 @@ Build the docs:
 
 Run the tests:
 
-    ./djangorestframework/runtests/runtests.py
+    ./rest_framework/runtests/runtests.py
 
 ## License
 
@@ -168,5 +170,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [csrf]: topics/csrf.md
 [formoverloading]: topics/formoverloading.md
+[browsableapi]: topics/browsable-api.md
 [contributing]: topics/contributing.md
 [credits]: topics/credits.md

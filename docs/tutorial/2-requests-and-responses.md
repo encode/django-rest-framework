@@ -40,9 +40,9 @@ We don't need our `JSONResponse` class anymore, so go ahead and delete that.  On
 
     from blog.models import Comment
     from blog.serializers import CommentSerializer
-    from djangorestframework import status
-    from djangorestframework.decorators import api_view
-    from djangorestframework.response import Response
+    from rest_framework import status
+    from rest_framework.decorators import api_view
+    from rest_framework.response import Response
 
     @api_view(['GET', 'POST'])
     def comment_root(request):
@@ -61,7 +61,7 @@ We don't need our `JSONResponse` class anymore, so go ahead and delete that.  On
                 comment.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
-                return Response(serializer.error_data, status=status.HTTP_400_BAD_REQUEST)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 Our instance view is an improvement over the previous example.  It's a little more concise, and the code now feels very similar to if we were working with the Forms API.  We're also using named status codes, which makes the response meanings more obvious.
@@ -87,7 +87,7 @@ Our instance view is an improvement over the previous example.  It's a little mo
                 comment.save()
                 return Response(serializer.data)
             else:
-                return Response(serializer.error_data, status=status.HTTP_400_BAD_REQUEST)
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         elif request.method == 'DELETE':
             comment.delete()
@@ -112,7 +112,7 @@ and
 Now update the `urls.py` file slightly, to append a set of `format_suffix_patterns` in addition to the existing URLs.
 
     from django.conf.urls import patterns, url
-    from djangorestframework.urlpatterns import format_suffix_patterns
+    from rest_framework.urlpatterns import format_suffix_patterns
 
     urlpatterns = patterns('blogpost.views',
         url(r'^$', 'comment_root'),
@@ -125,21 +125,27 @@ We don't necessarily need to add these extra url patterns in, but it gives us a 
 
 ## How's it looking?
 
-Go ahead and test the API from the command line, as we did in [tutorial part 1][2].  Everything is working pretty similarly, although we've got some nicer error handling if we send invalid requests.
+Go ahead and test the API from the command line, as we did in [tutorial part 1][tut-1].  Everything is working pretty similarly, although we've got some nicer error handling if we send invalid requests.
 
 **TODO: Describe using accept headers, content-type headers, and format suffixed URLs**
 
-Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/][3]."
+Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/][devserver]."
 
 **Note: Right now the Browseable API only works with the CBV's.  Need to fix that.**
 
-**TODO: Describe browseable API awesomeness**
+### Browsability
+
+Because the API chooses a return format based on what the client asks for, it will, by default, return an HTML-formatted representation of the resource when that resource is requested by a browser. This allows for the API to be easily browsable and usable by humans.
+
+See the [browsable api][browseable-api] topic for more information about the browsable API feature and how to customize it.
+
 
 ## What's next?
 
-In [tutorial part 3][4], we'll start using class based views, and see how generic views reduce the amount of code we need to write.
+In [tutorial part 3][tut-3], we'll start using class based views, and see how generic views reduce the amount of code we need to write.
 
 [json-url]: http://example.com/api/items/4.json
-[2]: 1-serialization.md
-[3]: http://127.0.0.1:8000/
-[4]: 3-class-based-views.md
+[devserver]: http://127.0.0.1:8000/
+[browseable-api]: ../topics/browsable-api.md
+[tut-1]: 1-serialization.md
+[tut-3]: 3-class-based-views.md

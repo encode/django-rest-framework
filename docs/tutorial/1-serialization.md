@@ -45,11 +45,11 @@ The simplest way to get up and running will probably be to use an `sqlite3` data
         }
     }
 
-We'll also need to add our new `blog` app and the `djangorestframework` app to `INSTALLED_APPS`.
+We'll also need to add our new `blog` app and the `rest_framework` app to `INSTALLED_APPS`.
 
     INSTALLED_APPS = (
         ...
-        'djangorestframework',
+        'rest_framework',
         'blog'
     )
 
@@ -67,7 +67,7 @@ For the purposes of this tutorial we're going to start by creating a simple `Com
 
     from django.db import models
 
-    class Comment(models.Model):
+    class Comment(models.Model):        
         email = models.EmailField()
         content = models.CharField(max_length=200)
         created = models.DateTimeField(auto_now_add=True)
@@ -81,10 +81,11 @@ Don't forget to sync the database for the first time.
 We're going to create a simple Web API that we can use to edit these comment objects with.  The first thing we need is a way of serializing and deserializing the objects into representations such as `json`.  We do this by declaring serializers, that work very similarly to Django's forms.  Create a file in the project named `serializers.py` and add the following.
 
     from blog import models
-    from djangorestframework import serializers
+    from rest_framework import serializers
 
 
     class CommentSerializer(serializers.Serializer):
+        id = serializers.IntegerField(readonly=True)
         email = serializers.EmailField()
         content = serializers.CharField(max_length=200)
         created = serializers.DateTimeField()
@@ -114,8 +115,8 @@ Okay, once we've got a few imports out of the way, we'd better create a few comm
 
     from blog.models import Comment
     from blog.serializers import CommentSerializer
-    from djangorestframework.renderers import JSONRenderer
-    from djangorestframework.parsers import JSONParser
+    from rest_framework.renderers import JSONRenderer
+    from rest_framework.parsers import JSONParser
 
     c1 = Comment(email='leila@example.com', content='nothing to say')
     c2 = Comment(email='tom@example.com', content='foo bar')
@@ -128,13 +129,13 @@ We've now got a few comment instances to play with.  Let's take a look at serial
 
     serializer = CommentSerializer(instance=c1)
     serializer.data
-    # {'email': u'leila@example.com', 'content': u'nothing to say', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774, tzinfo=<UTC>)}
+    # {'id': 1, 'email': u'leila@example.com', 'content': u'nothing to say', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774, tzinfo=<UTC>)}
 
 At this point we've translated the model instance into python native datatypes.  To finalise the serialization process we render the data into `json`.
 
     stream = JSONRenderer().render(serializer.data)
     stream
-    # '{"email": "leila@example.com", "content": "nothing to say", "created": "2012-08-22T16:20:09.822"}'
+    # '{"id": 1, "email": "leila@example.com", "content": "nothing to say", "created": "2012-08-22T16:20:09.822"}'
 
 Deserialization is similar.  First we parse a stream into python native datatypes... 
 
@@ -159,9 +160,10 @@ Edit the `blog/views.py` file, and add the following.
 
     from blog.models import Comment
     from blog.serializers import CommentSerializer
-    from djangorestframework.renderers import JSONRenderer
-    from djangorestframework.parsers import JSONParser
     from django.http import HttpResponse
+    from django.views.decorators.csrf import csrf_exempt
+    from rest_framework.renderers import JSONRenderer
+    from rest_framework.parsers import JSONParser
 
 
     class JSONResponse(HttpResponse):
@@ -177,6 +179,7 @@ Edit the `blog/views.py` file, and add the following.
 
 The root of our API is going to be a view that supports listing all the existing comments, or creating a new comment.
 
+    @csrf_exempt
     def comment_root(request):
         """
         List all comments, or create a new comment.
@@ -194,10 +197,13 @@ The root of our API is going to be a view that supports listing all the existing
                 comment.save()
                 return JSONResponse(serializer.data, status=201)
             else:
-                return JSONResponse(serializer.error_data, status=400)
+                return JSONResponse(serializer.errors, status=400)
+
+Note that because we want to be able to POST to this view from clients that won't have a CSRF token we need to mark the view as `csrf_exempt`.  This isn't something that you'd normally want to do, and REST framework views actually use more sensible behavior than this, but it'll do for our purposes right now. 
 
 We'll also need a view which corrosponds to an individual comment, and can be used to retrieve, update or delete the comment.
 
+    @csrf_exempt
     def comment_instance(request, pk):
         """
         Retrieve, update or delete a comment instance.
@@ -219,7 +225,7 @@ We'll also need a view which corrosponds to an individual comment, and can be us
                 comment.save()
                 return JSONResponse(serializer.data)
             else:
-                return JSONResponse(serializer.error_data, status=400)
+                return JSONResponse(serializer.errors, status=400)
 
         elif request.method == 'DELETE':
             comment.delete()
