@@ -34,8 +34,8 @@ class DataAndFiles(object):
 
 class BaseParser(object):
     """
-    All parsers should extend :class:`BaseParser`, specifying a :attr:`media_type` attribute,
-    and overriding the :meth:`parse` method.
+    All parsers should extend `BaseParser`, specifying a `media_type`
+    attribute, and overriding the `.parse_stream()` method.
     """
 
     media_type = None
@@ -66,7 +66,7 @@ class BaseParser(object):
 
     def parse_stream(self, stream, **opts):
         """
-        Given a *stream* to read from, return the deserialized output.
+        Given a stream to read from, return the deserialized output.
         Should return parsed data, or a DataAndFiles object consisting of the
         parsed data and files.
         """
@@ -234,16 +234,3 @@ class XMLParser(BaseParser):
             pass
 
         return value
-
-
-DEFAULT_PARSERS = (
-    JSONParser,
-    FormParser,
-    MultiPartParser,
-    XMLParser
-)
-
-if yaml:
-    DEFAULT_PARSERS += (YAMLParser, )
-else:
-    YAMLParser = None
