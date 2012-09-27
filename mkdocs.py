@@ -60,8 +60,8 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
 
         content = markdown.markdown(text, ['headerid'])
 
-        category_dir = dirpath.replace(docs_dir, '').lstrip(os.path.sep)
-        build_dir = os.path.join(html_dir, category_dir)
+        relative_dir = dirpath.replace(docs_dir, '').lstrip(os.path.sep)
+        build_dir = os.path.join(html_dir, relative_dir)
         build_file = os.path.join(build_dir, filename[:-3] + '.html')
 
         if not os.path.exists(build_dir):
