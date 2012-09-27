@@ -94,7 +94,12 @@
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
               <li class="main"><a href="#parsers">Parsers</a></li>
-<li><a href="#parse(request)">.parse(request)</a></li>
+<li><a href="#jsonparser">JSONParser</a></li>
+<li><a href="#yamlparser">YAMLParser</a></li>
+<li><a href="#xmlparser">XMLParser</a></li>
+<li><a href="#formparser">FormParser</a></li>
+<li><a href="#multipartparser">MultiPartParser</a></li>
+<li><a href="#custom-parsers">Custom parsers</a></li>
 
             </ul>
           </div>
@@ -103,7 +108,18 @@
         <div id="main-content" class="span9">
           <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/parsers.py"><span class="label label-info">parsers.py</span></a></p>
 <h1 id="parsers">Parsers</h1>
-<h2 id="parserequest">.parse(request)</h2>
+<blockquote>
+<p>Machine interacting web services tend to use more
+structured formats for sending data than form-encoded, since they're
+sending more complex data than simple forms</p>
+<p>&mdash; Malcom Tredinnick, <a href="https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion">Django developers group</a></p>
+</blockquote>
+<h2 id="jsonparser">JSONParser</h2>
+<h2 id="yamlparser">YAMLParser</h2>
+<h2 id="xmlparser">XMLParser</h2>
+<h2 id="formparser">FormParser</h2>
+<h2 id="multipartparser">MultiPartParser</h2>
+<h2 id="custom-parsers">Custom parsers</h2>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->

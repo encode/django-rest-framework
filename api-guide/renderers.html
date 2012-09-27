@@ -94,7 +94,13 @@
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
               <li class="main"><a href="#renderers">Renderers</a></li>
-<li><a href="#render(response)">.render(response)</a></li>
+<li><a href="#jsonrenderer">JSONRenderer</a></li>
+<li><a href="#jsonprenderer">JSONPRenderer</a></li>
+<li><a href="#yamlrenderer">YAMLRenderer</a></li>
+<li><a href="#xmlrenderer">XMLRenderer</a></li>
+<li><a href="#documentinghtmlrenderer">DocumentingHTMLRenderer</a></li>
+<li><a href="#templatedhtmlrenderer">TemplatedHTMLRenderer</a></li>
+<li><a href="#custom-renderers">Custom renderers</a></li>
 
             </ul>
           </div>
@@ -103,7 +109,17 @@
         <div id="main-content" class="span9">
           <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/renderers.py"><span class="label label-info">renderers.py</span></a></p>
 <h1 id="renderers">Renderers</h1>
-<h2 id="renderresponse">.render(response)</h2>
+<blockquote>
+<p>Before a TemplateResponse instance can be returned to the client, it must be rendered. The rendering process takes the intermediate representation of template and context, and turns it into the final byte stream that can be served to the client.</p>
+<p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process">Django documentation</a></p>
+</blockquote>
+<h2 id="jsonrenderer">JSONRenderer</h2>
+<h2 id="jsonprenderer">JSONPRenderer</h2>
+<h2 id="yamlrenderer">YAMLRenderer</h2>
+<h2 id="xmlrenderer">XMLRenderer</h2>
+<h2 id="documentinghtmlrenderer">DocumentingHTMLRenderer</h2>
+<h2 id="templatedhtmlrenderer">TemplatedHTMLRenderer</h2>
+<h2 id="custom-renderers">Custom renderers</h2>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->

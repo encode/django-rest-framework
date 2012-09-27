@@ -94,48 +94,88 @@
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
               <li class="main"><a href="#views">Views</a></li>
-<li><a href="#apiview">APIView</a></li>
-<li><a href="#method-handlers">Method handlers</a></li>
-<li><a href="#initial(request,-*args,-**kwargs)">.initial(request, *args, **kwargs)</a></li>
-<li><a href="#final(request,-response,-*args,-**kwargs)">.final(request, response, *args, **kwargs)</a></li>
-<li><a href="#parsers">.parsers</a></li>
-<li><a href="#renderers">.renderers</a></li>
-<li><a href="#serializer">.serializer</a></li>
-<li><a href="#authentication">.authentication</a></li>
-<li><a href="#permissions">.permissions</a></li>
-<li><a href="#headers">.headers</a></li>
+<li><a href="#api-policy-attributes">API policy attributes</a></li>
+<li><a href="#api-policy-instantiation-methods">API policy instantiation methods</a></li>
+<li><a href="#api-policy-implementation-methods">API policy implementation methods</a></li>
+<li><a href="#dispatch-methods">Dispatch methods</a></li>
 
             </ul>
           </div>
         </div>
 
         <div id="main-content" class="span9">
-          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/views.py"><span class="label label-info">views.py</span></a></p>
+          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/decorators.py"><span class="label label-info">decorators.py</span></a> <a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/views.py"><span class="label label-info">views.py</span></a></p>
 <h1 id="views">Views</h1>
 <blockquote>
 <p>Django's class based views are a welcome departure from the old-style views.</p>
 <p>&mdash; <a href="http://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html">Reinout van Rees</a></p>
 </blockquote>
-<p>REST framework provides a simple <code>APIView</code> class, built on Django's <code>django.generics.views.View</code>.  The <code>APIView</code> class ensures five main things:</p>
-<ol>
-<li>Any requests inside the view will become <code>Request</code> instances.</li>
-<li><code>Request</code> instances will have their <code>renderers</code> and <code>authentication</code> attributes automatically set. </li>
-<li><code>Response</code> instances will have their <code>parsers</code> and <code>serializer</code> attributes automatically set.</li>
-<li><code>APIException</code> exceptions will be caught and return appropriate responses.</li>
-<li>Any permissions provided will be checked prior to passing the request to a handler method.</li>
-</ol>
-<p>Additionally there are a some minor extras, such as providing a default <code>options</code> handler, setting some common headers on the response prior to return, and providing the useful <code>initial()</code> and <code>final()</code> hooks.</p>
-<h2 id="apiview">APIView</h2>
-<h2 id="method-handlers">Method handlers</h2>
-<p>Describe that APIView handles regular .get(), .post(), .put(), .delete() etc...</p>
-<h2 id="initialrequest-args-kwargs">.initial(request, <em>args, </em>*kwargs)</h2>
-<h2 id="finalrequest-response-args-kwargs">.final(request, response, <em>args, </em>*kwargs)</h2>
-<h2 id="parsers">.parsers</h2>
-<h2 id="renderers">.renderers</h2>
-<h2 id="serializer">.serializer</h2>
-<h2 id="authentication">.authentication</h2>
-<h2 id="permissions">.permissions</h2>
-<h2 id="headers">.headers</h2>
+<p>REST framework provides an <code>APIView</code> class, which subclasses Django's <code>View</code> class.</p>
+<p><code>APIView</code> classes are different from regular <code>View</code> classes in the following ways:</p>
+<ul>
+<li>Requests passed to the handler methods will be REST framework's <code>Request</code> instances, not Django's <code>HttpRequest</code> instances.</li>
+<li>Handler methods may return REST framework's <code>Response</code>, instead of Django's <code>HttpResponse</code>.  The view will manage content negotiation and setting the correct renderer on the response.</li>
+<li>Any <code>APIException</code> exceptions will be caught and mediated into appropriate responses.</li>
+<li>Incoming requests will be authenticated and appropriate permission and/or throttle checks will be run before dispatching the request to the handler method.</li>
+</ul>
+<p>Using the <code>APIView</code> class is pretty much the same as using a regular <code>View</code> class, as usual, the incoming request is dispatched to an appropriate handler method such as <code>.get()</code> or <code>.post()</code>.  Additionally, a number of attributes may be set on the class that control various aspects of the API policy.</p>
+<p>For example:</p>
+<pre class="prettyprint lang-py"><code>class ListUsers(APIView):
+    """
+    View to list all users in the system.
+
+    * Requires token authentication.
+    * Only admin users are able to access this view.
+    """
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAdmin,)
+
+    def get(self, request, format=None):
+        """
+        Return a list of all users.
+        """
+        users = [user.username for user in User.objects.all()]
+        return Response(users)
+</code></pre>
+<h2 id="api-policy-attributes">API policy attributes</h2>
+<p>The following attributes control the pluggable aspects of API views.</p>
+<h3 id="renderer_classes">.renderer_classes</h3>
+<h3 id="parser_classes">.parser_classes</h3>
+<h3 id="authentication_classes">.authentication_classes</h3>
+<h3 id="throttle_classes">.throttle_classes</h3>
+<h3 id="permission_classes">.permission_classes</h3>
+<h3 id="content_negotiation_class">.content_negotiation_class</h3>
+<h2 id="api-policy-instantiation-methods">API policy instantiation methods</h2>
+<p>The following methods are used by REST framework to instantiate the various pluggable API policies.  You won't typically need to override these methods.</p>
+<h3 id="get_renderersself">.get_renderers(self)</h3>
+<h3 id="get_parsersself">.get_parsers(self)</h3>
+<h3 id="get_authenticatorsself">.get_authenticators(self)</h3>
+<h3 id="get_throttlesself">.get_throttles(self)</h3>
+<h3 id="get_permissionsself">.get_permissions(self)</h3>
+<h3 id="get_content_negotiatorself">.get_content_negotiator(self)</h3>
+<h2 id="api-policy-implementation-methods">API policy implementation methods</h2>
+<p>The following methods are called before dispatching to the handler method.</p>
+<h3 id="check_permissions">.check_permissions(...)</h3>
+<h3 id="check_throttles">.check_throttles(...)</h3>
+<h3 id="perform_content_negotiation">.perform_content_negotiation(...)</h3>
+<h2 id="dispatch-methods">Dispatch methods</h2>
+<p>The following methods are called directly by the view's <code>.dispatch()</code> method.
+These perform any actions that need to occur before or after calling the handler methods such as <code>.get()</code>, <code>.post()</code>, <code>put()</code> and <code>.delete()</code>.<br />
+</p>
+<h3 id="initialself-request-args-kwargs">.initial(self, request, <em>args, </em>*kwargs)</h3>
+<p>Performs any actions that need to occur before the handler method gets called.
+This method is used to enforce permissions and throttling, and perform content negotiation.</p>
+<p>You won't typically need to override this method.</p>
+<h3 id="handle_exceptionself-exc">.handle_exception(self, exc)</h3>
+<p>Any exception thrown by the handler method will be passed to this method, which either returns a <code>Response</code> instance, or re-raises the exception.</p>
+<p>The default implementation handles any subclass of <code>rest_framework.exceptions.APIException</code>, as well as Django's <code>Http404</code> and <code>PermissionDenied</code> exceptions, and returns an appropriate error response.</p>
+<p>If you need to customize the error responses your API returns you should subclass this method.</p>
+<h3 id="initialize_requestself-request-args-kwargs">.initialize_request(self, request, <em>args, </em>*kwargs)</h3>
+<p>Ensures that the request object that is passed to the handler method is an instance of <code>Request</code>, rather than the usual Django <code>HttpRequest</code>.</p>
+<p>You won't typically need to override this method.</p>
+<h3 id="finalize_responseself-request-response-args-kwargs">.finalize_response(self, request, response, <em>args, </em>*kwargs)</h3>
+<p>Ensures that any <code>Response</code> object returned from the handler method will be rendered into the correct content type, as determined by the content negotation.</p>
+<p>You won't typically need to override this method.</p>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->
