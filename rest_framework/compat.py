@@ -10,15 +10,6 @@ except ImportError:
     import StringIO
 
 
-# parse_qs from 'urlparse' module unless python 2.5, in which case from 'cgi'
-try:
-    # python >= 2.6
-    from urlparse import parse_qs
-except ImportError:
-    # python < 2.6
-    from cgi import parse_qs
-
-
 # django.views.generic.View (Django >= 1.3)
 try:
     from django.views.generic import View
