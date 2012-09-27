@@ -1,0 +1,7 @@
+rest_framework/authtoken
+rest_framework/utils
+rest_framework/tests
+rest_framework/runtests
+rest_framework/templatetags
+rest_framework
+rest_framework/authtoken/migrations
