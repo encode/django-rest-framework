@@ -42,6 +42,7 @@ The following people have helped make REST framework great.
 * Alec Perkins - [alecperkins]
 * Michael Barrett - [phobologic]
 * Mathieu Dhondt - [laundromat]
+* Johan Charpentier - [cyberj]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -106,3 +107,4 @@ To contact the author directly:
 [alecperkins]: https://github.com/alecperkins
 [phobologic]: https://github.com/phobologic
 [laundromat]: https://github.com/laundromat
+[cyberj]: https://github.com/cyberj
