@@ -169,13 +169,14 @@ class APIView(View):
         conneg = self.content_negotiation_class()
         return conneg.negotiate(request, renderers, self.format, force)
 
-    def check_permissions(self, request, obj=None):
+    def has_permission(self, request, obj=None):
         """
-        Check if request should be permitted.
+        Return `True` if the request should be permitted.
         """
         for permission in self.get_permissions():
             if not permission.has_permission(request, obj):
-                self.permission_denied(request)
+                return False
+        return True
 
     def check_throttles(self, request):
         """
@@ -197,7 +198,8 @@ class APIView(View):
         Runs anything that needs to occur prior to calling the method handlers.
         """
         self.format = self.get_format_suffix(**kwargs)
-        self.check_permissions(request)
+        if not self.has_permission(request):
+            self.permission_denied(request)
         self.check_throttles(request)
         self.renderer, self.accepted_media_type = self.perform_content_negotiation(request)
 

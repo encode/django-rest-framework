@@ -88,8 +88,8 @@ class MetadataMixin(object):
             'parses': [parser.media_type for parser in self.parser_classes],
         }
         #  TODO: Add 'fields', from serializer info.
-        # form = self.get_bound_form()
-        # if form is not None:
+        # serializer = self.get_serializer()
+        # if serializer is not None:
         #     field_name_types = {}
         #     for name, field in form.fields.iteritems():
         #         field_name_types[name] = field.__class__.__name__

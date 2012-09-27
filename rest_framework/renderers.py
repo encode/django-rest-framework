@@ -5,6 +5,7 @@ Django REST framework also provides HTML and PlainText renderers that help self-
 by serializing the output along with documentation regarding the View, output status and headers,
 and providing forms and links depending on the allowed methods, renderers and parsers on the View.
 """
+import copy
 import string
 from django import forms
 from django.template import RequestContext, loader
@@ -193,7 +194,7 @@ class DocumentingHTMLRenderer(BaseRenderer):
     format = 'html'
     template = 'rest_framework/api.html'
 
-    def _get_content(self, view, request, obj, media_type):
+    def get_content(self, view, request, obj, media_type):
         """
         Get the content as if it had been rendered by a non-documenting renderer.
 
@@ -214,14 +215,31 @@ class DocumentingHTMLRenderer(BaseRenderer):
 
         return content
 
-    def _get_form_instance(self, view, method):
+    def get_form(self, view, method, request):
         """
         Get a form, possibly bound to either the input or output data.
         In the absence on of the Resource having an associated form then
         provide a form that can be used to submit arbitrary content.
         """
-        if not hasattr(self.view, 'get_serializer'):  # No serializer, no form.
-            return
+        if not method in view.allowed_methods:
+            return  # Not a valid method
+
+        if not api_settings.FORM_METHOD_OVERRIDE:
+            return  # Cannot use form overloading
+
+        temp = request._method
+        request._method = method.upper()
+        if not view.has_permission(request):
+            request._method = temp
+            return  # Don't have permission
+        request._method = temp
+
+        if method == 'DELETE' or method == 'OPTIONS':
+            return True  # Don't actually need to return a form
+
+        if not getattr(view, 'get_serializer', None):
+            return self.get_generic_content_form(view)
+
         #  We need to map our Fields to Django's Fields.
         field_mapping = dict([
          [serializers.FloatField.__name__, forms.FloatField],
@@ -236,20 +254,20 @@ class DocumentingHTMLRenderer(BaseRenderer):
         # Creating an on the fly form see: http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
         fields = {}
         object, data = None, None
-        if hasattr(self.view, 'object'):
-            object = self.view.object
-        serializer = self.view.get_serializer(instance=object)
+        if getattr(view, 'object', None):
+            object = view.object
+        serializer = view.get_serializer(instance=object)
         for k, v in serializer.fields.items():
             if v.readonly:
                 continue
             fields[k] = field_mapping[v.__class__.__name__]()
         OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
-        if object and not self.view.request.method == 'DELETE':  # Don't fill in the form when the object is deleted
+        if object and not view.request.method == 'DELETE':  # Don't fill in the form when the object is deleted
             data = serializer.data
         form_instance = OnTheFlyForm(data)
         return form_instance
 
-    def _get_generic_content_form(self, view):
+    def get_generic_content_form(self, view):
         """
         Returns a form that allows for arbitrary content types to be tunneled via standard HTML forms
         (Which are typically application/x-www-form-urlencoded)
@@ -257,7 +275,8 @@ class DocumentingHTMLRenderer(BaseRenderer):
 
         # If we're not using content overloading there's no point in supplying a generic form,
         # as the view won't treat the form's value as the content of the request.
-        if not getattr(view.request, '_USE_FORM_OVERLOADING', False):
+        if not (api_settings.FORM_CONTENT_OVERRIDE
+                and api_settings.FORM_CONTENTTYPE_OVERRIDE):
             return None
 
         # NB. http://jacobian.org/writing/dynamic-form-generation/
@@ -272,11 +291,15 @@ class DocumentingHTMLRenderer(BaseRenderer):
                 contenttype_choices = [(media_type, media_type) for media_type in parsed_media_types]
                 initial_contenttype = parsed_media_types[0]
 
-                self.fields[request._CONTENTTYPE_PARAM] = forms.ChoiceField(label='Content Type',
-                                                                         choices=contenttype_choices,
-                                                                         initial=initial_contenttype)
-                self.fields[request._CONTENT_PARAM] = forms.CharField(label='Content',
-                                                                   widget=forms.Textarea)
+                self.fields[api_settings.FORM_CONTENTTYPE_OVERRIDE] = forms.ChoiceField(
+                    label='Content Type',
+                    choices=contenttype_choices,
+                    initial=initial_contenttype
+                )
+                self.fields[api_settings.FORM_CONTENT_OVERRIDE] = forms.CharField(
+                    label='Content',
+                    widget=forms.Textarea
+                )
 
         # If either of these reserved parameters are turned off then content tunneling is not possible
         if self.view.request._CONTENTTYPE_PARAM is None or self.view.request._CONTENT_PARAM is None:
@@ -310,10 +333,12 @@ class DocumentingHTMLRenderer(BaseRenderer):
         request = view.request
         response = view.response
 
-        content = self._get_content(view, request, obj, media_type)
+        content = self.get_content(view, request, obj, media_type)
 
-        put_form_instance = self._get_form_instance(self.view, 'put')
-        post_form_instance = self._get_form_instance(self.view, 'post')
+        put_form = self.get_form(view, 'PUT', request)
+        post_form = self.get_form(view, 'POST', request)
+        delete_form = self.get_form(view, 'DELETE', request)
+        options_form = self.get_form(view, 'OPTIONS', request)
 
         name = self.get_name()
         description = self.get_description()
@@ -330,10 +355,12 @@ class DocumentingHTMLRenderer(BaseRenderer):
             'name': name,
             'version': VERSION,
             'breadcrumblist': breadcrumb_list,
-            'allowed_methods': self.view.allowed_methods,
-            'available_formats': [renderer.format for renderer in self.view.renderer_classes],
-            'put_form': put_form_instance,
-            'post_form': post_form_instance,
+            'allowed_methods': view.allowed_methods,
+            'available_formats': [renderer.format for renderer in view.renderer_classes],
+            'put_form': put_form,
+            'post_form': post_form,
+            'delete_form': delete_form,
+            'options_form': options_form,
             'api_settings': api_settings
         })
 

@@ -89,7 +89,7 @@
             </form>
         {% endif %}
 
-        {% if 'OPTIONS' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
+        {% if options_form %}
             <form class="button-form" action="{{ request.get_full_path }}" method="POST" class="pull-right">
                 {% csrf_token %}
                 <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
@@ -97,7 +97,7 @@
             </form>
         {% endif %}
 
-        {% if 'DELETE' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
+        {% if delete_form %}
             <form class="button-form" action="{{ request.get_full_path }}" method="POST" class="pull-right">
                 {% csrf_token %}
                 <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
@@ -121,7 +121,7 @@
 
             {% if response.status_code != 403 %}
 
-                {% if 'POST' in allowed_methods %}
+                {% if post_form %}
                     <form action="{{ request.get_full_path }}" method="POST" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
                         <fieldset>
                             <h2>POST: {{ name }}</h2>
@@ -144,7 +144,7 @@
                     </form>
                 {% endif %}
 
-                {% if 'PUT' in allowed_methods and api_settings.FORM_METHOD_OVERRIDE %}
+                {% if put_form %}
                     <form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
                         <fieldset>
                             <h2>PUT: {{ name }}</h2>

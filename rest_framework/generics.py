@@ -42,7 +42,8 @@ class SingleObjectBaseView(SingleObjectMixin, BaseView):
         Override default to add support for object-level permissions.
         """
         obj = super(SingleObjectBaseView, self).get_object()
-        self.check_permissions(self.request, obj)
+        if not self.has_permission(self.request, obj):
+            self.permission_denied(self.request)
         return obj
 
 

@@ -2,8 +2,9 @@ import re
 
 from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
+from django.test.client import RequestFactory
 
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.compat import yaml
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -87,6 +88,34 @@ urlpatterns = patterns('',
     url(r'^html1$', HTMLView1.as_view()),
     url(r'^api', include('rest_framework.urls', namespace='rest_framework'))
 )
+
+
+class POSTDeniedPermission(permissions.BasePermission):
+    def has_permission(self, request, obj=None):
+        return request.method != 'POST'
+
+
+class POSTDeniedView(APIView):
+    renderer_classes = (DocumentingHTMLRenderer,)
+    permission_classes = (POSTDeniedPermission,)
+
+    def get(self, request):
+        return Response()
+
+    def post(self, request):
+        return Response()
+
+    def put(self, request):
+        return Response()
+
+
+class DocumentingRendererTests(TestCase):
+    def test_only_permitted_forms_are_displayed(self):
+        view = POSTDeniedView.as_view()
+        request = RequestFactory().get('/')
+        response = view(request).render()
+        self.assertNotContains(response, '>POST<')
+        self.assertContains(response, '>PUT<')
 
 
 class RendererEndToEndTests(TestCase):

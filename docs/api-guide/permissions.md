@@ -92,7 +92,6 @@ To implement a custom permission, override `BasePermission` and implement the `.
 
 The method should return `True` if the request should be granted access, and `False` otherwise.
 
-
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
 [throttling]: throttling.md
