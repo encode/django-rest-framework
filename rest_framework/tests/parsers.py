@@ -1,7 +1,7 @@
 # """
 # ..
 #     >>> from rest_framework.parsers import FormParser
-#     >>> from rest_framework.compat import RequestFactory
+#     >>> from django.test.client import RequestFactory
 #     >>> from rest_framework.views import View
 #     >>> from StringIO import StringIO
 #     >>> from urllib import urlencode
@@ -83,7 +83,7 @@
 # import httplib, mimetypes
 # from tempfile import TemporaryFile
 # from django.test import TestCase
-# from rest_framework.compat import RequestFactory
+# from django.test.client import RequestFactory
 # from rest_framework.parsers import MultiPartParser
 # from rest_framework.views import View
 # from StringIO import StringIO

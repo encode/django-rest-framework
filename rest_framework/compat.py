@@ -19,52 +19,6 @@ except ImportError:
     from cgi import parse_qs
 
 
-# django.test.client.RequestFactory (Required for Django < 1.3)
-try:
-    from django.test.client import RequestFactory
-except ImportError:
-    from django.test import Client
-    from django.core.handlers.wsgi import WSGIRequest
-
-    # From: http://djangosnippets.org/snippets/963/
-    # Lovely stuff
-    class RequestFactory(Client):
-        """
-        Class that lets you create mock :obj:`Request` objects for use in testing.
-
-        Usage::
-
-            rf = RequestFactory()
-            get_request = rf.get('/hello/')
-            post_request = rf.post('/submit/', {'foo': 'bar'})
-
-        This class re-uses the :class:`django.test.client.Client` interface. Of which
-        you can find the docs here__.
-
-        __ http://www.djangoproject.com/documentation/testing/#the-test-client
-
-        Once you have a `request` object you can pass it to any :func:`view` function,
-        just as if that :func:`view` had been hooked up using a URLconf.
-        """
-        def request(self, **request):
-            """
-            Similar to parent class, but returns the :obj:`request` object as soon as it
-            has created it.
-            """
-            environ = {
-                'HTTP_COOKIE': self.cookies,
-                'PATH_INFO': '/',
-                'QUERY_STRING': '',
-                'REQUEST_METHOD': 'GET',
-                'SCRIPT_NAME': '',
-                'SERVER_NAME': 'testserver',
-                'SERVER_PORT': 80,
-                'SERVER_PROTOCOL': 'HTTP/1.1',
-            }
-            environ.update(self.defaults)
-            environ.update(request)
-            return WSGIRequest(environ)
-
 # django.views.generic.View (Django >= 1.3)
 try:
     from django.views.generic import View

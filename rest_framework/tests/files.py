@@ -1,7 +1,7 @@
 # from django.test import TestCase
 # from django import forms
 
-# from rest_framework.compat import RequestFactory
+# from django.test.client import RequestFactory
 # from rest_framework.views import View
 # from rest_framework.response import Response
 

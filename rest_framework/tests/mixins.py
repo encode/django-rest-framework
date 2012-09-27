@@ -1,7 +1,7 @@
 # """Tests for the mixin module"""
 # from django.test import TestCase
 # from rest_framework import status
-# from rest_framework.compat import RequestFactory
+# from django.test.client import RequestFactory
 # from django.contrib.auth.models import Group, User
 # from rest_framework.mixins import CreateModelMixin, PaginatorMixin, ReadModelMixin
 # from rest_framework.resources import ModelResource

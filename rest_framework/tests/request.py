@@ -7,7 +7,7 @@ from django.test import TestCase, Client
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
-from rest_framework.compat import RequestFactory
+from django.test.client import RequestFactory
 from rest_framework.parsers import (
     FormParser,
     MultiPartParser,
