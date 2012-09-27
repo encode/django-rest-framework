@@ -41,6 +41,7 @@ The following people have helped make REST framework great.
 * Shawn Lewis - [shawnlewis]
 * Alec Perkins - [alecperkins]
 * Michael Barrett - [phobologic]
+* Mathieu Dhondt - [laundromat]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -104,3 +105,4 @@ To contact the author directly:
 [shawnlewis]: https://github.com/shawnlewis
 [alecperkins]: https://github.com/alecperkins
 [phobologic]: https://github.com/phobologic
+[laundromat]: https://github.com/laundromat
