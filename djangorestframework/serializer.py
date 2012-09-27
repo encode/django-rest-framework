@@ -210,6 +210,9 @@ class Serializer(object):
         Given a model instance or dict, serialize it to a dict..
         """
         data = {}
+        # Append the instance itself to the stack so that you never iterate
+        # back into the first object.
+        self.stack.append(instance)
 
         fields = self.get_fields(instance)
 
