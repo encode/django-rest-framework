@@ -55,7 +55,7 @@ class TestContentParsing(TestCase):
         request = Request(factory.head('/'))
         self.assertEqual(request.DATA, None)
 
-    def test_standard_behaviour_determines_form_content_POST(self):
+    def test_request_DATA_with_form_content(self):
         """
         Ensure request.DATA returns content for POST request with form content.
         """
@@ -64,7 +64,7 @@ class TestContentParsing(TestCase):
         request.parser_classes = (FormParser, MultiPartParser)
         self.assertEqual(request.DATA.items(), data.items())
 
-    def test_standard_behaviour_determines_non_form_content_POST(self):
+    def test_request_DATA_with_text_content(self):
         """
         Ensure request.DATA returns content for POST request with
         non-form content.
@@ -74,6 +74,15 @@ class TestContentParsing(TestCase):
         request = Request(factory.post('/', content, content_type=content_type))
         request.parser_classes = (PlainTextParser,)
         self.assertEqual(request.DATA, content)
+
+    def test_request_POST_with_form_content(self):
+        """
+        Ensure request.POST returns content for POST request with form content.
+        """
+        data = {'qwerty': 'uiop'}
+        request = Request(factory.post('/', data))
+        request.parser_classes = (FormParser, MultiPartParser)
+        self.assertEqual(request.POST.items(), data.items())
 
     def test_standard_behaviour_determines_form_content_PUT(self):
         """
