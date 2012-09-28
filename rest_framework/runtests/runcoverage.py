@@ -46,7 +46,7 @@ def main():
 
     for (path, dirs, files) in os.walk(project_dir):
         # Drop tests and runtests directories from the test coverage report
-        if os.path.basename(path) == 'tests' or os.path.basename(path) == 'runtests':
+        if os.path.basename(path) in ['tests', 'runtests', 'migrations']:
             continue
 
         # Drop the compat module from coverage, since we're not interested in the coverage
