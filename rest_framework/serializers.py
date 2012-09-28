@@ -4,6 +4,7 @@ import types
 from decimal import Decimal
 from django.core.serializers.base import DeserializedObject
 from django.utils.datastructures import SortedDict
+from rest_framework.compat import get_concrete_model
 from rest_framework.fields import *
 
 
@@ -299,7 +300,7 @@ class ModelSerializer(RelatedField, Serializer):
         else:
             cls = self.opts.model
 
-        opts = cls._meta.concrete_model._meta
+        opts = get_concrete_model(cls)._meta
         pk_field = opts.pk
         while pk_field.rel:
             pk_field = pk_field.rel.to._meta.pk

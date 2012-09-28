@@ -10,6 +10,14 @@ except ImportError:
     import StringIO
 
 
+def get_concrete_model(model_cls):
+    try:
+        return model_cls._meta.concrete_model
+    except AttributeError:
+        # 1.3 does not include concrete model
+        return model_cls
+
+
 # First implementation of Django class-based views did not include head method
 # in base View class - https://code.djangoproject.com/ticket/15668
 if django.VERSION >= (1, 4):
