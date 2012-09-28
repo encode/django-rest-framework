@@ -114,7 +114,7 @@ class BaseSerializer(Field):
         Returns the complete set of fields for the object as a dict.
 
         This will be the set of any explicitly declared fields,
-        plus the set of fields returned by get_default_fields().
+        plus the set of fields returned by default_fields().
         """
         ret = SortedDict()
 
@@ -234,7 +234,7 @@ class BaseSerializer(Field):
             return dict([(key, self.to_native(val))
                          for (key, val) in obj.items()])
         elif hasattr(obj, '__iter__'):
-            return (self.to_native(item) for item in obj)
+            return [self.to_native(item) for item in obj]
         return self.convert_object(obj)
 
     def from_native(self, data):

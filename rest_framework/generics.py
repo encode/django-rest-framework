@@ -2,7 +2,7 @@
 Generic views that provide commmonly needed behaviour.
 """
 
-from rest_framework import views, mixins
+from rest_framework import views, mixins, serializers
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
 
@@ -18,11 +18,19 @@ class BaseView(views.APIView):
     def get_serializer(self, data=None, files=None, instance=None):
         # TODO: add support for files
         # TODO: add support for seperate serializer/deserializer
+        serializer_class = self.serializer_class
+
+        if serializer_class is None:
+            class DefaultSerializer(serializers.ModelSerializer):
+                class Meta:
+                    model = self.model
+            serializer_class = DefaultSerializer
+
         context = {
             'request': self.request,
             'format': self.kwargs.get('format', None)
         }
-        return self.serializer_class(data, instance=instance, context=context)
+        return serializer_class(data, instance=instance, context=context)
 
 
 class MultipleObjectBaseView(MultipleObjectMixin, BaseView):

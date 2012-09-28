@@ -100,7 +100,6 @@ import django
 if django.VERSION < (1, 3):
     INSTALLED_APPS += ('staticfiles',)
 
-
 # OAuth support is optional, so we only test oauth if it's installed.
 try:
     import oauth_provider

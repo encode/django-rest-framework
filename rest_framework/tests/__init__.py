@@ -1,4 +1,7 @@
-"""Force import of all modules in this package in order to get the standard test runner to pick up the tests.  Yowzers."""
+"""
+Force import of all modules in this package in order to get the standard test
+runner to pick up the tests.  Yowzers.
+"""
 import os
 
 modules = [filename.rsplit('.', 1)[0]
