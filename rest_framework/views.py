@@ -39,7 +39,8 @@ def _remove_leading_indent(content):
     # unindent the content if needed
     if whitespace_counts:
         whitespace_pattern = '^' + (' ' * min(whitespace_counts))
-        return re.sub(re.compile(whitespace_pattern, re.MULTILINE), '', content)
+        content = re.sub(re.compile(whitespace_pattern, re.MULTILINE), '', content)
+    content = content.strip('\n')
     return content
 
 

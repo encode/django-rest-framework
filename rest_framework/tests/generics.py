@@ -9,10 +9,16 @@ factory = RequestFactory()
 
 
 class RootView(generics.RootAPIView):
+    """
+    Example description for OPTIONS.
+    """
     model = BasicModel
 
 
 class InstanceView(generics.InstanceAPIView):
+    """
+    Example description for OPTIONS.
+    """
     model = BasicModel
 
 
@@ -60,7 +66,7 @@ class TestRootView(TestCase):
         request = factory.put('/', json.dumps(content), content_type='application/json')
         response = self.view(request).render()
         self.assertEquals(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEquals(response.content, '{"detail": "Method \'PUT\' not allowed."}')
+        self.assertEquals(response.data, {"detail": "Method 'PUT' not allowed."})
 
     def test_delete_root_view(self):
         """
@@ -69,7 +75,29 @@ class TestRootView(TestCase):
         request = factory.delete('/')
         response = self.view(request).render()
         self.assertEquals(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEquals(response.content, '{"detail": "Method \'DELETE\' not allowed."}')
+        self.assertEquals(response.data, {"detail": "Method 'DELETE' not allowed."})
+
+    def test_options_root_view(self):
+        """
+        OPTIONS requests to RootAPIView should return metadata
+        """
+        request = factory.options('/')
+        response = self.view(request).render()
+        expected = {
+            'parses': [
+                'application/json',
+                'application/x-www-form-urlencoded',
+                'multipart/form-data'
+            ],
+            'renders': [
+                'application/json',
+                'text/html'
+            ],
+            'name': 'Root',
+            'description': 'Example description for OPTIONS.'
+        }
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(response.data, expected)
 
 
 class TestInstanceView(TestCase):
@@ -104,7 +132,7 @@ class TestInstanceView(TestCase):
         request = factory.post('/', json.dumps(content), content_type='application/json')
         response = self.view(request).render()
         self.assertEquals(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEquals(response.content, '{"detail": "Method \'POST\' not allowed."}')
+        self.assertEquals(response.data, {"detail": "Method 'POST' not allowed."})
 
     def test_put_instance_view(self):
         """
@@ -128,3 +156,25 @@ class TestInstanceView(TestCase):
         self.assertEquals(response.content, '')
         ids = [obj.id for obj in self.objects.all()]
         self.assertEquals(ids, [2, 3])
+
+    def test_options_instance_view(self):
+        """
+        OPTIONS requests to InstanceAPIView should return metadata
+        """
+        request = factory.options('/')
+        response = self.view(request).render()
+        expected = {
+            'parses': [
+                'application/json',
+                'application/x-www-form-urlencoded',
+                'multipart/form-data'
+            ],
+            'renders': [
+                'application/json',
+                'text/html'
+            ],
+            'name': 'Instance',
+            'description': 'Example description for OPTIONS.'
+        }
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(response.data, expected)
