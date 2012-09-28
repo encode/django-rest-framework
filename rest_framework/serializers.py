@@ -231,6 +231,9 @@ class BaseSerializer(Field):
         """
         Serialize objects -> primatives.
         """
+        if isinstance(obj, DeserializedObject):
+            obj = obj.object
+
         if isinstance(obj, dict):
             return dict([(key, self.to_native(val))
                          for (key, val) in obj.items()])
@@ -295,11 +298,7 @@ class ModelSerializer(RelatedField, Serializer):
         """
         Return all the fields that should be serialized for the model.
         """
-        if serialize:
-            cls = obj.__class__
-        else:
-            cls = self.opts.model
-
+        cls = self.opts.model
         opts = get_concrete_model(cls)._meta
         pk_field = opts.pk
         while pk_field.rel:
@@ -342,6 +341,11 @@ class ModelSerializer(RelatedField, Serializer):
         """
         Restore the model instance.
         """
+        if instance:
+            for key, val in attrs.items():
+                setattr(instance, key, val)
+            return DeserializedObject(instance)
+
         m2m_data = {}
         for field in self.opts.model._meta.many_to_many:
             if field.name in attrs:
