@@ -53,7 +53,7 @@ def optional_login(request):
     """
     try:
         login_url = reverse('rest_framework:login')
-    except NoReverseMatch:
+    except:
         return ''
 
     snippet = "<a href='%s?next=%s'>Log in</a>" % (login_url, request.path)
@@ -67,7 +67,7 @@ def optional_logout(request):
     """
     try:
         logout_url = reverse('rest_framework:logout')
-    except NoReverseMatch:
+    except:
         return ''
 
     snippet = "<a href='%s?next=%s'>Log out</a>" % (logout_url, request.path)
