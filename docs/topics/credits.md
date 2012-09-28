@@ -43,6 +43,7 @@ The following people have helped make REST framework great.
 * Michael Barrett - [phobologic]
 * Mathieu Dhondt - [laundromat]
 * Johan Charpentier - [cyberj]
+* Jamie Matthews - [j4mie]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -53,6 +54,10 @@ The documentation is built with [Bootstrap] and [Markdown].
 Project hosting is with [GitHub].
 
 Continuous integration testing is managed with [Travis CI][travis-ci].
+
+Various inspiration taken from the [Piston], [Tastypie] and [Dagny] projects.
+
+Development of REST framework 2.0 was sponsored by [DabApps].
 
 ## Contact
 
@@ -67,6 +72,11 @@ To contact the author directly:
 [markdown]: http://daringfireball.net/projects/markdown/
 [github]: github.com/tomchristie/django-rest-framework
 [travis-ci]: https://secure.travis-ci.org/tomchristie/django-rest-framework
+[piston]: https://bitbucket.org/jespern/django-piston
+[tastypie]: https://github.com/toastdriven/django-tastypie
+[dagny]: https://github.com/zacharyvoase/dagny
+[dabapps]: http://lab.dabapps.com
+
 [tomchristie]: https://github.com/tomchristie
 [markotibold]: https://github.com/markotibold
 [pbgwl]: https://github.com/pbgwl
@@ -108,3 +118,4 @@ To contact the author directly:
 [phobologic]: https://github.com/phobologic
 [laundromat]: https://github.com/laundromat
 [cyberj]: https://github.com/cyberj
+[j4mie]: https://github.com/j4mie
