@@ -28,6 +28,22 @@ def _hasattr(obj, name):
     return not getattr(obj, name) is Empty
 
 
+def clone_request(request, method):
+    """
+    Internal helper method to clone a request, replacing with a different
+    HTTP method.  Used for checking permissions against other methods.
+    """
+    ret = Request(request._request,
+                  request.parser_classes,
+                  request.authentication_classes)
+    ret._data = request._data
+    ret._files = request._files
+    ret._content_type = request._content_type
+    ret._stream = request._stream
+    ret._method = method
+    return ret
+
+
 class Request(object):
     """
     Wrapper allowing to enhance a standard `HttpRequest` instance.

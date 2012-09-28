@@ -5,13 +5,13 @@ Django REST framework also provides HTML and PlainText renderers that help self-
 by serializing the output along with documentation regarding the View, output status and headers,
 and providing forms and links depending on the allowed methods, renderers and parsers on the View.
 """
-import copy
 import string
 from django import forms
 from django.template import RequestContext, loader
 from django.utils import simplejson as json
 from rest_framework.compat import yaml
 from rest_framework.settings import api_settings
+from rest_framework.request import clone_request
 from rest_framework.utils import dict2xml
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
@@ -227,12 +227,9 @@ class DocumentingHTMLRenderer(BaseRenderer):
         if not api_settings.FORM_METHOD_OVERRIDE:
             return  # Cannot use form overloading
 
-        temp = request._method
-        request._method = method.upper()
+        request = clone_request(request, method)
         if not view.has_permission(request):
-            request._method = temp
             return  # Don't have permission
-        request._method = temp
 
         if method == 'DELETE' or method == 'OPTIONS':
             return True  # Don't actually need to return a form
