@@ -33,6 +33,8 @@ class Response(SimpleTemplateResponse):
 
     @property
     def rendered_content(self):
+        assert self.renderer, "No renderer set on Response"
+
         self['Content-Type'] = self.renderer.media_type
         if self.data is None:
             return self.renderer.render()
