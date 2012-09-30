@@ -44,6 +44,10 @@ DEFAULTS = {
         'anon': None,
     },
 
+    'MODEL_SERIALIZER': 'rest_framework.serializers.ModelSerializer',
+    'PAGINATION_SERIALIZER': 'rest_framework.pagination.PaginationSerializer',
+    'PAGINATE_BY': 20,
+
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
 
@@ -65,6 +69,8 @@ IMPORT_STRINGS = (
     'DEFAULT_PERMISSIONS',
     'DEFAULT_THROTTLES',
     'DEFAULT_CONTENT_NEGOTIATION',
+    'MODEL_SERIALIZER',
+    'PAGINATION_SERIALIZER',
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN',
 )

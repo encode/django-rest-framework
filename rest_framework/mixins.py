@@ -7,6 +7,7 @@ which allows mixin classes to be composed in interesting ways.
 Eg. Use mixins to build a Resource class, and have a Router class
     perform the binding of http methods to actions for us.
 """
+from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -30,9 +31,27 @@ class ListModelMixin(object):
     List a queryset.
     Should be mixed in with `MultipleObjectBaseView`.
     """
+    empty_error = u"Empty list and '%(class_name)s.allow_empty' is False."
+
     def list(self, request, *args, **kwargs):
         self.object_list = self.get_queryset()
-        serializer = self.get_serializer(instance=self.object_list)
+
+        # Default is to allow empty querysets.  This can be altered by setting
+        # `.allow_empty = False`, to raise 404 errors on empty querysets.
+        allow_empty = self.get_allow_empty()
+        if not allow_empty and len(self.object_list) == 0:
+            error_args = {'class_name': self.__class__.__name__}
+            raise Http404(self.empty_error % error_args)
+
+        # Pagination size is set by the `.paginate_by` attribute,
+        # which may be `None` to disable pagination.
+        page_size = self.get_paginate_by(self.object_list)
+        if page_size:
+            paginator, page, queryset, is_paginated = self.paginate_queryset(self.object_list, page_size)
+            serializer = self.get_pagination_serializer(page)
+        else:
+            serializer = self.get_serializer(instance=self.object_list)
+
         return Response(serializer.data)
 
 
