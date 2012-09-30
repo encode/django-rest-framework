@@ -139,7 +139,13 @@ class Field(object):
         if hasattr(self, 'model_field'):
             return self.to_native(self.model_field._get_val_from_obj(obj))
 
-        return self.to_native(getattr(obj, self.source or field_name))
+        if self.source:
+            value = obj
+            for component in self.source.split('.'):
+                value = getattr(value, component)
+        else:
+            value = getattr(obj, field_name)
+        return self.to_native(value)
 
     def to_native(self, value):
         """
@@ -175,7 +181,7 @@ class RelatedField(Field):
     """
 
     def field_to_native(self, obj, field_name):
-        obj = getattr(obj, field_name)
+        obj = getattr(obj, self.source or field_name)
         if obj.__class__.__name__ in ('RelatedManager', 'ManyRelatedManager'):
             return [self.to_native(item) for item in obj.all()]
         return self.to_native(obj)
@@ -215,10 +221,10 @@ class PrimaryKeyRelatedField(RelatedField):
 
     def field_to_native(self, obj, field_name):
         try:
-            obj = obj.serializable_value(field_name)
+            obj = obj.serializable_value(self.source or field_name)
         except AttributeError:
             field = obj._meta.get_field_by_name(field_name)[0]
-            obj = getattr(obj, field_name)
+            obj = getattr(obj, self.source or field_name)
             if obj.__class__.__name__ == 'RelatedManager':
                 return [self.to_native(item.pk) for item in obj.all()]
             elif isinstance(field, RelatedObject):
