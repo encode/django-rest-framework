@@ -16,20 +16,24 @@ class BaseView(views.APIView):
     """
     serializer_class = None
     model_serializer_class = api_settings.MODEL_SERIALIZER
-    pagination_serializer_class = api_settings.PAGINATION_SERIALIZER
-    paginate_by = api_settings.PAGINATE_BY
 
     def get_serializer_context(self):
+        """
+        Extra context provided to the serializer class.
+        """
         return {
             'request': self.request,
-            'format': self.kwargs.get('format', None)
+            'format': self.format,
+            'view': self
         }
 
-    def get_serializer(self, data=None, files=None, instance=None, kwargs=None):
-        # TODO: add support for files
-        # TODO: add support for seperate serializer/deserializer
+    def get_serializer_class(self):
+        """
+        Return the class to use for the serializer.
+        Use `self.serializer_class`, falling back to constructing a
+        model serializer class from `self.model_serializer_class`
+        """
         serializer_class = self.serializer_class
-        kwargs = kwargs or {}
 
         if serializer_class is None:
             class DefaultSerializer(self.model_serializer_class):
@@ -37,22 +41,38 @@ class BaseView(views.APIView):
                     model = self.model
             serializer_class = DefaultSerializer
 
-        context = self.get_serializer_context()
-        return serializer_class(data, instance=instance, context=context, **kwargs)
+        return serializer_class
 
-    def get_pagination_serializer(self, page=None):
-        serializer_class = self.pagination_serializer_class
+    def get_serializer(self, data=None, files=None, instance=None):
+        # TODO: add support for files
+        # TODO: add support for seperate serializer/deserializer
+        serializer_class = self.get_serializer_class()
         context = self.get_serializer_context()
-        ret = serializer_class(instance=page, context=context)
-        ret.fields['results'] = self.get_serializer(kwargs={'source': 'object_list'})
-        return ret
+        return serializer_class(data, instance=instance, context=context)
 
 
 class MultipleObjectBaseView(MultipleObjectMixin, BaseView):
     """
     Base class for generic views onto a queryset.
     """
-    pass
+
+    pagination_serializer_class = api_settings.PAGINATION_SERIALIZER
+    paginate_by = api_settings.PAGINATE_BY
+
+    def get_pagination_serializer_class(self):
+        """
+        Return the class to use for the pagination serializer.
+        """
+        class SerializerClass(self.pagination_serializer_class):
+            class Meta:
+                object_serializer_class = self.get_serializer_class()
+
+        return SerializerClass
+
+    def get_pagination_serializer(self, page=None):
+        pagination_serializer_class = self.get_pagination_serializer_class()
+        context = self.get_serializer_context()
+        return pagination_serializer_class(instance=page, context=context)
 
 
 class SingleObjectBaseView(SingleObjectMixin, BaseView):
