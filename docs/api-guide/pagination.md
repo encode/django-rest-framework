@@ -8,7 +8,7 @@
 
 REST framework includes a `PaginationSerializer` class that makes it easy to return paginated data in a way that can then be rendered to arbitrary media types. 
 
-## Examples
+## Paginating basic data
 
 Let's start by taking a look at an example from the Django documentation.
 
@@ -34,6 +34,8 @@ The `context` argument of the `PaginationSerializer` class may optionally includ
     # {'count': 4, 'next': 'http://testserver/foobar?page=2', 'previous': None, 'results': [u'john', u'paul']}    
 
 We could now return that data in a `Response` object, and it would be rendered into the correct media type.
+
+## Paginating QuerySets
 
 Our first example worked because we were using primative objects.  If we wanted to paginate a queryset or other complex data, we'd need to specify a serializer to use to serialize the result set itself with.
 
@@ -83,16 +85,20 @@ You can also set the pagination style on a per-view basis, using the `ListAPIVie
         pagination_serializer_class = CustomPaginationSerializer
         paginate_by = 10
 
+For more complex requirements such as serialization that differs depending on the requested media type you can override the `.get_paginate_by()` and `.get_pagination_serializer_class()` methods.
+
 ## Creating custom pagination serializers
 
-Override `pagination.BasePaginationSerializer`, and set the fields that you want the serializer to return.
+To create a custom pagination serializer class you should override `pagination.BasePaginationSerializer` and set the fields that you want the serializer to return.
 
-For example.
+For example, to nest a pair of links labelled 'prev' and 'next' you might use something like this.
+
+    class LinksSerializer(serializers.Serializer):
+        next = pagination.NextURLField(source='*')
+        prev = pagination.PreviousURLField(source='*')
 
     class CustomPaginationSerializer(pagination.BasePaginationSerializer):
-        next = pagination.NextURLField()
+        links = LinksSerializer(source='*')  # Takes the page object as the source
         total_results = serializers.Field(source='paginator.count')
 
-
 [cite]: https://docs.djangoproject.com/en/dev/topics/pagination/
-
