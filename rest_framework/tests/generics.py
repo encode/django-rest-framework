@@ -13,6 +13,7 @@ class RootView(generics.RootAPIView):
     Example description for OPTIONS.
     """
     model = BasicModel
+    paginate_by = None
 
 
 class InstanceView(generics.InstanceAPIView):

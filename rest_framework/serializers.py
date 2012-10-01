@@ -70,7 +70,7 @@ class SerializerMetaclass(type):
 
 class SerializerOptions(object):
     """
-    Meta class options for ModelSerializer
+    Meta class options for Serializer
     """
     def __init__(self, meta):
         self.nested = getattr(meta, 'nested', False)
