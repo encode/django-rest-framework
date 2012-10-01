@@ -56,18 +56,31 @@ We can do this using the `object_serializer_class` attribute on the inner `Meta`
         class Meta:
             object_serializer_class = UserSerializer
 
-    queryset = User.objects.all()
-    paginator = Paginator(queryset, 20)
-    page = paginator.page(1)
-    serializer = PaginatedUserSerializer(instance=page)
-    serializer.data
-    # {'count': 1, 'next': None, 'previous': None, 'results': [{'username': u'admin', 'email': u'admin@example.com'}]}
+We could now use our pagination serializer in a view like this.
+
+    @api_view('GET')
+    def user_list(request):
+        queryset = User.objects.all()
+        paginator = Paginator(queryset, 20)
+
+        page = request.QUERY_PARAMS.get('page')
+        try:
+            users = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            users = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            users = paginator.page(paginator.num_pages)
+
+        serializer_context = {'request': request}
+        serializer = PaginatedUserSerializer(instance=users,
+                                             context=serializer_context)
+        return Response(serializer.data)
 
 ## Pagination in the generic views
 
 The generic class based views `ListAPIView` and `ListCreateAPIView` provide pagination of the returned querysets by default.  You can customise this behaviour by altering the pagination style, by modifying the default number of results, or by turning pagination off completely.
-
-## Setting the default pagination style
 
 The default pagination style may be set globally, using the `PAGINATION_SERIALIZER` and `PAGINATE_BY` settings.  For example.
 
