@@ -158,6 +158,8 @@ class Field(object):
             return value
         elif hasattr(self, 'model_field'):
             return self.model_field.value_to_string(self.obj)
+        elif hasattr(value, '__iter__') and not isinstance(value, (dict, basestring)):
+            return [self.to_native(item) for item in value]
         return smart_unicode(value)
 
     def attributes(self):

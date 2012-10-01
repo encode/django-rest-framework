@@ -1,6 +1,7 @@
+from django.core.paginator import Paginator
 from django.test import TestCase
 from django.test.client import RequestFactory
-from rest_framework import generics, status
+from rest_framework import generics, status, pagination
 from rest_framework.tests.models import BasicModel
 
 factory = RequestFactory()
@@ -14,7 +15,11 @@ class RootView(generics.RootAPIView):
     paginate_by = 10
 
 
-class TestPaginatedView(TestCase):
+class IntegrationTestPagination(TestCase):
+    """
+    Integration tests for paginated list views.
+    """
+
     def setUp(self):
         """
         Create 26 BasicModel intances.
@@ -55,3 +60,28 @@ class TestPaginatedView(TestCase):
         self.assertEquals(response.data['results'], self.data[20:])
         self.assertEquals(response.data['next'], None)
         self.assertNotEquals(response.data['previous'], None)
+
+
+class UnitTestPagination(TestCase):
+    """
+    Unit tests for pagination of primative objects.
+    """
+
+    def setUp(self):
+        self.objects = [char * 3 for char in 'abcdefghijklmnopqrstuvwxyz']
+        paginator = Paginator(self.objects, 10)
+        self.first_page = paginator.page(1)
+        self.last_page = paginator.page(3)
+
+    def test_native_pagination(self):
+        serializer = pagination.PaginationSerializer(instance=self.first_page)
+        self.assertEquals(serializer.data['count'], 26)
+        self.assertEquals(serializer.data['next'], '?page=2')
+        self.assertEquals(serializer.data['previous'], None)
+        self.assertEquals(serializer.data['results'], self.objects[:10])
+
+        serializer = pagination.PaginationSerializer(instance=self.last_page)
+        self.assertEquals(serializer.data['count'], 26)
+        self.assertEquals(serializer.data['next'], None)
+        self.assertEquals(serializer.data['previous'], '?page=2')
+        self.assertEquals(serializer.data['results'], self.objects[20:])
