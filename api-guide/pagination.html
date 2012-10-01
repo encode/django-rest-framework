@@ -16,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body onload="prettyPrint()" class="rest-hypermedia-hateoas-page">
+  <body onload="prettyPrint()" class="pagination-page">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -94,39 +94,113 @@
         <div class="span3">
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
-              <li class="main"><a href="#rest,-hypermedia-&-hateoas">REST, Hypermedia & HATEOAS</a></li>
-<li class="main"><a href="#building-hypermedia-apis-with-rest-framework">Building Hypermedia APIs with REST framework</a></li>
+              <li class="main"><a href="#pagination">Pagination</a></li>
+<li><a href="#paginating-basic-data">Paginating basic data</a></li>
+<li><a href="#paginating-querysets">Paginating QuerySets</a></li>
+<li><a href="#pagination-in-the-generic-views">Pagination in the generic views</a></li>
+<li><a href="#creating-custom-pagination-serializers">Creating custom pagination serializers</a></li>
 
             </ul>
           </div>
         </div>
 
         <div id="main-content" class="span9">
-          <h1 id="rest-hypermedia-hateoas">REST, Hypermedia &amp; HATEOAS</h1>
+          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/pagination.py"><span class="label label-info">pagination.py</span></a></p>
+<h1 id="pagination">Pagination</h1>
 <blockquote>
-<p>You keep using that word "REST". I do not think it means what you think it means.</p>
-<p>&mdash; Mike Amundsen, <a href="http://vimeo.com/channels/restfest/page:2">REST fest 2012 keynote</a>.</p>
+<p>Django provides a few classes that help you manage paginated data – that is, data that’s split across several pages, with “Previous/Next” links.</p>
+<p>&mdash; <a href="https://docs.djangoproject.com/en/dev/topics/pagination/">Django documentation</a></p>
 </blockquote>
-<p>First off, the disclaimer.  The name "Django REST framework" was choosen with a view to making sure the project would be easily found by developers.  Throughout the documentation we try to use the more simple and technically correct terminology of "Web APIs".</p>
-<p>If you are serious about designing a Hypermedia APIs, you should look to resources outside of this documentation to help inform your design choices.</p>
-<p>The following fall into the "required reading" category.</p>
-<ul>
-<li>Fielding's dissertation - <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">Architectural Styles and
-the Design of Network-based Software Architectures</a>.</li>
-<li>Fielding's "<a href="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">REST APIs must be hypertext-driven</a>" blog post.</li>
-<li>Leonard Richardson &amp; Sam Ruby's <a href="">RESTful Web Services</a>.</li>
-<li>Mike Amundsen's <a href="…">Building Hypermedia APIs with HTML5 and Node</a>.</li>
-<li>Steve Klabnik's <a href="http://designinghypermediaapis.com/">Designing Hypermedia APIs</a>.</li>
-<li>The <a href="http://martinfowler.com/articles/richardsonMaturityModel.html">Richardson Maturity Model</a>.</li>
-</ul>
-<p>For a more thorough background, check out Klabnik's <a href="http://blog.steveklabnik.com/posts/2012-02-27-hypermedia-api-reading-list">Hypermedia API reading list</a>.</p>
-<h1 id="building-hypermedia-apis-with-rest-framework">Building Hypermedia APIs with REST framework</h1>
-<p>REST framework is an agnositic Web API toolkit.  It does help guide you towards building well-connected APIs, and makes it easy to design appropriate media types, but it does not strictly enforce any particular design style.</p>
-<h3 id="what-rest-framework-does-provide">What REST framework <em>does</em> provide.</h3>
-<p>It is self evident that REST framework makes it possible to build Hypermedia APIs.  The browseable API that it offers is built on HTML - the hypermedia language of the web.</p>
-<p>REST framework also includes <a href="../api-guide/serializers">serialization</a> and <a href="../api-guide/parsers">parser</a>/<a href="../api-guide/renderers">renderer</a> components that make it easy to build appropriate media types, <a href="../api-guide/fields">hyperlinked relations</a> for building well-connected systems, and great support for <a href="../api-guide/content-negotiation">content negotiation</a>.</p>
-<h3 id="what-rest-framework-doesnt-provide">What REST framework <em>doesn't</em> provide.</h3>
-<p>What REST framework doesn't do is give you is machine readable hypermedia formats such as <a href="http://www.amundsen.com/media-types/collection/">Collection+JSON</a> by default, or the ability to auto-magically create HATEOAS style APIs.  Doing so would involve making opinionated choices about API design that should really remain outside of the framework's scope.</p>
+<p>REST framework includes a <code>PaginationSerializer</code> class that makes it easy to return paginated data in a way that can then be rendered to arbitrary media types. </p>
+<h2 id="paginating-basic-data">Paginating basic data</h2>
+<p>Let's start by taking a look at an example from the Django documentation.</p>
+<pre class="prettyprint lang-py"><code>from django.core.paginator import Paginator
+objects = ['john', 'paul', 'george', 'ringo']
+paginator = Paginator(objects, 2)
+page = paginator.page(1)
+page.object_list
+# ['john', 'paul']
+</code></pre>
+<p>At this point we've got a page object.  If we wanted to return this page object as a JSON response, we'd need to provide the client with context such as next and previous links, so that it would be able to page through the remaining results.</p>
+<pre class="prettyprint lang-py"><code>from rest_framework.pagination import PaginationSerializer
+serializer = PaginationSerializer(instance=page)
+serializer.data
+# {'count': 4, 'next': '?page=2', 'previous': None, 'results': [u'john', u'paul']}
+</code></pre>
+<p>The <code>context</code> argument of the <code>PaginationSerializer</code> class may optionally include the request.  If the request is included in the context then the next and previous links returned by the serializer will use absolute URLs instead of relative URLs.</p>
+<pre class="prettyprint lang-py"><code>request = RequestFactory().get('/foobar')
+serializer = PaginationSerializer(instance=page, context={'request': request})
+serializer.data
+# {'count': 4, 'next': 'http://testserver/foobar?page=2', 'previous': None, 'results': [u'john', u'paul']}
+</code></pre>
+<p>We could now return that data in a <code>Response</code> object, and it would be rendered into the correct media type.</p>
+<h2 id="paginating-querysets">Paginating QuerySets</h2>
+<p>Our first example worked because we were using primative objects.  If we wanted to paginate a queryset or other complex data, we'd need to specify a serializer to use to serialize the result set itself with.</p>
+<p>We can do this using the <code>object_serializer_class</code> attribute on the inner <code>Meta</code> class of the pagination serializer.  For example.</p>
+<pre class="prettyprint lang-py"><code>class UserSerializer(serializers.ModelSerializer):
+    """
+    Serializes user querysets.
+    """
+    class Meta:
+        model = User
+        fields = ('username', 'email')
+
+class PaginatedUserSerializer(pagination.PaginationSerializer):
+    """
+    Serializes page objects of user querysets.
+    """
+    class Meta:
+        object_serializer_class = UserSerializer
+</code></pre>
+<p>We could now use our pagination serializer in a view like this.</p>
+<pre class="prettyprint lang-py"><code>@api_view('GET')
+def user_list(request):
+    queryset = User.objects.all()
+    paginator = Paginator(queryset, 20)
+
+    page = request.QUERY_PARAMS.get('page')
+    try:
+        users = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        users = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        users = paginator.page(paginator.num_pages)
+
+    serializer_context = {'request': request}
+    serializer = PaginatedUserSerializer(instance=users,
+                                         context=serializer_context)
+    return Response(serializer.data)
+</code></pre>
+<h2 id="pagination-in-the-generic-views">Pagination in the generic views</h2>
+<p>The generic class based views <code>ListAPIView</code> and <code>ListCreateAPIView</code> provide pagination of the returned querysets by default.  You can customise this behaviour by altering the pagination style, by modifying the default number of results, or by turning pagination off completely.</p>
+<p>The default pagination style may be set globally, using the <code>PAGINATION_SERIALIZER</code> and <code>PAGINATE_BY</code> settings.  For example.</p>
+<pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
+    'PAGINATION_SERIALIZER': (
+        'example_app.pagination.CustomPaginationSerializer',
+    ),
+    'PAGINATE_BY': 10
+}
+</code></pre>
+<p>You can also set the pagination style on a per-view basis, using the <code>ListAPIView</code> generic class-based view.</p>
+<pre class="prettyprint lang-py"><code>class PaginatedListView(ListAPIView):
+    model = ExampleModel
+    pagination_serializer_class = CustomPaginationSerializer
+    paginate_by = 10
+</code></pre>
+<p>For more complex requirements such as serialization that differs depending on the requested media type you can override the <code>.get_paginate_by()</code> and <code>.get_pagination_serializer_class()</code> methods.</p>
+<h2 id="creating-custom-pagination-serializers">Creating custom pagination serializers</h2>
+<p>To create a custom pagination serializer class you should override <code>pagination.BasePaginationSerializer</code> and set the fields that you want the serializer to return.</p>
+<p>For example, to nest a pair of links labelled 'prev' and 'next' you might use something like this.</p>
+<pre class="prettyprint lang-py"><code>class LinksSerializer(serializers.Serializer):
+    next = pagination.NextURLField(source='*')
+    prev = pagination.PreviousURLField(source='*')
+
+class CustomPaginationSerializer(pagination.BasePaginationSerializer):
+    links = LinksSerializer(source='*')  # Takes the page object as the source
+    total_results = serializers.Field(source='paginator.count')
+</code></pre>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->

@@ -16,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body onload="prettyPrint()" class="authentication">
+  <body onload="prettyPrint()" class="authentication-page">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -55,6 +55,7 @@
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/authentication">Authentication</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/permissions">Permissions</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/throttling">Throttling</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/pagination">Pagination</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/content-negotiation">Content negotiation</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/format-suffixes">Format suffixes</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/reverse">Returning URLs</a></li>
@@ -134,6 +135,7 @@
 <p>You can also set the authentication policy on a per-view basis, using the <code>APIView</code> class based views.</p>
 <pre class="prettyprint lang-py"><code>class ExampleView(APIView):
     authentication_classes = (SessionAuthentication, UserBasicAuthentication)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None):
         content = {
@@ -143,10 +145,9 @@
         return Response(content)
 </code></pre>
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
-<pre class="prettyprint lang-py"><code>@api_view(
-    allowed=('GET',),
-    authentication_classes=(SessionAuthentication, UserBasicAuthentication)
-)
+<pre class="prettyprint lang-py"><code>@api_view('GET'),
+@authentication_classes(SessionAuthentication, UserBasicAuthentication)
+@permissions_classes(IsAuthenticated)
 def example_view(request, format=None):
     content = {
         'user': unicode(request.user),  # `django.contrib.auth.User` instance.

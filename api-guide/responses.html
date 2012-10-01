@@ -16,7 +16,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body onload="prettyPrint()" class="responses">
+  <body onload="prettyPrint()" class="responses-page">
 
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
@@ -55,6 +55,7 @@
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/authentication">Authentication</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/permissions">Permissions</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/throttling">Throttling</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/pagination">Pagination</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/content-negotiation">Content negotiation</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/format-suffixes">Format suffixes</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/api-guide/reverse">Returning URLs</a></li>
@@ -94,10 +95,10 @@
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
               <li class="main"><a href="#responses">Responses</a></li>
-<li><a href="#response(content,-headers=none,--renderers=none,-view=none,-format=none,-status=none)">Response(content, headers=None,  renderers=None, view=None, format=None, status=None)</a></li>
-<li><a href="#renderers">.renderers</a></li>
-<li><a href="#view">.view</a></li>
-<li><a href="#format">.format</a></li>
+<li><a href="#response(data,-status=none,-headers=none)">Response(data, status=None, headers=None)</a></li>
+<li><a href="#data">.data</a></li>
+<li><a href="#content">.content</a></li>
+<li><a href="#renderer">.renderer</a></li>
 
             </ul>
           </div>
@@ -111,12 +112,19 @@
 <p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/template-response/">Django documentation</a></p>
 </blockquote>
 <p>REST framework supports HTTP content negotiation by providing a <code>Response</code> class which allows you to return content that can be rendered into multiple content types, depending on the client request.</p>
-<p>The <code>Response</code> class subclasses Django's <code>TemplateResponse</code>.  <code>Response</code> objects are initialised with content, which should consist of native python primatives.  REST framework then uses standard HTTP content negotiation to determine how it should render the final response content.</p>
-<p>There's no requirement for you to use the <code>Response</code> class, you can also return regular <code>HttpResponse</code> objects from your views if you want, but it does provide a better interface for returning Web API responses.</p>
-<h2 id="responsecontent-headersnone-renderersnone-viewnone-formatnone-statusnone">Response(content, headers=None,  renderers=None, view=None, format=None, status=None)</h2>
-<h2 id="renderers">.renderers</h2>
-<h2 id="view">.view</h2>
-<h2 id="format">.format</h2>
+<p>The <code>Response</code> class subclasses Django's <code>SimpleTemplateResponse</code>.  <code>Response</code> objects are initialised with data, which should consist of native python primatives.  REST framework then uses standard HTTP content negotiation to determine how it should render the final response content.</p>
+<p>There's no requirement for you to use the <code>Response</code> class, you can also return regular <code>HttpResponse</code> objects from your views if you want, but it provides a nicer interface for returning Web API responses.</p>
+<p>Unless you want to heavily customize REST framework for some reason, you should always use an <code>APIView</code> class or <code>@api_view</code> function for views that return <code>Response</code> objects.  Doing so ensures that the view can perform content negotiation and select the appropriate renderer for the response, before it is returned from the view.</p>
+<h2 id="responsedata-statusnone-headersnone">Response(data, status=None, headers=None)</h2>
+<p>Unlike regular <code>HttpResponse</code> objects, you do not instantiate <code>Response</code> objects with rendered content.  Instead you pass in unrendered data, which may consist of any python primatives.</p>
+<p>The renderers used by the <code>Response</code> class cannot natively handle complex datatypes such as Django model instances, so you need to serialize the data into primative datatypes before creating the <code>Response</code> object.</p>
+<p>You can use REST framework's <code>Serializer</code> classes to perform this data serialization, or use your own custom serialization.</p>
+<h2 id="data">.data</h2>
+<p>The unrendered content of a <code>Request</code> object can be accessed using the <code>.data</code> attribute.</p>
+<h2 id="content">.content</h2>
+<p>To access the rendered content of a <code>Response</code> object, you must first call <code>.render()</code>.  You'll typically only need to do this in cases such as unit testing responses - when you return a <code>Response</code> from a view Django's response cycle will handle calling <code>.render()</code> for you.</p>
+<h2 id="renderer">.renderer</h2>
+<p>When you return a <code>Response</code> instance, the <code>APIView</code> class or <code>@api_view</code> decorator will select the appropriate renderer, and set the <code>.renderer</code> attribute on the <code>Response</code>, before returning it from the view.</p>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->
