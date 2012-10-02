@@ -136,6 +136,10 @@ The name of a URL parameter that may be used to override the HTTP `Accept` heade
 
 If the value of this setting is `None` then URL accept overloading will be disabled.
 
-Default: `'_accept'`
+Default: `'accept'`
+
+## URL_FORMAT_OVERRIDE
+
+Default: `'format'`
 
 [cite]: http://www.python.org/dev/peps/pep-0020/
