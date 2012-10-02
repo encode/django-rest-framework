@@ -1,6 +1,6 @@
 <a class="github" href="decorators.py"></a> <a class="github" href="views.py"></a>
 
-# Views
+# Class Based Views
 
 > Django's class based views are a welcome departure from the old-style views.
 >
@@ -110,4 +110,15 @@ Ensures that any `Response` object returned from the handler method will be rend
 
 You won't typically need to override this method.
 
+# Function Based Views
+
+> Saying [that Class based views] is always the superior solution is a mistake.
+>
+> &mdash; [Nick Coghlan][cite2]
+
+REST framework also gives you to work with regular function based views...
+
+**[TODO]**
+
 [cite]: http://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
+[cite2]: http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html
