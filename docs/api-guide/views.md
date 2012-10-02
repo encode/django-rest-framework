@@ -110,6 +110,8 @@ Ensures that any `Response` object returned from the handler method will be rend
 
 You won't typically need to override this method.
 
+---
+
 # Function Based Views
 
 > Saying [that Class based views] is always the superior solution is a mistake.
