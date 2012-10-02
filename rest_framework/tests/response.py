@@ -11,6 +11,7 @@ from rest_framework.renderers import (
     JSONRenderer,
     DocumentingHTMLRenderer
 )
+from rest_framework.settings import api_settings
 
 
 class MockPickleRenderer(BaseRenderer):
@@ -121,7 +122,11 @@ class RendererIntegrationTests(TestCase):
 
     def test_specified_renderer_serializes_content_on_accept_query(self):
         """The '_accept' query string should behave in the same way as the Accept header."""
-        resp = self.client.get('/?_accept=%s' % RendererB.media_type)
+        param = '?%s=%s' % (
+            api_settings.URL_ACCEPT_OVERRIDE,
+            RendererB.media_type
+        )
+        resp = self.client.get('/' + param)
         self.assertEquals(resp['Content-Type'], RendererB.media_type)
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEquals(resp.status_code, DUMMYSTATUS)

@@ -1,5 +1,5 @@
 from django import template
-from django.core.urlresolvers import reverse, NoReverseMatch
+from django.core.urlresolvers import reverse
 from django.http import QueryDict
 from django.utils.encoding import force_unicode
 from django.utils.html import escape

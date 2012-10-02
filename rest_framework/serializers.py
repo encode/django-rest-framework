@@ -3,6 +3,7 @@ import datetime
 import types
 from decimal import Decimal
 from django.core.serializers.base import DeserializedObject
+from django.db import models
 from django.utils.datastructures import SortedDict
 from rest_framework.compat import get_concrete_model
 from rest_framework.fields import *
@@ -70,7 +71,7 @@ class SerializerMetaclass(type):
 
 class SerializerOptions(object):
     """
-    Meta class options for ModelSerializer
+    Meta class options for Serializer
     """
     def __init__(self, meta):
         self.nested = getattr(meta, 'nested', False)
@@ -308,16 +309,30 @@ class ModelSerializer(RelatedField, Serializer):
         fields += [field for field in opts.many_to_many if field.serialize]
 
         ret = SortedDict()
+        is_pk = True  # First field in the list is the pk
+
         for model_field in fields:
-            if model_field.rel and nested:
+            if is_pk:
+                field = self.get_pk_field(model_field)
+                is_pk = False
+            elif model_field.rel and nested:
                 field = self.get_nested_field(model_field)
             elif model_field.rel:
                 field = self.get_related_field(model_field)
             else:
                 field = self.get_field(model_field)
-            field.initialize(parent=self, model_field=model_field)
-            ret[model_field.name] = field
+
+            if field is not None:
+                field.initialize(parent=self, model_field=model_field)
+                ret[model_field.name] = field
+
         return ret
+
+    def get_pk_field(self, model_field):
+        """
+        Returns a default instance of the pk field.
+        """
+        return Field(readonly=True)
 
     def get_nested_field(self, model_field):
         """
@@ -333,9 +348,22 @@ class ModelSerializer(RelatedField, Serializer):
 
     def get_field(self, model_field):
         """
-        Creates a default instance of a basic field.
+        Creates a default instance of a basic non-relational field.
         """
-        return Field()
+        field_mapping = dict([
+            [models.FloatField, FloatField],
+            [models.IntegerField, IntegerField],
+            [models.DateTimeField, DateTimeField],
+            [models.DateField, DateField],
+            [models.EmailField, EmailField],
+            [models.CharField, CharField],
+            [models.CommaSeparatedIntegerField, CharField],
+            [models.BooleanField, BooleanField]
+        ])
+        try:
+            return field_mapping[model_field.__class__]()
+        except KeyError:
+            return Field()
 
     def restore_object(self, attrs, instance=None):
         """

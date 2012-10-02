@@ -11,6 +11,7 @@ from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
     XMLRenderer, JSONPRenderer, DocumentingHTMLRenderer
 from rest_framework.parsers import YAMLParser, XMLParser
+from rest_framework.settings import api_settings
 
 from StringIO import StringIO
 import datetime
@@ -164,7 +165,11 @@ class RendererEndToEndTests(TestCase):
 
     def test_specified_renderer_serializes_content_on_accept_query(self):
         """The '_accept' query string should behave in the same way as the Accept header."""
-        resp = self.client.get('/?_accept=%s' % RendererB.media_type)
+        param = '?%s=%s' % (
+            api_settings.URL_ACCEPT_OVERRIDE,
+            RendererB.media_type
+        )
+        resp = self.client.get('/' + param)
         self.assertEquals(resp['Content-Type'], RendererB.media_type)
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEquals(resp.status_code, DUMMYSTATUS)
@@ -177,7 +182,11 @@ class RendererEndToEndTests(TestCase):
     def test_specified_renderer_serializes_content_on_format_query(self):
         """If a 'format' query is specified, the renderer with the matching
         format attribute should serialize the response."""
-        resp = self.client.get('/?format=%s' % RendererB.format)
+        param = '?%s=%s' % (
+            api_settings.URL_FORMAT_OVERRIDE,
+            RendererB.format
+        )
+        resp = self.client.get('/' + param)
         self.assertEquals(resp['Content-Type'], RendererB.media_type)
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEquals(resp.status_code, DUMMYSTATUS)
@@ -193,7 +202,11 @@ class RendererEndToEndTests(TestCase):
     def test_specified_renderer_is_used_on_format_query_with_matching_accept(self):
         """If both a 'format' query and a matching Accept header specified,
         the renderer with the matching format attribute should serialize the response."""
-        resp = self.client.get('/?format=%s' % RendererB.format,
+        param = '?%s=%s' % (
+            api_settings.URL_FORMAT_OVERRIDE,
+            RendererB.format
+        )
+        resp = self.client.get('/' + param,
                                HTTP_ACCEPT=RendererB.media_type)
         self.assertEquals(resp['Content-Type'], RendererB.media_type)
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))

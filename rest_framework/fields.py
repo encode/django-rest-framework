@@ -139,7 +139,13 @@ class Field(object):
         if hasattr(self, 'model_field'):
             return self.to_native(self.model_field._get_val_from_obj(obj))
 
-        return self.to_native(getattr(obj, self.source or field_name))
+        if self.source:
+            value = obj
+            for component in self.source.split('.'):
+                value = getattr(value, component)
+        else:
+            value = getattr(obj, field_name)
+        return self.to_native(value)
 
     def to_native(self, value):
         """
@@ -152,6 +158,8 @@ class Field(object):
             return value
         elif hasattr(self, 'model_field'):
             return self.model_field.value_to_string(self.obj)
+        elif hasattr(value, '__iter__') and not isinstance(value, (dict, basestring)):
+            return [self.to_native(item) for item in value]
         return smart_unicode(value)
 
     def attributes(self):
@@ -175,7 +183,7 @@ class RelatedField(Field):
     """
 
     def field_to_native(self, obj, field_name):
-        obj = getattr(obj, field_name)
+        obj = getattr(obj, self.source or field_name)
         if obj.__class__.__name__ in ('RelatedManager', 'ManyRelatedManager'):
             return [self.to_native(item) for item in obj.all()]
         return self.to_native(obj)
@@ -215,10 +223,10 @@ class PrimaryKeyRelatedField(RelatedField):
 
     def field_to_native(self, obj, field_name):
         try:
-            obj = obj.serializable_value(field_name)
+            obj = obj.serializable_value(self.source or field_name)
         except AttributeError:
             field = obj._meta.get_field_by_name(field_name)[0]
-            obj = getattr(obj, field_name)
+            obj = getattr(obj, self.source or field_name)
             if obj.__class__.__name__ == 'RelatedManager':
                 return [self.to_native(item.pk) for item in obj.all()]
             elif isinstance(field, RelatedObject):
@@ -431,19 +439,3 @@ class FloatField(Field):
         except (TypeError, ValueError):
             msg = self.error_messages['invalid'] % value
             raise ValidationError(msg)
-
-# field_mapping = {
-#     models.AutoField: IntegerField,
-#     models.BooleanField: BooleanField,
-#     models.CharField: CharField,
-#     models.DateTimeField: DateTimeField,
-#     models.DateField: DateField,
-#     models.BigIntegerField: IntegerField,
-#     models.IntegerField: IntegerField,
-#     models.PositiveIntegerField: IntegerField,
-#     models.FloatField: FloatField
-# }
-
-
-# def modelfield_to_serializerfield(field):
-#     return field_mapping.get(type(field), Field)

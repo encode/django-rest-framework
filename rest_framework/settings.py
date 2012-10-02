@@ -44,13 +44,17 @@ DEFAULTS = {
         'anon': None,
     },
 
+    'MODEL_SERIALIZER': 'rest_framework.serializers.ModelSerializer',
+    'PAGINATION_SERIALIZER': 'rest_framework.pagination.PaginationSerializer',
+    'PAGINATE_BY': 20,
+
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
 
     'FORM_METHOD_OVERRIDE': '_method',
     'FORM_CONTENT_OVERRIDE': '_content',
     'FORM_CONTENTTYPE_OVERRIDE': '_content_type',
-    'URL_ACCEPT_OVERRIDE': '_accept',
+    'URL_ACCEPT_OVERRIDE': 'accept',
     'URL_FORMAT_OVERRIDE': 'format',
 
     'FORMAT_SUFFIX_KWARG': 'format'
@@ -65,6 +69,8 @@ IMPORT_STRINGS = (
     'DEFAULT_PERMISSIONS',
     'DEFAULT_THROTTLES',
     'DEFAULT_CONTENT_NEGOTIATION',
+    'MODEL_SERIALIZER',
+    'PAGINATION_SERIALIZER',
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN',
 )
