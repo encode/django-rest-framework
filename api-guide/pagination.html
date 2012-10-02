@@ -192,7 +192,8 @@ def user_list(request):
 <p>For more complex requirements such as serialization that differs depending on the requested media type you can override the <code>.get_paginate_by()</code> and <code>.get_pagination_serializer_class()</code> methods.</p>
 <h2 id="creating-custom-pagination-serializers">Creating custom pagination serializers</h2>
 <p>To create a custom pagination serializer class you should override <code>pagination.BasePaginationSerializer</code> and set the fields that you want the serializer to return.</p>
-<p>For example, to nest a pair of links labelled 'prev' and 'next' you might use something like this.</p>
+<p>You can also override the name used for the object list field, by setting the <code>results_field</code> attribute, which defaults to <code>'results'</code>.</p>
+<p>For example, to nest a pair of links labelled 'prev' and 'next', and set the name for the results field to 'objects', you might use something like this.</p>
 <pre class="prettyprint lang-py"><code>class LinksSerializer(serializers.Serializer):
     next = pagination.NextURLField(source='*')
     prev = pagination.PreviousURLField(source='*')
@@ -200,6 +201,8 @@ def user_list(request):
 class CustomPaginationSerializer(pagination.BasePaginationSerializer):
     links = LinksSerializer(source='*')  # Takes the page object as the source
     total_results = serializers.Field(source='paginator.count')
+
+    results_field = 'objects'
 </code></pre>
         </div><!--/span-->
       </div><!--/row-->

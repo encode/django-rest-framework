@@ -95,13 +95,18 @@
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
               <li class="main"><a href="#renderers">Renderers</a></li>
+<li><a href="#how-the-renderer-is-determined">How the renderer is determined</a></li>
+<li><a href="#setting-the-renderers">Setting the renderers</a></li>
+<li><a href="#ordering-of-renderer-classes">Ordering of renderer classes</a></li>
 <li><a href="#jsonrenderer">JSONRenderer</a></li>
 <li><a href="#jsonprenderer">JSONPRenderer</a></li>
 <li><a href="#yamlrenderer">YAMLRenderer</a></li>
 <li><a href="#xmlrenderer">XMLRenderer</a></li>
 <li><a href="#documentinghtmlrenderer">DocumentingHTMLRenderer</a></li>
-<li><a href="#templatedhtmlrenderer">TemplatedHTMLRenderer</a></li>
+<li><a href="#templatehtmlrenderer">TemplateHTMLRenderer</a></li>
 <li><a href="#custom-renderers">Custom renderers</a></li>
+<li><a href="#advanced-renderer-usage">Advanced renderer usage</a></li>
+<li><a href="#designing-your-media-types">Designing your media types</a></li>
 
             </ul>
           </div>
@@ -114,13 +119,102 @@
 <p>Before a TemplateResponse instance can be returned to the client, it must be rendered. The rendering process takes the intermediate representation of template and context, and turns it into the final byte stream that can be served to the client.</p>
 <p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process">Django documentation</a></p>
 </blockquote>
+<p>REST framework includes a number of built in Renderer classes, that allow you to return responses with various media types.  There is also support for defining your own custom renderers, which gives you the flexiblity to design your own media types.</p>
+<h2 id="how-the-renderer-is-determined">How the renderer is determined</h2>
+<p>The set of valid renderers for a view is always defined as a list of classes.  When a view is entered REST framework will perform content negotiation on the incoming request, and determine the most appropriate renderer to satisfy the request.</p>
+<p>The basic process of content negotiation involves examining the request's <code>Accept</code> header, to determine which media types it expects in the response.  Optionally, format suffixes on the URL may be used to explicitly request a particular representation.  For example the URL <code>http://example.com/api/users_count.json</code> might be an endpoint that always returns JSON data.</p>
+<p>For more information see the documentation on <a href="content-negotiation">content negotation</a>.</p>
+<h2 id="setting-the-renderers">Setting the renderers</h2>
+<p>The default set of renderers may be set globally, using the <code>DEFAULT_RENDERERS</code> setting.  For example, the following settings would use <code>YAML</code> as the main media type and also include the self describing API.</p>
+<pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
+    'DEFAULT_RENDERERS': (
+        'rest_framework.renderers.YAMLRenderer',
+        'rest_framework.renderers.DocumentingHTMLRenderer',
+    )
+}
+</code></pre>
+<p>You can also set the renderers used for an individual view, using the <code>APIView</code> class based views.</p>
+<pre class="prettyprint lang-py"><code>class UserCountView(APIView):
+    """
+    A view that returns the count of active users, in JSON or JSONp.
+    """
+    renderer_classes = (JSONRenderer, JSONPRenderer)
+
+    def get(self, request, format=None):
+        user_count = User.objects.filter(active=True).count()
+        content = {'user_count': user_count}
+        return Response(content)
+</code></pre>
+<p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
+<pre class="prettyprint lang-py"><code>@api_view('GET'),
+@renderer_classes(JSONRenderer, JSONPRenderer)
+def user_count_view(request, format=None):
+    """
+    A view that returns the count of active users, in JSON or JSONp.
+    """
+    user_count = User.objects.filter(active=True).count()
+    content = {'user_count': user_count}
+    return Response(content)
+</code></pre>
+<h2 id="ordering-of-renderer-classes">Ordering of renderer classes</h2>
+<p>It's important when specifying the renderer classes for your API to think about what priority you want to assign to each media type.  If a client underspecifies the representations it can accept, such as sending an <code>Accept: */*</code> header, or not including an <code>Accept</code> header at all, then REST framework will select the first renderer in the list to use for the response.</p>
+<p>For example if your API serves JSON responses and the HTML browseable API, you might want to make <code>JSONRenderer</code> your default renderer, in order to send <code>JSON</code> responses to clients that do not specify an <code>Accept</code> header.</p>
+<p>If your API includes views that can serve both regular webpages and API responses depending on the request, then you might consider making <code>TemplateHTMLRenderer</code> your default renderer, in order to play nicely with older browsers that send <a href="http://www.gethifi.com/blog/browser-rest-http-accept-headers">broken accept headers</a>.</p>
 <h2 id="jsonrenderer">JSONRenderer</h2>
+<p><strong>.media_type:</strong> <code>application/json</code></p>
+<p><strong>.format:</strong> <code>'.json'</code></p>
 <h2 id="jsonprenderer">JSONPRenderer</h2>
+<p><strong>.media_type:</strong> <code>application/javascript</code></p>
+<p><strong>.format:</strong> <code>'.jsonp'</code></p>
 <h2 id="yamlrenderer">YAMLRenderer</h2>
+<p><strong>.media_type:</strong> <code>application/yaml</code></p>
+<p><strong>.format:</strong> <code>'.yaml'</code></p>
 <h2 id="xmlrenderer">XMLRenderer</h2>
+<p><strong>.media_type:</strong> <code>application/xml</code></p>
+<p><strong>.format:</strong> <code>'.xml'</code></p>
 <h2 id="documentinghtmlrenderer">DocumentingHTMLRenderer</h2>
-<h2 id="templatedhtmlrenderer">TemplatedHTMLRenderer</h2>
+<p><strong>.media_type:</strong> <code>text/html</code></p>
+<p><strong>.format:</strong> <code>'.api'</code></p>
+<h2 id="templatehtmlrenderer">TemplateHTMLRenderer</h2>
+<p><strong>.media_type:</strong> <code>text/html</code></p>
+<p><strong>.format:</strong> <code>'.html'</code></p>
 <h2 id="custom-renderers">Custom renderers</h2>
+<p>To implement a custom renderer, you should override <code>BaseRenderer</code>, set the <code>.media_type</code> and <code>.format</code> properties, and implement the <code>.render(self, data, media_type)</code> method.</p>
+<h2 id="advanced-renderer-usage">Advanced renderer usage</h2>
+<p>You can do some pretty flexible things using REST framework's renderers.  Some examples...</p>
+<ul>
+<li>Provide either flat or nested representations from the same endpoint, depending on the requested media type.</li>
+<li>Serve both regular HTML webpages, and JSON based API responses from the same endpoints.</li>
+<li>Specify multiple types of HTML representation for API clients to use.</li>
+<li>Underspecify a renderer's media type, such as using <code>media_type = 'image/*'</code>, and use the <code>Accept</code> header to vary the encoding of the response. </li>
+</ul>
+<p>In some cases you might want your view to use different serialization styles depending on the accepted media type.  If you need to do this you can access <code>request.accepted_renderer</code> to determine the negotiated renderer that will be used for the response.</p>
+<p>For example:</p>
+<pre class="prettyprint lang-py"><code>@api_view(('GET',))
+@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+@template_name('list_users.html')
+def list_users(request):
+    """
+    A view that can return JSON or HTML representations
+    of the users in the system.
+    """
+    queryset = Users.objects.filter(active=True)
+
+    if request.accepted_renderer.format == 'html':
+        # TemplateHTMLRenderer takes a context dict,
+        # and does not require serialization.
+        data = {'users': queryset}
+    else:
+        # JSONRenderer requires serialized data as normal.
+        serializer = UserSerializer(instance=queryset)
+        data = serializer.data
+
+    return Response(data)
+</code></pre>
+<h2 id="designing-your-media-types">Designing your media types</h2>
+<p>For the purposes of many Web APIs, simple <code>JSON</code> responses with hyperlinked relations may be sufficient.  If you want to fully embrace RESTful design and <a href="http://timelessrepo.com/haters-gonna-hateoas">HATEOAS</a> you'll neeed to consider the design and usage of your media types in more detail.</p>
+<p>In <a href="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">the words of Roy Fielding</a>, "A REST API should spend almost all of its descriptive effort in defining the media type(s) used for representing resources and driving application state, or in defining extended relation names and/or hypertext-enabled mark-up for existing standard media types.".</p>
+<p>For good examples of custom media types, see GitHub's use of a custom <a href="http://developer.github.com/v3/media/">application/vnd.github+json</a> media type, and Mike Amundsen's IANA approved <a href="http://www.amundsen.com/media-types/collection/">application/vnd.collection+json</a> JSON-based hypermedia.</p>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->

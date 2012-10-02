@@ -95,8 +95,8 @@
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
               <li class="main"><a href="#returning-urls">Returning URLs</a></li>
-<li><a href="#reverse(viewname,-request,-*args,-**kwargs)">reverse(viewname, request, *args, **kwargs)</a></li>
-<li><a href="#reverse_lazy(viewname,-request,-*args,-**kwargs)">reverse_lazy(viewname, request, *args, **kwargs)</a></li>
+<li><a href="#reverse">reverse</a></li>
+<li><a href="#reverse_lazy">reverse_lazy</a></li>
 
             </ul>
           </div>
@@ -119,7 +119,8 @@
 </ul>
 <p>REST framework provides two utility functions to make it more simple to return absolute URIs from your Web API.</p>
 <p>There's no requirement for you to use them, but if you do then the self-describing API will be able to automatically hyperlink it's output for you, which makes browsing the API much easier.</p>
-<h2 id="reverseviewname-request-args-kwargs">reverse(viewname, request, <em>args, </em>*kwargs)</h2>
+<h2 id="reverse">reverse</h2>
+<p><strong>Signature:</strong> <code>reverse(viewname, request, *args, **kwargs)</code></p>
 <p>Has the same behavior as <a href="https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse"><code>django.core.urlresolvers.reverse</code></a>, except that it returns a fully qualified URL, using the request to determine the host and port.</p>
 <pre class="prettyprint lang-py"><code>from rest_framework.utils import reverse
 from rest_framework.views import APIView
@@ -132,7 +133,8 @@ class MyView(APIView):
         }
         return Response(content)
 </code></pre>
-<h2 id="reverse_lazyviewname-request-args-kwargs">reverse_lazy(viewname, request, <em>args, </em>*kwargs)</h2>
+<h2 id="reverse_lazy">reverse_lazy</h2>
+<p><strong>Signature:</strong> <code>reverse_lazy(viewname, request, *args, **kwargs)</code></p>
 <p>Has the same behavior as <a href="https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse-lazy"><code>django.core.urlresolvers.reverse_lazy</code></a>, except that it returns a fully qualified URL, using the request to determine the host and port.</p>
         </div><!--/span-->
       </div><!--/row-->
