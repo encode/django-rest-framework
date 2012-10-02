@@ -25,16 +25,18 @@ There's no requirement for you to use them, but if you do then the self-describi
 
 Has the same behavior as [`django.core.urlresolvers.reverse`][reverse], except that it returns a fully qualified URL, using the request to determine the host and port.
 
+    import datetime
     from rest_framework.utils import reverse
     from rest_framework.views import APIView
    
-	class MyView(APIView):
+	class APIRootView(APIView):
 	    def get(self, request):
-			content = {
+	        year = datetime.datetime.now().year
+			data = {
  				...
-    		    'url': reverse('year-summary', request, args=[1945])
+    		    'year-summary-url': reverse('year-summary', request, args=[year])
             }
-    		return Response(content)
+    		return Response(data)
 
 ## reverse_lazy
 
