@@ -19,7 +19,9 @@ REST framework provides two utility functions to make it more simple to return a
 
 There's no requirement for you to use them, but if you do then the self-describing API will be able to automatically hyperlink it's output for you, which makes browsing the API much easier.
 
-## reverse(viewname, request, *args, **kwargs)
+## reverse
+
+**Signature:** `reverse(viewname, request, *args, **kwargs)`
 
 Has the same behavior as [`django.core.urlresolvers.reverse`][reverse], except that it returns a fully qualified URL, using the request to determine the host and port.
 
@@ -34,7 +36,9 @@ Has the same behavior as [`django.core.urlresolvers.reverse`][reverse], except t
             }
     		return Response(content)
 
-## reverse_lazy(viewname, request, *args, **kwargs)
+## reverse_lazy
+
+**Signature:** `reverse_lazy(viewname, request, *args, **kwargs)`
 
 Has the same behavior as [`django.core.urlresolvers.reverse_lazy`][reverse-lazy], except that it returns a fully qualified URL, using the request to determine the host and port.
 
