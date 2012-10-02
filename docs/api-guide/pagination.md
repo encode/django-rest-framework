@@ -104,7 +104,9 @@ For more complex requirements such as serialization that differs depending on th
 
 To create a custom pagination serializer class you should override `pagination.BasePaginationSerializer` and set the fields that you want the serializer to return.
 
-For example, to nest a pair of links labelled 'prev' and 'next' you might use something like this.
+You can also override the name used for the object list field, by setting the `results_field` attribute, which defaults to `'results'`.
+
+For example, to nest a pair of links labelled 'prev' and 'next', and set the name for the results field to 'objects', you might use something like this.
 
     class LinksSerializer(serializers.Serializer):
         next = pagination.NextURLField(source='*')
@@ -113,5 +115,7 @@ For example, to nest a pair of links labelled 'prev' and 'next' you might use so
     class CustomPaginationSerializer(pagination.BasePaginationSerializer):
         links = LinksSerializer(source='*')  # Takes the page object as the source
         total_results = serializers.Field(source='paginator.count')
+
+        results_field = 'objects'
 
 [cite]: https://docs.djangoproject.com/en/dev/topics/pagination/

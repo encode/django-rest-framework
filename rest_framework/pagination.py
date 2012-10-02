@@ -52,14 +52,14 @@ class BasePaginationSerializer(serializers.Serializer):
     to make implementing custom serializers more easy.
     """
     _options_class = PaginationSerializerOptions
-    _results_field = 'results'
+    results_field = 'results'
 
     def __init__(self, *args, **kwargs):
         """
         Override init to add in the object serializer field on-the-fly.
         """
         super(BasePaginationSerializer, self).__init__(*args, **kwargs)
-        results_field = self._results_field
+        results_field = self.results_field
         object_serializer = self.opts.object_serializer_class
         self.fields[results_field] = object_serializer(source='object_list')
 
