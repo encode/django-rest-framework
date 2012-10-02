@@ -95,6 +95,23 @@
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
               <li class="main"><a href="#generic-views">Generic views</a></li>
+<li><a href="#example">Example</a></li>
+<li class="main"><a href="#api-reference">API Reference</a></li>
+<li><a href="#listapiview">ListAPIView</a></li>
+<li><a href="#listcreateapiview">ListCreateAPIView</a></li>
+<li><a href="#retrieveapiview">RetrieveAPIView</a></li>
+<li><a href="#retrieveupdatedestroyapiview">RetrieveUpdateDestroyAPIView</a></li>
+<li class="main"><a href="#base-views">Base views</a></li>
+<li><a href="#baseapiview">BaseAPIView</a></li>
+<li><a href="#multipleobjectbaseapiview">MultipleObjectBaseAPIView</a></li>
+<li><a href="#singleobjectbaseapiview">SingleObjectBaseAPIView</a></li>
+<li class="main"><a href="#mixins">Mixins</a></li>
+<li><a href="#listmodelmixin">ListModelMixin</a></li>
+<li><a href="#createmodelmixin">CreateModelMixin</a></li>
+<li><a href="#retrievemodelmixin">RetrieveModelMixin</a></li>
+<li><a href="#updatemodelmixin">UpdateModelMixin</a></li>
+<li><a href="#destroymodelmixin">DestroyModelMixin</a></li>
+<li><a href="#metadatamixin">MetadataMixin</a></li>
 
             </ul>
           </div>
@@ -108,6 +125,48 @@
 <p>Django’s generic views... were developed as a shortcut for common usage patterns... They take certain common idioms and patterns found in view development and abstract them so that you can quickly write common views of data without having to repeat yourself.</p>
 <p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/class-based-views/#base-vs-generic-views">Django Documentation</a></p>
 </blockquote>
+<p>One of the key benefits of class based views is the way they allow you to compose bits of reusable behaviour.  REST framework takes advantage of this by providing a number of pre-built views that provide for commonly used patterns. </p>
+<h2 id="example">Example</h2>
+<p>...</p>
+<hr />
+<h1 id="api-reference">API Reference</h1>
+<h2 id="listapiview">ListAPIView</h2>
+<p>Used for read-write endpoints to represent a collection of model instances.</p>
+<p>Provides a <code>get</code> method handler.</p>
+<h2 id="listcreateapiview">ListCreateAPIView</h2>
+<p>Used for read-write endpoints to represent a collection of model instances.</p>
+<p>Provides <code>get</code> and <code>post</code> method handlers.</p>
+<h2 id="retrieveapiview">RetrieveAPIView</h2>
+<p>Used for read-only endpoints to represent a single model instance.</p>
+<p>Provides a <code>get</code> method handler.</p>
+<h2 id="retrieveupdatedestroyapiview">RetrieveUpdateDestroyAPIView</h2>
+<p>Used for read-write endpoints to represent a single model instance.</p>
+<p>Provides <code>get</code>, <code>put</code> and <code>delete</code> method handlers.</p>
+<hr />
+<h1 id="base-views">Base views</h1>
+<h2 id="baseapiview">BaseAPIView</h2>
+<p>Extends REST framework's <code>APIView</code> class, adding support for serialization of model instances and model querysets.</p>
+<h2 id="multipleobjectbaseapiview">MultipleObjectBaseAPIView</h2>
+<p>Provides a base view for acting on a single object, by combining REST framework's <code>APIView</code>, and Django's <a href="https://docs.djangoproject.com/en/dev/ref/class-based-views/mixins-multiple-object/">MultipleObjectMixin</a>.</p>
+<p><strong>See also:</strong> ccbv.co.uk documentation for <a href="http://ccbv.co.uk/projects/Django/1.4/django.views.generic.list/MultipleObjectMixin/">MultipleObjectMixin</a>.</p>
+<h2 id="singleobjectbaseapiview">SingleObjectBaseAPIView</h2>
+<p>Provides a base view for acting on a single object, by combining REST framework's <code>APIView</code>, and Django's <a href="https://docs.djangoproject.com/en/dev/ref/class-based-views/mixins-single-object/">SingleObjectMixin</a>.</p>
+<p><strong>See also:</strong> ccbv.co.uk documentation for <a href="http://ccbv.co.uk/projects/Django/1.4/django.views.generic.detail/SingleObjectMixin/">SingleObjectMixin</a>.</p>
+<hr />
+<h1 id="mixins">Mixins</h1>
+<p>The mixin classes provide the actions that are used </p>
+<h2 id="listmodelmixin">ListModelMixin</h2>
+<p>Provides a <code>.list(request, *args, **kwargs)</code> method, that implements listing a queryset.</p>
+<h2 id="createmodelmixin">CreateModelMixin</h2>
+<p>Provides a <code>.create(request, *args, **kwargs)</code> method, that implements creating and saving a new model instance.</p>
+<h2 id="retrievemodelmixin">RetrieveModelMixin</h2>
+<p>Provides a <code>.retrieve(request, *args, **kwargs)</code> method, that implements returning an existing model instance in a response.</p>
+<h2 id="updatemodelmixin">UpdateModelMixin</h2>
+<p>Provides a <code>.update(request, *args, **kwargs)</code> method, that implements updating and saving an existing model instance.</p>
+<h2 id="destroymodelmixin">DestroyModelMixin</h2>
+<p>Provides a <code>.destroy(request, *args, **kwargs)</code> method, that implements deletion of an existing model instance.</p>
+<h2 id="metadatamixin">MetadataMixin</h2>
+<p>Provides a <code>.metadata(request, *args, **kwargs)</code> method, that returns a response containing metadata about the view.</p>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->
