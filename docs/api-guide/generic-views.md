@@ -9,9 +9,38 @@
 
 One of the key benefits of class based views is the way they allow you to compose bits of reusable behaviour.  REST framework takes advantage of this by providing a number of pre-built views that provide for commonly used patterns. 
 
-## Example
+The generic views provided by REST framework allow you to quickly build API views that map closely to your database models.
 
-...
+If the generic views don't suit the needs of your API, you can drop down to using the regular `APIView` class, or reuse the mixins and base classes used by the generic views to compose your own set of reusable generic views. 
+
+## Examples
+
+Typically when using the generic views, you'll override the view, and set several class attributes.
+
+    class UserList(generics.ListCreateAPIView):
+        serializer = UserSerializer
+        model = User
+        permissions = (IsAdminUser,)
+        paginate_by = 100
+
+For more complex cases you might also want to override various methods on the view class.  For example.
+
+    class UserList(generics.ListCreateAPIView):
+        serializer = UserSerializer
+        model = User
+        permissions = (IsAdminUser,)
+        
+        def get_paginate_by(self):
+            """
+            Use smaller pagination for HTML representations.
+            """
+            if self.request.accepted_media_type == 'text/html':
+                return 10
+            return 100
+
+For very simple cases you might want to pass through any class attributes using the `.as_view()` method.  For example, your URLconf might include something the following entry.
+
+    url(r'^/users/', ListCreateAPIView.as_view(model=User) name='user-list')
 
 ---
 
@@ -19,7 +48,7 @@ One of the key benefits of class based views is the way they allow you to compos
 
 ## ListAPIView
 
-Used for read-write endpoints to represent a collection of model instances.
+Used for read-only endpoints to represent a collection of model instances.
 
 Provides a `get` method handler.
 
@@ -45,6 +74,8 @@ Provides `get`, `put` and `delete` method handlers.
 
 # Base views
 
+Each of the generic views provided is built by combining one of the base views below, with one or more mixin classes.
+
 ## BaseAPIView
 
 Extends REST framework's `APIView` class, adding support for serialization of model instances and model querysets.
@@ -65,7 +96,7 @@ Provides a base view for acting on a single object, by combining REST framework'
 
 # Mixins
 
-The mixin classes provide the actions that are used 
+The mixin classes provide the actions that are used to provide the basic view behaviour.  Note that the mixin classes provide action methods rather than defining the handler methods such as `.get()` and `.post()` directly.  This allows for more flexible composition of behaviour. 
 
 ## ListModelMixin
 
@@ -86,10 +117,6 @@ Provides a `.update(request, *args, **kwargs)` method, that implements updating 
 ## DestroyModelMixin
 
 Provides a `.destroy(request, *args, **kwargs)` method, that implements deletion of an existing model instance.
-
-## MetadataMixin
-
-Provides a `.metadata(request, *args, **kwargs)` method, that returns a response containing metadata about the view.
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/class-based-views/#base-vs-generic-views
 [MultipleObjectMixin]: https://docs.djangoproject.com/en/dev/ref/class-based-views/mixins-multiple-object/

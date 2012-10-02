@@ -92,6 +92,7 @@ class DestroyModelMixin(object):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+# TODO: Remove MetadataMixin, and implement on APIView.options()
 class MetadataMixin(object):
     """
     Return a dicitonary of view metadata.
