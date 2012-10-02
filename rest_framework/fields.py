@@ -439,19 +439,3 @@ class FloatField(Field):
         except (TypeError, ValueError):
             msg = self.error_messages['invalid'] % value
             raise ValidationError(msg)
-
-# field_mapping = {
-#     models.AutoField: IntegerField,
-#     models.BooleanField: BooleanField,
-#     models.CharField: CharField,
-#     models.DateTimeField: DateTimeField,
-#     models.DateField: DateField,
-#     models.BigIntegerField: IntegerField,
-#     models.IntegerField: IntegerField,
-#     models.PositiveIntegerField: IntegerField,
-#     models.FloatField: FloatField
-# }
-
-
-# def modelfield_to_serializerfield(field):
-#     return field_mapping.get(type(field), Field)

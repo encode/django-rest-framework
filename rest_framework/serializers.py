@@ -3,6 +3,7 @@ import datetime
 import types
 from decimal import Decimal
 from django.core.serializers.base import DeserializedObject
+from django.db import models
 from django.utils.datastructures import SortedDict
 from rest_framework.compat import get_concrete_model
 from rest_framework.fields import *
@@ -349,7 +350,20 @@ class ModelSerializer(RelatedField, Serializer):
         """
         Creates a default instance of a basic non-relational field.
         """
-        return Field()
+        field_mapping = dict([
+            [models.FloatField, FloatField],
+            [models.IntegerField, IntegerField],
+            [models.DateTimeField, DateTimeField],
+            [models.DateField, DateField],
+            [models.EmailField, EmailField],
+            [models.CharField, CharField],
+            [models.CommaSeparatedIntegerField, CharField],
+            [models.BooleanField, BooleanField]
+        ])
+        try:
+            return field_mapping[model_field.__class__]()
+        except KeyError:
+            return Field()
 
     def restore_object(self, attrs, instance=None):
         """

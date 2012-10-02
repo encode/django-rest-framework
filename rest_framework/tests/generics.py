@@ -52,7 +52,8 @@ class TestRootView(TestCase):
         POST requests to RootAPIView should create a new object.
         """
         content = {'text': 'foobar'}
-        request = factory.post('/', json.dumps(content), content_type='application/json')
+        request = factory.post('/', json.dumps(content),
+                               content_type='application/json')
         response = self.view(request).render()
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         self.assertEquals(response.data, {'id': 4, 'text': u'foobar'})
@@ -64,7 +65,8 @@ class TestRootView(TestCase):
         PUT requests to RootAPIView should not be allowed
         """
         content = {'text': 'foobar'}
-        request = factory.put('/', json.dumps(content), content_type='application/json')
+        request = factory.put('/', json.dumps(content),
+                              content_type='application/json')
         response = self.view(request).render()
         self.assertEquals(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEquals(response.data, {"detail": "Method 'PUT' not allowed."})
@@ -105,7 +107,8 @@ class TestRootView(TestCase):
         POST requests to create a new object should not be able to set the id.
         """
         content = {'id': 999, 'text': 'foobar'}
-        request = factory.post('/', json.dumps(content), content_type='application/json')
+        request = factory.post('/', json.dumps(content),
+                               content_type='application/json')
         response = self.view(request).render()
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         self.assertEquals(response.data, {'id': 4, 'text': u'foobar'})
@@ -142,7 +145,8 @@ class TestInstanceView(TestCase):
         POST requests to InstanceAPIView should not be allowed
         """
         content = {'text': 'foobar'}
-        request = factory.post('/', json.dumps(content), content_type='application/json')
+        request = factory.post('/', json.dumps(content),
+                               content_type='application/json')
         response = self.view(request).render()
         self.assertEquals(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEquals(response.data, {"detail": "Method 'POST' not allowed."})
@@ -152,7 +156,8 @@ class TestInstanceView(TestCase):
         PUT requests to InstanceAPIView should update an object.
         """
         content = {'text': 'foobar'}
-        request = factory.put('/1', json.dumps(content), content_type='application/json')
+        request = factory.put('/1', json.dumps(content),
+                              content_type='application/json')
         response = self.view(request, pk=1).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, {'id': 1, 'text': 'foobar'})
@@ -197,7 +202,8 @@ class TestInstanceView(TestCase):
         POST requests to create a new object should not be able to set the id.
         """
         content = {'id': 999, 'text': 'foobar'}
-        request = factory.put('/1', json.dumps(content), content_type='application/json')
+        request = factory.put('/1', json.dumps(content),
+                              content_type='application/json')
         response = self.view(request, pk=1).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, {'id': 1, 'text': 'foobar'})
