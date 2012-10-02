@@ -100,6 +100,18 @@ class TestRootView(TestCase):
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, expected)
 
+    def test_post_cannot_set_id(self):
+        """
+        POST requests to create a new object should not be able to set the id.
+        """
+        content = {'id': 999, 'text': 'foobar'}
+        request = factory.post('/', json.dumps(content), content_type='application/json')
+        response = self.view(request).render()
+        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+        self.assertEquals(response.data, {'id': 4, 'text': u'foobar'})
+        created = self.objects.get(id=4)
+        self.assertEquals(created.text, 'foobar')
+
 
 class TestInstanceView(TestCase):
     def setUp(self):

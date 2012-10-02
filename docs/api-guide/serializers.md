@@ -230,6 +230,9 @@ The `nested` option may also be set by passing it to the `serialize()` method.
         class Meta:
             model = Account
 
+        def get_pk_field(self, model_field):
+            return Field(readonly=True)
+
         def get_nested_field(self, model_field):
             return ModelSerializer()
 
