@@ -136,12 +136,12 @@ Using the mixin classes we've rewritten the views to use slightly less code than
     from rest_framework import generics
 
 
-    class CommentRoot(generics.RootAPIView):
+    class CommentRoot(generics.ListCreateAPIView):
         model = Comment
         serializer_class = CommentSerializer
 
 
-    class CommentInstance(generics.InstanceAPIView):
+    class CommentInstance(generics.RetrieveUpdateDestroyAPIView):
         model = Comment
         serializer_class = CommentSerializer
 

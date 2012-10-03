@@ -62,8 +62,8 @@ class Resource(ResourceMixin, views.APIView):
 
 
 class ModelResource(ResourceMixin, views.APIView):
-    root_class = generics.RootAPIView
-    detail_class = generics.InstanceAPIView
+    root_class = generics.ListCreateAPIView
+    detail_class = generics.RetrieveUpdateDestroyAPIView
 
     def root_view(self):
         return wrapped(self, self.root_class())

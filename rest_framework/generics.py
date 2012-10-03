@@ -106,10 +106,10 @@ class ListAPIView(mixins.ListModelMixin,
         return self.metadata(request, *args, **kwargs)
 
 
-class RootAPIView(mixins.ListModelMixin,
-                  mixins.CreateModelMixin,
-                  mixins.MetadataMixin,
-                  MultipleObjectBaseView):
+class ListCreateAPIView(mixins.ListModelMixin,
+                        mixins.CreateModelMixin,
+                        mixins.MetadataMixin,
+                        MultipleObjectBaseView):
     """
     Concrete view for listing a queryset or creating a model instance.
     """
@@ -123,9 +123,9 @@ class RootAPIView(mixins.ListModelMixin,
         return self.metadata(request, *args, **kwargs)
 
 
-class DetailAPIView(mixins.RetrieveModelMixin,
-                    mixins.MetadataMixin,
-                    SingleObjectBaseView):
+class RetrieveAPIView(mixins.RetrieveModelMixin,
+                      mixins.MetadataMixin,
+                      SingleObjectBaseView):
     """
     Concrete view for retrieving a model instance.
     """
@@ -136,11 +136,11 @@ class DetailAPIView(mixins.RetrieveModelMixin,
         return self.metadata(request, *args, **kwargs)
 
 
-class InstanceAPIView(mixins.RetrieveModelMixin,
-                      mixins.UpdateModelMixin,
-                      mixins.DestroyModelMixin,
-                      mixins.MetadataMixin,
-                      SingleObjectBaseView):
+class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
+                                   mixins.UpdateModelMixin,
+                                   mixins.DestroyModelMixin,
+                                   mixins.MetadataMixin,
+                                   SingleObjectBaseView):
     """
     Concrete view for retrieving, updating or deleting a model instance.
     """

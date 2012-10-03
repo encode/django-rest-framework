@@ -8,7 +8,7 @@ from rest_framework.tests.models import BasicModel
 factory = RequestFactory()
 
 
-class RootView(generics.RootAPIView):
+class RootView(generics.ListCreateAPIView):
     """
     Example description for OPTIONS.
     """
@@ -16,7 +16,7 @@ class RootView(generics.RootAPIView):
     paginate_by = None
 
 
-class InstanceView(generics.InstanceAPIView):
+class InstanceView(generics.RetrieveUpdateDestroyAPIView):
     """
     Example description for OPTIONS.
     """
@@ -40,7 +40,7 @@ class TestRootView(TestCase):
 
     def test_get_root_view(self):
         """
-        GET requests to RootAPIView should return list of objects.
+        GET requests to ListCreateAPIView should return list of objects.
         """
         request = factory.get('/')
         response = self.view(request).render()
@@ -49,7 +49,7 @@ class TestRootView(TestCase):
 
     def test_post_root_view(self):
         """
-        POST requests to RootAPIView should create a new object.
+        POST requests to ListCreateAPIView should create a new object.
         """
         content = {'text': 'foobar'}
         request = factory.post('/', json.dumps(content),
@@ -62,7 +62,7 @@ class TestRootView(TestCase):
 
     def test_put_root_view(self):
         """
-        PUT requests to RootAPIView should not be allowed
+        PUT requests to ListCreateAPIView should not be allowed
         """
         content = {'text': 'foobar'}
         request = factory.put('/', json.dumps(content),
@@ -73,7 +73,7 @@ class TestRootView(TestCase):
 
     def test_delete_root_view(self):
         """
-        DELETE requests to RootAPIView should not be allowed
+        DELETE requests to ListCreateAPIView should not be allowed
         """
         request = factory.delete('/')
         response = self.view(request).render()
@@ -82,7 +82,7 @@ class TestRootView(TestCase):
 
     def test_options_root_view(self):
         """
-        OPTIONS requests to RootAPIView should return metadata
+        OPTIONS requests to ListCreateAPIView should return metadata
         """
         request = factory.options('/')
         response = self.view(request).render()
@@ -133,7 +133,7 @@ class TestInstanceView(TestCase):
 
     def test_get_instance_view(self):
         """
-        GET requests to InstanceAPIView should return a single object.
+        GET requests to RetrieveUpdateDestroyAPIView should return a single object.
         """
         request = factory.get('/1')
         response = self.view(request, pk=1).render()
@@ -142,7 +142,7 @@ class TestInstanceView(TestCase):
 
     def test_post_instance_view(self):
         """
-        POST requests to InstanceAPIView should not be allowed
+        POST requests to RetrieveUpdateDestroyAPIView should not be allowed
         """
         content = {'text': 'foobar'}
         request = factory.post('/', json.dumps(content),
@@ -153,7 +153,7 @@ class TestInstanceView(TestCase):
 
     def test_put_instance_view(self):
         """
-        PUT requests to InstanceAPIView should update an object.
+        PUT requests to RetrieveUpdateDestroyAPIView should update an object.
         """
         content = {'text': 'foobar'}
         request = factory.put('/1', json.dumps(content),
@@ -166,7 +166,7 @@ class TestInstanceView(TestCase):
 
     def test_delete_instance_view(self):
         """
-        DELETE requests to InstanceAPIView should delete an object.
+        DELETE requests to RetrieveUpdateDestroyAPIView should delete an object.
         """
         request = factory.delete('/1')
         response = self.view(request, pk=1).render()
@@ -177,7 +177,7 @@ class TestInstanceView(TestCase):
 
     def test_options_instance_view(self):
         """
-        OPTIONS requests to InstanceAPIView should return metadata
+        OPTIONS requests to RetrieveUpdateDestroyAPIView should return metadata
         """
         request = factory.options('/')
         response = self.view(request).render()

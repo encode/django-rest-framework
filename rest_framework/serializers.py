@@ -322,7 +322,7 @@ class ModelSerializer(RelatedField, Serializer):
             else:
                 field = self.get_field(model_field)
 
-            if field is not None:
+            if field:
                 field.initialize(parent=self, model_field=model_field)
                 ret[model_field.name] = field
 

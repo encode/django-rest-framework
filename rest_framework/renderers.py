@@ -239,27 +239,29 @@ class DocumentingHTMLRenderer(BaseRenderer):
 
         #  We need to map our Fields to Django's Fields.
         field_mapping = dict([
-         [serializers.FloatField.__name__, forms.FloatField],
-         [serializers.IntegerField.__name__, forms.IntegerField],
-         [serializers.DateTimeField.__name__, forms.DateTimeField],
-         [serializers.DateField.__name__, forms.DateField],
-         [serializers.EmailField.__name__, forms.EmailField],
-         [serializers.CharField.__name__, forms.CharField],
-         [serializers.BooleanField.__name__, forms.BooleanField]
+            [serializers.FloatField.__name__, forms.FloatField],
+            [serializers.IntegerField.__name__, forms.IntegerField],
+            [serializers.DateTimeField.__name__, forms.DateTimeField],
+            [serializers.DateField.__name__, forms.DateField],
+            [serializers.EmailField.__name__, forms.EmailField],
+            [serializers.CharField.__name__, forms.CharField],
+            [serializers.BooleanField.__name__, forms.BooleanField]
         ])
 
         # Creating an on the fly form see: http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
         fields = {}
-        object, data = None, None
+        obj, data = None, None
         if getattr(view, 'object', None):
-            object = view.object
-        serializer = view.get_serializer(instance=object)
+            obj = view.object
+
+        serializer = view.get_serializer(instance=obj)
         for k, v in serializer.fields.items():
             if v.readonly:
                 continue
             fields[k] = field_mapping[v.__class__.__name__]()
+
         OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
-        if object and not view.request.method == 'DELETE':  # Don't fill in the form when the object is deleted
+        if obj and not view.request.method == 'DELETE':  # Don't fill in the form when the object is deleted
             data = serializer.data
         form_instance = OnTheFlyForm(data)
         return form_instance

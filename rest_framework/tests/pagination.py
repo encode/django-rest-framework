@@ -7,7 +7,7 @@ from rest_framework.tests.models import BasicModel
 factory = RequestFactory()
 
 
-class RootView(generics.RootAPIView):
+class RootView(generics.ListCreateAPIView):
     """
     Example description for OPTIONS.
     """
@@ -35,7 +35,7 @@ class IntegrationTestPagination(TestCase):
 
     def test_get_paginated_root_view(self):
         """
-        GET requests to paginated RootAPIView should return paginated results.
+        GET requests to paginated ListCreateAPIView should return paginated results.
         """
         request = factory.get('/')
         response = self.view(request).render()
