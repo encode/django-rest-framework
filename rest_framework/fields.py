@@ -180,6 +180,10 @@ class RelatedField(Field):
     Subclass this and override `convert` to define custom behaviour when
     serializing related objects.
     """
+    def __init__(self, *args, **kwargs):
+        self.queryset = kwargs.pop('queryset', None)
+        super(RelatedField, self).__init__(*args, **kwargs)
+
     def field_to_native(self, obj, field_name):
         obj = getattr(obj, self.source or field_name)
         if obj.__class__.__name__ in ('RelatedManager', 'ManyRelatedManager'):

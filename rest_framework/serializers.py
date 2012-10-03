@@ -351,9 +351,10 @@ class ModelSerializer(RelatedField, Serializer):
         """
         Creates a default instance of a flat relational field.
         """
+        queryset = model_field.rel.to._default_manager  # .using(db).complex_filter(self.rel.limit_choices_to)
         if isinstance(model_field, models.fields.related.ManyToManyField):
-            return ManyPrimaryKeyRelatedField()
-        return PrimaryKeyRelatedField()
+            return ManyPrimaryKeyRelatedField(queryset=queryset)
+        return PrimaryKeyRelatedField(queryset=queryset)
 
     def get_field(self, model_field):
         """
@@ -367,7 +368,7 @@ class ModelSerializer(RelatedField, Serializer):
             models.EmailField: EmailField,
             models.CharField: CharField,
             models.CommaSeparatedIntegerField: CharField,
-            models.BooleanField: BooleanField
+            models.BooleanField: BooleanField,
         }
         try:
             return field_mapping[model_field.__class__]()
