@@ -28,9 +28,25 @@ from django.db import models
 #             'pk': self.id
 #         })
 
+class Anchor(models.Model):
+    """
+    A simple model to use as the target of relationships for other test models.
+    """
+    text = models.CharField(max_length=100, default='anchor')
+
+    class Meta:
+        app_label = 'rest_framework'
+
 
 class BasicModel(models.Model):
     text = models.CharField(max_length=100)
+
+    class Meta:
+        app_label = 'rest_framework'
+
+
+class ManyToManyModel(models.Model):
+    rel = models.ManyToManyField(Anchor)
 
     class Meta:
         app_label = 'rest_framework'

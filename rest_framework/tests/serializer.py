@@ -1,6 +1,7 @@
 import datetime
 from django.test import TestCase
 from rest_framework import serializers
+from rest_framework.tests.models import *
 
 
 class Comment(object):
@@ -94,18 +95,6 @@ class ValidationTests(TestCase):
 
 
 class MetadataTests(TestCase):
-    # def setUp(self):
-    #     self.comment = Comment(
-    #         'tomchristie',
-    #         'Happy new year!',
-    #         datetime.datetime(2012, 1, 1)
-    #     )
-    #     self.data = {
-    #         'email': 'tomchristie',
-    #         'content': 'Happy new year!',
-    #         'created': datetime.datetime(2012, 1, 1)
-    #     }
-
     def test_empty(self):
         serializer = CommentSerializer()
         expected = {
@@ -115,3 +104,46 @@ class MetadataTests(TestCase):
         }
         for field_name, field in expected.items():
             self.assertTrue(isinstance(serializer.data.fields[field_name], field))
+
+
+class ManyToManyTests(TestCase):
+    def setUp(self):
+        class ManyToManySerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ManyToManyModel
+
+        self.serializer_class = ManyToManySerializer
+
+        # An anchor instance to use for the relationship
+        self.anchor = Anchor()
+        self.anchor.save()
+
+        # A model instance with a many to many relationship to the anchor
+        self.instance = ManyToManyModel()
+        self.instance.save()
+        self.instance.rel.add(self.anchor)
+
+        # A serialized representation of the model instance
+        self.data = {'id': 1, 'rel': [self.anchor.id]}
+
+    def test_retrieve(self):
+        serializer = self.serializer_class(instance=self.instance)
+        expected = self.data
+        self.assertEquals(serializer.data, expected)
+
+    def test_create(self):
+        data = {'rel': [self.anchor.id]}
+        serializer = self.serializer_class(data)
+        self.assertEquals(serializer.is_valid(), True)
+        serializer.object.save()
+        obj = serializer.object.object
+        self.assertEquals(obj.pk, 2)
+        self.assertEquals(list(obj.rel.all()), [self.anchor])
+        # self.assertFalse(serializer.object is expected)
+
+    # def test_deserialization_for_update(self):
+    #     serializer = self.serializer_class(self.data, instance=self.instance)
+    #     expected = self.instance
+    #     self.assertEquals(serializer.is_valid(), True)
+    #     self.assertEquals(serializer.object, expected)
+    #     self.assertTrue(serializer.object is expected)
