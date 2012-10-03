@@ -181,7 +181,6 @@ class RelatedField(Field):
     Subclass this and override `convert` to define custom behaviour when
     serializing related objects.
     """
-
     def field_to_native(self, obj, field_name):
         obj = getattr(obj, self.source or field_name)
         if obj.__class__.__name__ in ('RelatedManager', 'ManyRelatedManager'):
@@ -202,7 +201,6 @@ class PrimaryKeyRelatedField(RelatedField):
     """
     Serializes a model related field or related manager to a pk value.
     """
-
     # Note the we use ModelRelatedField's implementation, as we want to get the
     # raw database value directly, since that won't involve another
     # database lookup.
@@ -225,23 +223,34 @@ class PrimaryKeyRelatedField(RelatedField):
         try:
             obj = obj.serializable_value(self.source or field_name)
         except AttributeError:
-            field = obj._meta.get_field_by_name(field_name)[0]
+            # RelatedObject (reverse relationship)
             obj = getattr(obj, self.source or field_name)
-            if obj.__class__.__name__ == 'RelatedManager':
-                return [self.to_native(item.pk) for item in obj.all()]
-            elif isinstance(field, RelatedObject):
-                return self.to_native(obj.pk)
-            raise
-        if obj.__class__.__name__ == 'ManyRelatedManager':
-            return [self.to_native(item.pk) for item in obj.all()]
+            return self.to_native(obj.pk)
+        # Forward relationship
         return self.to_native(obj)
 
     def field_from_native(self, data, field_name, into):
         value = data.get(field_name)
-        if hasattr(value, '__iter__'):
-            into[field_name] = [self.from_native(item) for item in value]
-        else:
-            into[field_name + '_id'] = self.from_native(value)
+        into[field_name + '_id'] = self.from_native(value)
+
+
+class ManyPrimaryKeyRelatedField(PrimaryKeyRelatedField):
+    def field_to_native(self, obj, field_name):
+        try:
+            obj = obj.serializable_value(self.source or field_name)
+        except AttributeError:
+            # RelatedManager (reverse relationship)
+            obj = getattr(obj, self.source or field_name)
+            return [self.to_native(item.pk) for item in obj.all()]
+        # Forward relationship
+        return [self.to_native(item.pk) for item in obj.all()]
+
+    def field_from_native(self, data, field_name, into):
+        try:
+            value = data.getlist(field_name)
+        except:
+            value = data.get(field_name)
+        into[field_name] = [self.from_native(item) for item in value]
 
 
 class NaturalKeyRelatedField(RelatedField):
