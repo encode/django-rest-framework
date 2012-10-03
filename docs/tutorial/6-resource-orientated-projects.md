@@ -4,8 +4,8 @@ Resource classes are just View classes that don't have any handler methods bound
 
 This allows us to:
 
-* Encapsulate common behaviour accross a class of views, in a single Resource class.
-* Seperate out the actions of a Resource from the specfics of how those actions should be bound to a particular set of URLs.
+* Encapsulate common behaviour across a class of views, in a single Resource class.
+* Separate out the actions of a Resource from the specfics of how those actions should be bound to a particular set of URLs.
 
 ## Refactoring to use Resources, not Views
 
@@ -59,7 +59,7 @@ Right now that hasn't really saved us a lot of code.  However, now that we're us
 
 ## Trade-offs between views vs resources.
 
-Writing resource-orientated code can be a good thing.  It helps ensure that URL conventions will be consistent across your APIs, and minimises the amount of code you need to write.
+Writing resource-oriented code can be a good thing.  It helps ensure that URL conventions will be consistent across your APIs, and minimises the amount of code you need to write.
 
 The trade-off is that the behaviour is less explict.  It can be more difficult to determine what code path is being followed, or where to override some behaviour.
 
