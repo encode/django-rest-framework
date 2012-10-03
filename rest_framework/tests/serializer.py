@@ -50,19 +50,19 @@ class BasicTests(TestCase):
         }
         self.assertEquals(serializer.data, expected)
 
-    def test_serialization(self):
+    def test_retrieve(self):
         serializer = CommentSerializer(instance=self.comment)
         expected = self.data
         self.assertEquals(serializer.data, expected)
 
-    def test_deserialization_for_create(self):
+    def test_create(self):
         serializer = CommentSerializer(self.data)
         expected = self.comment
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.object, expected)
         self.assertFalse(serializer.object is expected)
 
-    def test_deserialization_for_update(self):
+    def test_update(self):
         serializer = CommentSerializer(self.data, instance=self.comment)
         expected = self.comment
         self.assertEquals(serializer.is_valid(), True)
@@ -83,12 +83,12 @@ class ValidationTests(TestCase):
             'created': datetime.datetime(2012, 1, 1)
         }
 
-    def test_deserialization_for_create(self):
+    def test_create(self):
         serializer = CommentSerializer(self.data)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
 
-    def test_deserialization_for_update(self):
+    def test_update(self):
         serializer = CommentSerializer(self.data, instance=self.comment)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
@@ -127,11 +127,17 @@ class ManyToManyTests(TestCase):
         self.data = {'id': 1, 'rel': [self.anchor.id]}
 
     def test_retrieve(self):
+        """
+        Serialize an instance of a model with a ManyToMany relationship.
+        """
         serializer = self.serializer_class(instance=self.instance)
         expected = self.data
         self.assertEquals(serializer.data, expected)
 
     def test_create(self):
+        """
+        Create an instance of a model with a ManyToMany relationship.
+        """
         data = {'rel': [self.anchor.id]}
         serializer = self.serializer_class(data)
         self.assertEquals(serializer.is_valid(), True)
@@ -139,7 +145,20 @@ class ManyToManyTests(TestCase):
         self.assertEquals(len(ManyToManyModel.objects.all()), 2)
         self.assertEquals(instance.pk, 2)
         self.assertEquals(list(instance.rel.all()), [self.anchor])
-        # self.assertFalse(serializer.object is expected)
+
+    def test_update(self):
+        """
+        Update an instance of a model with a ManyToMany relationship.
+        """
+        new_anchor = Anchor()
+        new_anchor.save()
+        data = {'rel': [self.anchor.id, new_anchor.id]}
+        serializer = self.serializer_class(data, instance=self.instance)
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+        self.assertEquals(len(ManyToManyModel.objects.all()), 1)
+        self.assertEquals(instance.pk, 1)
+        self.assertEquals(list(instance.rel.all()), [self.anchor, new_anchor])
 
     # def test_deserialization_for_update(self):
     #     serializer = self.serializer_class(self.data, instance=self.instance)
