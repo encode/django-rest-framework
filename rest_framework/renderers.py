@@ -238,15 +238,16 @@ class DocumentingHTMLRenderer(BaseRenderer):
             return self.get_generic_content_form(view)
 
         #  We need to map our Fields to Django's Fields.
-        field_mapping = dict([
-            [serializers.FloatField.__name__, forms.FloatField],
-            [serializers.IntegerField.__name__, forms.IntegerField],
-            [serializers.DateTimeField.__name__, forms.DateTimeField],
-            [serializers.DateField.__name__, forms.DateField],
-            [serializers.EmailField.__name__, forms.EmailField],
-            [serializers.CharField.__name__, forms.CharField],
-            [serializers.BooleanField.__name__, forms.BooleanField]
-        ])
+        # TODO: Remove this and just render serializer fields directly
+        field_mapping = {
+            serializers.FloatField: forms.FloatField,
+            serializers.IntegerField: forms.IntegerField,
+            serializers.DateTimeField: forms.DateTimeField,
+            serializers.DateField: forms.DateField,
+            serializers.EmailField: forms.EmailField,
+            serializers.CharField: forms.CharField,
+            serializers.BooleanField: forms.BooleanField
+        }
 
         # Creating an on the fly form see: http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
         fields = {}
@@ -255,10 +256,13 @@ class DocumentingHTMLRenderer(BaseRenderer):
             obj = view.object
 
         serializer = view.get_serializer(instance=obj)
-        for k, v in serializer.fields.items():
+        for k, v in serializer.get_fields(True).items():
             if v.readonly:
                 continue
-            fields[k] = field_mapping[v.__class__.__name__]()
+            try:
+                fields[k] = field_mapping[v.__class__]()
+            except KeyError:
+                fields[k] = forms.CharField
 
         OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
         if obj and not view.request.method == 'DELETE':  # Don't fill in the form when the object is deleted

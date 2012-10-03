@@ -350,16 +350,16 @@ class ModelSerializer(RelatedField, Serializer):
         """
         Creates a default instance of a basic non-relational field.
         """
-        field_mapping = dict([
-            [models.FloatField, FloatField],
-            [models.IntegerField, IntegerField],
-            [models.DateTimeField, DateTimeField],
-            [models.DateField, DateField],
-            [models.EmailField, EmailField],
-            [models.CharField, CharField],
-            [models.CommaSeparatedIntegerField, CharField],
-            [models.BooleanField, BooleanField]
-        ])
+        field_mapping = {
+            models.FloatField: FloatField,
+            models.IntegerField: IntegerField,
+            models.DateTimeField: DateTimeField,
+            models.DateField: DateField,
+            models.EmailField: EmailField,
+            models.CharField: CharField,
+            models.CommaSeparatedIntegerField: CharField,
+            models.BooleanField: BooleanField
+        }
         try:
             return field_mapping[model_field.__class__]()
         except KeyError:
