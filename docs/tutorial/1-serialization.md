@@ -78,7 +78,7 @@ Don't forget to sync the database for the first time.
 
 ## Creating a Serializer class
 
-We're going to create a simple Web API that we can use to edit these comment objects with.  The first thing we need is a way of serializing and deserializing the objects into representations such as `json`.  We do this by declaring serializers, that work very similarly to Django's forms.  Create a file in the project named `serializers.py` and add the following.
+We're going to create a simple Web API that we can use to edit these comment objects with.  The first thing we need is a way of serializing and deserializing the objects into representations such as `json`.  We do this by declaring serializers that work very similarly to Django's forms.  Create a file in the project named `serializers.py` and add the following.
 
     from blog import models
     from rest_framework import serializers
@@ -201,7 +201,7 @@ The root of our API is going to be a view that supports listing all the existing
 
 Note that because we want to be able to POST to this view from clients that won't have a CSRF token we need to mark the view as `csrf_exempt`.  This isn't something that you'd normally want to do, and REST framework views actually use more sensible behavior than this, but it'll do for our purposes right now. 
 
-We'll also need a view which corrosponds to an individual comment, and can be used to retrieve, update or delete the comment.
+We'll also need a view which corresponds to an individual comment, and can be used to retrieve, update or delete the comment.
 
     @csrf_exempt
     def comment_instance(request, pk):
@@ -231,7 +231,7 @@ We'll also need a view which corrosponds to an individual comment, and can be us
             comment.delete()
             return HttpResponse(status=204)
 
-Finally we need to wire these views up, in the `tutorial/urls.py` file.
+Finally we need to wire these views up. Create the `blog/urls.py` file:
 
     from django.conf.urls import patterns, url
 
