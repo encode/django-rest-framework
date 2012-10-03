@@ -28,10 +28,10 @@ We'll start by rewriting the root view as a class based view.  All this involves
             if serializer.is_valid():
                 comment = serializer.object
                 comment.save()
-                return Response(serializer.serialized, status=status.HTTP_201_CREATED)
-            return Response(serializer.serialized_errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-So far, so good.  It looks pretty similar to the previous case, but we've got better seperation between the different HTTP methods.  We'll also need to update the instance view. 
+So far, so good.  It looks pretty similar to the previous case, but we've got better separation between the different HTTP methods.  We'll also need to update the instance view. 
 
     class CommentInstance(APIView):
         """
@@ -145,7 +145,7 @@ Using the mixin classes we've rewritten the views to use slightly less code than
         model = Comment
         serializer_class = CommentSerializer
 
-Wow, that's pretty concise.  We've got a huge amount for free, and our code looks like good, clean, idomatic Django.
+Wow, that's pretty concise.  We've got a huge amount for free, and our code looks like good, clean, idiomatic Django.
 
 Next we'll move onto [part 4 of the tutorial][tut-4], where we'll take a look at how we can  customize the behavior of our views to support a range of authentication, permissions, throttling and other aspects.
 
