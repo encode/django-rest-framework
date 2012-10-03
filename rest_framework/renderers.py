@@ -247,7 +247,7 @@ class DocumentingHTMLRenderer(BaseRenderer):
             serializers.EmailField: forms.EmailField,
             serializers.CharField: forms.CharField,
             serializers.BooleanField: forms.BooleanField,
-            serializers.PrimaryKeyRelatedField: forms.ChoiceField,
+            serializers.PrimaryKeyRelatedField: forms.ModelChoiceField,
             serializers.ManyPrimaryKeyRelatedField: forms.ModelMultipleChoiceField
         }
 
