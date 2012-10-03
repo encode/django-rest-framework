@@ -275,6 +275,13 @@ class BaseSerializer(Field):
             self._data = self.to_native(self.object)
         return self._data
 
+    def save(self):
+        """
+        Save the deserialized object and return it.
+        """
+        self.object.save()
+        return self.object
+
 
 class Serializer(BaseSerializer):
     __metaclass__ = SerializerMetaclass
@@ -379,3 +386,10 @@ class ModelSerializer(RelatedField, Serializer):
             if field.name in attrs:
                 m2m_data[field.name] = attrs.pop(field.name)
         return DeserializedObject(self.opts.model(**attrs), m2m_data)
+
+    def save(self):
+        """
+        Save the deserialized object and return it.
+        """
+        self.object.save()
+        return self.object.object

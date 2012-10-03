@@ -135,10 +135,10 @@ class ManyToManyTests(TestCase):
         data = {'rel': [self.anchor.id]}
         serializer = self.serializer_class(data)
         self.assertEquals(serializer.is_valid(), True)
-        serializer.object.save()
-        obj = serializer.object.object
-        self.assertEquals(obj.pk, 2)
-        self.assertEquals(list(obj.rel.all()), [self.anchor])
+        instance = serializer.save()
+        self.assertEquals(len(ManyToManyModel.objects.all()), 2)
+        self.assertEquals(instance.pk, 2)
+        self.assertEquals(list(instance.rel.all()), [self.anchor])
         # self.assertFalse(serializer.object is expected)
 
     # def test_deserialization_for_update(self):
