@@ -250,7 +250,7 @@ class ManyPrimaryKeyRelatedField(PrimaryKeyRelatedField):
             value = data.getlist(field_name)
         except:
             value = data.get(field_name)
-        into[field_name] = [self.from_native(item) for item in value]
+        into[field_name] = [self.from_native(item) for item in value if item]
 
 
 class NaturalKeyRelatedField(RelatedField):
