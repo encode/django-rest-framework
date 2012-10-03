@@ -7,7 +7,6 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.db import DEFAULT_DB_ALIAS
-from django.db.models.related import RelatedObject
 from django.utils.encoding import is_protected_type, smart_unicode
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.compat import parse_date, parse_datetime
@@ -199,27 +198,23 @@ class RelatedField(Field):
 
 class PrimaryKeyRelatedField(RelatedField):
     """
-    Serializes a model related field or related manager to a pk value.
+    Serializes a related field or related object to a pk value.
     """
-    # Note the we use ModelRelatedField's implementation, as we want to get the
-    # raw database value directly, since that won't involve another
-    # database lookup.
-    #
-    # An alternative implementation would simply be this...
-    #
-    # class PrimaryKeyRelatedField(RelatedField):
-    #     def to_native(self, obj):
-    #         return obj.pk
 
     def to_native(self, pk):
         """
-        Simply returns the object's pk.  You can subclass this method to
-        provide different serialization behavior of the pk.
-        (For example returning a URL based on the model's pk.)
+        You can subclass this method to provide different serialization
+        behavior based on the pk.
         """
         return pk
 
     def field_to_native(self, obj, field_name):
+        # This is only implemented for performance reasons
+        #
+        # We could leave the default `RelatedField.field_to_native()` in place,
+        # and inside just implement `to_native()` as `return obj.pk`
+        #
+        # That would involve an extra database lookup.
         try:
             pk = obj.serializable_value(self.source or field_name)
         except AttributeError:
@@ -235,6 +230,10 @@ class PrimaryKeyRelatedField(RelatedField):
 
 
 class ManyPrimaryKeyRelatedField(PrimaryKeyRelatedField):
+    """
+    Serializes a to-many related field or related manager to a pk value.
+    """
+
     def field_to_native(self, obj, field_name):
         try:
             queryset = obj.serializable_value(self.source or field_name)
