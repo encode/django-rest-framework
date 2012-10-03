@@ -351,6 +351,8 @@ class ModelSerializer(RelatedField, Serializer):
         """
         Creates a default instance of a flat relational field.
         """
+        if isinstance(model_field, models.fields.related.ManyToManyField):
+            return ManyPrimaryKeyRelatedField()
         return PrimaryKeyRelatedField()
 
     def get_field(self, model_field):

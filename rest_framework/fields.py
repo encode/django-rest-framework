@@ -221,13 +221,13 @@ class PrimaryKeyRelatedField(RelatedField):
 
     def field_to_native(self, obj, field_name):
         try:
-            obj = obj.serializable_value(self.source or field_name)
+            pk = obj.serializable_value(self.source or field_name)
         except AttributeError:
             # RelatedObject (reverse relationship)
             obj = getattr(obj, self.source or field_name)
             return self.to_native(obj.pk)
         # Forward relationship
-        return self.to_native(obj)
+        return self.to_native(pk)
 
     def field_from_native(self, data, field_name, into):
         value = data.get(field_name)
@@ -237,13 +237,13 @@ class PrimaryKeyRelatedField(RelatedField):
 class ManyPrimaryKeyRelatedField(PrimaryKeyRelatedField):
     def field_to_native(self, obj, field_name):
         try:
-            obj = obj.serializable_value(self.source or field_name)
+            queryset = obj.serializable_value(self.source or field_name)
         except AttributeError:
             # RelatedManager (reverse relationship)
-            obj = getattr(obj, self.source or field_name)
-            return [self.to_native(item.pk) for item in obj.all()]
+            queryset = getattr(obj, self.source or field_name)
+            return [self.to_native(item.pk) for item in queryset.all()]
         # Forward relationship
-        return [self.to_native(item.pk) for item in obj.all()]
+        return [self.to_native(item.pk) for item in queryset.all()]
 
     def field_from_native(self, data, field_name, into):
         try:
