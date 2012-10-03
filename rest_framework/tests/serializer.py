@@ -160,6 +160,47 @@ class ManyToManyTests(TestCase):
         self.assertEquals(instance.pk, 1)
         self.assertEquals(list(instance.rel.all()), [self.anchor, new_anchor])
 
+    def test_create_empty_relationship(self):
+        """
+        Create an instance of a model with a ManyToMany relationship,
+        containing no items.
+        """
+        data = {'rel': []}
+        serializer = self.serializer_class(data)
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+        self.assertEquals(len(ManyToManyModel.objects.all()), 2)
+        self.assertEquals(instance.pk, 2)
+        self.assertEquals(list(instance.rel.all()), [])
+
+    def test_update_empty_relationship(self):
+        """
+        Update an instance of a model with a ManyToMany relationship,
+        containing no items.
+        """
+        new_anchor = Anchor()
+        new_anchor.save()
+        data = {'rel': []}
+        serializer = self.serializer_class(data, instance=self.instance)
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+        self.assertEquals(len(ManyToManyModel.objects.all()), 1)
+        self.assertEquals(instance.pk, 1)
+        self.assertEquals(list(instance.rel.all()), [])
+
+    def test_create_empty_relationship_flat_data(self):
+        """
+        Create an instance of a model with a ManyToMany relationship,
+        containing no items, using a representation that does not support
+        lists (eg form data).
+        """
+        data = {'rel': ''}
+        serializer = self.serializer_class(data)
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+        self.assertEquals(len(ManyToManyModel.objects.all()), 2)
+        self.assertEquals(instance.pk, 2)
+        self.assertEquals(list(instance.rel.all()), [])
     # def test_deserialization_for_update(self):
     #     serializer = self.serializer_class(self.data, instance=self.instance)
     #     expected = self.instance

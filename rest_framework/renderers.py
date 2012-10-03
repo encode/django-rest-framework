@@ -262,7 +262,7 @@ class DocumentingHTMLRenderer(BaseRenderer):
             try:
                 fields[k] = field_mapping[v.__class__]()
             except KeyError:
-                fields[k] = forms.CharField
+                fields[k] = forms.CharField()
 
         OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
         if obj and not view.request.method == 'DELETE':  # Don't fill in the form when the object is deleted
