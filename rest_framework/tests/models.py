@@ -28,6 +28,10 @@ from django.db import models
 #             'pk': self.id
 #         })
 
+def foobar():
+    return 'foobar'
+
+
 class RESTFrameworkModel(models.Model):
     """
     Base for test models that sets app_label, so they play nicely.
@@ -43,6 +47,14 @@ class Anchor(RESTFrameworkModel):
 
 class BasicModel(RESTFrameworkModel):
     text = models.CharField(max_length=100)
+
+
+class DefaultValueModel(RESTFrameworkModel):
+    text = models.CharField(default='foobar', max_length=100)
+
+
+class CallableDefaultValueModel(RESTFrameworkModel):
+    text = models.CharField(default=foobar, max_length=100)
 
 
 class ManyToManyModel(RESTFrameworkModel):
