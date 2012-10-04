@@ -123,16 +123,8 @@ class BaseSerializer(Field):
         # Get the explicitly declared fields
         for key, field in self.fields.items():
             ret[key] = field
-            # Determine if the declared field corrosponds to a model field.
-            try:
-                if key == 'pk':
-                    model_field = obj._meta.pk
-                else:
-                    model_field = obj._meta.get_field_by_name(key)[0]
-            except:
-                model_field = None
             # Set up the field
-            field.initialize(parent=self, model_field=model_field)
+            field.initialize(parent=self)
 
         # Add in the default fields
         fields = self.default_fields(serialize, obj, data, nested)
@@ -157,12 +149,12 @@ class BaseSerializer(Field):
     #####
     # Field methods - used when the serializer class is itself used as a field.
 
-    def initialize(self, parent, model_field=None):
+    def initialize(self, parent):
         """
         Same behaviour as usual Field, except that we need to keep track
         of state so that we can deal with handling maximum depth and recursion.
         """
-        super(BaseSerializer, self).initialize(parent, model_field)
+        super(BaseSerializer, self).initialize(parent)
         self.stack = parent.stack[:]
         if parent.opts.nested and not isinstance(parent.opts.nested, bool):
             self.opts.nested = parent.opts.nested - 1
@@ -296,11 +288,21 @@ class ModelSerializerOptions(SerializerOptions):
         self.model = getattr(meta, 'model', None)
 
 
-class ModelSerializer(RelatedField, Serializer):
+class ModelSerializer(Serializer):
     """
     A serializer that deals with model instances and querysets.
     """
     _options_class = ModelSerializerOptions
+
+    def field_to_native(self, obj, field_name):
+        """
+        Override default so that we can apply ModelSerializer as a nested
+        field to relationships.
+        """
+        obj = getattr(obj, self.source or field_name)
+        if obj.__class__.__name__ in ('RelatedManager', 'ManyRelatedManager'):
+            return [self.to_native(item) for item in obj.all()]
+        return self.to_native(obj)
 
     def default_fields(self, serialize, obj=None, data=None, nested=False):
         """
@@ -330,7 +332,7 @@ class ModelSerializer(RelatedField, Serializer):
                 field = self.get_field(model_field)
 
             if field:
-                field.initialize(parent=self, model_field=model_field)
+                field.initialize(parent=self)
                 ret[model_field.name] = field
 
         return ret
@@ -339,7 +341,7 @@ class ModelSerializer(RelatedField, Serializer):
         """
         Returns a default instance of the pk field.
         """
-        return Field(readonly=True)
+        return Field()
 
     def get_nested_field(self, model_field):
         """
@@ -373,7 +375,7 @@ class ModelSerializer(RelatedField, Serializer):
         try:
             return field_mapping[model_field.__class__]()
         except KeyError:
-            return Field()
+            return ModelField(model_field=model_field)
 
     def restore_object(self, attrs, instance=None):
         """
