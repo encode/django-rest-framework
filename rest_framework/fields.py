@@ -319,7 +319,7 @@ class HyperlinkedRelatedField(RelatedField):
         slug = getattr(obj, self.slug_field, None)
 
         if not slug:
-            raise ValidationError('Could not resolve URL for field using view name "%s"', view_name)
+            raise ValidationError('Could not resolve URL for field using view name "%s"' % view_name)
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
@@ -374,9 +374,6 @@ class HyperlinkedIdentityField(Field):
     """
     A field that represents the model's identity using a hyperlink.
     """
-    def __init__(self, *args, **kwargs):
-        pass
-
     def field_to_native(self, obj, field_name):
         request = self.context.get('request', None)
         view_name = self.parent.opts.view_name
