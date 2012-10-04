@@ -110,8 +110,8 @@
 <p>Resource classes are just View classes that don't have any handler methods bound to them.  The actions on a resource are defined, </p>
 <p>This allows us to:</p>
 <ul>
-<li>Encapsulate common behaviour accross a class of views, in a single Resource class.</li>
-<li>Seperate out the actions of a Resource from the specfics of how those actions should be bound to a particular set of URLs.</li>
+<li>Encapsulate common behaviour across a class of views, in a single Resource class.</li>
+<li>Separate out the actions of a Resource from the specfics of how those actions should be bound to a particular set of URLs.</li>
 </ul>
 <h2 id="refactoring-to-use-resources-not-views">Refactoring to use Resources, not Views</h2>
 <p>For instance, we can re-write our 4 sets of views into something more compact...</p>
@@ -158,7 +158,7 @@ router.register(resources.CommentResource)
 urlpatterns = router.urlpatterns
 </code></pre>
 <h2 id="trade-offs-between-views-vs-resources">Trade-offs between views vs resources.</h2>
-<p>Writing resource-orientated code can be a good thing.  It helps ensure that URL conventions will be consistent across your APIs, and minimises the amount of code you need to write.</p>
+<p>Writing resource-oriented code can be a good thing.  It helps ensure that URL conventions will be consistent across your APIs, and minimises the amount of code you need to write.</p>
 <p>The trade-off is that the behaviour is less explict.  It can be more difficult to determine what code path is being followed, or where to override some behaviour.</p>
 <h2 id="onwards-and-upwards">Onwards and upwards.</h2>
 <p>We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here's a few places you can start:</p>

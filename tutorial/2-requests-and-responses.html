@@ -129,7 +129,7 @@ request.DATA  # Handles arbitrary data.  Works any HTTP request with content.
 <li>The <code>@api_view</code> decorator for working with function based views.</li>
 <li>The <code>APIView</code> class for working with class based views.</li>
 </ol>
-<p>These wrappers provide a few bits of functionality such as making sure you recieve <code>Request</code> instances in your view, and adding context to <code>Response</code> objects so that content negotiation can be performed.</p>
+<p>These wrappers provide a few bits of functionality such as making sure you receive <code>Request</code> instances in your view, and adding context to <code>Response</code> objects so that content negotiation can be performed.</p>
 <p>The wrappers also provide behaviour such as returning <code>405 Method Not Allowed</code> responses when appropriate, and handling any <code>ParseError</code> exception that occurs when accessing <code>request.DATA</code> with malformed input.</p>
 <h2 id="pulling-it-all-together">Pulling it all together</h2>
 <p>Okay, let's go ahead and start using these new components to write a few views. </p>
@@ -208,7 +208,7 @@ urlpatterns = patterns('blogpost.views',
 
 urlpatterns = format_suffix_patterns(urlpatterns)
 </code></pre>
-<p>We don't necessarily need to add these extra url patterns in, but it gives us a simple, clean way of refering to a specific format.</p>
+<p>We don't necessarily need to add these extra url patterns in, but it gives us a simple, clean way of referring to a specific format.</p>
 <h2 id="hows-it-looking">How's it looking?</h2>
 <p>Go ahead and test the API from the command line, as we did in <a href="1-serialization">tutorial part 1</a>.  Everything is working pretty similarly, although we've got some nicer error handling if we send invalid requests.</p>
 <p><strong>TODO: Describe using accept headers, content-type headers, and format suffixed URLs</strong></p>

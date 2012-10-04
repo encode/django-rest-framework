@@ -95,7 +95,7 @@
           <div id="table-of-contents" class="well affix span3">
             <ul class="nav nav-list side-nav">
               <li class="main"><a href="#generic-views">Generic views</a></li>
-<li><a href="#example">Example</a></li>
+<li><a href="#examples">Examples</a></li>
 <li class="main"><a href="#api-reference">API Reference</a></li>
 <li><a href="#listapiview">ListAPIView</a></li>
 <li><a href="#listcreateapiview">ListCreateAPIView</a></li>
@@ -111,7 +111,6 @@
 <li><a href="#retrievemodelmixin">RetrieveModelMixin</a></li>
 <li><a href="#updatemodelmixin">UpdateModelMixin</a></li>
 <li><a href="#destroymodelmixin">DestroyModelMixin</a></li>
-<li><a href="#metadatamixin">MetadataMixin</a></li>
 
             </ul>
           </div>
@@ -126,12 +125,37 @@
 <p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/class-based-views/#base-vs-generic-views">Django Documentation</a></p>
 </blockquote>
 <p>One of the key benefits of class based views is the way they allow you to compose bits of reusable behaviour.  REST framework takes advantage of this by providing a number of pre-built views that provide for commonly used patterns. </p>
-<h2 id="example">Example</h2>
-<p>...</p>
+<p>The generic views provided by REST framework allow you to quickly build API views that map closely to your database models.</p>
+<p>If the generic views don't suit the needs of your API, you can drop down to using the regular <code>APIView</code> class, or reuse the mixins and base classes used by the generic views to compose your own set of reusable generic views. </p>
+<h2 id="examples">Examples</h2>
+<p>Typically when using the generic views, you'll override the view, and set several class attributes.</p>
+<pre class="prettyprint lang-py"><code>class UserList(generics.ListCreateAPIView):
+    serializer = UserSerializer
+    model = User
+    permissions = (IsAdminUser,)
+    paginate_by = 100
+</code></pre>
+<p>For more complex cases you might also want to override various methods on the view class.  For example.</p>
+<pre class="prettyprint lang-py"><code>class UserList(generics.ListCreateAPIView):
+    serializer = UserSerializer
+    model = User
+    permissions = (IsAdminUser,)
+
+    def get_paginate_by(self):
+        """
+        Use smaller pagination for HTML representations.
+        """
+        if self.request.accepted_media_type == 'text/html':
+            return 10
+        return 100
+</code></pre>
+<p>For very simple cases you might want to pass through any class attributes using the <code>.as_view()</code> method.  For example, your URLconf might include something the following entry.</p>
+<pre class="prettyprint lang-py"><code>url(r'^/users/', ListCreateAPIView.as_view(model=User) name='user-list')
+</code></pre>
 <hr />
 <h1 id="api-reference">API Reference</h1>
 <h2 id="listapiview">ListAPIView</h2>
-<p>Used for read-write endpoints to represent a collection of model instances.</p>
+<p>Used for read-only endpoints to represent a collection of model instances.</p>
 <p>Provides a <code>get</code> method handler.</p>
 <h2 id="listcreateapiview">ListCreateAPIView</h2>
 <p>Used for read-write endpoints to represent a collection of model instances.</p>
@@ -144,6 +168,7 @@
 <p>Provides <code>get</code>, <code>put</code> and <code>delete</code> method handlers.</p>
 <hr />
 <h1 id="base-views">Base views</h1>
+<p>Each of the generic views provided is built by combining one of the base views below, with one or more mixin classes.</p>
 <h2 id="baseapiview">BaseAPIView</h2>
 <p>Extends REST framework's <code>APIView</code> class, adding support for serialization of model instances and model querysets.</p>
 <h2 id="multipleobjectbaseapiview">MultipleObjectBaseAPIView</h2>
@@ -154,7 +179,7 @@
 <p><strong>See also:</strong> ccbv.co.uk documentation for <a href="http://ccbv.co.uk/projects/Django/1.4/django.views.generic.detail/SingleObjectMixin/">SingleObjectMixin</a>.</p>
 <hr />
 <h1 id="mixins">Mixins</h1>
-<p>The mixin classes provide the actions that are used </p>
+<p>The mixin classes provide the actions that are used to provide the basic view behaviour.  Note that the mixin classes provide action methods rather than defining the handler methods such as <code>.get()</code> and <code>.post()</code> directly.  This allows for more flexible composition of behaviour. </p>
 <h2 id="listmodelmixin">ListModelMixin</h2>
 <p>Provides a <code>.list(request, *args, **kwargs)</code> method, that implements listing a queryset.</p>
 <h2 id="createmodelmixin">CreateModelMixin</h2>
@@ -165,8 +190,6 @@
 <p>Provides a <code>.update(request, *args, **kwargs)</code> method, that implements updating and saving an existing model instance.</p>
 <h2 id="destroymodelmixin">DestroyModelMixin</h2>
 <p>Provides a <code>.destroy(request, *args, **kwargs)</code> method, that implements deletion of an existing model instance.</p>
-<h2 id="metadatamixin">MetadataMixin</h2>
-<p>Provides a <code>.metadata(request, *args, **kwargs)</code> method, that returns a response containing metadata about the view.</p>
         </div><!--/span-->
       </div><!--/row-->
     </div><!--/.fluid-container-->
