@@ -28,25 +28,34 @@ from django.db import models
 #             'pk': self.id
 #         })
 
-class Anchor(models.Model):
+def foobar():
+    return 'foobar'
+
+
+class RESTFrameworkModel(models.Model):
     """
-    A simple model to use as the target of relationships for other test models.
+    Base for test models that sets app_label, so they play nicely.
     """
+    class Meta:
+        app_label = 'rest_framework'
+        abstract = True
+
+
+class Anchor(RESTFrameworkModel):
     text = models.CharField(max_length=100, default='anchor')
 
-    class Meta:
-        app_label = 'rest_framework'
 
-
-class BasicModel(models.Model):
+class BasicModel(RESTFrameworkModel):
     text = models.CharField(max_length=100)
 
-    class Meta:
-        app_label = 'rest_framework'
+
+class DefaultValueModel(RESTFrameworkModel):
+    text = models.CharField(default='foobar', max_length=100)
 
 
-class ManyToManyModel(models.Model):
+class CallableDefaultValueModel(RESTFrameworkModel):
+    text = models.CharField(default=foobar, max_length=100)
+
+
+class ManyToManyModel(RESTFrameworkModel):
     rel = models.ManyToManyField(Anchor)
-
-    class Meta:
-        app_label = 'rest_framework'
