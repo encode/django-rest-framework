@@ -28,25 +28,22 @@ from django.db import models
 #             'pk': self.id
 #         })
 
-class Anchor(models.Model):
+class RestFrameworkModel(models.Model):
     """
-    A simple model to use as the target of relationships for other test models.
+    Base for test models that sets app_label, so they play nicely.
     """
+    class Meta:
+        app_label = 'rest_framework'
+        abstract = True
+
+
+class Anchor(RestFrameworkModel):
     text = models.CharField(max_length=100, default='anchor')
 
-    class Meta:
-        app_label = 'rest_framework'
 
-
-class BasicModel(models.Model):
+class BasicModel(RestFrameworkModel):
     text = models.CharField(max_length=100)
 
-    class Meta:
-        app_label = 'rest_framework'
 
-
-class ManyToManyModel(models.Model):
+class ManyToManyModel(RestFrameworkModel):
     rel = models.ManyToManyField(Anchor)
-
-    class Meta:
-        app_label = 'rest_framework'
