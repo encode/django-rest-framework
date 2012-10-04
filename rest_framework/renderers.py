@@ -260,7 +260,7 @@ class DocumentingHTMLRenderer(BaseRenderer):
         serializer = view.get_serializer(instance=obj)
         for k, v in serializer.get_fields(True).items():
             print k, v
-            if v.readonly:
+            if getattr(v, 'readonly', True):
                 continue
 
             kwargs = {}
