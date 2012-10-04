@@ -202,9 +202,58 @@ class ManyToManyTests(TestCase):
         self.assertEquals(instance.pk, 2)
         self.assertEquals(list(instance.rel.all()), [])
 
-    # def test_deserialization_for_update(self):
-    #     serializer = self.serializer_class(self.data, instance=self.instance)
-    #     expected = self.instance
-    #     self.assertEquals(serializer.is_valid(), True)
-    #     self.assertEquals(serializer.object, expected)
-    #     self.assertTrue(serializer.object is expected)
+
+class DefaultValueTests(TestCase):
+    def setUp(self):
+        class DefaultValueSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DefaultValueModel
+
+        self.serializer_class = DefaultValueSerializer
+        self.objects = DefaultValueModel.objects
+
+    def test_create_using_default(self):
+        data = {}
+        serializer = self.serializer_class(data)
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+        self.assertEquals(len(self.objects.all()), 1)
+        self.assertEquals(instance.pk, 1)
+        self.assertEquals(instance.text, 'foobar')
+
+    def test_create_overriding_default(self):
+        data = {'text': 'overridden'}
+        serializer = self.serializer_class(data)
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+        self.assertEquals(len(self.objects.all()), 1)
+        self.assertEquals(instance.pk, 1)
+        self.assertEquals(instance.text, 'overridden')
+
+
+class CallableDefaultValueTests(TestCase):
+    def setUp(self):
+        class CallableDefaultValueSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = CallableDefaultValueModel
+
+        self.serializer_class = CallableDefaultValueSerializer
+        self.objects = CallableDefaultValueModel.objects
+
+    def test_create_using_default(self):
+        data = {}
+        serializer = self.serializer_class(data)
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+        self.assertEquals(len(self.objects.all()), 1)
+        self.assertEquals(instance.pk, 1)
+        self.assertEquals(instance.text, 'foobar')
+
+    def test_create_overriding_default(self):
+        data = {'text': 'overridden'}
+        serializer = self.serializer_class(data)
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+        self.assertEquals(len(self.objects.all()), 1)
+        self.assertEquals(instance.pk, 1)
+        self.assertEquals(instance.text, 'overridden')
