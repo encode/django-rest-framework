@@ -353,7 +353,9 @@ class ModelSerializer(Serializer):
         """
         Creates a default instance of a flat relational field.
         """
-        queryset = model_field.rel.to._default_manager  # .using(db).complex_filter(self.rel.limit_choices_to)
+        # TODO: filter queryset using:
+        # .using(db).complex_filter(self.rel.limit_choices_to)
+        queryset = model_field.rel.to._default_manager
         if isinstance(model_field, models.fields.related.ManyToManyField):
             return ManyPrimaryKeyRelatedField(queryset=queryset)
         return PrimaryKeyRelatedField(queryset=queryset)
