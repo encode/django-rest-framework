@@ -6,7 +6,6 @@ import warnings
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.conf import settings
-from django.db import DEFAULT_DB_ALIAS
 from django.utils.encoding import is_protected_type, smart_unicode
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.reverse import reverse
@@ -27,6 +26,7 @@ def is_simple_callable(obj):
 class Field(object):
     creation_counter = 0
     empty = ''
+    type_name = None
 
     def __init__(self, source=None):
         self.parent = None
@@ -90,7 +90,7 @@ class Field(object):
         """
         Returns a dictionary of attributes to be used when serializing to xml.
         """
-        if getattr(self, 'type_name', None):
+        if self.type_name:
             return {'type': self.type_name}
         return {}
 
@@ -233,8 +233,10 @@ class ManyRelatedField(RelatedField):
 
     def field_from_native(self, data, field_name, into):
         try:
+            # Form data
             value = data.getlist(self.source or field_name)
         except:
+            # Non-form data
             value = data.get(self.source or field_name)
         else:
             if value == ['']:
