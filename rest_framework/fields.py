@@ -4,7 +4,8 @@ import inspect
 import warnings
 
 from django.core import validators
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.urlresolvers import resolve
 from django.conf import settings
 from django.utils.encoding import is_protected_type, smart_unicode
 from django.utils.translation import ugettext_lazy as _
@@ -223,9 +224,9 @@ class RelatedField(WritableField):
         into[(self.source or field_name) + '_id'] = self.from_native(value)
 
 
-class ManyRelatedField(RelatedField):
+class ManyRelatedMixin(object):
     """
-    Base class for related model managers.
+    Mixin to convert a related field to a many related field.
     """
     def field_to_native(self, obj, field_name):
         value = getattr(obj, self.source or field_name)
@@ -243,6 +244,15 @@ class ManyRelatedField(RelatedField):
                 value = []
         into[field_name] = [self.from_native(item) for item in value]
 
+
+class ManyRelatedField(ManyRelatedMixin, RelatedField):
+    """
+    Base class for related model managers.
+    """
+    pass
+
+
+### PrimaryKey relationships
 
 class PrimaryKeyRelatedField(RelatedField):
     """
@@ -281,6 +291,83 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
             return [self.to_native(item.pk) for item in queryset.all()]
         # Forward relationship
         return [self.to_native(item.pk) for item in queryset.all()]
+
+
+### Hyperlinked relationships
+
+class HyperlinkedRelatedField(RelatedField):
+    pk_url_kwarg = 'pk'
+    slug_url_kwarg = 'slug'
+    slug_field = 'slug'
+
+    def __init__(self, *args, **kwargs):
+        try:
+            self.view_name = kwargs.pop('view_name')
+        except:
+            raise ValueError("Hyperlinked field requires 'view_name' kwarg")
+        super(HyperlinkedRelatedField, self).__init__(*args, **kwargs)
+
+    def to_native(self, obj):
+        view_name = self.view_name
+        request = self.context.get('request', None)
+        kwargs = {self.pk_url_kwarg: obj.pk}
+        try:
+            return reverse(view_name, kwargs=kwargs, request=request)
+        except:
+            pass
+
+        slug = getattr(obj, self.slug_field, None)
+
+        if not slug:
+            raise ValidationError('Could not resolve URL for field using view name "%s"', view_name)
+
+        kwargs = {self.slug_url_kwarg: slug}
+        try:
+            return reverse(self.view_name, kwargs=kwargs, request=request)
+        except:
+            pass
+
+        kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
+        try:
+            return reverse(self.view_name, kwargs=kwargs, request=request)
+        except:
+            pass
+
+        raise ValidationError('Could not resolve URL for field using view name "%s"', view_name)
+
+    def from_native(self, value):
+        # Convert URL -> model instance pk
+        try:
+            match = resolve(value)
+        except:
+            raise ValidationError('Invalid hyperlink - No URL match')
+
+        if match.url_name != self.view_name:
+            raise ValidationError('Invalid hyperlink - Incorrect URL match')
+
+        pk = match.kwargs.get(self.pk_url_kwarg, None)
+        slug = match.kwargs.get(self.slug_url_kwarg, None)
+
+        # Try explicit primary key.
+        if pk is not None:
+            return pk
+        # Next, try looking up by slug.
+        elif slug is not None:
+            slug_field = self.get_slug_field()
+            queryset = self.queryset.filter(**{slug_field: slug})
+        # If none of those are defined, it's an error.
+        else:
+            raise ValidationError('Invalid hyperlink')
+
+        try:
+            obj = queryset.get()
+        except ObjectDoesNotExist:
+            raise ValidationError('Invalid hyperlink - object does not exist.')
+        return obj.pk
+
+
+class ManyHyperlinkedRelatedField(ManyRelatedMixin, HyperlinkedRelatedField):
+    pass
 
 
 class HyperlinkedIdentityField(Field):

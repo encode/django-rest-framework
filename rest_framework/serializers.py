@@ -422,13 +422,13 @@ class HyperlinkedModelSerializer(ModelSerializer):
     def __init__(self, *args, **kwargs):
         super(HyperlinkedModelSerializer, self).__init__(*args, **kwargs)
         if self.opts.view_name is None:
-            self.opts.view_name = self._get_default_view_name()
+            self.opts.view_name = self._get_default_view_name(self.opts.model)
 
-    def _get_default_view_name(self):
+    def _get_default_view_name(self, model):
         """
         Return the view name to use if 'view_name' is not specified in 'Meta'
         """
-        model_meta = self.opts.model._meta
+        model_meta = model._meta
         format_kwargs = {
             'app_label': model_meta.app_label,
             'model_name': model_meta.object_name.lower()
@@ -437,3 +437,19 @@ class HyperlinkedModelSerializer(ModelSerializer):
 
     def get_pk_field(self, model_field):
         return None
+
+    def get_related_field(self, model_field):
+        """
+        Creates a default instance of a flat relational field.
+        """
+        # TODO: filter queryset using:
+        # .using(db).complex_filter(self.rel.limit_choices_to)
+        rel = model_field.rel.to
+        queryset = rel._default_manager
+        kwargs = {
+            'queryset': queryset,
+            'view_name': self._get_default_view_name(rel)
+        }
+        if isinstance(model_field, models.fields.related.ManyToManyField):
+            return ManyHyperlinkedRelatedField(**kwargs)
+        return HyperlinkedRelatedField(**kwargs)
