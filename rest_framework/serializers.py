@@ -396,3 +396,40 @@ class ModelSerializer(RelatedField, Serializer):
         """
         self.object.save()
         return self.object.object
+
+
+class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
+    """
+    Options for HyperlinkedModelSerializer
+    """
+    def __init__(self, meta):
+        super(HyperlinkedModelSerializerOptions, self).__init__(meta)
+        self.view_name = getattr(meta, 'view_name', None)
+
+
+class HyperlinkedModelSerializer(ModelSerializer):
+    """
+    """
+    _options_class = HyperlinkedModelSerializerOptions
+    _default_view_name = '%(model_name)s-detail'
+
+    url = HyperlinkedIdentityField()
+
+    def __init__(self, *args, **kwargs):
+        super(HyperlinkedModelSerializer, self).__init__(*args, **kwargs)
+        if self.opts.view_name is None:
+            self.opts.view_name = self._get_default_view_name()
+
+    def _get_default_view_name(self):
+        """
+        Return the view name to use if 'view_name' is not specified in 'Meta'
+        """
+        model_meta = self.opts.model._meta
+        format_kwargs = {
+            'app_label': model_meta.app_label,
+            'model_name': model_meta.object_name.lower()
+        }
+        return self._default_view_name % format_kwargs
+
+    def get_pk_field(self, model_field):
+        return None

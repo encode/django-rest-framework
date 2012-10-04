@@ -13,7 +13,6 @@ class RootView(generics.ListCreateAPIView):
     Example description for OPTIONS.
     """
     model = BasicModel
-    paginate_by = None
 
 
 class InstanceView(generics.RetrieveUpdateDestroyAPIView):

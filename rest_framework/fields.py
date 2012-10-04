@@ -9,6 +9,7 @@ from django.conf import settings
 from django.db import DEFAULT_DB_ALIAS
 from django.utils.encoding import is_protected_type, smart_unicode
 from django.utils.translation import ugettext_lazy as _
+from rest_framework.reverse import reverse
 from rest_framework.compat import parse_date, parse_datetime
 from rest_framework.compat import timezone
 
@@ -171,6 +172,14 @@ class Field(object):
             }
         except AttributeError:
             return {}
+
+
+class HyperlinkedIdentityField(Field):
+    def field_to_native(self, obj, field_name):
+        request = self.context.get('request', None)
+        view_name = self.parent.opts.view_name
+        view_kwargs = {'pk': obj.pk}
+        return reverse(view_name, kwargs=view_kwargs, request=request)
 
 
 class RelatedField(Field):
