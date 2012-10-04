@@ -83,6 +83,10 @@ class Field(object):
 
         if is_protected_type(value):
             return value
+
+        all_callable = getattr(value, 'all', None)
+        if is_simple_callable(all_callable):
+            return [self.to_native(item) for item in value.all()]
         elif hasattr(value, '__iter__') and not isinstance(value, (dict, basestring)):
             return [self.to_native(item) for item in value]
         return smart_unicode(value)
@@ -197,7 +201,7 @@ class ModelField(WritableField):
         value = self.model_field._get_val_from_obj(obj)
         if is_protected_type(value):
             return value
-        return self.model_field.value_to_string(self.obj)
+        return self.model_field.value_to_string(obj)
 
     def attributes(self):
         return {

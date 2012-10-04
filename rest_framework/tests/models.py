@@ -1,4 +1,7 @@
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.generic import GenericForeignKey, GenericRelation
+
 # from django.contrib.auth.models import Group
 
 
@@ -59,3 +62,24 @@ class CallableDefaultValueModel(RESTFrameworkModel):
 
 class ManyToManyModel(RESTFrameworkModel):
     rel = models.ManyToManyField(Anchor)
+
+# Models to test generic relations
+
+
+class Tag(RESTFrameworkModel):
+    tag_name = models.SlugField()
+
+
+class TaggedItem(RESTFrameworkModel):
+    tag = models.ForeignKey(Tag, related_name='items')
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    def __unicode__(self):
+        return self.tag.tag_name
+
+
+class Bookmark(RESTFrameworkModel):
+    url = models.URLField()
+    tags = GenericRelation(TaggedItem)
