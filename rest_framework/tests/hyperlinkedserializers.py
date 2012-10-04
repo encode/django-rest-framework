@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
 from django.test.client import RequestFactory
 from rest_framework import generics, status, serializers
