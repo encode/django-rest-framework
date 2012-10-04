@@ -46,7 +46,7 @@ DEFAULTS = {
 
     'MODEL_SERIALIZER': 'rest_framework.serializers.ModelSerializer',
     'PAGINATION_SERIALIZER': 'rest_framework.pagination.PaginationSerializer',
-    'PAGINATE_BY': 20,
+    'PAGINATE_BY': None,
 
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
