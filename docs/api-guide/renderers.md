@@ -60,6 +60,8 @@ For example if your API serves JSON responses and the HTML browseable API, you m
 
 If your API includes views that can serve both regular webpages and API responses depending on the request, then you might consider making `TemplateHTMLRenderer` your default renderer, in order to play nicely with older browsers that send [broken accept headers][browser-accept-headers].
 
+# API Reference
+
 ## JSONRenderer
 
 **.media_type:** `application/json`
@@ -117,7 +119,7 @@ If you're building websites that use `HTMLTemplateRenderer` along with other ren
 
 To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, media_type)` method.
 
-## Advanced renderer usage
+# Advanced renderer usage
 
 You can do some pretty flexible things using REST framework's renderers.  Some examples...
 
