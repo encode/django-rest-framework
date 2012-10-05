@@ -341,6 +341,7 @@ class HyperlinkedRelatedField(RelatedField):
 
     def from_native(self, value):
         # Convert URL -> model instance pk
+        # TODO: Use values_list
         try:
             match = resolve(value)
         except:

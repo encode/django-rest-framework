@@ -79,6 +79,8 @@ class SingleObjectBaseView(SingleObjectMixin, BaseView):
     """
     Base class for generic views onto a model instance.
     """
+    pk_url_kwarg = 'pk'  # Not provided in Django 1.3
+    slug_url_kwarg = 'slug'  # Not provided in Django 1.3
 
     def get_object(self):
         """
