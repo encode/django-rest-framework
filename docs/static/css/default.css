@@ -222,10 +222,10 @@ html, body {
   padding-bottom: 70px;
 }
 
-
 footer, .push {
   height: 60px; /* .push must be the same height as .footer */
 }
+
 
 footer p {
   text-align: center;

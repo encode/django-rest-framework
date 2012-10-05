@@ -1,15 +1,6 @@
-body {
-    padding-top: 0;
-    padding-bottom: 1em;
-}
 
 /* The navbar is fixed at >= 980px wide, so add padding to the body to prevent
 content running up underneath it. */
-@media (min-width:980px) {
-    body {
-        padding-top: 60px;
-    }
-}
 
 h1 {
     font-weight: 500;
@@ -22,14 +13,6 @@ h2, h3 {
 .resource-description, .response-info {
     margin-bottom: 2em;
 }
-
-#footer {
-    border-top: 1px solid #eee;
-    margin-top: 2em;
-    padding-top: 1em;
-    text-align: right;
-}
-
 .version:before {
     content: "v";
     opacity: 0.6;
@@ -69,3 +52,109 @@ pre {
     border-bottom: none;
     padding-bottom: 0px;
 }
+
+
+/*=== dabapps bootstrap styles ====*/
+
+html{
+  width:100%;
+  background: none;
+}
+
+body, .navbar .navbar-inner .container-fluid{
+  max-width: 1150px;
+  margin: 0 auto;
+}
+
+body{
+  background: url("../img/grid.png") repeat-x;
+  background-attachment: fixed;
+}
+
+#content{
+    margin: 40px 0 0 0;
+}
+/* custom navigation styles */
+.wrapper .navbar{
+  width:100%;
+  position: absolute;
+  left:0;
+}
+
+.navbar .navbar-inner{
+  background: #2C2C2C;
+  color: white;
+  border: none;
+  border-top: 5px solid #A30000;
+  border-radius: 0px;
+}
+
+.navbar .navbar-inner .nav li, .navbar .navbar-inner .nav li a, .navbar .navbar-inner .brand{
+  color: white; 
+}
+
+.nav-list > .active > a, .nav-list > .active > a:hover {
+  background: #2c2c2c;
+}
+
+.navbar .navbar-inner .dropdown-menu li a, .navbar .navbar-inner .dropdown-menu li{
+ color: #A30000; 
+}
+.navbar .navbar-inner .dropdown-menu li a:hover{
+  background: #eeeeee;
+  color: #c20000;
+}
+
+/* custom general page styles */
+.hero-unit h2, .hero-unit h1{
+  color: #A30000;
+}
+
+body a, body a{
+  color: #A30000;
+}
+
+body a:hover{
+  color: #c20000;
+}
+
+#content a span{
+    text-decoration: underline;
+ }
+
+/* sticky footer and footer */
+html, body {
+  height: 100%;
+}
+.wrapper {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -60px;
+}
+
+
+#footer, #push {
+  height: 60px; /* .push must be the same height as .footer */
+}
+
+#footer{
+    text-align: right;
+}
+
+#footer p {
+  text-align: center;
+  color: gray;
+  border-top: 1px solid #DDD;
+  padding-top: 10px;
+}
+
+#footer a {
+  color: gray;
+  font-weight: bold;
+}
+
+#footer a:hover {
+  color: gray;
+}
+
