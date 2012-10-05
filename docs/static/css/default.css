@@ -64,6 +64,7 @@ a.github:hover {
 /* Force TOC text to not overrun */
 #table-of-contents {
     overflow: hidden;
+    margin: 0 0 20px 0;
 }
 
 /* Code blocks should scroll horizontally */
@@ -137,4 +138,73 @@ blockquote p:last-child {
   display: block;
   margin-top: 5px;
 }
+
+
+/*=== dabapps bootstrap styles ====*/
+
+html{
+  width:100%;
+  background: none;
+}
+
+body, .navbar .navbar-inner .container-fluid{
+  max-width: 1150px;
+  margin: 0 auto;
+}
+
+body{
+  background: url("../img/grid.png") repeat-x;
+}
+
+/* custom navigation styles */
+
+.navbar .navbar-inner{
+  background: #2C2C2C;
+  color: white;
+  border: none;
+  border-top: 5px solid #A30000;
+}
+
+.navbar .navbar-inner .nav li, .navbar .navbar-inner .nav li a, .navbar .navbar-inner .brand{
+  color: white; 
+}
+
+.nav-list > .active > a, .nav-list > .active > a:hover {
+  background: #2c2c2c;
+}
+
+.navbar .navbar-inner .dropdown-menu li a, .navbar .navbar-inner .dropdown-menu li{
+ color: #A30000; 
+}
+.navbar .navbar-inner .dropdown-menu li a:hover{
+  background: #eeeeee;
+  color: #c20000;
+}
+
+/* custom general page styles */
+.hero-unit h2, .hero-unit h1{
+  color: #A30000;
+}
+
+body a{
+  color: #A30000;
+}
+
+body a:hover{
+  color: #c20000;
+}
+
+/* subnavigation styles */
+
+@media (min-width: 767px) {
+     .sidebar-nav-fixed {
+         position:fixed;
+         width:19%;
+         max-width: 240px;
+     }
+
+     .navbar .navbar-inner .container-fluid{
+      max-width: 1110px;
+     }
+ }
 
