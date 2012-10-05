@@ -8,7 +8,7 @@ def format_suffix_patterns(urlpatterns, suffix_required=False, suffix_kwarg=None
     include a '.format' suffix.  Retains urlpattern ordering.
     """
     suffix_kwarg = suffix_kwarg or api_settings.FORMAT_SUFFIX_KWARG
-    suffix_pattern = '\.(?P<%s>[a-z]+)$' % suffix_kwarg
+    suffix_pattern = r'\.(?P<%s>[a-z]+)$' % suffix_kwarg
 
     ret = []
     for urlpattern in urlpatterns:
