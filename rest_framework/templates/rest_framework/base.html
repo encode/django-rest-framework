@@ -25,10 +25,12 @@
 
   <body class="{% block bodyclass %}{% endblock %} container">
 
+    <div class="wrapper">
+
     {% block navbar %}
-    <div class="navbar navbar-fixed-top {% block bootstrap_navbar_variant %}navbar-inverse{% endblock %}">
+    <div class="navbar {% block bootstrap_navbar_variant %}navbar-inverse{% endblock %}">
         <div class="navbar-inner">
-            <div class="container">
+            <div class="container-fluid">
                 <span class="brand" href="/">
                     {% block branding %}<a href='http://django-rest-framework.org'>Django REST framework <span class="version">{{ version }}</span></a>{% endblock %}
                 </span>
@@ -118,6 +120,7 @@
 {% endfor %}
 </div>{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
             </div>
+        </div>
 
             {% if response.status_code != 403 %}
 
@@ -181,13 +184,17 @@
     </div>
     <!-- END Content -->
 
+        <div id="push"></div>
+
+    </div>
+
+    </div><!-- ./wrapper -->
+
     {% block footer %}
     <div id="footer">
         <a class="powered-by" href='http://django-rest-framework.org'>Django REST framework</a> <span class="version">{{ version }}</span>
     </div>
     {% endblock %}
-
-    </div>
 
     {% block script %}
     <script src="{% get_static_prefix %}rest_framework/js/jquery-1.8.1-min.js"></script>
