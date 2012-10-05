@@ -91,9 +91,10 @@
 
     <div class="container-fluid">
       <div class="row-fluid">
+
         <div class="span3">
-          <div id="table-of-contents" class="well affix span3">
-            <ul class="nav nav-list side-nav">
+          <div id="table-of-contents">
+            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
               <li class="main"><a href="#permissions">Permissions</a></li>
 <li><a href="#how-permissions-are-determined">How permissions are determined</a></li>
 <li><a href="#object-level-permissions">Object level permissions</a></li>
@@ -176,16 +177,15 @@ def example_view(request, format=None):
 <p>The method should return <code>True</code> if the request should be granted access, and <code>False</code> otherwise.</p>
         </div><!--/span-->
       </div><!--/row-->
+
     </div><!--/.fluid-container-->
 
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify-1.0.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-2.1.1-min.js"></script>
     <script>
       //$('.side-nav').scrollspy()
       var shiftWindow = function() { scrollBy(0, -50) };

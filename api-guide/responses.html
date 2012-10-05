@@ -91,14 +91,22 @@
 
     <div class="container-fluid">
       <div class="row-fluid">
+
         <div class="span3">
-          <div id="table-of-contents" class="well affix span3">
-            <ul class="nav nav-list side-nav">
+          <div id="table-of-contents">
+            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
               <li class="main"><a href="#responses">Responses</a></li>
-<li><a href="#response(data,-status=none,-headers=none)">Response(data, status=None, headers=None)</a></li>
+<li class="main"><a href="#methods">Methods</a></li>
+<li><a href="#response(data,-status=none,-template_name=none,-headers=none)">Response(data, status=None, template_name=None, headers=None)</a></li>
+<li><a href="#render()">.render()</a></li>
+<li><a href="#standard-httpresponse-methods">Standard HTTPResponse methods</a></li>
+<li class="main"><a href="#attributes">Attributes</a></li>
 <li><a href="#data">.data</a></li>
+<li><a href="#status_code">.status_code</a></li>
 <li><a href="#content">.content</a></li>
-<li><a href="#renderer">.renderer</a></li>
+<li><a href="#template_name">.template_name</a></li>
+<li><a href="#accepted_renderer">.accepted_renderer</a></li>
+<li><a href="#accepted_media_type">.accepted_media_type</a></li>
 
             </ul>
           </div>
@@ -115,28 +123,54 @@
 <p>The <code>Response</code> class subclasses Django's <code>SimpleTemplateResponse</code>.  <code>Response</code> objects are initialised with data, which should consist of native python primatives.  REST framework then uses standard HTTP content negotiation to determine how it should render the final response content.</p>
 <p>There's no requirement for you to use the <code>Response</code> class, you can also return regular <code>HttpResponse</code> objects from your views if you want, but it provides a nicer interface for returning Web API responses.</p>
 <p>Unless you want to heavily customize REST framework for some reason, you should always use an <code>APIView</code> class or <code>@api_view</code> function for views that return <code>Response</code> objects.  Doing so ensures that the view can perform content negotiation and select the appropriate renderer for the response, before it is returned from the view.</p>
-<h2 id="responsedata-statusnone-headersnone">Response(data, status=None, headers=None)</h2>
+<hr />
+<h1 id="methods">Methods</h1>
+<h2 id="responsedata-statusnone-template_namenone-headersnone">Response(data, status=None, template_name=None, headers=None)</h2>
 <p>Unlike regular <code>HttpResponse</code> objects, you do not instantiate <code>Response</code> objects with rendered content.  Instead you pass in unrendered data, which may consist of any python primatives.</p>
 <p>The renderers used by the <code>Response</code> class cannot natively handle complex datatypes such as Django model instances, so you need to serialize the data into primative datatypes before creating the <code>Response</code> object.</p>
 <p>You can use REST framework's <code>Serializer</code> classes to perform this data serialization, or use your own custom serialization.</p>
+<p>Arguments:</p>
+<ul>
+<li><code>data</code>: The serialized data for the response.</li>
+<li><code>status</code>: A status code for the response.  Defaults to 200.  See also <a href="status-codes">status codes</a>.</li>
+<li><code>template_name</code>: A template name to use if <code>HTMLTemplateRenderer</code> is selected.</li>
+<li><code>headers</code>: A dictionary of HTTP headers to use in the response.</li>
+</ul>
+<h2 id="render">.render()</h2>
+<p>This methd is called to render the serialized data of the response into the final response content.  When <code>.render()</code> is called, the response content will be set to the result of calling the <code>.render(data, accepted_media_type)</code> method on the accepted renderer instance.</p>
+<p>You won't typically need to call <code>.render()</code> yourself, as it's handled by Django's standard response cycle.</p>
+<h2 id="standard-httpresponse-methods">Standard HTTPResponse methods</h2>
+<p>The <code>Response</code> class extends <code>SimpleTemplateResponse</code>, and all the usual methods are also available on the response.  For example you can set headers on the response in the standard way:</p>
+<pre class="prettyprint lang-py"><code>response = Response()
+response['Cache-Control'] = 'no-cache'
+</code></pre>
+<hr />
+<h1 id="attributes">Attributes</h1>
 <h2 id="data">.data</h2>
 <p>The unrendered content of a <code>Request</code> object can be accessed using the <code>.data</code> attribute.</p>
+<h2 id="status_code">.status_code</h2>
+<p>The numeric status code of the HTTP response.</p>
 <h2 id="content">.content</h2>
-<p>To access the rendered content of a <code>Response</code> object, you must first call <code>.render()</code>.  You'll typically only need to do this in cases such as unit testing responses - when you return a <code>Response</code> from a view Django's response cycle will handle calling <code>.render()</code> for you.</p>
-<h2 id="renderer">.renderer</h2>
-<p>When you return a <code>Response</code> instance, the <code>APIView</code> class or <code>@api_view</code> decorator will select the appropriate renderer, and set the <code>.renderer</code> attribute on the <code>Response</code>, before returning it from the view.</p>
+<p>The rendered content of the response.  <code>.render()</code> must have been called before <code>.content</code> can be accessed.</p>
+<h2 id="template_name">.template_name</h2>
+<p>The <code>template_name</code>, if supplied.  Only required if <code>HTMLTemplateRenderer</code> or some other custom template renderer is the accepted renderer for the reponse.</p>
+<h2 id="accepted_renderer">.accepted_renderer</h2>
+<p>The renderer instance that will be used to render the response.</p>
+<p>Set automatically by the <code>APIView</code> or <code>@api_view</code> immediately before the response is returned from the view.</p>
+<h2 id="accepted_media_type">.accepted_media_type</h2>
+<p>The media type that was selected by the content negotiation stage.</p>
+<p>Set automatically by the <code>APIView</code> or <code>@api_view</code> immediately before the response is returned from the view.</p>
         </div><!--/span-->
       </div><!--/row-->
+
     </div><!--/.fluid-container-->
 
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify-1.0.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-2.1.1-min.js"></script>
     <script>
       //$('.side-nav').scrollspy()
       var shiftWindow = function() { scrollBy(0, -50) };

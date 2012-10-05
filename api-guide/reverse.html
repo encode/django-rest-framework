@@ -91,9 +91,10 @@
 
     <div class="container-fluid">
       <div class="row-fluid">
+
         <div class="span3">
-          <div id="table-of-contents" class="well affix span3">
-            <ul class="nav nav-list side-nav">
+          <div id="table-of-contents">
+            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
               <li class="main"><a href="#returning-urls">Returning URLs</a></li>
 <li><a href="#reverse">reverse</a></li>
 <li><a href="#reverse_lazy">reverse_lazy</a></li>
@@ -140,16 +141,15 @@ class APIRootView(APIView):
 <p>Has the same behavior as <a href="https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse-lazy"><code>django.core.urlresolvers.reverse_lazy</code></a>, except that it returns a fully qualified URL, using the request to determine the host and port.</p>
         </div><!--/span-->
       </div><!--/row-->
+
     </div><!--/.fluid-container-->
 
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify-1.0.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-2.1.1-min.js"></script>
     <script>
       //$('.side-nav').scrollspy()
       var shiftWindow = function() { scrollBy(0, -50) };

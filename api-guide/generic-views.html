@@ -91,9 +91,10 @@
 
     <div class="container-fluid">
       <div class="row-fluid">
+
         <div class="span3">
-          <div id="table-of-contents" class="well affix span3">
-            <ul class="nav nav-list side-nav">
+          <div id="table-of-contents">
+            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
               <li class="main"><a href="#generic-views">Generic views</a></li>
 <li><a href="#examples">Examples</a></li>
 <li class="main"><a href="#api-reference">API Reference</a></li>
@@ -130,23 +131,24 @@
 <h2 id="examples">Examples</h2>
 <p>Typically when using the generic views, you'll override the view, and set several class attributes.</p>
 <pre class="prettyprint lang-py"><code>class UserList(generics.ListCreateAPIView):
-    serializer = UserSerializer
     model = User
-    permissions = (IsAdminUser,)
+    serializer_class = UserSerializer
+    permission_classes = (IsAdminUser,)
     paginate_by = 100
 </code></pre>
 <p>For more complex cases you might also want to override various methods on the view class.  For example.</p>
 <pre class="prettyprint lang-py"><code>class UserList(generics.ListCreateAPIView):
-    serializer = UserSerializer
     model = User
-    permissions = (IsAdminUser,)
+    serializer_class = UserSerializer
+    permission_classes = (IsAdminUser,)
 
     def get_paginate_by(self):
         """
         Use smaller pagination for HTML representations.
         """
-        if self.request.accepted_media_type == 'text/html':
-            return 10
+        page_size_param = self.request.QUERY_PARAMS.get('page_size')
+        if page_size_param:
+            return int(page_size_param)
         return 100
 </code></pre>
 <p>For very simple cases you might want to pass through any class attributes using the <code>.as_view()</code> method.  For example, your URLconf might include something the following entry.</p>
@@ -157,15 +159,19 @@
 <h2 id="listapiview">ListAPIView</h2>
 <p>Used for read-only endpoints to represent a collection of model instances.</p>
 <p>Provides a <code>get</code> method handler.</p>
+<p>Extends: <a href="#multipleobjectbaseapiview">MultipleObjectBaseAPIView</a>, <a href="#listmodelmixin">ListModelMixin</a></p>
 <h2 id="listcreateapiview">ListCreateAPIView</h2>
 <p>Used for read-write endpoints to represent a collection of model instances.</p>
 <p>Provides <code>get</code> and <code>post</code> method handlers.</p>
+<p>Extends: <a href="#multipleobjectbaseapiview">MultipleObjectBaseAPIView</a>, <a href="#listmodelmixin">ListModelMixin</a>, <a href="#createmodelmixin">CreateModelMixin</a></p>
 <h2 id="retrieveapiview">RetrieveAPIView</h2>
 <p>Used for read-only endpoints to represent a single model instance.</p>
 <p>Provides a <code>get</code> method handler.</p>
+<p>Extends: <a href="#singleobjectbaseapiview">SingleObjectBaseAPIView</a>, <a href="#retrievemodelmixin">RetrieveModelMixin</a></p>
 <h2 id="retrieveupdatedestroyapiview">RetrieveUpdateDestroyAPIView</h2>
 <p>Used for read-write endpoints to represent a single model instance.</p>
 <p>Provides <code>get</code>, <code>put</code> and <code>delete</code> method handlers.</p>
+<p>Extends: <a href="#singleobjectbaseapiview">SingleObjectBaseAPIView</a>, <a href="#retrievemodelmixin">RetrieveModelMixin</a>, <a href="#updatemodelmixin">UpdateModelMixin</a>, <a href="#destroymodelmixin">DestroyModelMixin</a></p>
 <hr />
 <h1 id="base-views">Base views</h1>
 <p>Each of the generic views provided is built by combining one of the base views below, with one or more mixin classes.</p>
@@ -192,16 +198,15 @@
 <p>Provides a <code>.destroy(request, *args, **kwargs)</code> method, that implements deletion of an existing model instance.</p>
         </div><!--/span-->
       </div><!--/row-->
+
     </div><!--/.fluid-container-->
 
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify-1.0.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-2.1.1-min.js"></script>
     <script>
       //$('.side-nav').scrollspy()
       var shiftWindow = function() { scrollBy(0, -50) };

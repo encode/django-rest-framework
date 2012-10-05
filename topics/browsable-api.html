@@ -91,9 +91,10 @@
 
     <div class="container-fluid">
       <div class="row-fluid">
+
         <div class="span3">
-          <div id="table-of-contents" class="well affix span3">
-            <ul class="nav nav-list side-nav">
+          <div id="table-of-contents">
+            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
               <li class="main"><a href="#working-with-the-browsable-api">Working with the Browsable API</a></li>
 <li><a href="#urls">URLs</a></li>
 <li><a href="#formats">Formats</a></li>
@@ -166,16 +167,15 @@
 <p>For more advanced customization, such as not having a Bootstrap basis or tighter integration with the rest of your site, you can simply choose not to have <code>api.html</code> extend <code>base.html</code>. Then the page content and capabilities are entirely up to you.</p>
         </div><!--/span-->
       </div><!--/row-->
+
     </div><!--/.fluid-container-->
 
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify-1.0.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-2.1.1-min.js"></script>
     <script>
       //$('.side-nav').scrollspy()
       var shiftWindow = function() { scrollBy(0, -50) };

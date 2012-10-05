@@ -91,9 +91,10 @@
 
     <div class="container-fluid">
       <div class="row-fluid">
+
         <div class="span3">
-          <div id="table-of-contents" class="well affix span3">
-            <ul class="nav nav-list side-nav">
+          <div id="table-of-contents">
+            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
               <li class="main"><a href="#django-rest-framework">Django REST framework</a></li>
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#installation">Installation</a></li>
@@ -111,7 +112,7 @@
         <div id="main-content" class="span9">
           <iframe src="http://ghbtns.com/github-btn.html?user=tomchristie&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
 
-<p><a href="http://travis-ci.org/tomchristie/django-rest-framework?branch=restframework2">![travis-build-image]</a></p>
+<p><a href="http://travis-ci.org/tomchristie/django-rest-framework?branch=restframework2"><img alt="Travis build image" src="https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=restframework2" /></a></p>
 <h1 id="django-rest-framework">Django REST framework</h1>
 <p><strong>A toolkit for building well-connected, self-describing Web APIs.</strong></p>
 <p><strong>WARNING: This documentation is for the 2.0 redesign of REST framework.  It is a work in progress.</strong></p>
@@ -155,7 +156,6 @@ pip install -r optionals.txt
 </code></pre>
 <p>Note that the base URL can be whatever you want, but you must include <code>rest_framework.urls</code> with the <code>rest_framework</code> namespace.</p>
 <h2 id="quickstart">Quickstart</h2>
-<p><strong>TODO</strong></p>
 <h2 id="tutorial">Tutorial</h2>
 <p>The tutorial will walk you through the building blocks that make up REST framework.   It'll take a little while to get through, but it'll give you a comprehensive understanding of how everything fits together, and is highly recommended reading.</p>
 <ul>
@@ -226,16 +226,15 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
         </div><!--/span-->
       </div><!--/row-->
+
     </div><!--/.fluid-container-->
 
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify-1.0.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-2.1.1-min.js"></script>
     <script>
       //$('.side-nav').scrollspy()
       var shiftWindow = function() { scrollBy(0, -50) };

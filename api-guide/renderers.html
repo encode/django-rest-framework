@@ -91,21 +91,23 @@
 
     <div class="container-fluid">
       <div class="row-fluid">
+
         <div class="span3">
-          <div id="table-of-contents" class="well affix span3">
-            <ul class="nav nav-list side-nav">
+          <div id="table-of-contents">
+            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
               <li class="main"><a href="#renderers">Renderers</a></li>
 <li><a href="#how-the-renderer-is-determined">How the renderer is determined</a></li>
 <li><a href="#setting-the-renderers">Setting the renderers</a></li>
 <li><a href="#ordering-of-renderer-classes">Ordering of renderer classes</a></li>
+<li class="main"><a href="#api-reference">API Reference</a></li>
 <li><a href="#jsonrenderer">JSONRenderer</a></li>
 <li><a href="#jsonprenderer">JSONPRenderer</a></li>
 <li><a href="#yamlrenderer">YAMLRenderer</a></li>
 <li><a href="#xmlrenderer">XMLRenderer</a></li>
 <li><a href="#documentinghtmlrenderer">DocumentingHTMLRenderer</a></li>
-<li><a href="#templatehtmlrenderer">TemplateHTMLRenderer</a></li>
+<li><a href="#htmltemplaterenderer">HTMLTemplateRenderer</a></li>
 <li><a href="#custom-renderers">Custom renderers</a></li>
-<li><a href="#advanced-renderer-usage">Advanced renderer usage</a></li>
+<li class="main"><a href="#advanced-renderer-usage">Advanced renderer usage</a></li>
 <li><a href="#designing-your-media-types">Designing your media types</a></li>
 
             </ul>
@@ -160,6 +162,7 @@ def user_count_view(request, format=None):
 <p>It's important when specifying the renderer classes for your API to think about what priority you want to assign to each media type.  If a client underspecifies the representations it can accept, such as sending an <code>Accept: */*</code> header, or not including an <code>Accept</code> header at all, then REST framework will select the first renderer in the list to use for the response.</p>
 <p>For example if your API serves JSON responses and the HTML browseable API, you might want to make <code>JSONRenderer</code> your default renderer, in order to send <code>JSON</code> responses to clients that do not specify an <code>Accept</code> header.</p>
 <p>If your API includes views that can serve both regular webpages and API responses depending on the request, then you might consider making <code>TemplateHTMLRenderer</code> your default renderer, in order to play nicely with older browsers that send <a href="http://www.gethifi.com/blog/browser-rest-http-accept-headers">broken accept headers</a>.</p>
+<h1 id="api-reference">API Reference</h1>
 <h2 id="jsonrenderer">JSONRenderer</h2>
 <p><strong>.media_type:</strong> <code>application/json</code></p>
 <p><strong>.format:</strong> <code>'.json'</code></p>
@@ -173,14 +176,26 @@ def user_count_view(request, format=None):
 <p><strong>.media_type:</strong> <code>application/xml</code></p>
 <p><strong>.format:</strong> <code>'.xml'</code></p>
 <h2 id="documentinghtmlrenderer">DocumentingHTMLRenderer</h2>
+<p>Renders data into HTML for the browseable API.  This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.</p>
 <p><strong>.media_type:</strong> <code>text/html</code></p>
 <p><strong>.format:</strong> <code>'.api'</code></p>
-<h2 id="templatehtmlrenderer">TemplateHTMLRenderer</h2>
+<h2 id="htmltemplaterenderer">HTMLTemplateRenderer</h2>
+<p>Renders data to HTML, using Django's standard template rendering.
+Unlike other renderers, the data passed to the <code>Response</code> does not need to be serialized.  Also, unlike other renderers, you may want to include a <code>template_name</code> argument when creating the <code>Response</code>.</p>
+<p>The HTMLTemplateRenderer will create a <code>RequestContext</code>, using the <code>response.data</code> as the context dict, and determine a template name to use to render the context.</p>
+<p>The template name is determined by (in order of preference):</p>
+<ol>
+<li>An explicit <code>.template_name</code> attribute set on the response.</li>
+<li>An explicit <code>.template_name</code> attribute set on this class.</li>
+<li>The return result of calling <code>view.get_template_names()</code>.</li>
+</ol>
+<p>You can use <code>HTMLTemplateRenderer</code> either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.</p>
+<p>If you're building websites that use <code>HTMLTemplateRenderer</code> along with other renderer classes, you should consider listing <code>HTMLTemplateRenderer</code> as the first class in the <code>renderer_classes</code> list, so that it will be prioritised first even for browsers that send poorly formed ACCEPT headers.</p>
 <p><strong>.media_type:</strong> <code>text/html</code></p>
 <p><strong>.format:</strong> <code>'.html'</code></p>
 <h2 id="custom-renderers">Custom renderers</h2>
 <p>To implement a custom renderer, you should override <code>BaseRenderer</code>, set the <code>.media_type</code> and <code>.format</code> properties, and implement the <code>.render(self, data, media_type)</code> method.</p>
-<h2 id="advanced-renderer-usage">Advanced renderer usage</h2>
+<h1 id="advanced-renderer-usage">Advanced renderer usage</h1>
 <p>You can do some pretty flexible things using REST framework's renderers.  Some examples...</p>
 <ul>
 <li>Provide either flat or nested representations from the same endpoint, depending on the requested media type.</li>
@@ -192,7 +207,6 @@ def user_count_view(request, format=None):
 <p>For example:</p>
 <pre class="prettyprint lang-py"><code>@api_view(('GET',))
 @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
-@template_name('list_users.html')
 def list_users(request):
     """
     A view that can return JSON or HTML representations
@@ -200,15 +214,16 @@ def list_users(request):
     """
     queryset = Users.objects.filter(active=True)
 
-    if request.accepted_renderer.format == 'html':
+    if request.accepted_media_type == 'text/html':
         # TemplateHTMLRenderer takes a context dict,
-        # and does not require serialization.
+        # and additionally requiresa 'template_name'.
+        # It does not require serialization.
         data = {'users': queryset}
-    else:
-        # JSONRenderer requires serialized data as normal.
-        serializer = UserSerializer(instance=queryset)
-        data = serializer.data
+        return Response(data, template_name='list_users.html')
 
+    # JSONRenderer requires serialized data as normal.
+    serializer = UserSerializer(instance=queryset)
+    data = serializer.data
     return Response(data)
 </code></pre>
 <h2 id="designing-your-media-types">Designing your media types</h2>
@@ -217,16 +232,15 @@ def list_users(request):
 <p>For good examples of custom media types, see GitHub's use of a custom <a href="http://developer.github.com/v3/media/">application/vnd.github+json</a> media type, and Mike Amundsen's IANA approved <a href="http://www.amundsen.com/media-types/collection/">application/vnd.collection+json</a> JSON-based hypermedia.</p>
         </div><!--/span-->
       </div><!--/row-->
+
     </div><!--/.fluid-container-->
 
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="http://tomchristie.github.com/django-rest-framework/js/jquery-1.8.1-min.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-dropdown.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-scrollspy.js"></script>
-    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-collapse.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/prettify-1.0.js"></script>
+    <script src="http://tomchristie.github.com/django-rest-framework/js/bootstrap-2.1.1-min.js"></script>
     <script>
       //$('.side-nav').scrollspy()
       var shiftWindow = function() { scrollBy(0, -50) };
