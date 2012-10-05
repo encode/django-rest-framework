@@ -59,7 +59,6 @@ Note that the base URL can be whatever you want, but you must include `rest_fram
 ## Quickstart
 
 
-
 ## Tutorial
 
 The tutorial will walk you through the building blocks that make up REST framework.   It'll take a little while to get through, but it'll give you a comprehensive understanding of how everything fits together, and is highly recommended reading.
