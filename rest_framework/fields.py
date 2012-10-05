@@ -378,9 +378,16 @@ class HyperlinkedIdentityField(Field):
     """
     A field that represents the model's identity using a hyperlink.
     """
+    def __init__(self, *args, **kwargs):
+        try:
+            self.view_name = kwargs.pop('view_name')
+        except:
+            raise ValueError("Hyperlinked field requires 'view_name' kwarg")
+        super(HyperlinkedRelatedField, self).__init__(*args, **kwargs)
+
     def field_to_native(self, obj, field_name):
         request = self.context.get('request', None)
-        view_name = self.parent.opts.view_name
+        view_name = self.view_name or self.parent.opts.view_name
         view_kwargs = {'pk': obj.pk}
         return reverse(view_name, kwargs=view_kwargs, request=request)
 
