@@ -1,5 +1,5 @@
 <iframe src="http://ghbtns.com/github-btn.html?user=tomchristie&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
-[![travis-build-image]][travis]
+[![Travis build image][travis-build-image]][travis]
 
 # Django REST framework
 
@@ -58,7 +58,7 @@ Note that the base URL can be whatever you want, but you must include `rest_fram
 
 ## Quickstart
 
-**TODO**
+
 
 ## Tutorial
 

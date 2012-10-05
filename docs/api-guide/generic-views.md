@@ -18,24 +18,25 @@ If the generic views don't suit the needs of your API, you can drop down to usin
 Typically when using the generic views, you'll override the view, and set several class attributes.
 
     class UserList(generics.ListCreateAPIView):
-        serializer = UserSerializer
         model = User
-        permissions = (IsAdminUser,)
+        serializer_class = UserSerializer
+        permission_classes = (IsAdminUser,)
         paginate_by = 100
 
 For more complex cases you might also want to override various methods on the view class.  For example.
 
     class UserList(generics.ListCreateAPIView):
-        serializer = UserSerializer
         model = User
-        permissions = (IsAdminUser,)
+        serializer_class = UserSerializer
+        permission_classes = (IsAdminUser,)
         
         def get_paginate_by(self):
             """
             Use smaller pagination for HTML representations.
             """
-            if self.request.accepted_media_type == 'text/html':
-                return 10
+            page_size_param = self.request.QUERY_PARAMS.get('page_size')
+            if page_size_param:
+                return int(page_size_param)
             return 100
 
 For very simple cases you might want to pass through any class attributes using the `.as_view()` method.  For example, your URLconf might include something the following entry.
@@ -52,11 +53,15 @@ Used for read-only endpoints to represent a collection of model instances.
 
 Provides a `get` method handler.
 
+Extends: [MultipleObjectBaseAPIView], [ListModelMixin]
+
 ## ListCreateAPIView
 
 Used for read-write endpoints to represent a collection of model instances.
 
 Provides `get` and `post` method handlers.
+
+Extends: [MultipleObjectBaseAPIView], [ListModelMixin], [CreateModelMixin]
 
 ## RetrieveAPIView
 
@@ -64,11 +69,15 @@ Used for read-only endpoints to represent a single model instance.
 
 Provides a `get` method handler.
 
+Extends: [SingleObjectBaseAPIView], [RetrieveModelMixin]
+
 ## RetrieveUpdateDestroyAPIView
 
 Used for read-write endpoints to represent a single model instance.
 
 Provides `get`, `put` and `delete` method handlers.
+
+Extends: [SingleObjectBaseAPIView], [RetrieveModelMixin], [UpdateModelMixin], [DestroyModelMixin]
 
 ---
 
@@ -123,3 +132,11 @@ Provides a `.destroy(request, *args, **kwargs)` method, that implements deletion
 [SingleObjectMixin]: https://docs.djangoproject.com/en/dev/ref/class-based-views/mixins-single-object/
 [multiple-object-mixin-classy]: http://ccbv.co.uk/projects/Django/1.4/django.views.generic.list/MultipleObjectMixin/
 [single-object-mixin-classy]: http://ccbv.co.uk/projects/Django/1.4/django.views.generic.detail/SingleObjectMixin/
+
+[SingleObjectBaseAPIView]: #singleobjectbaseapiview
+[MultipleObjectBaseAPIView]: #multipleobjectbaseapiview
+[ListModelMixin]: #listmodelmixin
+[CreateModelMixin]: #createmodelmixin
+[RetrieveModelMixin]: #retrievemodelmixin
+[UpdateModelMixin]: #updatemodelmixin
+[DestroyModelMixin]: #destroymodelmixin
