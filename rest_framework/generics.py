@@ -23,7 +23,7 @@ class BaseView(views.APIView):
         """
         return {
             'request': self.request,
-            'format': self.format,
+            'format': self.format_kwarg,
             'view': self
         }
 

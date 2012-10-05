@@ -50,9 +50,9 @@ You can also set the authentication policy on a per-view basis, using the `APIVi
 
 Or, if you're using the `@api_view` decorator with function based views.
 
-    @api_view('GET'),
-    @authentication_classes(SessionAuthentication, UserBasicAuthentication)
-    @permissions_classes(IsAuthenticated)
+    @api_view(('GET',)),
+    @authentication_classes((SessionAuthentication, UserBasicAuthentication))
+    @permissions_classes((IsAuthenticated,))
     def example_view(request, format=None):
         content = {
             'user': unicode(request.user),  # `django.contrib.auth.User` instance.

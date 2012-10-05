@@ -162,13 +162,19 @@ class APIView(View):
         """
         return [throttle(self) for throttle in self.throttle_classes]
 
+    def get_content_negotiator(self):
+        """
+        Instantiate and return the content negotiation class to use.
+        """
+        return self.content_negotiation_class()
+
     def perform_content_negotiation(self, request, force=False):
         """
         Determine which renderer and media type to use render the response.
         """
         renderers = self.get_renderers()
-        conneg = self.content_negotiation_class()
-        return conneg.negotiate(request, renderers, self.format, force)
+        conneg = self.get_content_negotiator()
+        return conneg.negotiate(request, renderers, self.format_kwarg, force)
 
     def has_permission(self, request, obj=None):
         """
@@ -198,7 +204,7 @@ class APIView(View):
         """
         Runs anything that needs to occur prior to calling the method handlers.
         """
-        self.format = self.get_format_suffix(**kwargs)
+        self.format_kwarg = self.get_format_suffix(**kwargs)
 
         if not self.has_permission(request):
             self.permission_denied(request)
