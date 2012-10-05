@@ -1,15 +1,5 @@
 /* Set the body padding-top when above 980px to push the content down from
    below the navbar, which is fixed at >980px screen widths. */
-@media (min-width: 980px) {
-  body {
-    padding-top: 71px;
-  }
-}
-
-body {
-  padding-bottom: 40px;
-}
-
 pre {
   font-size: 12px;
 }
@@ -61,28 +51,9 @@ a.github:hover {
   text-decoration: none;
 }
 
-/* Footer */
-/*
-.footer p {
-  text-align: center;
-  color: gray;
-  border-top: 1px solid #DDD;
-  padding-top: 10px;
-}
-
-.footer a {
-  color: gray;
-  font-weight: bold;
-}
-
-.footer a:hover {
-  color: gray;
-}
-*/
-
 /* */
 body hr {
-  border-top: 1px dotted #A30000
+  border-top: 1px dotted #A30000;
 }
 
 /* Force TOC text to not overrun */
@@ -100,7 +71,7 @@ pre {
 
 /* Preserve the spacing of the navbar across different screen sizes. */
 .navbar-inner {
-  padding: 5px 0; 
+  /*padding: 5px 0;*/
 }
 
 @media (max-width: 979px) {
@@ -194,8 +165,9 @@ body{
   color: white; 
 }
 
-.nav-list > .active > a, .nav-list > .active > a:hover {
-  background: #2c2c2c;
+.nav-list > .active > a, .navbar .navbar-inner .nav li a:hover {
+  background:#212121;
+  color:white;
 }
 
 .navbar .navbar-inner .dropdown-menu li a, .navbar .navbar-inner .dropdown-menu li{
@@ -233,3 +205,40 @@ body a:hover{
      }
  }
 
+
+/* sticky footer and footer */
+html, body {
+  height: 100%;
+}
+.wrapper {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -60px;
+}
+
+.body-content{
+  padding-top: 70px;
+  padding-bottom: 70px;
+}
+
+
+footer, .push {
+  height: 60px; /* .push must be the same height as .footer */
+}
+
+footer p {
+  text-align: center;
+  color: gray;
+  border-top: 1px solid #DDD;
+  padding-top: 10px;
+}
+
+footer a {
+  color: gray;
+  font-weight: bold;
+}
+
+footer a:hover {
+  color: gray;
+}
