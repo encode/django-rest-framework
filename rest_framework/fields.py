@@ -381,7 +381,7 @@ class HyperlinkedIdentityField(Field):
     def __init__(self, *args, **kwargs):
         # TODO: Make this mandatory
         self.view_name = kwargs.pop('view_name', None)
-        super(HyperlinkedRelatedField, self).__init__(*args, **kwargs)
+        super(HyperlinkedIdentityField, self).__init__(*args, **kwargs)
 
     def field_to_native(self, obj, field_name):
         request = self.context.get('request', None)
