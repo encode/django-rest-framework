@@ -199,20 +199,26 @@ class APIView(View):
         Runs anything that needs to occur prior to calling the method handlers.
         """
         self.format = self.get_format_suffix(**kwargs)
+
         if not self.has_permission(request):
             self.permission_denied(request)
         self.check_throttles(request)
-        self.renderer, self.accepted_media_type = self.perform_content_negotiation(request)
+
+        # Perform content negotiation and store the accepted info on the request
+        neg = self.perform_content_negotiation(request)
+        request.accepted_renderer, request.accepted_media_type = neg
 
     def finalize_response(self, request, response, *args, **kwargs):
         """
         Returns the final response object.
         """
         if isinstance(response, Response):
-            if not getattr(self, 'renderer', None):
-                self.renderer, self.accepted_media_type = self.perform_content_negotiation(request, force=True)
-            response.accepted_renderer = self.renderer
-            response.accepted_media_type = self.accepted_media_type
+            if not getattr(request, 'accepted_renderer', None):
+                neg = self.perform_content_negotiation(request, force=True)
+                request.accepted_renderer, request.accepted_media_type = neg
+
+            response.accepted_renderer = request.accepted_renderer
+            response.accepted_media_type = request.accepted_media_type
 
         for key, value in self.headers.items():
             response[key] = value

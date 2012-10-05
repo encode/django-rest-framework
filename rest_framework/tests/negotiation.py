@@ -1,8 +1,6 @@
 from django.test import TestCase
 from django.test.client import RequestFactory
-from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.negotiation import DefaultContentNegotiation
-from rest_framework.response import Response
 
 factory = RequestFactory()
 
@@ -10,26 +8,14 @@ factory = RequestFactory()
 class MockJSONRenderer(object):
     media_type = 'application/json'
 
-    def __init__(self, view):
-        pass
-
 
 class MockHTMLRenderer(object):
     media_type = 'text/html'
 
-    def __init__(self, view):
-        pass
-
-
-@api_view(('GET',))
-@renderer_classes((MockJSONRenderer, MockHTMLRenderer))
-def example(request):
-    return Response()
-
 
 class TestAcceptedMediaType(TestCase):
     def setUp(self):
-        self.renderers = [MockJSONRenderer(None), MockHTMLRenderer(None)]
+        self.renderers = [MockJSONRenderer(), MockHTMLRenderer()]
         self.negotiator = DefaultContentNegotiation()
 
     def negotiate(self, request):
@@ -49,10 +35,3 @@ class TestAcceptedMediaType(TestCase):
         request = factory.get('/', HTTP_ACCEPT='application/json; indent=8')
         accepted_renderer, accepted_media_type = self.negotiate(request)
         self.assertEquals(accepted_media_type, 'application/json; indent=8')
-
-
-class IntegrationTests(TestCase):
-    def test_accepted_negotiation_set_on_request(self):
-        request = factory.get('/', HTTP_ACCEPT='*/*')
-        response = example(request)
-        self.assertEquals(response.accepted_media_type, 'application/json')
