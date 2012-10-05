@@ -19,6 +19,8 @@
     <![endif]-->
   <body onload="prettyPrint()" class="6-resource-orientated-projects-page">
 
+  <div class="wrapper">
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -91,27 +93,26 @@
       </div>
     </div>
 
-    <div id="wrap">
+    <div class="body-content">
+      <div class="container-fluid">
+        <div class="row-fluid">
 
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <div class="span3">
-          <div id="table-of-contents">
-            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-              <li class="main"><a href="#tutorial-6---resources">Tutorial 6 - Resources</a></li>
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                <li class="main"><a href="#tutorial-6---resources">Tutorial 6 - Resources</a></li>
 <li><a href="#refactoring-to-use-resources,-not-views">Refactoring to use Resources, not Views</a></li>
 <li><a href="#binding-resources-to-urls-explicitly">Binding Resources to URLs explicitly</a></li>
 <li><a href="#using-routers">Using Routers</a></li>
 <li><a href="#trade-offs-between-views-vs-resources">Trade-offs between views vs resources.</a></li>
 <li><a href="#onwards-and-upwards">Onwards and upwards.</a></li>
 
-            </ul>
+              </ul>
+            </div>
           </div>
-        </div>
 
-        <div id="main-content" class="span9">
-          <h1 id="tutorial-6-resources">Tutorial 6 - Resources</h1>
+          <div id="main-content" class="span9">
+            <h1 id="tutorial-6-resources">Tutorial 6 - Resources</h1>
 <p>Resource classes are just View classes that don't have any handler methods bound to them.  The actions on a resource are defined, </p>
 <p>This allows us to:</p>
 <ul>
@@ -173,20 +174,17 @@ urlpatterns = router.urlpatterns
 <li>Follow me <a href="https://twitter.com/_tomchristie">on Twitter</a> and say hi.</li>
 </ul>
 <p><strong>Now go build some awesome things.</strong></p>
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/.fluid-container-->
+          </div><!--/span-->
+        </div><!--/row-->
+      </div><!--/.fluid-container-->
+    </div><!--/.body content-->
 
       <div id="push"></div>
-    </div>
+  </div><!--/.wrapper -->
 
-      <!--
-      <div class="row footer">
-          <div class="span12">
-              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
-          </div>
-      </div>
-    -->
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+  </footer>
 
     <!-- Le javascript
     ================================================== -->

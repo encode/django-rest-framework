@@ -19,6 +19,8 @@
     <![endif]-->
   <body onload="prettyPrint()" class="browsable-api-page">
 
+  <div class="wrapper">
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -91,25 +93,24 @@
       </div>
     </div>
 
-    <div id="wrap">
+    <div class="body-content">
+      <div class="container-fluid">
+        <div class="row-fluid">
 
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <div class="span3">
-          <div id="table-of-contents">
-            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-              <li class="main"><a href="#working-with-the-browsable-api">Working with the Browsable API</a></li>
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                <li class="main"><a href="#working-with-the-browsable-api">Working with the Browsable API</a></li>
 <li><a href="#urls">URLs</a></li>
 <li><a href="#formats">Formats</a></li>
 <li><a href="#customizing">Customizing</a></li>
 
-            </ul>
+              </ul>
+            </div>
           </div>
-        </div>
 
-        <div id="main-content" class="span9">
-          <h1 id="working-with-the-browsable-api">Working with the Browsable API</h1>
+          <div id="main-content" class="span9">
+            <h1 id="working-with-the-browsable-api">Working with the Browsable API</h1>
 <p>API may stand for Application <em>Programming</em> Interface, but humans have to be able to read the APIs, too; someone has to do the programming. Django REST Framework supports generating human-friendly HTML output for each resource when the <code>HTML</code> format is requested. These pages allow for easy browsing of resources, as well as forms for submitting data to the resources using <code>POST</code>, <code>PUT</code>, and <code>DELETE</code>.</p>
 <h2 id="urls">URLs</h2>
 <p>If you include fully-qualified URLs in your resource output, they will be 'urlized' and made clickable for easy browsing by humans. The <code>rest_framework</code> package includes a <a href="../api-guide/reverse"><code>reverse</code></a> helper for this purpose.</p>
@@ -169,20 +170,17 @@
 </ul>
 <h4 id="not-using-basehtml">Not using base.html</h4>
 <p>For more advanced customization, such as not having a Bootstrap basis or tighter integration with the rest of your site, you can simply choose not to have <code>api.html</code> extend <code>base.html</code>. Then the page content and capabilities are entirely up to you.</p>
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/.fluid-container-->
+          </div><!--/span-->
+        </div><!--/row-->
+      </div><!--/.fluid-container-->
+    </div><!--/.body content-->
 
       <div id="push"></div>
-    </div>
+  </div><!--/.wrapper -->
 
-      <!--
-      <div class="row footer">
-          <div class="span12">
-              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
-          </div>
-      </div>
-    -->
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+  </footer>
 
     <!-- Le javascript
     ================================================== -->

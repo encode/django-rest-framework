@@ -19,6 +19,8 @@
     <![endif]-->
   <body onload="prettyPrint()" class="index-page">
 
+  <div class="wrapper">
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -91,15 +93,14 @@
       </div>
     </div>
 
-    <div id="wrap">
+    <div class="body-content">
+      <div class="container-fluid">
+        <div class="row-fluid">
 
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <div class="span3">
-          <div id="table-of-contents">
-            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-              <li class="main"><a href="#django-rest-framework">Django REST framework</a></li>
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                <li class="main"><a href="#django-rest-framework">Django REST framework</a></li>
 <li><a href="#requirements">Requirements</a></li>
 <li><a href="#installation">Installation</a></li>
 <li><a href="#quickstart">Quickstart</a></li>
@@ -109,12 +110,12 @@
 <li><a href="#development">Development</a></li>
 <li><a href="#license">License</a></li>
 
-            </ul>
+              </ul>
+            </div>
           </div>
-        </div>
 
-        <div id="main-content" class="span9">
-          <iframe src="http://ghbtns.com/github-btn.html?user=tomchristie&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
+          <div id="main-content" class="span9">
+            <iframe src="http://ghbtns.com/github-btn.html?user=tomchristie&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
 
 <p><a href="http://travis-ci.org/tomchristie/django-rest-framework?branch=restframework2"><img alt="Travis build image" src="https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=restframework2" /></a></p>
 <h1 id="django-rest-framework">Django REST framework</h1>
@@ -229,20 +230,17 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/.fluid-container-->
+          </div><!--/span-->
+        </div><!--/row-->
+      </div><!--/.fluid-container-->
+    </div><!--/.body content-->
 
       <div id="push"></div>
-    </div>
+  </div><!--/.wrapper -->
 
-      <!--
-      <div class="row footer">
-          <div class="span12">
-              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
-          </div>
-      </div>
-    -->
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+  </footer>
 
     <!-- Le javascript
     ================================================== -->

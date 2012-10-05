@@ -19,6 +19,8 @@
     <![endif]-->
   <body onload="prettyPrint()" class="2-requests-and-responses-page">
 
+  <div class="wrapper">
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -91,15 +93,14 @@
       </div>
     </div>
 
-    <div id="wrap">
+    <div class="body-content">
+      <div class="container-fluid">
+        <div class="row-fluid">
 
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <div class="span3">
-          <div id="table-of-contents">
-            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-              <li class="main"><a href="#tutorial-2-requests-and-responses">Tutorial 2: Requests and Responses</a></li>
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                <li class="main"><a href="#tutorial-2-requests-and-responses">Tutorial 2: Requests and Responses</a></li>
 <li><a href="#request-objects">Request objects</a></li>
 <li><a href="#response-objects">Response objects</a></li>
 <li><a href="#status-codes">Status codes</a></li>
@@ -109,12 +110,12 @@
 <li><a href="#hows-it-looking">How's it looking?</a></li>
 <li><a href="#whats-next">What's next?</a></li>
 
-            </ul>
+              </ul>
+            </div>
           </div>
-        </div>
 
-        <div id="main-content" class="span9">
-          <h1 id="tutorial-2-requests-and-responses">Tutorial 2: Requests and Responses</h1>
+          <div id="main-content" class="span9">
+            <h1 id="tutorial-2-requests-and-responses">Tutorial 2: Requests and Responses</h1>
 <p>From this point we're going to really start covering the core of REST framework.
 Let's introduce a couple of essential building blocks.</p>
 <h2 id="request-objects">Request objects</h2>
@@ -224,20 +225,17 @@ urlpatterns = format_suffix_patterns(urlpatterns)
 <p>See the <a href="../topics/browsable-api">browsable api</a> topic for more information about the browsable API feature and how to customize it.</p>
 <h2 id="whats-next">What's next?</h2>
 <p>In <a href="3-class-based-views">tutorial part 3</a>, we'll start using class based views, and see how generic views reduce the amount of code we need to write.</p>
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/.fluid-container-->
+          </div><!--/span-->
+        </div><!--/row-->
+      </div><!--/.fluid-container-->
+    </div><!--/.body content-->
 
       <div id="push"></div>
-    </div>
+  </div><!--/.wrapper -->
 
-      <!--
-      <div class="row footer">
-          <div class="span12">
-              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
-          </div>
-      </div>
-    -->
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+  </footer>
 
     <!-- Le javascript
     ================================================== -->

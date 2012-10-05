@@ -19,6 +19,8 @@
     <![endif]-->
   <body onload="prettyPrint()" class="generic-views-page">
 
+  <div class="wrapper">
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -91,15 +93,14 @@
       </div>
     </div>
 
-    <div id="wrap">
+    <div class="body-content">
+      <div class="container-fluid">
+        <div class="row-fluid">
 
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <div class="span3">
-          <div id="table-of-contents">
-            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-              <li class="main"><a href="#generic-views">Generic views</a></li>
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                <li class="main"><a href="#generic-views">Generic views</a></li>
 <li><a href="#examples">Examples</a></li>
 <li class="main"><a href="#api-reference">API Reference</a></li>
 <li><a href="#listapiview">ListAPIView</a></li>
@@ -117,12 +118,12 @@
 <li><a href="#updatemodelmixin">UpdateModelMixin</a></li>
 <li><a href="#destroymodelmixin">DestroyModelMixin</a></li>
 
-            </ul>
+              </ul>
+            </div>
           </div>
-        </div>
 
-        <div id="main-content" class="span9">
-          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/mixins.py"><span class="label label-info">mixins.py</span></a>
+          <div id="main-content" class="span9">
+            <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/mixins.py"><span class="label label-info">mixins.py</span></a>
 <a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/generics.py"><span class="label label-info">generics.py</span></a></p>
 <h1 id="generic-views">Generic views</h1>
 <blockquote>
@@ -200,20 +201,17 @@
 <p>Provides a <code>.update(request, *args, **kwargs)</code> method, that implements updating and saving an existing model instance.</p>
 <h2 id="destroymodelmixin">DestroyModelMixin</h2>
 <p>Provides a <code>.destroy(request, *args, **kwargs)</code> method, that implements deletion of an existing model instance.</p>
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/.fluid-container-->
+          </div><!--/span-->
+        </div><!--/row-->
+      </div><!--/.fluid-container-->
+    </div><!--/.body content-->
 
       <div id="push"></div>
-    </div>
+  </div><!--/.wrapper -->
 
-      <!--
-      <div class="row footer">
-          <div class="span12">
-              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
-          </div>
-      </div>
-    -->
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+  </footer>
 
     <!-- Le javascript
     ================================================== -->

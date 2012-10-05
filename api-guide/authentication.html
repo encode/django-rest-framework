@@ -19,6 +19,8 @@
     <![endif]-->
   <body onload="prettyPrint()" class="authentication-page">
 
+  <div class="wrapper">
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -91,15 +93,14 @@
       </div>
     </div>
 
-    <div id="wrap">
+    <div class="body-content">
+      <div class="container-fluid">
+        <div class="row-fluid">
 
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <div class="span3">
-          <div id="table-of-contents">
-            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-              <li class="main"><a href="#authentication">Authentication</a></li>
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                <li class="main"><a href="#authentication">Authentication</a></li>
 <li><a href="#how-authentication-is-determined">How authentication is determined</a></li>
 <li><a href="#setting-the-authentication-policy">Setting the authentication policy</a></li>
 <li><a href="#basicauthentication">BasicAuthentication</a></li>
@@ -108,12 +109,12 @@
 <li><a href="#sessionauthentication">SessionAuthentication</a></li>
 <li><a href="#custom-authentication-policies">Custom authentication policies</a></li>
 
-            </ul>
+              </ul>
+            </div>
           </div>
-        </div>
 
-        <div id="main-content" class="span9">
-          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/authentication.py"><span class="label label-info">authentication.py</span></a></p>
+          <div id="main-content" class="span9">
+            <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/authentication.py"><span class="label label-info">authentication.py</span></a></p>
 <h1 id="authentication">Authentication</h1>
 <blockquote>
 <p>Auth needs to be pluggable.</p>
@@ -202,20 +203,17 @@ print token.key
 </ul>
 <h2 id="custom-authentication-policies">Custom authentication policies</h2>
 <p>To implement a custom authentication policy, subclass <code>BaseAuthentication</code> and override the <code>.authenticate(self, request)</code> method.  The method should return a two-tuple of <code>(user, auth)</code> if authentication succeeds, or <code>None</code> otherwise.</p>
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/.fluid-container-->
+          </div><!--/span-->
+        </div><!--/row-->
+      </div><!--/.fluid-container-->
+    </div><!--/.body content-->
 
       <div id="push"></div>
-    </div>
+  </div><!--/.wrapper -->
 
-      <!--
-      <div class="row footer">
-          <div class="span12">
-              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
-          </div>
-      </div>
-    -->
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+  </footer>
 
     <!-- Le javascript
     ================================================== -->

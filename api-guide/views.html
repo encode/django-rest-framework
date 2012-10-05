@@ -19,6 +19,8 @@
     <![endif]-->
   <body onload="prettyPrint()" class="views-page">
 
+  <div class="wrapper">
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -91,27 +93,26 @@
       </div>
     </div>
 
-    <div id="wrap">
+    <div class="body-content">
+      <div class="container-fluid">
+        <div class="row-fluid">
 
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <div class="span3">
-          <div id="table-of-contents">
-            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-              <li class="main"><a href="#class-based-views">Class Based Views</a></li>
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                <li class="main"><a href="#class-based-views">Class Based Views</a></li>
 <li><a href="#api-policy-attributes">API policy attributes</a></li>
 <li><a href="#api-policy-instantiation-methods">API policy instantiation methods</a></li>
 <li><a href="#api-policy-implementation-methods">API policy implementation methods</a></li>
 <li><a href="#dispatch-methods">Dispatch methods</a></li>
 <li class="main"><a href="#function-based-views">Function Based Views</a></li>
 
-            </ul>
+              </ul>
+            </div>
           </div>
-        </div>
 
-        <div id="main-content" class="span9">
-          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/decorators.py"><span class="label label-info">decorators.py</span></a> <a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/views.py"><span class="label label-info">views.py</span></a></p>
+          <div id="main-content" class="span9">
+            <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/decorators.py"><span class="label label-info">decorators.py</span></a> <a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/views.py"><span class="label label-info">views.py</span></a></p>
 <h1 id="class-based-views">Class Based Views</h1>
 <blockquote>
 <p>Django's class based views are a welcome departure from the old-style views.</p>
@@ -191,20 +192,17 @@ This method is used to enforce permissions and throttling, and perform content n
 </blockquote>
 <p>REST framework also gives you to work with regular function based views...</p>
 <p><strong>[TODO]</strong></p>
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/.fluid-container-->
+          </div><!--/span-->
+        </div><!--/row-->
+      </div><!--/.fluid-container-->
+    </div><!--/.body content-->
 
       <div id="push"></div>
-    </div>
+  </div><!--/.wrapper -->
 
-      <!--
-      <div class="row footer">
-          <div class="span12">
-              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
-          </div>
-      </div>
-    -->
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+  </footer>
 
     <!-- Le javascript
     ================================================== -->

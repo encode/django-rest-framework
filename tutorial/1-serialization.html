@@ -19,6 +19,8 @@
     <![endif]-->
   <body onload="prettyPrint()" class="1-serialization-page">
 
+  <div class="wrapper">
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -91,15 +93,14 @@
       </div>
     </div>
 
-    <div id="wrap">
+    <div class="body-content">
+      <div class="container-fluid">
+        <div class="row-fluid">
 
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <div class="span3">
-          <div id="table-of-contents">
-            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-              <li class="main"><a href="#tutorial-1-serialization">Tutorial 1: Serialization</a></li>
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                <li class="main"><a href="#tutorial-1-serialization">Tutorial 1: Serialization</a></li>
 <li><a href="#introduction">Introduction</a></li>
 <li><a href="#setting-up-a-new-environment">Setting up a new environment</a></li>
 <li><a href="#getting-started">Getting started</a></li>
@@ -110,12 +111,12 @@
 <li><a href="#testing-our-first-attempt-at-a-web-api">Testing our first attempt at a Web API</a></li>
 <li><a href="#where-are-we-now">Where are we now</a></li>
 
-            </ul>
+              </ul>
+            </div>
           </div>
-        </div>
 
-        <div id="main-content" class="span9">
-          <h1 id="tutorial-1-serialization">Tutorial 1: Serialization</h1>
+          <div id="main-content" class="span9">
+            <h1 id="tutorial-1-serialization">Tutorial 1: Serialization</h1>
 <h2 id="introduction">Introduction</h2>
 <p>This tutorial will walk you through the building blocks that make up REST framework.   It'll take a little while to get through, but it'll give you a comprehensive understanding of how everything fits together.</p>
 <h2 id="setting-up-a-new-environment">Setting up a new environment</h2>
@@ -328,20 +329,17 @@ urlpatterns = patterns('blog.views',
 <p>We're doing okay so far, we've got a serialization API that feels pretty similar to Django's Forms API, and some regular Django views.</p>
 <p>Our API views don't do anything particularly special at the moment, beyond serve <code>json</code> responses, and there's some error handling edge cases we'd still like to clean up, but it's a functioning Web API.</p>
 <p>We'll see how we can start to improve things in <a href="2-requests-and-responses">part 2 of the tutorial</a>.</p>
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/.fluid-container-->
+          </div><!--/span-->
+        </div><!--/row-->
+      </div><!--/.fluid-container-->
+    </div><!--/.body content-->
 
       <div id="push"></div>
-    </div>
+  </div><!--/.wrapper -->
 
-      <!--
-      <div class="row footer">
-          <div class="span12">
-              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
-          </div>
-      </div>
-    -->
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+  </footer>
 
     <!-- Le javascript
     ================================================== -->

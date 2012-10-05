@@ -19,6 +19,8 @@
     <![endif]-->
   <body onload="prettyPrint()" class="changelog-page">
 
+  <div class="wrapper">
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -91,15 +93,14 @@
       </div>
     </div>
 
-    <div id="wrap">
+    <div class="body-content">
+      <div class="container-fluid">
+        <div class="row-fluid">
 
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <div class="span3">
-          <div id="table-of-contents">
-            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-              <li><a href="#200">2.0.0</a></li>
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                <li><a href="#200">2.0.0</a></li>
 <li><a href="#040">0.4.0</a></li>
 <li><a href="#033">0.3.3</a></li>
 <li><a href="#032">0.3.2</a></li>
@@ -113,12 +114,12 @@
 <li><a href="#011">0.1.1</a></li>
 <li><a href="#010">0.1.0</a></li>
 
-            </ul>
+              </ul>
+            </div>
           </div>
-        </div>
 
-        <div id="main-content" class="span9">
-          <h1 id="release-notes">Release Notes</h1>
+          <div id="main-content" class="span9">
+            <h1 id="release-notes">Release Notes</h1>
 <h2 id="200">2.0.0</h2>
 <p><strong>TODO:</strong> Explain REST framework 2.0</p>
 <h2 id="040">0.4.0</h2>
@@ -231,20 +232,17 @@
 <ul>
 <li>Initial release.</li>
 </ul>
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/.fluid-container-->
+          </div><!--/span-->
+        </div><!--/row-->
+      </div><!--/.fluid-container-->
+    </div><!--/.body content-->
 
       <div id="push"></div>
-    </div>
+  </div><!--/.wrapper -->
 
-      <!--
-      <div class="row footer">
-          <div class="span12">
-              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
-          </div>
-      </div>
-    -->
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+  </footer>
 
     <!-- Le javascript
     ================================================== -->

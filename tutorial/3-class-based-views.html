@@ -19,6 +19,8 @@
     <![endif]-->
   <body onload="prettyPrint()" class="3-class-based-views-page">
 
+  <div class="wrapper">
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -91,25 +93,24 @@
       </div>
     </div>
 
-    <div id="wrap">
+    <div class="body-content">
+      <div class="container-fluid">
+        <div class="row-fluid">
 
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <div class="span3">
-          <div id="table-of-contents">
-            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-              <li class="main"><a href="#tutorial-3-class-based-views">Tutorial 3: Class Based Views</a></li>
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                <li class="main"><a href="#tutorial-3-class-based-views">Tutorial 3: Class Based Views</a></li>
 <li><a href="#rewriting-our-api-using-class-based-views">Rewriting our API using class based views</a></li>
 <li><a href="#using-mixins">Using mixins</a></li>
 <li><a href="#using-generic-class-based-views">Using generic class based views</a></li>
 
-            </ul>
+              </ul>
+            </div>
           </div>
-        </div>
 
-        <div id="main-content" class="span9">
-          <h1 id="tutorial-3-class-based-views">Tutorial 3: Class Based Views</h1>
+          <div id="main-content" class="span9">
+            <h1 id="tutorial-3-class-based-views">Tutorial 3: Class Based Views</h1>
 <p>We can also write our API views using class based views, rather than function based views.  As we'll see this is a powerful pattern that allows us to reuse common functionality, and helps us keep our code <a href="http://en.wikipedia.org/wiki/Don't_repeat_yourself">DRY</a>.</p>
 <h2 id="rewriting-our-api-using-class-based-views">Rewriting our API using class based views</h2>
 <p>We'll start by rewriting the root view as a class based view.  All this involves is a little bit of refactoring.</p>
@@ -238,20 +239,17 @@ class CommentInstance(generics.RetrieveUpdateDestroyAPIView):
 </code></pre>
 <p>Wow, that's pretty concise.  We've got a huge amount for free, and our code looks like good, clean, idiomatic Django.</p>
 <p>Next we'll move onto <a href="4-authentication-permissions-and-throttling">part 4 of the tutorial</a>, where we'll take a look at how we can  customize the behavior of our views to support a range of authentication, permissions, throttling and other aspects.</p>
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/.fluid-container-->
+          </div><!--/span-->
+        </div><!--/row-->
+      </div><!--/.fluid-container-->
+    </div><!--/.body content-->
 
       <div id="push"></div>
-    </div>
+  </div><!--/.wrapper -->
 
-      <!--
-      <div class="row footer">
-          <div class="span12">
-              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
-          </div>
-      </div>
-    -->
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+  </footer>
 
     <!-- Le javascript
     ================================================== -->

@@ -19,6 +19,8 @@
     <![endif]-->
   <body onload="prettyPrint()" class="formoverloading-page">
 
+  <div class="wrapper">
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -91,27 +93,26 @@
       </div>
     </div>
 
-    <div id="wrap">
+    <div class="body-content">
+      <div class="container-fluid">
+        <div class="row-fluid">
 
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <div class="span3">
-          <div id="table-of-contents">
-            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-              <li class="main"><a href="#browser-hacks">Browser hacks</a></li>
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                <li class="main"><a href="#browser-hacks">Browser hacks</a></li>
 <li><a href="#browser-based-put,-delete,-etc">Browser based PUT, DELETE, etc...</a></li>
 <li><a href="#browser-based-submission-of-non-form-content">Browser based submission of non-form content</a></li>
 <li><a href="#url-based-accept-headers">URL based accept headers</a></li>
 <li><a href="#url-based-format-suffixes">URL based format suffixes</a></li>
 <li><a href="#doesnt-html5-support-put-and-delete-forms">Doesn't HTML5 support PUT and DELETE forms?</a></li>
 
-            </ul>
+              </ul>
+            </div>
           </div>
-        </div>
 
-        <div id="main-content" class="span9">
-          <h1 id="browser-hacks">Browser hacks</h1>
+          <div id="main-content" class="span9">
+            <h1 id="browser-hacks">Browser hacks</h1>
 <blockquote>
 <p>"There are two noncontroversial uses for overloaded POST.  The first is to <em>simulate</em> HTTP's uniform interface for clients like web browsers that don't support PUT or DELETE"</p>
 <p>&mdash; <a href="1">RESTful Web Services</a>, Leonard Richardson &amp; Sam Ruby.</p>
@@ -137,20 +138,17 @@
 <h2 id="url-based-format-suffixes">URL based format suffixes</h2>
 <h2 id="doesnt-html5-support-put-and-delete-forms">Doesn't HTML5 support PUT and DELETE forms?</h2>
 <p>Nope.  It was at one point intended to support <code>PUT</code> and <code>DELETE</code> forms, but was later <a href="3">dropped from the spec</a>.  There remains <a href="4">ongoing discussion</a> about adding support for <code>PUT</code> and <code>DELETE</code>, as well as how to support content types other than form-encoded data.</p>
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/.fluid-container-->
+          </div><!--/span-->
+        </div><!--/row-->
+      </div><!--/.fluid-container-->
+    </div><!--/.body content-->
 
       <div id="push"></div>
-    </div>
+  </div><!--/.wrapper -->
 
-      <!--
-      <div class="row footer">
-          <div class="span12">
-              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
-          </div>
-      </div>
-    -->
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+  </footer>
 
     <!-- Le javascript
     ================================================== -->

@@ -19,6 +19,8 @@
     <![endif]-->
   <body onload="prettyPrint()" class="csrf-page">
 
+  <div class="wrapper">
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -91,22 +93,21 @@
       </div>
     </div>
 
-    <div id="wrap">
+    <div class="body-content">
+      <div class="container-fluid">
+        <div class="row-fluid">
 
-    <div class="container-fluid">
-      <div class="row-fluid">
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                <li class="main"><a href="#working-with-ajax-and-csrf">Working with AJAX and CSRF</a></li>
 
-        <div class="span3">
-          <div id="table-of-contents">
-            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-              <li class="main"><a href="#working-with-ajax-and-csrf">Working with AJAX and CSRF</a></li>
-
-            </ul>
+              </ul>
+            </div>
           </div>
-        </div>
 
-        <div id="main-content" class="span9">
-          <h1 id="working-with-ajax-and-csrf">Working with AJAX and CSRF</h1>
+          <div id="main-content" class="span9">
+            <h1 id="working-with-ajax-and-csrf">Working with AJAX and CSRF</h1>
 <blockquote>
 <p>"Take a close look at possible CSRF / XSRF vulnerabilities on your own websites. They're the worst kind of vulnerability -- very easy to exploit by attackers, yet not so intuitively easy to understand for software developers, at least until you've been bitten by one."</p>
 <p>&mdash; <a href="http://www.codinghorror.com/blog/2008/10/preventing-csrf-and-xsrf-attacks.html">Jeff Atwood</a></p>
@@ -116,20 +117,17 @@
 <li>Explain defered CSRF style used by REST framework</li>
 <li>Why you should use Django's standard login/logout views, and not REST framework view</li>
 </ul>
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/.fluid-container-->
+          </div><!--/span-->
+        </div><!--/row-->
+      </div><!--/.fluid-container-->
+    </div><!--/.body content-->
 
       <div id="push"></div>
-    </div>
+  </div><!--/.wrapper -->
 
-      <!--
-      <div class="row footer">
-          <div class="span12">
-              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
-          </div>
-      </div>
-    -->
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+  </footer>
 
     <!-- Le javascript
     ================================================== -->

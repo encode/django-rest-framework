@@ -19,6 +19,8 @@
     <![endif]-->
   <body onload="prettyPrint()" class="fields-page">
 
+  <div class="wrapper">
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -91,15 +93,14 @@
       </div>
     </div>
 
-    <div id="wrap">
+    <div class="body-content">
+      <div class="container-fluid">
+        <div class="row-fluid">
 
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <div class="span3">
-          <div id="table-of-contents">
-            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-              <li class="main"><a href="#serializer-fields">Serializer fields</a></li>
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                <li class="main"><a href="#serializer-fields">Serializer fields</a></li>
 <li class="main"><a href="#generic-fields">Generic Fields</a></li>
 <li><a href="#field">Field</a></li>
 <li><a href="#writablefield">WritableField</a></li>
@@ -119,19 +120,21 @@
 <li><a href="#manyhyperlinkedrelatedfield">ManyHyperlinkedRelatedField</a></li>
 <li><a href="#hyperlinkedidentityfield">HyperLinkedIdentityField</a></li>
 
-            </ul>
+              </ul>
+            </div>
           </div>
-        </div>
 
-        <div id="main-content" class="span9">
-          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/fields.py"><span class="label label-info">fields.py</span></a></p>
+          <div id="main-content" class="span9">
+            <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/fields.py"><span class="label label-info">fields.py</span></a></p>
 <h1 id="serializer-fields">Serializer fields</h1>
 <blockquote>
 <p>Flat is better than nested.</p>
 <p>&mdash; <a href="http://www.python.org/dev/peps/pep-0020/">The Zen of Python</a></p>
 </blockquote>
-<p><strong>Note:</strong> The serializer fields are declared in fields.py, but by convention you should import them using <code>from rest_framework import serializers</code> and refer to fields as <code>serializers.&lt;FieldName&gt;</code>.</p>
 <p>Serializer fields handle converting between primative values and internal datatypes.  They also deal with validating input values, as well as retrieving and setting the values from their parent objects.</p>
+<hr />
+<p><strong>Note:</strong> The serializer fields are declared in fields.py, but by convention you should import them using <code>from rest_framework import serializers</code> and refer to fields as <code>serializers.&lt;FieldName&gt;</code>.</p>
+<hr />
 <h1 id="generic-fields">Generic Fields</h1>
 <h2 id="field">Field</h2>
 <p>A generic, read-only field.  You can use this field for any attribute that does not need to support write operations.</p>
@@ -156,20 +159,17 @@
 <h2 id="hyperlinkedrelatedfield">HyperlinkedRelatedField</h2>
 <h2 id="manyhyperlinkedrelatedfield">ManyHyperlinkedRelatedField</h2>
 <h2 id="hyperlinkedidentityfield">HyperLinkedIdentityField</h2>
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/.fluid-container-->
+          </div><!--/span-->
+        </div><!--/row-->
+      </div><!--/.fluid-container-->
+    </div><!--/.body content-->
 
       <div id="push"></div>
-    </div>
+  </div><!--/.wrapper -->
 
-      <!--
-      <div class="row footer">
-          <div class="span12">
-              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
-          </div>
-      </div>
-    -->
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+  </footer>
 
     <!-- Le javascript
     ================================================== -->

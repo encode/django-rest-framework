@@ -19,6 +19,8 @@
     <![endif]-->
   <body onload="prettyPrint()" class="throttling-page">
 
+  <div class="wrapper">
+
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
@@ -91,15 +93,14 @@
       </div>
     </div>
 
-    <div id="wrap">
+    <div class="body-content">
+      <div class="container-fluid">
+        <div class="row-fluid">
 
-    <div class="container-fluid">
-      <div class="row-fluid">
-
-        <div class="span3">
-          <div id="table-of-contents">
-            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-              <li class="main"><a href="#throttling">Throttling</a></li>
+          <div class="span3">
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                <li class="main"><a href="#throttling">Throttling</a></li>
 <li><a href="#how-throttling-is-determined">How throttling is determined</a></li>
 <li><a href="#setting-the-throttling-policy">Setting the throttling policy</a></li>
 <li><a href="#anonratethrottle">AnonRateThrottle</a></li>
@@ -107,12 +108,12 @@
 <li><a href="#scopedratethrottle">ScopedRateThrottle</a></li>
 <li><a href="#custom-throttles">Custom throttles</a></li>
 
-            </ul>
+              </ul>
+            </div>
           </div>
-        </div>
 
-        <div id="main-content" class="span9">
-          <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/throttling.py"><span class="label label-info">throttling.py</span></a></p>
+          <div id="main-content" class="span9">
+            <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/throttling.py"><span class="label label-info">throttling.py</span></a></p>
 <h1 id="throttling">Throttling</h1>
 <blockquote>
 <p>HTTP/1.1 420 Enhance Your Calm</p>
@@ -227,20 +228,17 @@ class UploadView(APIView):
 <h2 id="custom-throttles">Custom throttles</h2>
 <p>To create a custom throttle, override <code>BaseThrottle</code> and implement <code>.allow_request(request)</code>.  The method should return <code>True</code> if the request should be allowed, and <code>False</code> otherwise.</p>
 <p>Optionally you may also override the <code>.wait()</code> method.  If implemented, <code>.wait()</code> should return a recomended number of seconds to wait before attempting the next request, or <code>None</code>.  The <code>.wait()</code> method will only be called if <code>.check_throttle()</code> has previously returned <code>False</code>.</p>
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/.fluid-container-->
+          </div><!--/span-->
+        </div><!--/row-->
+      </div><!--/.fluid-container-->
+    </div><!--/.body content-->
 
       <div id="push"></div>
-    </div>
+  </div><!--/.wrapper -->
 
-      <!--
-      <div class="row footer">
-          <div class="span12">
-              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
-          </div>
-      </div>
-    -->
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+  </footer>
 
     <!-- Le javascript
     ================================================== -->
