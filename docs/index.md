@@ -81,6 +81,7 @@ The API guide is your complete reference manual to all the functionality provide
 * [Parsers][parsers]
 * [Renderers][renderers]
 * [Serializers][serializers]
+* [Serializer fields][fields]
 * [Authentication][authentication]
 * [Permissions][permissions]
 * [Throttling][throttling]
@@ -159,6 +160,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [parsers]: api-guide/parsers.md
 [renderers]: api-guide/renderers.md
 [serializers]: api-guide/serializers.md
+[fields]: api-guide/fields.md
 [authentication]: api-guide/authentication.md
 [permissions]: api-guide/permissions.md
 [throttling]: api-guide/throttling.md
