@@ -2,6 +2,7 @@
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <title>Django REST framework</title>
+    <link href="http://tomchristie.github.com/django-rest-framework/img/favicon.ico" rel="icon" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -89,6 +90,8 @@
       </div>
     </div>
 
+    <div id="wrap">
+
     <div class="container-fluid">
       <div class="row-fluid">
 
@@ -129,7 +132,8 @@ pip install djangorestframework
 <h2 id="getting-started">Getting started</h2>
 <p>Okay, we're ready to get coding.
 To get started, let's create a new project to work with.</p>
-<pre class="prettyprint lang-py"><code>django-admin.py startproject tutorial
+<pre class="prettyprint lang-py"><code>cd ~
+django-admin.py startproject tutorial
 cd tutorial
 </code></pre>
 <p>Once that's done we can create an app that we'll use to create a simple Web API.</p>
@@ -173,7 +177,7 @@ class Comment(models.Model):
 <pre class="prettyprint lang-py"><code>python manage.py syncdb
 </code></pre>
 <h2 id="creating-a-serializer-class">Creating a Serializer class</h2>
-<p>We're going to create a simple Web API that we can use to edit these comment objects with.  The first thing we need is a way of serializing and deserializing the objects into representations such as <code>json</code>.  We do this by declaring serializers that work very similarly to Django's forms.  Create a file in the project named <code>serializers.py</code> and add the following.</p>
+<p>We're going to create a simple Web API that we can use to edit these comment objects with.  The first thing we need is a way of serializing and deserializing the objects into representations such as <code>json</code>.  We do this by declaring serializers that work very similarly to Django's forms.  Create a file in the <code>blog</code> directory named <code>serializers.py</code> and add the following.</p>
 <pre class="prettyprint lang-py"><code>from blog import models
 from rest_framework import serializers
 
@@ -325,8 +329,18 @@ urlpatterns = patterns('blog.views',
 <p>We'll see how we can start to improve things in <a href="2-requests-and-responses">part 2 of the tutorial</a>.</p>
         </div><!--/span-->
       </div><!--/row-->
-
     </div><!--/.fluid-container-->
+
+      <div id="push"></div>
+    </div>
+
+      <!--
+      <div class="row footer">
+          <div class="span12">
+              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+          </div>
+      </div>
+    -->
 
     <!-- Le javascript
     ================================================== -->

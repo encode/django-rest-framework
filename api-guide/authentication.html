@@ -2,6 +2,7 @@
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <title>Django REST framework</title>
+    <link href="http://tomchristie.github.com/django-rest-framework/img/favicon.ico" rel="icon" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -89,6 +90,8 @@
       </div>
     </div>
 
+    <div id="wrap">
+
     <div class="container-fluid">
       <div class="row-fluid">
 
@@ -146,9 +149,9 @@
         return Response(content)
 </code></pre>
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
-<pre class="prettyprint lang-py"><code>@api_view('GET'),
-@authentication_classes(SessionAuthentication, UserBasicAuthentication)
-@permissions_classes(IsAuthenticated)
+<pre class="prettyprint lang-py"><code>@api_view(('GET',)),
+@authentication_classes((SessionAuthentication, UserBasicAuthentication))
+@permissions_classes((IsAuthenticated,))
 def example_view(request, format=None):
     content = {
         'user': unicode(request.user),  # `django.contrib.auth.User` instance.
@@ -200,8 +203,18 @@ print token.key
 <p>To implement a custom authentication policy, subclass <code>BaseAuthentication</code> and override the <code>.authenticate(self, request)</code> method.  The method should return a two-tuple of <code>(user, auth)</code> if authentication succeeds, or <code>None</code> otherwise.</p>
         </div><!--/span-->
       </div><!--/row-->
-
     </div><!--/.fluid-container-->
+
+      <div id="push"></div>
+    </div>
+
+      <!--
+      <div class="row footer">
+          <div class="span12">
+              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+          </div>
+      </div>
+    -->
 
     <!-- Le javascript
     ================================================== -->

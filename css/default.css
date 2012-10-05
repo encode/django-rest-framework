@@ -61,6 +61,30 @@ a.github:hover {
   text-decoration: none;
 }
 
+/* Footer */
+/*
+.footer p {
+  text-align: center;
+  color: gray;
+  border-top: 1px solid #DDD;
+  padding-top: 10px;
+}
+
+.footer a {
+  color: gray;
+  font-weight: bold;
+}
+
+.footer a:hover {
+  color: gray;
+}
+*/
+
+/* */
+body hr {
+  border-top: 1px dotted #A30000
+}
+
 /* Force TOC text to not overrun */
 #table-of-contents {
     overflow: hidden;

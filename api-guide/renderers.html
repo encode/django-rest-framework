@@ -2,6 +2,7 @@
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <title>Django REST framework</title>
+    <link href="http://tomchristie.github.com/django-rest-framework/img/favicon.ico" rel="icon" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -89,6 +90,8 @@
       </div>
     </div>
 
+    <div id="wrap">
+
     <div class="container-fluid">
       <div class="row-fluid">
 
@@ -108,6 +111,7 @@
 <li><a href="#htmltemplaterenderer">HTMLTemplateRenderer</a></li>
 <li><a href="#custom-renderers">Custom renderers</a></li>
 <li class="main"><a href="#advanced-renderer-usage">Advanced renderer usage</a></li>
+<li><a href="#varying-behaviour-by-media-type">Varying behaviour by media type</a></li>
 <li><a href="#designing-your-media-types">Designing your media types</a></li>
 
             </ul>
@@ -162,6 +166,7 @@ def user_count_view(request, format=None):
 <p>It's important when specifying the renderer classes for your API to think about what priority you want to assign to each media type.  If a client underspecifies the representations it can accept, such as sending an <code>Accept: */*</code> header, or not including an <code>Accept</code> header at all, then REST framework will select the first renderer in the list to use for the response.</p>
 <p>For example if your API serves JSON responses and the HTML browseable API, you might want to make <code>JSONRenderer</code> your default renderer, in order to send <code>JSON</code> responses to clients that do not specify an <code>Accept</code> header.</p>
 <p>If your API includes views that can serve both regular webpages and API responses depending on the request, then you might consider making <code>TemplateHTMLRenderer</code> your default renderer, in order to play nicely with older browsers that send <a href="http://www.gethifi.com/blog/browser-rest-http-accept-headers">broken accept headers</a>.</p>
+<hr />
 <h1 id="api-reference">API Reference</h1>
 <h2 id="jsonrenderer">JSONRenderer</h2>
 <p><strong>.media_type:</strong> <code>application/json</code></p>
@@ -195,6 +200,7 @@ Unlike other renderers, the data passed to the <code>Response</code> does not ne
 <p><strong>.format:</strong> <code>'.html'</code></p>
 <h2 id="custom-renderers">Custom renderers</h2>
 <p>To implement a custom renderer, you should override <code>BaseRenderer</code>, set the <code>.media_type</code> and <code>.format</code> properties, and implement the <code>.render(self, data, media_type)</code> method.</p>
+<hr />
 <h1 id="advanced-renderer-usage">Advanced renderer usage</h1>
 <p>You can do some pretty flexible things using REST framework's renderers.  Some examples...</p>
 <ul>
@@ -203,6 +209,7 @@ Unlike other renderers, the data passed to the <code>Response</code> does not ne
 <li>Specify multiple types of HTML representation for API clients to use.</li>
 <li>Underspecify a renderer's media type, such as using <code>media_type = 'image/*'</code>, and use the <code>Accept</code> header to vary the encoding of the response. </li>
 </ul>
+<h2 id="varying-behaviour-by-media-type">Varying behaviour by media type</h2>
 <p>In some cases you might want your view to use different serialization styles depending on the accepted media type.  If you need to do this you can access <code>request.accepted_renderer</code> to determine the negotiated renderer that will be used for the response.</p>
 <p>For example:</p>
 <pre class="prettyprint lang-py"><code>@api_view(('GET',))
@@ -232,8 +239,18 @@ def list_users(request):
 <p>For good examples of custom media types, see GitHub's use of a custom <a href="http://developer.github.com/v3/media/">application/vnd.github+json</a> media type, and Mike Amundsen's IANA approved <a href="http://www.amundsen.com/media-types/collection/">application/vnd.collection+json</a> JSON-based hypermedia.</p>
         </div><!--/span-->
       </div><!--/row-->
-
     </div><!--/.fluid-container-->
+
+      <div id="push"></div>
+    </div>
+
+      <!--
+      <div class="row footer">
+          <div class="span12">
+              <p>Sponsored by <a href="http://dabapps.com/">Dab Apps</a>.</a></p>
+          </div>
+      </div>
+    -->
 
     <!-- Le javascript
     ================================================== -->
