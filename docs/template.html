@@ -91,9 +91,10 @@
 
     <div class="container-fluid">
       <div class="row-fluid">
+
         <div class="span3">
-          <div id="table-of-contents" class="well affix span3">
-            <ul class="nav nav-list side-nav">
+          <div id="table-of-contents">
+            <ul class="nav nav-list side-nav well sidebar-nav-fixed">
               {{ toc }}
             </ul>
           </div>
@@ -103,6 +104,7 @@
           {{ content }}
         </div><!--/span-->
       </div><!--/row-->
+
     </div><!--/.fluid-container-->
 
     <!-- Le javascript
@@ -110,9 +112,7 @@
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="{{ base_url }}/js/jquery-1.8.1-min.js"></script>
     <script src="{{ base_url }}/js/prettify.js"></script>
-    <script src="{{ base_url }}/js/bootstrap-dropdown.js"></script>
-    <script src="{{ base_url }}/js/bootstrap-scrollspy.js"></script>
-    <script src="{{ base_url }}/js/bootstrap-collapse.js"></script>
+    <script src="{{ base_url }}/js/bootstrap.min.js"></script>
     <script>
       //$('.side-nav').scrollspy()
       var shiftWindow = function() { scrollBy(0, -50) };
