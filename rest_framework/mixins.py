@@ -71,12 +71,37 @@ class UpdateModelMixin(object):
     Should be mixed in with `SingleObjectBaseView`.
     """
     def update(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        try:
+            self.object = self.get_object()
+        except Http404:
+            self.object = None
+
         serializer = self.get_serializer(data=request.DATA, instance=self.object)
         if serializer.is_valid():
+            if self.object is None:
+                obj = serializer.object
+                # TODO: Make ModelSerializers return regular instances,
+                # not DeserializedObject
+                if hasattr(obj, 'object'):
+                    obj = obj.object
+                self.update_urlconf_attributes(serializer.object.object)
             self.object = serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update_urlconf_attributes(self, obj):
+        """
+        When update (re)creates an object, we need to set any attributes that
+        are tied to the URLconf.
+        """
+        pk = self.kwargs.get(self.pk_url_kwarg, None)
+        if pk:
+            setattr(obj, 'pk', pk)
+
+        slug = self.kwargs.get(self.slug_url_kwarg, None)
+        if slug:
+            slug_field = self.get_slug_field()
+            setattr(obj, slug_field, slug)
 
 
 class DestroyModelMixin(object):
