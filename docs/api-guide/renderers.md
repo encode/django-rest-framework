@@ -86,11 +86,28 @@ If your API includes views that can serve both regular webpages and API response
 
 ## DocumentingHTMLRenderer
 
+Renders data into HTML for the browseable API.  This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.
+
 **.media_type:** `text/html`
 
 **.format:** `'.api'`
 
-## TemplateHTMLRenderer
+## HTMLTemplateRenderer
+
+Renders data to HTML, using Django's standard template rendering.
+Unlike other renderers, the data passed to the `Response` does not need to be serialized.  Also, unlike other renderers, you may want to include a `template_name` argument when creating the `Response`.
+
+The HTMLTemplateRenderer will create a `RequestContext`, using the `response.data` as the context dict, and determine a template name to use to render the context.
+
+The template name is determined by (in order of preference):
+
+1. An explicit `.template_name` attribute set on the response.
+2. An explicit `.template_name` attribute set on this class.
+3. The return result of calling `view.get_template_names()`.
+
+You can use `HTMLTemplateRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
+
+If you're building websites that use `HTMLTemplateRenderer` along with other renderer classes, you should consider listing `HTMLTemplateRenderer` as the first class in the `renderer_classes` list, so that it will be prioritised first even for browsers that send poorly formed ACCEPT headers.
 
 **.media_type:** `text/html`
 
@@ -115,7 +132,6 @@ For example:
 
     @api_view(('GET',))
     @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
-    @template_name('list_users.html')
     def list_users(request):
         """
         A view that can return JSON or HTML representations
@@ -123,15 +139,16 @@ For example:
         """
         queryset = Users.objects.filter(active=True)
 
-        if request.accepted_renderer.format == 'html':
+        if request.accepted_media_type == 'text/html':
             # TemplateHTMLRenderer takes a context dict,
-            # and does not require serialization.
+            # and additionally requiresa 'template_name'.
+            # It does not require serialization.
             data = {'users': queryset}
-        else:
-            # JSONRenderer requires serialized data as normal.
-            serializer = UserSerializer(instance=queryset)
-            data = serializer.data
+            return Response(data, template_name='list_users.html')
 
+        # JSONRenderer requires serialized data as normal.
+        serializer = UserSerializer(instance=queryset)
+        data = serializer.data
         return Response(data)
 
 ## Designing your media types

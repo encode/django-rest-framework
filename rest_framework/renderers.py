@@ -10,12 +10,13 @@ from django import forms
 from django.template import RequestContext, loader
 from django.utils import simplejson as json
 from rest_framework.compat import yaml
+from rest_framework.exceptions import ConfigurationError
 from rest_framework.settings import api_settings
 from rest_framework.request import clone_request
 from rest_framework.utils import dict2xml
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
-from rest_framework.utils.mediatypes import get_media_type_params, add_media_type_param, media_type_matches
+from rest_framework.utils.mediatypes import get_media_type_params, add_media_type_param
 from rest_framework import VERSION
 from rest_framework import serializers
 
@@ -32,39 +33,8 @@ class BaseRenderer(object):
     def __init__(self, view=None):
         self.view = view
 
-    def can_handle_format(self, format):
-        return format == self.format
-
-    def can_handle_media_type(self, media_type):
-        """
-        Returns `True` if this renderer is able to deal with the given
-        media type.
-
-        The default implementation for this function is to check the media type
-        argument against the media_type attribute set on the class to see if
-        they match.
-
-        This may be overridden to provide for other behavior, but typically
-        you'll instead want to just set the `media_type` attribute on the class.
-        """
-        return media_type_matches(self.media_type, media_type)
-
-    def render(self, obj=None, media_type=None):
-        """
-        Given an object render it into a string.
-
-        The requested media type is also passed to this method,
-        as it may contain parameters relevant to how the parser
-        should render the output.
-        EG: ``application/json; indent=4``
-
-        By default render simply returns the output as-is.
-        Override this method to provide for other behavior.
-        """
-        if obj is None:
-            return ''
-
-        return str(obj)
+    def render(self, data=None, accepted_media_type=None):
+        raise NotImplemented('Renderer class requires .render() to be implemented')
 
 
 class JSONRenderer(BaseRenderer):
@@ -76,16 +46,16 @@ class JSONRenderer(BaseRenderer):
     format = 'json'
     encoder_class = encoders.JSONEncoder
 
-    def render(self, obj=None, media_type=None):
+    def render(self, data=None, accepted_media_type=None):
         """
         Render `obj` into json.
         """
-        if obj is None:
+        if data is None:
             return ''
 
         # If the media type looks like 'application/json; indent=4', then
         # pretty print the result.
-        indent = get_media_type_params(media_type).get('indent', None)
+        indent = get_media_type_params(accepted_media_type).get('indent', None)
         sort_keys = False
         try:
             indent = max(min(int(indent), 8), 0)
@@ -93,7 +63,7 @@ class JSONRenderer(BaseRenderer):
         except (ValueError, TypeError):
             indent = None
 
-        return json.dumps(obj, cls=self.encoder_class,
+        return json.dumps(data, cls=self.encoder_class,
                           indent=indent, sort_keys=sort_keys)
 
 
@@ -115,7 +85,7 @@ class JSONPRenderer(JSONRenderer):
         params = self.view.request.GET
         return params.get(self.callback_parameter, self.default_callback)
 
-    def render(self, obj=None, media_type=None):
+    def render(self, data=None, accepted_media_type=None):
         """
         Renders into jsonp, wrapping the json output in a callback function.
 
@@ -123,7 +93,7 @@ class JSONPRenderer(JSONRenderer):
         on the URL, for example: ?callback=exampleCallbackName
         """
         callback = self.get_callback()
-        json = super(JSONPRenderer, self).render(obj, media_type)
+        json = super(JSONPRenderer, self).render(data, accepted_media_type)
         return "%s(%s);" % (callback, json)
 
 
@@ -135,13 +105,13 @@ class XMLRenderer(BaseRenderer):
     media_type = 'application/xml'
     format = 'xml'
 
-    def render(self, obj=None, media_type=None):
+    def render(self, data=None, accepted_media_type=None):
         """
         Renders *obj* into serialized XML.
         """
-        if obj is None:
+        if data is None:
             return ''
-        return dict2xml(obj)
+        return dict2xml(data)
 
 
 class YAMLRenderer(BaseRenderer):
@@ -152,17 +122,17 @@ class YAMLRenderer(BaseRenderer):
     media_type = 'application/yaml'
     format = 'yaml'
 
-    def render(self, obj=None, media_type=None):
+    def render(self, data=None, accepted_media_type=None):
         """
         Renders *obj* into serialized YAML.
         """
-        if obj is None:
+        if data is None:
             return ''
 
-        return yaml.safe_dump(obj)
+        return yaml.safe_dump(data)
 
 
-class TemplateRenderer(BaseRenderer):
+class HTMLTemplateRenderer(BaseRenderer):
     """
     A Base class provided for convenience.
 
@@ -171,19 +141,42 @@ class TemplateRenderer(BaseRenderer):
     the :attr:`media_type` and :attr:`template` attributes.
     """
 
-    media_type = None
-    template = None
+    media_type = 'text/html'
+    format = 'html'
+    template_name = None
 
-    def render(self, obj=None, media_type=None):
+    def render(self, data=None, accepted_media_type=None):
         """
-        Renders *obj* using the :attr:`template` specified on the class.
-        """
-        if obj is None:
-            return ''
+        Renders data to HTML, using Django's standard template rendering.
 
-        template = loader.get_template(self.template)
-        context = RequestContext(self.view.request, {'object': obj})
+        The template name is determined by (in order of preference):
+
+        1. An explicit .template_name set on the response.
+        2. An explicit .template_name set on this class.
+        3. The return result of calling view.get_template_names().
+        """
+        view = self.view
+        request, response = view.request, view.response
+
+        template_names = self.get_template_names(response, view)
+        template = self.resolve_template(template_names)
+        context = self.resolve_context(data, request)
         return template.render(context)
+
+    def resolve_template(self, template_names):
+        return loader.select_template(template_names)
+
+    def resolve_context(self, data, request):
+        return RequestContext(request, data)
+
+    def get_template_names(self, response, view):
+        if response.template_name:
+            return [response.template_name]
+        elif self.template_name:
+            return [self.template_name]
+        elif hasattr(view, 'get_template_names'):
+            return view.get_template_names()
+        raise ConfigurationError('Returned a template response with no template_name')
 
 
 class DocumentingHTMLRenderer(BaseRenderer):
@@ -191,10 +184,10 @@ class DocumentingHTMLRenderer(BaseRenderer):
     HTML renderer used to self-document the API.
     """
     media_type = 'text/html'
-    format = 'html'
+    format = 'api'
     template = 'rest_framework/api.html'
 
-    def get_content(self, view, request, obj, media_type):
+    def get_content(self, view, request, data, accepted_media_type):
         """
         Get the content as if it had been rendered by a non-documenting renderer.
 
@@ -208,8 +201,8 @@ class DocumentingHTMLRenderer(BaseRenderer):
         if not renderers:
             return '[No renderers were found]'
 
-        media_type = add_media_type_param(media_type, 'indent', '4')
-        content = renderers[0](view).render(obj, media_type)
+        accepted_media_type = add_media_type_param(accepted_media_type, 'indent', '4')
+        content = renderers[0](view).render(data, accepted_media_type)
         if not all(char in string.printable for char in content):
             return '[%d bytes of binary content]'
 
@@ -333,7 +326,7 @@ class DocumentingHTMLRenderer(BaseRenderer):
         except AttributeError:
             return self.view.__doc__
 
-    def render(self, obj=None, media_type=None):
+    def render(self, data=None, accepted_media_type=None):
         """
         Renders *obj* using the :attr:`template` set on the class.
 
@@ -344,7 +337,7 @@ class DocumentingHTMLRenderer(BaseRenderer):
         request = view.request
         response = view.response
 
-        content = self.get_content(view, request, obj, media_type)
+        content = self.get_content(view, request, data, accepted_media_type)
 
         put_form = self.get_form(view, 'PUT', request)
         post_form = self.get_form(view, 'POST', request)

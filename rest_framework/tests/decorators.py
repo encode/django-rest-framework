@@ -58,7 +58,7 @@ class DecoratorTestCase(TestCase):
 
         request = self.factory.get('/')
         response = view(request)
-        self.assertTrue(isinstance(response.renderer, JSONRenderer))
+        self.assertTrue(isinstance(response.accepted_renderer, JSONRenderer))
 
     def test_parser_classes(self):
 

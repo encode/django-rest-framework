@@ -1,6 +1,6 @@
 from rest_framework import exceptions
 from rest_framework.settings import api_settings
-from rest_framework.utils.mediatypes import order_by_precedence
+from rest_framework.utils.mediatypes import order_by_precedence, media_type_matches
 
 
 class BaseContentNegotiation(object):
@@ -46,8 +46,16 @@ class DefaultContentNegotiation(object):
         for media_type_set in order_by_precedence(accepts):
             for renderer in renderers:
                 for media_type in media_type_set:
-                    if renderer.can_handle_media_type(media_type):
-                        return renderer, media_type
+                    if media_type_matches(renderer.media_type, media_type):
+                        # Return the most specific media type as accepted.
+                        if len(renderer.media_type) > len(media_type):
+                            # Eg client requests '*/*'
+                            # Accepted media type is 'application/json'
+                            return renderer, renderer.media_type
+                        else:
+                            # Eg client requests 'application/json; indent=8'
+                            # Accepted media type is 'application/json; indent=8'
+                            return renderer, media_type
 
         raise exceptions.NotAcceptable(available_renderers=renderers)
 
@@ -57,7 +65,7 @@ class DefaultContentNegotiation(object):
         so that we only negotiation against those that accept that format.
         """
         renderers = [renderer for renderer in renderers
-                     if renderer.can_handle_format(format)]
+                     if renderer.format == format]
         if not renderers:
             raise exceptions.InvalidFormat(format)
         return renderers
