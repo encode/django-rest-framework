@@ -15,11 +15,9 @@ from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError
 from django.utils import simplejson as json
-from rest_framework.compat import yaml
+from rest_framework.compat import yaml, ETParseError
 from rest_framework.exceptions import ParseError
-from rest_framework.utils.mediatypes import media_type_matches
 from xml.etree import ElementTree as ET
-from rest_framework.compat import ETParseError
 from xml.parsers.expat import ExpatError
 import datetime
 import decimal
@@ -39,19 +37,6 @@ class BaseParser(object):
     """
 
     media_type = None
-
-    def can_handle_request(self, content_type):
-        """
-        Returns :const:`True` if this parser is able to deal with the given *content_type*.
-
-        The default implementation for this function is to check the *content_type*
-        argument against the :attr:`media_type` attribute set on the class to see if
-        they match.
-
-        This may be overridden to provide for other behavior, but typically you'll
-        instead want to just set the :attr:`media_type` attribute on the class.
-        """
-        return media_type_matches(self.media_type, content_type)
 
     def parse(self, string_or_stream, **opts):
         """

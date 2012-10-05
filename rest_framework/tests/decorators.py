@@ -65,7 +65,9 @@ class DecoratorTestCase(TestCase):
         @api_view(['GET'])
         @parser_classes([JSONParser])
         def view(request):
-            self.assertEqual(request.parser_classes, [JSONParser])
+            self.assertEqual(len(request.parsers), 1)
+            self.assertTrue(isinstance(request.parsers[0],
+                                       JSONParser))
             return Response({})
 
         request = self.factory.get('/')
@@ -76,7 +78,9 @@ class DecoratorTestCase(TestCase):
         @api_view(['GET'])
         @authentication_classes([BasicAuthentication])
         def view(request):
-            self.assertEqual(request.authentication_classes, [BasicAuthentication])
+            self.assertEqual(len(request.authenticators), 1)
+            self.assertTrue(isinstance(request.authenticators[0],
+                                       BasicAuthentication))
             return Response({})
 
         request = self.factory.get('/')

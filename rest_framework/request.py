@@ -34,8 +34,8 @@ def clone_request(request, method):
     HTTP method.  Used for checking permissions against other methods.
     """
     ret = Request(request._request,
-                  request.parser_classes,
-                  request.authentication_classes)
+                  request.parsers,
+                  request.authenticators)
     ret._data = request._data
     ret._files = request._files
     ret._content_type = request._content_type
@@ -60,27 +60,20 @@ class Request(object):
     _CONTENT_PARAM = api_settings.FORM_CONTENT_OVERRIDE
     _CONTENTTYPE_PARAM = api_settings.FORM_CONTENTTYPE_OVERRIDE
 
-    def __init__(self, request, parser_classes=None, authentication_classes=None):
+    def __init__(self, request, parsers=None, authenticators=None,
+                 negotiator=None):
         self._request = request
-        self.parser_classes = parser_classes or ()
-        self.authentication_classes = authentication_classes or ()
+        self.parsers = parsers or ()
+        self.authenticators = authenticators or ()
+        self.negotiator = negotiator or self._default_negotiator()
         self._data = Empty
         self._files = Empty
         self._method = Empty
         self._content_type = Empty
         self._stream = Empty
 
-    def get_parsers(self):
-        """
-        Instantiates and returns the list of parsers the request will use.
-        """
-        return [parser() for parser in self.parser_classes]
-
-    def get_authentications(self):
-        """
-        Instantiates and returns the list of parsers the request will use.
-        """
-        return [authentication() for authentication in self.authentication_classes]
+    def _default_negotiator(self):
+        return api_settings.DEFAULT_CONTENT_NEGOTIATION()
 
     @property
     def method(self):
@@ -254,26 +247,27 @@ class Request(object):
         if self.stream is None or self.content_type is None:
             return (None, None)
 
-        for parser in self.get_parsers():
-            if parser.can_handle_request(self.content_type):
-                parsed = parser.parse(self.stream, meta=self.META,
-                                      upload_handlers=self.upload_handlers)
-                # Parser classes may return the raw data, or a
-                # DataAndFiles object.  Unpack the result as required.
-                try:
-                    return (parsed.data, parsed.files)
-                except AttributeError:
-                    return (parsed, None)
+        parser = self.negotiator.select_parser(self.parsers, self.content_type)
 
-        raise exceptions.UnsupportedMediaType(self._content_type)
+        if not parser:
+            raise exceptions.UnsupportedMediaType(self._content_type)
+
+        parsed = parser.parse(self.stream, meta=self.META,
+                              upload_handlers=self.upload_handlers)
+        # Parser classes may return the raw data, or a
+        # DataAndFiles object.  Unpack the result as required.
+        try:
+            return (parsed.data, parsed.files)
+        except AttributeError:
+            return (parsed, None)
 
     def _authenticate(self):
         """
         Attempt to authenticate the request using each authentication instance in turn.
         Returns a two-tuple of (user, authtoken).
         """
-        for authentication in self.get_authentications():
-            user_auth_tuple = authentication.authenticate(self)
+        for authenticator in self.authenticators:
+            user_auth_tuple = authenticator.authenticate(self)
             if not user_auth_tuple is None:
                 return user_auth_tuple
         return self._not_authenticated()

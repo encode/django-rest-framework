@@ -70,6 +70,7 @@ class APIView(View):
         as an attribute on the callable function.  This allows us to discover
         information about the view when we do URL reverse lookups.
         """
+        # TODO: deprecate?
         view = super(APIView, cls).as_view(**initkwargs)
         view.cls_instance = cls(**initkwargs)
         return view
@@ -84,6 +85,7 @@ class APIView(View):
 
     @property
     def default_response_headers(self):
+        # TODO: Only vary by accept if multiple renderers
         return {
             'Allow': ', '.join(self.allowed_methods),
             'Vary': 'Accept'
@@ -94,6 +96,7 @@ class APIView(View):
         Return the resource or view class name for use as this view's name.
         Override to customize.
         """
+        # TODO: deprecate?
         name = self.__class__.__name__
         name = _remove_trailing_string(name, 'View')
         return _camelcase_to_spaces(name)
@@ -103,6 +106,7 @@ class APIView(View):
         Return the resource or view docstring for use as this view's description.
         Override to customize.
         """
+        # TODO: deprecate?
         description = self.__doc__ or ''
         description = _remove_leading_indent(description)
         if html:
@@ -113,6 +117,7 @@ class APIView(View):
         """
         Apply HTML markup to the description of this view.
         """
+        # TODO: deprecate?
         if apply_markdown:
             description = apply_markdown(description)
         else:
@@ -137,6 +142,8 @@ class APIView(View):
         """
         raise exceptions.Throttled(wait)
 
+    # API policy instantiation methods
+
     def get_format_suffix(self, **kwargs):
         """
         Determine if the request includes a '.json' style format suffix
@@ -144,11 +151,23 @@ class APIView(View):
         if self.settings.FORMAT_SUFFIX_KWARG:
             return kwargs.get(self.settings.FORMAT_SUFFIX_KWARG)
 
-    def get_renderers(self, format=None):
+    def get_renderers(self):
         """
         Instantiates and returns the list of renderers that this view can use.
         """
         return [renderer(self) for renderer in self.renderer_classes]
+
+    def get_parsers(self):
+        """
+        Instantiates and returns the list of renderers that this view can use.
+        """
+        return [parser() for parser in self.parser_classes]
+
+    def get_authenticators(self):
+        """
+        Instantiates and returns the list of renderers that this view can use.
+        """
+        return [auth() for auth in self.authentication_classes]
 
     def get_permissions(self):
         """
@@ -166,7 +185,11 @@ class APIView(View):
         """
         Instantiate and return the content negotiation class to use.
         """
-        return self.content_negotiation_class()
+        if not getattr(self, '_negotiator', None):
+            self._negotiator = self.content_negotiation_class()
+        return self._negotiator
+
+    # API policy implementation methods
 
     def perform_content_negotiation(self, request, force=False):
         """
@@ -193,19 +216,24 @@ class APIView(View):
             if not throttle.allow_request(request):
                 self.throttled(request, throttle.wait())
 
+    # Dispatch methods
+
     def initialize_request(self, request, *args, **kargs):
         """
         Returns the initial request object.
         """
-        return Request(request, parser_classes=self.parser_classes,
-                       authentication_classes=self.authentication_classes)
+        return Request(request,
+                       parsers=self.get_parsers(),
+                       authenticators=self.get_authenticators(),
+                       negotiator=self.get_content_negotiator())
 
     def initial(self, request, *args, **kwargs):
         """
-        Runs anything that needs to occur prior to calling the method handlers.
+        Runs anything that needs to occur prior to calling the method handler.
         """
         self.format_kwarg = self.get_format_suffix(**kwargs)
 
+        # Ensure that the incoming request is permitted
         if not self.has_permission(request):
             self.permission_denied(request)
         self.check_throttles(request)

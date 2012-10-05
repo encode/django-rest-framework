@@ -11,6 +11,16 @@ class BaseContentNegotiation(object):
 class DefaultContentNegotiation(object):
     settings = api_settings
 
+    def select_parser(self, parsers, media_type):
+        """
+        Given a list of parsers and a media type, return the appropriate
+        parser to handle the incoming request.
+        """
+        for parser in parsers:
+            if media_type_matches(parser.media_type, media_type):
+                return parser
+        return None
+
     def negotiate(self, request, renderers, format=None, force=False):
         """
         Given a request and a list of renderers, return a two-tuple of:

@@ -61,7 +61,7 @@ class TestContentParsing(TestCase):
         """
         data = {'qwerty': 'uiop'}
         request = Request(factory.post('/', data))
-        request.parser_classes = (FormParser, MultiPartParser)
+        request.parsers = (FormParser(), MultiPartParser())
         self.assertEqual(request.DATA.items(), data.items())
 
     def test_request_DATA_with_text_content(self):
@@ -72,7 +72,7 @@ class TestContentParsing(TestCase):
         content = 'qwerty'
         content_type = 'text/plain'
         request = Request(factory.post('/', content, content_type=content_type))
-        request.parser_classes = (PlainTextParser,)
+        request.parsers = (PlainTextParser(),)
         self.assertEqual(request.DATA, content)
 
     def test_request_POST_with_form_content(self):
@@ -81,7 +81,7 @@ class TestContentParsing(TestCase):
         """
         data = {'qwerty': 'uiop'}
         request = Request(factory.post('/', data))
-        request.parser_classes = (FormParser, MultiPartParser)
+        request.parsers = (FormParser(), MultiPartParser())
         self.assertEqual(request.POST.items(), data.items())
 
     def test_standard_behaviour_determines_form_content_PUT(self):
@@ -99,7 +99,7 @@ class TestContentParsing(TestCase):
         else:
             request = Request(factory.put('/', data))
 
-        request.parser_classes = (FormParser, MultiPartParser)
+        request.parsers = (FormParser(), MultiPartParser())
         self.assertEqual(request.DATA.items(), data.items())
 
     def test_standard_behaviour_determines_non_form_content_PUT(self):
@@ -110,7 +110,7 @@ class TestContentParsing(TestCase):
         content = 'qwerty'
         content_type = 'text/plain'
         request = Request(factory.put('/', content, content_type=content_type))
-        request.parser_classes = (PlainTextParser, )
+        request.parsers = (PlainTextParser(), )
         self.assertEqual(request.DATA, content)
 
     def test_overloaded_behaviour_allows_content_tunnelling(self):
@@ -124,7 +124,7 @@ class TestContentParsing(TestCase):
             Request._CONTENTTYPE_PARAM: content_type
         }
         request = Request(factory.post('/', data))
-        request.parser_classes = (PlainTextParser, )
+        request.parsers = (PlainTextParser(), )
         self.assertEqual(request.DATA, content)
 
     # def test_accessing_post_after_data_form(self):
