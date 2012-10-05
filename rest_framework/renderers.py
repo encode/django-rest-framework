@@ -32,22 +32,8 @@ class BaseRenderer(object):
     def __init__(self, view=None):
         self.view = view
 
-    def render(self, obj=None, media_type=None):
-        """
-        Given an object render it into a string.
-
-        The requested media type is also passed to this method,
-        as it may contain parameters relevant to how the parser
-        should render the output.
-        EG: ``application/json; indent=4``
-
-        By default render simply returns the output as-is.
-        Override this method to provide for other behavior.
-        """
-        if obj is None:
-            return ''
-
-        return str(obj)
+    def render(self, data=None, accepted_media_type=None):
+        raise NotImplemented('Renderer class requires .render() to be implemented')
 
 
 class JSONRenderer(BaseRenderer):
@@ -59,16 +45,16 @@ class JSONRenderer(BaseRenderer):
     format = 'json'
     encoder_class = encoders.JSONEncoder
 
-    def render(self, obj=None, media_type=None):
+    def render(self, data=None, accepted_media_type=None):
         """
         Render `obj` into json.
         """
-        if obj is None:
+        if data is None:
             return ''
 
         # If the media type looks like 'application/json; indent=4', then
         # pretty print the result.
-        indent = get_media_type_params(media_type).get('indent', None)
+        indent = get_media_type_params(accepted_media_type).get('indent', None)
         sort_keys = False
         try:
             indent = max(min(int(indent), 8), 0)
@@ -76,7 +62,7 @@ class JSONRenderer(BaseRenderer):
         except (ValueError, TypeError):
             indent = None
 
-        return json.dumps(obj, cls=self.encoder_class,
+        return json.dumps(data, cls=self.encoder_class,
                           indent=indent, sort_keys=sort_keys)
 
 
@@ -98,7 +84,7 @@ class JSONPRenderer(JSONRenderer):
         params = self.view.request.GET
         return params.get(self.callback_parameter, self.default_callback)
 
-    def render(self, obj=None, media_type=None):
+    def render(self, data=None, accepted_media_type=None):
         """
         Renders into jsonp, wrapping the json output in a callback function.
 
@@ -106,7 +92,7 @@ class JSONPRenderer(JSONRenderer):
         on the URL, for example: ?callback=exampleCallbackName
         """
         callback = self.get_callback()
-        json = super(JSONPRenderer, self).render(obj, media_type)
+        json = super(JSONPRenderer, self).render(data, accepted_media_type)
         return "%s(%s);" % (callback, json)
 
 
@@ -118,13 +104,13 @@ class XMLRenderer(BaseRenderer):
     media_type = 'application/xml'
     format = 'xml'
 
-    def render(self, obj=None, media_type=None):
+    def render(self, data=None, accepted_media_type=None):
         """
         Renders *obj* into serialized XML.
         """
-        if obj is None:
+        if data is None:
             return ''
-        return dict2xml(obj)
+        return dict2xml(data)
 
 
 class YAMLRenderer(BaseRenderer):
@@ -135,17 +121,17 @@ class YAMLRenderer(BaseRenderer):
     media_type = 'application/yaml'
     format = 'yaml'
 
-    def render(self, obj=None, media_type=None):
+    def render(self, data=None, accepted_media_type=None):
         """
         Renders *obj* into serialized YAML.
         """
-        if obj is None:
+        if data is None:
             return ''
 
-        return yaml.safe_dump(obj)
+        return yaml.safe_dump(data)
 
 
-class TemplateRenderer(BaseRenderer):
+class HTMLTemplateRenderer(BaseRenderer):
     """
     A Base class provided for convenience.
 
@@ -154,18 +140,19 @@ class TemplateRenderer(BaseRenderer):
     the :attr:`media_type` and :attr:`template` attributes.
     """
 
-    media_type = None
+    media_type = 'text/html'
+    format = 'html'
     template = None
 
-    def render(self, obj=None, media_type=None):
+    def render(self, data=None, accepted_media_type=None):
         """
         Renders *obj* using the :attr:`template` specified on the class.
         """
-        if obj is None:
+        if data is None:
             return ''
 
         template = loader.get_template(self.template)
-        context = RequestContext(self.view.request, {'object': obj})
+        context = RequestContext(self.view.request, {'object': data})
         return template.render(context)
 
 
@@ -174,10 +161,10 @@ class DocumentingHTMLRenderer(BaseRenderer):
     HTML renderer used to self-document the API.
     """
     media_type = 'text/html'
-    format = 'html'
+    format = 'api'
     template = 'rest_framework/api.html'
 
-    def get_content(self, view, request, obj, media_type):
+    def get_content(self, view, request, data, accepted_media_type):
         """
         Get the content as if it had been rendered by a non-documenting renderer.
 
@@ -191,8 +178,8 @@ class DocumentingHTMLRenderer(BaseRenderer):
         if not renderers:
             return '[No renderers were found]'
 
-        media_type = add_media_type_param(media_type, 'indent', '4')
-        content = renderers[0](view).render(obj, media_type)
+        accepted_media_type = add_media_type_param(accepted_media_type, 'indent', '4')
+        content = renderers[0](view).render(data, accepted_media_type)
         if not all(char in string.printable for char in content):
             return '[%d bytes of binary content]'
 
@@ -316,7 +303,7 @@ class DocumentingHTMLRenderer(BaseRenderer):
         except AttributeError:
             return self.view.__doc__
 
-    def render(self, obj=None, media_type=None):
+    def render(self, data=None, accepted_media_type=None):
         """
         Renders *obj* using the :attr:`template` set on the class.
 
@@ -327,7 +314,7 @@ class DocumentingHTMLRenderer(BaseRenderer):
         request = view.request
         response = view.response
 
-        content = self.get_content(view, request, obj, media_type)
+        content = self.get_content(view, request, data, accepted_media_type)
 
         put_form = self.get_form(view, 'PUT', request)
         post_form = self.get_form(view, 'POST', request)
