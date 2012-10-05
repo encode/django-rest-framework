@@ -56,7 +56,7 @@ The `Response` class extends `SimpleTemplateResponse`, and all the usual methods
 
 ## .data
 
-The unrendered content of a `Request` object can be accessed using the `.data` attribute.
+The unrendered content of a `Request` object.
 
 ## .status_code
 
@@ -64,7 +64,7 @@ The numeric status code of the HTTP response.
 
 ## .content
 
-The rendered content of the response.  `.render()` must have been called before `.content` can be accessed.
+The rendered content of the response.  The `.render()` method must have been called before `.content` can be accessed.
 
 ## .template_name
 

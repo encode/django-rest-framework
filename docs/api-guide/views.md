@@ -83,7 +83,7 @@ The following methods are called before dispatching to the handler method.
 The following methods are called directly by the view's `.dispatch()` method.
 These perform any actions that need to occur before or after calling the handler methods such as `.get()`, `.post()`, `put()` and `.delete()`.  
 
-### .initial(self, request, *args, **kwargs)
+### .initial(self, request, \*args, **kwargs)
 
 Performs any actions that need to occur before the handler method gets called.
 This method is used to enforce permissions and throttling, and perform content negotiation.
@@ -98,13 +98,13 @@ The default implementation handles any subclass of `rest_framework.exceptions.AP
 
 If you need to customize the error responses your API returns you should subclass this method.
 
-### .initialize_request(self, request, *args, **kwargs)
+### .initialize_request(self, request, \*args, **kwargs)
 
 Ensures that the request object that is passed to the handler method is an instance of `Request`, rather than the usual Django `HttpRequest`.
 
 You won't typically need to override this method.
 
-### .finalize_response(self, request, response, *args, **kwargs)
+### .finalize_response(self, request, response, \*args, **kwargs)
 
 Ensures that any `Response` object returned from the handler method will be rendered into the correct content type, as determined by the content negotation.
 

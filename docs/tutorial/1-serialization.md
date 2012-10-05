@@ -25,6 +25,7 @@ Now that we're inside a virtualenv environment, we can install our package requi
 Okay, we're ready to get coding.
 To get started, let's create a new project to work with.
 
+    cd ~
     django-admin.py startproject tutorial
     cd tutorial
 
@@ -78,7 +79,7 @@ Don't forget to sync the database for the first time.
 
 ## Creating a Serializer class
 
-We're going to create a simple Web API that we can use to edit these comment objects with.  The first thing we need is a way of serializing and deserializing the objects into representations such as `json`.  We do this by declaring serializers that work very similarly to Django's forms.  Create a file in the project named `serializers.py` and add the following.
+We're going to create a simple Web API that we can use to edit these comment objects with.  The first thing we need is a way of serializing and deserializing the objects into representations such as `json`.  We do this by declaring serializers that work very similarly to Django's forms.  Create a file in the `blog` directory named `serializers.py` and add the following.
 
     from blog import models
     from rest_framework import serializers
