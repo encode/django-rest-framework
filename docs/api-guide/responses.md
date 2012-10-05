@@ -18,7 +18,9 @@ Unless you want to heavily customize REST framework for some reason, you should 
 
 # Methods
 
-## Response(data, status=None, template_name=None, headers=None)
+## Response()
+
+**Signature:** `Response(data, status=None, template_name=None, headers=None)`
 
 Unlike regular `HttpResponse` objects, you do not instantiate `Response` objects with rendered content.  Instead you pass in unrendered data, which may consist of any python primatives.
 
@@ -35,11 +37,13 @@ Arguments:
 
 ## .render()
 
+**Signature:** `.render()`
+
 This methd is called to render the serialized data of the response into the final response content.  When `.render()` is called, the response content will be set to the result of calling the `.render(data, accepted_media_type)` method on the accepted renderer instance.
 
 You won't typically need to call `.render()` yourself, as it's handled by Django's standard response cycle.
 
-## Standard HTTPResponse methods
+## Standard response methods
 
 The `Response` class extends `SimpleTemplateResponse`, and all the usual methods are also available on the response.  For example you can set headers on the response in the standard way:
 

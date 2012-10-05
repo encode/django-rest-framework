@@ -154,6 +154,7 @@ body, .navbar .navbar-inner .container-fluid{
 
 body{
   background: url("../img/grid.png") repeat-x;
+  background-attachment: fixed;
 }
 
 /* custom navigation styles */
