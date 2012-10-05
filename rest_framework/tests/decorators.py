@@ -49,6 +49,20 @@ class DecoratorTestCase(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 405)
 
+    def test_calling_put_method(self):
+
+        @api_view(['GET', 'PUT'])
+        def view(request):
+            return Response({})
+
+        request = self.factory.put('/')
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
+
+        request = self.factory.post('/')
+        response = view(request)
+        self.assertEqual(response.status_code, 405)
+
     def test_renderer_classes(self):
 
         @api_view(['GET'])

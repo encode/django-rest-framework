@@ -379,7 +379,8 @@ class HyperlinkedIdentityField(Field):
     A field that represents the model's identity using a hyperlink.
     """
     def __init__(self, *args, **kwargs):
-        # TODO: Make this mandatory
+        # TODO: Make this mandatory, and have the HyperlinkedModelSerializer
+        # set it on-the-fly
         self.view_name = kwargs.pop('view_name', None)
         super(HyperlinkedIdentityField, self).__init__(*args, **kwargs)
 
