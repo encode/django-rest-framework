@@ -115,7 +115,6 @@ For example:
 
     @api_view(('GET',))
     @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
-    @template_name('list_users.html')
     def list_users(request):
         """
         A view that can return JSON or HTML representations
@@ -123,15 +122,16 @@ For example:
         """
         queryset = Users.objects.filter(active=True)
 
-        if request.accepted_renderer.format == 'html':
+        if request.accepted_media_type == 'text/html':
             # TemplateHTMLRenderer takes a context dict,
-            # and does not require serialization.
+            # and additionally requiresa 'template_name'.
+            # It does not require serialization.
             data = {'users': queryset}
-        else:
-            # JSONRenderer requires serialized data as normal.
-            serializer = UserSerializer(instance=queryset)
-            data = serializer.data
+            return Response(data, template='list_users.html')
 
+        # JSONRenderer requires serialized data as normal.
+        serializer = UserSerializer(instance=queryset)
+        data = serializer.data
         return Response(data)
 
 ## Designing your media types

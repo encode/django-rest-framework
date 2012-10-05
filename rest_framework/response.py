@@ -20,26 +20,21 @@ class Response(SimpleTemplateResponse):
         super(Response, self).__init__(None, status=status)
         self.data = data
         self.headers = headers and headers[:] or []
-        self.renderer = renderer
 
-        # Accepted media type is the portion of the request Accept header
-        # that the renderer satisfied.  It could be '*/*', or somthing like
-        # application/json; indent=4
-        #
-        # This is NOT the value that will be returned in the 'Content-Type'
-        # header, but we do need to know the value in case there are
-        # any specific parameters which affect the rendering process.
+        self.accepted_renderer = renderer
         self.accepted_media_type = accepted_media_type
 
     @property
     def rendered_content(self):
-        assert self.renderer, "No renderer set on Response"
+        renderer = self.accepted_renderer
 
-        self['Content-Type'] = self.renderer.media_type
+        assert renderer, "No renderer set on Response"
+
+        self['content-type'] = self.accepted_media_type
         if self.data is None:
-            return self.renderer.render()
-        render_media_type = self.accepted_media_type or self.renderer.media_type
-        return self.renderer.render(self.data, render_media_type)
+            return renderer.render()
+
+        return renderer.render(self.data, self.accepted_media_type)
 
     @property
     def status_text(self):

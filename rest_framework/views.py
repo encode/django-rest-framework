@@ -211,7 +211,7 @@ class APIView(View):
         if isinstance(response, Response):
             if not getattr(self, 'renderer', None):
                 self.renderer, self.accepted_media_type = self.perform_content_negotiation(request, force=True)
-            response.renderer = self.renderer
+            response.accepted_renderer = self.renderer
             response.accepted_media_type = self.accepted_media_type
 
         for key, value in self.headers.items():

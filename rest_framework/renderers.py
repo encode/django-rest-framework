@@ -15,7 +15,7 @@ from rest_framework.request import clone_request
 from rest_framework.utils import dict2xml
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
-from rest_framework.utils.mediatypes import get_media_type_params, add_media_type_param, media_type_matches
+from rest_framework.utils.mediatypes import get_media_type_params, add_media_type_param
 from rest_framework import VERSION
 from rest_framework import serializers
 
@@ -31,23 +31,6 @@ class BaseRenderer(object):
 
     def __init__(self, view=None):
         self.view = view
-
-    def can_handle_format(self, format):
-        return format == self.format
-
-    def can_handle_media_type(self, media_type):
-        """
-        Returns `True` if this renderer is able to deal with the given
-        media type.
-
-        The default implementation for this function is to check the media type
-        argument against the media_type attribute set on the class to see if
-        they match.
-
-        This may be overridden to provide for other behavior, but typically
-        you'll instead want to just set the `media_type` attribute on the class.
-        """
-        return media_type_matches(self.media_type, media_type)
 
     def render(self, obj=None, media_type=None):
         """

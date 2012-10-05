@@ -58,7 +58,7 @@ Note that the base URL can be whatever you want, but you must include `rest_fram
 
 ## Quickstart
 
-**TODO**
+
 
 ## Tutorial
 
