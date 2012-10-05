@@ -97,9 +97,9 @@
             <ul class="nav nav-list side-nav well sidebar-nav-fixed">
               <li class="main"><a href="#responses">Responses</a></li>
 <li class="main"><a href="#methods">Methods</a></li>
-<li><a href="#response(data,-status=none,-template_name=none,-headers=none)">Response(data, status=None, template_name=None, headers=None)</a></li>
+<li><a href="#response()">Response()</a></li>
 <li><a href="#render()">.render()</a></li>
-<li><a href="#standard-httpresponse-methods">Standard HTTPResponse methods</a></li>
+<li><a href="#standard-response-methods">Standard response methods</a></li>
 <li class="main"><a href="#attributes">Attributes</a></li>
 <li><a href="#data">.data</a></li>
 <li><a href="#status_code">.status_code</a></li>
@@ -125,7 +125,8 @@
 <p>Unless you want to heavily customize REST framework for some reason, you should always use an <code>APIView</code> class or <code>@api_view</code> function for views that return <code>Response</code> objects.  Doing so ensures that the view can perform content negotiation and select the appropriate renderer for the response, before it is returned from the view.</p>
 <hr />
 <h1 id="methods">Methods</h1>
-<h2 id="responsedata-statusnone-template_namenone-headersnone">Response(data, status=None, template_name=None, headers=None)</h2>
+<h2 id="response">Response()</h2>
+<p><strong>Signature:</strong> <code>Response(data, status=None, template_name=None, headers=None)</code></p>
 <p>Unlike regular <code>HttpResponse</code> objects, you do not instantiate <code>Response</code> objects with rendered content.  Instead you pass in unrendered data, which may consist of any python primatives.</p>
 <p>The renderers used by the <code>Response</code> class cannot natively handle complex datatypes such as Django model instances, so you need to serialize the data into primative datatypes before creating the <code>Response</code> object.</p>
 <p>You can use REST framework's <code>Serializer</code> classes to perform this data serialization, or use your own custom serialization.</p>
@@ -137,9 +138,10 @@
 <li><code>headers</code>: A dictionary of HTTP headers to use in the response.</li>
 </ul>
 <h2 id="render">.render()</h2>
+<p><strong>Signature:</strong> <code>.render()</code></p>
 <p>This methd is called to render the serialized data of the response into the final response content.  When <code>.render()</code> is called, the response content will be set to the result of calling the <code>.render(data, accepted_media_type)</code> method on the accepted renderer instance.</p>
 <p>You won't typically need to call <code>.render()</code> yourself, as it's handled by Django's standard response cycle.</p>
-<h2 id="standard-httpresponse-methods">Standard HTTPResponse methods</h2>
+<h2 id="standard-response-methods">Standard response methods</h2>
 <p>The <code>Response</code> class extends <code>SimpleTemplateResponse</code>, and all the usual methods are also available on the response.  For example you can set headers on the response in the standard way:</p>
 <pre class="prettyprint lang-py"><code>response = Response()
 response['Cache-Control'] = 'no-cache'
