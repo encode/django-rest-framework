@@ -10,6 +10,7 @@ from django import forms
 from django.template import RequestContext, loader
 from django.utils import simplejson as json
 from rest_framework.compat import yaml
+from rest_framework.exceptions import ConfigurationError
 from rest_framework.settings import api_settings
 from rest_framework.request import clone_request
 from rest_framework.utils import dict2xml
@@ -142,18 +143,40 @@ class HTMLTemplateRenderer(BaseRenderer):
 
     media_type = 'text/html'
     format = 'html'
-    template = None
+    template_name = None
 
     def render(self, data=None, accepted_media_type=None):
         """
-        Renders *obj* using the :attr:`template` specified on the class.
-        """
-        if data is None:
-            return ''
+        Renders data to HTML, using Django's standard template rendering.
 
-        template = loader.get_template(self.template)
-        context = RequestContext(self.view.request, {'object': data})
+        The template name is determined by (in order of preference):
+
+        1. An explicit .template_name set on the response.
+        2. An explicit .template_name set on this class.
+        3. The return result of calling view.get_template_names().
+        """
+        view = self.view
+        request, response = view.request, view.response
+
+        template_names = self.get_template_names(response, view)
+        template = self.resolve_template(template_names)
+        context = self.resolve_context(data, request)
         return template.render(context)
+
+    def resolve_template(self, template_names):
+        return loader.select_template(template_names)
+
+    def resolve_context(self, data, request):
+        return RequestContext(request, data)
+
+    def get_template_names(self, response, view):
+        if response.template_name:
+            return [response.template_name]
+        elif self.template_name:
+            return [self.template_name]
+        elif hasattr(view, 'get_template_names'):
+            return view.get_template_names()
+        raise ConfigurationError('Returned a template response with no template_name')
 
 
 class DocumentingHTMLRenderer(BaseRenderer):

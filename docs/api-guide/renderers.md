@@ -127,7 +127,7 @@ For example:
             # and additionally requiresa 'template_name'.
             # It does not require serialization.
             data = {'users': queryset}
-            return Response(data, template='list_users.html')
+            return Response(data, template_name='list_users.html')
 
         # JSONRenderer requires serialized data as normal.
         serializer = UserSerializer(instance=queryset)
