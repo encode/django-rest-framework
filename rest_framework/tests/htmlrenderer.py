@@ -47,4 +47,4 @@ class HTMLRendererTests(TestCase):
     def test_simple_html_view(self):
         response = self.client.get('/')
         self.assertContains(response, "example: foobar")
-        self.assertEquals(response['content-type'], 'text/html')
+        self.assertEquals(response['Content-Type'], 'text/html')

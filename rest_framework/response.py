@@ -8,7 +8,7 @@ class Response(SimpleTemplateResponse):
     arbitrary media types.
     """
 
-    def __init__(self, data=None, status=None,
+    def __init__(self, data=None, status=200,
                  template_name=None, headers=None):
         """
         Alters the init arguments slightly.
@@ -30,7 +30,7 @@ class Response(SimpleTemplateResponse):
         assert renderer, "No accepted renderer set on Response"
         assert media_type, "No accepted media type set on Response"
 
-        self['content-type'] = media_type
+        self['Content-Type'] = media_type
         if self.data is None:
             return renderer.render()
 
