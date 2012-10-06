@@ -200,11 +200,13 @@ body a:hover{
          max-width: 240px;
      }
 
+     .navbar {
+      position: fixed;
+     }
      .navbar .navbar-inner .container-fluid{
       max-width: 1110px;
      }
- }
-
+}
 
 /* sticky footer and footer */
 html, body {
@@ -220,6 +222,24 @@ html, body {
 .body-content{
   padding-top: 70px;
   padding-bottom: 70px;
+}
+
+@media (max-width: 979px) {
+  .navbar-fixed-top .navbar-inner {
+    padding: 0px;
+  }
+}
+
+@media (max-width: 767px) {
+  .body-content{
+    padding-top: 0px;
+  }
+}
+
+@media (min-width: 768px) {
+  footer.span12 {
+    width: 95%;
+  }
 }
 
 footer, .push {
