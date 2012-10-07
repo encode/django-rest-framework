@@ -44,6 +44,8 @@ The following people have helped make REST framework great.
 * Mathieu Dhondt - [laundromat]
 * Johan Charpentier - [cyberj]
 * Jamie Matthews - [j4mie]
+* Mattbo - [mattbo]
+* Max Hurl - [maximilianhurl]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -119,3 +121,5 @@ To contact the author directly:
 [laundromat]: https://github.com/laundromat
 [cyberj]: https://github.com/cyberj
 [j4mie]: https://github.com/j4mie
+[mattbo]: https://github.com/mattbo
+[maximilianhurl]: https://github.com/maximilianhurl
