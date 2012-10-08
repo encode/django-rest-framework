@@ -124,6 +124,21 @@ class APIView(View):
             description = escape(description).replace('\n', '<br />')
         return mark_safe(description)
 
+    def metadata(self, request):
+        return {
+            'name': self.get_name(),
+            'description': self.get_description(),
+            'renders': [renderer.media_type for renderer in self.renderer_classes],
+            'parses': [parser.media_type for parser in self.parser_classes],
+        }
+        #  TODO: Add 'fields', from serializer info, if it exists.
+        # serializer = self.get_serializer()
+        # if serializer is not None:
+        #     field_name_types = {}
+        #     for name, field in form.fields.iteritems():
+        #         field_name_types[name] = field.__class__.__name__
+        #     content['fields'] = field_name_types
+
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
         Called if `request.method` does not corrospond to a handler method.
@@ -309,3 +324,11 @@ class APIView(View):
 
         self.response = self.finalize_response(request, response, *args, **kwargs)
         return self.response
+
+    def options(self, request, *args, **kwargs):
+        """
+        Handler method for HTTP 'OPTIONS' request.
+        We may as well implement this as Django will otherwise provide
+        a less useful default implementation.
+        """
+        return Response(self.metadata(request), status=status.HTTP_200_OK)

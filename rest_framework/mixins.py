@@ -112,28 +112,3 @@ class DestroyModelMixin(object):
         self.object = self.get_object()
         self.object.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-# TODO: Remove MetadataMixin, and implement on APIView.options()
-class MetadataMixin(object):
-    """
-    Return a dicitonary of view metadata.
-    Should be mixed in with any `BaseView`.
-
-    This mixin is typically used for the HTTP 'OPTIONS' method.
-    """
-    def metadata(self, request, *args, **kwargs):
-        content = {
-            'name': self.get_name(),
-            'description': self.get_description(),
-            'renders': [renderer.media_type for renderer in self.renderer_classes],
-            'parses': [parser.media_type for parser in self.parser_classes],
-        }
-        #  TODO: Add 'fields', from serializer info.
-        # serializer = self.get_serializer()
-        # if serializer is not None:
-        #     field_name_types = {}
-        #     for name, field in form.fields.iteritems():
-        #         field_name_types[name] = field.__class__.__name__
-        #     content['fields'] = field_name_types
-        return Response(content, status=status.HTTP_200_OK)

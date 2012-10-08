@@ -96,7 +96,6 @@ class SingleObjectBaseView(SingleObjectMixin, BaseView):
 ### by composing the mixin classes with a base view.   ###
 
 class ListAPIView(mixins.ListModelMixin,
-                  mixins.MetadataMixin,
                   MultipleObjectBaseView):
     """
     Concrete view for listing a queryset.
@@ -104,13 +103,9 @@ class ListAPIView(mixins.ListModelMixin,
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
-    def options(self, request, *args, **kwargs):
-        return self.metadata(request, *args, **kwargs)
-
 
 class ListCreateAPIView(mixins.ListModelMixin,
                         mixins.CreateModelMixin,
-                        mixins.MetadataMixin,
                         MultipleObjectBaseView):
     """
     Concrete view for listing a queryset or creating a model instance.
@@ -121,12 +116,8 @@ class ListCreateAPIView(mixins.ListModelMixin,
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
 
-    def options(self, request, *args, **kwargs):
-        return self.metadata(request, *args, **kwargs)
-
 
 class RetrieveAPIView(mixins.RetrieveModelMixin,
-                      mixins.MetadataMixin,
                       SingleObjectBaseView):
     """
     Concrete view for retrieving a model instance.
@@ -134,14 +125,23 @@ class RetrieveAPIView(mixins.RetrieveModelMixin,
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
-    def options(self, request, *args, **kwargs):
-        return self.metadata(request, *args, **kwargs)
+
+class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
+                             mixins.DestroyModelMixin,
+                             SingleObjectBaseView):
+    """
+    Concrete view for retrieving or deleting a model instance.
+    """
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 
 
 class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
                                    mixins.UpdateModelMixin,
                                    mixins.DestroyModelMixin,
-                                   mixins.MetadataMixin,
                                    SingleObjectBaseView):
     """
     Concrete view for retrieving, updating or deleting a model instance.
@@ -154,6 +154,3 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
-
-    def options(self, request, *args, **kwargs):
-        return self.metadata(request, *args, **kwargs)
