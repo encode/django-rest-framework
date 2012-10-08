@@ -114,7 +114,7 @@ Now update the `urls.py` file slightly, to append a set of `format_suffix_patter
     from django.conf.urls import patterns, url
     from rest_framework.urlpatterns import format_suffix_patterns
 
-    urlpatterns = patterns('blogpost.views',
+    urlpatterns = patterns('blog.views',
         url(r'^$', 'comment_root'),
         url(r'^(?P<pk>[0-9]+)$', 'comment_instance')
     )

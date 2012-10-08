@@ -30,6 +30,8 @@ A generic field that can be tied to any arbitrary model field.  The `ModelField`
 
 **Signature:** `ModelField(model_field=<Django ModelField class>)`
 
+---
+
 # Typed Fields
 
 These fields represent basic datatypes, and support both reading and writing values.
@@ -47,6 +49,8 @@ These fields represent basic datatypes, and support both reading and writing val
 ## IntegerField
 
 ## FloatField
+
+---
 
 # Relational Fields
 

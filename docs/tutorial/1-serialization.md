@@ -89,7 +89,7 @@ We're going to create a simple Web API that we can use to edit these comment obj
         id = serializers.IntegerField(readonly=True)
         email = serializers.EmailField()
         content = serializers.CharField(max_length=200)
-        created = serializers.DateTimeField()
+        created = serializers.DateTimeField(readonly=True)
         
         def restore_object(self, attrs, instance=None):
             """
