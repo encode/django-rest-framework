@@ -85,6 +85,13 @@ class Bookmark(RESTFrameworkModel):
     tags = GenericRelation(TaggedItem)
 
 
+# Model to test filtering.
+class FilterableItem(RESTFrameworkModel):
+    text = models.CharField(max_length=100)
+    decimal = models.DecimalField(max_digits=4, decimal_places=2)
+    date = models.DateField()
+
+
 # Model for regression test for #285
 
 class Comment(RESTFrameworkModel):

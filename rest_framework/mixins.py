@@ -33,7 +33,7 @@ class ListModelMixin(object):
     empty_error = u"Empty list and '%(class_name)s.allow_empty' is False."
 
     def list(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
+        self.object_list = self.get_filtered_queryset()
 
         # Default is to allow empty querysets.  This can be altered by setting
         # `.allow_empty = False`, to raise 404 errors on empty querysets.
