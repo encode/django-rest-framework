@@ -115,6 +115,7 @@
 <li><a href="#listapiview">ListAPIView</a></li>
 <li><a href="#listcreateapiview">ListCreateAPIView</a></li>
 <li><a href="#retrieveapiview">RetrieveAPIView</a></li>
+<li><a href="#retrievedestroyapiview">RetrieveDestroyAPIView</a></li>
 <li><a href="#retrieveupdatedestroyapiview">RetrieveUpdateDestroyAPIView</a></li>
 <li class="main"><a href="#base-views">Base views</a></li>
 <li><a href="#baseapiview">BaseAPIView</a></li>
@@ -170,20 +171,25 @@
 </code></pre>
 <hr />
 <h1 id="api-reference">API Reference</h1>
+<p>The following classes are the concrete generic views.  If you're using generic views this is normally the level you'll be working at unless you need heavily customized behavior.</p>
 <h2 id="listapiview">ListAPIView</h2>
-<p>Used for read-only endpoints to represent a collection of model instances.</p>
+<p>Used for <strong>read-only</strong> endpoints to represent a <strong>collection of model instances</strong>.</p>
 <p>Provides a <code>get</code> method handler.</p>
 <p>Extends: <a href="#multipleobjectbaseapiview">MultipleObjectBaseAPIView</a>, <a href="#listmodelmixin">ListModelMixin</a></p>
 <h2 id="listcreateapiview">ListCreateAPIView</h2>
-<p>Used for read-write endpoints to represent a collection of model instances.</p>
+<p>Used for <strong>read-write</strong> endpoints to represent a <strong>collection of model instances</strong>.</p>
 <p>Provides <code>get</code> and <code>post</code> method handlers.</p>
 <p>Extends: <a href="#multipleobjectbaseapiview">MultipleObjectBaseAPIView</a>, <a href="#listmodelmixin">ListModelMixin</a>, <a href="#createmodelmixin">CreateModelMixin</a></p>
 <h2 id="retrieveapiview">RetrieveAPIView</h2>
-<p>Used for read-only endpoints to represent a single model instance.</p>
+<p>Used for <strong>read-only</strong> endpoints to represent a <strong>single model instance</strong>.</p>
 <p>Provides a <code>get</code> method handler.</p>
 <p>Extends: <a href="#singleobjectbaseapiview">SingleObjectBaseAPIView</a>, <a href="#retrievemodelmixin">RetrieveModelMixin</a></p>
+<h2 id="retrievedestroyapiview">RetrieveDestroyAPIView</h2>
+<p>Used for <strong>read or delete</strong> endpoints to represent a <strong>single model instance</strong>.</p>
+<p>Provides <code>get</code> and <code>delete</code> method handlers.</p>
+<p>Extends: <a href="#singleobjectbaseapiview">SingleObjectBaseAPIView</a>, <a href="#retrievemodelmixin">RetrieveModelMixin</a>, <a href="#destroymodelmixin">DestroyModelMixin</a></p>
 <h2 id="retrieveupdatedestroyapiview">RetrieveUpdateDestroyAPIView</h2>
-<p>Used for read-write endpoints to represent a single model instance.</p>
+<p>Used for <strong>read-write</strong> endpoints to represent a <strong>single model instance</strong>.</p>
 <p>Provides <code>get</code>, <code>put</code> and <code>delete</code> method handlers.</p>
 <p>Extends: <a href="#singleobjectbaseapiview">SingleObjectBaseAPIView</a>, <a href="#retrievemodelmixin">RetrieveModelMixin</a>, <a href="#updatemodelmixin">UpdateModelMixin</a>, <a href="#destroymodelmixin">DestroyModelMixin</a></p>
 <hr />
@@ -202,14 +208,19 @@
 <p>The mixin classes provide the actions that are used to provide the basic view behaviour.  Note that the mixin classes provide action methods rather than defining the handler methods such as <code>.get()</code> and <code>.post()</code> directly.  This allows for more flexible composition of behaviour. </p>
 <h2 id="listmodelmixin">ListModelMixin</h2>
 <p>Provides a <code>.list(request, *args, **kwargs)</code> method, that implements listing a queryset.</p>
+<p>Should be mixed in with <a href="#multipleobjectbaseapiview">MultipleObjectBaseAPIView</a>.</p>
 <h2 id="createmodelmixin">CreateModelMixin</h2>
 <p>Provides a <code>.create(request, *args, **kwargs)</code> method, that implements creating and saving a new model instance.</p>
+<p>Should be mixed in with any <a href="#baseapiview">BaseAPIView</a>.</p>
 <h2 id="retrievemodelmixin">RetrieveModelMixin</h2>
 <p>Provides a <code>.retrieve(request, *args, **kwargs)</code> method, that implements returning an existing model instance in a response.</p>
+<p>Should be mixed in with <a href="#singleobjectbaseapiview">SingleObjectBaseAPIView</a>.</p>
 <h2 id="updatemodelmixin">UpdateModelMixin</h2>
 <p>Provides a <code>.update(request, *args, **kwargs)</code> method, that implements updating and saving an existing model instance.</p>
+<p>Should be mixed in with <a href="#singleobjectbaseapiview">SingleObjectBaseAPIView</a>.</p>
 <h2 id="destroymodelmixin">DestroyModelMixin</h2>
 <p>Provides a <code>.destroy(request, *args, **kwargs)</code> method, that implements deletion of an existing model instance.</p>
+<p>Should be mixed in with <a href="#singleobjectbaseapiview">SingleObjectBaseAPIView</a>.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->
