@@ -17,7 +17,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body onload="prettyPrint()" class="settings-page">
+  <body onload="prettyPrint()" class="browserhacks-page">
 
   <div class="wrapper">
 
@@ -109,118 +109,44 @@
           -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                <li class="main"><a href="#settings">Settings</a></li>
-<li><a href="#accessing-settings">Accessing settings</a></li>
-<li><a href="#default_renderers">DEFAULT_RENDERERS</a></li>
-<li><a href="#default_parsers">DEFAULT_PARSERS</a></li>
-<li><a href="#default_authentication">DEFAULT_AUTHENTICATION</a></li>
-<li><a href="#default_permissions">DEFAULT_PERMISSIONS</a></li>
-<li><a href="#default_throttles">DEFAULT_THROTTLES</a></li>
-<li><a href="#default_model_serializer">DEFAULT_MODEL_SERIALIZER</a></li>
-<li><a href="#default_pagination_serializer">DEFAULT_PAGINATION_SERIALIZER</a></li>
-<li><a href="#format_suffix_kwarg">FORMAT_SUFFIX_KWARG</a></li>
-<li><a href="#unauthenticated_user">UNAUTHENTICATED_USER</a></li>
-<li><a href="#unauthenticated_token">UNAUTHENTICATED_TOKEN</a></li>
-<li><a href="#form_method_override">FORM_METHOD_OVERRIDE</a></li>
-<li><a href="#form_content_override">FORM_CONTENT_OVERRIDE</a></li>
-<li><a href="#form_contenttype_override">FORM_CONTENTTYPE_OVERRIDE</a></li>
-<li><a href="#url_accept_override">URL_ACCEPT_OVERRIDE</a></li>
-<li><a href="#url_format_override">URL_FORMAT_OVERRIDE</a></li>
+                <li class="main"><a href="#browser-hacks">Browser hacks</a></li>
+<li><a href="#browser-based-put,-delete,-etc">Browser based PUT, DELETE, etc...</a></li>
+<li><a href="#browser-based-submission-of-non-form-content">Browser based submission of non-form content</a></li>
+<li><a href="#url-based-accept-headers">URL based accept headers</a></li>
+<li><a href="#url-based-format-suffixes">URL based format suffixes</a></li>
+<li><a href="#doesnt-html5-support-put-and-delete-forms">Doesn't HTML5 support PUT and DELETE forms?</a></li>
 
               </ul>
             </div>
           </div>
 
           <div id="main-content" class="span9">
-            <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/settings.py"><span class="label label-info">settings.py</span></a></p>
-<h1 id="settings">Settings</h1>
+            <h1 id="browser-hacks">Browser hacks</h1>
 <blockquote>
-<p>Namespaces are one honking great idea - let's do more of those!</p>
-<p>&mdash; <a href="http://www.python.org/dev/peps/pep-0020/">The Zen of Python</a></p>
+<p>"There are two noncontroversial uses for overloaded POST.  The first is to <em>simulate</em> HTTP's uniform interface for clients like web browsers that don't support PUT or DELETE"</p>
+<p>&mdash; <a href="1">RESTful Web Services</a>, Leonard Richardson &amp; Sam Ruby.</p>
 </blockquote>
-<p>Configuration for REST framework is all namespaced inside a single Django setting, named <code>REST_FRAMEWORK</code>.</p>
-<p>For example your project's <code>settings.py</code> file might include something like this:</p>
-<pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
-    'DEFAULT_RENDERERS': (
-        'rest_framework.renderers.YAMLRenderer',
-    )
-    'DEFAULT_PARSERS': (
-        'rest_framework.parsers.YAMLParser',
-    )
-}
+<h2 id="browser-based-put-delete-etc">Browser based PUT, DELETE, etc...</h2>
+<p><strong>TODO: Preamble.</strong>  Note that this is the same strategy as is used in <a href="2">Ruby on Rails</a>.</p>
+<p>For example, given the following form:</p>
+<pre class="prettyprint lang-py"><code>&lt;form action="/news-items/5" method="POST"&gt;
+    &lt;input type="hidden" name="_method" value="DELETE"&gt;
+&lt;/form&gt;
 </code></pre>
-<h2 id="accessing-settings">Accessing settings</h2>
-<p>If you need to access the values of REST framework's API settings in your project,
-you should use the <code>api_settings</code> object.  For example.</p>
-<pre class="prettyprint lang-py"><code>from rest_framework.settings import api_settings
-
-print api_settings.DEFAULT_AUTHENTICATION
+<p><code>request.method</code> would return <code>"DELETE"</code>.</p>
+<h2 id="browser-based-submission-of-non-form-content">Browser based submission of non-form content</h2>
+<p>Browser-based submission of content types other than form are supported by using form fields named <code>_content</code> and <code>_content_type</code>:</p>
+<p>For example, given the following form:</p>
+<pre class="prettyprint lang-py"><code>&lt;form action="/news-items/5" method="PUT"&gt;
+    &lt;input type="hidden" name="_content_type" value="application/json"&gt;
+    &lt;input name="_content" value="{'count': 1}"&gt;
+&lt;/form&gt;
 </code></pre>
-<p>The <code>api_settings</code> object will check for any user-defined settings, and otherwise fallback to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.</p>
-<h2 id="default_renderers">DEFAULT_RENDERERS</h2>
-<p>A list or tuple of renderer classes, that determines the default set of renderers that may be used when returning a <code>Response</code> object.</p>
-<p>Default:</p>
-<pre class="prettyprint lang-py"><code>(
-    'rest_framework.renderers.JSONRenderer',
-    'rest_framework.renderers.DocumentingHTMLRenderer'
-    'rest_framework.renderers.TemplateHTMLRenderer'
-)
-</code></pre>
-<h2 id="default_parsers">DEFAULT_PARSERS</h2>
-<p>A list or tuple of parser classes, that determines the default set of parsers used when accessing the <code>request.DATA</code> property.</p>
-<p>Default:</p>
-<pre class="prettyprint lang-py"><code>(
-    'rest_framework.parsers.JSONParser',
-    'rest_framework.parsers.FormParser'
-)
-</code></pre>
-<h2 id="default_authentication">DEFAULT_AUTHENTICATION</h2>
-<p>A list or tuple of authentication classes, that determines the default set of authenticators used when accessing the <code>request.user</code> or <code>request.auth</code> properties.</p>
-<p>Default:</p>
-<pre class="prettyprint lang-py"><code>(
-    'rest_framework.authentication.SessionAuthentication',
-    'rest_framework.authentication.UserBasicAuthentication'
-)
-</code></pre>
-<h2 id="default_permissions">DEFAULT_PERMISSIONS</h2>
-<p>A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view.</p>
-<p>Default: <code>()</code></p>
-<h2 id="default_throttles">DEFAULT_THROTTLES</h2>
-<p>A list or tuple of throttle classes, that determines the default set of throttles checked at the start of a view.</p>
-<p>Default: <code>()</code></p>
-<h2 id="default_model_serializer">DEFAULT_MODEL_SERIALIZER</h2>
-<p><strong>TODO</strong></p>
-<p>Default: <code>rest_framework.serializers.ModelSerializer</code></p>
-<h2 id="default_pagination_serializer">DEFAULT_PAGINATION_SERIALIZER</h2>
-<p><strong>TODO</strong></p>
-<p>Default: <code>rest_framework.pagination.PaginationSerializer</code></p>
-<h2 id="format_suffix_kwarg">FORMAT_SUFFIX_KWARG</h2>
-<p><strong>TODO</strong></p>
-<p>Default: <code>'format'</code></p>
-<h2 id="unauthenticated_user">UNAUTHENTICATED_USER</h2>
-<p>The class that should be used to initialize <code>request.user</code> for unauthenticated requests.</p>
-<p>Default: <code>django.contrib.auth.models.AnonymousUser</code></p>
-<h2 id="unauthenticated_token">UNAUTHENTICATED_TOKEN</h2>
-<p>The class that should be used to initialize <code>request.auth</code> for unauthenticated requests.</p>
-<p>Default: <code>None</code></p>
-<h2 id="form_method_override">FORM_METHOD_OVERRIDE</h2>
-<p>The name of a form field that may be used to override the HTTP method of the form.</p>
-<p>If the value of this setting is <code>None</code> then form method overloading will be disabled.</p>
-<p>Default: <code>'_method'</code></p>
-<h2 id="form_content_override">FORM_CONTENT_OVERRIDE</h2>
-<p>The name of a form field that may be used to override the content of the form payload.  Must be used together with <code>FORM_CONTENTTYPE_OVERRIDE</code>.</p>
-<p>If either setting is <code>None</code> then form content overloading will be disabled.</p>
-<p>Default: <code>'_content'</code></p>
-<h2 id="form_contenttype_override">FORM_CONTENTTYPE_OVERRIDE</h2>
-<p>The name of a form field that may be used to override the content type of the form payload.  Must be used together with <code>FORM_CONTENT_OVERRIDE</code>.</p>
-<p>If either setting is <code>None</code> then form content overloading will be disabled.</p>
-<p>Default: <code>'_content_type'</code></p>
-<h2 id="url_accept_override">URL_ACCEPT_OVERRIDE</h2>
-<p>The name of a URL parameter that may be used to override the HTTP <code>Accept</code> header.</p>
-<p>If the value of this setting is <code>None</code> then URL accept overloading will be disabled.</p>
-<p>Default: <code>'accept'</code></p>
-<h2 id="url_format_override">URL_FORMAT_OVERRIDE</h2>
-<p>Default: <code>'format'</code></p>
+<p><code>request.content_type</code> would return <code>"application/json"</code>, and <code>request.content</code> would return <code>"{'count': 1}"</code></p>
+<h2 id="url-based-accept-headers">URL based accept headers</h2>
+<h2 id="url-based-format-suffixes">URL based format suffixes</h2>
+<h2 id="doesnt-html5-support-put-and-delete-forms">Doesn't HTML5 support PUT and DELETE forms?</h2>
+<p>Nope.  It was at one point intended to support <code>PUT</code> and <code>DELETE</code> forms, but was later <a href="3">dropped from the spec</a>.  There remains <a href="4">ongoing discussion</a> about adding support for <code>PUT</code> and <code>DELETE</code>, as well as how to support content types other than form-encoded data.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->

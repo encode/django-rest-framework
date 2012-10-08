@@ -72,9 +72,12 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/csrf">Working with AJAX and CSRF</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/formoverloading">Browser based PUT, PATCH and DELETE</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/browsable-api">Working with the browsable API</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/formoverloading">Browser hacks</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/browsable-api">Working with the Browsable API</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/migration">2.0 Migration Guide</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/changelog">Change Log</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/credits">Credits</a></li>
                 </ul>
               </li>
@@ -98,9 +101,16 @@
         <div class="row-fluid">
 
           <div class="span3">
+            <!-- TODO
+            <p style="margin-top: -12px">
+              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
+              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
+            </p>
+          -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                <li><a href="#200">2.0.0</a></li>
+                <li class="main"><a href="#change-log">Change Log</a></li>
+<li><a href="#200">2.0.0</a></li>
 <li><a href="#040">0.4.0</a></li>
 <li><a href="#033">0.3.3</a></li>
 <li><a href="#032">0.3.2</a></li>
@@ -119,9 +129,13 @@
           </div>
 
           <div id="main-content" class="span9">
-            <h1 id="release-notes">Release Notes</h1>
+            <h1 id="change-log">Change Log</h1>
 <h2 id="200">2.0.0</h2>
-<p><strong>TODO:</strong> Explain REST framework 2.0</p>
+<ul>
+<li><strong>Fix all of the things.</strong></li>
+<li>For more information please see the <a href="migration">2.0 migration guide</a>.</li>
+</ul>
+<hr />
 <h2 id="040">0.4.0</h2>
 <ul>
 <li>Supports Django 1.5.</li>

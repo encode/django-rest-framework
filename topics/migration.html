@@ -17,7 +17,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body onload="prettyPrint()" class="settings-page">
+  <body onload="prettyPrint()" class="migration-page">
 
   <div class="wrapper">
 
@@ -109,118 +109,81 @@
           -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                <li class="main"><a href="#settings">Settings</a></li>
-<li><a href="#accessing-settings">Accessing settings</a></li>
-<li><a href="#default_renderers">DEFAULT_RENDERERS</a></li>
-<li><a href="#default_parsers">DEFAULT_PARSERS</a></li>
-<li><a href="#default_authentication">DEFAULT_AUTHENTICATION</a></li>
-<li><a href="#default_permissions">DEFAULT_PERMISSIONS</a></li>
-<li><a href="#default_throttles">DEFAULT_THROTTLES</a></li>
-<li><a href="#default_model_serializer">DEFAULT_MODEL_SERIALIZER</a></li>
-<li><a href="#default_pagination_serializer">DEFAULT_PAGINATION_SERIALIZER</a></li>
-<li><a href="#format_suffix_kwarg">FORMAT_SUFFIX_KWARG</a></li>
-<li><a href="#unauthenticated_user">UNAUTHENTICATED_USER</a></li>
-<li><a href="#unauthenticated_token">UNAUTHENTICATED_TOKEN</a></li>
-<li><a href="#form_method_override">FORM_METHOD_OVERRIDE</a></li>
-<li><a href="#form_content_override">FORM_CONTENT_OVERRIDE</a></li>
-<li><a href="#form_contenttype_override">FORM_CONTENTTYPE_OVERRIDE</a></li>
-<li><a href="#url_accept_override">URL_ACCEPT_OVERRIDE</a></li>
-<li><a href="#url_format_override">URL_FORMAT_OVERRIDE</a></li>
+                <li class="main"><a href="#20-migration-guide">2.0 Migration Guide</a></li>
+<li><a href="#example-blog-posts-api">Example: Blog Posts API</a></li>
 
               </ul>
             </div>
           </div>
 
           <div id="main-content" class="span9">
-            <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/settings.py"><span class="label label-info">settings.py</span></a></p>
-<h1 id="settings">Settings</h1>
-<blockquote>
-<p>Namespaces are one honking great idea - let's do more of those!</p>
-<p>&mdash; <a href="http://www.python.org/dev/peps/pep-0020/">The Zen of Python</a></p>
-</blockquote>
-<p>Configuration for REST framework is all namespaced inside a single Django setting, named <code>REST_FRAMEWORK</code>.</p>
-<p>For example your project's <code>settings.py</code> file might include something like this:</p>
-<pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
-    'DEFAULT_RENDERERS': (
-        'rest_framework.renderers.YAMLRenderer',
-    )
-    'DEFAULT_PARSERS': (
-        'rest_framework.parsers.YAMLParser',
-    )
-}
-</code></pre>
-<h2 id="accessing-settings">Accessing settings</h2>
-<p>If you need to access the values of REST framework's API settings in your project,
-you should use the <code>api_settings</code> object.  For example.</p>
-<pre class="prettyprint lang-py"><code>from rest_framework.settings import api_settings
+            <h1 id="20-migration-guide">2.0 Migration Guide</h1>
+<p>REST framework 2.0 introduces a radical redesign of the core components, and a large number of backwards breaking changes.</p>
+<h3 id="serialization-redesign">Serialization redesign.</h3>
+<p>REST framework's serialization and deserialization previously used a slightly odd combination of serializers for output, and Django Forms and Model Forms for input.  The serialization core has been completely redesigned based on work that was originally intended for Django core.</p>
+<p>2.0's form-like serializers comprehensively address those issues, and are a much more flexible and clean solution to the problems around accepting both form-based and non-form based inputs.</p>
+<h3 id="generic-views-improved">Generic views improved.</h3>
+<p>When REST framework 0.1 was released the current Django version was 1.2.  REST framework included a backport of the Django 1.3's upcoming <code>View</code> class, but it didn't take full advantage of the generic view implementations.</p>
+<p>As of 2.0 the generic views in REST framework tie in much more cleanly and obviously with Django's existing codebase, and the mixin architecture is radically simplified.</p>
+<h3 id="cleaner-request-response-cycle">Cleaner request-response cycle.</h3>
+<p>REST framework 2.0's request-response cycle is now much less complex.</p>
+<ul>
+<li>Responses inherit from <code>SimpleTemplateResponse</code>, allowing rendering to be delegated to the response, not handled by the view.</li>
+<li>Requests extend the regular <code>HttpRequest</code>, allowing authentication and parsing to be delegated to the request, not handled by the view.</li>
+</ul>
+<h3 id="renamed-attribnutes-classes">Renamed attribnutes &amp; classes.</h3>
+<p>Various attributes and classes have been renamed in order to fit in better with Django's conventions.</p>
+<h2 id="example-blog-posts-api">Example: Blog Posts API</h2>
+<p>Let's take a look at an example from the REST framework 0.4 documentation...</p>
+<pre class="prettyprint lang-py"><code>from djangorestframework.resources import ModelResource
+from djangorestframework.reverse import reverse
+from blogpost.models import BlogPost, Comment
 
-print api_settings.DEFAULT_AUTHENTICATION
+class BlogPostResource(ModelResource):
+    """
+    A Blog Post has a *title* and *content*, and can be associated
+    with zero or more comments.
+    """
+    model = BlogPost
+    fields = ('created', 'title', 'slug', 'content', 'url', 'comments')
+    ordering = ('-created',)
+
+    def url(self, instance):
+        return reverse('blog-post',
+                        kwargs={'key': instance.key},
+                        request=self.request)
+
+    def comments(self, instance):
+        return reverse('comments',
+                       kwargs={'blogpost': instance.key},
+                       request=self.request)
+
+class CommentResource(ModelResource):
+    """
+    A Comment is associated with a given Blog Post and has a
+    *username* and *comment*, and optionally a *rating*.
+    """
+    model = Comment
+    fields = ('username', 'comment', 'created', 'rating', 'url', 'blogpost')
+    ordering = ('-created',)
+
+    def blogpost(self, instance):
+        return reverse('blog-post',
+                       kwargs={'key': instance.blogpost.key},
+                       request=self.request)
 </code></pre>
-<p>The <code>api_settings</code> object will check for any user-defined settings, and otherwise fallback to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.</p>
-<h2 id="default_renderers">DEFAULT_RENDERERS</h2>
-<p>A list or tuple of renderer classes, that determines the default set of renderers that may be used when returning a <code>Response</code> object.</p>
-<p>Default:</p>
-<pre class="prettyprint lang-py"><code>(
-    'rest_framework.renderers.JSONRenderer',
-    'rest_framework.renderers.DocumentingHTMLRenderer'
-    'rest_framework.renderers.TemplateHTMLRenderer'
-)
+<p>There's a bit of a mix of concerns going on there.  We've got some information about how the data should be serialized, such as the <code>fields</code> attribute, and some information about how it should be retrieved from the database - the <code>ordering</code> attribute.</p>
+<p>Let's start to re-write this for REST framework 2.0.</p>
+<pre class="prettyprint lang-py"><code>from rest_framework import serializers
+
+class BlogPostSerializer(serializers.HyperlinkedModelSerializer):
+    model = BlogPost
+    fields = ('created', 'title', 'slug', 'content', 'url', 'comments')
+
+class CommentSerializer(serializers.HyperlinkedModelSerializer):
+    model = Comment
+    fields = ('username', 'comment', 'created', 'rating', 'url', 'blogpost')
 </code></pre>
-<h2 id="default_parsers">DEFAULT_PARSERS</h2>
-<p>A list or tuple of parser classes, that determines the default set of parsers used when accessing the <code>request.DATA</code> property.</p>
-<p>Default:</p>
-<pre class="prettyprint lang-py"><code>(
-    'rest_framework.parsers.JSONParser',
-    'rest_framework.parsers.FormParser'
-)
-</code></pre>
-<h2 id="default_authentication">DEFAULT_AUTHENTICATION</h2>
-<p>A list or tuple of authentication classes, that determines the default set of authenticators used when accessing the <code>request.user</code> or <code>request.auth</code> properties.</p>
-<p>Default:</p>
-<pre class="prettyprint lang-py"><code>(
-    'rest_framework.authentication.SessionAuthentication',
-    'rest_framework.authentication.UserBasicAuthentication'
-)
-</code></pre>
-<h2 id="default_permissions">DEFAULT_PERMISSIONS</h2>
-<p>A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view.</p>
-<p>Default: <code>()</code></p>
-<h2 id="default_throttles">DEFAULT_THROTTLES</h2>
-<p>A list or tuple of throttle classes, that determines the default set of throttles checked at the start of a view.</p>
-<p>Default: <code>()</code></p>
-<h2 id="default_model_serializer">DEFAULT_MODEL_SERIALIZER</h2>
-<p><strong>TODO</strong></p>
-<p>Default: <code>rest_framework.serializers.ModelSerializer</code></p>
-<h2 id="default_pagination_serializer">DEFAULT_PAGINATION_SERIALIZER</h2>
-<p><strong>TODO</strong></p>
-<p>Default: <code>rest_framework.pagination.PaginationSerializer</code></p>
-<h2 id="format_suffix_kwarg">FORMAT_SUFFIX_KWARG</h2>
-<p><strong>TODO</strong></p>
-<p>Default: <code>'format'</code></p>
-<h2 id="unauthenticated_user">UNAUTHENTICATED_USER</h2>
-<p>The class that should be used to initialize <code>request.user</code> for unauthenticated requests.</p>
-<p>Default: <code>django.contrib.auth.models.AnonymousUser</code></p>
-<h2 id="unauthenticated_token">UNAUTHENTICATED_TOKEN</h2>
-<p>The class that should be used to initialize <code>request.auth</code> for unauthenticated requests.</p>
-<p>Default: <code>None</code></p>
-<h2 id="form_method_override">FORM_METHOD_OVERRIDE</h2>
-<p>The name of a form field that may be used to override the HTTP method of the form.</p>
-<p>If the value of this setting is <code>None</code> then form method overloading will be disabled.</p>
-<p>Default: <code>'_method'</code></p>
-<h2 id="form_content_override">FORM_CONTENT_OVERRIDE</h2>
-<p>The name of a form field that may be used to override the content of the form payload.  Must be used together with <code>FORM_CONTENTTYPE_OVERRIDE</code>.</p>
-<p>If either setting is <code>None</code> then form content overloading will be disabled.</p>
-<p>Default: <code>'_content'</code></p>
-<h2 id="form_contenttype_override">FORM_CONTENTTYPE_OVERRIDE</h2>
-<p>The name of a form field that may be used to override the content type of the form payload.  Must be used together with <code>FORM_CONTENT_OVERRIDE</code>.</p>
-<p>If either setting is <code>None</code> then form content overloading will be disabled.</p>
-<p>Default: <code>'_content_type'</code></p>
-<h2 id="url_accept_override">URL_ACCEPT_OVERRIDE</h2>
-<p>The name of a URL parameter that may be used to override the HTTP <code>Accept</code> header.</p>
-<p>If the value of this setting is <code>None</code> then URL accept overloading will be disabled.</p>
-<p>Default: <code>'accept'</code></p>
-<h2 id="url_format_override">URL_FORMAT_OVERRIDE</h2>
-<p>Default: <code>'format'</code></p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->
