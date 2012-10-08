@@ -371,9 +371,14 @@ class ModelSerializer(Serializer):
             models.BooleanField: BooleanField,
         }
         try:
-            return field_mapping[model_field.__class__]()
+            ret = field_mapping[model_field.__class__]()
         except KeyError:
-            return ModelField(model_field=model_field)
+            ret = ModelField(model_field=model_field)
+
+        if model_field.default:
+            ret.required = False
+
+        return ret
 
     def restore_object(self, attrs, instance=None):
         """

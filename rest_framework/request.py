@@ -225,7 +225,6 @@ class Request(object):
         if (self._METHOD_PARAM and
             self._METHOD_PARAM in self._data):
             self._method = self._data[self._METHOD_PARAM].upper()
-            self._data.pop(self._METHOD_PARAM)
 
         # Content overloading - modify the content type, and force re-parse.
         if (self._CONTENT_PARAM and

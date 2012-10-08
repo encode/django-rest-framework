@@ -161,7 +161,9 @@ class WritableField(Field):
         try:
             native = data[field_name]
         except KeyError:
-            return  # TODO Consider validation behaviour, 'required' opt etc...
+            if self.required:
+                raise ValidationError(self.error_messages['required'])
+            return
 
         value = self.from_native(native)
         if self.source == '*':

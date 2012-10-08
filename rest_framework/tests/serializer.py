@@ -1,3 +1,4 @@
+import copy
 import datetime
 from django.test import TestCase
 from rest_framework import serializers
@@ -92,6 +93,15 @@ class ValidationTests(TestCase):
         serializer = CommentSerializer(self.data, instance=self.comment)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
+
+    def test_update_missing_field(self):
+        data = {
+            'content': 'xxx',
+            'created': datetime.datetime(2012, 1, 1)
+        }
+        serializer = CommentSerializer(data, instance=self.comment)
+        self.assertEquals(serializer.is_valid(), False)
+        self.assertEquals(serializer.errors, {'email': [u'This field is required.']})
 
 
 class MetadataTests(TestCase):

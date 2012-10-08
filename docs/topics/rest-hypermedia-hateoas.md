@@ -32,7 +32,7 @@ REST framework also includes [serialization] and [parser]/[renderer] components 
 
 ### What REST framework *doesn't* provide.
 
-What REST framework doesn't do is give you is machine readable hypermedia formats such as [Collection+JSON][collection] by default, or the ability to auto-magically create HATEOAS style APIs.  Doing so would involve making opinionated choices about API design that should really remain outside of the framework's scope.
+What REST framework doesn't do is give you is machine readable hypermedia formats such as [Collection+JSON][collection] or HTML [microformats] by default, or the ability to auto-magically create HATEOAS style APIs.  Doing so would involve making opinionated choices about API design that should really remain outside of the framework's scope.
 
 [cite]: http://vimeo.com/channels/restfest/page:2
 [dissertation]: http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm
@@ -45,6 +45,7 @@ What REST framework doesn't do is give you is machine readable hypermedia format
 [maturitymodel]: http://martinfowler.com/articles/richardsonMaturityModel.html
 
 [collection]: http://www.amundsen.com/media-types/collection/
+[microformats]: http://microformats.org/wiki/Main_Page
 [serialization]: ../api-guide/serializers.md
 [parser]: ../api-guide/parsers.md
 [renderer]: ../api-guide/renderers.md

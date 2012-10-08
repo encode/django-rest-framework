@@ -17,12 +17,14 @@ class BasicView(APIView):
         return Response({'method': 'POST', 'data': request.DATA})
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'POST', 'PUT'])
 def basic_view(request):
     if request.method == 'GET':
         return {'method': 'GET'}
     elif request.method == 'POST':
         return {'method': 'POST', 'data': request.DATA}
+    elif request.method == 'PUT':
+        return {'method': 'PUT', 'data': request.DATA}
 
 
 class ClassBasedViewIntegrationTests(TestCase):
