@@ -2,7 +2,6 @@ import copy
 import datetime
 import types
 from decimal import Decimal
-from django.core.serializers.base import DeserializedObject
 from django.db import models
 from django.utils.datastructures import SortedDict
 from rest_framework.compat import get_concrete_model
@@ -224,9 +223,6 @@ class BaseSerializer(Field):
         """
         Serialize objects -> primatives.
         """
-        if isinstance(obj, DeserializedObject):
-            obj = obj.object
-
         if isinstance(obj, dict):
             return dict([(key, self.to_native(val))
                          for (key, val) in obj.items()])
@@ -383,23 +379,30 @@ class ModelSerializer(Serializer):
         """
         Restore the model instance.
         """
+        self.m2m_data = {}
+
         if instance:
             for key, val in attrs.items():
                 setattr(instance, key, val)
-            return DeserializedObject(instance)
+            return instance
 
-        m2m_data = {}
         for field in self.opts.model._meta.many_to_many:
             if field.name in attrs:
-                m2m_data[field.name] = attrs.pop(field.name)
-        return DeserializedObject(self.opts.model(**attrs), m2m_data)
+                self.m2m_data[field.name] = attrs.pop(field.name)
+        return self.opts.model(**attrs)
 
-    def save(self):
+    def save(self, save_m2m=True):
         """
         Save the deserialized object and return it.
         """
         self.object.save()
-        return self.object.object
+
+        if self.m2m_data and save_m2m:
+            for accessor_name, object_list in self.m2m_data.items():
+                setattr(self.object, accessor_name, object_list)
+            self.m2m_data = {}
+
+        return self.object
 
 
 class HyperlinkedModelSerializerOptions(ModelSerializerOptions):

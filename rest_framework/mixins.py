@@ -77,16 +77,15 @@ class UpdateModelMixin(object):
             self.object = None
 
         serializer = self.get_serializer(data=request.DATA, instance=self.object)
+
         if serializer.is_valid():
             if self.object is None:
-                obj = serializer.object
-                # TODO: Make ModelSerializers return regular instances,
-                # not DeserializedObject
-                if hasattr(obj, 'object'):
-                    obj = obj.object
-                self.update_urlconf_attributes(serializer.object.object)
+                # If PUT occurs to a non existant object, we need to set any
+                # attributes on the object that are implicit in the URL.
+                self.update_urlconf_attributes(serializer.object)
             self.object = serializer.save()
             return Response(serializer.data)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update_urlconf_attributes(self, obj):

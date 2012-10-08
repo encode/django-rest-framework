@@ -1,8 +1,8 @@
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import simplejson as json
-from rest_framework import generics, status
-from rest_framework.tests.models import BasicModel
+from rest_framework import generics, serializers, status
+from rest_framework.tests.models import BasicModel, Comment
 
 
 factory = RequestFactory()
@@ -223,3 +223,36 @@ class TestInstanceView(TestCase):
         self.assertEquals(response.data, {'id': 1, 'text': 'foobar'})
         updated = self.objects.get(id=1)
         self.assertEquals(updated.text, 'foobar')
+
+
+# Regression test for #285
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        exclude = ('created',)
+
+
+class CommentView(generics.ListCreateAPIView):
+    serializer_class = CommentSerializer
+    model = Comment
+
+
+class TestCreateModelWithAutoNowAddField(TestCase):
+    def setUp(self):
+        self.objects = Comment.objects
+        self.view = CommentView.as_view()
+
+    def test_create_model_with_auto_now_add_field(self):
+        """
+        Regression test for #285
+
+        https://github.com/tomchristie/django-rest-framework/issues/285
+        """
+        content = {'email': 'foobar@example.com', 'content': 'foobar'}
+        request = factory.post('/', json.dumps(content),
+                               content_type='application/json')
+        response = self.view(request).render()
+        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+        created = self.objects.get(id=1)
+        self.assertEquals(created.content, 'foobar')

@@ -83,3 +83,11 @@ class TaggedItem(RESTFrameworkModel):
 class Bookmark(RESTFrameworkModel):
     url = models.URLField()
     tags = GenericRelation(TaggedItem)
+
+
+# Model for regression test for #285
+
+class Comment(RESTFrameworkModel):
+    email = models.EmailField()
+    content = models.CharField(max_length=200)
+    created = models.DateTimeField(auto_now_add=True)
