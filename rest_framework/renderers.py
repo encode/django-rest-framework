@@ -230,8 +230,11 @@ class DocumentingHTMLRenderer(BaseRenderer):
         if not getattr(view, 'get_serializer', None):
             return self.get_generic_content_form(view)
 
+        #####
+        # TODO: This is a little bit of a hack.  Actually we'd like to remove
+        #       this and just render serializer fields to html directly.
+
         #  We need to map our Fields to Django's Fields.
-        # TODO: Remove this and just render serializer fields directly
         field_mapping = {
             serializers.FloatField: forms.FloatField,
             serializers.IntegerField: forms.IntegerField,
@@ -252,7 +255,6 @@ class DocumentingHTMLRenderer(BaseRenderer):
 
         serializer = view.get_serializer(instance=obj)
         for k, v in serializer.get_fields(True).items():
-            print k, v
             if getattr(v, 'readonly', True):
                 continue
 

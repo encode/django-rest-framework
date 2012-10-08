@@ -1,8 +1,11 @@
-# Release Notes
+# Change Log
 
 ## 2.0.0
 
-**TODO:** Explain REST framework 2.0
+* **Fix all of the things.**
+* For more information please see the [2.0 migration guide][migration].
+
+---
 
 ## 0.4.0
 
@@ -105,3 +108,4 @@
 
 * Initial release.
 
+[migration]: migration.md

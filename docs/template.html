@@ -72,9 +72,12 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li><a href="{{ base_url }}/topics/csrf{{ suffix }}">Working with AJAX and CSRF</a></li>
-                  <li><a href="{{ base_url }}/topics/formoverloading{{ suffix }}">Browser based PUT, PATCH and DELETE</a></li>
-                  <li><a href="{{ base_url }}/topics/browsable-api{{ suffix }}">Working with the browsable API</a></li>
+                  <li><a href="{{ base_url }}/topics/formoverloading{{ suffix }}">Browser hacks</a></li>
+                  <li><a href="{{ base_url }}/topics/browsable-api{{ suffix }}">Working with the Browsable API</a></li>
+                  <li><a href="{{ base_url }}/topics/rest-hypermedia-hateoas{{ suffix }}">REST, Hypermedia & HATEOAS</a></li>
                   <li><a href="{{ base_url }}/topics/contributing{{ suffix }}">Contributing to REST framework</a></li>
+                  <li><a href="{{ base_url }}/topics/migration{{ suffix }}">2.0 Migration Guide</a></li>
+                  <li><a href="{{ base_url }}/topics/changelog{{ suffix }}">Change Log</a></li>
                   <li><a href="{{ base_url }}/topics/credits{{ suffix }}">Credits</a></li>
                 </ul>
               </li>
@@ -98,6 +101,12 @@
         <div class="row-fluid">
 
           <div class="span3">
+            <!-- TODO
+            <p style="margin-top: -12px">
+              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
+              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
+            </p>
+          -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
                 {{ toc }}

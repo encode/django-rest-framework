@@ -20,7 +20,7 @@ the Design of Network-based Software Architectures][dissertation].
 
 For a more thorough background, check out Klabnik's [Hypermedia API reading list][readinglist].
 
-# Building Hypermedia APIs with REST framework
+## Building Hypermedia APIs with REST framework
 
 REST framework is an agnositic Web API toolkit.  It does help guide you towards building well-connected APIs, and makes it easy to design appropriate media types, but it does not strictly enforce any particular design style.
 
