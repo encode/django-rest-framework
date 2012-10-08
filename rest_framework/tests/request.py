@@ -4,6 +4,7 @@ Tests for content parsing, and form-overloaded content parsing.
 from django.conf.urls.defaults import patterns
 from django.contrib.auth.models import User
 from django.test import TestCase, Client
+from django.utils import simplejson as json
 
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
@@ -12,9 +13,11 @@ from rest_framework.parsers import (
     FormParser,
     MultiPartParser,
     PlainTextParser,
+    JSONParser
 )
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
 
@@ -36,7 +39,7 @@ class TestMethodOverloading(TestCase):
         POST requests can be overloaded to another method by setting a
         reserved form field
         """
-        request = Request(factory.post('/', {Request._METHOD_PARAM: 'DELETE'}))
+        request = Request(factory.post('/', {api_settings.FORM_METHOD_OVERRIDE: 'DELETE'}))
         self.assertEqual(request.method, 'DELETE')
 
 
@@ -117,15 +120,16 @@ class TestContentParsing(TestCase):
         """
         Ensure request.DATA returns content for overloaded POST request.
         """
-        content = 'qwerty'
-        content_type = 'text/plain'
-        data = {
-            Request._CONTENT_PARAM: content,
-            Request._CONTENTTYPE_PARAM: content_type
+        json_data = {'foobar': 'qwerty'}
+        content = json.dumps(json_data)
+        content_type = 'application/json'
+        form_data = {
+            api_settings.FORM_CONTENT_OVERRIDE: content,
+            api_settings.FORM_CONTENTTYPE_OVERRIDE: content_type
         }
-        request = Request(factory.post('/', data))
-        request.parsers = (PlainTextParser(), )
-        self.assertEqual(request.DATA, content)
+        request = Request(factory.post('/', form_data))
+        request.parsers = (JSONParser(), )
+        self.assertEqual(request.DATA, json_data)
 
     # def test_accessing_post_after_data_form(self):
     #     """

@@ -1,128 +1,83 @@
-# from django.core.urlresolvers import reverse
-# from django.conf.urls.defaults import patterns, url, include
-# from django.http import HttpResponse
-# from django.test import TestCase
-# from django.utils import simplejson as json
+from django.test import TestCase
+from django.test.client import RequestFactory
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.settings import api_settings
+from rest_framework.views import APIView
 
-# from rest_framework.views import View
-
-
-# class MockView(View):
-#     """This is a basic mock view"""
-#     pass
+factory = RequestFactory()
 
 
-# class MockViewFinal(View):
-#     """View with final() override"""
+class BasicView(APIView):
+    def get(self, request, *args, **kwargs):
+        return Response({'method': 'GET'})
 
-#     def final(self, request, response, *args, **kwargs):
-#         return HttpResponse('{"test": "passed"}', content_type="application/json")
-
-
-# # class ResourceMockView(View):
-# #     """This is a resource-based mock view"""
-
-# #     class MockForm(forms.Form):
-# #         foo = forms.BooleanField(required=False)
-# #         bar = forms.IntegerField(help_text='Must be an integer.')
-# #         baz = forms.CharField(max_length=32)
-
-# #     form = MockForm
+    def post(self, request, *args, **kwargs):
+        return Response({'method': 'POST', 'data': request.DATA})
 
 
-# # class MockResource(ModelResource):
-# #     """This is a mock model-based resource"""
-
-# #     class MockResourceModel(models.Model):
-# #         foo = models.BooleanField()
-# #         bar = models.IntegerField(help_text='Must be an integer.')
-# #         baz = models.CharField(max_length=32, help_text='Free text.  Max length 32 chars.')
-
-# #     model = MockResourceModel
-# #     fields = ('foo', 'bar', 'baz')
-
-# urlpatterns = patterns('',
-#     url(r'^mock/$', MockView.as_view()),
-#     url(r'^mock/final/$', MockViewFinal.as_view()),
-#     # url(r'^resourcemock/$', ResourceMockView.as_view()),
-#     # url(r'^model/$', ListOrCreateModelView.as_view(resource=MockResource)),
-#     # url(r'^model/(?P<pk>[^/]+)/$', InstanceModelView.as_view(resource=MockResource)),
-#     url(r'^restframework/', include('rest_framework.urls', namespace='rest_framework')),
-# )
+@api_view(['GET', 'POST'])
+def basic_view(request):
+    if request.method == 'GET':
+        return {'method': 'GET'}
+    elif request.method == 'POST':
+        return {'method': 'POST', 'data': request.DATA}
 
 
-# class BaseViewTests(TestCase):
-#     """Test the base view class of rest_framework"""
-#     urls = 'rest_framework.tests.views'
+class ClassBasedViewIntegrationTests(TestCase):
+    def setUp(self):
+        self.view = BasicView.as_view()
 
-#     def test_view_call_final(self):
-#         response = self.client.options('/mock/final/')
-#         self.assertEqual(response['Content-Type'].split(';')[0], "application/json")
-#         data = json.loads(response.content)
-#         self.assertEqual(data['test'], 'passed')
+    def test_400_parse_error(self):
+        request = factory.post('/', 'f00bar', content_type='application/json')
+        response = self.view(request)
+        expected = {
+            'detail': u'JSON parse error - No JSON object could be decoded'
+        }
+        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEquals(response.data, expected)
 
-#     def test_options_method_simple_view(self):
-#         response = self.client.options('/mock/')
-#         self._verify_options_response(response,
-#                                       name='Mock',
-#                                       description='This is a basic mock view')
-
-#     def test_options_method_resource_view(self):
-#         response = self.client.options('/resourcemock/')
-#         self._verify_options_response(response,
-#                                       name='Resource Mock',
-#                                       description='This is a resource-based mock view',
-#                                       fields={'foo': 'BooleanField',
-#                                               'bar': 'IntegerField',
-#                                               'baz': 'CharField',
-#                                               })
-
-#     def test_options_method_model_resource_list_view(self):
-#         response = self.client.options('/model/')
-#         self._verify_options_response(response,
-#                                       name='Mock List',
-#                                       description='This is a mock model-based resource',
-#                                       fields={'foo': 'BooleanField',
-#                                               'bar': 'IntegerField',
-#                                               'baz': 'CharField',
-#                                               })
-
-#     def test_options_method_model_resource_detail_view(self):
-#         response = self.client.options('/model/0/')
-#         self._verify_options_response(response,
-#                                       name='Mock Instance',
-#                                       description='This is a mock model-based resource',
-#                                       fields={'foo': 'BooleanField',
-#                                               'bar': 'IntegerField',
-#                                               'baz': 'CharField',
-#                                               })
-
-#     def _verify_options_response(self, response, name, description, fields=None, status=200,
-#                                  mime_type='application/json'):
-#         self.assertEqual(response.status_code, status)
-#         self.assertEqual(response['Content-Type'].split(';')[0], mime_type)
-#         data = json.loads(response.content)
-#         self.assertTrue('application/json' in data['renders'])
-#         self.assertEqual(name, data['name'])
-#         self.assertEqual(description, data['description'])
-#         if fields is None:
-#             self.assertFalse(hasattr(data, 'fields'))
-#         else:
-#             self.assertEqual(data['fields'], fields)
+    def test_400_parse_error_tunneled_content(self):
+        content = 'f00bar'
+        content_type = 'application/json'
+        form_data = {
+            api_settings.FORM_CONTENT_OVERRIDE: content,
+            api_settings.FORM_CONTENTTYPE_OVERRIDE: content_type
+        }
+        request = factory.post('/', form_data)
+        response = self.view(request)
+        expected = {
+            'detail': u'JSON parse error - No JSON object could be decoded'
+        }
+        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEquals(response.data, expected)
 
 
-# class ExtraViewsTests(TestCase):
-#     """Test the extra views rest_framework provides"""
-#     urls = 'rest_framework.tests.views'
+class FunctionBasedViewIntegrationTests(TestCase):
+    def setUp(self):
+        self.view = basic_view
 
-#     def test_login_view(self):
-#         """Ensure the login view exists"""
-#         response = self.client.get(reverse('rest_framework:login'))
-#         self.assertEqual(response.status_code, 200)
-#         self.assertEqual(response['Content-Type'].split(';')[0], 'text/html')
+    def test_400_parse_error(self):
+        request = factory.post('/', 'f00bar', content_type='application/json')
+        response = self.view(request)
+        expected = {
+            'detail': u'JSON parse error - No JSON object could be decoded'
+        }
+        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEquals(response.data, expected)
 
-#     def test_logout_view(self):
-#         """Ensure the logout view exists"""
-#         response = self.client.get(reverse('rest_framework:logout'))
-#         self.assertEqual(response.status_code, 200)
-#         self.assertEqual(response['Content-Type'].split(';')[0], 'text/html')
+    def test_400_parse_error_tunneled_content(self):
+        content = 'f00bar'
+        content_type = 'application/json'
+        form_data = {
+            api_settings.FORM_CONTENT_OVERRIDE: content,
+            api_settings.FORM_CONTENTTYPE_OVERRIDE: content_type
+        }
+        request = factory.post('/', form_data)
+        response = self.view(request)
+        expected = {
+            'detail': u'JSON parse error - No JSON object could be decoded'
+        }
+        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEquals(response.data, expected)

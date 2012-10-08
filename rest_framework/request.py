@@ -227,16 +227,14 @@ class Request(object):
             self._method = self._data[self._METHOD_PARAM].upper()
             self._data.pop(self._METHOD_PARAM)
 
-        # Content overloading - modify the content type, and re-parse.
+        # Content overloading - modify the content type, and force re-parse.
         if (self._CONTENT_PARAM and
             self._CONTENTTYPE_PARAM and
             self._CONTENT_PARAM in self._data and
             self._CONTENTTYPE_PARAM in self._data):
             self._content_type = self._data[self._CONTENTTYPE_PARAM]
             self._stream = StringIO(self._data[self._CONTENT_PARAM])
-            self._data.pop(self._CONTENTTYPE_PARAM)
-            self._data.pop(self._CONTENT_PARAM)
-            self._data, self._files = self._parse()
+            self._data, self._files = (Empty, Empty)
 
     def _parse(self):
         """
@@ -250,7 +248,7 @@ class Request(object):
         parser = self.negotiator.select_parser(self.parsers, self.content_type)
 
         if not parser:
-            raise exceptions.UnsupportedMediaType(self._content_type)
+            raise exceptions.UnsupportedMediaType(self.content_type)
 
         parsed = parser.parse(self.stream, meta=self.META,
                               upload_handlers=self.upload_handlers)
