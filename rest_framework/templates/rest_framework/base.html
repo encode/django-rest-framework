@@ -95,7 +95,7 @@
             <form class="button-form" action="{{ request.get_full_path }}" method="POST" class="pull-right">
                 {% csrf_token %}
                 <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
-                <button class="btn btn-info js-tooltip" title="Make an OPTIONS request on the {{ name }} resource">OPTIONS</button>
+                <button class="btn btn-primary js-tooltip" title="Make an OPTIONS request on the {{ name }} resource">OPTIONS</button>
             </form>
         {% endif %}
 

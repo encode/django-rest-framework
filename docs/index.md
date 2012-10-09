@@ -54,7 +54,7 @@ If you're intending to use the browserable API you'll want to add REST framework
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     )
 
-Note that the base URL can be whatever you want, but you must include `rest_framework.urls` with the `rest_framework` namespace.
+Note that the URL path can be whatever you want, but you must include `rest_framework.urls` with the `rest_framework` namespace.
 
 ## Quickstart
 
@@ -119,6 +119,7 @@ Run the tests:
 
     ./rest_framework/runtests/runtests.py
 
+For more information see the [Contributing to REST framework][contributing] section.
 ## Support
 
 For support please see the [REST framework discussion group][group], or try the  `#restframework` channel on `irc.freenode.net`.

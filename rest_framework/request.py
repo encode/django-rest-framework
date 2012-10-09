@@ -41,6 +41,10 @@ def clone_request(request, method):
     ret._content_type = request._content_type
     ret._stream = request._stream
     ret._method = method
+    if hasattr(request, '_user'):
+        ret._user = request._user
+    if hasattr(request, '_auth'):
+        ret._auth = request._auth
     return ret
 
 
