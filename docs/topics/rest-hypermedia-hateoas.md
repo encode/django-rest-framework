@@ -4,15 +4,15 @@
 >
 > &mdash; Mike Amundsen, [REST fest 2012 keynote][cite].
 
-First off, the disclaimer.  The name "Django REST framework" was choosen with a view to making sure the project would be easily found by developers.  Throughout the documentation we try to use the more simple and technically correct terminology of "Web APIs".
+First off, the disclaimer.  The name "Django REST framework" was choosen simply to sure the project would be easily found by developers.  Throughout the documentation we try to use the more simple and technically correct terminology of "Web APIs".
 
 If you are serious about designing a Hypermedia APIs, you should look to resources outside of this documentation to help inform your design choices.
 
 The following fall into the "required reading" category.
 
-* Fielding's dissertation - [Architectural Styles and
+* Roy Fielding's dissertation - [Architectural Styles and
 the Design of Network-based Software Architectures][dissertation].
-* Fielding's "[REST APIs must be hypertext-driven][hypertext-driven]" blog post.
+* Roy Fielding's "[REST APIs must be hypertext-driven][hypertext-driven]" blog post.
 * Leonard Richardson & Sam Ruby's [RESTful Web Services][restful-web-services].
 * Mike Amundsen's [Building Hypermedia APIs with HTML5 and Node][building-hypermedia-apis].
 * Steve Klabnik's [Designing Hypermedia APIs][designing-hypermedia-apis].
@@ -32,7 +32,7 @@ REST framework also includes [serialization] and [parser]/[renderer] components 
 
 ### What REST framework *doesn't* provide.
 
-What REST framework doesn't do is give you is machine readable hypermedia formats such as [Collection+JSON][collection] or HTML [microformats] by default, or the ability to auto-magically create HATEOAS style APIs.  Doing so would involve making opinionated choices about API design that should really remain outside of the framework's scope.
+What REST framework doesn't do is give you is machine readable hypermedia formats such as [Collection+JSON][collection] or HTML [microformats] by default, or the ability to auto-magically create fully HATEOAS style APIs that include form descriptions, and semantically labelled hyperlinks.  Doing so would involve making opinionated choices about API design that should really remain outside of the framework's scope.
 
 [cite]: http://vimeo.com/channels/restfest/page:2
 [dissertation]: http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm

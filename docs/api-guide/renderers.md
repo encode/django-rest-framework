@@ -110,7 +110,7 @@ An example of a view that uses `HTMLRenderer`:
         model = Users
         renderer_classes = (HTMLRenderer,)
 
-        def get(self, request, \*args, **kwargs)
+        def get(self, request, *args, **kwargs)
             self.object = self.get_object()
             return Response(self.object, template_name='user_detail.html')
  

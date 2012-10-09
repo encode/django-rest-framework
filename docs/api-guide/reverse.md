@@ -21,9 +21,11 @@ There's no requirement for you to use them, but if you do then the self-describi
 
 ## reverse
 
-**Signature:** `reverse(viewname, request, *args, **kwargs)`
+**Signature:** `reverse(viewname, *args, **kwargs)`
 
 Has the same behavior as [`django.core.urlresolvers.reverse`][reverse], except that it returns a fully qualified URL, using the request to determine the host and port.
+
+You should **include the request as a keyword argument** to the function, for example:
 
     import datetime
     from rest_framework.utils import reverse
@@ -34,15 +36,19 @@ Has the same behavior as [`django.core.urlresolvers.reverse`][reverse], except t
 	        year = datetime.datetime.now().year
 			data = {
  				...
-    		    'year-summary-url': reverse('year-summary', request, args=[year])
+    		    'year-summary-url': reverse('year-summary', args=[year], request=request)
             }
     		return Response(data)
 
 ## reverse_lazy
 
-**Signature:** `reverse_lazy(viewname, request, *args, **kwargs)`
+**Signature:** `reverse_lazy(viewname, *args, **kwargs)`
 
 Has the same behavior as [`django.core.urlresolvers.reverse_lazy`][reverse-lazy], except that it returns a fully qualified URL, using the request to determine the host and port.
+
+As with the `reverse` function, you should **include the request as a keyword argument** to the function, for example:
+
+    api_root = reverse_lazy('api-root', request=request)
 
 [cite]: http://www.ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm#sec_5_1_5
 [reverse]: https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse
