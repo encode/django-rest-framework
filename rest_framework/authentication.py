@@ -126,7 +126,7 @@ class TokenAuthentication(BaseAuthentication):
             except self.model.DoesNotExist:
                 return None
 
-            if token.user.is_active and not getattr(token, 'revoked', False):
+            if token.user.is_active:
                 return (token.user, token)
 
 # TODO: OAuthAuthentication

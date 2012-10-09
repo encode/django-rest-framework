@@ -9,8 +9,7 @@ class Token(models.Model):
     The default authorization token model.
     """
     key = models.CharField(max_length=40, primary_key=True)
-    user = models.ForeignKey('auth.User')
-    revoked = models.BooleanField(default=False)
+    user = models.OneToOneField('auth.User', related_name='api_key')
     created = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
@@ -21,3 +20,6 @@ class Token(models.Model):
     def generate_key(self):
         unique = str(uuid.uuid4())
         return hmac.new(unique, digestmod=sha1).hexdigest()
+
+    def __unicode__(self):
+        return self.key

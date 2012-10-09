@@ -149,5 +149,6 @@ class TokenAuthTests(TestCase):
 
     def test_token_has_auto_assigned_key_if_none_provided(self):
         """Ensure creating a token with no key will auto-assign a key"""
+        self.token.delete()
         token = Token.objects.create(user=self.user)
         self.assertTrue(bool(token.key))

@@ -11,8 +11,7 @@ class Migration(SchemaMigration):
         # Adding model 'Token'
         db.create_table('authtoken_token', (
             ('key', self.gf('django.db.models.fields.CharField')(max_length=40, primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
-            ('revoked', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('user', self.gf('django.db.models.fields.related.OneToOneField')(related_name='api_key', unique=True, to=orm['auth.User'])),
             ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
         ))
         db.send_create_signal('authtoken', ['Token'])
@@ -57,8 +56,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Token'},
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'key': ('django.db.models.fields.CharField', [], {'max_length': '40', 'primary_key': 'True'}),
-            'revoked': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"})
+            'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'api_key'", 'unique': 'True', 'to': "orm['auth.User']"})
         },
         'contenttypes.contenttype': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
