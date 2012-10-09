@@ -94,7 +94,7 @@ The `Serializer` class is itself a type of `Field`, and can be used to represent
 
 
     class CommentSerializer(serializers.Serializer):
-        user = serializers.UserSerializer()
+        user = UserSerializer()
         title = serializers.CharField()
         content = serializers.CharField(max_length=200)
         created = serializers.DateTimeField()
