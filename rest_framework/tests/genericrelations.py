@@ -19,7 +19,7 @@ class TestGenericRelations(TestCase):
 
     def test_reverse_generic_relation(self):
         class BookmarkSerializer(serializers.ModelSerializer):
-            tags = serializers.Field(source='tags')
+            tags = serializers.ManyRelatedField(source='tags')
 
             class Meta:
                 model = Bookmark

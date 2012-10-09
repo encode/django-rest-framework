@@ -83,10 +83,6 @@ class Field(object):
 
         if is_protected_type(value):
             return value
-
-        all_callable = getattr(value, 'all', None)
-        if is_simple_callable(all_callable):
-            return [self.to_native(item) for item in value.all()]
         elif hasattr(value, '__iter__') and not isinstance(value, (dict, basestring)):
             return [self.to_native(item) for item in value]
         return smart_unicode(value)
