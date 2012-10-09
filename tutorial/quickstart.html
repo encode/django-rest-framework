@@ -17,7 +17,7 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-  <body onload="prettyPrint()" class="status-codes-page">
+  <body onload="prettyPrint()" class="quickstart-page">
 
   <div class="wrapper">
 
@@ -110,94 +110,123 @@
           -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                <li class="main"><a href="#status-codes">Status Codes</a></li>
-<li><a href="#informational---1xx">Informational - 1xx</a></li>
-<li><a href="#successful---2xx">Successful - 2xx</a></li>
-<li><a href="#redirection---3xx">Redirection - 3xx</a></li>
-<li><a href="#client-error---4xx">Client Error - 4xx</a></li>
-<li><a href="#server-error---5xx">Server Error - 5xx</a></li>
+                <li class="main"><a href="#quickstart">Quickstart</a></li>
+<li><a href="#serializers">Serializers</a></li>
+<li><a href="#views">Views</a></li>
+<li><a href="#urls">URLs</a></li>
+<li><a href="#settings">Settings</a></li>
 
               </ul>
             </div>
           </div>
 
           <div id="main-content" class="span9">
-            <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/status.py"><span class="label label-info">status.py</span></a></p>
-<h1 id="status-codes">Status Codes</h1>
-<blockquote>
-<p>418 I'm a teapot - Any attempt to brew coffee with a teapot should result in the error code "418 I'm a teapot". The resulting entity body MAY be short and stout.</p>
-<p>&mdash; <a href="http://www.ietf.org/rfc/rfc2324.txt">RFC 2324</a>, Hyper Text Coffee Pot Control Protocol</p>
-</blockquote>
-<p>Using bare status codes in your responses isn't recommended.  REST framework includes a set of named constants that you can use to make more code more obvious and readable.</p>
-<pre class="prettyprint lang-py"><code>from rest_framework import status
+            <h1 id="quickstart">Quickstart</h1>
+<p>We're going to create a simple API to allow admin users to view and edit the users and groups in the system.</p>
+<p>Create a new Django project, and start a new app called <code>quickstart</code>.  Once you've set up a database and got everything synced and ready to go open up the app's directory and we'll get coding...</p>
+<h2 id="serializers">Serializers</h2>
+<p>First up we're going to define some serializers in <code>quickstart/serializers.py</code> that we'll use for our data representations.</p>
+<pre class="prettyprint lang-py"><code>from django.contrib.auth.models import User, Group
+from rest_framework import serializers
 
-def empty_view(self):
-    content = {'please move along': 'nothing to see here'}
-    return Response(content, status=status.HTTP_404_NOT_FOUND)
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ('url', 'username', 'email', 'groups')
+
+class GroupSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('url', 'name', 'permissions')
 </code></pre>
-<p>The full set of HTTP status codes included in the <code>status</code> module is listed below.</p>
-<p>For more information on proper usage of HTTP status codes see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">RFC 2616</a>
-and <a href="http://tools.ietf.org/html/rfc6585">RFC 6585</a>.</p>
-<h2 id="informational-1xx">Informational - 1xx</h2>
-<p>This class of status code indicates a provisional response.  There are no 1xx status codes used in REST framework by default.</p>
-<pre class="prettyprint lang-py"><code>HTTP_100_CONTINUE
-HTTP_101_SWITCHING_PROTOCOLS
+<p>Notice that we're using hyperlinked relations in this case, with <code>HyperlinkedModelSerializer</code>.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.</p>
+<h2 id="views">Views</h2>
+<p>Right, we'd better right some views then.  Open <code>quickstart/views.py</code> and get typing.</p>
+<pre class="prettyprint lang-py"><code>from django.contrib.auth.models import User, Group
+from rest_framework import generics
+from rest_framework.decorators import api_view
+from rest_framework.reverse import reverse
+from rest_framework.response import Response
+from quickstart.serializers import UserSerializer, GroupSerializer
+
+@api_view(['GET'])
+def api_root(request, format=None):
+    """
+    The entry endpoint of our API.
+    """
+    return Response({
+        'users': reverse('user-list', request=request),
+        'groups': reverse('group-list', request=request),
+    })
+
+class UserList(generics.ListCreateAPIView):
+    """
+    API endpoint that represents a list of users.
+    """
+    model = User
+    serializer_class = UserSerializer
+
+class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API endpoint that represents a single user.
+    """
+    model = User
+    serializer_class = UserSerializer
+
+class GroupList(generics.ListCreateAPIView):
+    """
+    API endpoint that represents a list of groups.
+    """
+    model = Group
+    serializer_class = GroupSerializer
+
+class GroupDetail(generics.RetrieveUpdateDestroyAPIView):
+    """
+    API endpoint that represents a single group.
+    """
+    model = Group
+    serializer_class = GroupSerializer
 </code></pre>
-<h2 id="successful-2xx">Successful - 2xx</h2>
-<p>This class of status code indicates that the client's request was successfully received, understood, and accepted.</p>
-<pre class="prettyprint lang-py"><code>HTTP_200_OK
-HTTP_201_CREATED
-HTTP_202_ACCEPTED
-HTTP_203_NON_AUTHORITATIVE_INFORMATION
-HTTP_204_NO_CONTENT
-HTTP_205_RESET_CONTENT
-HTTP_206_PARTIAL_CONTENT
+<p>Let's take a moment to look at what we've done here before we move on.  We have one function-based view representing the root of the API, and four class-based views which map to our database models, and specify which serializers should be used for representing that data.  Pretty simple stuff.</p>
+<h2 id="urls">URLs</h2>
+<p>Okay, let's wire this baby up.  On to <code>quickstart/urls.py</code>...</p>
+<pre class="prettyprint lang-py"><code>from django.conf.urls import patterns, url, include
+from rest_framework.urlpatterns import format_suffix_patterns
+from quickstart.views import UserList, UserDetail, GroupList, GroupDetail
+
+urlpatterns = patterns('quickstart.views',
+    url(r'^$', 'api_root'),
+    url(r'^users/$', UserList.as_view(), name='user-list'),
+    url(r'^users/(?P&lt;pk&gt;\d+)/$', UserDetail.as_view(), name='user-detail'),
+    url(r'^groups/$', GroupList.as_view(), name='group-list'),
+    url(r'^groups/(?P&lt;pk&gt;\d+)/$', GroupDetail.as_view(), name='group-detail'),
+)
+
+# Format suffixes
+urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'api'])
+
+# Default login/logout views
+urlpatterns += patterns('',
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+)
 </code></pre>
-<h2 id="redirection-3xx">Redirection - 3xx</h2>
-<p>This class of status code indicates that further action needs to be taken by the user agent in order to fulfill the request.</p>
-<pre class="prettyprint lang-py"><code>HTTP_300_MULTIPLE_CHOICES
-HTTP_301_MOVED_PERMANENTLY
-HTTP_302_FOUND
-HTTP_303_SEE_OTHER
-HTTP_304_NOT_MODIFIED
-HTTP_305_USE_PROXY
-HTTP_306_RESERVED
-HTTP_307_TEMPORARY_REDIRECT
+<p>There's a few things worth noting here.</p>
+<p>Firstly the names <code>user-detail</code> and <code>group-detail</code> are important.  We're using the default hyperlinked relationships without explicitly specifying the view names, so we need to use names of the style <code>{modelname}-detail</code> to represent the model instance views.</p>
+<p>Secondly, we're modifying the urlpatterns using <code>format_suffix_patterns</code>, to append optional <code>.json</code> style suffixes to our URLs.</p>
+<p>Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browseable API.</p>
+<h2 id="settings">Settings</h2>
+<p>We'd also like to set a few global settings.  We'd like to turn on pagination, and we want our API to only be accessible to admin users.</p>
+<pre class="prettyprint lang-py"><code>INSTALLED_APPS = (
+    ...
+    'rest_framework',
+)
+
+REST_FRAMEWORK = {
+    'PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser'),
+    'PAGINATE_BY': 10
+}
 </code></pre>
-<h2 id="client-error-4xx">Client Error - 4xx</h2>
-<p>The 4xx class of status code is intended for cases in which the client seems to have erred. Except when responding to a HEAD request, the server SHOULD include an entity containing an explanation of the error situation, and whether it is a temporary or permanent condition.</p>
-<pre class="prettyprint lang-py"><code>HTTP_400_BAD_REQUEST
-HTTP_401_UNAUTHORIZED
-HTTP_402_PAYMENT_REQUIRED
-HTTP_403_FORBIDDEN
-HTTP_404_NOT_FOUND
-HTTP_405_METHOD_NOT_ALLOWED
-HTTP_406_NOT_ACCEPTABLE
-HTTP_407_PROXY_AUTHENTICATION_REQUIRED
-HTTP_408_REQUEST_TIMEOUT
-HTTP_409_CONFLICT
-HTTP_410_GONE
-HTTP_411_LENGTH_REQUIRED
-HTTP_412_PRECONDITION_FAILED
-HTTP_413_REQUEST_ENTITY_TOO_LARGE
-HTTP_414_REQUEST_URI_TOO_LONG
-HTTP_415_UNSUPPORTED_MEDIA_TYPE
-HTTP_416_REQUESTED_RANGE_NOT_SATISFIABLE
-HTTP_417_EXPECTATION_FAILED
-HTTP_428_PRECONDITION_REQUIRED
-HTTP_429_TOO_MANY_REQUESTS
-HTTP_431_REQUEST_HEADER_FIELDS_TOO_LARGE
-</code></pre>
-<h2 id="server-error-5xx">Server Error - 5xx</h2>
-<p>Response status codes beginning with the digit "5" indicate cases in which the server is aware that it has erred or is incapable of performing the request. Except when responding to a HEAD request, the server SHOULD include an entity containing an explanation of the error situation, and whether it is a temporary or permanent condition.</p>
-<pre class="prettyprint lang-py"><code>HTTP_500_INTERNAL_SERVER_ERROR
-HTTP_501_NOT_IMPLEMENTED
-HTTP_502_BAD_GATEWAY
-HTTP_503_SERVICE_UNAVAILABLE
-HTTP_504_GATEWAY_TIMEOUT
-HTTP_505_HTTP_VERSION_NOT_SUPPORTED
-HTTP_511_NETWORD_AUTHENTICATION_REQUIRED
-</code></pre>
+<p>Okay, that's us done.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->

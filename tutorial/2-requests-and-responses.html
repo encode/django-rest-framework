@@ -37,6 +37,7 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
                 <ul class="dropdown-menu">
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/tutorial/quickstart">Quickstart</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/tutorial/1-serialization">1 - Serialization</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/tutorial/2-requests-and-responses">2 - Requests and responses</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/tutorial/3-class-based-views">3 - Class based views</a></li>
@@ -216,7 +217,7 @@ def comment_instance(request, pk):
 <pre class="prettyprint lang-py"><code>from django.conf.urls import patterns, url
 from rest_framework.urlpatterns import format_suffix_patterns
 
-urlpatterns = patterns('blogpost.views',
+urlpatterns = patterns('blog.views',
     url(r'^$', 'comment_root'),
     url(r'^(?P&lt;pk&gt;[0-9]+)$', 'comment_instance')
 )

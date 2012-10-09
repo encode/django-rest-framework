@@ -37,6 +37,7 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
                 <ul class="dropdown-menu">
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/tutorial/quickstart">Quickstart</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/tutorial/1-serialization">1 - Serialization</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/tutorial/2-requests-and-responses">2 - Requests and responses</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/tutorial/3-class-based-views">3 - Class based views</a></li>
@@ -152,6 +153,7 @@
 <h2 id="modelfield">ModelField</h2>
 <p>A generic field that can be tied to any arbitrary model field.  The <code>ModelField</code> class delegates the task of serialization/deserialization to it's associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.</p>
 <p><strong>Signature:</strong> <code>ModelField(model_field=&lt;Django ModelField class&gt;)</code></p>
+<hr />
 <h1 id="typed-fields">Typed Fields</h1>
 <p>These fields represent basic datatypes, and support both reading and writing values.</p>
 <h2 id="booleanfield">BooleanField</h2>
@@ -161,6 +163,7 @@
 <h2 id="datetimefield">DateTimeField</h2>
 <h2 id="integerfield">IntegerField</h2>
 <h2 id="floatfield">FloatField</h2>
+<hr />
 <h1 id="relational-fields">Relational Fields</h1>
 <p>Relational fields are used to represent model relationships.  They can be applied to <code>ForeignKey</code>, <code>ManyToManyField</code> and <code>OneToOneField</code> relationships, as well as to reverse relationships, and custom relationships such as <code>GenericForeignKey</code>.</p>
 <h2 id="primarykeyrelatedfield">PrimaryKeyRelatedField</h2>
