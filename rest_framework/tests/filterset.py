@@ -147,14 +147,13 @@ class IntegrationTestFiltering(TestCase):
         request = factory.get('/')
         self.assertRaises(AssertionError, view, request)
 
-    # TODO Return 400 filter paramater requested that hasn't been configured.
-    def test_bad_request(self):
+    def test_unknown_filter(self):
         """
-        GET requests with filters that aren't configured should return 400.
+        GET requests with filters that aren't configured should return 200.
         """
         view = FilterFieldsRootView.as_view()
 
         search_integer = 10
         request = factory.get('/?integer=%s' % search_integer)
         response = view(request).render()
-        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
