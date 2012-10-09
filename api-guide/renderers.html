@@ -121,8 +121,8 @@
 <li><a href="#jsonprenderer">JSONPRenderer</a></li>
 <li><a href="#yamlrenderer">YAMLRenderer</a></li>
 <li><a href="#xmlrenderer">XMLRenderer</a></li>
-<li><a href="#documentinghtmlrenderer">DocumentingHTMLRenderer</a></li>
-<li><a href="#htmltemplaterenderer">HTMLTemplateRenderer</a></li>
+<li><a href="#htmlrenderer">HTMLRenderer</a></li>
+<li><a href="#browsableapirenderer">BrowsableAPIRenderer</a></li>
 <li><a href="#custom-renderers">Custom renderers</a></li>
 <li class="main"><a href="#advanced-renderer-usage">Advanced renderer usage</a></li>
 <li><a href="#varying-behaviour-by-media-type">Varying behaviour by media type</a></li>
@@ -149,7 +149,7 @@
 <pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
     'DEFAULT_RENDERERS': (
         'rest_framework.renderers.YAMLRenderer',
-        'rest_framework.renderers.DocumentingHTMLRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
     )
 }
 </code></pre>
@@ -194,26 +194,51 @@ def user_count_view(request, format=None):
 <h2 id="xmlrenderer">XMLRenderer</h2>
 <p><strong>.media_type:</strong> <code>application/xml</code></p>
 <p><strong>.format:</strong> <code>'.xml'</code></p>
-<h2 id="documentinghtmlrenderer">DocumentingHTMLRenderer</h2>
-<p>Renders data into HTML for the browseable API.  This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.</p>
-<p><strong>.media_type:</strong> <code>text/html</code></p>
-<p><strong>.format:</strong> <code>'.api'</code></p>
-<h2 id="htmltemplaterenderer">HTMLTemplateRenderer</h2>
+<h2 id="htmlrenderer">HTMLRenderer</h2>
 <p>Renders data to HTML, using Django's standard template rendering.
 Unlike other renderers, the data passed to the <code>Response</code> does not need to be serialized.  Also, unlike other renderers, you may want to include a <code>template_name</code> argument when creating the <code>Response</code>.</p>
-<p>The HTMLTemplateRenderer will create a <code>RequestContext</code>, using the <code>response.data</code> as the context dict, and determine a template name to use to render the context.</p>
+<p>The HTMLRenderer will create a <code>RequestContext</code>, using the <code>response.data</code> as the context dict, and determine a template name to use to render the context.</p>
 <p>The template name is determined by (in order of preference):</p>
 <ol>
 <li>An explicit <code>.template_name</code> attribute set on the response.</li>
 <li>An explicit <code>.template_name</code> attribute set on this class.</li>
 <li>The return result of calling <code>view.get_template_names()</code>.</li>
 </ol>
-<p>You can use <code>HTMLTemplateRenderer</code> either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.</p>
-<p>If you're building websites that use <code>HTMLTemplateRenderer</code> along with other renderer classes, you should consider listing <code>HTMLTemplateRenderer</code> as the first class in the <code>renderer_classes</code> list, so that it will be prioritised first even for browsers that send poorly formed ACCEPT headers.</p>
+<p>An example of a view that uses <code>HTMLRenderer</code>:</p>
+<pre class="prettyprint lang-py"><code>class UserInstance(generics.RetrieveUserAPIView):
+    """
+    A view that returns a templated HTML representations of a given user.
+    """
+    model = Users
+    renderer_classes = (HTMLRenderer,)
+
+    def get(self, request, *args, **kwargs)
+        self.object = self.get_object()
+        return Response(self.object, template_name='user_detail.html')
+</code></pre>
+<p>You can use <code>HTMLRenderer</code> either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.</p>
+<p>If you're building websites that use <code>HTMLRenderer</code> along with other renderer classes, you should consider listing <code>HTMLRenderer</code> as the first class in the <code>renderer_classes</code> list, so that it will be prioritised first even for browsers that send poorly formed <code>ACCEPT:</code> headers.</p>
 <p><strong>.media_type:</strong> <code>text/html</code></p>
 <p><strong>.format:</strong> <code>'.html'</code></p>
+<h2 id="browsableapirenderer">BrowsableAPIRenderer</h2>
+<p>Renders data into HTML for the Browseable API.  This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.</p>
+<p><strong>.media_type:</strong> <code>text/html</code></p>
+<p><strong>.format:</strong> <code>'.api'</code></p>
 <h2 id="custom-renderers">Custom renderers</h2>
 <p>To implement a custom renderer, you should override <code>BaseRenderer</code>, set the <code>.media_type</code> and <code>.format</code> properties, and implement the <code>.render(self, data, media_type)</code> method.</p>
+<p>For example:</p>
+<pre class="prettyprint lang-py"><code>from django.utils.encoding import smart_unicode
+from rest_framework import renderers
+
+class PlainText(renderers.BaseRenderer):
+    media_type = 'text/plain'
+    format = 'txt'
+
+    def render(self, data, media_type):
+        if isinstance(data, basestring):
+            return data
+        return smart_unicode(data)
+</code></pre>
 <hr />
 <h1 id="advanced-renderer-usage">Advanced renderer usage</h1>
 <p>You can do some pretty flexible things using REST framework's renderers.  Some examples...</p>
@@ -227,7 +252,7 @@ Unlike other renderers, the data passed to the <code>Response</code> does not ne
 <p>In some cases you might want your view to use different serialization styles depending on the accepted media type.  If you need to do this you can access <code>request.accepted_renderer</code> to determine the negotiated renderer that will be used for the response.</p>
 <p>For example:</p>
 <pre class="prettyprint lang-py"><code>@api_view(('GET',))
-@renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+@renderer_classes((HTMLRenderer, JSONRenderer))
 def list_users(request):
     """
     A view that can return JSON or HTML representations

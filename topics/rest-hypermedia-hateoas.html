@@ -125,13 +125,13 @@
 <p>You keep using that word "REST". I do not think it means what you think it means.</p>
 <p>&mdash; Mike Amundsen, <a href="http://vimeo.com/channels/restfest/page:2">REST fest 2012 keynote</a>.</p>
 </blockquote>
-<p>First off, the disclaimer.  The name "Django REST framework" was choosen with a view to making sure the project would be easily found by developers.  Throughout the documentation we try to use the more simple and technically correct terminology of "Web APIs".</p>
+<p>First off, the disclaimer.  The name "Django REST framework" was choosen simply to sure the project would be easily found by developers.  Throughout the documentation we try to use the more simple and technically correct terminology of "Web APIs".</p>
 <p>If you are serious about designing a Hypermedia APIs, you should look to resources outside of this documentation to help inform your design choices.</p>
 <p>The following fall into the "required reading" category.</p>
 <ul>
-<li>Fielding's dissertation - <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">Architectural Styles and
+<li>Roy Fielding's dissertation - <a href="http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm">Architectural Styles and
 the Design of Network-based Software Architectures</a>.</li>
-<li>Fielding's "<a href="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">REST APIs must be hypertext-driven</a>" blog post.</li>
+<li>Roy Fielding's "<a href="http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven">REST APIs must be hypertext-driven</a>" blog post.</li>
 <li>Leonard Richardson &amp; Sam Ruby's <a href="">RESTful Web Services</a>.</li>
 <li>Mike Amundsen's <a href="…">Building Hypermedia APIs with HTML5 and Node</a>.</li>
 <li>Steve Klabnik's <a href="http://designinghypermediaapis.com/">Designing Hypermedia APIs</a>.</li>
@@ -144,7 +144,7 @@ the Design of Network-based Software Architectures</a>.</li>
 <p>It is self evident that REST framework makes it possible to build Hypermedia APIs.  The browseable API that it offers is built on HTML - the hypermedia language of the web.</p>
 <p>REST framework also includes <a href="../api-guide/serializers">serialization</a> and <a href="../api-guide/parsers">parser</a>/<a href="../api-guide/renderers">renderer</a> components that make it easy to build appropriate media types, <a href="../api-guide/fields">hyperlinked relations</a> for building well-connected systems, and great support for <a href="../api-guide/content-negotiation">content negotiation</a>.</p>
 <h3 id="what-rest-framework-doesnt-provide">What REST framework <em>doesn't</em> provide.</h3>
-<p>What REST framework doesn't do is give you is machine readable hypermedia formats such as <a href="http://www.amundsen.com/media-types/collection/">Collection+JSON</a> or HTML <a href="http://microformats.org/wiki/Main_Page">microformats</a> by default, or the ability to auto-magically create HATEOAS style APIs.  Doing so would involve making opinionated choices about API design that should really remain outside of the framework's scope.</p>
+<p>What REST framework doesn't do is give you is machine readable hypermedia formats such as <a href="http://www.amundsen.com/media-types/collection/">Collection+JSON</a> or HTML <a href="http://microformats.org/wiki/Main_Page">microformats</a> by default, or the ability to auto-magically create fully HATEOAS style APIs that include form descriptions, and semantically labelled hyperlinks.  Doing so would involve making opinionated choices about API design that should really remain outside of the framework's scope.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->

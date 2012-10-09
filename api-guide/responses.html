@@ -151,7 +151,7 @@
 <ul>
 <li><code>data</code>: The serialized data for the response.</li>
 <li><code>status</code>: A status code for the response.  Defaults to 200.  See also <a href="status-codes">status codes</a>.</li>
-<li><code>template_name</code>: A template name to use if <code>HTMLTemplateRenderer</code> is selected.</li>
+<li><code>template_name</code>: A template name to use if <code>HTMLRenderer</code> is selected.</li>
 <li><code>headers</code>: A dictionary of HTTP headers to use in the response.</li>
 </ul>
 <h2 id="render">.render()</h2>
@@ -172,7 +172,7 @@ response['Cache-Control'] = 'no-cache'
 <h2 id="content">.content</h2>
 <p>The rendered content of the response.  The <code>.render()</code> method must have been called before <code>.content</code> can be accessed.</p>
 <h2 id="template_name">.template_name</h2>
-<p>The <code>template_name</code>, if supplied.  Only required if <code>HTMLTemplateRenderer</code> or some other custom template renderer is the accepted renderer for the reponse.</p>
+<p>The <code>template_name</code>, if supplied.  Only required if <code>HTMLRenderer</code> or some other custom template renderer is the accepted renderer for the reponse.</p>
 <h2 id="accepted_renderer">.accepted_renderer</h2>
 <p>The renderer instance that will be used to render the response.</p>
 <p>Set automatically by the <code>APIView</code> or <code>@api_view</code> immediately before the response is returned from the view.</p>
