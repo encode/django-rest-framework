@@ -304,6 +304,13 @@ class ModelSerializer(Serializer):
         """
         Return all the fields that should be serialized for the model.
         """
+        # TODO: Modfiy this so that it's called on init, and drop
+        #       serialize/obj/data arguments.
+        #
+        #       We *could* provide a hook for dynamic fields, but
+        #       it'd be nice if the default was to generate fields statically
+        #       at the point of __init__
+
         cls = self.opts.model
         opts = get_concrete_model(cls)._meta
         pk_field = opts.pk
