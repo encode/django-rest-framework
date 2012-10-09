@@ -126,7 +126,7 @@ We'd also like to set a few global settings.  We'd like to turn on pagination, a
     )
 
     REST_FRAMEWORK = {
-        'PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser'),
+        'DEFAULT_PERMISSIONS': ('rest_framework.permissions.IsAdminUser',),
         'PAGINATE_BY': 10
     }
 
