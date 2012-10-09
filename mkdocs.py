@@ -37,12 +37,25 @@ for static in ['css', 'js', 'img']:
     shutil.copytree(source, target)
 
 for (dirpath, dirnames, filenames) in os.walk(docs_dir):
+    relative_dir = dirpath.replace(docs_dir, '').lstrip(os.path.sep)
+    build_dir = os.path.join(html_dir, relative_dir)
+    if not os.path.exists(build_dir):
+        os.makedirs(build_dir)
+
     for filename in filenames:
-        if not filename.endswith('.md'):
+        path = os.path.join(dirpath, filename)
+
+        if filename.endswith('.png'):
+            output_path = os.path.join(build_dir, filename)
+            shutil.copy(path, output_path)
+            continue
+        elif not filename.endswith('.md'):
             continue
 
+        output_path = os.path.join(build_dir, filename[:-3] + '.html')
+
         toc = ''
-        text = open(os.path.join(dirpath, filename), 'r').read().decode('utf-8')
+        text = open(path, 'r').read().decode('utf-8')
         for line in text.splitlines():
             if line.startswith('# '):
                 title = line[2:].strip()
@@ -60,16 +73,10 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
 
         content = markdown.markdown(text, ['headerid'])
 
-        relative_dir = dirpath.replace(docs_dir, '').lstrip(os.path.sep)
-        build_dir = os.path.join(html_dir, relative_dir)
-        build_file = os.path.join(build_dir, filename[:-3] + '.html')
-
-        if not os.path.exists(build_dir):
-            os.makedirs(build_dir)
         output = page.replace('{{ content }}', content).replace('{{ toc }}', toc).replace('{{ base_url }}', base_url).replace('{{ suffix }}', suffix).replace('{{ index }}', index)
         output = output.replace('{{ page_id }}', filename[:-3])
         output = re.sub(r'a href="([^"]*)\.md"', r'a href="\1%s"' % suffix, output)
         output = re.sub(r'<pre><code>:::bash', r'<pre class="prettyprint lang-bsh">', output)
         output = re.sub(r'<pre>', r'<pre class="prettyprint lang-py">', output)
         output = re.sub(r'<a class="github" href="([^"]*)"></a>', code_label, output)
-        open(build_file, 'w').write(output.encode('utf-8'))
+        open(output_path, 'w').write(output.encode('utf-8'))

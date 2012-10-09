@@ -19,6 +19,10 @@ h2, h3 {
     padding-right: 0.25em;
 }
 
+.version {
+  font-size: 70%;
+}
+
 .format-option {
     font-family: Menlo, Consolas, "Andale Mono", "Lucida Console", monospace;
 }

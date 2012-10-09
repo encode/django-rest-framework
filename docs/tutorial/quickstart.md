@@ -131,3 +131,42 @@ We'd also like to set a few global settings.  We'd like to turn on pagination, a
     }
 
 Okay, that's us done.
+
+---
+
+## Testing our API
+
+We can now access our API, both from the command-line, using tools like `curl`...
+
+    bash: curl -H 'Accept: application/json; indent=4' -u admin:password http://127.0.0.1:8000/users/ 
+    {
+        "count": 2, 
+        "next": null, 
+        "previous": null, 
+        "results": [
+            {
+                "email": "admin@example.com", 
+                "groups": [], 
+                "url": "http://127.0.0.1:8000/users/1/", 
+                "username": "admin"
+            }, 
+            {
+                "email": "tom@example.com", 
+                "groups": [], 
+                "url": "http://127.0.0.1:8000/users/2/", 
+                "username": "tom"
+            }
+        ]
+    }
+
+Or directly through the browser...
+
+![Quick start image][image]
+
+Great, that was easy!
+
+If you want to get a more in depth understanding of how REST framework fits together head on over to [the tutorial][tutorial], or start browsing the [API guide][guide].
+
+[image]: ../images/quickstart.png
+[tutorial]: 1-serialization.md
+[guide]: ../#api-guide

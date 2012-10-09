@@ -39,7 +39,7 @@
                         {% if user.is_authenticated %}
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                    Logged in as {{ user }}
+                                    {{ user }}
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu">
@@ -128,7 +128,6 @@
                 <div class="well">
                     <form action="{{ request.get_full_path }}" method="POST" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
                         <fieldset>
-                            <h2>POST: {{ name }}</h2>
                             {% csrf_token %}
                             {{ post_form.non_field_errors }}
                             {% for field in post_form %}
@@ -153,7 +152,6 @@
                 <div class="well">
                     <form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
                         <fieldset>
-                            <h2>PUT: {{ name }}</h2>
                             <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" />
                             {% csrf_token %}
                             {{ put_form.non_field_errors }}
@@ -191,9 +189,9 @@
     </div><!-- ./wrapper -->
 
     {% block footer %}
-    <div id="footer">
-        <a class="powered-by" href='http://django-rest-framework.org'>Django REST framework</a> <span class="version">{{ version }}</span>
-    </div>
+    <!--<div id="footer">
+        <a class="powered-by" href='http://django-rest-framework.org'>Django REST framework</a>
+    </div>-->
     {% endblock %}
 
     {% block script %}
