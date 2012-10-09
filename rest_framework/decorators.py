@@ -13,7 +13,8 @@ def api_view(http_method_names):
         class WrappedAPIView(APIView):
             pass
 
-        WrappedAPIView.http_method_names = [method.lower() for method in http_method_names]
+        allowed_methods = set(http_method_names) | set(('options',))
+        WrappedAPIView.http_method_names = [method.lower() for method in allowed_methods]
 
         def handler(self, *args, **kwargs):
             return func(*args, **kwargs)

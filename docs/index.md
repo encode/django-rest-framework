@@ -58,6 +58,7 @@ Note that the base URL can be whatever you want, but you must include `rest_fram
 
 ## Quickstart
 
+Can't wait to get started?  The [quickstart guide][quickstart] is the fastest way to get up and running with REST framework.
 
 ## Tutorial
 
@@ -118,6 +119,12 @@ Run the tests:
 
     ./rest_framework/runtests/runtests.py
 
+## Support
+
+For support please see the [REST framework discussion group][group], or try the  `#restframework` channel on `irc.freenode.net`.
+
+Paid support is also available from [DabApps], and can include work on REST framework core, or support with building your REST framework API.  Please contact [Tom Christie][email] if you'd like to discuss commercial support options.
+
 ## License
 
 Copyright (c) 2011-2012, Tom Christie
@@ -149,6 +156,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [yaml]: http://pypi.python.org/pypi/PyYAML
 
+[quickstart]: tutorial/quickstart.md
 [tut-1]: tutorial/1-serialization.md
 [tut-2]: tutorial/2-requests-and-responses.md
 [tut-3]: tutorial/3-class-based-views.md
@@ -183,3 +191,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [migration]: topics/migration.md
 [changelog]: topics/changelog.md
 [credits]: topics/credits.md
+
+[group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
+[DabApps]: http://dabapps.com
+[email]: mailto:tom@tomchristie.com
