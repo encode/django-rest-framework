@@ -167,6 +167,6 @@ Great, that was easy!
 
 If you want to get a more in depth understanding of how REST framework fits together head on over to [the tutorial][tutorial], or start browsing the [API guide][guide].
 
-[image]: ../images/quickstart.png
+[image]: ../img/quickstart.png
 [tutorial]: 1-serialization.md
 [guide]: ../#api-guide

@@ -29,27 +29,27 @@ code_label = r'<a class="github" href="https://github.com/tomchristie/django-res
 page = open(os.path.join(docs_dir, 'template.html'), 'r').read()
 
 # Copy static files
-for static in ['css', 'js', 'img']:
-    source = os.path.join(docs_dir, 'static', static)
-    target = os.path.join(html_dir, static)
-    if os.path.exists(target):
-        shutil.rmtree(target)
-    shutil.copytree(source, target)
+# for static in ['css', 'js', 'img']:
+#     source = os.path.join(docs_dir, 'static', static)
+#     target = os.path.join(html_dir, static)
+#     if os.path.exists(target):
+#         shutil.rmtree(target)
+#     shutil.copytree(source, target)
 
 for (dirpath, dirnames, filenames) in os.walk(docs_dir):
     relative_dir = dirpath.replace(docs_dir, '').lstrip(os.path.sep)
     build_dir = os.path.join(html_dir, relative_dir)
+
     if not os.path.exists(build_dir):
         os.makedirs(build_dir)
 
     for filename in filenames:
         path = os.path.join(dirpath, filename)
 
-        if filename.endswith('.png'):
-            output_path = os.path.join(build_dir, filename)
-            shutil.copy(path, output_path)
-            continue
-        elif not filename.endswith('.md'):
+        if not filename.endswith('.md'):
+            if relative_dir:
+                output_path = os.path.join(build_dir, filename)
+                shutil.copy(path, output_path)
             continue
 
         output_path = os.path.join(build_dir, filename[:-3] + '.html')
