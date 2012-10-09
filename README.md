@@ -53,7 +53,8 @@ To run the tests.
 
 ## 2.0.0
 
-Redesign of core components.
+* Redesign of core components.
+* Fix **all of the things**.
 
 # License
 

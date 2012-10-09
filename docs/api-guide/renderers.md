@@ -23,7 +23,7 @@ The default set of renderers may be set globally, using the `DEFAULT_RENDERERS` 
     REST_FRAMEWORK = {
         'DEFAULT_RENDERERS': (
             'rest_framework.renderers.YAMLRenderer',
-            'rest_framework.renderers.DocumentingHTMLRenderer',
+            'rest_framework.renderers.BrowsableAPIRenderer',
         )
     }
 
@@ -88,20 +88,12 @@ If your API includes views that can serve both regular webpages and API response
 
 **.format:** `'.xml'`
 
-## DocumentingHTMLRenderer
-
-Renders data into HTML for the browseable API.  This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.
-
-**.media_type:** `text/html`
-
-**.format:** `'.api'`
-
-## HTMLTemplateRenderer
+## HTMLRenderer
 
 Renders data to HTML, using Django's standard template rendering.
 Unlike other renderers, the data passed to the `Response` does not need to be serialized.  Also, unlike other renderers, you may want to include a `template_name` argument when creating the `Response`.
 
-The HTMLTemplateRenderer will create a `RequestContext`, using the `response.data` as the context dict, and determine a template name to use to render the context.
+The HTMLRenderer will create a `RequestContext`, using the `response.data` as the context dict, and determine a template name to use to render the context.
 
 The template name is determined by (in order of preference):
 
@@ -109,17 +101,53 @@ The template name is determined by (in order of preference):
 2. An explicit `.template_name` attribute set on this class.
 3. The return result of calling `view.get_template_names()`.
 
-You can use `HTMLTemplateRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
+An example of a view that uses `HTMLRenderer`:
 
-If you're building websites that use `HTMLTemplateRenderer` along with other renderer classes, you should consider listing `HTMLTemplateRenderer` as the first class in the `renderer_classes` list, so that it will be prioritised first even for browsers that send poorly formed ACCEPT headers.
+    class UserInstance(generics.RetrieveUserAPIView):
+        """
+        A view that returns a templated HTML representations of a given user.
+        """
+        model = Users
+        renderer_classes = (HTMLRenderer,)
+
+        def get(self, request, \*args, **kwargs)
+            self.object = self.get_object()
+            return Response(self.object, template_name='user_detail.html')
+ 
+You can use `HTMLRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
+
+If you're building websites that use `HTMLRenderer` along with other renderer classes, you should consider listing `HTMLRenderer` as the first class in the `renderer_classes` list, so that it will be prioritised first even for browsers that send poorly formed `ACCEPT:` headers.
 
 **.media_type:** `text/html`
 
 **.format:** `'.html'`
 
+## BrowsableAPIRenderer
+
+Renders data into HTML for the Browseable API.  This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.
+
+**.media_type:** `text/html`
+
+**.format:** `'.api'`
+
 ## Custom renderers
 
 To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, media_type)` method.
+
+For example:
+
+    from django.utils.encoding import smart_unicode
+    from rest_framework import renderers
+
+
+    class PlainText(renderers.BaseRenderer):
+        media_type = 'text/plain'
+        format = 'txt'
+        
+        def render(self, data, media_type):
+            if isinstance(data, basestring):
+                return data
+            return smart_unicode(data)
 
 ---
 
@@ -139,7 +167,7 @@ In some cases you might want your view to use different serialization styles dep
 For example:
 
     @api_view(('GET',))
-    @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
+    @renderer_classes((HTMLRenderer, JSONRenderer))
     def list_users(request):
         """
         A view that can return JSON or HTML representations

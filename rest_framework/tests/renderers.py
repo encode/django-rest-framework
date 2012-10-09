@@ -9,7 +9,7 @@ from rest_framework.compat import yaml
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
-    XMLRenderer, JSONPRenderer, DocumentingHTMLRenderer
+    XMLRenderer, JSONPRenderer, BrowsableAPIRenderer
 from rest_framework.parsers import YAMLParser, XMLParser
 from rest_framework.settings import api_settings
 
@@ -68,14 +68,14 @@ class MockGETView(APIView):
 
 
 class HTMLView(APIView):
-    renderer_classes = (DocumentingHTMLRenderer, )
+    renderer_classes = (BrowsableAPIRenderer, )
 
     def get(self, request, **kwargs):
         return Response('text')
 
 
 class HTMLView1(APIView):
-    renderer_classes = (DocumentingHTMLRenderer, JSONRenderer)
+    renderer_classes = (BrowsableAPIRenderer, JSONRenderer)
 
     def get(self, request, **kwargs):
         return Response('text')
@@ -97,7 +97,7 @@ class POSTDeniedPermission(permissions.BasePermission):
 
 
 class POSTDeniedView(APIView):
-    renderer_classes = (DocumentingHTMLRenderer,)
+    renderer_classes = (BrowsableAPIRenderer,)
     permission_classes = (POSTDeniedPermission,)
 
     def get(self, request):

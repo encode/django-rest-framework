@@ -32,7 +32,7 @@ Arguments:
 
 * `data`: The serialized data for the response.
 * `status`: A status code for the response.  Defaults to 200.  See also [status codes][statuscodes].
-* `template_name`: A template name to use if `HTMLTemplateRenderer` is selected.
+* `template_name`: A template name to use if `HTMLRenderer` is selected.
 * `headers`: A dictionary of HTTP headers to use in the response.
 
 ## .render()
@@ -68,7 +68,7 @@ The rendered content of the response.  The `.render()` method must have been cal
 
 ## .template_name
 
-The `template_name`, if supplied.  Only required if `HTMLTemplateRenderer` or some other custom template renderer is the accepted renderer for the reponse.
+The `template_name`, if supplied.  Only required if `HTMLRenderer` or some other custom template renderer is the accepted renderer for the reponse.
 
 ## .accepted_renderer
 

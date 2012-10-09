@@ -24,7 +24,7 @@ from django.utils import importlib
 DEFAULTS = {
     'DEFAULT_RENDERERS': (
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.DocumentingHTMLRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
     ),
     'DEFAULT_PARSERS': (
         'rest_framework.parsers.JSONParser',

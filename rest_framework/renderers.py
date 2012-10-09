@@ -132,7 +132,7 @@ class YAMLRenderer(BaseRenderer):
         return yaml.safe_dump(data)
 
 
-class HTMLTemplateRenderer(BaseRenderer):
+class HTMLRenderer(BaseRenderer):
     """
     A Base class provided for convenience.
 
@@ -179,7 +179,7 @@ class HTMLTemplateRenderer(BaseRenderer):
         raise ConfigurationError('Returned a template response with no template_name')
 
 
-class DocumentingHTMLRenderer(BaseRenderer):
+class BrowsableAPIRenderer(BaseRenderer):
     """
     HTML renderer used to self-document the API.
     """
@@ -197,7 +197,7 @@ class DocumentingHTMLRenderer(BaseRenderer):
 
         # Find the first valid renderer and render the content. (Don't use another documenting renderer.)
         renderers = [renderer for renderer in view.renderer_classes
-                     if not issubclass(renderer, DocumentingHTMLRenderer)]
+                     if not issubclass(renderer, BrowsableAPIRenderer)]
         if not renderers:
             return '[No renderers were found]'
 

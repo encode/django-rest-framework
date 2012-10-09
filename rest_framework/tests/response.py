@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework.renderers import (
     BaseRenderer,
     JSONRenderer,
-    DocumentingHTMLRenderer
+    BrowsableAPIRenderer
 )
 from rest_framework.settings import api_settings
 
@@ -53,14 +53,14 @@ class MockView(APIView):
 
 
 class HTMLView(APIView):
-    renderer_classes = (DocumentingHTMLRenderer, )
+    renderer_classes = (BrowsableAPIRenderer, )
 
     def get(self, request, **kwargs):
         return Response('text')
 
 
 class HTMLView1(APIView):
-    renderer_classes = (DocumentingHTMLRenderer, JSONRenderer)
+    renderer_classes = (BrowsableAPIRenderer, JSONRenderer)
 
     def get(self, request, **kwargs):
         return Response('text')
