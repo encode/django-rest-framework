@@ -206,7 +206,7 @@ where some of the attributes of an object might not be simple datatypes such as 
         return User(**attrs)
 
 class CommentSerializer(serializers.Serializer):
-    user = serializers.UserSerializer()
+    user = UserSerializer()
     title = serializers.CharField()
     content = serializers.CharField(max_length=200)
     created = serializers.DateTimeField()

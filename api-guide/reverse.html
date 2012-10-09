@@ -142,7 +142,7 @@
 <p>Has the same behavior as <a href="https://docs.djangoproject.com/en/dev/topics/http/urls/#reverse"><code>django.core.urlresolvers.reverse</code></a>, except that it returns a fully qualified URL, using the request to determine the host and port.</p>
 <p>You should <strong>include the request as a keyword argument</strong> to the function, for example:</p>
 <pre class="prettyprint lang-py"><code>import datetime
-from rest_framework.utils import reverse
+from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
 class APIRootView(APIView):
