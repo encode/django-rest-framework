@@ -84,6 +84,7 @@
               </li>
             </ul>
             <ul class="nav pull-right">
+              <!-- TODO
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version: 2.0.0 <b class="caret"></b></a>
                 <ul class="dropdown-menu">
@@ -91,6 +92,7 @@
                   <li><a href="#">2.0.0</a></li>
                 </ul>
               </li>
+            -->
             </ul>
           </div><!--/.nav-collapse -->
         </div>
@@ -115,6 +117,7 @@
 <li><a href="#views">Views</a></li>
 <li><a href="#urls">URLs</a></li>
 <li><a href="#settings">Settings</a></li>
+<li><a href="#testing-our-api">Testing our API</a></li>
 
               </ul>
             </div>
@@ -227,6 +230,34 @@ REST_FRAMEWORK = {
 }
 </code></pre>
 <p>Okay, that's us done.</p>
+<hr />
+<h2 id="testing-our-api">Testing our API</h2>
+<p>We can now access our API, both from the command-line, using tools like <code>curl</code>...</p>
+<pre class="prettyprint lang-py"><code>bash: curl -H 'Accept: application/json; indent=4' -u admin:password http://127.0.0.1:8000/users/ 
+{
+    "count": 2, 
+    "next": null, 
+    "previous": null, 
+    "results": [
+        {
+            "email": "admin@example.com", 
+            "groups": [], 
+            "url": "http://127.0.0.1:8000/users/1/", 
+            "username": "admin"
+        }, 
+        {
+            "email": "tom@example.com", 
+            "groups": [], 
+            "url": "http://127.0.0.1:8000/users/2/", 
+            "username": "tom"
+        }
+    ]
+}
+</code></pre>
+<p>Or directly through the browser...</p>
+<p><img alt="Quick start image" src="../img/quickstart.png" /></p>
+<p>Great, that was easy!</p>
+<p>If you want to get a more in depth understanding of how REST framework fits together head on over to <a href="1-serialization">the tutorial</a>, or start browsing the <a href="../#api-guide">API guide</a>.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->
