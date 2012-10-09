@@ -323,7 +323,9 @@ class ModelSerializer(Serializer):
             elif model_field.rel and nested:
                 field = self.get_nested_field(model_field)
             elif model_field.rel:
-                field = self.get_related_field(model_field)
+                to_many = isinstance(model_field,
+                                     models.fields.related.ManyToManyField)
+                field = self.get_related_field(model_field, to_many=to_many)
             else:
                 field = self.get_field(model_field)
 
@@ -345,14 +347,14 @@ class ModelSerializer(Serializer):
         """
         return ModelSerializer()
 
-    def get_related_field(self, model_field):
+    def get_related_field(self, model_field, to_many=False):
         """
         Creates a default instance of a flat relational field.
         """
         # TODO: filter queryset using:
         # .using(db).complex_filter(self.rel.limit_choices_to)
         queryset = model_field.rel.to._default_manager
-        if isinstance(model_field, models.fields.related.ManyToManyField):
+        if to_many:
             return ManyPrimaryKeyRelatedField(queryset=queryset)
         return PrimaryKeyRelatedField(queryset=queryset)
 
@@ -446,7 +448,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
     def get_pk_field(self, model_field):
         return None
 
-    def get_related_field(self, model_field):
+    def get_related_field(self, model_field, to_many):
         """
         Creates a default instance of a flat relational field.
         """
@@ -458,6 +460,6 @@ class HyperlinkedModelSerializer(ModelSerializer):
             'queryset': queryset,
             'view_name': self._get_default_view_name(rel)
         }
-        if isinstance(model_field, models.fields.related.ManyToManyField):
+        if to_many:
             return ManyHyperlinkedRelatedField(**kwargs)
         return HyperlinkedRelatedField(**kwargs)
