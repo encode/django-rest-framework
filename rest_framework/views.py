@@ -50,7 +50,8 @@ def _camelcase_to_spaces(content):
     Used when generating names from view classes.
     """
     camelcase_boundry = '(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))'
-    return re.sub(camelcase_boundry, ' \\1', content).strip()
+    content = re.sub(camelcase_boundry, ' \\1', content).strip()
+    return ' '.join(content.split('_')).title()
 
 
 class APIView(View):

@@ -21,6 +21,8 @@ def api_view(http_method_names):
         for method in http_method_names:
             setattr(WrappedAPIView, method.lower(), handler)
 
+        WrappedAPIView.__name__ = func.__name__
+
         WrappedAPIView.renderer_classes = getattr(func, 'renderer_classes',
                                                   APIView.renderer_classes)
 
