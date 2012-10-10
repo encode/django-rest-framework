@@ -9,7 +9,7 @@ class Token(models.Model):
     The default authorization token model.
     """
     key = models.CharField(max_length=40, primary_key=True)
-    user = models.OneToOneField('auth.User', related_name='api_key')
+    user = models.OneToOneField('auth.User', related_name='auth_token')
     created = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
