@@ -54,7 +54,6 @@ class JSONRenderer(BaseRenderer):
         # E.g. If we're being called by the BrowseableAPIRenderer.
         renderer_context = renderer_context or {}
         indent = renderer_context.get('indent', None)
-        sort_keys = indent and True or False
 
         if accepted_media_type:
             # If the media type looks like 'application/json; indent=4',
@@ -63,12 +62,10 @@ class JSONRenderer(BaseRenderer):
             indent = params.get('indent', indent)
             try:
                 indent = max(min(int(indent), 8), 0)
-                sort_keys = True
             except (ValueError, TypeError):
                 indent = None
 
-        return json.dumps(data, cls=self.encoder_class,
-                          indent=indent, sort_keys=sort_keys)
+        return json.dumps(data, cls=self.encoder_class, indent=indent)
 
 
 class JSONPRenderer(JSONRenderer):
