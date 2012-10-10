@@ -237,8 +237,13 @@ class BaseSerializer(Field):
         if hasattr(data, '__iter__') and not isinstance(data, dict):
             # TODO: error data when deserializing lists
             return (self.from_native(item) for item in data)
+
         self._errors = {}
-        attrs = self.restore_fields(data)
+        if data is not None:
+            attrs = self.restore_fields(data)
+        else:
+            self._errors['non_field_errors'] = 'No input provided'
+
         if not self._errors:
             return self.restore_object(attrs, instance=getattr(self, 'object', None))
 
