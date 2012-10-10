@@ -132,7 +132,7 @@ Renders data into HTML for the Browseable API.  This renderer will determine whi
 
 ## Custom renderers
 
-To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, media_type)` method.
+To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, media_type=None, renderer_context=None)` method.
 
 For example:
 
@@ -144,10 +144,25 @@ For example:
         media_type = 'text/plain'
         format = 'txt'
         
-        def render(self, data, media_type):
+        def render(self, data, media_type=None, renderer_context=None):
             if isinstance(data, basestring):
                 return data
             return smart_unicode(data)
+
+The arguments passed to the `.render()` method are:
+
+#### `data`
+
+The request data, as set by the `Response()` instantiation.
+
+#### `media_type=None`
+
+Optional. If provided, this is the accepted media type, as determined by the content negotiation stage.  Depending on the client's `Accept:` header, this may be more specific than the renderer's `media_type` attribute, and may include media type parameters.  For example `"application/json; nested=true"`.
+
+#### `renderer_context=None`
+
+Optional. If provided, this is a dictionary of contextual information provided by the view.
+By default this will include the following keys: `view`, `request`, `response`, `args`, `kwargs`.
 
 ---
 

@@ -41,16 +41,16 @@ class RendererA(BaseRenderer):
     media_type = 'mock/renderera'
     format = "formata"
 
-    def render(self, obj=None, media_type=None):
-        return RENDERER_A_SERIALIZER(obj)
+    def render(self, data, media_type=None, renderer_context=None):
+        return RENDERER_A_SERIALIZER(data)
 
 
 class RendererB(BaseRenderer):
     media_type = 'mock/rendererb'
     format = "formatb"
 
-    def render(self, obj=None, media_type=None):
-        return RENDERER_B_SERIALIZER(obj)
+    def render(self, data, media_type=None, renderer_context=None):
+        return RENDERER_B_SERIALIZER(data)
 
 
 class MockView(APIView):
@@ -235,7 +235,7 @@ class JSONRendererTests(TestCase):
         Test basic JSON rendering.
         """
         obj = {'foo': ['bar', 'baz']}
-        renderer = JSONRenderer(None)
+        renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
         # Fix failing test case which depends on version of JSON library.
         self.assertEquals(content, _flat_repr)
@@ -245,7 +245,7 @@ class JSONRendererTests(TestCase):
         Test JSON rendering with additional content type arguments supplied.
         """
         obj = {'foo': ['bar', 'baz']}
-        renderer = JSONRenderer(None)
+        renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json; indent=2')
         self.assertEquals(strip_trailing_whitespace(content), _indented_repr)
 
@@ -302,7 +302,7 @@ if yaml:
             Test basic YAML rendering.
             """
             obj = {'foo': ['bar', 'baz']}
-            renderer = YAMLRenderer(None)
+            renderer = YAMLRenderer()
             content = renderer.render(obj, 'application/yaml')
             self.assertEquals(content, _yaml_repr)
 
@@ -313,7 +313,7 @@ if yaml:
             """
             obj = {'foo': ['bar', 'baz']}
 
-            renderer = YAMLRenderer(None)
+            renderer = YAMLRenderer()
             parser = YAMLParser()
 
             content = renderer.render(obj, 'application/yaml')
@@ -345,7 +345,7 @@ class XMLRendererTestCase(TestCase):
         """
         Test XML rendering.
         """
-        renderer = XMLRenderer(None)
+        renderer = XMLRenderer()
         content = renderer.render({'field': 'astring'}, 'application/xml')
         self.assertXMLContains(content, '<field>astring</field>')
 
@@ -353,7 +353,7 @@ class XMLRendererTestCase(TestCase):
         """
         Test XML rendering.
         """
-        renderer = XMLRenderer(None)
+        renderer = XMLRenderer()
         content = renderer.render({'field': 111}, 'application/xml')
         self.assertXMLContains(content, '<field>111</field>')
 
@@ -361,7 +361,7 @@ class XMLRendererTestCase(TestCase):
         """
         Test XML rendering.
         """
-        renderer = XMLRenderer(None)
+        renderer = XMLRenderer()
         content = renderer.render({
             'field': datetime.datetime(2011, 12, 25, 12, 45, 00)
         }, 'application/xml')
@@ -371,7 +371,7 @@ class XMLRendererTestCase(TestCase):
         """
         Test XML rendering.
         """
-        renderer = XMLRenderer(None)
+        renderer = XMLRenderer()
         content = renderer.render({'field': 123.4}, 'application/xml')
         self.assertXMLContains(content, '<field>123.4</field>')
 
@@ -379,7 +379,7 @@ class XMLRendererTestCase(TestCase):
         """
         Test XML rendering.
         """
-        renderer = XMLRenderer(None)
+        renderer = XMLRenderer()
         content = renderer.render({'field': Decimal('111.2')}, 'application/xml')
         self.assertXMLContains(content, '<field>111.2</field>')
 
@@ -387,7 +387,7 @@ class XMLRendererTestCase(TestCase):
         """
         Test XML rendering.
         """
-        renderer = XMLRenderer(None)
+        renderer = XMLRenderer()
         content = renderer.render({'field': None}, 'application/xml')
         self.assertXMLContains(content, '<field></field>')
 
@@ -395,7 +395,7 @@ class XMLRendererTestCase(TestCase):
         """
         Test XML rendering.
         """
-        renderer = XMLRenderer(None)
+        renderer = XMLRenderer()
         content = renderer.render(self._complex_data, 'application/xml')
         self.assertXMLContains(content, '<sub_name>first</sub_name>')
         self.assertXMLContains(content, '<sub_name>second</sub_name>')
@@ -404,7 +404,7 @@ class XMLRendererTestCase(TestCase):
         """
         Test XML rendering.
         """
-        renderer = XMLRenderer(None)
+        renderer = XMLRenderer()
         content = StringIO(renderer.render(self._complex_data, 'application/xml'))
 
         parser = XMLParser()

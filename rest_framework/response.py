@@ -24,17 +24,17 @@ class Response(SimpleTemplateResponse):
 
     @property
     def rendered_content(self):
-        renderer = self.accepted_renderer
-        media_type = self.accepted_media_type
+        renderer = getattr(self, 'accepted_renderer', None)
+        media_type = getattr(self, 'accepted_media_type', None)
+        context = getattr(self, 'renderer_context', None)
 
-        assert renderer, "No accepted renderer set on Response"
-        assert media_type, "No accepted media type set on Response"
+        assert renderer, ".accepted_renderer not set on Response"
+        assert media_type, ".accepted_media_type not set on Response"
+        assert context, ".renderer_context not set on Response"
+        context['response'] = self
 
         self['Content-Type'] = media_type
-        if self.data is None:
-            return renderer.render()
-
-        return renderer.render(self.data, media_type)
+        return renderer.render(self.data, media_type, context)
 
     @property
     def status_text(self):
@@ -42,4 +42,6 @@ class Response(SimpleTemplateResponse):
         Returns reason text corresponding to our HTTP response status code.
         Provided for convenience.
         """
+        # TODO: Deprecate and use a template tag instead
+        # TODO: Status code text for RFC 6585 status codes
         return STATUS_CODE_TEXT.get(self.status_code, '')

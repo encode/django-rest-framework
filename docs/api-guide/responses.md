@@ -82,6 +82,11 @@ The media type that was selected by the content negotiation stage.
 
 Set automatically by the `APIView` or `@api_view` immediately before the response is returned from the view.
 
+## .renderer_context
+
+A dictionary of additional context information that will be passed to the renderer's `.render()` method.
+
+Set automatically by the `APIView` or `@api_view` immediately before the response is returned from the view.
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/
 [statuscodes]: status-codes.md

@@ -86,6 +86,7 @@ class APIView(View):
 
     @property
     def default_response_headers(self):
+        # TODO: deprecate?
         # TODO: Only vary by accept if multiple renderers
         return {
             'Allow': ', '.join(self.allowed_methods),
@@ -158,6 +159,20 @@ class APIView(View):
         """
         raise exceptions.Throttled(wait)
 
+    def get_renderer_context(self):
+        """
+        Returns a dict that is passed through to the Renderer.render(),
+        as the `renderer_context` keyword argument.
+        """
+        # Note: Additionally 'response' will also be set on the context,
+        #       by the Response object.
+        return {
+            'view': self,
+            'request': self.request,
+            'args': self.args,
+            'kwargs': self.kwargs
+        }
+
     # API policy instantiation methods
 
     def get_format_suffix(self, **kwargs):
@@ -171,7 +186,7 @@ class APIView(View):
         """
         Instantiates and returns the list of renderers that this view can use.
         """
-        return [renderer(self) for renderer in self.renderer_classes]
+        return [renderer() for renderer in self.renderer_classes]
 
     def get_parsers(self):
         """
@@ -269,6 +284,7 @@ class APIView(View):
 
             response.accepted_renderer = request.accepted_renderer
             response.accepted_media_type = request.accepted_media_type
+            response.renderer_context = self.get_renderer_context()
 
         for key, value in self.headers.items():
             response[key] = value
@@ -306,7 +322,7 @@ class APIView(View):
         self.request = request
         self.args = args
         self.kwargs = kwargs
-        self.headers = self.default_response_headers
+        self.headers = self.default_response_headers  # deprecate?
 
         try:
             self.initial(request, *args, **kwargs)

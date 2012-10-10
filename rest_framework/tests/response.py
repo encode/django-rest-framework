@@ -33,16 +33,16 @@ class RendererA(BaseRenderer):
     media_type = 'mock/renderera'
     format = "formata"
 
-    def render(self, obj=None, media_type=None):
-        return RENDERER_A_SERIALIZER(obj)
+    def render(self, data, media_type=None, renderer_context=None):
+        return RENDERER_A_SERIALIZER(data)
 
 
 class RendererB(BaseRenderer):
     media_type = 'mock/rendererb'
     format = "formatb"
 
-    def render(self, obj=None, media_type=None):
-        return RENDERER_B_SERIALIZER(obj)
+    def render(self, data, media_type=None, renderer_context=None):
+        return RENDERER_B_SERIALIZER(data)
 
 
 class MockView(APIView):

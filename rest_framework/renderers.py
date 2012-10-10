@@ -16,7 +16,7 @@ from rest_framework.request import clone_request
 from rest_framework.utils import dict2xml
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
-from rest_framework.utils.mediatypes import get_media_type_params, add_media_type_param
+from rest_framework.utils.mediatypes import get_media_type_params
 from rest_framework import VERSION
 from rest_framework import serializers
 
@@ -30,10 +30,7 @@ class BaseRenderer(object):
     media_type = None
     format = None
 
-    def __init__(self, view=None):
-        self.view = view
-
-    def render(self, data=None, accepted_media_type=None):
+    def render(self, data, accepted_media_type=None, renderer_context=None):
         raise NotImplemented('Renderer class requires .render() to be implemented')
 
 
@@ -46,22 +43,29 @@ class JSONRenderer(BaseRenderer):
     format = 'json'
     encoder_class = encoders.JSONEncoder
 
-    def render(self, data=None, accepted_media_type=None):
+    def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Render `obj` into json.
         """
         if data is None:
             return ''
 
-        # If the media type looks like 'application/json; indent=4', then
-        # pretty print the result.
-        indent = get_media_type_params(accepted_media_type).get('indent', None)
-        sort_keys = False
-        try:
-            indent = max(min(int(indent), 8), 0)
-            sort_keys = True
-        except (ValueError, TypeError):
-            indent = None
+        # If 'indent' is provided in the context, then pretty print the result.
+        # E.g. If we're being called by the BrowseableAPIRenderer.
+        renderer_context = renderer_context or {}
+        indent = renderer_context.get('indent', None)
+        sort_keys = indent and True or False
+
+        if accepted_media_type:
+            # If the media type looks like 'application/json; indent=4',
+            # then pretty print the result.
+            params = get_media_type_params(accepted_media_type)
+            indent = params.get('indent', indent)
+            try:
+                indent = max(min(int(indent), 8), 0)
+                sort_keys = True
+            except (ValueError, TypeError):
+                indent = None
 
         return json.dumps(data, cls=self.encoder_class,
                           indent=indent, sort_keys=sort_keys)
@@ -78,22 +82,25 @@ class JSONPRenderer(JSONRenderer):
     callback_parameter = 'callback'
     default_callback = 'callback'
 
-    def get_callback(self):
+    def get_callback(self, renderer_context):
         """
         Determine the name of the callback to wrap around the json output.
         """
-        params = self.view.request.GET
+        request = renderer_context.get('request', None)
+        params = request and request.GET or {}
         return params.get(self.callback_parameter, self.default_callback)
 
-    def render(self, data=None, accepted_media_type=None):
+    def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Renders into jsonp, wrapping the json output in a callback function.
 
         Clients may set the callback function name using a query parameter
         on the URL, for example: ?callback=exampleCallbackName
         """
-        callback = self.get_callback()
-        json = super(JSONPRenderer, self).render(data, accepted_media_type)
+        renderer_context = renderer_context or {}
+        callback = self.get_callback(renderer_context)
+        json = super(JSONPRenderer, self).render(data, accepted_media_type,
+                                                 renderer_context)
         return "%s(%s);" % (callback, json)
 
 
@@ -105,7 +112,7 @@ class XMLRenderer(BaseRenderer):
     media_type = 'application/xml'
     format = 'xml'
 
-    def render(self, data=None, accepted_media_type=None):
+    def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Renders *obj* into serialized XML.
         """
@@ -122,7 +129,7 @@ class YAMLRenderer(BaseRenderer):
     media_type = 'application/yaml'
     format = 'yaml'
 
-    def render(self, data=None, accepted_media_type=None):
+    def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Renders *obj* into serialized YAML.
         """
@@ -145,7 +152,7 @@ class HTMLRenderer(BaseRenderer):
     format = 'html'
     template_name = None
 
-    def render(self, data=None, accepted_media_type=None):
+    def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Renders data to HTML, using Django's standard template rendering.
 
@@ -155,8 +162,10 @@ class HTMLRenderer(BaseRenderer):
         2. An explicit .template_name set on this class.
         3. The return result of calling view.get_template_names().
         """
-        view = self.view
-        request, response = view.request, view.response
+        renderer_context = renderer_context or {}
+        view = renderer_context['view']
+        request = renderer_context['request']
+        response = renderer_context['response']
 
         template_names = self.get_template_names(response, view)
         template = self.resolve_template(template_names)
@@ -187,22 +196,29 @@ class BrowsableAPIRenderer(BaseRenderer):
     format = 'api'
     template = 'rest_framework/api.html'
 
-    def get_content(self, view, request, data, accepted_media_type):
+    def get_default_renderer(self, view):
         """
-        Get the content as if it had been rendered by a non-documenting renderer.
-
-        (Typically this will be the content as it would have been if the Resource had been
-        requested with an 'Accept: */*' header, although with verbose style formatting if appropriate.)
+        Return an instance of the first valid renderer.
+        (Don't use another documenting renderer.)
         """
-
-        # Find the first valid renderer and render the content. (Don't use another documenting renderer.)
         renderers = [renderer for renderer in view.renderer_classes
                      if not issubclass(renderer, BrowsableAPIRenderer)]
         if not renderers:
+            return None
+        return renderers[0]()
+
+    def get_content(self, renderer, data,
+                    accepted_media_type, renderer_context):
+        """
+        Get the content as if it had been rendered by the default
+        non-documenting renderer.
+        """
+        if not renderer:
             return '[No renderers were found]'
 
-        accepted_media_type = add_media_type_param(accepted_media_type, 'indent', '4')
-        content = renderers[0](view).render(data, accepted_media_type)
+        renderer_context['indent'] = 4
+        content = renderer.render(data, accepted_media_type, renderer_context)
+
         if not all(char in string.printable for char in content):
             return '[%d bytes of binary content]'
 
@@ -228,7 +244,8 @@ class BrowsableAPIRenderer(BaseRenderer):
             return True  # Don't actually need to return a form
 
         if not getattr(view, 'get_serializer', None):
-            return self.get_generic_content_form(view)
+            media_types = [parser.media_type for parser in view.parser_classes]
+            return self.get_generic_content_form(media_types)
 
         #####
         # TODO: This is a little bit of a hack.  Actually we'd like to remove
@@ -273,9 +290,10 @@ class BrowsableAPIRenderer(BaseRenderer):
         form_instance = OnTheFlyForm(data)
         return form_instance
 
-    def get_generic_content_form(self, view):
+    def get_generic_content_form(self, media_types):
         """
-        Returns a form that allows for arbitrary content types to be tunneled via standard HTML forms
+        Returns a form that allows for arbitrary content types to be tunneled
+        via standard HTML forms.
         (Which are typically application/x-www-form-urlencoded)
         """
 
@@ -285,74 +303,68 @@ class BrowsableAPIRenderer(BaseRenderer):
                 and api_settings.FORM_CONTENTTYPE_OVERRIDE):
             return None
 
+        content_type_field = api_settings.FORM_CONTENTTYPE_OVERRIDE
+        content_field = api_settings.FORM_CONTENT_OVERRIDE
+        choices = [(media_type, media_type) for media_type in media_types]
+        initial = media_types[0]
+
         # NB. http://jacobian.org/writing/dynamic-form-generation/
         class GenericContentForm(forms.Form):
-            def __init__(self, view, request):
-                """We don't know the names of the fields we want to set until the point the form is instantiated,
-                as they are determined by the Resource the form is being created against.
-                Add the fields dynamically."""
+            def __init__(self):
                 super(GenericContentForm, self).__init__()
 
-                parsed_media_types = [parser.media_type for parser in view.parser_classes]
-                contenttype_choices = [(media_type, media_type) for media_type in parsed_media_types]
-                initial_contenttype = parsed_media_types[0]
-
-                self.fields[api_settings.FORM_CONTENTTYPE_OVERRIDE] = forms.ChoiceField(
+                self.fields[content_type_field] = forms.ChoiceField(
                     label='Content Type',
-                    choices=contenttype_choices,
-                    initial=initial_contenttype
+                    choices=choices,
+                    initial=initial
                 )
-                self.fields[api_settings.FORM_CONTENT_OVERRIDE] = forms.CharField(
+                self.fields[content_field] = forms.CharField(
                     label='Content',
                     widget=forms.Textarea
                 )
 
-        # If either of these reserved parameters are turned off then content tunneling is not possible
-        if self.view.request._CONTENTTYPE_PARAM is None or self.view.request._CONTENT_PARAM is None:
-            return None
+        return GenericContentForm()
 
-        # Okey doke, let's do it
-        return GenericContentForm(view, view.request)
-
-    def get_name(self):
+    def get_name(self, view):
         try:
-            return self.view.get_name()
+            return view.get_name()
         except AttributeError:
-            return self.view.__doc__
+            return view.__doc__
 
-    def get_description(self, html=None):
-        if html is None:
-            html = bool('html' in self.format)
+    def get_description(self, view):
         try:
-            return self.view.get_description(html)
+            return view.get_description(html=True)
         except AttributeError:
-            return self.view.__doc__
+            return view.__doc__
 
-    def render(self, data=None, accepted_media_type=None):
+    def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Renders *obj* using the :attr:`template` set on the class.
 
         The context used in the template contains all the information
         needed to self-document the response to this request.
         """
-        view = self.view
-        request = view.request
-        response = view.response
+        accepted_media_type = accepted_media_type or ''
+        renderer_context = renderer_context or {}
 
-        content = self.get_content(view, request, data, accepted_media_type)
+        view = renderer_context['view']
+        request = renderer_context['request']
+        response = renderer_context['response']
+
+        renderer = self.get_default_renderer(view)
+        content = self.get_content(renderer, data, accepted_media_type, renderer_context)
 
         put_form = self.get_form(view, 'PUT', request)
         post_form = self.get_form(view, 'POST', request)
         delete_form = self.get_form(view, 'DELETE', request)
         options_form = self.get_form(view, 'OPTIONS', request)
 
-        name = self.get_name()
-        description = self.get_description()
-
-        breadcrumb_list = get_breadcrumbs(self.view.request.path)
+        name = self.get_name(view)
+        description = self.get_description(view)
+        breadcrumb_list = get_breadcrumbs(request.path)
 
         template = loader.get_template(self.template)
-        context = RequestContext(self.view.request, {
+        context = RequestContext(request, {
             'content': content,
             'view': view,
             'request': request,
@@ -375,7 +387,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         # Munge DELETE Response code to allow us to return content
         # (Do this *after* we've rendered the template so that we include
         # the normal deletion response code in the output)
-        if self.view.response.status_code == 204:
-            self.view.response.status_code = 200
+        if response.status_code == 204:
+            response.status_code = 200
 
         return ret
