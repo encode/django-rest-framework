@@ -88,11 +88,14 @@ class SessionAuthentication(BaseAuthentication):
         Returns a :obj:`User` if the request session currently has a logged in user.
         Otherwise returns :const:`None`.
         """
-        user = getattr(request._request, 'user', None)
+
+        # Get the underlying HttpRequest object
+        http_request = request._request
+        user = getattr(http_request, 'user', None)
 
         if user and user.is_active:
             # Enforce CSRF validation for session based authentication.
-            resp = CsrfViewMiddleware().process_view(request, None, (), {})
+            resp = CsrfViewMiddleware().process_view(http_request, None, (), {})
 
             if resp is None:  # csrf passed
                 return (user, None)
