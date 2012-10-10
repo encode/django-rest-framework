@@ -6,6 +6,6 @@
 * Demonstrate nested relationships
 * Demonstrate and describe hyperlinked relationships
 
-Onwards to [part 6][tut-6].
+<!-- Onwards to [part 6][tut-6].
 
-[tut-6]: 6-resource-orientated-projects.md
+[tut-6]: 6-resource-orientated-projects.md -->

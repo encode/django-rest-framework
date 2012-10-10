@@ -1,3 +1,5 @@
+##### RESOURCES AND ROUTERS ARE NOT YET IMPLEMENTED - PLACEHOLDER ONLY #####
+
 from functools import update_wrapper
 import inspect
 from django.utils.decorators import classonlymethod
@@ -13,6 +15,8 @@ def wrapped(source, dest):
         setattr(dest, attr, getattr(source, attr))
     return dest
 
+
+##### RESOURCES AND ROUTERS ARE NOT YET IMPLEMENTED - PLACEHOLDER ONLY #####
 
 class ResourceMixin(object):
     """
@@ -57,9 +61,13 @@ class ResourceMixin(object):
         return view
 
 
+##### RESOURCES AND ROUTERS ARE NOT YET IMPLEMENTED - PLACEHOLDER ONLY #####
+
 class Resource(ResourceMixin, views.APIView):
     pass
 
+
+##### RESOURCES AND ROUTERS ARE NOT YET IMPLEMENTED - PLACEHOLDER ONLY #####
 
 class ModelResource(ResourceMixin, views.APIView):
     root_class = generics.ListCreateAPIView

@@ -69,7 +69,7 @@ The tutorial will walk you through the building blocks that make up REST framewo
 * [3 - Class based views][tut-3]
 * [4 - Authentication, permissions & throttling][tut-4]
 * [5 - Relationships & hyperlinked APIs][tut-5]
-* [6 - Resource orientated projects][tut-6]
+<!-- * [6 - Resource orientated projects][tut-6]-->
 
 ## API Guide
 
