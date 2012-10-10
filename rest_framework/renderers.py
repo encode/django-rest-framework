@@ -18,7 +18,7 @@ from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework.utils.mediatypes import get_media_type_params
 from rest_framework import VERSION
-from rest_framework import serializers
+from rest_framework import serializers, parsers
 
 
 class BaseRenderer(object):
@@ -125,6 +125,7 @@ class YAMLRenderer(BaseRenderer):
 
     media_type = 'application/yaml'
     format = 'yaml'
+    encoder = encoders.SafeDumper
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -133,7 +134,7 @@ class YAMLRenderer(BaseRenderer):
         if data is None:
             return ''
 
-        return yaml.safe_dump(data)
+        return yaml.dump(data, stream=None, Dumper=self.encoder)
 
 
 class HTMLRenderer(BaseRenderer):
@@ -240,7 +241,8 @@ class BrowsableAPIRenderer(BaseRenderer):
         if method == 'DELETE' or method == 'OPTIONS':
             return True  # Don't actually need to return a form
 
-        if not getattr(view, 'get_serializer', None):
+        if (not getattr(view, 'get_serializer', None) or
+            not parsers.FormParser in getattr(view, 'parser_classes')):
             media_types = [parser.media_type for parser in view.parser_classes]
             return self.get_generic_content_form(media_types)
 
