@@ -189,13 +189,13 @@ class APIView(View):
         """
         Instantiates and returns the list of permissions that this view requires.
         """
-        return [permission(self) for permission in self.permission_classes]
+        return [permission() for permission in self.permission_classes]
 
     def get_throttles(self):
         """
         Instantiates and returns the list of thottles that this view uses.
         """
-        return [throttle(self) for throttle in self.throttle_classes]
+        return [throttle() for throttle in self.throttle_classes]
 
     def get_content_negotiator(self):
         """
@@ -220,7 +220,7 @@ class APIView(View):
         Return `True` if the request should be permitted.
         """
         for permission in self.get_permissions():
-            if not permission.has_permission(request, obj):
+            if not permission.has_permission(request, self, obj):
                 return False
         return True
 
@@ -229,7 +229,7 @@ class APIView(View):
         Check if request should be throttled.
         """
         for throttle in self.get_throttles():
-            if not throttle.allow_request(request):
+            if not throttle.allow_request(request, self):
                 self.throttled(request, throttle.wait())
 
     # Dispatch methods

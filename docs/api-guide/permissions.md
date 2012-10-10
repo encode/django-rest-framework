@@ -88,7 +88,7 @@ The `DjangoModelPermissions` class also supports object-level permissions.  Thir
 
 ## Custom permissions
 
-To implement a custom permission, override `BasePermission` and implement the `.has_permission(self, request, obj=None)` method.
+To implement a custom permission, override `BasePermission` and implement the `.has_permission(self, request, view, obj=None)` method.
 
 The method should return `True` if the request should be granted access, and `False` otherwise.
 

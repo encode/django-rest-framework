@@ -92,7 +92,7 @@ urlpatterns = patterns('',
 
 
 class POSTDeniedPermission(permissions.BasePermission):
-    def has_permission(self, request, obj=None):
+    def has_permission(self, request, view, obj=None):
         return request.method != 'POST'
 
 

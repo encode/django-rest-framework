@@ -13,13 +13,8 @@ class BasePermission(object):
     """
     A base class from which all permission classes should inherit.
     """
-    def __init__(self, view):
-        """
-        Permission classes are always passed the current view on creation.
-        """
-        self.view = view
 
-    def has_permission(self, request, obj=None):
+    def has_permission(self, request, view, obj=None):
         """
         Should simply return, or raise an :exc:`response.ImmediateResponse`.
         """
@@ -31,7 +26,7 @@ class IsAuthenticated(BasePermission):
     Allows access only to authenticated users.
     """
 
-    def has_permission(self, request, obj=None):
+    def has_permission(self, request, view, obj=None):
         if request.user and request.user.is_authenticated():
             return True
         return False
@@ -42,7 +37,7 @@ class IsAdminUser(BasePermission):
     Allows access only to admin users.
     """
 
-    def has_permission(self, request, obj=None):
+    def has_permission(self, request, view, obj=None):
         if request.user and request.user.is_staff:
             return True
         return False
@@ -53,7 +48,7 @@ class IsAuthenticatedOrReadOnly(BasePermission):
     The request is authenticated as a user, or is a read-only request.
     """
 
-    def has_permission(self, request, obj=None):
+    def has_permission(self, request, view, obj=None):
         if (request.method in SAFE_METHODS or
             request.user and
             request.user.is_authenticated()):
@@ -96,8 +91,8 @@ class DjangoModelPermissions(BasePermission):
         }
         return [perm % kwargs for perm in self.perms_map[method]]
 
-    def has_permission(self, request, obj=None):
-        model_cls = self.view.model
+    def has_permission(self, request, view, obj=None):
+        model_cls = view.model
         perms = self.get_required_permissions(request.method, model_cls)
 
         if (request.user and
