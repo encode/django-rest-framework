@@ -1,3 +1,4 @@
+import copy
 from django.test import TestCase
 from django.test.client import RequestFactory
 from rest_framework import status
@@ -27,6 +28,17 @@ def basic_view(request):
         return {'method': 'PUT', 'data': request.DATA}
 
 
+def sanitise_json_error(error_dict):
+    """
+    Exact contents of JSON error messages depend on the installed version
+    of json.
+    """
+    ret = copy.copy(error_dict)
+    chop = len('JSON parse error - No JSON object could be decoded')
+    ret['detail'] = ret['detail'][:chop]
+    return ret
+
+
 class ClassBasedViewIntegrationTests(TestCase):
     def setUp(self):
         self.view = BasicView.as_view()
@@ -38,7 +50,7 @@ class ClassBasedViewIntegrationTests(TestCase):
             'detail': u'JSON parse error - No JSON object could be decoded'
         }
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEquals(response.data, expected)
+        self.assertEquals(sanitise_json_error(response.data), expected)
 
     def test_400_parse_error_tunneled_content(self):
         content = 'f00bar'
@@ -53,7 +65,7 @@ class ClassBasedViewIntegrationTests(TestCase):
             'detail': u'JSON parse error - No JSON object could be decoded'
         }
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEquals(response.data, expected)
+        self.assertEquals(sanitise_json_error(response.data), expected)
 
 
 class FunctionBasedViewIntegrationTests(TestCase):
@@ -67,7 +79,7 @@ class FunctionBasedViewIntegrationTests(TestCase):
             'detail': u'JSON parse error - No JSON object could be decoded'
         }
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEquals(response.data, expected)
+        self.assertEquals(sanitise_json_error(response.data), expected)
 
     def test_400_parse_error_tunneled_content(self):
         content = 'f00bar'
@@ -82,4 +94,4 @@ class FunctionBasedViewIntegrationTests(TestCase):
             'detail': u'JSON parse error - No JSON object could be decoded'
         }
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEquals(response.data, expected)
+        self.assertEquals(sanitise_json_error(response.data), expected)
