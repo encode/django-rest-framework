@@ -62,7 +62,7 @@ setup(
     author_email='tom@tomchristie.com',
     packages=get_packages('rest_framework'),
     package_data=get_package_data('rest_framework'),
-    test_suite='rest_framework.runtests.runcoverage.main',
+    test_suite='rest_framework.runtests.runtests.main',
     install_requires=[],
     classifiers=[
         'Development Status :: 4 - Beta',
