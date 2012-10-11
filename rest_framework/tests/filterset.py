@@ -1,4 +1,5 @@
 import datetime
+from decimal import Decimal
 from django.test import TestCase
 from django.test.client import RequestFactory
 from rest_framework import generics, status
@@ -50,7 +51,7 @@ class IntegrationTestFiltering(TestCase):
         """
         Create 10 FilterableItem instances.
         """
-        base_data = ('a', 0.25, datetime.date(2012, 10, 8))
+        base_data = ('a', Decimal('0.25'), datetime.date(2012, 10, 8))
         for i in range(10):
             text = chr(i + ord(base_data[0])) * 3  # Produces string 'aaa', 'bbb', etc.
             decimal = base_data[1] + i
