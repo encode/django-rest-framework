@@ -14,6 +14,9 @@ class NextPageField(serializers.Field):
         request = self.context.get('request')
         relative_url = '?page=%d' % page
         if request:
+            for field, value in request.QUERY_PARAMS.iteritems():
+                if field != 'page':
+                    relative_url += '&%s=%s' % (field, value)
             return request.build_absolute_uri(relative_url)
         return relative_url
 
@@ -29,7 +32,10 @@ class PreviousPageField(serializers.Field):
         request = self.context.get('request')
         relative_url = '?page=%d' % page
         if request:
-            return request.build_absolute_uri('?page=%d' % page)
+            for field, value in request.QUERY_PARAMS.iteritems():
+                if field != 'page':
+                    relative_url += '&%s=%s' % (field, value)
+            return request.build_absolute_uri(relative_url)
         return relative_url
 
 
