@@ -76,6 +76,7 @@ class IntegrationTestPagination(TestCase):
         self.assertEquals(response.data['next'], None)
         self.assertNotEquals(response.data['previous'], None)
 
+
 class IntegrationTestPaginationAndFiltering(TestCase):
 
     def setUp(self):
