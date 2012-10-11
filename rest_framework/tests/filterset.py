@@ -77,7 +77,7 @@ class IntegrationTestFiltering(TestCase):
         self.assertEquals(response.data, self.data)
 
         # Tests that the decimal filter works.
-        search_decimal = 2.25
+        search_decimal = Decimal('2.25')
         request = factory.get('/?decimal=%s' % search_decimal)
         response = view(request).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
@@ -106,7 +106,7 @@ class IntegrationTestFiltering(TestCase):
         self.assertEquals(response.data, self.data)
 
         # Tests that the decimal filter set with 'lt' in the filter class works.
-        search_decimal = 4.25
+        search_decimal = Decimal('4.25')
         request = factory.get('/?decimal=%s' % search_decimal)
         response = view(request).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
@@ -130,7 +130,7 @@ class IntegrationTestFiltering(TestCase):
         self.assertEquals(response.data, expected_data)
 
         # Tests that multiple filters works.
-        search_decimal = 5.25
+        search_decimal = Decimal('5.25')
         search_date = datetime.date(2012, 10, 2)
         request = factory.get('/?decimal=%s&date=%s' % (search_decimal, search_date))
         response = view(request).render()
