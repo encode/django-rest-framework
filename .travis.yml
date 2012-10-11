@@ -11,8 +11,6 @@ env:
 
 install:
   - pip install $DJANGO 
-  - pip install -e . --use-mirrors
-  - pip install -r requirements.txt --use-mirrors
 
 script:
-  - python setup.py test
+  - python rest_framework/runtests/runtests.py
