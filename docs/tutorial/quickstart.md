@@ -27,7 +27,7 @@ Notice that we're using hyperlinked relations in this case, with `HyperlinkedMod
 
 ## Views
 
-Right, we'd better right some views then.  Open `quickstart/views.py` and get typing.
+Right, we'd better write some views then.  Open `quickstart/views.py` and get typing.
 
     from django.contrib.auth.models import User, Group
     from rest_framework import generics
