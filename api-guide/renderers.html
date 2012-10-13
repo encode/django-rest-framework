@@ -73,7 +73,7 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/csrf">Working with AJAX and CSRF</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/browserhacks">Browser hacks</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/browser-enhancements">Browser enhancements</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/browsable-api">Working with the Browsable API</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
@@ -225,7 +225,7 @@ Unlike other renderers, the data passed to the <code>Response</code> does not ne
 <p><strong>.media_type:</strong> <code>text/html</code></p>
 <p><strong>.format:</strong> <code>'.api'</code></p>
 <h2 id="custom-renderers">Custom renderers</h2>
-<p>To implement a custom renderer, you should override <code>BaseRenderer</code>, set the <code>.media_type</code> and <code>.format</code> properties, and implement the <code>.render(self, data, media_type)</code> method.</p>
+<p>To implement a custom renderer, you should override <code>BaseRenderer</code>, set the <code>.media_type</code> and <code>.format</code> properties, and implement the <code>.render(self, data, media_type=None, renderer_context=None)</code> method.</p>
 <p>For example:</p>
 <pre class="prettyprint lang-py"><code>from django.utils.encoding import smart_unicode
 from rest_framework import renderers
@@ -234,11 +234,19 @@ class PlainText(renderers.BaseRenderer):
     media_type = 'text/plain'
     format = 'txt'
 
-    def render(self, data, media_type):
+    def render(self, data, media_type=None, renderer_context=None):
         if isinstance(data, basestring):
             return data
         return smart_unicode(data)
 </code></pre>
+<p>The arguments passed to the <code>.render()</code> method are:</p>
+<h4 id="data"><code>data</code></h4>
+<p>The request data, as set by the <code>Response()</code> instantiation.</p>
+<h4 id="media_typenone"><code>media_type=None</code></h4>
+<p>Optional. If provided, this is the accepted media type, as determined by the content negotiation stage.  Depending on the client's <code>Accept:</code> header, this may be more specific than the renderer's <code>media_type</code> attribute, and may include media type parameters.  For example <code>"application/json; nested=true"</code>.</p>
+<h4 id="renderer_contextnone"><code>renderer_context=None</code></h4>
+<p>Optional. If provided, this is a dictionary of contextual information provided by the view.
+By default this will include the following keys: <code>view</code>, <code>request</code>, <code>response</code>, <code>args</code>, <code>kwargs</code>.</p>
 <hr />
 <h1 id="advanced-renderer-usage">Advanced renderer usage</h1>
 <p>You can do some pretty flexible things using REST framework's renderers.  Some examples...</p>

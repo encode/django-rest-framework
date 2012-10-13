@@ -73,7 +73,7 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/csrf">Working with AJAX and CSRF</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/browserhacks">Browser hacks</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/browser-enhancements">Browser enhancements</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/browsable-api">Working with the Browsable API</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
@@ -124,6 +124,7 @@
 <li><a href="#template_name">.template_name</a></li>
 <li><a href="#accepted_renderer">.accepted_renderer</a></li>
 <li><a href="#accepted_media_type">.accepted_media_type</a></li>
+<li><a href="#renderer_context">.renderer_context</a></li>
 
               </ul>
             </div>
@@ -178,6 +179,9 @@ response['Cache-Control'] = 'no-cache'
 <p>Set automatically by the <code>APIView</code> or <code>@api_view</code> immediately before the response is returned from the view.</p>
 <h2 id="accepted_media_type">.accepted_media_type</h2>
 <p>The media type that was selected by the content negotiation stage.</p>
+<p>Set automatically by the <code>APIView</code> or <code>@api_view</code> immediately before the response is returned from the view.</p>
+<h2 id="renderer_context">.renderer_context</h2>
+<p>A dictionary of additional context information that will be passed to the renderer's <code>.render()</code> method.</p>
 <p>Set automatically by the <code>APIView</code> or <code>@api_view</code> immediately before the response is returned from the view.</p>
           </div><!--/span-->
         </div><!--/row-->

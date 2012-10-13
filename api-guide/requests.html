@@ -73,7 +73,7 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/csrf">Working with AJAX and CSRF</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/browserhacks">Browser hacks</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/browser-enhancements">Browser enhancements</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/browsable-api">Working with the Browsable API</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
@@ -113,15 +113,19 @@
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
                 <li class="main"><a href="#requests">Requests</a></li>
-<li><a href="#method">.method</a></li>
-<li><a href="#content_type">.content_type</a></li>
+<li class="main"><a href="#request-parsing">Request parsing</a></li>
 <li><a href="#data">.DATA</a></li>
 <li><a href="#files">.FILES</a></li>
+<li><a href="#query_params">.QUERY_PARAMS</a></li>
+<li><a href="#parsers">.parsers</a></li>
+<li class="main"><a href="#authentication">Authentication</a></li>
 <li><a href="#user">.user</a></li>
 <li><a href="#auth">.auth</a></li>
-<li><a href="#parsers">.parsers</a></li>
+<li><a href="#authenticators">.authenticators</a></li>
+<li class="main"><a href="#browser-enhancments">Browser enhancments</a></li>
+<li><a href="#method">.method</a></li>
+<li><a href="#content_type">.content_type</a></li>
 <li><a href="#stream">.stream</a></li>
-<li><a href="#authentication">.authentication</a></li>
 
               </ul>
             </div>
@@ -134,36 +138,67 @@
 <p>If you're doing REST-based web service stuff ... you should ignore request.POST.</p>
 <p>&mdash; Malcom Tredinnick, <a href="https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion">Django developers group</a></p>
 </blockquote>
-<p>REST framework's <code>Request</code> class extends the standard <code>HttpRequest</code>, adding support for parsing multiple content types, allowing browser-based <code>PUT</code>, <code>DELETE</code> and other methods, and adding flexible per-request authentication.</p>
-<h2 id="method">.method</h2>
-<p><code>request.method</code> returns the uppercased string representation of the request's HTTP method.</p>
-<p>Browser-based <code>PUT</code>, <code>DELETE</code> and other requests are supported, and can be made by using a hidden form field named <code>_method</code> in a regular <code>POST</code> form.</p>
-<h2 id="content_type">.content_type</h2>
-<p><code>request.content</code>, returns a string object representing the mimetype of the HTTP request's body, if one exists.</p>
+<p>REST framework's <code>Request</code> class extends the standard <code>HttpRequest</code>, adding support for REST framework's flexible request parsing and request authentication.</p>
+<hr />
+<h1 id="request-parsing">Request parsing</h1>
+<p>REST framework's Request objects provide flexible request parsing that allows you to treat requests with JSON data or other media types in the same way that you would normally deal with form data.</p>
 <h2 id="data">.DATA</h2>
-<p><code>request.DATA</code> returns the parsed content of the request body.  This is similar to the standard <code>HttpRequest.POST</code> attribute except that:</p>
-<ol>
+<p><code>request.DATA</code> returns the parsed content of the request body.  This is similar to the standard <code>request.POST</code> attribute except that:</p>
+<ul>
 <li>It supports parsing the content of HTTP methods other than <code>POST</code>, meaning that you can access the content of <code>PUT</code> and <code>PATCH</code> requests.</li>
-<li>It supports parsing multiple content types, rather than just form data.  For example you can handle incoming json data in the same way that you handle incoming form data.</li>
-</ol>
+<li>It supports REST framework's flexible request parsing, rather than just supporting form data.  For example you can handle incoming JSON data in the same way that you handle incoming form data.</li>
+</ul>
+<p>For more details see the <a href="parsers">parsers documentation</a>.</p>
 <h2 id="files">.FILES</h2>
 <p><code>request.FILES</code> returns any uploaded files that may be present in the content of the request body.  This is the same as the standard <code>HttpRequest</code> behavior, except that the same flexible request parsing that is used for <code>request.DATA</code>.</p>
-<p>This allows you to support file uploads from multiple content-types.  For example you can write a parser that supports <code>POST</code>ing the raw content of a file, instead of using form-encoded file uploads.</p>
-<h2 id="user">.user</h2>
-<p><code>request.user</code> returns a <code>django.contrib.auth.models.User</code> instance. </p>
-<h2 id="auth">.auth</h2>
-<p><code>request.auth</code> returns any additional authentication context that may not be contained in <code>request.user</code>.  The exact behavior of <code>request.auth</code> depends on what authentication has been set in <code>request.authentication</code>.  For many types of authentication this will simply be <code>None</code>, but it may also be an object representing a permission scope, an expiry time, or any other information that might be contained in a token-based authentication scheme.</p>
+<p>For more details see the <a href="parsers">parsers documentation</a>.</p>
+<h2 id="query_params">.QUERY_PARAMS</h2>
+<p><code>request.QUERY_PARAMS</code> is a more correcly named synonym for <code>request.GET</code>.</p>
+<p>For clarity inside your code, we recommend using <code>request.QUERY_PARAMS</code> instead of the usual <code>request.GET</code>, as <em>any</em> HTTP method type may include query parameters.</p>
 <h2 id="parsers">.parsers</h2>
-<p><code>request.parsers</code> should be set to a list of <code>Parser</code> instances that can be used to parse the content of the request body.</p>
-<p><code>request.parsers</code> may no longer be altered once <code>request.DATA</code>, <code>request.FILES</code> or <code>request.POST</code> have been accessed.</p>
-<p>If you're using the <code>rest_framework.views.View</code> class... <strong>[TODO]</strong></p>
+<p>The <code>APIView</code> class or <code>@api_view</code> decorator will ensure that this property is automatically to a list of <code>Parser</code> instances, based on the <code>parser_classes</code> set on the view or based on the <code>DEFAULT_PARSERS</code> setting.</p>
+<p>You won't typically need to access this property.</p>
+<hr />
+<p><strong>Note:</strong> If a client sends malformed content, then accessing <code>request.DATA</code> or <code>request.FILES</code> may raise a <code>ParseError</code>.  By default REST framework's <code>APIView</code> class or <code>@api_view</code> decorator will catch the error and return a <code>400 Bad Request</code> response.</p>
+<hr />
+<h1 id="authentication">Authentication</h1>
+<p>REST framework provides flexbile, per-request authentication, that gives you the abilty to:</p>
+<ul>
+<li>Use different authentication policies for different parts of your API.</li>
+<li>Support the use of multiple authentication policies.</li>
+<li>Provide both user and token information associated with the incoming request.</li>
+</ul>
+<h2 id="user">.user</h2>
+<p><code>request.user</code> typically returns an instance of <code>django.contrib.auth.models.User</code>, although the behavior depends on the authentication policy being used.</p>
+<p>If the request is unauthenticated the default value of <code>request.user</code> is an instance of <code>django.contrib.auth.models.AnonymousUser</code>.</p>
+<p>For more details see the <a href="authentication">authentication documentation</a>.</p>
+<h2 id="auth">.auth</h2>
+<p><code>request.auth</code> returns any additional authentication context.  The exact behavior of <code>request.auth</code> depends on the authentication policy being used, but it may typically be an instance of the token that the request was authenticated against.</p>
+<p>If the request is unauthenticated, or if no additional context is present, the default value of <code>request.auth</code> is <code>None</code>.</p>
+<p>For more details see the <a href="authentication">authentication documentation</a>.</p>
+<h2 id="authenticators">.authenticators</h2>
+<p>The <code>APIView</code> class or <code>@api_view</code> decorator will ensure that this property is automatically to a list of <code>Authentication</code> instances, based on the <code>authentication_classes</code> set on the view or based on the <code>DEFAULT_AUTHENTICATORS</code> setting.</p>
+<p>You won't typically need to access this property.</p>
+<hr />
+<h1 id="browser-enhancments">Browser enhancments</h1>
+<p>REST framework supports a few browser enhancments such as broser-based <code>PUT</code> and <code>DELETE</code> forms.</p>
+<h2 id="method">.method</h2>
+<p><code>request.method</code> returns the <strong>uppercased</strong> string representation of the request's HTTP method.</p>
+<p>Browser-based <code>PUT</code> and <code>DELETE</code> forms are transparently supported.</p>
+<p>For more information see the <a href="../topics/browser-enhancements">browser enhancements documentation</a>.  <br />
+</p>
+<h2 id="content_type">.content_type</h2>
+<p><code>request.content_type</code>, returns a string object representing the media type of the HTTP request's body, or an empty string if no media type was provided.</p>
+<p>You won't typically need to directly access the request's content type, as you'll normally rely on REST framework's default request parsing behavior.</p>
+<p>If you do need to access the content type of the request you should use the <code>.content_type</code> property in preference to using <code>request.META.get('HTTP_CONTENT_TYPE')</code>, as it provides transparent support for browser-based non-form content.</p>
+<p>For more information see the <a href="../topics/browser-enhancements">browser enhancements documentation</a>.  <br />
+</p>
 <h2 id="stream">.stream</h2>
 <p><code>request.stream</code> returns a stream representing the content of the request body.</p>
-<p>You will not typically need to access <code>request.stream</code>, unless you're writing a <code>Parser</code> class.</p>
-<h2 id="authentication">.authentication</h2>
-<p><code>request.authentication</code> should be set to a list of <code>Authentication</code> instances that can be used to authenticate the request.</p>
-<p><code>request.authentication</code> may no longer be altered once <code>request.user</code> or <code>request.auth</code> have been accessed.</p>
-<p>If you're using the <code>rest_framework.views.View</code> class... <strong>[TODO]</strong></p>
+<p>You won't typically need to directly access the request's content, as you'll normally rely on REST framework's default request parsing behavior.</p>
+<p>If you do need to access the raw content directly, you should use the <code>.stream</code> property in preference to using <code>request.content</code>, as it provides transparent support for browser-based non-form content.</p>
+<p>For more information see the <a href="../topics/browser-enhancements">browser enhancements documentation</a>.  <br />
+</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->
