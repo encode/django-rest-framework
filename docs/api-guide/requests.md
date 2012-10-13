@@ -79,7 +79,7 @@ You won't typically need to access this property.
 
 ---
 
-# Browser enhancments
+# Browser enhancements
 
 REST framework supports a few browser enhancments such as broser-based `PUT` and `DELETE` forms.
 
