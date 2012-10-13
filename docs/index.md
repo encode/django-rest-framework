@@ -100,7 +100,7 @@ General guides to using REST framework.
 
 * [CSRF][csrf]
 * [Browser enhancements][browser-enhancements]
-* [Working with the Browsable API][browsableapi]
+* [The Browsable API][browsableapi]
 * [REST, Hypermedia & HATEOAS][rest-hypermedia-hateoas]
 * [Contributing to REST framework][contributing]
 * [2.0 Migration Guide][migration]
