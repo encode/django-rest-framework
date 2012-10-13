@@ -74,7 +74,7 @@
                 <ul class="dropdown-menu">
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/csrf">Working with AJAX and CSRF</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/browser-enhancements">Browser enhancements</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/browsable-api">Working with the Browsable API</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/browsable-api">The Browsable API</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/migration">2.0 Migration Guide</a></li>
@@ -121,6 +121,10 @@
 
           <div id="main-content" class="span9">
             <h1 id="20-migration-guide">2.0 Migration Guide</h1>
+<blockquote>
+<p>Move fast and break things</p>
+<p>&mdash; Mark Zuckerberg, <a href="http://www.wired.com/business/2012/02/zuck-letter/">the Hacker Way</a>.</p>
+</blockquote>
 <p>REST framework 2.0 introduces a radical redesign of the core components, and a large number of backwards breaking changes.</p>
 <h3 id="serialization-redesign">Serialization redesign.</h3>
 <p>REST framework's serialization and deserialization previously used a slightly odd combination of serializers for output, and Django Forms and Model Forms for input.  The serialization core has been completely redesigned based on work that was originally intended for Django core.</p>
@@ -134,7 +138,7 @@
 <li>Responses inherit from <code>SimpleTemplateResponse</code>, allowing rendering to be delegated to the response, not handled by the view.</li>
 <li>Requests extend the regular <code>HttpRequest</code>, allowing authentication and parsing to be delegated to the request, not handled by the view.</li>
 </ul>
-<h3 id="renamed-attribnutes-classes">Renamed attribnutes &amp; classes.</h3>
+<h3 id="renamed-attributes-classes">Renamed attributes &amp; classes.</h3>
 <p>Various attributes and classes have been renamed in order to fit in better with Django's conventions.</p>
 <h2 id="example-blog-posts-api">Example: Blog Posts API</h2>
 <p>Let's take a look at an example from the REST framework 0.4 documentation...</p>
