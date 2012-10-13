@@ -144,7 +144,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 </code></pre>
 <p>Notice that we're using hyperlinked relations in this case, with <code>HyperlinkedModelSerializer</code>.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.</p>
 <h2 id="views">Views</h2>
-<p>Right, we'd better right some views then.  Open <code>quickstart/views.py</code> and get typing.</p>
+<p>Right, we'd better write some views then.  Open <code>quickstart/views.py</code> and get typing.</p>
 <pre class="prettyprint lang-py"><code>from django.contrib.auth.models import User, Group
 from rest_framework import generics
 from rest_framework.decorators import api_view
