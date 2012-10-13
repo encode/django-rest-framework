@@ -96,7 +96,7 @@ class Request(object):
         """
         Returns the content type header.
 
-        This should be used instead of ``request.META.get('HTTP_CONTENT_TYPE')``,
+        This should be used instead of `request.META.get('HTTP_CONTENT_TYPE')`,
         as it allows the content type to be overridden by using a hidden form
         field on a form POST request.
         """
