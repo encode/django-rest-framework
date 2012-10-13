@@ -99,7 +99,7 @@ The API guide is your complete reference manual to all the functionality provide
 General guides to using REST framework.
 
 * [CSRF][csrf]
-* [Browser hacks][browserhacks]
+* [Browser enhancements][browser-enhancements]
 * [Working with the Browsable API][browsableapi]
 * [REST, Hypermedia & HATEOAS][rest-hypermedia-hateoas]
 * [Contributing to REST framework][contributing]
@@ -185,7 +185,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [settings]: api-guide/settings.md
 
 [csrf]: topics/csrf.md
-[browserhacks]: topics/browserhacks.md
+[browser-enhancements]: topics/browser-enhancements.md
 [browsableapi]: topics/browsable-api.md
 [rest-hypermedia-hateoas]: topics/rest-hypermedia-hateoas.md
 [contributing]: topics/contributing.md

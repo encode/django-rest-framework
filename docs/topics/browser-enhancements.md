@@ -1,4 +1,4 @@
-# Browser hacks
+# Browser enhancements
 
 > "There are two noncontroversial uses for overloaded POST.  The first is to *simulate* HTTP's uniform interface for clients like web browsers that don't support PUT or DELETE"
 >
@@ -27,7 +27,7 @@ For example, given the following form:
 		<input name="_content" value="{'count': 1}">
 	</form>
 
-`request.content_type` would return `"application/json"`, and `request.content` would return `"{'count': 1}"`
+`request.content_type` would return `"application/json"`, and `request.stream` would return `"{'count': 1}"`
 
 ## URL based accept headers
 
