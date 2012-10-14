@@ -83,7 +83,7 @@ You won't typically need to access this property.
 
 # Browser enhancements
 
-REST framework supports a few browser enhancments such as broser-based `PUT` and `DELETE` forms.
+REST framework supports a few browser enhancments such as browser-based `PUT` and `DELETE` forms.
 
 ## .method
 
