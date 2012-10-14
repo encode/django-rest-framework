@@ -98,23 +98,6 @@ class YAMLParser(BaseParser):
             raise ParseError('YAML parse error - %s' % unicode(exc))
 
 
-class PlainTextParser(BaseParser):
-    """
-    Plain text parser.
-    """
-
-    media_type = 'text/plain'
-
-    def parse_stream(self, stream, **opts):
-        """
-        Returns a 2-tuple of `(data, files)`.
-
-        `data` will simply be a string representing the body of the request.
-        `files` will always be `None`.
-        """
-        return stream.read()
-
-
 class FormParser(BaseParser):
     """
     Parser for form data.

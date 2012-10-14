@@ -45,6 +45,8 @@ You won't typically need to access this property.
 
 **Note:** If a client sends malformed content, then accessing `request.DATA` or `request.FILES` may raise a `ParseError`.  By default REST framework's `APIView` class or `@api_view` decorator will catch the error and return a `400 Bad Request` response.
 
+If a client sends a request with a content-type that cannot be parsed then a `UnsupportedMediaType` exception will be raised, which by default will be caught and return a `415 Unsupported Media Type` response.
+
 ---
 
 # Authentication
