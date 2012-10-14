@@ -1,5 +1,10 @@
 # The Browsable API
 
+> It is a profoundly erroneous truism... that we should cultivate the habit of thinking of what we are doing. The precise opposite is the case. Civilization advances by extending the number of important operations which we can perform without thinking about them.
+>
+> &mdash; [Alfred North Whitehead][cite], An Introduction to Mathematics (1911)
+
+
 API may stand for Application *Programming* Interface, but humans have to be able to read the APIs, too; someone has to do the programming. Django REST Framework supports generating human-friendly HTML output for each resource when the `HTML` format is requested. These pages allow for easy browsing of resources, as well as forms for submitting data to the resources using `POST`, `PUT`, and `DELETE`.
 
 ## URLs
@@ -85,7 +90,7 @@ The context that's available to the template:
 
 For more advanced customization, such as not having a Bootstrap basis or tighter integration with the rest of your site, you can simply choose not to have `api.html` extend `base.html`. Then the page content and capabilities are entirely up to you.
 
-
+[cite]: http://en.wikiquote.org/wiki/Alfred_North_Whitehead
 [drfreverse]: ../api-guide/reverse.md
 [ffjsonview]: https://addons.mozilla.org/en-US/firefox/addon/jsonview/
 [chromejsonview]: https://chrome.google.com/webstore/detail/chklaanhfefbnpoihckbnefhakgolnmc

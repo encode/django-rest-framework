@@ -111,6 +111,15 @@ If you do need to access the raw content directly, you should use the `.stream` 
 
 For more information see the [browser enhancements documentation].    
 
+---
+
+# Standard HttpRequest attributes
+
+As REST framework's `Request` extends Django's `HttpRequest`, all the other standard attributes and methods are also available.  For example the `request.META` dictionary is available as normal.
+
+Note that due to implementation reasons the `Request` class does not inherit from `HttpRequest` class, but instead extends the class using composition.
+
+
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion
 [parsers documentation]: parsers.md
 [authentication documentation]: authentication.md

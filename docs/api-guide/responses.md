@@ -16,7 +16,7 @@ Unless you want to heavily customize REST framework for some reason, you should 
 
 ---
 
-# Methods
+# Creating responses
 
 ## Response()
 
@@ -34,21 +34,6 @@ Arguments:
 * `status`: A status code for the response.  Defaults to 200.  See also [status codes][statuscodes].
 * `template_name`: A template name to use if `HTMLRenderer` is selected.
 * `headers`: A dictionary of HTTP headers to use in the response.
-
-## .render()
-
-**Signature:** `.render()`
-
-This methd is called to render the serialized data of the response into the final response content.  When `.render()` is called, the response content will be set to the result of calling the `.render(data, accepted_media_type)` method on the accepted renderer instance.
-
-You won't typically need to call `.render()` yourself, as it's handled by Django's standard response cycle.
-
-## Standard response methods
-
-The `Response` class extends `SimpleTemplateResponse`, and all the usual methods are also available on the response.  For example you can set headers on the response in the standard way:
-
-    response = Response()
-    response['Cache-Control'] = 'no-cache'
 
 ---
 
@@ -88,5 +73,22 @@ A dictionary of additional context information that will be passed to the render
 
 Set automatically by the `APIView` or `@api_view` immediately before the response is returned from the view.
 
+---
+
+# Standard HttpResponse attributes
+
+The `Response` class extends `SimpleTemplateResponse`, and all the usual attributes and methods are also available on the response.  For example you can set headers on the response in the standard way:
+
+    response = Response()
+    response['Cache-Control'] = 'no-cache'
+
+## .render()
+
+**Signature:** `.render()`
+
+As with any other `TemplateResponse`, this methd is called to render the serialized data of the response into the final response content.  When `.render()` is called, the response content will be set to the result of calling the `.render(data, accepted_media_type, renderer_context)` method on the `accepted_renderer` instance.
+
+You won't typically need to call `.render()` yourself, as it's handled by Django's standard response cycle.
+    
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/
 [statuscodes]: status-codes.md
