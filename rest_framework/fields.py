@@ -409,6 +409,13 @@ class BooleanField(WritableField):
             return False
         raise ValidationError(self.error_messages['invalid'] % value)
 
+class TextField(WritableField):
+    type_name = 'TextField'
+
+    def from_native(self, value):
+        if isinstance(value, basestring) or value is None:
+            return value
+        return smart_unicode(value)
 
 class CharField(WritableField):
     type_name = 'CharField'
