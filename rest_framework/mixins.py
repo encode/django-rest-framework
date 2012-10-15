@@ -32,8 +32,15 @@ class ListModelMixin(object):
     """
     empty_error = u"Empty list and '%(class_name)s.allow_empty' is False."
 
+    def limit_list(self, request, queryset):
+        """
+        Override this method to limit the queryset based on information in the request, such as the logged in user.
+        Should return the limited queryset, defaults to no limits.
+        """
+        return queryset
+
     def list(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
+        self.object_list = self.limit_list(request, self.get_queryset())
 
         # Default is to allow empty querysets.  This can be altered by setting
         # `.allow_empty = False`, to raise 404 errors on empty querysets.
