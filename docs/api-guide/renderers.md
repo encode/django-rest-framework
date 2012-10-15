@@ -98,7 +98,7 @@ Renders the request data into `YAML`.
 
 Renders REST framework's default style of `XML` response content.
 
-Note that the `XML` markup language is used typically used as the base language for more strictly defined domain-specific languages, such as `RSS`, `Atom`, `SOAP`, and `XHTML`.
+Note that the `XML` markup language is used typically used as the base language for more strictly defined domain-specific languages, such as `RSS`, `Atom`, and `XHTML`.
 
 If you are considering using `XML` for your API, you may want to consider implementing a custom renderer and parser for your specific requirements, and using an existing domain-specific media-type, or creating your own custom XML-based media-type.
 
@@ -154,21 +154,6 @@ Renders data into HTML for the Browseable API.  This renderer will determine whi
 
 To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, media_type=None, renderer_context=None)` method.
 
-For example:
-
-    from django.utils.encoding import smart_unicode
-    from rest_framework import renderers
-
-
-    class PlainText(renderers.BaseRenderer):
-        media_type = 'text/plain'
-        format = 'txt'
-        
-        def render(self, data, media_type=None, renderer_context=None):
-            if isinstance(data, basestring):
-                return data
-            return smart_unicode(data)
-
 The arguments passed to the `.render()` method are:
 
 ### `data`
@@ -183,6 +168,23 @@ Optional. If provided, this is the accepted media type, as determined by the con
 
 Optional. If provided, this is a dictionary of contextual information provided by the view.
 By default this will include the following keys: `view`, `request`, `response`, `args`, `kwargs`.
+
+## Example
+
+The following is an example plaintext renderer that will return a response with the `data` parameter as the content of the response.
+
+    from django.utils.encoding import smart_unicode
+    from rest_framework import renderers
+
+
+    class PlainText(renderers.BaseRenderer):
+        media_type = 'text/plain'
+        format = 'txt'
+        
+        def render(self, data, media_type=None, renderer_context=None):
+            if isinstance(data, basestring):
+                return data
+            return smart_unicode(data)
 
 ---
 

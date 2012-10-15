@@ -7,6 +7,7 @@ and providing forms and links depending on the allowed methods, renderers and pa
 """
 import string
 from django import forms
+from django.http.multipartparser import parse_header
 from django.template import RequestContext, loader
 from django.utils import simplejson as json
 from rest_framework.compat import yaml
@@ -16,7 +17,6 @@ from rest_framework.request import clone_request
 from rest_framework.utils import dict2xml
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
-from rest_framework.utils.mediatypes import get_media_type_params
 from rest_framework import VERSION
 from rest_framework import serializers, parsers
 
@@ -58,7 +58,7 @@ class JSONRenderer(BaseRenderer):
         if accepted_media_type:
             # If the media type looks like 'application/json; indent=4',
             # then pretty print the result.
-            params = get_media_type_params(accepted_media_type)
+            base_media_type, params = parse_header(accepted_media_type)
             indent = params.get('indent', indent)
             try:
                 indent = max(min(int(indent), 8), 0)

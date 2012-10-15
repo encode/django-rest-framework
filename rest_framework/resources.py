@@ -70,6 +70,7 @@ class Resource(ResourceMixin, views.APIView):
 ##### RESOURCES AND ROUTERS ARE NOT YET IMPLEMENTED - PLACEHOLDER ONLY #####
 
 class ModelResource(ResourceMixin, views.APIView):
+    # TODO: Actually delegation won't work
     root_class = generics.ListCreateAPIView
     detail_class = generics.RetrieveUpdateDestroyAPIView
 

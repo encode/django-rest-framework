@@ -38,7 +38,7 @@ class BaseParser(object):
 
     media_type = None
 
-    def parse(self, string_or_stream, **opts):
+    def parse(self, string_or_stream, parser_context=None):
         """
         The main entry point to parsers.  This is a light wrapper around
         `parse_stream`, that instead handles both string and stream objects.
@@ -47,9 +47,9 @@ class BaseParser(object):
             stream = BytesIO(string_or_stream)
         else:
             stream = string_or_stream
-        return self.parse_stream(stream, **opts)
+        return self.parse_stream(stream, parser_context)
 
-    def parse_stream(self, stream, **opts):
+    def parse_stream(self, stream, parser_context=None):
         """
         Given a stream to read from, return the deserialized output.
         Should return parsed data, or a DataAndFiles object consisting of the
@@ -65,7 +65,7 @@ class JSONParser(BaseParser):
 
     media_type = 'application/json'
 
-    def parse_stream(self, stream, **opts):
+    def parse_stream(self, stream, parser_context=None):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -85,7 +85,7 @@ class YAMLParser(BaseParser):
 
     media_type = 'application/yaml'
 
-    def parse_stream(self, stream, **opts):
+    def parse_stream(self, stream, parser_context=None):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -105,7 +105,7 @@ class FormParser(BaseParser):
 
     media_type = 'application/x-www-form-urlencoded'
 
-    def parse_stream(self, stream, **opts):
+    def parse_stream(self, stream, parser_context=None):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -123,15 +123,16 @@ class MultiPartParser(BaseParser):
 
     media_type = 'multipart/form-data'
 
-    def parse_stream(self, stream, **opts):
+    def parse_stream(self, stream, parser_context=None):
         """
         Returns a DataAndFiles object.
 
         `.data` will be a `QueryDict` containing all the form parameters.
         `.files` will be a `QueryDict` containing all the form files.
         """
-        meta = opts['meta']
-        upload_handlers = opts['upload_handlers']
+        parser_context = parser_context or {}
+        meta = parser_context['meta']
+        upload_handlers = parser_context['upload_handlers']
         try:
             parser = DjangoMultiPartParser(meta, stream, upload_handlers)
             data, files = parser.parse()
@@ -147,7 +148,7 @@ class XMLParser(BaseParser):
 
     media_type = 'application/xml'
 
-    def parse_stream(self, stream, **opts):
+    def parse_stream(self, stream, parser_context=None):
         try:
             tree = ET.parse(stream)
         except (ExpatError, ETParseError, ValueError), exc:

@@ -35,7 +35,7 @@ DEFAULTS = {
     ),
     'DEFAULT_AUTHENTICATION': (
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.UserBasicAuthentication'
+        'rest_framework.authentication.BasicAuthentication'
     ),
     'DEFAULT_PERMISSIONS': (),
     'DEFAULT_THROTTLES': (),

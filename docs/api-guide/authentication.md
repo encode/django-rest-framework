@@ -60,6 +60,8 @@ Or, if you're using the `@api_view` decorator with function based views.
         }
         return Response(content)
 
+# API Reference
+
 ## BasicAuthentication
 
 This policy uses [HTTP Basic Authentication][basicauth], signed against a user's username and password.  Basic authentication is generally only appropriate for testing.
@@ -113,7 +115,7 @@ If successfully authenticated, `SessionAuthentication` provides the following cr
 * `request.user` will be a `django.contrib.auth.models.User` instance.
 * `request.auth` will be `None`.
 
-## Custom authentication policies
+# Custom authentication
 
 To implement a custom authentication policy, subclass `BaseAuthentication` and override the `.authenticate(self, request)` method.  The method should return a two-tuple of `(user, auth)` if authentication succeeds, or `None` otherwise.
 

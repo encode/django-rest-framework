@@ -24,15 +24,15 @@ For a more thorough background, check out Klabnik's [Hypermedia API reading list
 
 REST framework is an agnositic Web API toolkit.  It does help guide you towards building well-connected APIs, and makes it easy to design appropriate media types, but it does not strictly enforce any particular design style.
 
-### What REST framework *does* provide.
+## What REST framework *does* provide.
 
 It is self evident that REST framework makes it possible to build Hypermedia APIs.  The browseable API that it offers is built on HTML - the hypermedia language of the web.
 
 REST framework also includes [serialization] and [parser]/[renderer] components that make it easy to build appropriate media types, [hyperlinked relations][fields] for building well-connected systems, and great support for [content negotiation][conneg].
 
-### What REST framework *doesn't* provide.
+## What REST framework *doesn't* provide.
 
-What REST framework doesn't do is give you is machine readable hypermedia formats such as [Collection+JSON][collection] or HTML [microformats] by default, or the ability to auto-magically create fully HATEOAS style APIs that include form descriptions, and semantically labelled hyperlinks.  Doing so would involve making opinionated choices about API design that should really remain outside of the framework's scope.
+What REST framework doesn't do is give you is machine readable hypermedia formats such as [Collection+JSON][collection] or HTML [microformats] by default, or the ability to auto-magically create fully HATEOAS style APIs that include hypermedia-based form descriptions and semantically labelled hyperlinks.  Doing so would involve making opinionated choices about API design that should really remain outside of the framework's scope.
 
 [cite]: http://vimeo.com/channels/restfest/page:2
 [dissertation]: http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm

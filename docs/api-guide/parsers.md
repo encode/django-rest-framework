@@ -65,7 +65,7 @@ Parses `YAML` request content.
 
 Parses REST framework's default style of `XML` request content.
 
-Note that the `XML` markup language is used typically used as the base language for more strictly defined domain-specific languages, such as `RSS`, `Atom`, `SOAP`, and `XHTML`.
+Note that the `XML` markup language is used typically used as the base language for more strictly defined domain-specific languages, such as `RSS`, `Atom`, and `XHTML`.
 
 If you are considering using `XML` for your API, you may want to consider implementing a custom renderer and parser for your specific requirements, and using an existing domain-specific media-type, or creating your own custom XML-based media-type.
 
@@ -95,7 +95,19 @@ To implement a custom parser, you should override `BaseParser`, set the `.media_
 
 The method should return the data that will be used to populate the `request.DATA` property.
 
-For example:
+The arguments passed to `.parse_stream()` are:
+
+### stream
+
+A stream-like object representing the body of the request.
+
+### parser_context
+
+If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.  By default it includes the keys `'upload_handlers'` and `'meta'`, which contain the values of the `request.upload_handlers` and `request.meta` properties.
+
+## Example
+
+The following is an example plaintext parser that will populate the `request.DATA` property with a string representing the body of the request. 
 
     class PlainTextParser(BaseParser):
     """
@@ -109,16 +121,6 @@ For example:
         Simply return a string representing the body of the request.
         """
         return stream.read()
-
-The arguments passed to `.parse_stream()` are:
-
-### stream
-
-A stream-like object representing the body of the request.
-
-### parser_context
-
-If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.  By default it includes the keys `'upload_handlers'` and `'meta'`, which contain the values of the `request.upload_handlers` and `request.meta` properties.
 
 ## Uploading file content
 

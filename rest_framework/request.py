@@ -11,9 +11,18 @@ The wrapped request then offers a richer API, in particular :
 """
 from StringIO import StringIO
 
+from django.http.multipartparser import parse_header
 from rest_framework import exceptions
 from rest_framework.settings import api_settings
-from rest_framework.utils.mediatypes import is_form_media_type
+
+
+def is_form_media_type(media_type):
+    """
+    Return True if the media type is a valid form media type.
+    """
+    base_media_type, params = parse_header(media_type)
+    return base_media_type == 'application/x-www-form-urlencoded' or \
+           base_media_type == 'multipart/form-data'
 
 
 class Empty(object):
@@ -35,7 +44,8 @@ def clone_request(request, method):
     """
     ret = Request(request._request,
                   request.parsers,
-                  request.authenticators)
+                  request.authenticators,
+                  request.parser_context)
     ret._data = request._data
     ret._files = request._files
     ret._content_type = request._content_type
@@ -65,19 +75,29 @@ class Request(object):
     _CONTENTTYPE_PARAM = api_settings.FORM_CONTENTTYPE_OVERRIDE
 
     def __init__(self, request, parsers=None, authenticators=None,
-                 negotiator=None):
+                 negotiator=None, parser_context=None):
         self._request = request
         self.parsers = parsers or ()
         self.authenticators = authenticators or ()
         self.negotiator = negotiator or self._default_negotiator()
+        self.parser_context = parser_context
         self._data = Empty
         self._files = Empty
         self._method = Empty
         self._content_type = Empty
         self._stream = Empty
 
+        if self.parser_context is None:
+            self.parser_context = self._default_parser_context(request)
+
     def _default_negotiator(self):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION()
+
+    def _default_parser_context(self, request):
+        return {
+            'upload_handlers': request.upload_handlers,
+            'meta': request.META,
+        }
 
     @property
     def method(self):
@@ -253,8 +273,7 @@ class Request(object):
         if not parser:
             raise exceptions.UnsupportedMediaType(self.content_type)
 
-        parsed = parser.parse(self.stream, meta=self.META,
-                              upload_handlers=self.upload_handlers)
+        parsed = parser.parse(self.stream, self.parser_context)
         # Parser classes may return the raw data, or a
         # DataAndFiles object.  Unpack the result as required.
         try:

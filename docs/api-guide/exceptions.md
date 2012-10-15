@@ -37,7 +37,7 @@ Might recieve an error response indicating that the `DELETE` method is not allow
 
 **Signature:** `APIException(detail=None)`
 
-The base class for all exceptions raised inside REST framework.
+The **base class** for all exceptions raised inside REST framework.
 
 To provide a custom exception, subclass `APIException` and set the `.status_code` and `.detail` properties on the class.
 

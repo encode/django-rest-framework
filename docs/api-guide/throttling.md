@@ -63,6 +63,8 @@ Or, if you're using the `@api_view` decorator with function based views.
         }
         return Response(content)
 
+# API Reference
+
 ## AnonRateThrottle
 
 The `AnonThrottle` will only ever throttle unauthenticated users.  The IP address of the incoming request is used to generate a unique key to throttle against.
@@ -142,7 +144,7 @@ For example, given the following views...
 
 User requests to either `ContactListView` or `ContactDetailView` would be restricted to a total of 1000 requests per-day.  User requests to `UploadView` would be restricted to 20 requests per day.
 
-## Custom throttles
+# Custom throttles
 
 To create a custom throttle, override `BaseThrottle` and implement `.allow_request(request, view)`.  The method should return `True` if the request should be allowed, and `False` otherwise.
 

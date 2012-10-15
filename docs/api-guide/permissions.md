@@ -54,6 +54,8 @@ Or, if you're using the `@api_view` decorator with function based views.
         }
         return Response(content)
 
+# API Reference
+
 ## IsAuthenticated
 
 The `IsAuthenticated` permission class will deny permission to any unauthenticated user, and allow permission otherwise.
@@ -86,7 +88,7 @@ To use custom model permissions, override `DjangoModelPermissions` and set the `
 
 The `DjangoModelPermissions` class also supports object-level permissions.  Third-party authorization backends such as [django-guardian][guardian] that provide object-level permissions should work just fine with `DjangoModelPermissions` without any custom configuration required.
 
-## Custom permissions
+# Custom permissions
 
 To implement a custom permission, override `BasePermission` and implement the `.has_permission(self, request, view, obj=None)` method.
 

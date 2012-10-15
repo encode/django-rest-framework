@@ -1,8 +1,5 @@
 """
-The :mod:`views` module provides the Views you will most probably
-be subclassing in your implementation.
-
-By setting or modifying class attributes on your view, you change it's predefined behaviour.
+Provides an APIView class that is used as the base of all class-based views.
 """
 
 import re
@@ -159,9 +156,19 @@ class APIView(View):
         """
         raise exceptions.Throttled(wait)
 
+    def get_parser_context(self, request):
+        """
+        Returns a dict that is passed through to Parser.parse_stream(),
+        as the `parser_context` keyword argument.
+        """
+        return {
+            'upload_handlers': request.upload_handlers,
+            'meta': request.META,
+        }
+
     def get_renderer_context(self):
         """
-        Returns a dict that is passed through to the Renderer.render(),
+        Returns a dict that is passed through to Renderer.render(),
         as the `renderer_context` keyword argument.
         """
         # Note: Additionally 'response' will also be set on the context,
@@ -253,10 +260,13 @@ class APIView(View):
         """
         Returns the initial request object.
         """
+        parser_context = self.get_parser_context(request)
+
         return Request(request,
                        parsers=self.get_parsers(),
                        authenticators=self.get_authenticators(),
-                       negotiator=self.get_content_negotiator())
+                       negotiator=self.get_content_negotiator(),
+                       parser_context=parser_context)
 
     def initial(self, request, *args, **kwargs):
         """
