@@ -377,11 +377,14 @@ class ModelSerializer(Serializer):
         field_mapping = {
             models.FloatField: FloatField,
             models.IntegerField: IntegerField,
+            models.PositiveIntegerField: IntegerField,
+            models.SmallIntegerField: IntegerField,
+            models.PositiveSmallIntegerField: IntegerField,
             models.DateTimeField: DateTimeField,
             models.DateField: DateField,
             models.EmailField: EmailField,
             models.CharField: CharField,
-            models.TextField: TextField,
+            models.TextField: CharField,
             models.CommaSeparatedIntegerField: CharField,
             models.BooleanField: BooleanField,
         }
