@@ -28,6 +28,26 @@ class CommentSerializer(serializers.Serializer):
         return instance
 
 
+class LongText(object):
+    def __init__(self, content):
+        self.content = content
+
+    def __eq__(self, other):
+        return all([getattr(self, attr) == getattr(other, attr)
+                    for attr in ('content',)])
+
+
+class LongTextSerializer(serializers.Serializer):
+    content = serializers.TextField()
+
+    def restore_object(self, data, instance=None):
+        if instance is None:
+            return LongText(**data)
+        for key, val in data.items():
+            setattr(instance, key, val)
+        return instance
+
+
 class BasicTests(TestCase):
     def setUp(self):
         self.comment = Comment(
@@ -82,6 +102,7 @@ class ValidationTests(TestCase):
             'content': 'x' * 1001,
             'created': datetime.datetime(2012, 1, 1)
         }
+        self.long_text = LongText('test test test test')
 
     def test_create(self):
         serializer = CommentSerializer(self.data)
@@ -101,6 +122,14 @@ class ValidationTests(TestCase):
         serializer = CommentSerializer(data, instance=self.comment)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'email': [u'This field is required.']})
+
+    def test_update_long_text(self):
+        data = {
+            'content' : 'Lorem ipsum dolor sit amet.'
+        }
+        serializer = LongTextSerializer(data, self.long_text)
+        self.assertEquals(serializer.is_valid(), True)
+        self.assertEquals(data['content'], self.long_text.content)
 
 
 class MetadataTests(TestCase):
