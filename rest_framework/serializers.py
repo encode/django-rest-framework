@@ -381,7 +381,7 @@ class ModelSerializer(Serializer):
             models.DateField: DateField,
             models.EmailField: EmailField,
             models.CharField: CharField,
-			models.TextField: TextField,
+            models.TextField: TextField,
             models.CommaSeparatedIntegerField: CharField,
             models.BooleanField: BooleanField,
         }
