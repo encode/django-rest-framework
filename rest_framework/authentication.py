@@ -4,6 +4,7 @@ Provides a set of pluggable authentication policies.
 
 from django.contrib.auth import authenticate
 from django.utils.encoding import smart_unicode, DjangoUnicodeDecodeError
+from rest_framework import exceptions
 from rest_framework.compat import CsrfViewMiddleware
 from rest_framework.authtoken.models import Token
 import base64
@@ -71,12 +72,23 @@ class SessionAuthentication(BaseAuthentication):
         http_request = request._request
         user = getattr(http_request, 'user', None)
 
-        if user and user.is_active:
-            # Enforce CSRF validation for session based authentication.
-            resp = CsrfViewMiddleware().process_view(http_request, None, (), {})
+        # Unauthenticated, CSRF validation not required
+        if not user or not user.is_active:
+            return
 
-            if resp is None:  # csrf passed
-                return (user, None)
+        # Enforce CSRF validation for session based authentication.
+        class CSRFCheck(CsrfViewMiddleware):
+            def _reject(self, request, reason):
+                # Return the failure reason instead of an HttpResponse
+                return reason
+
+        reason = CSRFCheck().process_view(http_request, None, (), {})
+        if reason:
+            # CSRF failed, bail with explicit error message
+            raise exceptions.PermissionDenied('CSRF Failed: %s' % reason)
+
+        # CSRF passed with authenticated user
+        return (user, None)
 
 
 class TokenAuthentication(BaseAuthentication):

@@ -235,8 +235,11 @@ class BrowsableAPIRenderer(BaseRenderer):
             return  # Cannot use form overloading
 
         request = clone_request(request, method)
-        if not view.has_permission(request):
-            return  # Don't have permission
+        try:
+            if not view.has_permission(request):
+                return  # Don't have permission
+        except:
+            return  # Don't have permission and exception explicitly raise
 
         if method == 'DELETE' or method == 'OPTIONS':
             return True  # Don't actually need to return a form

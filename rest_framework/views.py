@@ -156,14 +156,14 @@ class APIView(View):
         """
         raise exceptions.Throttled(wait)
 
-    def get_parser_context(self, request):
+    def get_parser_context(self, http_request):
         """
         Returns a dict that is passed through to Parser.parse_stream(),
         as the `parser_context` keyword argument.
         """
         return {
-            'upload_handlers': request.upload_handlers,
-            'meta': request.META,
+            'upload_handlers': http_request.upload_handlers,
+            'meta': http_request.META,
         }
 
     def get_renderer_context(self):
