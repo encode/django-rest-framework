@@ -92,7 +92,7 @@ If successfully authenticated, `BasicAuthentication` provides the following cred
 * `request.user` will be a `django.contrib.auth.models.User` instance.
 * `request.auth` will be `None`.
 
-Unauthenticated responses that are denied permission will result in an `HTTP 401 Unauthenticated` response with an appropriate WWW-Authenticate header.  For example:
+Unauthenticated responses that are denied permission will result in an `HTTP 401 Unauthorized` response with an appropriate WWW-Authenticate header.  For example:
 
     WWW-Authenticate: Basic realm="api"
 
@@ -120,7 +120,7 @@ If successfully authenticated, `TokenAuthentication` provides the following cred
 * `request.user` will be a `django.contrib.auth.models.User` instance.
 * `request.auth` will be a `rest_framework.tokenauth.models.BasicToken` instance.
 
-Unauthenticated responses that are denied permission will result in an `HTTP 401 Unauthenticated` response with an appropriate WWW-Authenticate header.  For example:
+Unauthenticated responses that are denied permission will result in an `HTTP 401 Unauthorized` response with an appropriate WWW-Authenticate header.  For example:
 
     WWW-Authenticate: Token
 
@@ -163,7 +163,7 @@ Typically the approach you should take is:
 * If authentication is not attempted, return `None`.  Any other authentication schemes also in use will still be checked.
 * If authentication is attempted but fails, raise an `Unauthenticated` exception.  An error response will be returned immediately, without checking any other authentication schemes.
 
-You *may* also override the `.authentication_header(self, request)` method.  If implemented, it should return a string that will be used as the value of the `WWW-Authenticate` header in a `HTTP 401 Unauthenticated` response.
+You *may* also override the `.authentication_header(self, request)` method.  If implemented, it should return a string that will be used as the value of the `WWW-Authenticate` header in a `HTTP 401 Unauthorized` response.
 
 If the `.authentication_header()` method is not overridden, the authentication scheme will return `HTTP 403 Forbidden` responses when an unauthenticated request is denied access.
 
