@@ -23,6 +23,14 @@ class ParseError(APIException):
         self.detail = detail or self.default_detail
 
 
+class Unauthenticated(APIException):
+    status_code = status.HTTP_401_UNAUTHENTICATED
+    default_detail = 'Incorrect or absent authentication credentials.'
+
+    def __init__(self, detail=None):
+        self.detail = detail or self.default_detail
+
+
 class PermissionDenied(APIException):
     status_code = status.HTTP_403_FORBIDDEN
     default_detail = 'You do not have permission to perform this action.'
