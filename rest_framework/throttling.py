@@ -22,7 +22,7 @@ class BaseThrottle(object):
         return None
 
 
-class SimpleRateThottle(BaseThrottle):
+class SimpleRateThrottle(BaseThrottle):
     """
     A simple cache implementation, that only requires `.get_cache_key()`
     to be overridden.
@@ -133,7 +133,7 @@ class SimpleRateThottle(BaseThrottle):
         return remaining_duration / float(available_requests)
 
 
-class AnonRateThrottle(SimpleRateThottle):
+class AnonRateThrottle(SimpleRateThrottle):
     """
     Limits the rate of API calls that may be made by a anonymous users.
 
@@ -153,7 +153,7 @@ class AnonRateThrottle(SimpleRateThottle):
         }
 
 
-class UserRateThrottle(SimpleRateThottle):
+class UserRateThrottle(SimpleRateThrottle):
     """
     Limits the rate of API calls that may be made by a given user.
 
@@ -175,7 +175,7 @@ class UserRateThrottle(SimpleRateThottle):
         }
 
 
-class ScopedRateThrottle(SimpleRateThottle):
+class ScopedRateThrottle(SimpleRateThrottle):
     """
     Limits the rate of API calls by different amounts for various parts of
     the API.  Any view that has the `throttle_scope` property set will be
