@@ -78,7 +78,7 @@
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/migration">2.0 Migration Guide</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/changelog">Change Log</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/release-notes">Release Notes</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/credits">Credits</a></li>
                 </ul>
               </li>
@@ -113,12 +113,17 @@
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
                 <li class="main"><a href="#parsers">Parsers</a></li>
+<li><a href="#how-the-parser-is-determined">How the parser is determined</a></li>
+<li><a href="#setting-the-parsers">Setting the parsers</a></li>
+<li class="main"><a href="#api-reference">API Reference</a></li>
 <li><a href="#jsonparser">JSONParser</a></li>
 <li><a href="#yamlparser">YAMLParser</a></li>
 <li><a href="#xmlparser">XMLParser</a></li>
 <li><a href="#formparser">FormParser</a></li>
 <li><a href="#multipartparser">MultiPartParser</a></li>
-<li><a href="#custom-parsers">Custom parsers</a></li>
+<li class="main"><a href="#custom-parsers">Custom parsers</a></li>
+<li><a href="#example">Example</a></li>
+<li><a href="#uploading-file-content">Uploading file content</a></li>
 
               </ul>
             </div>
@@ -133,12 +138,106 @@ structured formats for sending data than form-encoded, since they're
 sending more complex data than simple forms</p>
 <p>&mdash; Malcom Tredinnick, <a href="https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion">Django developers group</a></p>
 </blockquote>
+<p>REST framework includes a number of built in Parser classes, that allow you to accept requests with various media types.  There is also support for defining your own custom parsers, which gives you the flexiblity to design the media types that your API accepts.</p>
+<h2 id="how-the-parser-is-determined">How the parser is determined</h2>
+<p>The set of valid parsers for a view is always defined as a list of classes.  When either <code>request.DATA</code> or <code>request.FILES</code> is accessed, REST framework will examine the <code>Content-Type</code> header on the incoming request, and determine which parser to use to parse the request content.</p>
+<h2 id="setting-the-parsers">Setting the parsers</h2>
+<p>The default set of parsers may be set globally, using the <code>DEFAULT_PARSERS</code> setting.  For example, the following settings would allow requests with <code>YAML</code> content.</p>
+<pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
+    'DEFAULT_PARSERS': (
+        'rest_framework.parsers.YAMLParser',
+    )
+}
+</code></pre>
+<p>You can also set the renderers used for an individual view, using the <code>APIView</code> class based views.</p>
+<pre class="prettyprint lang-py"><code>class ExampleView(APIView):
+    """
+    A view that can accept POST requests with YAML content.
+    """
+    parser_classes = (YAMLParser,)
+
+    def post(self, request, format=None):
+        return Response({'received data': request.DATA})
+</code></pre>
+<p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
+<pre class="prettyprint lang-py"><code>@api_view(('POST',)),
+@parser_classes((YAMLParser,))
+def example_view(request, format=None):
+    """
+    A view that can accept POST requests with YAML content.
+    """
+    return Response({'received data': request.DATA})
+</code></pre>
+<hr />
+<h1 id="api-reference">API Reference</h1>
 <h2 id="jsonparser">JSONParser</h2>
+<p>Parses <code>JSON</code> request content.</p>
+<p><strong>.media_type</strong>: <code>application/json</code></p>
 <h2 id="yamlparser">YAMLParser</h2>
+<p>Parses <code>YAML</code> request content.</p>
+<p><strong>.media_type</strong>: <code>application/yaml</code></p>
 <h2 id="xmlparser">XMLParser</h2>
+<p>Parses REST framework's default style of <code>XML</code> request content.</p>
+<p>Note that the <code>XML</code> markup language is used typically used as the base language for more strictly defined domain-specific languages, such as <code>RSS</code>, <code>Atom</code>, and <code>XHTML</code>.</p>
+<p>If you are considering using <code>XML</code> for your API, you may want to consider implementing a custom renderer and parser for your specific requirements, and using an existing domain-specific media-type, or creating your own custom XML-based media-type.</p>
+<p><strong>.media_type</strong>: <code>application/xml</code></p>
 <h2 id="formparser">FormParser</h2>
+<p>Parses HTML form content.  <code>request.DATA</code> will be populated with a <code>QueryDict</code> of data, <code>request.FILES</code> will be populated with an empty <code>QueryDict</code> of data.</p>
+<p>You will typically want to use both <code>FormParser</code> and <code>MultiPartParser</code> together in order to fully support HTML form data.</p>
+<p><strong>.media_type</strong>: <code>application/x-www-form-urlencoded</code></p>
 <h2 id="multipartparser">MultiPartParser</h2>
-<h2 id="custom-parsers">Custom parsers</h2>
+<p>Parses multipart HTML form content, which supports file uploads.  Both <code>request.DATA</code> and <code>request.FILES</code> will be populated with a <code>QueryDict</code>.</p>
+<p>You will typically want to use both <code>FormParser</code> and <code>MultiPartParser</code> together in order to fully support HTML form data.</p>
+<p><strong>.media_type</strong>: <code>multipart/form-data</code></p>
+<hr />
+<h1 id="custom-parsers">Custom parsers</h1>
+<p>To implement a custom parser, you should override <code>BaseParser</code>, set the <code>.media_type</code> property, and implement the <code>.parse_stream(self, stream, parser_context)</code> method.</p>
+<p>The method should return the data that will be used to populate the <code>request.DATA</code> property.</p>
+<p>The arguments passed to <code>.parse_stream()</code> are:</p>
+<h3 id="stream">stream</h3>
+<p>A stream-like object representing the body of the request.</p>
+<h3 id="parser_context">parser_context</h3>
+<p>If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.  By default it includes the keys <code>'upload_handlers'</code> and <code>'meta'</code>, which contain the values of the <code>request.upload_handlers</code> and <code>request.meta</code> properties.</p>
+<h2 id="example">Example</h2>
+<p>The following is an example plaintext parser that will populate the <code>request.DATA</code> property with a string representing the body of the request. </p>
+<pre class="prettyprint lang-py"><code>class PlainTextParser(BaseParser):
+"""
+Plain text parser.
+"""
+
+media_type = 'text/plain'
+
+def parse_stream(self, stream, parser_context=None):
+    """
+    Simply return a string representing the body of the request.
+    """
+    return stream.read()
+</code></pre>
+<h2 id="uploading-file-content">Uploading file content</h2>
+<p>If your custom parser needs to support file uploads, you may return a <code>DataAndFiles</code> object from the <code>.parse_stream()</code> method.  <code>DataAndFiles</code> should be instantiated with two arguments.  The first argument will be used to populate the <code>request.DATA</code> property, and the second argument will be used to populate the <code>request.FILES</code> property.</p>
+<p>For example:</p>
+<pre class="prettyprint lang-py"><code>class SimpleFileUploadParser(BaseParser):
+    """
+    A naive raw file upload parser.
+    """
+
+    def parse_stream(self, stream, parser_context):
+        content = stream.read()
+        name = 'example.dat'
+        content_type = 'application/octet-stream'
+        size = len(content)
+        charset = 'utf-8'
+
+        # Write a temporary file based on the request content
+        temp = tempfile.NamedTemporaryFile(delete=False)
+        temp.write(content)
+        uploaded = UploadedFile(temp, name, content_type, size, charset)
+
+        # Return the uploaded file
+        data = {}
+        files = {name: uploaded}
+        return DataAndFiles(data, files)
+</code></pre>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->

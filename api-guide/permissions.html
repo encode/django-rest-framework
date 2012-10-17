@@ -78,7 +78,7 @@
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/migration">2.0 Migration Guide</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/changelog">Change Log</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/release-notes">Release Notes</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/credits">Credits</a></li>
                 </ul>
               </li>
@@ -116,11 +116,12 @@
 <li><a href="#how-permissions-are-determined">How permissions are determined</a></li>
 <li><a href="#object-level-permissions">Object level permissions</a></li>
 <li><a href="#setting-the-permission-policy">Setting the permission policy</a></li>
+<li class="main"><a href="#api-reference">API Reference</a></li>
 <li><a href="#isauthenticated">IsAuthenticated</a></li>
 <li><a href="#isadminuser">IsAdminUser</a></li>
 <li><a href="#isauthenticatedorreadonly">IsAuthenticatedOrReadOnly</a></li>
 <li><a href="#djangomodelpermissions">DjangoModelPermissions</a></li>
-<li><a href="#custom-permissions">Custom permissions</a></li>
+<li class="main"><a href="#custom-permissions">Custom permissions</a></li>
 
               </ul>
             </div>
@@ -170,6 +171,7 @@ def example_view(request, format=None):
     }
     return Response(content)
 </code></pre>
+<h1 id="api-reference">API Reference</h1>
 <h2 id="isauthenticated">IsAuthenticated</h2>
 <p>The <code>IsAuthenticated</code> permission class will deny permission to any unauthenticated user, and allow permission otherwise.</p>
 <p>This permission is suitable if you want your API to only be accessible to registered users.</p>
@@ -189,7 +191,7 @@ def example_view(request, format=None):
 <p>The default behaviour can also be overridden to support custom model permissions.  For example, you might want to include a <code>view</code> model permission for <code>GET</code> requests.</p>
 <p>To use custom model permissions, override <code>DjangoModelPermissions</code> and set the <code>.perms_map</code> property.  Refer to the source code for details.</p>
 <p>The <code>DjangoModelPermissions</code> class also supports object-level permissions.  Third-party authorization backends such as <a href="https://github.com/lukaszb/django-guardian">django-guardian</a> that provide object-level permissions should work just fine with <code>DjangoModelPermissions</code> without any custom configuration required.</p>
-<h2 id="custom-permissions">Custom permissions</h2>
+<h1 id="custom-permissions">Custom permissions</h1>
 <p>To implement a custom permission, override <code>BasePermission</code> and implement the <code>.has_permission(self, request, view, obj=None)</code> method.</p>
 <p>The method should return <code>True</code> if the request should be granted access, and <code>False</code> otherwise.</p>
           </div><!--/span-->

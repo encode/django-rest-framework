@@ -78,7 +78,7 @@
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/migration">2.0 Migration Guide</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/changelog">Change Log</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/release-notes">Release Notes</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/credits">Credits</a></li>
                 </ul>
               </li>
@@ -126,6 +126,7 @@
 <li><a href="#method">.method</a></li>
 <li><a href="#content_type">.content_type</a></li>
 <li><a href="#stream">.stream</a></li>
+<li class="main"><a href="#standard-httprequest-attributes">Standard HttpRequest attributes</a></li>
 
               </ul>
             </div>
@@ -160,6 +161,7 @@
 <p>You won't typically need to access this property.</p>
 <hr />
 <p><strong>Note:</strong> If a client sends malformed content, then accessing <code>request.DATA</code> or <code>request.FILES</code> may raise a <code>ParseError</code>.  By default REST framework's <code>APIView</code> class or <code>@api_view</code> decorator will catch the error and return a <code>400 Bad Request</code> response.</p>
+<p>If a client sends a request with a content-type that cannot be parsed then a <code>UnsupportedMediaType</code> exception will be raised, which by default will be caught and return a <code>415 Unsupported Media Type</code> response.</p>
 <hr />
 <h1 id="authentication">Authentication</h1>
 <p>REST framework provides flexbile, per-request authentication, that gives you the abilty to:</p>
@@ -181,7 +183,7 @@
 <p>You won't typically need to access this property.</p>
 <hr />
 <h1 id="browser-enhancements">Browser enhancements</h1>
-<p>REST framework supports a few browser enhancments such as broser-based <code>PUT</code> and <code>DELETE</code> forms.</p>
+<p>REST framework supports a few browser enhancments such as browser-based <code>PUT</code> and <code>DELETE</code> forms.</p>
 <h2 id="method">.method</h2>
 <p><code>request.method</code> returns the <strong>uppercased</strong> string representation of the request's HTTP method.</p>
 <p>Browser-based <code>PUT</code> and <code>DELETE</code> forms are transparently supported.</p>
@@ -199,6 +201,10 @@
 <p>If you do need to access the raw content directly, you should use the <code>.stream</code> property in preference to using <code>request.content</code>, as it provides transparent support for browser-based non-form content.</p>
 <p>For more information see the <a href="../topics/browser-enhancements">browser enhancements documentation</a>.  <br />
 </p>
+<hr />
+<h1 id="standard-httprequest-attributes">Standard HttpRequest attributes</h1>
+<p>As REST framework's <code>Request</code> extends Django's <code>HttpRequest</code>, all the other standard attributes and methods are also available.  For example the <code>request.META</code> dictionary is available as normal.</p>
+<p>Note that due to implementation reasons the <code>Request</code> class does not inherit from <code>HttpRequest</code> class, but instead extends the class using composition.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->

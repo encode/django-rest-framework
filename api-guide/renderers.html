@@ -78,7 +78,7 @@
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/migration">2.0 Migration Guide</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/changelog">Change Log</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/release-notes">Release Notes</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/credits">Credits</a></li>
                 </ul>
               </li>
@@ -123,7 +123,8 @@
 <li><a href="#xmlrenderer">XMLRenderer</a></li>
 <li><a href="#htmlrenderer">HTMLRenderer</a></li>
 <li><a href="#browsableapirenderer">BrowsableAPIRenderer</a></li>
-<li><a href="#custom-renderers">Custom renderers</a></li>
+<li class="main"><a href="#custom-renderers">Custom renderers</a></li>
+<li><a href="#example">Example</a></li>
 <li class="main"><a href="#advanced-renderer-usage">Advanced renderer usage</a></li>
 <li><a href="#varying-behaviour-by-media-type">Varying behaviour by media type</a></li>
 <li><a href="#designing-your-media-types">Designing your media types</a></li>
@@ -166,8 +167,8 @@
         return Response(content)
 </code></pre>
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
-<pre class="prettyprint lang-py"><code>@api_view('GET'),
-@renderer_classes(JSONRenderer, JSONPRenderer)
+<pre class="prettyprint lang-py"><code>@api_view(('GET',)),
+@renderer_classes((JSONRenderer, JSONPRenderer))
 def user_count_view(request, format=None):
     """
     A view that returns the count of active users, in JSON or JSONp.
@@ -183,17 +184,26 @@ def user_count_view(request, format=None):
 <hr />
 <h1 id="api-reference">API Reference</h1>
 <h2 id="jsonrenderer">JSONRenderer</h2>
-<p><strong>.media_type:</strong> <code>application/json</code></p>
-<p><strong>.format:</strong> <code>'.json'</code></p>
+<p>Renders the request data into <code>JSON</code>.</p>
+<p>The client may additionally include an <code>'indent'</code> media type parameter, in which case the returned <code>JSON</code> will be indented.  For example <code>Accept: application/json; indent=4</code>.</p>
+<p><strong>.media_type</strong>: <code>application/json</code></p>
+<p><strong>.format</strong>: <code>'.json'</code></p>
 <h2 id="jsonprenderer">JSONPRenderer</h2>
-<p><strong>.media_type:</strong> <code>application/javascript</code></p>
-<p><strong>.format:</strong> <code>'.jsonp'</code></p>
+<p>Renders the request data into <code>JSONP</code>.  The <code>JSONP</code> media type provides a mechanism of allowing cross-domain AJAX requests, by wrapping a <code>JSON</code> response in a javascript callback.</p>
+<p>The javascript callback function must be set by the client including a <code>callback</code> URL query parameter.  For example <code>http://example.com/api/users?callback=jsonpCallback</code>.  If the callback function is not explicitly set by the client it will default to <code>'callback'</code>.</p>
+<p><strong>Note</strong>: If you require cross-domain AJAX requests, you may also want to consider using <a href="http://en.wikipedia.org/wiki/Cross-origin_resource_sharing">CORS</a> as an alternative to <code>JSONP</code>.</p>
+<p><strong>.media_type</strong>: <code>application/javascript</code></p>
+<p><strong>.format</strong>: <code>'.jsonp'</code></p>
 <h2 id="yamlrenderer">YAMLRenderer</h2>
-<p><strong>.media_type:</strong> <code>application/yaml</code></p>
-<p><strong>.format:</strong> <code>'.yaml'</code></p>
+<p>Renders the request data into <code>YAML</code>. </p>
+<p><strong>.media_type</strong>: <code>application/yaml</code></p>
+<p><strong>.format</strong>: <code>'.yaml'</code></p>
 <h2 id="xmlrenderer">XMLRenderer</h2>
-<p><strong>.media_type:</strong> <code>application/xml</code></p>
-<p><strong>.format:</strong> <code>'.xml'</code></p>
+<p>Renders REST framework's default style of <code>XML</code> response content.</p>
+<p>Note that the <code>XML</code> markup language is used typically used as the base language for more strictly defined domain-specific languages, such as <code>RSS</code>, <code>Atom</code>, and <code>XHTML</code>.</p>
+<p>If you are considering using <code>XML</code> for your API, you may want to consider implementing a custom renderer and parser for your specific requirements, and using an existing domain-specific media-type, or creating your own custom XML-based media-type.</p>
+<p><strong>.media_type</strong>: <code>application/xml</code></p>
+<p><strong>.format</strong>: <code>'.xml'</code></p>
 <h2 id="htmlrenderer">HTMLRenderer</h2>
 <p>Renders data to HTML, using Django's standard template rendering.
 Unlike other renderers, the data passed to the <code>Response</code> does not need to be serialized.  Also, unlike other renderers, you may want to include a <code>template_name</code> argument when creating the <code>Response</code>.</p>
@@ -218,15 +228,25 @@ Unlike other renderers, the data passed to the <code>Response</code> does not ne
 </code></pre>
 <p>You can use <code>HTMLRenderer</code> either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.</p>
 <p>If you're building websites that use <code>HTMLRenderer</code> along with other renderer classes, you should consider listing <code>HTMLRenderer</code> as the first class in the <code>renderer_classes</code> list, so that it will be prioritised first even for browsers that send poorly formed <code>ACCEPT:</code> headers.</p>
-<p><strong>.media_type:</strong> <code>text/html</code></p>
-<p><strong>.format:</strong> <code>'.html'</code></p>
+<p><strong>.media_type</strong>: <code>text/html</code></p>
+<p><strong>.format</strong>: <code>'.html'</code></p>
 <h2 id="browsableapirenderer">BrowsableAPIRenderer</h2>
 <p>Renders data into HTML for the Browseable API.  This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.</p>
-<p><strong>.media_type:</strong> <code>text/html</code></p>
-<p><strong>.format:</strong> <code>'.api'</code></p>
-<h2 id="custom-renderers">Custom renderers</h2>
+<p><strong>.media_type</strong>: <code>text/html</code></p>
+<p><strong>.format</strong>: <code>'.api'</code></p>
+<hr />
+<h1 id="custom-renderers">Custom renderers</h1>
 <p>To implement a custom renderer, you should override <code>BaseRenderer</code>, set the <code>.media_type</code> and <code>.format</code> properties, and implement the <code>.render(self, data, media_type=None, renderer_context=None)</code> method.</p>
-<p>For example:</p>
+<p>The arguments passed to the <code>.render()</code> method are:</p>
+<h3 id="data"><code>data</code></h3>
+<p>The request data, as set by the <code>Response()</code> instantiation.</p>
+<h3 id="media_typenone"><code>media_type=None</code></h3>
+<p>Optional. If provided, this is the accepted media type, as determined by the content negotiation stage.  Depending on the client's <code>Accept:</code> header, this may be more specific than the renderer's <code>media_type</code> attribute, and may include media type parameters.  For example <code>"application/json; nested=true"</code>.</p>
+<h3 id="renderer_contextnone"><code>renderer_context=None</code></h3>
+<p>Optional. If provided, this is a dictionary of contextual information provided by the view.
+By default this will include the following keys: <code>view</code>, <code>request</code>, <code>response</code>, <code>args</code>, <code>kwargs</code>.</p>
+<h2 id="example">Example</h2>
+<p>The following is an example plaintext renderer that will return a response with the <code>data</code> parameter as the content of the response.</p>
 <pre class="prettyprint lang-py"><code>from django.utils.encoding import smart_unicode
 from rest_framework import renderers
 
@@ -239,14 +259,6 @@ class PlainText(renderers.BaseRenderer):
             return data
         return smart_unicode(data)
 </code></pre>
-<p>The arguments passed to the <code>.render()</code> method are:</p>
-<h4 id="data"><code>data</code></h4>
-<p>The request data, as set by the <code>Response()</code> instantiation.</p>
-<h4 id="media_typenone"><code>media_type=None</code></h4>
-<p>Optional. If provided, this is the accepted media type, as determined by the content negotiation stage.  Depending on the client's <code>Accept:</code> header, this may be more specific than the renderer's <code>media_type</code> attribute, and may include media type parameters.  For example <code>"application/json; nested=true"</code>.</p>
-<h4 id="renderer_contextnone"><code>renderer_context=None</code></h4>
-<p>Optional. If provided, this is a dictionary of contextual information provided by the view.
-By default this will include the following keys: <code>view</code>, <code>request</code>, <code>response</code>, <code>args</code>, <code>kwargs</code>.</p>
 <hr />
 <h1 id="advanced-renderer-usage">Advanced renderer usage</h1>
 <p>You can do some pretty flexible things using REST framework's renderers.  Some examples...</p>

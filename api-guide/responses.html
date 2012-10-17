@@ -78,7 +78,7 @@
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/migration">2.0 Migration Guide</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/changelog">Change Log</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/release-notes">Release Notes</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/credits">Credits</a></li>
                 </ul>
               </li>
@@ -113,10 +113,8 @@
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
                 <li class="main"><a href="#responses">Responses</a></li>
-<li class="main"><a href="#methods">Methods</a></li>
+<li class="main"><a href="#creating-responses">Creating responses</a></li>
 <li><a href="#response()">Response()</a></li>
-<li><a href="#render()">.render()</a></li>
-<li><a href="#standard-response-methods">Standard response methods</a></li>
 <li class="main"><a href="#attributes">Attributes</a></li>
 <li><a href="#data">.data</a></li>
 <li><a href="#status_code">.status_code</a></li>
@@ -125,6 +123,8 @@
 <li><a href="#accepted_renderer">.accepted_renderer</a></li>
 <li><a href="#accepted_media_type">.accepted_media_type</a></li>
 <li><a href="#renderer_context">.renderer_context</a></li>
+<li class="main"><a href="#standard-httpresponse-attributes">Standard HttpResponse attributes</a></li>
+<li><a href="#render()">.render()</a></li>
 
               </ul>
             </div>
@@ -142,7 +142,7 @@
 <p>There's no requirement for you to use the <code>Response</code> class, you can also return regular <code>HttpResponse</code> objects from your views if you want, but it provides a nicer interface for returning Web API responses.</p>
 <p>Unless you want to heavily customize REST framework for some reason, you should always use an <code>APIView</code> class or <code>@api_view</code> function for views that return <code>Response</code> objects.  Doing so ensures that the view can perform content negotiation and select the appropriate renderer for the response, before it is returned from the view.</p>
 <hr />
-<h1 id="methods">Methods</h1>
+<h1 id="creating-responses">Creating responses</h1>
 <h2 id="response">Response()</h2>
 <p><strong>Signature:</strong> <code>Response(data, status=None, template_name=None, headers=None)</code></p>
 <p>Unlike regular <code>HttpResponse</code> objects, you do not instantiate <code>Response</code> objects with rendered content.  Instead you pass in unrendered data, which may consist of any python primatives.</p>
@@ -155,15 +155,6 @@
 <li><code>template_name</code>: A template name to use if <code>HTMLRenderer</code> is selected.</li>
 <li><code>headers</code>: A dictionary of HTTP headers to use in the response.</li>
 </ul>
-<h2 id="render">.render()</h2>
-<p><strong>Signature:</strong> <code>.render()</code></p>
-<p>This methd is called to render the serialized data of the response into the final response content.  When <code>.render()</code> is called, the response content will be set to the result of calling the <code>.render(data, accepted_media_type)</code> method on the accepted renderer instance.</p>
-<p>You won't typically need to call <code>.render()</code> yourself, as it's handled by Django's standard response cycle.</p>
-<h2 id="standard-response-methods">Standard response methods</h2>
-<p>The <code>Response</code> class extends <code>SimpleTemplateResponse</code>, and all the usual methods are also available on the response.  For example you can set headers on the response in the standard way:</p>
-<pre class="prettyprint lang-py"><code>response = Response()
-response['Cache-Control'] = 'no-cache'
-</code></pre>
 <hr />
 <h1 id="attributes">Attributes</h1>
 <h2 id="data">.data</h2>
@@ -183,6 +174,16 @@ response['Cache-Control'] = 'no-cache'
 <h2 id="renderer_context">.renderer_context</h2>
 <p>A dictionary of additional context information that will be passed to the renderer's <code>.render()</code> method.</p>
 <p>Set automatically by the <code>APIView</code> or <code>@api_view</code> immediately before the response is returned from the view.</p>
+<hr />
+<h1 id="standard-httpresponse-attributes">Standard HttpResponse attributes</h1>
+<p>The <code>Response</code> class extends <code>SimpleTemplateResponse</code>, and all the usual attributes and methods are also available on the response.  For example you can set headers on the response in the standard way:</p>
+<pre class="prettyprint lang-py"><code>response = Response()
+response['Cache-Control'] = 'no-cache'
+</code></pre>
+<h2 id="render">.render()</h2>
+<p><strong>Signature:</strong> <code>.render()</code></p>
+<p>As with any other <code>TemplateResponse</code>, this methd is called to render the serialized data of the response into the final response content.  When <code>.render()</code> is called, the response content will be set to the result of calling the <code>.render(data, accepted_media_type, renderer_context)</code> method on the <code>accepted_renderer</code> instance.</p>
+<p>You won't typically need to call <code>.render()</code> yourself, as it's handled by Django's standard response cycle.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->

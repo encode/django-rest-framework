@@ -78,7 +78,7 @@
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/migration">2.0 Migration Guide</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/changelog">Change Log</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/release-notes">Release Notes</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/credits">Credits</a></li>
                 </ul>
               </li>
@@ -114,6 +114,8 @@
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
                 <li class="main"><a href="#rest,-hypermedia-&-hateoas">REST, Hypermedia & HATEOAS</a></li>
 <li><a href="#building-hypermedia-apis-with-rest-framework">Building Hypermedia APIs with REST framework</a></li>
+<li><a href="#what-rest-framework-provides">What REST framework provides.</a></li>
+<li><a href="#what-rest-framework-doesnt-provide">What REST framework doesn't provide.</a></li>
 
               </ul>
             </div>
@@ -140,11 +142,11 @@ the Design of Network-based Software Architectures</a>.</li>
 <p>For a more thorough background, check out Klabnik's <a href="http://blog.steveklabnik.com/posts/2012-02-27-hypermedia-api-reading-list">Hypermedia API reading list</a>.</p>
 <h2 id="building-hypermedia-apis-with-rest-framework">Building Hypermedia APIs with REST framework</h2>
 <p>REST framework is an agnositic Web API toolkit.  It does help guide you towards building well-connected APIs, and makes it easy to design appropriate media types, but it does not strictly enforce any particular design style.</p>
-<h3 id="what-rest-framework-does-provide">What REST framework <em>does</em> provide.</h3>
+<h2 id="what-rest-framework-provides">What REST framework provides.</h2>
 <p>It is self evident that REST framework makes it possible to build Hypermedia APIs.  The browseable API that it offers is built on HTML - the hypermedia language of the web.</p>
 <p>REST framework also includes <a href="../api-guide/serializers">serialization</a> and <a href="../api-guide/parsers">parser</a>/<a href="../api-guide/renderers">renderer</a> components that make it easy to build appropriate media types, <a href="../api-guide/fields">hyperlinked relations</a> for building well-connected systems, and great support for <a href="../api-guide/content-negotiation">content negotiation</a>.</p>
-<h3 id="what-rest-framework-doesnt-provide">What REST framework <em>doesn't</em> provide.</h3>
-<p>What REST framework doesn't do is give you is machine readable hypermedia formats such as <a href="http://www.amundsen.com/media-types/collection/">Collection+JSON</a> or HTML <a href="http://microformats.org/wiki/Main_Page">microformats</a> by default, or the ability to auto-magically create fully HATEOAS style APIs that include form descriptions, and semantically labelled hyperlinks.  Doing so would involve making opinionated choices about API design that should really remain outside of the framework's scope.</p>
+<h2 id="what-rest-framework-doesnt-provide">What REST framework doesn't provide.</h2>
+<p>What REST framework doesn't do is give you is machine readable hypermedia formats such as <a href="http://www.amundsen.com/media-types/collection/">Collection+JSON</a> or HTML <a href="http://microformats.org/wiki/Main_Page">microformats</a> by default, or the ability to auto-magically create fully HATEOAS style APIs that include hypermedia-based form descriptions and semantically labelled hyperlinks.  Doing so would involve making opinionated choices about API design that should really remain outside of the framework's scope.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->

@@ -78,7 +78,7 @@
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/migration">2.0 Migration Guide</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/changelog">Change Log</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/release-notes">Release Notes</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/credits">Credits</a></li>
                 </ul>
               </li>
@@ -115,11 +115,12 @@
                 <li class="main"><a href="#authentication">Authentication</a></li>
 <li><a href="#how-authentication-is-determined">How authentication is determined</a></li>
 <li><a href="#setting-the-authentication-policy">Setting the authentication policy</a></li>
+<li class="main"><a href="#api-reference">API Reference</a></li>
 <li><a href="#basicauthentication">BasicAuthentication</a></li>
 <li><a href="#tokenauthentication">TokenAuthentication</a></li>
 <li><a href="#oauthauthentication">OAuthAuthentication</a></li>
 <li><a href="#sessionauthentication">SessionAuthentication</a></li>
-<li><a href="#custom-authentication-policies">Custom authentication policies</a></li>
+<li class="main"><a href="#custom-authentication">Custom authentication</a></li>
 
               </ul>
             </div>
@@ -173,6 +174,7 @@ def example_view(request, format=None):
     }
     return Response(content)
 </code></pre>
+<h1 id="api-reference">API Reference</h1>
 <h2 id="basicauthentication">BasicAuthentication</h2>
 <p>This policy uses <a href="http://tools.ietf.org/html/rfc2617">HTTP Basic Authentication</a>, signed against a user's username and password.  Basic authentication is generally only appropriate for testing.</p>
 <p>If successfully authenticated, <code>BasicAuthentication</code> provides the following credentials.</p>
@@ -213,7 +215,7 @@ print token.key
 <li><code>request.user</code> will be a <code>django.contrib.auth.models.User</code> instance.</li>
 <li><code>request.auth</code> will be <code>None</code>.</li>
 </ul>
-<h2 id="custom-authentication-policies">Custom authentication policies</h2>
+<h1 id="custom-authentication">Custom authentication</h1>
 <p>To implement a custom authentication policy, subclass <code>BaseAuthentication</code> and override the <code>.authenticate(self, request)</code> method.  The method should return a two-tuple of <code>(user, auth)</code> if authentication succeeds, or <code>None</code> otherwise.</p>
           </div><!--/span-->
         </div><!--/row-->

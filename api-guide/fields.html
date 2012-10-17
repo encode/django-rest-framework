@@ -78,7 +78,7 @@
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/migration">2.0 Migration Guide</a></li>
-                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/changelog">Change Log</a></li>
+                  <li><a href="http://tomchristie.github.com/django-rest-framework/topics/release-notes">Release Notes</a></li>
                   <li><a href="http://tomchristie.github.com/django-rest-framework/topics/credits">Credits</a></li>
                 </ul>
               </li>
@@ -190,12 +190,21 @@
 <h1 id="typed-fields">Typed Fields</h1>
 <p>These fields represent basic datatypes, and support both reading and writing values.</p>
 <h2 id="booleanfield">BooleanField</h2>
+<p>A Boolean representation, corresponds to <code>django.db.models.fields.BooleanField</code>.</p>
 <h2 id="charfield">CharField</h2>
+<p>A text representation, optionally validates the text to be shorter than <code>max_length</code> and longer than <code>min_length</code>, corresponds to <code>django.db.models.fields.CharField</code>
+or <code>django.db.models.fields.TextField</code>.</p>
+<p><strong>Signature:</strong> <code>CharField([max_length=&lt;Integer&gt;[, min_length=&lt;Integer&gt;]])</code></p>
 <h2 id="emailfield">EmailField</h2>
+<p>A text representation, validates the text to be a valid e-mail adress. Corresponds to <code>django.db.models.fields.EmailField</code></p>
 <h2 id="datefield">DateField</h2>
+<p>A date representation. Corresponds to <code>django.db.models.fields.DateField</code></p>
 <h2 id="datetimefield">DateTimeField</h2>
+<p>A date and time representation. Corresponds to <code>django.db.models.fields.DateTimeField</code></p>
 <h2 id="integerfield">IntegerField</h2>
+<p>An integer representation. Corresponds to <code>django.db.models.fields.IntegerField</code>, <code>django.db.models.fields.SmallIntegerField</code>, <code>django.db.models.fields.PositiveIntegerField</code> and <code>django.db.models.fields.PositiveSmallIntegerField</code></p>
 <h2 id="floatfield">FloatField</h2>
+<p>A floating point representation. Corresponds to <code>django.db.models.fields.FloatField</code>.</p>
 <hr />
 <h1 id="relational-fields">Relational Fields</h1>
 <p>Relational fields are used to represent model relationships.  They can be applied to <code>ForeignKey</code>, <code>ManyToManyField</code> and <code>OneToOneField</code> relationships, as well as to reverse relationships, and custom relationships such as <code>GenericForeignKey</code>.</p>
