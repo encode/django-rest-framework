@@ -103,7 +103,9 @@ A stream-like object representing the body of the request.
 
 ### parser_context
 
-If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.  By default it includes the keys `'upload_handlers'` and `'meta'`, which contain the values of the `request.upload_handlers` and `request.meta` properties.
+Optional.  If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.
+
+By default this will include the following keys: `view`, `request`, `args`, `kwargs`.
 
 ## Example
 

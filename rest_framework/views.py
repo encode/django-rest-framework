@@ -161,9 +161,12 @@ class APIView(View):
         Returns a dict that is passed through to Parser.parse(),
         as the `parser_context` keyword argument.
         """
+        # Note: Additionally `request` will also be added to the context
+        #       by the Request object.
         return {
-            'upload_handlers': http_request.upload_handlers,
-            'meta': http_request.META,
+            'view': self,
+            'args': getattr(self, 'args', ()),
+            'kwargs': getattr(self, 'kwargs', {})
         }
 
     def get_renderer_context(self):
@@ -171,13 +174,13 @@ class APIView(View):
         Returns a dict that is passed through to Renderer.render(),
         as the `renderer_context` keyword argument.
         """
-        # Note: Additionally 'response' will also be set on the context,
+        # Note: Additionally 'response' will also be added to the context,
         #       by the Response object.
         return {
             'view': self,
-            'request': self.request,
-            'args': self.args,
-            'kwargs': self.kwargs
+            'args': getattr(self, 'args', ()),
+            'kwargs': getattr(self, 'kwargs', {}),
+            'request': getattr(self, 'request', None)
         }
 
     # API policy instantiation methods

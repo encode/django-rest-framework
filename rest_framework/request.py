@@ -88,16 +88,11 @@ class Request(object):
         self._stream = Empty
 
         if self.parser_context is None:
-            self.parser_context = self._default_parser_context(request)
+            self.parser_context = {}
+        self.parser_context['request'] = self
 
     def _default_negotiator(self):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION()
-
-    def _default_parser_context(self, request):
-        return {
-            'upload_handlers': request.upload_handlers,
-            'meta': request.META,
-        }
 
     @property
     def method(self):

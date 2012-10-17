@@ -119,8 +119,10 @@ class MultiPartParser(BaseParser):
         `.files` will be a `QueryDict` containing all the form files.
         """
         parser_context = parser_context or {}
-        meta = parser_context['meta']
-        upload_handlers = parser_context['upload_handlers']
+        request = parser_context['request']
+        meta = request.META
+        upload_handlers = request.upload_handlers
+
         try:
             parser = DjangoMultiPartParser(meta, stream, upload_handlers)
             data, files = parser.parse()

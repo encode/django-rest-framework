@@ -162,11 +162,14 @@ The request data, as set by the `Response()` instantiation.
 
 ### `media_type=None`
 
-Optional. If provided, this is the accepted media type, as determined by the content negotiation stage.  Depending on the client's `Accept:` header, this may be more specific than the renderer's `media_type` attribute, and may include media type parameters.  For example `"application/json; nested=true"`.
+Optional. If provided, this is the accepted media type, as determined by the content negotiation stage.
+
+Depending on the client's `Accept:` header, this may be more specific than the renderer's `media_type` attribute, and may include media type parameters.  For example `"application/json; nested=true"`.
 
 ### `renderer_context=None`
 
 Optional. If provided, this is a dictionary of contextual information provided by the view.
+
 By default this will include the following keys: `view`, `request`, `response`, `args`, `kwargs`.
 
 ## Example
