@@ -47,6 +47,7 @@ The following people have helped make REST framework great.
 * Mattbo - [mattbo]
 * Max Hurl - [maximilianhurl]
 * Tomi Pajunen - [eofs]
+* Rob Dobson - [rdobson]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -125,3 +126,4 @@ To contact the author directly:
 [mattbo]: https://github.com/mattbo
 [maximilianhurl]: https://github.com/maximilianhurl
 [eofs]: https://github.com/eofs
+[rdobson]: https://github.com/rdobson
