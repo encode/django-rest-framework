@@ -134,12 +134,15 @@ We've now got a few comment instances to play with.  Let's take a look at serial
 
 At this point we've translated the model instance into python native datatypes.  To finalise the serialization process we render the data into `json`.
 
-    stream = JSONRenderer().render(serializer.data)
-    stream
+    content = JSONRenderer().render(serializer.data)
+    content
     # '{"id": 1, "email": "leila@example.com", "content": "nothing to say", "created": "2012-08-22T16:20:09.822"}'
 
 Deserialization is similar.  First we parse a stream into python native datatypes... 
 
+    import StringIO
+
+    stream = StringIO.StringIO(content)
     data = JSONParser().parse(stream)
 
 ...then we restore those native datatypes into to a fully populated object instance.
