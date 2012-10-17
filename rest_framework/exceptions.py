@@ -24,7 +24,7 @@ class ParseError(APIException):
 
 
 class Unauthenticated(APIException):
-    status_code = status.HTTP_401_UNAUTHENTICATED
+    status_code = status.HTTP_401_UNAUTHORIZED
     default_detail = 'Incorrect or absent authentication credentials.'
 
     def __init__(self, detail=None):
