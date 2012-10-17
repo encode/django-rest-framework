@@ -101,6 +101,12 @@ The arguments passed to `.parse()` are:
 
 A stream-like object representing the body of the request.
 
+### media_type
+
+Optional.  If provided, this is the media type of the incoming request.
+
+Depending on the request's `Content-Type:` header, this may be more specific than the renderer's `media_type` attribute, and may include media type parameters.  For example `"text/plain; charset=utf-8"`.
+
 ### parser_context
 
 Optional.  If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.
@@ -118,7 +124,7 @@ The following is an example plaintext parser that will populate the `request.DAT
 
     media_type = 'text/plain'
 
-    def parse(self, stream, parser_context=None):
+    def parse(self, stream, media_type=None, parser_context=None):
         """
         Simply return a string representing the body of the request.
         """
@@ -135,7 +141,7 @@ For example:
         A naive raw file upload parser.
         """
 
-        def parse(self, stream, parser_context):
+        def parse(self, stream, media_type=None, parser_context=None):
             content = stream.read()
             name = 'example.dat'
             content_type = 'application/octet-stream'

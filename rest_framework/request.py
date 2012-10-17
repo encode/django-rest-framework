@@ -260,15 +260,19 @@ class Request(object):
 
         May raise an `UnsupportedMediaType`, or `ParseError` exception.
         """
-        if self.stream is None or self.content_type is None:
+        stream = self.stream
+        media_type = self.content_type
+
+        if stream is None or media_type is None:
             return (None, None)
 
-        parser = self.negotiator.select_parser(self.parsers, self.content_type)
+        parser = self.negotiator.select_parser(self.parsers, media_type)
 
         if not parser:
-            raise exceptions.UnsupportedMediaType(self.content_type)
+            raise exceptions.UnsupportedMediaType(media_type)
 
-        parsed = parser.parse(self.stream, self.parser_context)
+        parsed = parser.parse(stream, media_type, self.parser_context)
+
         # Parser classes may return the raw data, or a
         # DataAndFiles object.  Unpack the result as required.
         try:

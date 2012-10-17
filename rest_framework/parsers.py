@@ -1,14 +1,8 @@
 """
-Django supports parsing the content of an HTTP request, but only for form POST requests.
-That behavior is sufficient for dealing with standard HTML forms, but it doesn't map well
-to general HTTP requests.
+Parsers are used to parse the content of incoming HTTP requests.
 
-We need a method to be able to:
-
-1.) Determine the parsed content on a request for methods other than POST (eg typically also PUT)
-
-2.) Determine the parsed content on a request for media types other than application/x-www-form-urlencoded
-   and multipart/form-data.  (eg also handle multipart/json)
+They give us a generic way of being able to handle various media types
+on the request, such as form content or json encoded data.
 """
 
 from django.http import QueryDict
@@ -37,10 +31,10 @@ class BaseParser(object):
 
     media_type = None
 
-    def parse(self, stream, parser_context=None):
+    def parse(self, stream, media_type=None, parser_context=None):
         """
-        Given a stream to read from, return the deserialized output.
-        Should return parsed data, or a DataAndFiles object consisting of the
+        Given a stream to read from, return the parsed representation.
+        Should return parsed data, or a `DataAndFiles` object consisting of the
         parsed data and files.
         """
         raise NotImplementedError(".parse() must be overridden.")
@@ -53,7 +47,7 @@ class JSONParser(BaseParser):
 
     media_type = 'application/json'
 
-    def parse(self, stream, parser_context=None):
+    def parse(self, stream, media_type=None, parser_context=None):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -73,7 +67,7 @@ class YAMLParser(BaseParser):
 
     media_type = 'application/yaml'
 
-    def parse(self, stream, parser_context=None):
+    def parse(self, stream, media_type=None, parser_context=None):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -93,7 +87,7 @@ class FormParser(BaseParser):
 
     media_type = 'application/x-www-form-urlencoded'
 
-    def parse(self, stream, parser_context=None):
+    def parse(self, stream, media_type=None, parser_context=None):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -111,7 +105,7 @@ class MultiPartParser(BaseParser):
 
     media_type = 'multipart/form-data'
 
-    def parse(self, stream, parser_context=None):
+    def parse(self, stream, media_type=None, parser_context=None):
         """
         Returns a DataAndFiles object.
 
@@ -138,7 +132,7 @@ class XMLParser(BaseParser):
 
     media_type = 'application/xml'
 
-    def parse(self, stream, parser_context=None):
+    def parse(self, stream, media_type=None, parser_context=None):
         try:
             tree = ET.parse(stream)
         except (ExpatError, ETParseError, ValueError), exc:
