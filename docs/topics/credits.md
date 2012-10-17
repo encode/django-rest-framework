@@ -46,6 +46,7 @@ The following people have helped make REST framework great.
 * Jamie Matthews - [j4mie]
 * Mattbo - [mattbo]
 * Max Hurl - [maximilianhurl]
+* Tomi Pajunen - [eofs]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -123,3 +124,4 @@ To contact the author directly:
 [j4mie]: https://github.com/j4mie
 [mattbo]: https://github.com/mattbo
 [maximilianhurl]: https://github.com/maximilianhurl
+[eofs]: https://github.com/eofs
