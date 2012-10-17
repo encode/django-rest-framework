@@ -104,7 +104,7 @@ General guides to using REST framework.
 * [REST, Hypermedia & HATEOAS][rest-hypermedia-hateoas]
 * [Contributing to REST framework][contributing]
 * [2.0 Migration Guide][migration]
-* [Change Log][changelog]
+* [Release Notes][release-notes]
 * [Credits][credits]
 
 ## Development
@@ -190,7 +190,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [rest-hypermedia-hateoas]: topics/rest-hypermedia-hateoas.md
 [contributing]: topics/contributing.md
 [migration]: topics/migration.md
-[changelog]: topics/changelog.md
+[release-notes]: topics/release-notes.md
 [credits]: topics/credits.md
 
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
