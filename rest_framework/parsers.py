@@ -21,7 +21,6 @@ from xml.etree import ElementTree as ET
 from xml.parsers.expat import ExpatError
 import datetime
 import decimal
-from io import BytesIO
 
 
 class DataAndFiles(object):
@@ -33,29 +32,18 @@ class DataAndFiles(object):
 class BaseParser(object):
     """
     All parsers should extend `BaseParser`, specifying a `media_type`
-    attribute, and overriding the `.parse_stream()` method.
+    attribute, and overriding the `.parse()` method.
     """
 
     media_type = None
 
-    def parse(self, string_or_stream, parser_context=None):
-        """
-        The main entry point to parsers.  This is a light wrapper around
-        `parse_stream`, that instead handles both string and stream objects.
-        """
-        if isinstance(string_or_stream, basestring):
-            stream = BytesIO(string_or_stream)
-        else:
-            stream = string_or_stream
-        return self.parse_stream(stream, parser_context)
-
-    def parse_stream(self, stream, parser_context=None):
+    def parse(self, stream, parser_context=None):
         """
         Given a stream to read from, return the deserialized output.
         Should return parsed data, or a DataAndFiles object consisting of the
         parsed data and files.
         """
-        raise NotImplementedError(".parse_stream() must be overridden.")
+        raise NotImplementedError(".parse() must be overridden.")
 
 
 class JSONParser(BaseParser):
@@ -65,7 +53,7 @@ class JSONParser(BaseParser):
 
     media_type = 'application/json'
 
-    def parse_stream(self, stream, parser_context=None):
+    def parse(self, stream, parser_context=None):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -85,7 +73,7 @@ class YAMLParser(BaseParser):
 
     media_type = 'application/yaml'
 
-    def parse_stream(self, stream, parser_context=None):
+    def parse(self, stream, parser_context=None):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -105,7 +93,7 @@ class FormParser(BaseParser):
 
     media_type = 'application/x-www-form-urlencoded'
 
-    def parse_stream(self, stream, parser_context=None):
+    def parse(self, stream, parser_context=None):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -123,7 +111,7 @@ class MultiPartParser(BaseParser):
 
     media_type = 'multipart/form-data'
 
-    def parse_stream(self, stream, parser_context=None):
+    def parse(self, stream, parser_context=None):
         """
         Returns a DataAndFiles object.
 
@@ -148,7 +136,7 @@ class XMLParser(BaseParser):
 
     media_type = 'application/xml'
 
-    def parse_stream(self, stream, parser_context=None):
+    def parse(self, stream, parser_context=None):
         try:
             tree = ET.parse(stream)
         except (ExpatError, ETParseError, ValueError), exc:

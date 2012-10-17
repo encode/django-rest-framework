@@ -158,7 +158,7 @@ class APIView(View):
 
     def get_parser_context(self, http_request):
         """
-        Returns a dict that is passed through to Parser.parse_stream(),
+        Returns a dict that is passed through to Parser.parse(),
         as the `parser_context` keyword argument.
         """
         return {
