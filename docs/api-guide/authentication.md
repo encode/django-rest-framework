@@ -16,6 +16,12 @@ The `request.user` property will typically be set to an instance of the `contrib
 
 The `request.auth` property is used for any additional authentication information, for example, it may be used to represent an authentication token that the request was signed with.
 
+---
+
+**Note:** Don't forget that authentication by itself wont allow or disallow an incoming request, it simply identifies the credentials that the request was made with.  For information on how to setup the permission polices for your API please see the [permissions documentation][permission].
+
+---
+
 ## How authentication is determined
 
 The authentication policy is always defined as a list of classes.  REST framework will attempt to authenticate with each class in the list, and will set `request.user` and `request.auth` using the return value of the first class that successfully authenticates.
