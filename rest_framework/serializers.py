@@ -393,7 +393,7 @@ class ModelSerializer(Serializer):
         except KeyError:
             ret = ModelField(model_field=model_field)
 
-        if model_field.default:
+        if model_field.default is not None:
             ret.required = False
 
         return ret
