@@ -28,6 +28,10 @@ class CommentSerializer(serializers.Serializer):
         return instance
 
 
+class ActionItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActionItem
+
 class BasicTests(TestCase):
     def setUp(self):
         self.comment = Comment(
@@ -81,7 +85,9 @@ class ValidationTests(TestCase):
             'email': 'tom@example.com',
             'content': 'x' * 1001,
             'created': datetime.datetime(2012, 1, 1)
-        }
+        }         
+        self.actionitem = ActionItem('Some to do item',
+        )
 
     def test_create(self):
         serializer = CommentSerializer(self.data)
@@ -101,6 +107,17 @@ class ValidationTests(TestCase):
         serializer = CommentSerializer(data, instance=self.comment)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'email': [u'This field is required.']})
+
+    def test_missing_bool_with_default(self):
+        """Make sure that a boolean value with a 'False' value is not
+        mistaken for not having a default."""
+        data = {
+            'title':'Some action item',
+            #No 'done' value.
+        }
+        serializer = ActionItemSerializer(data, instance=self.actionitem)
+        self.assertEquals(serializer.is_valid(), True)
+        self.assertEquals(serializer.errors, {})
 
 
 class MetadataTests(TestCase):
