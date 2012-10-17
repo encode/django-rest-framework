@@ -33,6 +33,10 @@ Might recieve an error response indicating that the `DELETE` method is not allow
     
     {"detail": "Method 'DELETE' not allowed."}
 
+---
+
+# API Reference
+
 ## APIException
 
 **Signature:** `APIException(detail=None)`

@@ -54,6 +54,8 @@ Or, if you're using the `@api_view` decorator with function based views.
         }
         return Response(content)
 
+---
+
 # API Reference
 
 ## IsAuthenticated
@@ -88,11 +90,14 @@ To use custom model permissions, override `DjangoModelPermissions` and set the `
 
 The `DjangoModelPermissions` class also supports object-level permissions.  Third-party authorization backends such as [django-guardian][guardian] that provide object-level permissions should work just fine with `DjangoModelPermissions` without any custom configuration required.
 
+---
+
 # Custom permissions
 
 To implement a custom permission, override `BasePermission` and implement the `.has_permission(self, request, view, obj=None)` method.
 
 The method should return `True` if the request should be granted access, and `False` otherwise.
+
 
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md

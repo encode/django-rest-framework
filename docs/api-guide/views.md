@@ -33,8 +33,8 @@ For example:
             """
             Return a list of all users.
             """
-            users = [user.username for user in User.objects.all()]
-            return Response(users)
+            usernames = [user.username for user in User.objects.all()]
+            return Response(usernames)
 
 ## API policy attributes
 

@@ -30,6 +30,10 @@ you should use the `api_settings` object.  For example.
 
 The `api_settings` object will check for any user-defined settings, and otherwise fallback to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.
 
+---
+
+# API Reference
+
 ## DEFAULT_RENDERERS
 
 A list or tuple of renderer classes, that determines the default set of renderers that may be used when returning a `Response` object.
