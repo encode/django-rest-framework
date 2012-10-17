@@ -1,9 +1,10 @@
 """
-Renderers are used to serialize a View's output into specific media types.
+Renderers are used to serialize a response into specific media types.
 
-Django REST framework also provides HTML and PlainText renderers that help self-document the API,
-by serializing the output along with documentation regarding the View, output status and headers,
-and providing forms and links depending on the allowed methods, renderers and parsers on the View.
+They give us a generic way of being able to handle various media types
+on the response, such as JSON encoded data or HTML output.
+
+REST framework also provides an HTML renderer the renders the browseable API.
 """
 import string
 from django import forms
@@ -23,8 +24,8 @@ from rest_framework import serializers, parsers
 
 class BaseRenderer(object):
     """
-    All renderers must extend this class, set the :attr:`media_type` attribute,
-    and override the :meth:`render` method.
+    All renderers should extend this class, setting the `media_type`
+    and `format` attributes, and override the `.render()` method.
     """
 
     media_type = None

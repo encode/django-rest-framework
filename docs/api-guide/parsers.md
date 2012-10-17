@@ -91,19 +91,27 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 # Custom parsers
 
-To implement a custom parser, you should override `BaseParser`, set the `.media_type` property, and implement the `.parse_stream(self, stream, parser_context)` method.
+To implement a custom parser, you should override `BaseParser`, set the `.media_type` property, and implement the `.parse(self, stream, parser_context)` method.
 
 The method should return the data that will be used to populate the `request.DATA` property.
 
-The arguments passed to `.parse_stream()` are:
+The arguments passed to `.parse()` are:
 
 ### stream
 
 A stream-like object representing the body of the request.
 
+### media_type
+
+Optional.  If provided, this is the media type of the incoming request.
+
+Depending on the request's `Content-Type:` header, this may be more specific than the renderer's `media_type` attribute, and may include media type parameters.  For example `"text/plain; charset=utf-8"`.
+
 ### parser_context
 
-If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.  By default it includes the keys `'upload_handlers'` and `'meta'`, which contain the values of the `request.upload_handlers` and `request.meta` properties.
+Optional.  If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.
+
+By default this will include the following keys: `view`, `request`, `args`, `kwargs`.
 
 ## Example
 
@@ -116,7 +124,7 @@ The following is an example plaintext parser that will populate the `request.DAT
 
     media_type = 'text/plain'
 
-    def parse_stream(self, stream, parser_context=None):
+    def parse(self, stream, media_type=None, parser_context=None):
         """
         Simply return a string representing the body of the request.
         """
@@ -124,7 +132,7 @@ The following is an example plaintext parser that will populate the `request.DAT
 
 ## Uploading file content
 
-If your custom parser needs to support file uploads, you may return a `DataAndFiles` object from the `.parse_stream()` method.  `DataAndFiles` should be instantiated with two arguments.  The first argument will be used to populate the `request.DATA` property, and the second argument will be used to populate the `request.FILES` property.
+If your custom parser needs to support file uploads, you may return a `DataAndFiles` object from the `.parse()` method.  `DataAndFiles` should be instantiated with two arguments.  The first argument will be used to populate the `request.DATA` property, and the second argument will be used to populate the `request.FILES` property.
 
 For example:
 
@@ -133,7 +141,7 @@ For example:
         A naive raw file upload parser.
         """
 
-        def parse_stream(self, stream, parser_context):
+        def parse(self, stream, media_type=None, parser_context=None):
             content = stream.read()
             name = 'example.dat'
             content_type = 'application/octet-stream'
