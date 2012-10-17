@@ -49,11 +49,19 @@ Raised if the request contains malformed data when accessing `request.DATA` or `
 
 By default this exception results in a response with the HTTP status code "400 Bad Request".
 
-## Unauthenticated
+## AuthenticationFailed
 
-**Signature:** `Unauthenticated(detail=None)`
+**Signature:** `AuthenticationFailed(detail=None)`
 
-Raised when an unauthenticated incoming request fails the permission checks.
+Raised when an incoming request includes incorrect authentication.
+
+By default this exception results in a response with the HTTP status code "401 Unauthenticated", but it may also result in a "403 Forbidden" response, depending on the authentication scheme in use.  See the [authentication documentation][authentication] for more details.
+
+## NotAuthenticated
+
+**Signature:** `NotAuthenticated(detail=None)`
+
+Raised when an unauthenticated request fails the permission checks.
 
 By default this exception results in a response with the HTTP status code "401 Unauthenticated", but it may also result in a "403 Forbidden" response, depending on the authentication scheme in use.  See the [authentication documentation][authentication] for more details.
 
@@ -61,7 +69,7 @@ By default this exception results in a response with the HTTP status code "401 U
 
 **Signature:** `PermissionDenied(detail=None)`
 
-Raised when an authenticated incoming request fails the permission checks.
+Raised when an authenticated request fails the permission checks.
 
 By default this exception results in a response with the HTTP status code "403 Forbidden".
 

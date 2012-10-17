@@ -156,12 +156,12 @@ Unauthenticated responses that are denied permission will result in an `HTTP 403
 
 To implement a custom authentication scheme, subclass `BaseAuthentication` and override the `.authenticate(self, request)` method.  The method should return a two-tuple of `(user, auth)` if authentication succeeds, or `None` otherwise.
 
-In some circumstances instead of returning `None`, you may want to raise an `Unauthenticated` exception from the `.authenticate()` method.
+In some circumstances instead of returning `None`, you may want to raise an `AuthenticationFailed` exception from the `.authenticate()` method.
 
 Typically the approach you should take is:
 
 * If authentication is not attempted, return `None`.  Any other authentication schemes also in use will still be checked.
-* If authentication is attempted but fails, raise an `Unauthenticated` exception.  An error response will be returned immediately, without checking any other authentication schemes.
+* If authentication is attempted but fails, raise a `AuthenticationFailed` exception.  An error response will be returned immediately, without checking any other authentication schemes.
 
 You *may* also override the `.authentication_header(self, request)` method.  If implemented, it should return a string that will be used as the value of the `WWW-Authenticate` header in a `HTTP 401 Unauthorized` response.
 
