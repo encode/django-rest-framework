@@ -91,3 +91,7 @@ class Comment(RESTFrameworkModel):
     email = models.EmailField()
     content = models.CharField(max_length=200)
     created = models.DateTimeField(auto_now_add=True)
+
+class ActionItem(RESTFrameworkModel):
+    title = models.CharField(max_length=200)
+    done = models.BooleanField(default=False)
