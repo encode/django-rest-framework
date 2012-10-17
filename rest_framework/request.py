@@ -266,7 +266,7 @@ class Request(object):
         if stream is None or media_type is None:
             return (None, None)
 
-        parser = self.negotiator.select_parser(self.parsers, media_type)
+        parser = self.negotiator.select_parser(self, self.parsers)
 
         if not parser:
             raise exceptions.UnsupportedMediaType(media_type)

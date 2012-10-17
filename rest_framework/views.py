@@ -238,7 +238,13 @@ class APIView(View):
         """
         renderers = self.get_renderers()
         conneg = self.get_content_negotiator()
-        return conneg.negotiate(request, renderers, self.format_kwarg, force)
+
+        try:
+            return conneg.select_renderer(request, renderers, self.format_kwarg)
+        except:
+            if force:
+                return (renderers[0], renderers[0].media_type)
+            raise
 
     def has_permission(self, request, obj=None):
         """
