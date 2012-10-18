@@ -91,7 +91,7 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 # Custom parsers
 
-To implement a custom parser, you should override `BaseParser`, set the `.media_type` property, and implement the `.parse(self, stream, parser_context)` method.
+To implement a custom parser, you should override `BaseParser`, set the `.media_type` property, and implement the `.parse(self, stream, media_type, parser_context)` method.
 
 The method should return the data that will be used to populate the `request.DATA` property.
 
@@ -103,7 +103,7 @@ A stream-like object representing the body of the request.
 
 ### media_type
 
-Optional.  If provided, this is the media type of the incoming request.
+Optional.  If provided, this is the media type of the incoming request content.
 
 Depending on the request's `Content-Type:` header, this may be more specific than the renderer's `media_type` attribute, and may include media type parameters.  For example `"text/plain; charset=utf-8"`.
 
