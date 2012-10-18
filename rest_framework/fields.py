@@ -224,6 +224,9 @@ class RelatedField(WritableField):
         return self.to_native(value)
 
     def field_from_native(self, data, field_name, into):
+        if self.readonly:
+            return
+
         value = data.get(field_name)
         into[(self.source or field_name) + '_id'] = self.from_native(value)
 
