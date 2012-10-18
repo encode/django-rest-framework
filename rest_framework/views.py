@@ -54,12 +54,12 @@ def _camelcase_to_spaces(content):
 class APIView(View):
     settings = api_settings
 
-    renderer_classes = api_settings.DEFAULT_RENDERERS
-    parser_classes = api_settings.DEFAULT_PARSERS
-    authentication_classes = api_settings.DEFAULT_AUTHENTICATION
-    throttle_classes = api_settings.DEFAULT_THROTTLES
-    permission_classes = api_settings.DEFAULT_PERMISSIONS
-    content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+    parser_classes = api_settings.DEFAULT_PARSER_CLASSES
+    authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
+    throttle_classes = api_settings.DEFAULT_THROTTLE_CLASSES
+    permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
+    content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
 
     @classmethod
     def as_view(cls, **initkwargs):

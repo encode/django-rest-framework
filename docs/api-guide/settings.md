@@ -11,10 +11,10 @@ Configuration for REST framework is all namespaced inside a single Django settin
 For example your project's `settings.py` file might include something like this:
 
     REST_FRAMEWORK = {
-        'DEFAULT_RENDERERS': (
+        'DEFAULT_RENDERER_CLASSES': (
             'rest_framework.renderers.YAMLRenderer',
         )
-        'DEFAULT_PARSERS': (
+        'DEFAULT_PARSER_CLASSES': (
             'rest_framework.parsers.YAMLParser',
         )
     }
@@ -26,7 +26,7 @@ you should use the `api_settings` object.  For example.
 
     from rest_framework.settings import api_settings
     
-    print api_settings.DEFAULT_AUTHENTICATION
+    print api_settings.DEFAULT_AUTHENTICATION_CLASSES
 
 The `api_settings` object will check for any user-defined settings, and otherwise fallback to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.
 
@@ -34,7 +34,7 @@ The `api_settings` object will check for any user-defined settings, and otherwis
 
 # API Reference
 
-## DEFAULT_RENDERERS
+## DEFAULT_RENDERER_CLASSES
 
 A list or tuple of renderer classes, that determines the default set of renderers that may be used when returning a `Response` object.
 
@@ -46,7 +46,7 @@ Default:
         'rest_framework.renderers.TemplateHTMLRenderer'
     )
 
-## DEFAULT_PARSERS
+## DEFAULT_PARSER_CLASSES
 
 A list or tuple of parser classes, that determines the default set of parsers used when accessing the `request.DATA` property.
 
@@ -57,7 +57,7 @@ Default:
         'rest_framework.parsers.FormParser'
     )
 
-## DEFAULT_AUTHENTICATION
+## DEFAULT_AUTHENTICATION_CLASSES
 
 A list or tuple of authentication classes, that determines the default set of authenticators used when accessing the `request.user` or `request.auth` properties.
 
@@ -68,25 +68,25 @@ Default:
         'rest_framework.authentication.UserBasicAuthentication'
     )
 
-## DEFAULT_PERMISSIONS
+## DEFAULT_PERMISSION_CLASSES
 
 A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view.
 
 Default: `()`
 
-## DEFAULT_THROTTLES
+## DEFAULT_THROTTLE_CLASSES
 
 A list or tuple of throttle classes, that determines the default set of throttles checked at the start of a view.
 
 Default: `()`
 
-## DEFAULT_MODEL_SERIALIZER
+## DEFAULT_MODEL_SERIALIZER_CLASS
 
 **TODO**
 
 Default: `rest_framework.serializers.ModelSerializer`
 
-## DEFAULT_PAGINATION_SERIALIZER
+## DEFAULT_PAGINATION_SERIALIZER_CLASS
 
 **TODO**
 

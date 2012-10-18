@@ -16,10 +16,10 @@ The set of valid parsers for a view is always defined as a list of classes.  Whe
 
 ## Setting the parsers
 
-The default set of parsers may be set globally, using the `DEFAULT_PARSERS` setting.  For example, the following settings would allow requests with `YAML` content.
+The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSES` setting.  For example, the following settings would allow requests with `YAML` content.
 
     REST_FRAMEWORK = {
-        'DEFAULT_PARSERS': (
+        'DEFAULT_PARSER_CLASSES': (
             'rest_framework.parsers.YAMLParser',
         )
     }

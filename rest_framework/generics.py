@@ -15,7 +15,7 @@ class BaseView(views.APIView):
     Base class for all other generic views.
     """
     serializer_class = None
-    model_serializer_class = api_settings.MODEL_SERIALIZER
+    model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
 
     def get_serializer_context(self):
         """
@@ -56,7 +56,7 @@ class MultipleObjectBaseView(MultipleObjectMixin, BaseView):
     Base class for generic views onto a queryset.
     """
 
-    pagination_serializer_class = api_settings.PAGINATION_SERIALIZER
+    pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
     paginate_by = api_settings.PAGINATE_BY
 
     def get_pagination_serializer_class(self):

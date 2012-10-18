@@ -26,10 +26,10 @@ The value of `request.user` and `request.auth` for unauthenticated requests can 
 
 ## Setting the authentication policy
 
-The default authentication policy may be set globally, using the `DEFAULT_AUTHENTICATION` setting.  For example.
+The default authentication policy may be set globally, using the `DEFAULT_AUTHENTICATION_CLASSES` setting.  For example.
 
     REST_FRAMEWORK = {
-        'DEFAULT_AUTHENTICATION': (
+        'DEFAULT_AUTHENTICATION_CLASSES': (
             'rest_framework.authentication.UserBasicAuthentication',
             'rest_framework.authentication.SessionAuthentication',
         )
