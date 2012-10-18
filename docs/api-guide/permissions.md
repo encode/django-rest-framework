@@ -25,10 +25,10 @@ Object level permissions are run by REST framework's generic views when `.get_ob
 
 ## Setting the permission policy
 
-The default permission policy may be set globally, using the `DEFAULT_PERMISSIONS` setting.  For example.
+The default permission policy may be set globally, using the `DEFAULT_PERMISSION_CLASSES` setting.  For example.
 
     REST_FRAMEWORK = {
-        'DEFAULT_PERMISSIONS': (
+        'DEFAULT_PERMISSION_CLASSES': (
             'rest_framework.permissions.IsAuthenticated',
         )
     }

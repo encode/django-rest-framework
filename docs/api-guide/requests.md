@@ -37,7 +37,7 @@ For clarity inside your code, we recommend using `request.QUERY_PARAMS` instead 
 
 ## .parsers
 
-The `APIView` class or `@api_view` decorator will ensure that this property is automatically to a list of `Parser` instances, based on the `parser_classes` set on the view or based on the `DEFAULT_PARSERS` setting.
+The `APIView` class or `@api_view` decorator will ensure that this property is automatically to a list of `Parser` instances, based on the `parser_classes` set on the view or based on the `DEFAULT_PARSER_CLASSES` setting.
 
 You won't typically need to access this property.
 

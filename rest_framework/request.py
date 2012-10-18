@@ -92,7 +92,7 @@ class Request(object):
         self.parser_context['request'] = self
 
     def _default_negotiator(self):
-        return api_settings.DEFAULT_CONTENT_NEGOTIATION()
+        return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()
 
     @property
     def method(self):

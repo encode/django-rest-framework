@@ -18,10 +18,10 @@ For more information see the documentation on [content negotation][conneg].
 
 ## Setting the renderers
 
-The default set of renderers may be set globally, using the `DEFAULT_RENDERERS` setting.  For example, the following settings would use `YAML` as the main media type and also include the self describing API.
+The default set of renderers may be set globally, using the `DEFAULT_RENDERER_CLASSES` setting.  For example, the following settings would use `YAML` as the main media type and also include the self describing API.
 
     REST_FRAMEWORK = {
-        'DEFAULT_RENDERERS': (
+        'DEFAULT_RENDERER_CLASSES': (
             'rest_framework.renderers.YAMLRenderer',
             'rest_framework.renderers.BrowsableAPIRenderer',
         )

@@ -27,10 +27,10 @@ If any throttle check fails an `exceptions.Throttled` exception will be raised, 
 
 ## Setting the throttling policy
 
-The default throttling policy may be set globally, using the `DEFAULT_THROTTLES` and `DEFAULT_THROTTLE_RATES` settings.  For example.
+The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_CLASSES` and `DEFAULT_THROTTLE_RATES` settings.  For example.
 
     REST_FRAMEWORK = {
-        'DEFAULT_THROTTLES': (
+        'DEFAULT_THROTTLE_CLASSES': (
             'rest_framework.throttles.AnonThrottle',
             'rest_framework.throttles.UserThrottle',
         )
@@ -100,7 +100,7 @@ For example, multiple user throttle rates could be implemented by using the foll
 ...and the following settings.
 
     REST_FRAMEWORK = {
-        'DEFAULT_THROTTLES': (
+        'DEFAULT_THROTTLE_CLASSES': (
             'example.throttles.BurstRateThrottle',
             'example.throttles.SustainedRateThrottle',
         )
@@ -135,7 +135,7 @@ For example, given the following views...
 ...and the following settings.
 
     REST_FRAMEWORK = {
-        'DEFAULT_THROTTLES': (
+        'DEFAULT_THROTTLE_CLASSES': (
             'rest_framework.throttles.ScopedRateThrottle',
         )
         'DEFAULT_THROTTLE_RATES': {
