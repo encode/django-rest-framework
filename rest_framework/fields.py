@@ -70,6 +70,8 @@ class Field(object):
             value = obj
             for component in self.source.split('.'):
                 value = getattr(value, component)
+                if is_simple_callable(value):
+                    value = value()
         else:
             value = getattr(obj, field_name)
         return self.to_native(value)
