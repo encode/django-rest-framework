@@ -279,13 +279,22 @@ class BrowsableAPIRenderer(BaseRenderer):
                 continue
 
             kwargs = {}
+            kwargs['required'] = v.required
             if getattr(v, 'queryset', None):
-                kwargs['queryset'] = getattr(v, 'queryset', None)
+                kwargs['queryset'] = v.queryset
+            if getattr(v, 'widget', None):
+                kwargs['widget'] = v.widget
+            if getattr(v, 'initial', None):
+                kwargs['initial'] = v.initial
+            if getattr(v, 'help_text', None):
+                kwargs['help_text'] = v.help_text
+            kwargs['label'] = k
+            print kwargs
 
             try:
                 fields[k] = field_mapping[v.__class__](**kwargs)
             except KeyError:
-                fields[k] = forms.CharField()
+                fields[k] = forms.CharField(**kwargs)
 
         OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
         if obj and not view.request.method == 'DELETE':  # Don't fill in the form when the object is deleted
