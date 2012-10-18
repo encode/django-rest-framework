@@ -4,6 +4,11 @@ from rest_framework import serializers
 from rest_framework.tests.models import *
 
 
+class SubComment(object):
+    def __init__(self, sub_comment):
+        self.sub_comment = sub_comment
+            
+
 class Comment(object):
     def __init__(self, email, content, created):
         self.email = email
@@ -13,13 +18,18 @@ class Comment(object):
     def __eq__(self, other):
         return all([getattr(self, attr) == getattr(other, attr)
                     for attr in ('email', 'content', 'created')])
+                    
+    def get_sub_comment(self):
+        sub_comment = SubComment('And Merry Christmas!')
+        return sub_comment
 
 
 class CommentSerializer(serializers.Serializer):
     email = serializers.EmailField()
     content = serializers.CharField(max_length=1000)
     created = serializers.DateTimeField()
-
+    sub_comment = serializers.Field(source='get_sub_comment.sub_comment')
+    
     def restore_object(self, data, instance=None):
         if instance is None:
             return Comment(**data)
@@ -42,7 +52,14 @@ class BasicTests(TestCase):
         self.data = {
             'email': 'tom@example.com',
             'content': 'Happy new year!',
-            'created': datetime.datetime(2012, 1, 1)
+            'created': datetime.datetime(2012, 1, 1),
+            'sub_comment': 'This wont change'
+        }
+        self.expected = {
+            'email': 'tom@example.com',
+            'content': 'Happy new year!',
+            'created': datetime.datetime(2012, 1, 1),
+            'sub_comment': 'And Merry Christmas!'
         }
 
     def test_empty(self):
@@ -50,14 +67,14 @@ class BasicTests(TestCase):
         expected = {
             'email': '',
             'content': '',
-            'created': None
+            'created': None,
+            'sub_comment': ''
         }
         self.assertEquals(serializer.data, expected)
 
     def test_retrieve(self):
-        serializer = CommentSerializer(instance=self.comment)
-        expected = self.data
-        self.assertEquals(serializer.data, expected)
+        serializer = CommentSerializer(instance=self.comment)        
+        self.assertEquals(serializer.data, self.expected)
 
     def test_create(self):
         serializer = CommentSerializer(self.data)
@@ -65,6 +82,7 @@ class BasicTests(TestCase):
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.object, expected)
         self.assertFalse(serializer.object is expected)
+        self.assertEquals(serializer.data['sub_comment'], 'And Merry Christmas!')
 
     def test_update(self):
         serializer = CommentSerializer(self.data, instance=self.comment)
@@ -72,6 +90,7 @@ class BasicTests(TestCase):
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.object, expected)
         self.assertTrue(serializer.object is expected)
+        self.assertEquals(serializer.data['sub_comment'], 'And Merry Christmas!')
 
 
 class ValidationTests(TestCase):
