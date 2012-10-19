@@ -157,7 +157,7 @@
 <p><code>request.QUERY_PARAMS</code> is a more correcly named synonym for <code>request.GET</code>.</p>
 <p>For clarity inside your code, we recommend using <code>request.QUERY_PARAMS</code> instead of the usual <code>request.GET</code>, as <em>any</em> HTTP method type may include query parameters.</p>
 <h2 id="parsers">.parsers</h2>
-<p>The <code>APIView</code> class or <code>@api_view</code> decorator will ensure that this property is automatically to a list of <code>Parser</code> instances, based on the <code>parser_classes</code> set on the view or based on the <code>DEFAULT_PARSERS</code> setting.</p>
+<p>The <code>APIView</code> class or <code>@api_view</code> decorator will ensure that this property is automatically to a list of <code>Parser</code> instances, based on the <code>parser_classes</code> set on the view or based on the <code>DEFAULT_PARSER_CLASSES</code> setting.</p>
 <p>You won't typically need to access this property.</p>
 <hr />
 <p><strong>Note:</strong> If a client sends malformed content, then accessing <code>request.DATA</code> or <code>request.FILES</code> may raise a <code>ParseError</code>.  By default REST framework's <code>APIView</code> class or <code>@api_view</code> decorator will catch the error and return a <code>400 Bad Request</code> response.</p>

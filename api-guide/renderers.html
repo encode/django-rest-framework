@@ -146,9 +146,9 @@
 <p>The basic process of content negotiation involves examining the request's <code>Accept</code> header, to determine which media types it expects in the response.  Optionally, format suffixes on the URL may be used to explicitly request a particular representation.  For example the URL <code>http://example.com/api/users_count.json</code> might be an endpoint that always returns JSON data.</p>
 <p>For more information see the documentation on <a href="content-negotiation">content negotation</a>.</p>
 <h2 id="setting-the-renderers">Setting the renderers</h2>
-<p>The default set of renderers may be set globally, using the <code>DEFAULT_RENDERERS</code> setting.  For example, the following settings would use <code>YAML</code> as the main media type and also include the self describing API.</p>
+<p>The default set of renderers may be set globally, using the <code>DEFAULT_RENDERER_CLASSES</code> setting.  For example, the following settings would use <code>YAML</code> as the main media type and also include the self describing API.</p>
 <pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
-    'DEFAULT_RENDERERS': (
+    'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.YAMLRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
     )
@@ -241,10 +241,11 @@ Unlike other renderers, the data passed to the <code>Response</code> does not ne
 <h3 id="data"><code>data</code></h3>
 <p>The request data, as set by the <code>Response()</code> instantiation.</p>
 <h3 id="media_typenone"><code>media_type=None</code></h3>
-<p>Optional. If provided, this is the accepted media type, as determined by the content negotiation stage.  Depending on the client's <code>Accept:</code> header, this may be more specific than the renderer's <code>media_type</code> attribute, and may include media type parameters.  For example <code>"application/json; nested=true"</code>.</p>
+<p>Optional. If provided, this is the accepted media type, as determined by the content negotiation stage.</p>
+<p>Depending on the client's <code>Accept:</code> header, this may be more specific than the renderer's <code>media_type</code> attribute, and may include media type parameters.  For example <code>"application/json; nested=true"</code>.</p>
 <h3 id="renderer_contextnone"><code>renderer_context=None</code></h3>
-<p>Optional. If provided, this is a dictionary of contextual information provided by the view.
-By default this will include the following keys: <code>view</code>, <code>request</code>, <code>response</code>, <code>args</code>, <code>kwargs</code>.</p>
+<p>Optional. If provided, this is a dictionary of contextual information provided by the view.</p>
+<p>By default this will include the following keys: <code>view</code>, <code>request</code>, <code>response</code>, <code>args</code>, <code>kwargs</code>.</p>
 <h2 id="example">Example</h2>
 <p>The following is an example plaintext renderer that will return a response with the <code>data</code> parameter as the content of the response.</p>
 <pre class="prettyprint lang-py"><code>from django.utils.encoding import smart_unicode

@@ -142,9 +142,9 @@
 <p>Before running the main body of the view each throttle in the list is checked.
 If any throttle check fails an <code>exceptions.Throttled</code> exception will be raised, and the main body of the view will not run.</p>
 <h2 id="setting-the-throttling-policy">Setting the throttling policy</h2>
-<p>The default throttling policy may be set globally, using the <code>DEFAULT_THROTTLES</code> and <code>DEFAULT_THROTTLE_RATES</code> settings.  For example.</p>
+<p>The default throttling policy may be set globally, using the <code>DEFAULT_THROTTLE_CLASSES</code> and <code>DEFAULT_THROTTLE_RATES</code> settings.  For example.</p>
 <pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
-    'DEFAULT_THROTTLES': (
+    'DEFAULT_THROTTLE_CLASSES': (
         'rest_framework.throttles.AnonThrottle',
         'rest_framework.throttles.UserThrottle',
     )
@@ -174,6 +174,7 @@ def example_view(request, format=None):
     }
     return Response(content)
 </code></pre>
+<hr />
 <h1 id="api-reference">API Reference</h1>
 <h2 id="anonratethrottle">AnonRateThrottle</h2>
 <p>The <code>AnonThrottle</code> will only ever throttle unauthenticated users.  The IP address of the incoming request is used to generate a unique key to throttle against.</p>
@@ -200,7 +201,7 @@ class SustainedRateThrottle(UserRateThrottle):
 </code></pre>
 <p>...and the following settings.</p>
 <pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
-    'DEFAULT_THROTTLES': (
+    'DEFAULT_THROTTLE_CLASSES': (
         'example.throttles.BurstRateThrottle',
         'example.throttles.SustainedRateThrottle',
     )
@@ -229,7 +230,7 @@ class UploadView(APIView):
 </code></pre>
 <p>...and the following settings.</p>
 <pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
-    'DEFAULT_THROTTLES': (
+    'DEFAULT_THROTTLE_CLASSES': (
         'rest_framework.throttles.ScopedRateThrottle',
     )
     'DEFAULT_THROTTLE_RATES': {
@@ -239,6 +240,7 @@ class UploadView(APIView):
 }
 </code></pre>
 <p>User requests to either <code>ContactListView</code> or <code>ContactDetailView</code> would be restricted to a total of 1000 requests per-day.  User requests to <code>UploadView</code> would be restricted to 20 requests per day.</p>
+<hr />
 <h1 id="custom-throttles">Custom throttles</h1>
 <p>To create a custom throttle, override <code>BaseThrottle</code> and implement <code>.allow_request(request, view)</code>.  The method should return <code>True</code> if the request should be allowed, and <code>False</code> otherwise.</p>
 <p>Optionally you may also override the <code>.wait()</code> method.  If implemented, <code>.wait()</code> should return a recomended number of seconds to wait before attempting the next request, or <code>None</code>.  The <code>.wait()</code> method will only be called if <code>.allow_request()</code> has previously returned <code>False</code>.</p>

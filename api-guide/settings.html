@@ -114,13 +114,14 @@
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
                 <li class="main"><a href="#settings">Settings</a></li>
 <li><a href="#accessing-settings">Accessing settings</a></li>
-<li><a href="#default_renderers">DEFAULT_RENDERERS</a></li>
-<li><a href="#default_parsers">DEFAULT_PARSERS</a></li>
-<li><a href="#default_authentication">DEFAULT_AUTHENTICATION</a></li>
-<li><a href="#default_permissions">DEFAULT_PERMISSIONS</a></li>
-<li><a href="#default_throttles">DEFAULT_THROTTLES</a></li>
-<li><a href="#default_model_serializer">DEFAULT_MODEL_SERIALIZER</a></li>
-<li><a href="#default_pagination_serializer">DEFAULT_PAGINATION_SERIALIZER</a></li>
+<li class="main"><a href="#api-reference">API Reference</a></li>
+<li><a href="#default_renderer_classes">DEFAULT_RENDERER_CLASSES</a></li>
+<li><a href="#default_parser_classes">DEFAULT_PARSER_CLASSES</a></li>
+<li><a href="#default_authentication_classes">DEFAULT_AUTHENTICATION_CLASSES</a></li>
+<li><a href="#default_permission_classes">DEFAULT_PERMISSION_CLASSES</a></li>
+<li><a href="#default_throttle_classes">DEFAULT_THROTTLE_CLASSES</a></li>
+<li><a href="#default_model_serializer_class">DEFAULT_MODEL_SERIALIZER_CLASS</a></li>
+<li><a href="#default_pagination_serializer_class">DEFAULT_PAGINATION_SERIALIZER_CLASS</a></li>
 <li><a href="#format_suffix_kwarg">FORMAT_SUFFIX_KWARG</a></li>
 <li><a href="#unauthenticated_user">UNAUTHENTICATED_USER</a></li>
 <li><a href="#unauthenticated_token">UNAUTHENTICATED_TOKEN</a></li>
@@ -144,10 +145,10 @@
 <p>Configuration for REST framework is all namespaced inside a single Django setting, named <code>REST_FRAMEWORK</code>.</p>
 <p>For example your project's <code>settings.py</code> file might include something like this:</p>
 <pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
-    'DEFAULT_RENDERERS': (
+    'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.YAMLRenderer',
     )
-    'DEFAULT_PARSERS': (
+    'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.YAMLParser',
     )
 }
@@ -157,10 +158,12 @@
 you should use the <code>api_settings</code> object.  For example.</p>
 <pre class="prettyprint lang-py"><code>from rest_framework.settings import api_settings
 
-print api_settings.DEFAULT_AUTHENTICATION
+print api_settings.DEFAULT_AUTHENTICATION_CLASSES
 </code></pre>
 <p>The <code>api_settings</code> object will check for any user-defined settings, and otherwise fallback to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.</p>
-<h2 id="default_renderers">DEFAULT_RENDERERS</h2>
+<hr />
+<h1 id="api-reference">API Reference</h1>
+<h2 id="default_renderer_classes">DEFAULT_RENDERER_CLASSES</h2>
 <p>A list or tuple of renderer classes, that determines the default set of renderers that may be used when returning a <code>Response</code> object.</p>
 <p>Default:</p>
 <pre class="prettyprint lang-py"><code>(
@@ -169,7 +172,7 @@ print api_settings.DEFAULT_AUTHENTICATION
     'rest_framework.renderers.TemplateHTMLRenderer'
 )
 </code></pre>
-<h2 id="default_parsers">DEFAULT_PARSERS</h2>
+<h2 id="default_parser_classes">DEFAULT_PARSER_CLASSES</h2>
 <p>A list or tuple of parser classes, that determines the default set of parsers used when accessing the <code>request.DATA</code> property.</p>
 <p>Default:</p>
 <pre class="prettyprint lang-py"><code>(
@@ -177,7 +180,7 @@ print api_settings.DEFAULT_AUTHENTICATION
     'rest_framework.parsers.FormParser'
 )
 </code></pre>
-<h2 id="default_authentication">DEFAULT_AUTHENTICATION</h2>
+<h2 id="default_authentication_classes">DEFAULT_AUTHENTICATION_CLASSES</h2>
 <p>A list or tuple of authentication classes, that determines the default set of authenticators used when accessing the <code>request.user</code> or <code>request.auth</code> properties.</p>
 <p>Default:</p>
 <pre class="prettyprint lang-py"><code>(
@@ -185,16 +188,16 @@ print api_settings.DEFAULT_AUTHENTICATION
     'rest_framework.authentication.UserBasicAuthentication'
 )
 </code></pre>
-<h2 id="default_permissions">DEFAULT_PERMISSIONS</h2>
+<h2 id="default_permission_classes">DEFAULT_PERMISSION_CLASSES</h2>
 <p>A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view.</p>
 <p>Default: <code>()</code></p>
-<h2 id="default_throttles">DEFAULT_THROTTLES</h2>
+<h2 id="default_throttle_classes">DEFAULT_THROTTLE_CLASSES</h2>
 <p>A list or tuple of throttle classes, that determines the default set of throttles checked at the start of a view.</p>
 <p>Default: <code>()</code></p>
-<h2 id="default_model_serializer">DEFAULT_MODEL_SERIALIZER</h2>
+<h2 id="default_model_serializer_class">DEFAULT_MODEL_SERIALIZER_CLASS</h2>
 <p><strong>TODO</strong></p>
 <p>Default: <code>rest_framework.serializers.ModelSerializer</code></p>
-<h2 id="default_pagination_serializer">DEFAULT_PAGINATION_SERIALIZER</h2>
+<h2 id="default_pagination_serializer_class">DEFAULT_PAGINATION_SERIALIZER_CLASS</h2>
 <p><strong>TODO</strong></p>
 <p>Default: <code>rest_framework.pagination.PaginationSerializer</code></p>
 <h2 id="format_suffix_kwarg">FORMAT_SUFFIX_KWARG</h2>

@@ -154,8 +154,8 @@
         """
         Return a list of all users.
         """
-        users = [user.username for user in User.objects.all()]
-        return Response(users)
+        usernames = [user.username for user in User.objects.all()]
+        return Response(usernames)
 </code></pre>
 <h2 id="api-policy-attributes">API policy attributes</h2>
 <p>The following attributes control the pluggable aspects of API views.</p>

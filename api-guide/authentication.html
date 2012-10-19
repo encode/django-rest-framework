@@ -143,9 +143,9 @@
 <p>If no class authenticates, <code>request.user</code> will be set to an instance of <code>django.contrib.auth.models.AnonymousUser</code>, and <code>request.auth</code> will be set to <code>None</code>.</p>
 <p>The value of <code>request.user</code> and <code>request.auth</code> for unauthenticated requests can be modified using the <code>UNAUTHENTICATED_USER</code> and <code>UNAUTHENTICATED_TOKEN</code> settings.</p>
 <h2 id="setting-the-authentication-policy">Setting the authentication policy</h2>
-<p>The default authentication policy may be set globally, using the <code>DEFAULT_AUTHENTICATION</code> setting.  For example.</p>
+<p>The default authentication policy may be set globally, using the <code>DEFAULT_AUTHENTICATION_CLASSES</code> setting.  For example.</p>
 <pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION': (
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.UserBasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     )

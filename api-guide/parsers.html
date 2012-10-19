@@ -142,9 +142,9 @@ sending more complex data than simple forms</p>
 <h2 id="how-the-parser-is-determined">How the parser is determined</h2>
 <p>The set of valid parsers for a view is always defined as a list of classes.  When either <code>request.DATA</code> or <code>request.FILES</code> is accessed, REST framework will examine the <code>Content-Type</code> header on the incoming request, and determine which parser to use to parse the request content.</p>
 <h2 id="setting-the-parsers">Setting the parsers</h2>
-<p>The default set of parsers may be set globally, using the <code>DEFAULT_PARSERS</code> setting.  For example, the following settings would allow requests with <code>YAML</code> content.</p>
+<p>The default set of parsers may be set globally, using the <code>DEFAULT_PARSER_CLASSES</code> setting.  For example, the following settings would allow requests with <code>YAML</code> content.</p>
 <pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
-    'DEFAULT_PARSERS': (
+    'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.YAMLParser',
     )
 }
@@ -191,13 +191,17 @@ def example_view(request, format=None):
 <p><strong>.media_type</strong>: <code>multipart/form-data</code></p>
 <hr />
 <h1 id="custom-parsers">Custom parsers</h1>
-<p>To implement a custom parser, you should override <code>BaseParser</code>, set the <code>.media_type</code> property, and implement the <code>.parse_stream(self, stream, parser_context)</code> method.</p>
+<p>To implement a custom parser, you should override <code>BaseParser</code>, set the <code>.media_type</code> property, and implement the <code>.parse(self, stream, media_type, parser_context)</code> method.</p>
 <p>The method should return the data that will be used to populate the <code>request.DATA</code> property.</p>
-<p>The arguments passed to <code>.parse_stream()</code> are:</p>
+<p>The arguments passed to <code>.parse()</code> are:</p>
 <h3 id="stream">stream</h3>
 <p>A stream-like object representing the body of the request.</p>
+<h3 id="media_type">media_type</h3>
+<p>Optional.  If provided, this is the media type of the incoming request content.</p>
+<p>Depending on the request's <code>Content-Type:</code> header, this may be more specific than the renderer's <code>media_type</code> attribute, and may include media type parameters.  For example <code>"text/plain; charset=utf-8"</code>.</p>
 <h3 id="parser_context">parser_context</h3>
-<p>If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.  By default it includes the keys <code>'upload_handlers'</code> and <code>'meta'</code>, which contain the values of the <code>request.upload_handlers</code> and <code>request.meta</code> properties.</p>
+<p>Optional.  If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.</p>
+<p>By default this will include the following keys: <code>view</code>, <code>request</code>, <code>args</code>, <code>kwargs</code>.</p>
 <h2 id="example">Example</h2>
 <p>The following is an example plaintext parser that will populate the <code>request.DATA</code> property with a string representing the body of the request. </p>
 <pre class="prettyprint lang-py"><code>class PlainTextParser(BaseParser):
@@ -207,21 +211,21 @@ Plain text parser.
 
 media_type = 'text/plain'
 
-def parse_stream(self, stream, parser_context=None):
+def parse(self, stream, media_type=None, parser_context=None):
     """
     Simply return a string representing the body of the request.
     """
     return stream.read()
 </code></pre>
 <h2 id="uploading-file-content">Uploading file content</h2>
-<p>If your custom parser needs to support file uploads, you may return a <code>DataAndFiles</code> object from the <code>.parse_stream()</code> method.  <code>DataAndFiles</code> should be instantiated with two arguments.  The first argument will be used to populate the <code>request.DATA</code> property, and the second argument will be used to populate the <code>request.FILES</code> property.</p>
+<p>If your custom parser needs to support file uploads, you may return a <code>DataAndFiles</code> object from the <code>.parse()</code> method.  <code>DataAndFiles</code> should be instantiated with two arguments.  The first argument will be used to populate the <code>request.DATA</code> property, and the second argument will be used to populate the <code>request.FILES</code> property.</p>
 <p>For example:</p>
 <pre class="prettyprint lang-py"><code>class SimpleFileUploadParser(BaseParser):
     """
     A naive raw file upload parser.
     """
 
-    def parse_stream(self, stream, parser_context):
+    def parse(self, stream, media_type=None, parser_context=None):
         content = stream.read()
         name = 'example.dat'
         content_type = 'application/octet-stream'

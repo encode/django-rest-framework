@@ -116,7 +116,8 @@
 <li><a href="#paginating-basic-data">Paginating basic data</a></li>
 <li><a href="#paginating-querysets">Paginating QuerySets</a></li>
 <li><a href="#pagination-in-the-generic-views">Pagination in the generic views</a></li>
-<li><a href="#custom-pagination-serializers">Custom pagination serializers</a></li>
+<li class="main"><a href="#custom-pagination-serializers">Custom pagination serializers</a></li>
+<li><a href="#example">Example</a></li>
 
               </ul>
             </div>
@@ -208,9 +209,11 @@ def user_list(request):
     paginate_by = 10
 </code></pre>
 <p>For more complex requirements such as serialization that differs depending on the requested media type you can override the <code>.get_paginate_by()</code> and <code>.get_pagination_serializer_class()</code> methods.</p>
-<h2 id="custom-pagination-serializers">Custom pagination serializers</h2>
+<hr />
+<h1 id="custom-pagination-serializers">Custom pagination serializers</h1>
 <p>To create a custom pagination serializer class you should override <code>pagination.BasePaginationSerializer</code> and set the fields that you want the serializer to return.</p>
 <p>You can also override the name used for the object list field, by setting the <code>results_field</code> attribute, which defaults to <code>'results'</code>.</p>
+<h2 id="example">Example</h2>
 <p>For example, to nest a pair of links labelled 'prev' and 'next', and set the name for the results field to 'objects', you might use something like this.</p>
 <pre class="prettyprint lang-py"><code>class LinksSerializer(serializers.Serializer):
     next = pagination.NextURLField(source='*')
