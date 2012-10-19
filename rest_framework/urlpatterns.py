@@ -2,26 +2,23 @@ from django.conf.urls.defaults import url
 from rest_framework.settings import api_settings
 
 
-def format_suffix_patterns(urlpatterns, suffix_required=False,
-                           suffix_kwarg=None, allowed=None):
+def format_suffix_patterns(urlpatterns, suffix_required=False, allowed=None):
     """
     Supplement existing urlpatterns with corrosponding patterns that also
     include a '.format' suffix.  Retains urlpattern ordering.
+
+    urlpatterns:
+        A list of URL patterns.
 
     suffix_required:
         If `True`, only suffixed URLs will be generated, and non-suffixed
         URLs will not be used.  Defaults to `False`.
 
-    suffix_kwarg:
-        The name of the kwarg that will be passed to the view.
-        Defaults to 'format'.
-
     allowed:
         An optional tuple/list of allowed suffixes.  eg ['json', 'api']
         Defaults to `None`, which allows any suffix.
-
     """
-    suffix_kwarg = suffix_kwarg or api_settings.FORMAT_SUFFIX_KWARG
+    suffix_kwarg = api_settings.FORMAT_SUFFIX_KWARG
     if allowed:
         if len(allowed) == 1:
             allowed_pattern = allowed[0]
