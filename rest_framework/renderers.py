@@ -286,8 +286,6 @@ class BrowsableAPIRenderer(BaseRenderer):
                 kwargs['widget'] = v.widget
             if getattr(v, 'initial', None):
                 kwargs['initial'] = v.initial
-            if getattr(v, 'help_text', None):
-                kwargs['help_text'] = v.help_text
             kwargs['label'] = k
             print kwargs
 

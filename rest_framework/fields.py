@@ -110,7 +110,7 @@ class WritableField(Field):
 
     def __init__(self, source=None, readonly=False, required=None,
                  validators=[], error_messages=None, widget=None,
-                 help_text=None, initial=None):
+                 initial=None):
 
         super(WritableField, self).__init__(source=source)
 
@@ -131,7 +131,6 @@ class WritableField(Field):
 
         # These attributes are ony used for HTML forms.
         self.initial = initial
-        self.help_text = help_text and smart_unicode(help_text) or ''
 
         widget = widget or self.widget
         if isinstance(widget, type):
