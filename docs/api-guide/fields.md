@@ -42,7 +42,7 @@ A serializer definition that looked like this:
         class Meta:
             fields = ('url', 'owner', 'name', 'expired')
 
-Would produced output similar to:
+Would produce output similar to:
 
     {
         'url': 'http://example.com/api/accounts/3/',
@@ -51,7 +51,7 @@ Would produced output similar to:
         'expired': True
     }
 
-Be default, the `Field` class will perform a basic translation of the source value into primative datatypes, falling back to unicode representations of complex datatypes when neccesary.
+By default, the `Field` class will perform a basic translation of the source value into primative datatypes, falling back to unicode representations of complex datatypes when necessary.
 
 You can customize this  behaviour by overriding the `.to_native(self, value)` method.
 
@@ -84,7 +84,7 @@ or `django.db.models.fields.TextField`.
 
 ## EmailField
 
-A text representation, validates the text to be a valid e-mail adress. Corresponds to `django.db.models.fields.EmailField`
+A text representation, validates the text to be a valid e-mail address. Corresponds to `django.db.models.fields.EmailField`
 
 ## DateField
 
@@ -165,7 +165,7 @@ And a model serializer defined like this:
             model = Bookmark
             exclude = ('id',)
 
-The an example output format for a Bookmark instance would be:
+Then an example output format for a Bookmark instance would be:
 
     {
         'tags': [u'django', u'python'],

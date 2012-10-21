@@ -60,7 +60,7 @@ class SimpleRateThrottle(BaseThrottle):
         Determine the string representation of the allowed request rate.
         """
         if not getattr(self, 'scope', None):
-            msg = ("You must set either `.scope` or `.rate` for '%s' thottle" %
+            msg = ("You must set either `.scope` or `.rate` for '%s' throttle" %
                    self.__class__.__name__)
             raise exceptions.ConfigurationError(msg)
 
@@ -137,7 +137,7 @@ class AnonRateThrottle(SimpleRateThrottle):
     """
     Limits the rate of API calls that may be made by a anonymous users.
 
-    The IP address of the request will be used as the unqiue cache key.
+    The IP address of the request will be used as the unique cache key.
     """
     scope = 'anon'
 

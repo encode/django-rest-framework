@@ -6,7 +6,7 @@
 >
 > &mdash; [Apple Developer Documentation][cite]
 
-Together with [authentication] and [throttling], permissions determine wheter a request should be granted or denied access.
+Together with [authentication] and [throttling], permissions determine whether a request should be granted or denied access.
 
 Permission checks are always run at the very start of the view, before any other code is allowed to proceed.  Permission checks will typically use the authentication information in the `request.user` and `request.auth` properties to determine if the incoming request should be permitted.
 

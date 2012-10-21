@@ -86,7 +86,7 @@ The `Response` class extends `SimpleTemplateResponse`, and all the usual attribu
 
 **Signature:** `.render()`
 
-As with any other `TemplateResponse`, this methd is called to render the serialized data of the response into the final response content.  When `.render()` is called, the response content will be set to the result of calling the `.render(data, accepted_media_type, renderer_context)` method on the `accepted_renderer` instance.
+As with any other `TemplateResponse`, this method is called to render the serialized data of the response into the final response content.  When `.render()` is called, the response content will be set to the result of calling the `.render(data, accepted_media_type, renderer_context)` method on the `accepted_renderer` instance.
 
 You won't typically need to call `.render()` yourself, as it's handled by Django's standard response cycle.
     
