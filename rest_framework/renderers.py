@@ -288,7 +288,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                 fields[k] = forms.CharField()
 
         OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
-        if obj and not view.request.method == 'DELETE':  # Don't fill in the form when the object is deleted
+        if obj:
             data = serializer.data
         form_instance = OnTheFlyForm(data)
         return form_instance
