@@ -8,7 +8,7 @@ sending more complex data than simple forms
 >
 > &mdash; Malcom Tredinnick, [Django developers group][cite]
 
-REST framework includes a number of built in Parser classes, that allow you to accept requests with various media types.  There is also support for defining your own custom parsers, which gives you the flexiblity to design the media types that your API accepts.
+REST framework includes a number of built in Parser classes, that allow you to accept requests with various media types.  There is also support for defining your own custom parsers, which gives you the flexibility to design the media types that your API accepts.
 
 ## How the parser is determined
 
@@ -65,7 +65,7 @@ Parses `YAML` request content.
 
 Parses REST framework's default style of `XML` request content.
 
-Note that the `XML` markup language is used typically used as the base language for more strictly defined domain-specific languages, such as `RSS`, `Atom`, and `XHTML`.
+Note that the `XML` markup language is typically used as the base language for more strictly defined domain-specific languages, such as `RSS`, `Atom`, and `XHTML`.
 
 If you are considering using `XML` for your API, you may want to consider implementing a custom renderer and parser for your specific requirements, and using an existing domain-specific media-type, or creating your own custom XML-based media-type.
 

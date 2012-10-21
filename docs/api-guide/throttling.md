@@ -80,7 +80,7 @@ The allowed request rate is determined from one of the following (in order of pr
 
 ## UserRateThrottle
 
-The `UserThrottle` will throttle users to a given rate of requests across the API.  The user id is used to generate a unique key to throttle against.  Unauthenticted requests will fall back to using the IP address of the incoming request to generate a unique key to throttle against.
+The `UserThrottle` will throttle users to a given rate of requests across the API.  The user id is used to generate a unique key to throttle against.  Unauthenticated requests will fall back to using the IP address of the incoming request to generate a unique key to throttle against.
 
 The allowed request rate is determined from one of the following (in order of preference).
 
@@ -114,7 +114,7 @@ For example, multiple user throttle rates could be implemented by using the foll
 
 ## ScopedRateThrottle
 
-The `ScopedThrottle` class can be used to restrict access to specific parts of the API.  This throttle will only be applied if the view that is being accessed includes a `.throttle_scope` property.  The unique throttle key will then be formed by concatenating the "scope" of the request with the unqiue user id or IP address.
+The `ScopedThrottle` class can be used to restrict access to specific parts of the API.  This throttle will only be applied if the view that is being accessed includes a `.throttle_scope` property.  The unique throttle key will then be formed by concatenating the "scope" of the request with the unique user id or IP address.
 
 The allowed request rate is determined by the `DEFAULT_THROTTLE_RATES` setting using a key from the request "scope".
 
@@ -152,6 +152,6 @@ User requests to either `ContactListView` or `ContactDetailView` would be restri
 
 To create a custom throttle, override `BaseThrottle` and implement `.allow_request(request, view)`.  The method should return `True` if the request should be allowed, and `False` otherwise.
 
-Optionally you may also override the `.wait()` method.  If implemented, `.wait()` should return a recomended number of seconds to wait before attempting the next request, or `None`.  The `.wait()` method will only be called if `.allow_request()` has previously returned `False`.
+Optionally you may also override the `.wait()` method.  If implemented, `.wait()` should return a recommended number of seconds to wait before attempting the next request, or `None`.  The `.wait()` method will only be called if `.allow_request()` has previously returned `False`.
 
 [permissions]: permissions.md

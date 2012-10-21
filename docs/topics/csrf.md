@@ -5,7 +5,7 @@
 >  &mdash; [Jeff Atwood][cite]
 
 * Explain need to add CSRF token to AJAX requests.
-* Explain defered CSRF style used by REST framework
+* Explain deferred CSRF style used by REST framework
 * Why you should use Django's standard login/logout views, and not REST framework view
 
 

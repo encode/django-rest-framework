@@ -47,7 +47,7 @@ Add `rest_framework` to your `INSTALLED_APPS`.
         'rest_framework',        
     )
 
-If you're intending to use the browserable API you'll want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
+If you're intending to use the browseable API you'll want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
 
     urlpatterns = patterns('',
         ...

@@ -12,7 +12,7 @@ Content negotiation is the process of selecting one of multiple possible represe
 
 ## Determining the accepted renderer
 
-REST framework uses a simple style of content negotition to determine which media type should be returned to a client, based on the available renderers, the priorities of each of those renderers, and the client's `Accept:` header.  The style used is partly client-driven, and partly server-driven.
+REST framework uses a simple style of content negotiation to determine which media type should be returned to a client, based on the available renderers, the priorities of each of those renderers, and the client's `Accept:` header.  The style used is partly client-driven, and partly server-driven.
 
 1. More specific media types are given preference to less specific media types.
 2. If multiple media types have the same specificity, then preference is given to based on the ordering of the renderers configured for the given view.
@@ -41,9 +41,9 @@ This is a valid approach as the HTTP spec deliberately underspecifies how a serv
 
 # Custom content negotiation
 
-It's unlikley that you'll want to provide a custom content negotiation scheme for REST framework, but you can do so if needed.  To implement a custom content negotiation scheme override `BaseContentNegotiation`.
+It's unlikely that you'll want to provide a custom content negotiation scheme for REST framework, but you can do so if needed.  To implement a custom content negotiation scheme override `BaseContentNegotiation`.
 
-REST framework's content negotiation classes handle selection of both the approprate parser for the requesr, and the appropriate renderer for the response,  so you should implement both the `.select_parser(request, parsers)` and `.select_renderer(request, renderers, format_suffix)` methods.
+REST framework's content negotiation classes handle selection of both the appropriate parser for the request, and the appropriate renderer for the response,  so you should implement both the `.select_parser(request, parsers)` and `.select_renderer(request, renderers, format_suffix)` methods.
 
 ## Example
 

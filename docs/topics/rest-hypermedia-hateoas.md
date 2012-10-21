@@ -4,7 +4,7 @@
 >
 > &mdash; Mike Amundsen, [REST fest 2012 keynote][cite].
 
-First off, the disclaimer.  The name "Django REST framework" was choosen simply to sure the project would be easily found by developers.  Throughout the documentation we try to use the more simple and technically correct terminology of "Web APIs".
+First off, the disclaimer.  The name "Django REST framework" was chosen simply to sure the project would be easily found by developers.  Throughout the documentation we try to use the more simple and technically correct terminology of "Web APIs".
 
 If you are serious about designing a Hypermedia APIs, you should look to resources outside of this documentation to help inform your design choices.
 
@@ -22,7 +22,7 @@ For a more thorough background, check out Klabnik's [Hypermedia API reading list
 
 ## Building Hypermedia APIs with REST framework
 
-REST framework is an agnositic Web API toolkit.  It does help guide you towards building well-connected APIs, and makes it easy to design appropriate media types, but it does not strictly enforce any particular design style.
+REST framework is an agnostic Web API toolkit.  It does help guide you towards building well-connected APIs, and makes it easy to design appropriate media types, but it does not strictly enforce any particular design style.
 
 ## What REST framework provides.
 
