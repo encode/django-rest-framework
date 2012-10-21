@@ -223,11 +223,9 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         return content
 
-    def get_form(self, view, method, request):
+    def show_form_for_method(self, view, method, request):
         """
-        Get a form, possibly bound to either the input or output data.
-        In the absence on of the Resource having an associated form then
-        provide a form that can be used to submit arbitrary content.
+        Returns True if a form should be shown for this method.
         """
         if not method in view.allowed_methods:
             return  # Not a valid method
@@ -241,20 +239,9 @@ class BrowsableAPIRenderer(BaseRenderer):
                 return  # Don't have permission
         except:
             return  # Don't have permission and exception explicitly raise
+        return True
 
-        if method == 'DELETE' or method == 'OPTIONS':
-            return True  # Don't actually need to return a form
-
-        if (not getattr(view, 'get_serializer', None) or
-            not parsers.FormParser in getattr(view, 'parser_classes')):
-            media_types = [parser.media_type for parser in view.parser_classes]
-            return self.get_generic_content_form(media_types)
-
-        #####
-        # TODO: This is a little bit of a hack.  Actually we'd like to remove
-        #       this and just render serializer fields to html directly.
-
-        #  We need to map our Fields to Django's Fields.
+    def serializer_to_form_fields(self, serializer):
         field_mapping = {
             serializers.FloatField: forms.FloatField,
             serializers.IntegerField: forms.IntegerField,
@@ -267,13 +254,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             serializers.ManyPrimaryKeyRelatedField: forms.ModelMultipleChoiceField
         }
 
-        # Creating an on the fly form see: http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
         fields = {}
-        obj, data = None, None
-        if getattr(view, 'object', None):
-            obj = view.object
-
-        serializer = view.get_serializer(instance=obj)
         for k, v in serializer.get_fields(True).items():
             if getattr(v, 'readonly', True):
                 continue
@@ -286,6 +267,31 @@ class BrowsableAPIRenderer(BaseRenderer):
                 fields[k] = field_mapping[v.__class__](**kwargs)
             except KeyError:
                 fields[k] = forms.CharField()
+        return fields
+
+    def get_form(self, view, method, request):
+        """
+        Get a form, possibly bound to either the input or output data.
+        In the absence on of the Resource having an associated form then
+        provide a form that can be used to submit arbitrary content.
+        """
+        if not self.show_form_for_method(view, method, request):
+            return
+
+        if method == 'DELETE' or method == 'OPTIONS':
+            return True  # Don't actually need to return a form
+
+        if not getattr(view, 'get_serializer', None) or not parsers.FormParser in view.parser_classes:
+            media_types = [parser.media_type for parser in view.parser_classes]
+            return self.get_generic_content_form(media_types)
+
+        # Creating an on the fly form see: http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
+        obj, data = None, None
+        if getattr(view, 'object', None):
+            obj = view.object
+
+        serializer = view.get_serializer(instance=obj)
+        fields = self.serializer_to_form_fields(serializer)
 
         OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
         if obj:
