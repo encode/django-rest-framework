@@ -281,8 +281,10 @@ class BrowsableAPIRenderer(BaseRenderer):
 
             kwargs = {}
             kwargs['required'] = v.required
+
             if getattr(v, 'queryset', None):
                 kwargs['queryset'] = v.queryset
+
             if getattr(v, 'widget', None):
                 widget = copy.deepcopy(v.widget)
                 # If choices have friendly readable names,
@@ -294,8 +296,10 @@ class BrowsableAPIRenderer(BaseRenderer):
                                    for (ident, desc) in choices]
                     widget.choices = choices
                 kwargs['widget'] = widget
-            if getattr(v, 'initial', None):
-                kwargs['initial'] = v.initial
+
+            if getattr(v, 'default', None) is not None:
+                kwargs['initial'] = v.default
+
             kwargs['label'] = k
 
             try:

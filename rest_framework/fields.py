@@ -107,10 +107,11 @@ class WritableField(Field):
         'invalid': _('Invalid value.'),
     }
     widget = widgets.TextInput
+    default = None
 
     def __init__(self, source=None, readonly=False, required=None,
                  validators=[], error_messages=None, widget=None,
-                 initial=None):
+                 default=None):
 
         super(WritableField, self).__init__(source=source)
 
@@ -128,10 +129,9 @@ class WritableField(Field):
         self.error_messages = messages
 
         self.validators = self.default_validators + validators
+        self.default = default or self.default
 
-        # These attributes are ony used for HTML forms.
-        self.initial = initial
-
+        # Widgets are ony used for HTML forms.
         widget = widget or self.widget
         if isinstance(widget, type):
             widget = widget()
@@ -170,8 +170,8 @@ class WritableField(Field):
         try:
             native = data[field_name]
         except KeyError:
-            if getattr(self, 'missing_value', None) is not None:
-                native = self.missing_value
+            if self.default is not None:
+                native = self.default
             else:
                 if self.required:
                     raise ValidationError(self.error_messages['required'])
@@ -415,7 +415,11 @@ class BooleanField(WritableField):
         'invalid': _(u"'%s' value must be either True or False."),
     }
     empty = False
-    missing_value = False  # Fill in missing value not supplied by html form
+
+    # Note: we set default to `False` in order to fill in missing value not
+    # supplied by html form.  TODO: Fix so that only html form input gets
+    # this behavior.
+    default = False
 
     def from_native(self, value):
         if value in ('t', 'True', '1'):
