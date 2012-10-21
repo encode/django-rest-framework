@@ -107,7 +107,7 @@ Let's take a look at how we can compose our views by using the mixin classes.
 
 We'll take a moment to examine exactly what's happening here - We're building our view using `MultipleObjectBaseView`, and adding in `ListModelMixin` and `CreateModelMixin`.
 
-The base class provides the core functionality, and the mixin classes provide the `.list()` and `.create()` actions.  We're then explictly binding the `get` and `post` methods to the appropriate actions.  Simple enough stuff so far.
+The base class provides the core functionality, and the mixin classes provide the `.list()` and `.create()` actions.  We're then explicitly binding the `get` and `post` methods to the appropriate actions.  Simple enough stuff so far.
 
     class CommentInstance(mixins.RetrieveModelMixin,
                           mixins.UpdateModelMixin,

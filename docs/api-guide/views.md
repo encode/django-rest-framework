@@ -27,7 +27,7 @@ For example:
         * Only admin users are able to access this view.
         """
         authentication_classes = (authentication.TokenAuthentication,)
-        permission_classes = (permissions.IsAdmin,)
+        permission_classes = (permissions.IsAdminUser,)
 
         def get(self, request, format=None):
             """

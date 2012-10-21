@@ -5,7 +5,7 @@ Resource classes are just View classes that don't have any handler methods bound
 This allows us to:
 
 * Encapsulate common behaviour across a class of views, in a single Resource class.
-* Separate out the actions of a Resource from the specfics of how those actions should be bound to a particular set of URLs.
+* Separate out the actions of a Resource from the specifics of how those actions should be bound to a particular set of URLs.
 
 ## Refactoring to use Resources, not Views
 

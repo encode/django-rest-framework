@@ -175,7 +175,7 @@ You can add extra fields to a `ModelSerializer` or override the default fields b
         class Meta:
             model = Account
 
-Extra fields can corrospond to any property or callable on the model.
+Extra fields can correspond to any property or callable on the model.
 
 ## Relational fields
 
@@ -187,7 +187,7 @@ The `PrimaryKeyRelatedField` and `HyperlinkedRelatedField` fields provide altern
 
 The `ModelSerializer` class can itself be used as a field, in order to serialize relationships using nested representations.
 
-The `RelatedField` class may be subclassed to create a custom represenation of a relationship.  The subclass should override `.to_native()`, and optionally `.from_native()` if deserialization is supported.
+The `RelatedField` class may be subclassed to create a custom representation of a relationship.  The subclass should override `.to_native()`, and optionally `.from_native()` if deserialization is supported.
 
 All the relational fields may be used for any relationship or reverse relationship on a model.
 

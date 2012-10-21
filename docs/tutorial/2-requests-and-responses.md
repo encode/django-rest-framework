@@ -5,7 +5,7 @@ Let's introduce a couple of essential building blocks.
 
 ## Request objects
 
-REST framework intoduces a `Request` object that extends the regular `HttpRequest`, and provides more flexible request parsing.  The core functionality of the `Request` object is the `request.DATA` attribute, which is similar to `request.POST`, but more useful for working with Web APIs.
+REST framework introduces a `Request` object that extends the regular `HttpRequest`, and provides more flexible request parsing.  The core functionality of the `Request` object is the `request.DATA` attribute, which is similar to `request.POST`, but more useful for working with Web APIs.
 
     request.POST  # Only handles form data.  Only works for 'POST' method.
     request.DATA  # Handles arbitrary data.  Works any HTTP request with content.
