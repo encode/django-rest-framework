@@ -88,7 +88,7 @@ or `django.db.models.fields.TextField`.
 
 ## ChoiceField
 
-A field that can accept on of a limited set of choices.
+A field that can accept a value out of a limited set of choices.
 
 ## EmailField
 
