@@ -73,34 +73,52 @@ These fields represent basic datatypes, and support both reading and writing val
 
 ## BooleanField
 
-A Boolean representation, corresponds to `django.db.models.fields.BooleanField`.
+A Boolean representation.
+
+Corresponds to `django.db.models.fields.BooleanField`.
 
 ## CharField
 
-A text representation, optionally validates the text to be shorter than `max_length` and longer than `min_length`, corresponds to `django.db.models.fields.CharField`
+A text representation, optionally validates the text to be shorter than `max_length` and longer than `min_length`.
+
+Corresponds to `django.db.models.fields.CharField`
 or `django.db.models.fields.TextField`.
 
-**Signature:** `CharField([max_length=<Integer>[, min_length=<Integer>]])`
+**Signature:** `CharField(max_length=None, min_length=None)`
+
+## ChoiceField
+
+A field that can accept on of a limited set of choices.
 
 ## EmailField
 
-A text representation, validates the text to be a valid e-mail address. Corresponds to `django.db.models.fields.EmailField`
+A text representation, validates the text to be a valid e-mail address.
+
+Corresponds to `django.db.models.fields.EmailField`
 
 ## DateField
 
-A date representation. Corresponds to `django.db.models.fields.DateField`
+A date representation.
+
+Corresponds to `django.db.models.fields.DateField`
 
 ## DateTimeField
 
-A date and time representation. Corresponds to `django.db.models.fields.DateTimeField`
+A date and time representation.
+
+Corresponds to `django.db.models.fields.DateTimeField`
 
 ## IntegerField
 
-An integer representation. Corresponds to `django.db.models.fields.IntegerField`, `django.db.models.fields.SmallIntegerField`, `django.db.models.fields.PositiveIntegerField` and `django.db.models.fields.PositiveSmallIntegerField`
+An integer representation.
+
+Corresponds to `django.db.models.fields.IntegerField`, `django.db.models.fields.SmallIntegerField`, `django.db.models.fields.PositiveIntegerField` and `django.db.models.fields.PositiveSmallIntegerField`
 
 ## FloatField
 
-A floating point representation. Corresponds to `django.db.models.fields.FloatField`.
+A floating point representation.
+
+Corresponds to `django.db.models.fields.FloatField`.
 
 ---
 

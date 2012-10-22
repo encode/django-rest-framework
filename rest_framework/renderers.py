@@ -6,6 +6,7 @@ on the response, such as JSON encoded data or HTML output.
 
 REST framework also provides an HTML renderer the renders the browseable API.
 """
+import copy
 import string
 from django import forms
 from django.http.multipartparser import parse_header
@@ -260,13 +261,32 @@ class BrowsableAPIRenderer(BaseRenderer):
                 continue
 
             kwargs = {}
+            kwargs['required'] = v.required
+
             if getattr(v, 'queryset', None):
-                kwargs['queryset'] = getattr(v, 'queryset', None)
+                kwargs['queryset'] = v.queryset
+
+            if getattr(v, 'widget', None):
+                widget = copy.deepcopy(v.widget)
+                # If choices have friendly readable names,
+                # then add in the identities too
+                if getattr(widget, 'choices', None):
+                    choices = widget.choices
+                    if any([ident != desc for (ident, desc) in choices]):
+                        choices = [(ident, "%s (%s)" % (desc, ident))
+                                   for (ident, desc) in choices]
+                    widget.choices = choices
+                kwargs['widget'] = widget
+
+            if getattr(v, 'default', None) is not None:
+                kwargs['initial'] = v.default
+
+            kwargs['label'] = k
 
             try:
                 fields[k] = field_mapping[v.__class__](**kwargs)
             except KeyError:
-                fields[k] = forms.CharField()
+                fields[k] = forms.CharField(**kwargs)
         return fields
 
     def get_form(self, view, method, request):
