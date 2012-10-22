@@ -247,6 +247,19 @@ class BaseSerializer(Field):
         if not self._errors:
             return self.restore_object(attrs, instance=getattr(self, 'object', None))
 
+    def field_to_native(self, obj, field_name):
+        """
+        Override default so that we can apply ModelSerializer as a nested
+        field to relationships.
+        """
+        obj = getattr(obj, self.source or field_name)
+
+        # If the object has an "all" method, assume it's a relationship
+        if is_simple_callable(getattr(obj, 'all', None)):
+            return [self.to_native(item) for item in obj.all()]
+
+        return self.to_native(obj)
+
     @property
     def errors(self):
         """
@@ -294,16 +307,6 @@ class ModelSerializer(Serializer):
     A serializer that deals with model instances and querysets.
     """
     _options_class = ModelSerializerOptions
-
-    def field_to_native(self, obj, field_name):
-        """
-        Override default so that we can apply ModelSerializer as a nested
-        field to relationships.
-        """
-        obj = getattr(obj, self.source or field_name)
-        if obj.__class__.__name__ in ('RelatedManager', 'ManyRelatedManager'):
-            return [self.to_native(item) for item in obj.all()]
-        return self.to_native(obj)
 
     def default_fields(self, serialize, obj=None, data=None, nested=False):
         """
