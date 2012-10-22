@@ -246,6 +246,60 @@ class ManyToManyTests(TestCase):
         self.assertEquals(len(ManyToManyModel.objects.all()), 2)
         self.assertEquals(instance.pk, 2)
         self.assertEquals(list(instance.rel.all()), [])
+        
+class ReadOnlyManyToManyTests(TestCase):
+    def setUp(self):
+        class ReadOnlyManyToManySerializer(serializers.ModelSerializer):
+            rel =  serializers.ManyRelatedField(readonly=True)
+            class Meta:
+                model = ReadOnlyManyToManyModel
+
+        self.serializer_class = ReadOnlyManyToManySerializer
+
+        # An anchor instance to use for the relationship
+        self.anchor = Anchor()
+        self.anchor.save()
+
+        # A model instance with a many to many relationship to the anchor
+        self.instance = ReadOnlyManyToManyModel()
+        self.instance.save()
+        self.instance.rel.add(self.anchor)
+
+        # A serialized representation of the model instance
+        self.data = {'rel': [self.anchor.id], 'id': 1, 'text': 'anchor'}
+
+
+    def test_update(self):
+        """
+        Attempt to update an instance of a model with a ManyToMany
+        relationship.  Not updated due to readonly=True
+        """
+        new_anchor = Anchor()
+        new_anchor.save()
+        data = {'rel': [self.anchor.id, new_anchor.id]}
+        serializer = self.serializer_class(data, instance=self.instance)
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+        self.assertEquals(len(ReadOnlyManyToManyModel.objects.all()), 1)
+        self.assertEquals(instance.pk, 1)
+        # rel is still as original (1 entry)
+        self.assertEquals(list(instance.rel.all()), [self.anchor])
+
+    def test_update_without_relationship(self):
+        """
+        Attempt to update an instance of a model where many to ManyToMany
+        relationship is not supplied.  Not updated due to readonly=True
+        """
+        new_anchor = Anchor()
+        new_anchor.save()
+        data = {}
+        serializer = self.serializer_class(data, instance=self.instance)
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+        self.assertEquals(len(ReadOnlyManyToManyModel.objects.all()), 1)
+        self.assertEquals(instance.pk, 1)
+        # rel is still as original (1 entry)
+        self.assertEquals(list(instance.rel.all()), [self.anchor])
 
 
 class DefaultValueTests(TestCase):
