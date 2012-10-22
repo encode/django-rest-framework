@@ -391,10 +391,14 @@ class ModelSerializer(Serializer):
             models.CommaSeparatedIntegerField: CharField,
             models.BooleanField: BooleanField,
         }
-        try:
-            ret = field_mapping[model_field.__class__]()
-        except KeyError:
-            ret = ModelField(model_field=model_field)
+
+        if model_field.flatchoices:  # This ModelField contains choices
+            ret = ChoiceField(model_field.flatchoices)
+        else:
+            try:
+                ret = field_mapping[model_field.__class__]()
+            except KeyError:
+                ret = ModelField(model_field=model_field)
 
         if model_field.default is not None:
             ret.required = False
