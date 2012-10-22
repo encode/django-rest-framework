@@ -302,3 +302,32 @@ class CallableDefaultValueTests(TestCase):
         self.assertEquals(len(self.objects.all()), 1)
         self.assertEquals(instance.pk, 1)
         self.assertEquals(instance.text, 'overridden')
+
+
+class ManyRelatedTests(TestCase):
+    def setUp(self):
+
+        class BlogPostCommentSerializer(serializers.Serializer):
+            text = serializers.CharField()
+
+        class BlogPostSerializer(serializers.Serializer):
+            title = serializers.CharField()
+            comments = BlogPostCommentSerializer(source='blogpostcomment_set')
+
+        self.serializer_class = BlogPostSerializer
+
+    def test_reverse_relations(self):
+        post = BlogPost.objects.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        serializer = self.serializer_class(instance=post)
+        expected = {
+            'title': 'Test blog post',
+            'comments': [
+                {'text': 'I hate this blog post'},
+                {'text': 'I love this blog post'}
+            ]
+        }
+
+        self.assertEqual(serializer.data, expected)
