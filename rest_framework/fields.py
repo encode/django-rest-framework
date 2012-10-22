@@ -7,6 +7,7 @@ from django.core import validators
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import resolve
 from django.conf import settings
+from django.forms import widgets
 from django.utils.encoding import is_protected_type, smart_unicode
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.reverse import reverse
@@ -107,10 +108,15 @@ class WritableField(Field):
         'required': _('This field is required.'),
         'invalid': _('Invalid value.'),
     }
+    widget = widgets.TextInput
+    default = None
 
     def __init__(self, source=None, readonly=False, required=None,
-                 validators=[], error_messages=None):
+                 validators=[], error_messages=None, widget=None,
+                 default=None):
+
         super(WritableField, self).__init__(source=source)
+
         self.readonly = readonly
         if required is None:
             self.required = not(readonly)
@@ -125,6 +131,13 @@ class WritableField(Field):
         self.error_messages = messages
 
         self.validators = self.default_validators + validators
+        self.default = default or self.default
+
+        # Widgets are ony used for HTML forms.
+        widget = widget or self.widget
+        if isinstance(widget, type):
+            widget = widget()
+        self.widget = widget
 
     def validate(self, value):
         if value in validators.EMPTY_VALUES and self.required:
@@ -159,9 +172,12 @@ class WritableField(Field):
         try:
             native = data[field_name]
         except KeyError:
-            if self.required:
-                raise ValidationError(self.error_messages['required'])
-            return
+            if self.default is not None:
+                native = self.default
+            else:
+                if self.required:
+                    raise ValidationError(self.error_messages['required'])
+                return
 
         value = self.from_native(native)
         if self.source == '*':
@@ -399,20 +415,23 @@ class HyperlinkedIdentityField(Field):
 
 class BooleanField(WritableField):
     type_name = 'BooleanField'
+    widget = widgets.CheckboxInput
     default_error_messages = {
         'invalid': _(u"'%s' value must be either True or False."),
     }
+    empty = False
+
+    # Note: we set default to `False` in order to fill in missing value not
+    # supplied by html form.  TODO: Fix so that only html form input gets
+    # this behavior.
+    default = False
 
     def from_native(self, value):
-        if value in (True, False):
-            # if value is 1 or 0 than it's equal to True or False, but we want
-            # to return a true bool for semantic reasons.
-            return bool(value)
         if value in ('t', 'True', '1'):
             return True
         if value in ('f', 'False', '0'):
             return False
-        raise ValidationError(self.error_messages['invalid'] % value)
+        return bool(value)
 
 
 class CharField(WritableField):
@@ -430,6 +449,52 @@ class CharField(WritableField):
         if isinstance(value, basestring) or value is None:
             return value
         return smart_unicode(value)
+
+
+class ChoiceField(WritableField):
+    type_name = 'ChoiceField'
+    widget = widgets.Select
+    default_error_messages = {
+        'invalid_choice': _('Select a valid choice. %(value)s is not one of the available choices.'),
+    }
+
+    def __init__(self, choices=(), *args, **kwargs):
+        super(ChoiceField, self).__init__(*args, **kwargs)
+        self.choices = choices
+
+    def _get_choices(self):
+        return self._choices
+
+    def _set_choices(self, value):
+        # Setting choices also sets the choices on the widget.
+        # choices can be any iterable, but we call list() on it because
+        # it will be consumed more than once.
+        self._choices = self.widget.choices = list(value)
+
+    choices = property(_get_choices, _set_choices)
+
+    def validate(self, value):
+        """
+        Validates that the input is in self.choices.
+        """
+        super(ChoiceField, self).validate(value)
+        if value and not self.valid_value(value):
+            raise ValidationError(self.error_messages['invalid_choice'] % {'value': value})
+
+    def valid_value(self, value):
+        """
+        Check to see if the provided value is a valid choice.
+        """
+        for k, v in self.choices:
+            if isinstance(v, (list, tuple)):
+                # This is an optgroup, so look inside the group for options
+                for k2, v2 in v:
+                    if value == smart_unicode(k2):
+                        return True
+            else:
+                if value == smart_unicode(k):
+                    return True
+        return False
 
 
 class EmailField(CharField):
