@@ -92,6 +92,17 @@ class Comment(RESTFrameworkModel):
     content = models.CharField(max_length=200)
     created = models.DateTimeField(auto_now_add=True)
 
+
 class ActionItem(RESTFrameworkModel):
     title = models.CharField(max_length=200)
     done = models.BooleanField(default=False)
+
+
+# Models for reverse relations
+class BlogPost(RESTFrameworkModel):
+    title = models.CharField(max_length=100)
+
+
+class BlogPostComment(RESTFrameworkModel):
+    text = models.TextField()
+    blog_post = models.ForeignKey(BlogPost)
