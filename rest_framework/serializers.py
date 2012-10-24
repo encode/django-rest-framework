@@ -208,33 +208,32 @@ class BaseSerializer(Field):
 
         return reverted_data
 
-    def validate_fields(self, attrs):
+    def perform_validation(self, attrs):
         """
-        Run validate_<fieldname> methods on the serializer
+        Run `validate_<fieldname>()` and `validate()` methods on the serializer
         """
         fields = self.get_fields(serialize=False, data=attrs, nested=self.opts.nested)
 
         for field_name, field in fields.items():
             try:
-                clean_method = getattr(self, 'validate_%s' % field_name, None)
-                if clean_method:
+                validate_method = getattr(self, 'validate_%s' % field_name, None)
+                if validate_method:
                     source = field.source or field_name
-                    attrs = clean_method(attrs, source)
+                    attrs = validate_method(attrs, source)
             except ValidationError as err:
                 self._errors[field_name] = self._errors.get(field_name, []) + list(err.messages)
 
-        return attrs
-
-    def validate_all(self, attrs):
-        """
-        Run the `validate` method on the serializer, if it exists
-        """
         try:
-            validate_method = getattr(self, 'validate', None)
-            if validate_method:
-                attrs = validate_method(attrs)
+            attrs = self.validate(attrs)
         except ValidationError as err:
             self._errors['non_field_errors'] = err.messages
+
+        return attrs
+
+    def validate(self, attrs):
+        """
+        Stub method, to be overridden in Serializer subclasses
+        """
         return attrs
 
     def restore_object(self, attrs, instance=None):
@@ -270,8 +269,7 @@ class BaseSerializer(Field):
         self._errors = {}
         if data is not None:
             attrs = self.restore_fields(data)
-            attrs = self.validate_fields(attrs)
-            attrs = self.validate_all(attrs)
+            attrs = self.perform_validation(attrs)
         else:
             self._errors['non_field_errors'] = ['No input provided']
 
