@@ -95,6 +95,17 @@ class SingleObjectBaseView(SingleObjectMixin, BaseView):
 ### Concrete view classes that provide method handlers ###
 ### by composing the mixin classes with a base view.   ###
 
+
+class CreateAPIView(mixins.CreateModelMixin,
+                    BaseView):
+
+    """
+    Concrete view for creating a model instance.
+    """
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+
 class ListAPIView(mixins.ListModelMixin,
                   MultipleObjectBaseView):
     """
@@ -102,19 +113,6 @@ class ListAPIView(mixins.ListModelMixin,
     """
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
-
-
-class ListCreateAPIView(mixins.ListModelMixin,
-                        mixins.CreateModelMixin,
-                        MultipleObjectBaseView):
-    """
-    Concrete view for listing a queryset or creating a model instance.
-    """
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
 
 
 class RetrieveAPIView(mixins.RetrieveModelMixin,
@@ -126,31 +124,43 @@ class RetrieveAPIView(mixins.RetrieveModelMixin,
         return self.retrieve(request, *args, **kwargs)
 
 
-class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
-                             mixins.DestroyModelMixin,
-                             SingleObjectBaseView):
-    """
-    Concrete view for retrieving or deleting a model instance.
-    """
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+class DestroyAPIView(mixins.DestroyModelMixin,
+                    SingleObjectBaseView):
 
+    """
+    Concrete view for deleting a model instance.
+    """
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
 
-class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
-                                   mixins.UpdateModelMixin,
-                                   mixins.DestroyModelMixin,
-                                   SingleObjectBaseView):
-    """
-    Concrete view for retrieving, updating or deleting a model instance.
-    """
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+class UpdateAPIView(mixins.UpdateModelMixin,
+                    SingleObjectBaseView):
 
+    """
+    Concrete view for updating a model instance.
+    """
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
+
+class ListCreateAPIView(ListAPIView,
+                        CreateAPIView):
+    """
+    Concrete view for listing a queryset or creating a model instance.
+    """
+
+
+class RetrieveDestroyAPIView(RetrieveAPIView,
+                             DestroyAPIView):
+    """
+    Concrete view for retrieving or deleting a model instance.
+    """
+
+
+class RetrieveUpdateDestroyAPIView(RetrieveAPIView,
+                                   UpdateAPIView,
+                                   DestroyAPIView):
+    """
+    Concrete view for retrieving, updating or deleting a model instance.
+    """
