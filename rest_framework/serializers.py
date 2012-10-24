@@ -225,6 +225,18 @@ class BaseSerializer(Field):
 
         return data
 
+    def clean_all(self, attrs):
+        """
+        Run the `validate` method on the serializer, if it exists
+        """
+        try:
+            validate_method = getattr(self, 'validate', None)
+            if validate_method:
+                attrs = validate_method(attrs)
+        except ValidationError as err:
+            self._errors['non_field_errors'] = err.messages
+        return attrs
+
     def restore_object(self, attrs, instance=None):
         """
         Deserialize a dictionary of attributes into an object instance.
@@ -259,6 +271,7 @@ class BaseSerializer(Field):
         if data is not None:
             attrs = self.restore_fields(data)
             attrs = self.clean_fields(attrs)
+            attrs = self.clean_all(attrs)
         else:
             self._errors['non_field_errors'] = 'No input provided'
 
