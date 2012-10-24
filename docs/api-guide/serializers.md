@@ -254,7 +254,7 @@ When serializing objects using a nested representation any occurances of recursi
         def get_related_field(self, model_field, to_many=False):
             queryset = model_field.rel.to._default_manager
             if to_many:
-                return return serializers.ManyRelatedField(queryset=queryset)
+                return serializers.ManyRelatedField(queryset=queryset)
             return serializers.RelatedField(queryset=queryset)
 
         def get_field(self, model_field):
