@@ -406,6 +406,10 @@ class ModelSerializer(Serializer):
         """
         Creates a default instance of a basic non-relational field.
         """
+        kwargs = {}
+        if model_field.has_default():
+            kwargs['required'] = False
+
         field_mapping = {
             models.FloatField: FloatField,
             models.IntegerField: IntegerField,
@@ -421,14 +425,9 @@ class ModelSerializer(Serializer):
             models.BooleanField: BooleanField,
         }
         try:
-            ret = field_mapping[model_field.__class__]()
+            return field_mapping[model_field.__class__](**kwargs)
         except KeyError:
-            ret = ModelField(model_field=model_field)
-
-        if model_field.default is not None:
-            ret.required = False
-
-        return ret
+            return ModelField(model_field=model_field, **kwargs)
 
     def restore_object(self, attrs, instance=None):
         """
