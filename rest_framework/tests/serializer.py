@@ -142,7 +142,7 @@ class ValidationTests(TestCase):
 
         class CommentSerializerWithFieldValidator(CommentSerializer):
 
-            def clean_content(self, attrs, source):
+            def validate_content(self, attrs, source):
                 value = attrs[source]
                 if "test" not in value:
                     raise serializers.ValidationError("Test not in value")

@@ -210,13 +210,13 @@ class BaseSerializer(Field):
 
     def clean_fields(self, data):
         """
-        Run clean_<fieldname> validators on the serializer
+        Run validate_<fieldname> methods on the serializer
         """
         fields = self.get_fields(serialize=False, data=data, nested=self.opts.nested)
 
         for field_name, field in fields.items():
             try:
-                clean_method = getattr(self, 'clean_%s' % field_name, None)
+                clean_method = getattr(self, 'validate_%s' % field_name, None)
                 if clean_method:
                     source = field.source or field_name
                     data = clean_method(data, source)
