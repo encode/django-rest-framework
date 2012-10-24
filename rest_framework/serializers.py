@@ -208,6 +208,34 @@ class BaseSerializer(Field):
 
         return reverted_data
 
+    def perform_validation(self, attrs):
+        """
+        Run `validate_<fieldname>()` and `validate()` methods on the serializer
+        """
+        fields = self.get_fields(serialize=False, data=attrs, nested=self.opts.nested)
+
+        for field_name, field in fields.items():
+            try:
+                validate_method = getattr(self, 'validate_%s' % field_name, None)
+                if validate_method:
+                    source = field.source or field_name
+                    attrs = validate_method(attrs, source)
+            except ValidationError as err:
+                self._errors[field_name] = self._errors.get(field_name, []) + list(err.messages)
+
+        try:
+            attrs = self.validate(attrs)
+        except ValidationError as err:
+            self._errors['non_field_errors'] = err.messages
+
+        return attrs
+
+    def validate(self, attrs):
+        """
+        Stub method, to be overridden in Serializer subclasses
+        """
+        return attrs
+
     def restore_object(self, attrs, instance=None):
         """
         Deserialize a dictionary of attributes into an object instance.
@@ -241,8 +269,9 @@ class BaseSerializer(Field):
         self._errors = {}
         if data is not None:
             attrs = self.restore_fields(data)
+            attrs = self.perform_validation(attrs)
         else:
-            self._errors['non_field_errors'] = 'No input provided'
+            self._errors['non_field_errors'] = ['No input provided']
 
         if not self._errors:
             return self.restore_object(attrs, instance=getattr(self, 'object', None))

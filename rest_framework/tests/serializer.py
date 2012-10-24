@@ -138,6 +138,55 @@ class ValidationTests(TestCase):
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.errors, {})
 
+    def test_field_validation(self):
+
+        class CommentSerializerWithFieldValidator(CommentSerializer):
+
+            def validate_content(self, attrs, source):
+                value = attrs[source]
+                if "test" not in value:
+                    raise serializers.ValidationError("Test not in value")
+                return attrs
+
+        data = {
+            'email': 'tom@example.com',
+            'content': 'A test comment',
+            'created': datetime.datetime(2012, 1, 1)
+        }
+
+        serializer = CommentSerializerWithFieldValidator(data)
+        self.assertTrue(serializer.is_valid())
+
+        data['content'] = 'This should not validate'
+
+        serializer = CommentSerializerWithFieldValidator(data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'content': [u'Test not in value']})
+
+    def test_cross_field_validation(self):
+
+        class CommentSerializerWithCrossFieldValidator(CommentSerializer):
+
+            def validate(self, attrs):
+                if attrs["email"] not in attrs["content"]:
+                    raise serializers.ValidationError("Email address not in content")
+                return attrs
+
+        data = {
+            'email': 'tom@example.com',
+            'content': 'A comment from tom@example.com',
+            'created': datetime.datetime(2012, 1, 1)
+        }
+
+        serializer = CommentSerializerWithCrossFieldValidator(data)
+        self.assertTrue(serializer.is_valid())
+
+        data['content'] = 'A comment from foo@bar.com'
+
+        serializer = CommentSerializerWithCrossFieldValidator(data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'non_field_errors': [u'Email address not in content']})
+
 
 class MetadataTests(TestCase):
     def test_empty(self):
