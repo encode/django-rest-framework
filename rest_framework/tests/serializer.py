@@ -138,6 +138,31 @@ class ValidationTests(TestCase):
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.errors, {})
 
+    def test_field_validation(self):
+
+        class CommentSerializerWithFieldValidator(CommentSerializer):
+
+            def clean_content(self, attrs, source):
+                value = attrs[source]
+                if "test" not in value:
+                    raise serializers.ValidationError("Test not in value")
+                return attrs
+
+        data = {
+            'email': 'tom@example.com',
+            'content': 'A test comment',
+            'created': datetime.datetime(2012, 1, 1)
+        }
+
+        serializer = CommentSerializerWithFieldValidator(data)
+        self.assertTrue(serializer.is_valid())
+
+        data['content'] = 'This should not validate'
+
+        serializer = CommentSerializerWithFieldValidator(data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'content': [u'Test not in value']})
+
 
 class MetadataTests(TestCase):
     def test_empty(self):
