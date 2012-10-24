@@ -78,7 +78,7 @@ When deserializing data, you always need to call `is_valid()` before attempting 
 
 ### Field-level validation
 
-You can specify custom field-level validation by adding `validate_<fieldname>()` methods to your `Serializer` subclass. These are analagous to `clean_<fieldname>` methods on Django forms, but accept slightly different arguments. They take a dictionary of deserialized data as a first argument, and the field name in that data as a second argument (which will be either the name of the field or the value of the `source` argument to the field, if one was provided). Your `validate_<fieldname>` methods should either just return the data dictionary or raise a `ValidationError`. For example:
+You can specify custom field-level validation by adding `validate_<fieldname>()` methods to your `Serializer` subclass. These are analagous to `clean_<fieldname>` methods on Django forms, but accept slightly different arguments. They take a dictionary of deserialized attributes as a first argument, and the field name in that dictionary as a second argument (which will be either the name of the field or the value of the `source` argument to the field, if one was provided). Your `validate_<fieldname>` methods should either just return the attrs dictionary or raise a `ValidationError`. For example:
 
     from rest_framework import serializers
 
@@ -86,14 +86,14 @@ You can specify custom field-level validation by adding `validate_<fieldname>()`
         title = serializers.CharField(max_length=100)
         content = serializers.CharField()
 
-        def validate_title(self, data, source):
+        def validate_title(self, attrs, source):
             """
             Check that the blog post is about Django
             """
-            value = data[source]
+            value = attrs[source]
             if "Django" not in value:
                 raise serializers.ValidationError("Blog post is not about Django")
-            return data
+            return attrs
 
 ### Final cross-field validation
 
