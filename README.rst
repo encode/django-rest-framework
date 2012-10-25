@@ -10,6 +10,10 @@ Django REST framework
 .. |build-image| image:: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master
                  :target: https://secure.travis-ci.org/tomchristie/django-rest-framework
 
+**Important!** REST framework 2.0 is due to be released to PyPI by the end of October.
+If you are considering building a new API using REST framework you should start working
+with the `restframework2` branch, end refering to the upcoming [REST framework 2 docs][docs].
+
 Overview
 ========
 
@@ -84,3 +88,5 @@ To run the tests against the full set of supported configurations::
 To create the sdist packages::
 
     python setup.py sdist --formats=gztar,zip
+
+[docs]: tomchristie.github.com/django-rest-framework
