@@ -144,23 +144,44 @@ class UpdateAPIView(mixins.UpdateModelMixin,
         return self.update(request, *args, **kwargs)
 
 
-class ListCreateAPIView(ListAPIView,
-                        CreateAPIView):
+class ListCreateAPIView(mixins.ListModelMixin,
+                        mixins.CreateModelMixin,
+                        MultipleObjectBaseView):
     """
     Concrete view for listing a queryset or creating a model instance.
     """
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
 
-class RetrieveDestroyAPIView(RetrieveAPIView,
-                             DestroyAPIView):
+class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
+                             mixins.DestroyModelMixin,
+                             SingleObjectBaseView):
     """
     Concrete view for retrieving or deleting a model instance.
     """
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
 
 
-class RetrieveUpdateDestroyAPIView(RetrieveAPIView,
-                                   UpdateAPIView,
-                                   DestroyAPIView):
+class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
+                                   mixins.UpdateModelMixin,
+                                   mixins.DestroyModelMixin,
+                                   SingleObjectBaseView):
     """
     Concrete view for retrieving, updating or deleting a model instance.
     """
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
