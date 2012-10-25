@@ -10,7 +10,7 @@ Before we do anything else we'll create a new virtual environment, using [virtua
 
     :::bash
     mkdir ~/env
-    virtualenv --no-site-packages ~/env/tutorial
+    virtualenv ~/env/tutorial
     source ~/env/tutorial/bin/activate
 
 Now that we're inside a virtualenv environment, we can install our package requirements.
