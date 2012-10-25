@@ -10,7 +10,7 @@ from django.views.generic.list import MultipleObjectMixin
 
 ### Base classes for the generic views ###
 
-class BaseView(views.APIView):
+class GenericAPIView(views.APIView):
     """
     Base class for all other generic views.
     """
@@ -51,7 +51,7 @@ class BaseView(views.APIView):
         return serializer_class(data, instance=instance, context=context)
 
 
-class MultipleObjectBaseView(MultipleObjectMixin, BaseView):
+class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
     """
     Base class for generic views onto a queryset.
     """
@@ -75,7 +75,7 @@ class MultipleObjectBaseView(MultipleObjectMixin, BaseView):
         return pagination_serializer_class(instance=page, context=context)
 
 
-class SingleObjectBaseView(SingleObjectMixin, BaseView):
+class SingleObjectAPIView(SingleObjectMixin, GenericAPIView):
     """
     Base class for generic views onto a model instance.
     """
@@ -86,7 +86,7 @@ class SingleObjectBaseView(SingleObjectMixin, BaseView):
         """
         Override default to add support for object-level permissions.
         """
-        obj = super(SingleObjectBaseView, self).get_object()
+        obj = super(SingleObjectAPIView, self).get_object()
         if not self.has_permission(self.request, obj):
             self.permission_denied(self.request)
         return obj
@@ -97,7 +97,7 @@ class SingleObjectBaseView(SingleObjectMixin, BaseView):
 
 
 class CreateAPIView(mixins.CreateModelMixin,
-                    BaseView):
+                    GenericAPIView):
 
     """
     Concrete view for creating a model instance.
@@ -107,7 +107,7 @@ class CreateAPIView(mixins.CreateModelMixin,
 
 
 class ListAPIView(mixins.ListModelMixin,
-                  MultipleObjectBaseView):
+                  MultipleObjectAPIView):
     """
     Concrete view for listing a queryset.
     """
@@ -116,7 +116,7 @@ class ListAPIView(mixins.ListModelMixin,
 
 
 class RetrieveAPIView(mixins.RetrieveModelMixin,
-                      SingleObjectBaseView):
+                      SingleObjectAPIView):
     """
     Concrete view for retrieving a model instance.
     """
@@ -125,7 +125,7 @@ class RetrieveAPIView(mixins.RetrieveModelMixin,
 
 
 class DestroyAPIView(mixins.DestroyModelMixin,
-                    SingleObjectBaseView):
+                    SingleObjectAPIView):
 
     """
     Concrete view for deleting a model instance.
@@ -135,7 +135,7 @@ class DestroyAPIView(mixins.DestroyModelMixin,
 
 
 class UpdateAPIView(mixins.UpdateModelMixin,
-                    SingleObjectBaseView):
+                    SingleObjectAPIView):
 
     """
     Concrete view for updating a model instance.
@@ -146,7 +146,7 @@ class UpdateAPIView(mixins.UpdateModelMixin,
 
 class ListCreateAPIView(mixins.ListModelMixin,
                         mixins.CreateModelMixin,
-                        MultipleObjectBaseView):
+                        MultipleObjectAPIView):
     """
     Concrete view for listing a queryset or creating a model instance.
     """
@@ -159,7 +159,7 @@ class ListCreateAPIView(mixins.ListModelMixin,
 
 class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
                              mixins.DestroyModelMixin,
-                             SingleObjectBaseView):
+                             SingleObjectAPIView):
     """
     Concrete view for retrieving or deleting a model instance.
     """
@@ -173,7 +173,7 @@ class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
 class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
                                    mixins.UpdateModelMixin,
                                    mixins.DestroyModelMixin,
-                                   SingleObjectBaseView):
+                                   SingleObjectAPIView):
     """
     Concrete view for retrieving, updating or deleting a model instance.
     """
