@@ -20,9 +20,13 @@ class CreateModelMixin(object):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA)
         if serializer.is_valid():
+            self.pre_save(serializer.object)
             self.object = serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def pre_save(self, obj):
+        pass
 
 
 class ListModelMixin(object):
@@ -46,7 +50,8 @@ class ListModelMixin(object):
         # which may be `None` to disable pagination.
         page_size = self.get_paginate_by(self.object_list)
         if page_size:
-            paginator, page, queryset, is_paginated = self.paginate_queryset(self.object_list, page_size)
+            packed = self.paginate_queryset(self.object_list, page_size)
+            paginator, page, queryset, is_paginated = packed
             serializer = self.get_pagination_serializer(page)
         else:
             serializer = self.get_serializer(instance=self.object_list)
@@ -79,20 +84,17 @@ class UpdateModelMixin(object):
         serializer = self.get_serializer(data=request.DATA, instance=self.object)
 
         if serializer.is_valid():
-            if self.object is None:
-                # If PUT occurs to a non existant object, we need to set any
-                # attributes on the object that are implicit in the URL.
-                self.update_urlconf_attributes(serializer.object)
+            self.pre_save(serializer.object)
             self.object = serializer.save()
             return Response(serializer.data)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def update_urlconf_attributes(self, obj):
+    def pre_save(self, obj):
         """
-        When update (re)creates an object, we need to set any attributes that
-        are tied to the URLconf.
+        Set any attributes on the object that are implicit in the request.
         """
+        # pk and/or slug attributes are implicit in the URL.
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         if pk:
             setattr(obj, 'pk', pk)
