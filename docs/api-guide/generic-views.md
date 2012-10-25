@@ -119,17 +119,17 @@ Extends: [SingleObjectAPIView], [RetrieveModelMixin], [UpdateModelMixin], [Destr
 
 Each of the generic views provided is built by combining one of the base views below, with one or more mixin classes.
 
-## BaseAPIView
+## GenericAPIView
 
 Extends REST framework's `APIView` class, adding support for serialization of model instances and model querysets.
 
-## MultipleObjectBaseAPIView
+## MultipleObjectAPIView
 
 Provides a base view for acting on a single object, by combining REST framework's `APIView`, and Django's [MultipleObjectMixin].
 
 **See also:** ccbv.co.uk documentation for [MultipleObjectMixin][multiple-object-mixin-classy].
 
-## SingleObjectBaseAPIView
+## SingleObjectAPIView
 
 Provides a base view for acting on a single object, by combining REST framework's `APIView`, and Django's [SingleObjectMixin].
 
@@ -151,7 +151,7 @@ Should be mixed in with [MultipleObjectAPIView].
 
 Provides a `.create(request, *args, **kwargs)` method, that implements creating and saving a new model instance.
 
-Should be mixed in with any [BaseAPIView].
+Should be mixed in with any [GenericAPIView].
 
 ## RetrieveModelMixin
 
