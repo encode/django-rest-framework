@@ -30,7 +30,7 @@ For more complex cases you might also want to override various methods on the vi
         serializer_class = UserSerializer
         permission_classes = (IsAdminUser,)
         
-        def get_paginate_by(self):
+        def get_paginate_by(self, queryset):
             """
             Use smaller pagination for HTML representations.
             """

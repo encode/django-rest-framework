@@ -7,7 +7,7 @@ from rest_framework.tests.models import *
 class SubComment(object):
     def __init__(self, sub_comment):
         self.sub_comment = sub_comment
-            
+
 
 class Comment(object):
     def __init__(self, email, content, created):
@@ -18,7 +18,7 @@ class Comment(object):
     def __eq__(self, other):
         return all([getattr(self, attr) == getattr(other, attr)
                     for attr in ('email', 'content', 'created')])
-                    
+
     def get_sub_comment(self):
         sub_comment = SubComment('And Merry Christmas!')
         return sub_comment
@@ -29,7 +29,7 @@ class CommentSerializer(serializers.Serializer):
     content = serializers.CharField(max_length=1000)
     created = serializers.DateTimeField()
     sub_comment = serializers.Field(source='get_sub_comment.sub_comment')
-    
+
     def restore_object(self, data, instance=None):
         if instance is None:
             return Comment(**data)
@@ -41,6 +41,7 @@ class CommentSerializer(serializers.Serializer):
 class ActionItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ActionItem
+
 
 class BasicTests(TestCase):
     def setUp(self):
@@ -73,7 +74,7 @@ class BasicTests(TestCase):
         self.assertEquals(serializer.data, expected)
 
     def test_retrieve(self):
-        serializer = CommentSerializer(instance=self.comment)        
+        serializer = CommentSerializer(instance=self.comment)
         self.assertEquals(serializer.data, self.expected)
 
     def test_create(self):
@@ -104,7 +105,7 @@ class ValidationTests(TestCase):
             'email': 'tom@example.com',
             'content': 'x' * 1001,
             'created': datetime.datetime(2012, 1, 1)
-        }         
+        }
         self.actionitem = ActionItem('Some to do item',
         )
 
@@ -131,7 +132,7 @@ class ValidationTests(TestCase):
         """Make sure that a boolean value with a 'False' value is not
         mistaken for not having a default."""
         data = {
-            'title':'Some action item',
+            'title': 'Some action item',
             #No 'done' value.
         }
         serializer = ActionItemSerializer(data, instance=self.actionitem)
@@ -295,11 +296,13 @@ class ManyToManyTests(TestCase):
         self.assertEquals(len(ManyToManyModel.objects.all()), 2)
         self.assertEquals(instance.pk, 2)
         self.assertEquals(list(instance.rel.all()), [])
-        
+
+
 class ReadOnlyManyToManyTests(TestCase):
     def setUp(self):
         class ReadOnlyManyToManySerializer(serializers.ModelSerializer):
-            rel =  serializers.ManyRelatedField(readonly=True)
+            rel = serializers.ManyRelatedField(readonly=True)
+
             class Meta:
                 model = ReadOnlyManyToManyModel
 
@@ -316,7 +319,6 @@ class ReadOnlyManyToManyTests(TestCase):
 
         # A serialized representation of the model instance
         self.data = {'rel': [self.anchor.id], 'id': 1, 'text': 'anchor'}
-
 
     def test_update(self):
         """
