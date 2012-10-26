@@ -224,7 +224,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         return content
 
-    def show_form_for_method(self, view, method, request):
+    def show_form_for_method(self, view, method, request, obj):
         """
         Returns True if a form should be shown for this method.
         """
@@ -236,7 +236,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         request = clone_request(request, method)
         try:
-            if not view.has_permission(request):
+            if not view.has_permission(request, obj):
                 return  # Don't have permission
         except:
             return  # Don't have permission and exception explicitly raise
@@ -295,7 +295,8 @@ class BrowsableAPIRenderer(BaseRenderer):
         In the absence on of the Resource having an associated form then
         provide a form that can be used to submit arbitrary content.
         """
-        if not self.show_form_for_method(view, method, request):
+        obj = getattr(view, 'object', None)
+        if not self.show_form_for_method(view, method, request, obj):
             return
 
         if method == 'DELETE' or method == 'OPTIONS':
@@ -305,17 +306,13 @@ class BrowsableAPIRenderer(BaseRenderer):
             media_types = [parser.media_type for parser in view.parser_classes]
             return self.get_generic_content_form(media_types)
 
-        # Creating an on the fly form see: http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
-        obj, data = None, None
-        if getattr(view, 'object', None):
-            obj = view.object
-
         serializer = view.get_serializer(instance=obj)
         fields = self.serializer_to_form_fields(serializer)
 
+        # Creating an on the fly form see:
+        # http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
         OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
-        if obj:
-            data = serializer.data
+        data = (obj is not None) and serializer.data or None
         form_instance = OnTheFlyForm(data)
         return form_instance
 

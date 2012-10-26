@@ -258,7 +258,7 @@ class ManyRelatedMixin(object):
     def field_from_native(self, data, field_name, into):
         if self.readonly:
             return
-            
+
         try:
             # Form data
             value = data.getlist(self.source or field_name)
