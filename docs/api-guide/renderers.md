@@ -130,7 +130,7 @@ An example of a view that uses `HTMLRenderer`:
 
         def get(self, request, *args, **kwargs)
             self.object = self.get_object()
-            return Response(self.object, template_name='user_detail.html')
+            return Response({'user': self.object}, template_name='user_detail.html')
  
 You can use `HTMLRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
 
