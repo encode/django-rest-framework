@@ -3,6 +3,7 @@ import datetime
 import types
 from decimal import Decimal
 from django.db import models
+from django.forms import widgets
 from django.utils.datastructures import SortedDict
 from rest_framework.compat import get_concrete_model
 from rest_framework.fields import *
@@ -409,6 +410,15 @@ class ModelSerializer(Serializer):
         kwargs = {}
         if model_field.has_default():
             kwargs['required'] = False
+            kwargs['default'] = model_field.default
+
+        if model_field.__class__ == models.TextField:
+            kwargs['widget'] = widgets.Textarea
+
+        # TODO: TypedChoiceField?
+        if model_field.flatchoices:  # This ModelField contains choices
+            kwargs['choices'] = model_field.flatchoices
+            return ChoiceField(**kwargs)
 
         field_mapping = {
             models.FloatField: FloatField,
