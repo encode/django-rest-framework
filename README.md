@@ -28,7 +28,7 @@ For more information, check out [the documentation][docs], in particular, the tu
 
 Install using `pip`...
 
-    pip install rest_framework
+    pip install djangorestframework
 
 ...or clone the project from github.
 
