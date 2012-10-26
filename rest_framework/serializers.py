@@ -410,7 +410,7 @@ class ModelSerializer(Serializer):
         kwargs = {}
         if model_field.has_default():
             kwargs['required'] = False
-            kwargs['default'] = model_field.default
+            kwargs['default'] = model_field.get_default()
 
         if model_field.__class__ == models.TextField:
             kwargs['widget'] = widgets.Textarea
