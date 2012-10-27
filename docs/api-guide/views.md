@@ -148,15 +148,15 @@ To override the default settings, REST framework provides a set of additional de
 
 These decorators correspond to the attributes set on `APIView` subclasses, described above.
 
-### renderer_classes(renderer_classes)
+### @renderer_classes()
 
-### parser_classes(parser_classes)
+### @parser_classes()
 
-### authentication_classes(authentication_classes)
+### @authentication_classes()
 
-### throttle_classes(throttle_classes)
+### @throttle_classes()
 
-### permission_classes(permission_classes)
+### @permission_classes()
 
 
 [cite]: http://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
