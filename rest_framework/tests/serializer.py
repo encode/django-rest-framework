@@ -436,3 +436,19 @@ class ManyRelatedTests(TestCase):
         }
 
         self.assertEqual(serializer.data, expected)
+
+
+# Test for issue #324
+class BlankFieldTests(TestCase):
+    def setUp(self):
+
+        class BlankFieldModelSerializer(serializers.ModelSerializer):
+             class Meta:
+                model = BlankFieldModel
+
+        self.serializer_class = BlankFieldModelSerializer
+
+    def test_create_blank_field(self):
+        data = {'title': ''}
+        serializer = self.serializer_class(data)
+        self.assertEquals(serializer.is_valid(), True)
