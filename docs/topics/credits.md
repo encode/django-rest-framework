@@ -49,6 +49,7 @@ The following people have helped make REST framework great.
 * Tomi Pajunen - [eofs]
 * Rob Dobson - [rdobson]
 * Daniel Vaca Araujo - [diviei]
+* Madis Väin - [madisvain]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -129,3 +130,4 @@ To contact the author directly:
 [eofs]: https://github.com/eofs
 [rdobson]: https://github.com/rdobson
 [diviei]: https://github.com/diviei
+[madisvain]: https://github.com/madisvain
