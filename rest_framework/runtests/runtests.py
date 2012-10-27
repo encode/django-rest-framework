@@ -32,7 +32,7 @@ def main():
     else:
         print usage()
         sys.exit(1)
-    failures = test_runner.run_tests(['rest_framework' + test_case])
+    failures = test_runner.run_tests(['tests' + test_case])
 
     sys.exit(failures)
 
