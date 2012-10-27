@@ -85,7 +85,7 @@ class DjangoModelPermissions(BasePermission):
         """
         kwargs = {
             'app_label': model_cls._meta.app_label,
-            'model_name':  model_cls._meta.module_name
+            'model_name': model_cls._meta.module_name
         }
         return [perm % kwargs for perm in self.perms_map[method]]
 

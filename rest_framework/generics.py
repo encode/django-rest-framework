@@ -125,7 +125,7 @@ class RetrieveAPIView(mixins.RetrieveModelMixin,
 
 
 class DestroyAPIView(mixins.DestroyModelMixin,
-                    SingleObjectAPIView):
+                     SingleObjectAPIView):
 
     """
     Concrete view for deleting a model instance.

@@ -21,8 +21,8 @@ def is_form_media_type(media_type):
     Return True if the media type is a valid form media type.
     """
     base_media_type, params = parse_header(media_type)
-    return base_media_type == 'application/x-www-form-urlencoded' or \
-           base_media_type == 'multipart/form-data'
+    return (base_media_type == 'application/x-www-form-urlencoded' or
+            base_media_type == 'multipart/form-data')
 
 
 class Empty(object):

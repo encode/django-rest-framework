@@ -1,6 +1,8 @@
 """
-The :mod:`compat` module provides support for backwards compatibility with older versions of django/python.
+The `compat` module provides support for backwards compatibility with older
+versions of django/python, and compatbility wrappers around optional packages.
 """
+# flake8: noqa
 import django
 
 # cStringIO only if it's available, otherwise StringIO

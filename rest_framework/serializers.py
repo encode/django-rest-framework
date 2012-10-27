@@ -34,10 +34,10 @@ def _is_protected_type(obj):
     """
     return isinstance(obj, (
         types.NoneType,
-       int, long,
-       datetime.datetime, datetime.date, datetime.time,
-       float, Decimal,
-       basestring)
+        int, long,
+        datetime.datetime, datetime.date, datetime.time,
+        float, Decimal,
+        basestring)
     )
 
 
