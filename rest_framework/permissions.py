@@ -18,6 +18,17 @@ class BasePermission(object):
         raise NotImplementedError(".has_permission() must be overridden.")
 
 
+class AllowAny(BasePermission):
+    """
+    Allow any access.
+    This isn't strictly required, since you could use an empty
+    permission_classes list, but it's useful because it makes the intention
+    more explicit.
+    """
+    def has_permission(self, request, view, obj=None):
+        return True
+
+
 class IsAuthenticated(BasePermission):
     """
     Allows access only to authenticated users.

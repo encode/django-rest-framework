@@ -72,7 +72,11 @@ Default:
 
 A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view.
 
-Default: `()`
+Default:
+
+    (
+        'rest_framework.permissions.AllowAny',
+    )
 
 ## DEFAULT_THROTTLE_CLASSES
 
