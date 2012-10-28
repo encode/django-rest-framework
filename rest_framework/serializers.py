@@ -23,10 +23,6 @@ class SortedDictWithMetadata(SortedDict, DictWithMetadata):
     pass
 
 
-class RecursionOccured(BaseException):
-    pass
-
-
 def _is_protected_type(obj):
     """
     True if the object is a native datatype that does not need to
@@ -93,7 +89,6 @@ class BaseSerializer(Field):
         self.parent = None
         self.root = None
 
-        self.stack = []
         self.context = context or {}
 
         self.init_data = data
@@ -152,10 +147,9 @@ class BaseSerializer(Field):
     def initialize(self, parent):
         """
         Same behaviour as usual Field, except that we need to keep track
-        of state so that we can deal with handling maximum depth and recursion.
+        of state so that we can deal with handling maximum depth.
         """
         super(BaseSerializer, self).initialize(parent)
-        self.stack = parent.stack[:]
         if parent.opts.depth:
             self.opts.depth = parent.opts.depth - 1
 
@@ -173,10 +167,6 @@ class BaseSerializer(Field):
         Core of serialization.
         Convert an object into a dictionary of serialized field values.
         """
-        if obj in self.stack and not self.source == '*':
-            raise RecursionOccured()
-        self.stack.append(obj)
-
         ret = self._dict_class()
         ret.fields = {}
 
