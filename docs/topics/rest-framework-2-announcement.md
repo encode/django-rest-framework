@@ -56,16 +56,6 @@ REST framework 2 also allows you to work with both function-based and class-base
 
 Pretty much every aspect of REST framework has been reworked, with the aim of ironing out some of the design flaws of the previous versions.  Each of the components of REST framework are cleanly decoupled, and can be used independantly of each-other, and there are no monolithic resource classes, overcomplicated mixin combinations, or opinionated serialization or URL routing decisions.
 
-## Documentation
-
-As you can see the documentation for REST framework has been radically improved.  It gets a completely new style, using markdown for the documentation source, and a bootstrap-based theme for the styling.
-
-In the author's opinion, using `markdown` for documentation is a much better option that `rst`.  It is intuitive and readable, and there is great tooling available, such as the [Mou][mou] editor for Mac OS X, which makes it easy and plesant to work.
-
-We're really pleased with how the docs style looks - it's simple and clean, and the docs build much more quickly than with the previous sphinx setup.  We'll miss being able to use the wonderful [Read the Docs][readthedocs] service, but we think it's a trade-off worth making.
-
-Developing REST framework's documentation builder into a fully-fledged reusable project is something that we have planned for a future date.
-
 ## The Browseable API
 
 Django REST framework's most unique feature is the way it is able to serve up both machine-readable representations, and a fully browsable HTML representation to the same endpoints.
@@ -76,6 +66,16 @@ With REST framework 2, the browseable API gets a snazzy new bootstrap-based them
 
 There are also some functionality improvments - actions such as as `POST` and `DELETE` will only display if the user has the appropriate permissions.
 
+![Browseable API][image]
+
+**Image above**: An example of the browseable API in REST framework 2
+
+## Documentation
+
+As you can see the documentation for REST framework has been radically improved.  It gets a completely new style, using markdown for the documentation source, and a bootstrap-based theme for the styling.
+
+We're really pleased with how the docs style looks - it's simple and clean, is easy to navigate around, and we think it reads great.  We'll miss being able to use the wonderful [Read the Docs][readthedocs] service, but we think it's a trade-off worth making.
+
 ## Summary
 
 In short, we've engineered the hell outta this thing, and we're incredibly proud of the result.
@@ -84,5 +84,5 @@ In short, we've engineered the hell outta this thing, and we're incredibly proud
 [quote1]: https://twitter.com/kobutsu/status/261689665952833536
 [quote2]: https://groups.google.com/d/msg/django-rest-framework/heRGHzG6BWQ/ooVURgpwVC0J
 [quote3]: https://groups.google.com/d/msg/django-rest-framework/flsXbvYqRoY/9lSyntOf5cUJ
-[mou]: http://mouapp.com/
+[image]: ../img/quickstart.png
 [readthedocs]: https://readthedocs.org/
