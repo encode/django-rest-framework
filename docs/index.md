@@ -97,11 +97,9 @@ The API guide is your complete reference manual to all the functionality provide
 
 General guides to using REST framework.
 
-* [CSRF][csrf]
 * [Browser enhancements][browser-enhancements]
 * [The Browsable API][browsableapi]
 * [REST, Hypermedia & HATEOAS][rest-hypermedia-hateoas]
-* [Contributing to REST framework][contributing]
 * [2.0 Announcement][rest-framework-2-announcement]
 * [Release Notes][release-notes]
 * [Credits][credits]
