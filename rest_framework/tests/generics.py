@@ -243,7 +243,7 @@ class TestInstanceView(TestCase):
                               content_type='application/json')
         response = self.view(request, pk=5).render()
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
-        new_obj = self.objects.get(slug='test_slug')
+        new_obj = self.objects.get(pk=5)
         self.assertEquals(new_obj.text, 'foobar')
 
     def test_put_as_create_on_slug_based_url(self):
