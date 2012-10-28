@@ -235,20 +235,16 @@ class TestInstanceView(TestCase):
     def test_put_as_create_on_id_based_url(self):
         """
         PUT requests to RetrieveUpdateDestroyAPIView should create an object
-        at the requested url if it doesn't exist, if creation is not possible,
-        e.g. the pk for an id-field is determined by the database,
-        a HTTP_403_FORBIDDEN error-response must be returned.
+        at the requested url if it doesn't exist.
         """
         content = {'text': 'foobar'}
         # pk fields can not be created on demand, only the database can set th pk for a new object
         request = factory.put('/5', json.dumps(content),
                               content_type='application/json')
         response = self.view(request, pk=5).render()
-        expected = {
-            'detail': u'A resource could not be created at the requested URI'
-        }
-        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEquals(response.data, expected)
+        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+        new_obj = self.objects.get(slug='test_slug')
+        self.assertEquals(new_obj.text, 'foobar')
 
     def test_put_as_create_on_slug_based_url(self):
         """
@@ -261,8 +257,8 @@ class TestInstanceView(TestCase):
         response = self.slug_based_view(request, pk='test_slug').render()
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         self.assertEquals(response.data, {'slug': 'test_slug', 'text': 'foobar'})
-        updated = self.objects.get(slug='test_slug')
-        self.assertEquals(updated.text, 'foobar')
+        new_obj = self.objects.get(slug='test_slug')
+        self.assertEquals(new_obj.text, 'foobar')
 
 
 # Regression test for #285
