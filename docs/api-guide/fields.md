@@ -14,6 +14,51 @@ Serializer fields handle converting between primative values and internal dataty
 
 ---
 
+## Core arguments
+
+Each serializer field class constructor takes at least these arguments. Some Field classes take additional, field-specific arguments, but the following should always be accepted:
+
+### `source`
+
+The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `Field(source='get_absolute_url')`, or may use dotted notation to traverse attributes, such as `Field(source='user.email')`.
+
+The value `source='*'` has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations.  (See the implementation of the `PaginationSerializer` class for an example.)
+
+Defaults to the name of the field.
+
+### `readonly`
+
+Set this to `True` to ensure that the field is used when serializing a representation, but is not used when updating an instance dureing deserialization.
+
+Defaults to `False`
+
+### `required`
+
+Normally an error will be raised if a field is not supplied during deserialization.
+Set to false if this field is not required to be present during deserialization.
+
+Defaults to `True`.
+
+### `default`
+
+If set, this gives the default value that will be used for the field if none is supplied.  If not set the default behaviour is to not populate the attribute at all.
+
+### `validators`
+
+A list of Django validators that should be used to validate deserialized values.
+
+### `error_messages`
+
+A dictionary of error codes to error messages.
+
+### `widget`
+
+Used only if rendering the field to HTML.
+This argument sets the widget that should be used to render the field.
+
+
+---
+
 # Generic Fields
 
 These generic fields are used for representing arbitrary model fields or the output of model methods.
@@ -192,7 +237,7 @@ Then an example output format for a Bookmark instance would be:
 
 ## PrimaryKeyRelatedField
 
-As with `RelatedField` field can be applied to any "to-one" relationship, such as a `ForeignKey` field.
+This field can be applied to any "to-one" relationship, such as a `ForeignKey` field.
 
 `PrimaryKeyRelatedField` will represent the target of the field using it's primary key.
 
@@ -200,16 +245,34 @@ Be default, `PrimaryKeyRelatedField` is read-write, although you can change this
 
 ## ManyPrimaryKeyRelatedField
 
-As with `RelatedField` field can be applied to any "to-many" relationship, such as a `ManyToManyField` field, or a reverse `ForeignKey` relationship.
+This field can be applied to any "to-many" relationship, such as a `ManyToManyField` field, or a reverse `ForeignKey` relationship.
 
-`PrimaryKeyRelatedField` will represent the target of the field using their primary key.
+`PrimaryKeyRelatedField` will represent the targets of the field using their primary key.
 
 Be default, `ManyPrimaryKeyRelatedField` is read-write, although you can change this behaviour using the `readonly` flag.
 
 ## HyperlinkedRelatedField
 
+This field can be applied to any "to-one" relationship, such as a `ForeignKey` field.
+
+`HyperlinkedRelatedField` will represent the target of the field using a hyperlink.  You must include a named URL pattern in your URL conf, with a name like `'{model-name}-detail'` that corresponds to the target of the hyperlink.
+
+Be default, `HyperlinkedRelatedField` is read-write, although you can change this behaviour using the `readonly` flag.
+
 ## ManyHyperlinkedRelatedField
 
+This field can be applied to any "to-many" relationship, such as a `ManyToManyField` field, or a reverse `ForeignKey` relationship.
+
+`ManyHyperlinkedRelatedField` will represent the targets of the field using hyperlinks.  You must include a named URL pattern in your URL conf, with a name like `'{model-name}-detail'` that corresponds to the target of the hyperlink.
+
+Be default, `ManyHyperlinkedRelatedField` is read-write, although you can change this behaviour using the `readonly` flag.
+
 ## HyperLinkedIdentityField
+
+This field can be applied as an identity relationship, such as the `'url'` field on  a HyperlinkedModelSerializer.
+
+You must include a named URL pattern in your URL conf, with a name like `'{model-name}-detail'` that corresponds to the model.
+
+This field is always read-only.
 
 [cite]: http://www.python.org/dev/peps/pep-0020/
