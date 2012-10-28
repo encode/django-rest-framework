@@ -33,6 +33,12 @@ The default permission policy may be set globally, using the `DEFAULT_PERMISSION
         )
     }
 
+If not specified, this setting defaults to allowing unrestricted access:
+
+    'DEFAULT_PERMISSION_CLASSES': (
+       'rest_framework.permissions.AllowAny',
+    )
+
 You can also set the authentication policy on a per-view basis, using the `APIView` class based views.
 
     class ExampleView(APIView):
@@ -57,6 +63,12 @@ Or, if you're using the `@api_view` decorator with function based views.
 ---
 
 # API Reference
+
+## AllowAny
+
+The `AllowAny` permission class will allow unrestricted access, **regardless of if the request was authenticated or unauthenticated**.
+
+This permission is not strictly required, since you can achieve the same result by using an empty list or tuple for the permissions setting, but you may find it useful to specify this class because it makes the intention explicit.
 
 ## IsAuthenticated
 
