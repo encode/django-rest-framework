@@ -278,13 +278,13 @@ We'll also need a view which corresponds to an individual snippet, and can be us
             snippet.delete()
             return HttpResponse(status=204)
 
-Finally we need to wire these views up. Create the `snippet/urls.py` file:
+Finally we need to wire these views up. Create the `snippets/urls.py` file:
 
     from django.conf.urls import patterns, url
 
     urlpatterns = patterns('snippets.views',
-        url(r'^snippet/$', 'snippet_list'),
-        url(r'^snippet/(?P<pk>[0-9]+)/$', 'snippet_detail')
+        url(r'^snippets/$', 'snippet_list'),
+        url(r'^snippets/(?P<pk>[0-9]+)/$', 'snippet_detail')
     )
 
 It's worth noting that there's a couple of edge cases we're not dealing with properly at the moment.  If we send malformed `json`, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.

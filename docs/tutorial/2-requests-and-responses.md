@@ -114,8 +114,8 @@ Now update the `urls.py` file slightly, to append a set of `format_suffix_patter
     from rest_framework.urlpatterns import format_suffix_patterns
 
     urlpatterns = patterns('snippet.views',
-        url(r'^$', 'snippet_list'),
-        url(r'^(?P<pk>[0-9]+)$', 'snippet_detail')
+        url(r'^snippets/$', 'snippet_list'),
+        url(r'^snippets/(?P<pk>[0-9]+)$', 'snippet_detail')
     )
     
     urlpatterns = format_suffix_patterns(urlpatterns)
@@ -128,7 +128,7 @@ Go ahead and test the API from the command line, as we did in [tutorial part 1][
 
 **TODO: Describe using accept headers, content-type headers, and format suffixed URLs**
 
-Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/][devserver]."
+Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/snippets/][devserver]."
 
 **Note: Right now the Browseable API only works with the CBV's.  Need to fix that.**
 
@@ -144,7 +144,7 @@ See the [browsable api][browseable-api] topic for more information about the bro
 In [tutorial part 3][tut-3], we'll start using class based views, and see how generic views reduce the amount of code we need to write.
 
 [json-url]: http://example.com/api/items/4.json
-[devserver]: http://127.0.0.1:8000/
+[devserver]: http://127.0.0.1:8000/snippets/
 [browseable-api]: ../topics/browsable-api.md
 [tut-1]: 1-serialization.md
 [tut-3]: 3-class-based-views.md

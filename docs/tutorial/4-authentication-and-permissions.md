@@ -100,6 +100,8 @@ This field is doing something quite interesting.  The `source` argument controls
 
 The field we've added is the untyped `Field` class, in contrast to the other typed fields, such as `CharField`, `BooleanField` etc...  The untyped `Field` is always read-only, and will be used for serialized representations, but will not be used for updating model instances when they are deserialized.
 
+**TODO: Explain the SessionAuthentication and BasicAuthentication classes, and demonstrate using HTTP basic authentication with curl requests**
+
 ## Adding required permissions to views
 
 Now that code snippets are associated with users we want to make sure that only authenticated users are able to create, update and delete code snippets.
