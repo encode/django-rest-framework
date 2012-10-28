@@ -301,7 +301,7 @@ class ManyToManyTests(TestCase):
 class ReadOnlyManyToManyTests(TestCase):
     def setUp(self):
         class ReadOnlyManyToManySerializer(serializers.ModelSerializer):
-            rel = serializers.ManyRelatedField(readonly=True)
+            rel = serializers.ManyRelatedField(read_only=True)
 
             class Meta:
                 model = ReadOnlyManyToManyModel
@@ -323,7 +323,7 @@ class ReadOnlyManyToManyTests(TestCase):
     def test_update(self):
         """
         Attempt to update an instance of a model with a ManyToMany
-        relationship.  Not updated due to readonly=True
+        relationship.  Not updated due to read_only=True
         """
         new_anchor = Anchor()
         new_anchor.save()
@@ -339,7 +339,7 @@ class ReadOnlyManyToManyTests(TestCase):
     def test_update_without_relationship(self):
         """
         Attempt to update an instance of a model where many to ManyToMany
-        relationship is not supplied.  Not updated due to readonly=True
+        relationship is not supplied.  Not updated due to read_only=True
         """
         new_anchor = Anchor()
         new_anchor.save()

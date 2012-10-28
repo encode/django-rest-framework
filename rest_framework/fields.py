@@ -111,17 +111,17 @@ class WritableField(Field):
     widget = widgets.TextInput
     default = None
 
-    def __init__(self, source=None, readonly=False, required=None,
+    def __init__(self, source=None, read_only=False, required=None,
                  validators=[], error_messages=None, widget=None,
                  default=None):
 
         super(WritableField, self).__init__(source=source)
 
-        self.readonly = readonly
+        self.read_only = read_only
         if required is None:
-            self.required = not(readonly)
+            self.required = not(read_only)
         else:
-            assert not readonly, "Cannot set required=True and readonly=True"
+            assert not read_only, "Cannot set required=True and read_only=True"
             self.required = required
 
         messages = {}
@@ -166,7 +166,7 @@ class WritableField(Field):
         Given a dictionary and a field name, updates the dictionary `into`,
         with the field and it's deserialized value.
         """
-        if self.readonly:
+        if self.read_only:
             return
 
         try:
@@ -240,7 +240,7 @@ class RelatedField(WritableField):
         return self.to_native(value)
 
     def field_from_native(self, data, field_name, into):
-        if self.readonly:
+        if self.read_only:
             return
 
         value = data.get(field_name)
@@ -256,7 +256,7 @@ class ManyRelatedMixin(object):
         return [self.to_native(item) for item in value.all()]
 
     def field_from_native(self, data, field_name, into):
-        if self.readonly:
+        if self.read_only:
             return
 
         try:

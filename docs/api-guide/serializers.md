@@ -190,7 +190,7 @@ The `ModelSerializer` class lets you automatically create a Serializer class wit
 You can add extra fields to a `ModelSerializer` or override the default fields by declaring fields on the class, just as you would for a `Serializer` class.
 
     class AccountSerializer(serializers.ModelSerializer):
-        url = CharField(source='get_absolute_url', readonly=True)
+        url = CharField(source='get_absolute_url', read_only=True)
         group = NaturalKeyField()
 
         class Meta:
@@ -246,7 +246,7 @@ When serializing objects using a nested representation any occurances of recursi
             model = Account
 
         def get_pk_field(self, model_field):
-            return serializers.Field(readonly=True)
+            return serializers.Field(read_only=True)
 
         def get_nested_field(self, model_field):
             return serializers.ModelSerializer()

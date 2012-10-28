@@ -288,7 +288,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         fields = {}
         for k, v in serializer.get_fields(True).items():
-            if getattr(v, 'readonly', True):
+            if getattr(v, 'read_only', True):
                 continue
 
             kwargs = {}

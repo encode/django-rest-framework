@@ -26,7 +26,7 @@ The value `source='*'` has a special meaning, and is used to indicate that the e
 
 Defaults to the name of the field.
 
-### `readonly`
+### `read_only`
 
 Set this to `True` to ensure that the field is used when serializing a representation, but is not used when updating an instance dureing deserialization.
 
@@ -241,7 +241,7 @@ This field can be applied to any "to-one" relationship, such as a `ForeignKey` f
 
 `PrimaryKeyRelatedField` will represent the target of the field using it's primary key.
 
-Be default, `PrimaryKeyRelatedField` is read-write, although you can change this behaviour using the `readonly` flag.
+Be default, `PrimaryKeyRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
 
 ## ManyPrimaryKeyRelatedField
 
@@ -249,7 +249,7 @@ This field can be applied to any "to-many" relationship, such as a `ManyToManyFi
 
 `PrimaryKeyRelatedField` will represent the targets of the field using their primary key.
 
-Be default, `ManyPrimaryKeyRelatedField` is read-write, although you can change this behaviour using the `readonly` flag.
+Be default, `ManyPrimaryKeyRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
 
 ## HyperlinkedRelatedField
 
@@ -257,7 +257,7 @@ This field can be applied to any "to-one" relationship, such as a `ForeignKey` f
 
 `HyperlinkedRelatedField` will represent the target of the field using a hyperlink.  You must include a named URL pattern in your URL conf, with a name like `'{model-name}-detail'` that corresponds to the target of the hyperlink.
 
-Be default, `HyperlinkedRelatedField` is read-write, although you can change this behaviour using the `readonly` flag.
+Be default, `HyperlinkedRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
 
 ## ManyHyperlinkedRelatedField
 
@@ -265,7 +265,7 @@ This field can be applied to any "to-many" relationship, such as a `ManyToManyFi
 
 `ManyHyperlinkedRelatedField` will represent the targets of the field using hyperlinks.  You must include a named URL pattern in your URL conf, with a name like `'{model-name}-detail'` that corresponds to the target of the hyperlink.
 
-Be default, `ManyHyperlinkedRelatedField` is read-write, although you can change this behaviour using the `readonly` flag.
+Be default, `ManyHyperlinkedRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
 
 ## HyperLinkedIdentityField
 
