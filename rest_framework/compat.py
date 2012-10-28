@@ -59,6 +59,10 @@ else:
             update_wrapper(view, cls.dispatch, assigned=())
             return view
 
+http_method_names = set(View.http_method_names)
+http_method_names.add('patch')
+View.http_method_names = list(http_method_names)  # PATCH method is not implemented by Django
+
 # PUT, DELETE do not require CSRF until 1.4.  They should.  Make it better.
 if django.VERSION >= (1, 4):
     from django.middleware.csrf import CsrfViewMiddleware

@@ -138,10 +138,13 @@ class UpdateAPIView(mixins.UpdateModelMixin,
                     SingleObjectAPIView):
 
     """
-    Concrete view for updating a model instance.
+    Concrete view for updating or partially updating a model instance.
     """
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partially_update(request, *args, **kwargs)
 
 
 class ListCreateAPIView(mixins.ListModelMixin,
@@ -175,13 +178,16 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
                                    mixins.DestroyModelMixin,
                                    SingleObjectAPIView):
     """
-    Concrete view for retrieving, updating or deleting a model instance.
+    Concrete view for retrieving, updating, partially updating, or deleting a model instance.
     """
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.partially_update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)

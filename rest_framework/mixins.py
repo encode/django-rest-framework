@@ -82,7 +82,21 @@ class UpdateModelMixin(object):
             self.object = None
 
         serializer = self.get_serializer(data=request.DATA, instance=self.object)
+        if serializer.is_valid():
+            self.pre_save(serializer.object)
+            self.object = serializer.save()
+            return Response(serializer.data)
 
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def partially_update(self, request, *args, **kwargs):
+        """
+        Updates model instance with only the fields present in request.DATA.
+        """
+        self.object = self.get_object()
+        data = self.get_serializer(instance=self.object).data
+        data.update(request.DATA)  # overwrite data with data from the request
+        serializer = self.get_serializer(data=data, instance=self.object)
         if serializer.is_valid():
             self.pre_save(serializer.object)
             self.object = serializer.save()
