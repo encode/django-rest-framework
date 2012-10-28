@@ -67,9 +67,8 @@ The tutorial will walk you through the building blocks that make up REST framewo
 * [1 - Serialization][tut-1]
 * [2 - Requests & Responses][tut-2]
 * [3 - Class based views][tut-3]
-* [4 - Authentication, permissions & throttling][tut-4]
+* [4 - Authentication & permissions][tut-4]
 * [5 - Relationships & hyperlinked APIs][tut-5]
-<!-- * [6 - Resource orientated projects][tut-6]-->
 
 ## API Guide
 
@@ -161,9 +160,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [tut-1]: tutorial/1-serialization.md
 [tut-2]: tutorial/2-requests-and-responses.md
 [tut-3]: tutorial/3-class-based-views.md
-[tut-4]: tutorial/4-authentication-permissions-and-throttling.md
+[tut-4]: tutorial/4-authentication-and-permissions.md
 [tut-5]: tutorial/5-relationships-and-hyperlinked-apis.md
-[tut-6]: tutorial/6-resource-orientated-projects.md
 
 [request]: api-guide/requests.md
 [response]: api-guide/responses.md

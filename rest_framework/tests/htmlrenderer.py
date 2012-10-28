@@ -3,12 +3,12 @@ from django.test import TestCase
 from django.template import TemplateDoesNotExist, Template
 import django.template.loader
 from rest_framework.decorators import api_view, renderer_classes
-from rest_framework.renderers import HTMLRenderer
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 
 
 @api_view(('GET',))
-@renderer_classes((HTMLRenderer,))
+@renderer_classes((TemplateHTMLRenderer,))
 def example(request):
     """
     A view that can returns an HTML representation.
@@ -22,7 +22,7 @@ urlpatterns = patterns('',
 )
 
 
-class HTMLRendererTests(TestCase):
+class TemplateHTMLRendererTests(TestCase):
     urls = 'rest_framework.tests.htmlrenderer'
 
     def setUp(self):

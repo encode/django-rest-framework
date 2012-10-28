@@ -139,13 +139,24 @@ class YAMLRenderer(BaseRenderer):
         return yaml.dump(data, stream=None, Dumper=self.encoder)
 
 
-class HTMLRenderer(BaseRenderer):
+class TemplateHTMLRenderer(BaseRenderer):
     """
-    A Base class provided for convenience.
+    An HTML renderer for use with templates.
 
-    Render the object simply by using the given template.
-    To create a template renderer, subclass this class, and set
-    the :attr:`media_type` and :attr:`template` attributes.
+    The data supplied to the Response object should be a dictionary that will
+    be used as context for the template.
+
+    The template name is determined by (in order of preference):
+
+    1. An explicit `.template_name` attribute set on the response.
+    2. An explicit `.template_name` attribute set on this class.
+    3. The return result of calling `view.get_template_names()`.
+
+    For example:
+        data = {'users': User.objects.all()}
+        return Response(data, template_name='users.html')
+
+    For pre-rendered HTML, see StaticHTMLRenderer.
     """
 
     media_type = 'text/html'
@@ -186,6 +197,26 @@ class HTMLRenderer(BaseRenderer):
         elif hasattr(view, 'get_template_names'):
             return view.get_template_names()
         raise ConfigurationError('Returned a template response with no template_name')
+
+
+class StaticHTMLRenderer(BaseRenderer):
+    """
+    An HTML renderer class that simply returns pre-rendered HTML.
+
+    The data supplied to the Response object should be a string representing
+    the pre-rendered HTML content.
+
+    For example:
+        data = '<html><body>example</body></html>'
+        return Response(data)
+
+    For template rendered HTML, see TemplateHTMLRenderer.
+    """
+    media_type = 'text/html'
+    format = 'html'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        return data
 
 
 class BrowsableAPIRenderer(BaseRenderer):
