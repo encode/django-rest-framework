@@ -140,7 +140,7 @@ We've walked through each step of the design process, and seen how if we need to
 
 You can review the final [tutorial code][repo] on GitHub, or try out a live example in [the sandbox][sandbox]. 
 
-## Onwards and upwards.
+## Onwards and upwards
 
 We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here's a few places you can start:
 

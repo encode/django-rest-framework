@@ -116,7 +116,6 @@ Run the tests:
 
     ./rest_framework/runtests/runtests.py
 
-For more information see the [Contributing to REST framework][contributing] section.
 ## Support
 
 For support please see the [REST framework discussion group][group], or try the  `#restframework` channel on `irc.freenode.net`.
