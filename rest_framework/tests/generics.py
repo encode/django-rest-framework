@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import simplejson as json
 from rest_framework import generics, serializers, status
-from rest_framework.tests.models import BasicModel, Comment
+from rest_framework.tests.models import BasicModel, Comment, SlugBasedModel
 
 
 factory = RequestFactory()
@@ -20,6 +20,13 @@ class InstanceView(generics.RetrieveUpdateDestroyAPIView):
     Example description for OPTIONS.
     """
     model = BasicModel
+
+
+class SlugBasedInstanceView(InstanceView):
+    """
+    A model with a slug-field.
+    """
+    model = SlugBasedModel
 
 
 class TestRootView(TestCase):
@@ -129,6 +136,7 @@ class TestInstanceView(TestCase):
             for obj in self.objects.all()
         ]
         self.view = InstanceView.as_view()
+        self.slug_based_view = SlugBasedInstanceView.as_view()
 
     def test_get_instance_view(self):
         """
@@ -198,7 +206,7 @@ class TestInstanceView(TestCase):
 
     def test_put_cannot_set_id(self):
         """
-        POST requests to create a new object should not be able to set the id.
+        PUT requests to create a new object should not be able to set the id.
         """
         content = {'id': 999, 'text': 'foobar'}
         request = factory.put('/1', json.dumps(content),
@@ -222,6 +230,38 @@ class TestInstanceView(TestCase):
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, {'id': 1, 'text': 'foobar'})
         updated = self.objects.get(id=1)
+        self.assertEquals(updated.text, 'foobar')
+
+    def test_put_as_create_on_id_based_url(self):
+        """
+        PUT requests to RetrieveUpdateDestroyAPIView should create an object
+        at the requested url if it doesn't exist, if creation is not possible,
+        e.g. the pk for an id-field is determined by the database,
+        a HTTP_403_FORBIDDEN error-response must be returned.
+        """
+        content = {'text': 'foobar'}
+        # pk fields can not be created on demand, only the database can set th pk for a new object
+        request = factory.put('/5', json.dumps(content),
+                              content_type='application/json')
+        response = self.view(request, pk=5).render()
+        expected = {
+            'detail': u'A resource could not be created at the requested URI'
+        }
+        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEquals(response.data, expected)
+
+    def test_put_as_create_on_slug_based_url(self):
+        """
+        PUT requests to RetrieveUpdateDestroyAPIView should create an object
+        at the requested url if possible, else return HTTP_403_FORBIDDEN error-response.
+        """
+        content = {'text': 'foobar'}
+        request = factory.put('/test_slug', json.dumps(content),
+                              content_type='application/json')
+        response = self.slug_based_view(request, pk='test_slug').render()
+        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+        self.assertEquals(response.data, {'slug': 'test_slug', 'text': 'foobar'})
+        updated = self.objects.get(slug='test_slug')
         self.assertEquals(updated.text, 'foobar')
 
 
