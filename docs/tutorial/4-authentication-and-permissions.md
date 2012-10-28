@@ -1,7 +1,11 @@
 # Tutorial 4: Authentication & Permissions
 
-Currently our API doesn't have any restrictions on who can 
+Currently our API doesn't have any restrictions on who can edit or delete code snippets.  We'd like to have some more advanced behavior in order to make sure that:
 
+* Code snippets are always associated with a creator.
+* Only authenticated users may create snippets.
+* Only the creator of a snippet may update or delete it.
+* Unauthenticated requests should have full read-only access.
 
 ## Adding information to our model
 
