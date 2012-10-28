@@ -106,12 +106,12 @@ If you are considering using `XML` for your API, you may want to consider implem
 
 **.format**: `'.xml'`
 
-## HTMLRenderer
+## TemplateHTMLRenderer
 
 Renders data to HTML, using Django's standard template rendering.
 Unlike other renderers, the data passed to the `Response` does not need to be serialized.  Also, unlike other renderers, you may want to include a `template_name` argument when creating the `Response`.
 
-The HTMLRenderer will create a `RequestContext`, using the `response.data` as the context dict, and determine a template name to use to render the context.
+The TemplateHTMLRenderer will create a `RequestContext`, using the `response.data` as the context dict, and determine a template name to use to render the context.
 
 The template name is determined by (in order of preference):
 
@@ -119,26 +119,48 @@ The template name is determined by (in order of preference):
 2. An explicit `.template_name` attribute set on this class.
 3. The return result of calling `view.get_template_names()`.
 
-An example of a view that uses `HTMLRenderer`:
+An example of a view that uses `TemplateHTMLRenderer`:
 
     class UserInstance(generics.RetrieveUserAPIView):
         """
         A view that returns a templated HTML representations of a given user.
         """
         model = Users
-        renderer_classes = (HTMLRenderer,)
+        renderer_classes = (TemplateHTMLRenderer,)
 
         def get(self, request, *args, **kwargs)
             self.object = self.get_object()
             return Response({'user': self.object}, template_name='user_detail.html')
  
-You can use `HTMLRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
+You can use `TemplateHTMLRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
 
-If you're building websites that use `HTMLRenderer` along with other renderer classes, you should consider listing `HTMLRenderer` as the first class in the `renderer_classes` list, so that it will be prioritised first even for browsers that send poorly formed `ACCEPT:` headers.
+If you're building websites that use `TemplateHTMLRenderer` along with other renderer classes, you should consider listing `TemplateHTMLRenderer` as the first class in the `renderer_classes` list, so that it will be prioritised first even for browsers that send poorly formed `ACCEPT:` headers.
 
 **.media_type**: `text/html`
 
 **.format**: `'.html'`
+
+See also: `StaticHTMLRenderer`
+
+## StaticHTMLRenderer
+
+A simple renderer that simply returns pre-rendered HTML.  Unlike other renderers, the data passed to the response object should be a string representing the content to be returned.
+
+An example of a view that uses `TemplateHTMLRenderer`:
+
+    @api_view(('GET',))
+    @renderer_classes((StaticHTMLRenderer,))
+    def simple_html_view(request): 
+        data = '<html><body><h1>Hello, world</h1></body></html>'
+        return Response(data)
+
+You can use `TemplateHTMLRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
+
+**.media_type**: `text/html`
+
+**.format**: `'.html'`
+
+See also: `TemplateHTMLRenderer`
 
 ## BrowsableAPIRenderer
 
@@ -207,7 +229,7 @@ In some cases you might want your view to use different serialization styles dep
 For example:
 
     @api_view(('GET',))
-    @renderer_classes((HTMLRenderer, JSONRenderer))
+    @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
     def list_users(request):
         """
         A view that can return JSON or HTML representations
@@ -215,9 +237,9 @@ For example:
         """
         queryset = Users.objects.filter(active=True)
 
-        if request.accepted_media_type == 'text/html':
+        if request.accepted_renderer.format == 'html':
             # TemplateHTMLRenderer takes a context dict,
-            # and additionally requiresa 'template_name'.
+            # and additionally requires a 'template_name'.
             # It does not require serialization.
             data = {'users': queryset}
             return Response(data, template_name='list_users.html')
