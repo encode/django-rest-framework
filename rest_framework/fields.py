@@ -244,7 +244,7 @@ class RelatedField(WritableField):
             return
 
         value = data.get(field_name)
-        into[(self.source or field_name) + '_id'] = self.from_native(value)
+        into[(self.source or field_name)] = self.from_native(value)
 
 
 class ManyRelatedMixin(object):
@@ -287,6 +287,12 @@ class PrimaryKeyRelatedField(RelatedField):
 
     def to_native(self, pk):
         return pk
+
+    def from_native(self, data):
+        try:
+            return self.queryset.get(pk=data)
+        except ObjectDoesNotExist:
+            raise ValidationError('Invalid hyperlink - object does not exist.')
 
     def field_to_native(self, obj, field_name):
         try:
@@ -377,7 +383,7 @@ class HyperlinkedRelatedField(RelatedField):
 
         # Try explicit primary key.
         if pk is not None:
-            return pk
+            queryset = self.queryset.filter(pk=pk)
         # Next, try looking up by slug.
         elif slug is not None:
             slug_field = self.get_slug_field()
@@ -390,7 +396,7 @@ class HyperlinkedRelatedField(RelatedField):
             obj = queryset.get()
         except ObjectDoesNotExist:
             raise ValidationError('Invalid hyperlink - object does not exist.')
-        return obj.pk
+        return obj
 
 
 class ManyHyperlinkedRelatedField(ManyRelatedMixin, HyperlinkedRelatedField):
