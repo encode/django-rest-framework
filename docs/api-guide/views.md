@@ -122,7 +122,7 @@ REST framework also allows you to work with regular function based views. It pro
 
 ## @api_view()
 
-**Signature:** `@api_view(http_method_names)
+**Signature:** `@api_view(http_method_names)`
 
 The core of this functionality is the `api_view` decorator, which takes a list of HTTP methods that your view should respond to. For example, this is how you would write a very simple view that just manually returns some data:
 
