@@ -446,11 +446,22 @@ class CharField(WritableField):
 
     def __init__(self, max_length=None, min_length=None, *args, **kwargs):
         self.max_length, self.min_length = max_length, min_length
+        self.blank = kwargs.pop('blank', False)
         super(CharField, self).__init__(*args, **kwargs)
         if min_length is not None:
             self.validators.append(validators.MinLengthValidator(min_length))
         if max_length is not None:
             self.validators.append(validators.MaxLengthValidator(max_length))
+
+    def validate(self, value):
+        """
+        Validates that the value is supplied (if required).
+        """
+        # if empty string and allow blank
+        if self.blank and not value:
+            return
+        else:
+            super(CharField, self).validate(value)
 
     def from_native(self, value):
         if isinstance(value, basestring) or value is None:
