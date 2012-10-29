@@ -22,11 +22,20 @@ class InstanceView(generics.RetrieveUpdateDestroyAPIView):
     model = BasicModel
 
 
+class SlugSerializer(serializers.ModelSerializer):
+    slug = serializers.Field()  # read only
+
+    class Meta:
+        model = SlugBasedModel
+        exclude = ('id',)
+
+
 class SlugBasedInstanceView(InstanceView):
     """
     A model with a slug-field.
     """
     model = SlugBasedModel
+    serializer_class = SlugSerializer
 
 
 class TestRootView(TestCase):
@@ -254,10 +263,10 @@ class TestInstanceView(TestCase):
         content = {'text': 'foobar'}
         request = factory.put('/test_slug', json.dumps(content),
                               content_type='application/json')
-        response = self.slug_based_view(request, pk='test_slug').render()
+        response = self.slug_based_view(request, slug='test_slug').render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, {'slug': 'test_slug', 'text': 'foobar'})
-        new_obj = self.objects.get(slug='test_slug')
+        new_obj = SlugBasedModel.objects.get(slug='test_slug')
         self.assertEquals(new_obj.text, 'foobar')
 
 
