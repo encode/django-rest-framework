@@ -136,8 +136,8 @@ For example, given the following views...
 
     REST_FRAMEWORK = {
         'DEFAULT_THROTTLE_CLASSES': (
-            'rest_framework.throttles.ScopedRateThrottle',
-        )
+            'rest_framework.throttles.ScopedRateThrottle'
+        ),
         'DEFAULT_THROTTLE_RATES': {
             'contacts': '1000/day',
             'uploads': '20/day'
