@@ -32,8 +32,8 @@ The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_C
     REST_FRAMEWORK = {
         'DEFAULT_THROTTLE_CLASSES': (
             'rest_framework.throttles.AnonThrottle',
-            'rest_framework.throttles.UserThrottle',
-        )
+            'rest_framework.throttles.UserThrottle'
+        ),
         'DEFAULT_THROTTLE_RATES': {
             'anon': '100/day',
             'user': '1000/day'
