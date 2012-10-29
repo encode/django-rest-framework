@@ -116,3 +116,8 @@ class BlogPost(RESTFrameworkModel):
 class BlogPostComment(RESTFrameworkModel):
     text = models.TextField()
     blog_post = models.ForeignKey(BlogPost)
+
+
+class Person(RESTFrameworkModel):
+    name = models.CharField(max_length=10)
+    age = models.IntegerField(null=True, blank=True)
