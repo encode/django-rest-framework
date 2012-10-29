@@ -509,7 +509,10 @@ class EmailField(CharField):
     default_validators = [validators.validate_email]
 
     def from_native(self, value):
-        return super(EmailField, self).from_native(value).strip()
+        ret = super(EmailField, self).from_native(value)
+        if ret is None:
+            return None
+        return ret.strip()
 
     def __deepcopy__(self, memo):
         result = copy.copy(self)
@@ -531,8 +534,9 @@ class DateField(WritableField):
     empty = None
 
     def from_native(self, value):
-        if value is None:
-            return value
+        if value in validators.EMPTY_VALUES:
+            return None
+
         if isinstance(value, datetime.datetime):
             if timezone and settings.USE_TZ and timezone.is_aware(value):
                 # Convert aware datetimes to the default time zone
@@ -570,8 +574,9 @@ class DateTimeField(WritableField):
     empty = None
 
     def from_native(self, value):
-        if value is None:
-            return value
+        if value in validators.EMPTY_VALUES:
+            return None
+
         if isinstance(value, datetime.datetime):
             return value
         if isinstance(value, datetime.date):
@@ -629,6 +634,7 @@ class IntegerField(WritableField):
     def from_native(self, value):
         if value in validators.EMPTY_VALUES:
             return None
+
         try:
             value = int(str(value))
         except (ValueError, TypeError):
@@ -644,8 +650,9 @@ class FloatField(WritableField):
     }
 
     def from_native(self, value):
-        if value is None:
-            return value
+        if value in validators.EMPTY_VALUES:
+            return None
+
         try:
             return float(value)
         except (TypeError, ValueError):
