@@ -135,7 +135,6 @@ Let's look at an example of serializing a class that represents an RGB color val
         """
         A color represented in the RGB colorspace.
         """
-
         def __init__(self, red, green, blue):
             assert(red >= 0 and green >= 0 and blue >= 0)
             assert(red < 256 and green < 256 and blue < 256)
@@ -145,7 +144,6 @@ Let's look at an example of serializing a class that represents an RGB color val
         """
         Color objects are serialized into "rgb(#, #, #)" notation.
         """
-
         def to_native(self, obj):
             return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)
       

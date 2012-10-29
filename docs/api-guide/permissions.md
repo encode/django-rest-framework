@@ -78,7 +78,7 @@ This permission is suitable if you want your API to only be accessible to regist
 
 ## IsAdminUser
 
-The `IsAdminUser` permission class will deny permission to any user, unless `user.is_staff`is `True` in which case permission will be allowed.
+The `IsAdminUser` permission class will deny permission to any user, unless `user.is_staff` is `True` in which case permission will be allowed.
 
 This permission is suitable is you want your API to only be accessible to a subset of trusted administrators.
 

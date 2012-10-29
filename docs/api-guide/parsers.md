@@ -37,7 +37,7 @@ You can also set the renderers used for an individual view, using the `APIView` 
 
 Or, if you're using the `@api_view` decorator with function based views.
 
-    @api_view(('POST',)),
+    @api_view(['POST'])
     @parser_classes((YAMLParser,))
     def example_view(request, format=None):
         """

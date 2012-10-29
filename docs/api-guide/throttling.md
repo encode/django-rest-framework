@@ -32,8 +32,8 @@ The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_C
     REST_FRAMEWORK = {
         'DEFAULT_THROTTLE_CLASSES': (
             'rest_framework.throttles.AnonThrottle',
-            'rest_framework.throttles.UserThrottle',
-        )
+            'rest_framework.throttles.UserThrottle'
+        ),
         'DEFAULT_THROTTLE_RATES': {
             'anon': '100/day',
             'user': '1000/day'
@@ -102,8 +102,8 @@ For example, multiple user throttle rates could be implemented by using the foll
     REST_FRAMEWORK = {
         'DEFAULT_THROTTLE_CLASSES': (
             'example.throttles.BurstRateThrottle',
-            'example.throttles.SustainedRateThrottle',
-        )
+            'example.throttles.SustainedRateThrottle'
+        ),
         'DEFAULT_THROTTLE_RATES': {
             'burst': '60/min',
             'sustained': '1000/day'
@@ -136,8 +136,8 @@ For example, given the following views...
 
     REST_FRAMEWORK = {
         'DEFAULT_THROTTLE_CLASSES': (
-            'rest_framework.throttles.ScopedRateThrottle',
-        )
+            'rest_framework.throttles.ScopedRateThrottle'
+        ),
         'DEFAULT_THROTTLE_RATES': {
             'contacts': '1000/day',
             'uploads': '20/day'
