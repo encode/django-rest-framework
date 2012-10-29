@@ -102,8 +102,8 @@ For example, multiple user throttle rates could be implemented by using the foll
     REST_FRAMEWORK = {
         'DEFAULT_THROTTLE_CLASSES': (
             'example.throttles.BurstRateThrottle',
-            'example.throttles.SustainedRateThrottle',
-        )
+            'example.throttles.SustainedRateThrottle'
+        ),
         'DEFAULT_THROTTLE_RATES': {
             'burst': '60/min',
             'sustained': '1000/day'
