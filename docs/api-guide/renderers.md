@@ -42,7 +42,7 @@ You can also set the renderers used for an individual view, using the `APIView` 
 
 Or, if you're using the `@api_view` decorator with function based views.
 
-    @api_view(('GET',)),
+    @api_view(['GET'])
     @renderer_classes((JSONRenderer, JSONPRenderer))
     def user_count_view(request, format=None):
         """
