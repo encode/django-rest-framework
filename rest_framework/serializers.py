@@ -393,6 +393,9 @@ class ModelSerializer(Serializer):
         Creates a default instance of a basic non-relational field.
         """
         kwargs = {}
+        if model_field.null:
+            kwargs['required'] = False
+
         if model_field.has_default():
             kwargs['required'] = False
             kwargs['default'] = model_field.get_default()
