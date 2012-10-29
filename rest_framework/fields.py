@@ -331,14 +331,16 @@ class HyperlinkedRelatedField(RelatedField):
             self.view_name = kwargs.pop('view_name')
         except:
             raise ValueError("Hyperlinked field requires 'view_name' kwarg")
+        self.format = kwargs.pop('format', None)
         super(HyperlinkedRelatedField, self).__init__(*args, **kwargs)
 
     def to_native(self, obj):
         view_name = self.view_name
         request = self.context.get('request', None)
+        format = self.format or self.context.get('format', None)
         kwargs = {self.pk_url_kwarg: obj.pk}
         try:
-            return reverse(view_name, kwargs=kwargs, request=request)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
@@ -349,13 +351,13 @@ class HyperlinkedRelatedField(RelatedField):
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request)
+            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request)
+            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
@@ -405,13 +407,15 @@ class HyperlinkedIdentityField(Field):
         # TODO: Make this mandatory, and have the HyperlinkedModelSerializer
         # set it on-the-fly
         self.view_name = kwargs.pop('view_name', None)
+        self.format = kwargs.pop('format', None)
         super(HyperlinkedIdentityField, self).__init__(*args, **kwargs)
 
     def field_to_native(self, obj, field_name):
         request = self.context.get('request', None)
+        format = self.format or self.context.get('format', None)
         view_name = self.view_name or self.parent.opts.view_name
         view_kwargs = {'pk': obj.pk}
-        return reverse(view_name, kwargs=view_kwargs, request=request)
+        return reverse(view_name, kwargs=view_kwargs, request=request, format=format)
 
 
 ##### Typed Fields #####
