@@ -23,10 +23,6 @@ class SortedDictWithMetadata(SortedDict, DictWithMetadata):
     pass
 
 
-class RecursionOccured(BaseException):
-    pass
-
-
 def _is_protected_type(obj):
     """
     True if the object is a native datatype that does not need to
@@ -74,7 +70,7 @@ class SerializerOptions(object):
     Meta class options for Serializer
     """
     def __init__(self, meta):
-        self.nested = getattr(meta, 'nested', False)
+        self.depth = getattr(meta, 'depth', 0)
         self.fields = getattr(meta, 'fields', ())
         self.exclude = getattr(meta, 'exclude', ())
 
@@ -93,7 +89,6 @@ class BaseSerializer(Field):
         self.parent = None
         self.root = None
 
-        self.stack = []
         self.context = context or {}
 
         self.init_data = data
@@ -152,14 +147,11 @@ class BaseSerializer(Field):
     def initialize(self, parent):
         """
         Same behaviour as usual Field, except that we need to keep track
-        of state so that we can deal with handling maximum depth and recursion.
+        of state so that we can deal with handling maximum depth.
         """
         super(BaseSerializer, self).initialize(parent)
-        self.stack = parent.stack[:]
-        if parent.opts.nested and not isinstance(parent.opts.nested, bool):
-            self.opts.nested = parent.opts.nested - 1
-        else:
-            self.opts.nested = parent.opts.nested
+        if parent.opts.depth:
+            self.opts.depth = parent.opts.depth - 1
 
     #####
     # Methods to convert or revert from objects <--> primative representations.
@@ -175,21 +167,13 @@ class BaseSerializer(Field):
         Core of serialization.
         Convert an object into a dictionary of serialized field values.
         """
-        if obj in self.stack and not self.source == '*':
-            raise RecursionOccured()
-        self.stack.append(obj)
-
         ret = self._dict_class()
         ret.fields = {}
 
-        fields = self.get_fields(serialize=True, obj=obj, nested=self.opts.nested)
+        fields = self.get_fields(serialize=True, obj=obj, nested=bool(self.opts.depth))
         for field_name, field in fields.items():
             key = self.get_field_key(field_name)
-            try:
-                value = field.field_to_native(obj, field_name)
-            except RecursionOccured:
-                field = self.get_fields(serialize=True, obj=obj, nested=False)[field_name]
-                value = field.field_to_native(obj, field_name)
+            value = field.field_to_native(obj, field_name)
             ret[key] = value
             ret.fields[key] = field
         return ret
@@ -199,7 +183,7 @@ class BaseSerializer(Field):
         Core of deserialization, together with `restore_object`.
         Converts a dictionary of data into a dictionary of deserialized fields.
         """
-        fields = self.get_fields(serialize=False, data=data, nested=self.opts.nested)
+        fields = self.get_fields(serialize=False, data=data, nested=bool(self.opts.depth))
         reverted_data = {}
         for field_name, field in fields.items():
             try:
@@ -213,7 +197,8 @@ class BaseSerializer(Field):
         """
         Run `validate_<fieldname>()` and `validate()` methods on the serializer
         """
-        fields = self.get_fields(serialize=False, data=attrs, nested=self.opts.nested)
+        # TODO: refactor this so we're not determining the fields again
+        fields = self.get_fields(serialize=False, data=attrs, nested=bool(self.opts.depth))
 
         for field_name, field in fields.items():
             try:

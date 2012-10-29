@@ -111,17 +111,17 @@ class WritableField(Field):
     widget = widgets.TextInput
     default = None
 
-    def __init__(self, source=None, readonly=False, required=None,
+    def __init__(self, source=None, read_only=False, required=None,
                  validators=[], error_messages=None, widget=None,
                  default=None):
 
         super(WritableField, self).__init__(source=source)
 
-        self.readonly = readonly
+        self.read_only = read_only
         if required is None:
-            self.required = not(readonly)
+            self.required = not(read_only)
         else:
-            assert not readonly, "Cannot set required=True and readonly=True"
+            assert not read_only, "Cannot set required=True and read_only=True"
             self.required = required
 
         messages = {}
@@ -166,7 +166,7 @@ class WritableField(Field):
         Given a dictionary and a field name, updates the dictionary `into`,
         with the field and it's deserialized value.
         """
-        if self.readonly:
+        if self.read_only:
             return
 
         try:
@@ -240,7 +240,7 @@ class RelatedField(WritableField):
         return self.to_native(value)
 
     def field_from_native(self, data, field_name, into):
-        if self.readonly:
+        if self.read_only:
             return
 
         value = data.get(field_name)
@@ -256,7 +256,7 @@ class ManyRelatedMixin(object):
         return [self.to_native(item) for item in value.all()]
 
     def field_from_native(self, data, field_name, into):
-        if self.readonly:
+        if self.read_only:
             return
 
         try:
@@ -331,14 +331,16 @@ class HyperlinkedRelatedField(RelatedField):
             self.view_name = kwargs.pop('view_name')
         except:
             raise ValueError("Hyperlinked field requires 'view_name' kwarg")
+        self.format = kwargs.pop('format', None)
         super(HyperlinkedRelatedField, self).__init__(*args, **kwargs)
 
     def to_native(self, obj):
         view_name = self.view_name
         request = self.context.get('request', None)
+        format = self.format or self.context.get('format', None)
         kwargs = {self.pk_url_kwarg: obj.pk}
         try:
-            return reverse(view_name, kwargs=kwargs, request=request)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
@@ -349,13 +351,13 @@ class HyperlinkedRelatedField(RelatedField):
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request)
+            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request)
+            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
@@ -405,13 +407,15 @@ class HyperlinkedIdentityField(Field):
         # TODO: Make this mandatory, and have the HyperlinkedModelSerializer
         # set it on-the-fly
         self.view_name = kwargs.pop('view_name', None)
+        self.format = kwargs.pop('format', None)
         super(HyperlinkedIdentityField, self).__init__(*args, **kwargs)
 
     def field_to_native(self, obj, field_name):
         request = self.context.get('request', None)
+        format = self.format or self.context.get('format', None)
         view_name = self.view_name or self.parent.opts.view_name
         view_kwargs = {'pk': obj.pk}
-        return reverse(view_name, kwargs=view_kwargs, request=request)
+        return reverse(view_name, kwargs=view_kwargs, request=request, format=format)
 
 
 ##### Typed Fields #####
@@ -520,7 +524,10 @@ class EmailField(CharField):
     default_validators = [validators.validate_email]
 
     def from_native(self, value):
-        return super(EmailField, self).from_native(value).strip()
+        ret = super(EmailField, self).from_native(value)
+        if ret is None:
+            return None
+        return ret.strip()
 
     def __deepcopy__(self, memo):
         result = copy.copy(self)
@@ -542,8 +549,9 @@ class DateField(WritableField):
     empty = None
 
     def from_native(self, value):
-        if value is None:
-            return value
+        if value in validators.EMPTY_VALUES:
+            return None
+
         if isinstance(value, datetime.datetime):
             if timezone and settings.USE_TZ and timezone.is_aware(value):
                 # Convert aware datetimes to the default time zone
@@ -581,8 +589,9 @@ class DateTimeField(WritableField):
     empty = None
 
     def from_native(self, value):
-        if value is None:
-            return value
+        if value in validators.EMPTY_VALUES:
+            return None
+
         if isinstance(value, datetime.datetime):
             return value
         if isinstance(value, datetime.date):
@@ -640,6 +649,7 @@ class IntegerField(WritableField):
     def from_native(self, value):
         if value in validators.EMPTY_VALUES:
             return None
+
         try:
             value = int(str(value))
         except (ValueError, TypeError):
@@ -655,8 +665,9 @@ class FloatField(WritableField):
     }
 
     def from_native(self, value):
-        if value is None:
-            return value
+        if value in validators.EMPTY_VALUES:
+            return None
+
         try:
             return float(value)
         except (TypeError, ValueError):

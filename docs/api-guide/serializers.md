@@ -107,21 +107,21 @@ where some of the attributes of an object might not be simple datatypes such as 
 The `Serializer` class is itself a type of `Field`, and can be used to represent relationships where one object type is nested inside another.
 
     class UserSerializer(serializers.Serializer):
-        email = serializers.EmailField()
-        username = serializers.CharField()
-        
-        def restore_object(self, attrs, instance=None):
-            return User(**attrs)
-
+        email = serializers.Field()
+        username = serializers.Field()
 
     class CommentSerializer(serializers.Serializer):
         user = UserSerializer()
-        title = serializers.CharField()
-        content = serializers.CharField(max_length=200)
-        created = serializers.DateTimeField()
-        
-        def restore_object(self, attrs, instance=None):
-            return Comment(**attrs)
+        title = serializers.Field()
+        content = serializers.Field()
+        created = serializers.Field()
+
+---
+
+**Note**: Nested serializers are only suitable for read-only representations, as there are cases where they would have ambiguous or non-obvious behavior if used when updating instances.  For read-write representations you should always use a flat representation, by using one of the `RelatedField` subclasses.
+
+---
+
 
 ## Creating custom fields
 
@@ -135,7 +135,6 @@ Let's look at an example of serializing a class that represents an RGB color val
         """
         A color represented in the RGB colorspace.
         """
-
         def __init__(self, red, green, blue):
             assert(red >= 0 and green >= 0 and blue >= 0)
             assert(red < 256 and green < 256 and blue < 256)
@@ -145,7 +144,6 @@ Let's look at an example of serializing a class that represents an RGB color val
         """
         Color objects are serialized into "rgb(#, #, #)" notation.
         """
-
         def to_native(self, obj):
             return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)
       
@@ -190,7 +188,7 @@ The `ModelSerializer` class lets you automatically create a Serializer class wit
 You can add extra fields to a `ModelSerializer` or override the default fields by declaring fields on the class, just as you would for a `Serializer` class.
 
     class AccountSerializer(serializers.ModelSerializer):
-        url = CharField(source='get_absolute_url', readonly=True)
+        url = CharField(source='get_absolute_url', read_only=True)
         group = NaturalKeyField()
 
         class Meta:
@@ -225,40 +223,54 @@ For example:
 
 ## Specifiying nested serialization
 
-The default `ModelSerializer` uses primary keys for relationships, but you can also easily generate nested representations using the `nested` option:
+The default `ModelSerializer` uses primary keys for relationships, but you can also easily generate nested representations using the `depth` option:
 
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
             exclude = ('id',)
-            nested = True
+            depth = 1
 
-The `nested` option may be set to either `True`, `False`, or an integer value.  If given an integer value it indicates the depth of relationships that should be traversed before reverting to a flat representation.
+The `depth` option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.
 
-When serializing objects using a nested representation any occurances of recursion will be recognised, and will fall back to using a flat representation.
+## Customising the default fields
 
-## Customising the default fields used by a ModelSerializer
+You can create customized subclasses of `ModelSerializer` that use a different set of default fields for the representation, by overriding various `get_<field_type>_field` methods.
 
+Each of these methods may either return a field or serializer instance, or `None`.
 
+### get_pk_field
 
-    class AccountSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = Account
+**Signature**: `.get_pk_field(self, model_field)`
 
+Returns the field instance that should be used to represent the pk field.
+
+### get_nested_field
+
+**Signature**: `.get_nested_field(self, model_field)`
+
+Returns the field instance that should be used to represent a related field when `depth` is specified as being non-zero.
+
+### get_related_field
+
+**Signature**: `.get_related_field(self, model_field, to_many=False)`
+
+Returns the field instance that should be used to represent a related field when `depth` is not specified, or when nested representations are being used and the depth reaches zero.
+
+### get_field
+
+**Signature**: `.get_field(self, model_field)`
+
+Returns the field instance that should be used for non-relational, non-pk fields.
+
+### Example:
+
+The following custom model serializer could be used as a base class for model serializers that should always exclude the pk by default.
+
+    class NoPKModelSerializer(serializers.ModelSerializer):
         def get_pk_field(self, model_field):
-            return serializers.Field(readonly=True)
+            return None
 
-        def get_nested_field(self, model_field):
-            return serializers.ModelSerializer()
-
-        def get_related_field(self, model_field, to_many=False):
-            queryset = model_field.rel.to._default_manager
-            if to_many:
-                return serializers.ManyRelatedField(queryset=queryset)
-            return serializers.RelatedField(queryset=queryset)
-
-        def get_field(self, model_field):
-            return serializers.ModelField(model_field=model_field)
 
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
