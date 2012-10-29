@@ -242,7 +242,7 @@ class TestInstanceView(TestCase):
         request = factory.put('/5', json.dumps(content),
                               content_type='application/json')
         response = self.view(request, pk=5).render()
-        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
         new_obj = self.objects.get(pk=5)
         self.assertEquals(new_obj.text, 'foobar')
 
@@ -255,7 +255,7 @@ class TestInstanceView(TestCase):
         request = factory.put('/test_slug', json.dumps(content),
                               content_type='application/json')
         response = self.slug_based_view(request, pk='test_slug').render()
-        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, {'slug': 'test_slug', 'text': 'foobar'})
         new_obj = self.objects.get(slug='test_slug')
         self.assertEquals(new_obj.text, 'foobar')
