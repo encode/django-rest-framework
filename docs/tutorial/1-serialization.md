@@ -87,8 +87,8 @@ For the purposes of this tutorial we're going to start by creating a simple `Sni
                                     default='python',
                                     max_length=100)
         style = models.CharField(choices=STYLE_CHOICES,
-                                    default='friendly',
-                                    max_length=100)
+                                 default='friendly',
+                                 max_length=100)
        
         class Meta:
             ordering = ('created',)
