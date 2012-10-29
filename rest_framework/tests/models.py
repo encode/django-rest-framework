@@ -52,6 +52,11 @@ class BasicModel(RESTFrameworkModel):
     text = models.CharField(max_length=100)
 
 
+class SlugBasedModel(RESTFrameworkModel):
+    text = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=32)
+
+
 class DefaultValueModel(RESTFrameworkModel):
     text = models.CharField(default='foobar', max_length=100)
 
