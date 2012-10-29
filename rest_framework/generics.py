@@ -1,5 +1,5 @@
 """
-Generic views that provide commmonly needed behaviour.
+Generic views that provide commonly needed behaviour.
 """
 
 from rest_framework import views, mixins

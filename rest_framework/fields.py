@@ -43,7 +43,7 @@ class Field(object):
         Called to set up a field prior to field_to_native or field_from_native.
 
         parent - The parent serializer.
-        model_field - The model field this field corrosponds to, if one exists.
+        model_field - The model field this field corresponds to, if one exists.
         """
         self.parent = parent
         self.root = parent.root or parent
@@ -197,7 +197,7 @@ class WritableField(Field):
 
 class ModelField(WritableField):
     """
-    A generic field that can be used against an arbirtrary model field.
+    A generic field that can be used against an arbitrary model field.
     """
     def __init__(self, *args, **kwargs):
         try:

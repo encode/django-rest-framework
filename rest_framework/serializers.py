@@ -279,7 +279,7 @@ class BaseSerializer(Field):
     def errors(self):
         """
         Run deserialization and return error data,
-        setting self.object if no errors occured.
+        setting self.object if no errors occurred.
         """
         if self._errors is None:
             obj = self.from_native(self.init_data)
