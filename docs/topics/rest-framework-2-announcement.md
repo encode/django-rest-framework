@@ -74,7 +74,7 @@ There are also some functionality improvments - actions such as as `POST` and `D
 
 As you can see the documentation for REST framework has been radically improved.  It gets a completely new style, using markdown for the documentation source, and a bootstrap-based theme for the styling.
 
-We're really pleased with how the docs style looks - it's simple and clean, is easy to navigate around, and we think it reads great.  We'll miss being able to use the wonderful [Read the Docs][readthedocs] service, but we think it's a trade-off worth making.
+We're really pleased with how the docs style looks - it's simple and clean, is easy to navigate around, and we think it reads great.
 
 ## Summary
 
