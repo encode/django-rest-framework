@@ -10,8 +10,18 @@ def api_view(http_method_names):
 
     def decorator(func):
 
-        class WrappedAPIView(APIView):
-            pass
+        WrappedAPIView = type(
+            'WrappedAPIView',
+            (APIView,),
+            {'__doc__': func.__doc__}
+        )
+
+        # Note, the above allows us to set the docstring.
+        # It is the equivelent of:
+        #
+        #     class WrappedAPIView(APIView):
+        #         pass
+        #     WrappedAPIView.__doc__ = func.doc    <--- Not possible to do this
 
         allowed_methods = set(http_method_names) | set(('options',))
         WrappedAPIView.http_method_names = [method.lower() for method in allowed_methods]
