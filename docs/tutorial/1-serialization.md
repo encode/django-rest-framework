@@ -200,7 +200,7 @@ Open the file `snippets/serializers.py` again, and edit the `SnippetSerializer` 
 
     class SnippetSerializer(serializers.ModelSerializer):
         class Meta:
-            model = models.Snippet
+            model = Snippet
             fields = ('pk', 'title', 'code', 'linenos', 'language', 'style')
 
 
