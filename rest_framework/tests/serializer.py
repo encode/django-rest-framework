@@ -449,3 +449,52 @@ class ManyRelatedTests(TestCase):
         }
 
         self.assertEqual(serializer.data, expected)
+
+
+# Test for issue #324
+class BlankFieldTests(TestCase):
+    def setUp(self):
+
+        class BlankFieldModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlankFieldModel
+
+        class BlankFieldSerializer(serializers.Serializer):
+            title = serializers.CharField(blank=True)
+
+        class NotBlankFieldModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BasicModel
+
+        class NotBlankFieldSerializer(serializers.Serializer):
+            title = serializers.CharField()
+
+        self.model_serializer_class = BlankFieldModelSerializer
+        self.serializer_class = BlankFieldSerializer
+        self.not_blank_model_serializer_class = NotBlankFieldModelSerializer
+        self.not_blank_serializer_class = NotBlankFieldSerializer
+        self.data = {'title': ''}
+
+    def test_create_blank_field(self):
+        serializer = self.serializer_class(self.data)
+        self.assertEquals(serializer.is_valid(), True)
+
+    def test_create_model_blank_field(self):
+        serializer = self.model_serializer_class(self.data)
+        self.assertEquals(serializer.is_valid(), True)
+
+    def test_create_not_blank_field(self):
+        """
+        Test to ensure blank data in a field not marked as blank=True
+        is considered invalid in a non-model serializer
+        """
+        serializer = self.not_blank_serializer_class(self.data)
+        self.assertEquals(serializer.is_valid(), False)
+
+    def test_create_model_not_blank_field(self):
+        """
+        Test to ensure blank data in a field not marked as blank=True
+        is considered invalid in a model serializer
+        """
+        serializer = self.not_blank_model_serializer_class(self.data)
+        self.assertEquals(serializer.is_valid(), False)

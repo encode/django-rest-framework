@@ -114,7 +114,7 @@ class WritableField(Field):
 
     def __init__(self, source=None, read_only=False, required=None,
                  validators=[], error_messages=None, widget=None,
-                 default=None):
+                 default=None, blank=None):
 
         super(WritableField, self).__init__(source=source)
 
@@ -133,6 +133,7 @@ class WritableField(Field):
 
         self.validators = self.default_validators + validators
         self.default = default or self.default
+        self.blank = blank
 
         # Widgets are ony used for HTML forms.
         widget = widget or self.widget
@@ -466,6 +467,16 @@ class CharField(WritableField):
             self.validators.append(validators.MinLengthValidator(min_length))
         if max_length is not None:
             self.validators.append(validators.MaxLengthValidator(max_length))
+
+    def validate(self, value):
+        """
+        Validates that the value is supplied (if required).
+        """
+        # if empty string and allow blank
+        if self.blank and not value:
+            return
+        else:
+            super(CharField, self).validate(value)
 
     def from_native(self, value):
         if isinstance(value, basestring) or value is None:
