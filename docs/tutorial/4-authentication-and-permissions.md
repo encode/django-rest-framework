@@ -59,7 +59,7 @@ Now that we've got some users to work with, we'd better add representations of t
 
         class Meta:
             model = User
-            fields = ('pk', 'username', 'snippets')
+            fields = ('id', 'username', 'snippets')
 
 Because `'snippets'` is a *reverse* relationship on the User model, it will not be included by default when using the `ModelSerializer` class, so we've needed to add an explicit field for it.
 
@@ -85,7 +85,7 @@ Right now, if we created a code snippet, there'd be no way of associating the us
 
 The way we deal with that is by overriding a `.pre_save()` method on our snippet views, that allows us to handle any information that is implicit in the incoming request or requested URL.
 
-On **both** the `SnippetList` and `SnippetInstance` view classes, add the following method:
+On **both** the `SnippetList` and `SnippetDetail` view classes, add the following method:
 
     def pre_save(self, obj):
         obj.owner = self.request.user
@@ -112,7 +112,11 @@ Now that code snippets are associated with users we want to make sure that only 
 
 REST framework includes a number of permission classes that we can use to restrict who can access a given view.  In this case the one we're looking for is `IsAuthenticatedOrReadOnly`, which will ensure that authenticated requests get read-write access, and unauthenticated requests get read-only access.
 
-Add the following property to **both** the `SnippetList` and `SnippetInstance` view classes.
+First add the following import in the views module
+
+    from rest_framework import permissions
+
+Then, add the following property to **both** the `SnippetList` and `SnippetDetail` view classes.
 
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
@@ -169,7 +173,7 @@ In the snippets app, create a new file, `permissions.py`
             # Write permissions are only allowed to the owner of the snippet
             return obj.owner == request.user
 
-Now we can add that custom permission to our snippet instance endpoint, by editing the `permission_classes` property on the `SnippetInstance` class:
+Now we can add that custom permission to our snippet instance endpoint, by editing the `permission_classes` property on the `SnippetDetail` class:
 
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
