@@ -74,7 +74,7 @@ We can easily re-write our existing serializers to use hyperlinking.
 
     class SnippetSerializer(serializers.HyperlinkedModelSerializer):
         owner = serializers.Field(source='owner.username')
-        highlight = serializers.HyperlinkedIdentityField(view_name='snippet-highlight')
+        highlight = serializers.HyperlinkedIdentityField(view_name='snippet-highlight', format='html')
     
         class Meta:
             model = models.Snippet
@@ -90,6 +90,8 @@ We can easily re-write our existing serializers to use hyperlinking.
             fields = ('url', 'username', 'snippets')
 
 Notice that we've also added a new `'highlight'` field.  This field is of the same type as the `url` field, except that it points to the `'snippet-highlight'` url pattern, instead of the `'snippet-detail'` url pattern.
+
+Because we've included format suffixed URLs such as `'.json'`, we also need to indicate on the `highlight` field that any format suffixed hyperlinks it returns should use the `'.html'` suffix.
 
 ## Making sure our URL patterns are named
 
@@ -127,6 +129,20 @@ After adding all those names into our URLconf, our final `'urls.py'` file should
         url(r'^api-auth/', include('rest_framework.urls',
                                    namespace='rest_framework'))
     )
+
+## Adding pagination
+
+The list views for users and code snippets could end up returning quite a lot of instances, so really we'd like to make sure we paginate the results, and allow the API client to step through each of the individual pages.
+
+We can change the default list style to use pagination, by modifying our `settings.py` file slightly.  Add the following setting:
+
+    REST_FRAMEWORK = {
+        'PAGINATE_BY': 10
+    }
+
+Note that settings in REST framework are all namespaced into a single dictionary setting, named 'REST_FRAMEWORK', which helps keep them well seperated from your other project settings.
+
+We could also customize the pagination style if we needed too, but in this case we'll just stick with the default.
 
 ## Reviewing our work
 
