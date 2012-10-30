@@ -43,6 +43,11 @@ class ActionItemSerializer(serializers.ModelSerializer):
         model = ActionItem
 
 
+class PersonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Person
+
+
 class BasicTests(TestCase):
     def setUp(self):
         self.comment = Comment(
@@ -187,6 +192,14 @@ class ValidationTests(TestCase):
         serializer = CommentSerializerWithCrossFieldValidator(data)
         self.assertFalse(serializer.is_valid())
         self.assertEquals(serializer.errors, {'non_field_errors': [u'Email address not in content']})
+
+    def test_null_is_true_fields(self):
+        """
+        Omitting a value for null-field should validate.
+        """
+        serializer = PersonSerializer({'name': 'marko'})
+        self.assertEquals(serializer.is_valid(), True)
+        self.assertEquals(serializer.errors, {})
 
 
 class MetadataTests(TestCase):
