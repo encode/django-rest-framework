@@ -36,7 +36,6 @@ So far, so good.  It looks pretty similar to the previous case, but we've got be
         """
         Retrieve, update or delete a snippet instance.
         """
-
         def get_object(self, pk):
             try:
                 return Snippet.objects.get(pk=pk)
