@@ -218,7 +218,7 @@ class APIView(View):
 
     def get_throttles(self):
         """
-        Instantiates and returns the list of thottles that this view uses.
+        Instantiates and returns the list of throttles that this view uses.
         """
         return [throttle() for throttle in self.throttle_classes]
 
