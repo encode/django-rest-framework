@@ -1,7 +1,0 @@
-# Pygments for the code highlighting example,
-# markdown for the docstring -> auto-documentation
-
-Pygments==1.4
-Markdown==2.0.3
-
-

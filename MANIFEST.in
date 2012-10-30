@@ -1,5 +1,2 @@
-recursive-include djangorestframework/static *.ico *.txt *.css
-recursive-include djangorestframework/templates *.txt *.html
-recursive-include examples .keep *.py *.txt
-recursive-include docs *.py *.rst *.html *.txt
-include AUTHORS LICENSE CHANGELOG.rst requirements.txt tox.ini
+recursive-include rest_framework/static *.js *.css *.png
+recursive-include rest_framework/templates *.txt *.html

@@ -1,0 +1,22 @@
+/*
+
+This CSS file contains some tweaks specific to the included Bootstrap theme. 
+It's separate from `style.css` so that it can be easily overridden by replacing
+a single block in the template.
+
+*/
+
+
+.form-actions {
+    background: transparent;
+    border-top-color: transparent;
+    padding-top: 0;
+}
+
+.navbar-inverse .brand a {
+    color: #999;
+}
+.navbar-inverse .brand:hover a {
+    color: white;
+    text-decoration: none;
+}
