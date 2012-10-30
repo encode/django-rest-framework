@@ -19,7 +19,7 @@ Add the following two fields to the model.
 
 We'd also need to make sure that when the model is saved, that we populate the highlighted field, using the `pygments` code higlighting library.
 
-We'll ned some extra imports:
+We'll need some extra imports:
 
     from pygments.lexers import get_lexer_by_name
     from pygments.formatters import HtmlFormatter
@@ -100,7 +100,7 @@ Add the following field to the serializer definition:
 
 **Note**: Make sure you also add `'owner',` to the list of fields in the inner `Meta` class.
 
-This field is doing something quite interesting.  The `source` argument controls which attribtue is used to populate a field, and can point at any attribute on the serialized instance.  It can also take the dotted notation shown above, in which case it will traverse the given attributes, in a similar way as is used with Django's template language.
+This field is doing something quite interesting.  The `source` argument controls which attribute is used to populate a field, and can point at any attribute on the serialized instance.  It can also take the dotted notation shown above, in which case it will traverse the given attributes, in a similar way as it is used with Django's template language.
 
 The field we've added is the untyped `Field` class, in contrast to the other typed fields, such as `CharField`, `BooleanField` etc...  The untyped `Field` is always read-only, and will be used for serialized representations, but will not be used for updating model instances when they are deserialized.
 
@@ -120,7 +120,7 @@ Add the following property to **both** the `SnippetList` and `SnippetInstance` v
 
 ## Adding login to the Browseable API
 
-If you open a browser and navigate to the browseable API at the moment, you'll find you're no longer able to create new code snippets.  In order to do so we'd need to be able to login as a user.
+If you open a browser and navigate to the browseable API at the moment, you'll find that you're no longer able to create new code snippets. In order to do so we'd need to be able to login as a user.
 
 We can add a login view for use with the browseable API, by editing our URLconf once more.
 
