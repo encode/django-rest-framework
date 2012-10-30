@@ -291,6 +291,9 @@ class PrimaryKeyRelatedField(RelatedField):
         return pk
 
     def from_native(self, data):
+        if self.queryset is None:
+            raise Exception('Writable related fields must include a `queryset` argument')
+
         try:
             return self.queryset.get(pk=data)
         except ObjectDoesNotExist:
@@ -374,6 +377,8 @@ class HyperlinkedRelatedField(RelatedField):
     def from_native(self, value):
         # Convert URL -> model instance pk
         # TODO: Use values_list
+        if self.queryset is None:
+            raise Exception('Writable related fields must include a `queryset` argument')
 
         if value.startswith('http:') or value.startswith('https:'):
             # If needed convert absolute URLs to relative path
