@@ -19,7 +19,7 @@ Add the following two fields to the model.
 
 We'd also need to make sure that when the model is saved, that we populate the highlighted field, using the `pygments` code higlighting library.
 
-We'll ned some extra imports:
+We'll need some extra imports:
 
     from pygments.lexers import get_lexer_by_name
     from pygments.formatters import HtmlFormatter
