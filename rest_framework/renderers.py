@@ -283,7 +283,9 @@ class BrowsableAPIRenderer(BaseRenderer):
             serializers.CharField: forms.CharField,
             serializers.BooleanField: forms.BooleanField,
             serializers.PrimaryKeyRelatedField: forms.ModelChoiceField,
-            serializers.ManyPrimaryKeyRelatedField: forms.ModelMultipleChoiceField
+            serializers.ManyPrimaryKeyRelatedField: forms.ModelMultipleChoiceField,
+            serializers.HyperlinkedRelatedField: forms.ModelChoiceField,
+            serializers.ManyHyperlinkedRelatedField: forms.ModelMultipleChoiceField
         }
 
         fields = {}

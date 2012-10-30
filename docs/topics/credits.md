@@ -62,6 +62,8 @@ Project hosting is with [GitHub].
 
 Continuous integration testing is managed with [Travis CI][travis-ci].
 
+The [live sandbox][sandbox] is hosted on [Heroku]. 
+
 Various inspiration taken from the [Piston], [Tastypie] and [Dagny] projects.
 
 Development of REST framework 2.0 was sponsored by [DabApps].
@@ -83,6 +85,8 @@ To contact the author directly:
 [tastypie]: https://github.com/toastdriven/django-tastypie
 [dagny]: https://github.com/zacharyvoase/dagny
 [dabapps]: http://lab.dabapps.com
+[sandbox]: http://restframework.herokuapp.com/
+[heroku]: http://www.heroku.com/
 
 [tomchristie]: https://github.com/tomchristie
 [markotibold]: https://github.com/markotibold

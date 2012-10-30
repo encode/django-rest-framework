@@ -1,6 +1,6 @@
 # Django REST framework 2
 
-What it is, and why you should care
+What it is, and why you should care.
 
 > Most people just make the mistake that it should be simple to design simple things. In reality, the effort required to design something is inversely proportional to the simplicity of the result.
 >
@@ -86,9 +86,15 @@ We're really pleased with how the docs style looks - it's simple and clean, is e
 
 In short, we've engineered the hell outta this thing, and we're incredibly proud of the result.
 
+If you're interested please take a browse around the documentation.  [The tutorial][tut] is a great place to get started.
+
+There's also a [live sandbox version of the tutorial API][sandbox] available for testing.
+
 [cite]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven#comment-724
 [quote1]: https://twitter.com/kobutsu/status/261689665952833536
 [quote2]: https://groups.google.com/d/msg/django-rest-framework/heRGHzG6BWQ/ooVURgpwVC0J
 [quote3]: https://groups.google.com/d/msg/django-rest-framework/flsXbvYqRoY/9lSyntOf5cUJ
 [image]: ../img/quickstart.png
 [readthedocs]: https://readthedocs.org/
+[tut]: ../tutorial/1-serialization.md
+[sandbox]: http://restframework.herokuapp.com/
