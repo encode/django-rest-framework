@@ -120,7 +120,7 @@ Add the following property to **both** the `SnippetList` and `SnippetInstance` v
 
 ## Adding login to the Browseable API
 
-If you open a browser and navigate to the browseable API at the moment, you'll find you're no longer able to create new code snippets.  In order to do so we'd need to be able to login as a user.
+If you open a browser and navigate to the browseable API at the moment, you'll find that you're no longer able to create new code snippets. In order to do so we'd need to be able to login as a user.
 
 We can add a login view for use with the browseable API, by editing our URLconf once more.
 
