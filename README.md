@@ -94,7 +94,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [sandbox]: http://restframework.herokuapp.com/
 [rest-framework-2-announcement]: topics/rest-framework-2-announcement.md
 
-[docs]: http://tomchristie.github.com/django-rest-framework/
+[docs]: http://django-rest-framework.org/
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [pyyaml]: http://pypi.python.org/pypi/PyYAML
