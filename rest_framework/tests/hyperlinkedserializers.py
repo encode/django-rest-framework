@@ -158,7 +158,7 @@ class TestCreateWithForeignKeys(TestCase):
 
         data = {
             'text': 'A test comment',
-            'blog_post_url': '/posts/1/'
+            'blog_post_url': 'http://testserver/posts/1/'
         }
 
         request = factory.post('/comments/', data=data)

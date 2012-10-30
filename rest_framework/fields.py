@@ -5,7 +5,7 @@ import warnings
 
 from django.core import validators
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.urlresolvers import resolve
+from django.core.urlresolvers import resolve, get_script_prefix
 from django.conf import settings
 from django.forms import widgets
 from django.utils.encoding import is_protected_type, smart_unicode
@@ -13,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework.reverse import reverse
 from rest_framework.compat import parse_date, parse_datetime
 from rest_framework.compat import timezone
+from urlparse import urlparse
 
 
 def is_simple_callable(obj):
@@ -372,6 +373,14 @@ class HyperlinkedRelatedField(RelatedField):
     def from_native(self, value):
         # Convert URL -> model instance pk
         # TODO: Use values_list
+
+        if value.startswith('http:') or value.startswith('https:'):
+            # If needed convert absolute URLs to relative path
+            value = urlparse(value).path
+            prefix = get_script_prefix()
+            if value.startswith(prefix):
+                value = '/' + value[len(prefix):]
+
         try:
             match = resolve(value)
         except:
