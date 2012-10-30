@@ -100,7 +100,7 @@ Add the following field to the serializer definition:
 
 **Note**: Make sure you also add `'owner',` to the list of fields in the inner `Meta` class.
 
-This field is doing something quite interesting.  The `source` argument controls which attribute is used to populate a field, and can point at any attribute on the serialized instance.  It can also take the dotted notation shown above, in which case it will traverse the given attributes, in a similar way as is used with Django's template language.
+This field is doing something quite interesting.  The `source` argument controls which attribute is used to populate a field, and can point at any attribute on the serialized instance.  It can also take the dotted notation shown above, in which case it will traverse the given attributes, in a similar way as it is used with Django's template language.
 
 The field we've added is the untyped `Field` class, in contrast to the other typed fields, such as `CharField`, `BooleanField` etc...  The untyped `Field` is always read-only, and will be used for serialized representations, but will not be used for updating model instances when they are deserialized.
 
