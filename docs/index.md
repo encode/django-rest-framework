@@ -5,11 +5,23 @@
 
 **A toolkit for building well-connected, self-describing Web APIs.**
 
-**WARNING: This documentation is for the 2.0 redesign of REST framework.  It is a work in progress.**
+---
+
+**Note**: This documentation is for the 2.0 version of REST framework.  If you are looking for earlier versions please see the [0.4.x branch][0.4] on GitHub.
+
+---
 
 Django REST framework is a lightweight library that makes it easy to build Web APIs.  It is designed as a modular and easy to customize architecture, based on Django's class based views.
 
 Web APIs built using REST framework are fully self-describing and web browseable - a huge useability win for your developers.  It also supports a wide range of media types, authentication and permission policies out of the box.
+
+If you are considering using REST framework for your API, we recommend reading the [REST framework 2 announcment][rest-framework-2-announcement] which gives a good overview of the framework and it's capabilities.
+
+There is also a sandbox API you can use for testing purposes, [available here][sandbox].
+
+**Below**: *Screenshot from the browseable API*
+
+![Screenshot][image]
 
 ## Requirements
 
@@ -24,8 +36,6 @@ The following packages are optional:
 * [PyYAML][yaml] (3.10+) - YAML content-type support.
 
 ## Installation
-
-**WARNING: These instructions will only become valid once this becomes the master version**
 
 Install using `pip`, including any optional packages you want...
 
@@ -152,6 +162,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [yaml]: http://pypi.python.org/pypi/PyYAML
+[0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
+[image]: img/quickstart.png
+[sandbox]: http://restframework.herokuapp.com/
 
 [quickstart]: tutorial/quickstart.md
 [tut-1]: tutorial/1-serialization.md

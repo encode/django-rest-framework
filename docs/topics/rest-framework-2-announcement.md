@@ -6,7 +6,13 @@ What it is, and why you should care
 >
 > &mdash; [Roy Fielding][cite]
 
-REST framework 2 is an almost complete reworking of the original framework, which comprehensivly addresses some of the original design issues.
+---
+
+**Announcement:** REST framework 2 released - Tue 30th Oct 2012 
+
+---
+
+REST framework 2 is an almost complete reworking of the original framework, which comprehensively addresses some of the original design issues.
 
 Because the latest version should be considered a re-release, rather than an incremental improvement, we've skipped a version, and called this release Django REST framework 2.0.
 

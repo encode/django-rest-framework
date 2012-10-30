@@ -6,6 +6,12 @@ This tutorial will cover creating a simple pastebin code highlighting Web API. A
 
 The tutorial is fairly in-depth, so you should probably get a cookie and a cup of your favorite brew before getting started.  If you just want a quick overview, you should head over to the [quickstart] documentation instead.
 
+---
+
+**Note**: The final code for this tutorial is available in the [tomchristie/rest-framework-tutorial][repo] repository on GitHub.  There is also a sandbox version for testing, [available here][sandbox].
+
+---
+
 ## Setting up a new environment
 
 Before we do anything else we'll create a new virtual environment, using [virtualenv].  This will make sure our package configuration is keep nicely isolated from any other projects we're working on.
@@ -303,5 +309,7 @@ Our API views don't do anything particularly special at the moment, beyond serve
 We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 
 [quickstart]: quickstart.md
+[repo]: https://github.com/tomchristie/rest-framework-tutorial
+[sandbox]: http://restframework.herokuapp.com/
 [virtualenv]: http://www.virtualenv.org/en/latest/index.html
 [tut-2]: 2-requests-and-responses.md
