@@ -13,7 +13,7 @@ For example your project's `settings.py` file might include something like this:
     REST_FRAMEWORK = {
         'DEFAULT_RENDERER_CLASSES': (
             'rest_framework.renderers.YAMLRenderer',
-        )
+        ),
         'DEFAULT_PARSER_CLASSES': (
             'rest_framework.parsers.YAMLParser',
         )
