@@ -4,6 +4,10 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
+## Master
+
+* If PUT creates an instance return '201 Created', instead of '200 OK'.
+
 ## 2.0.0
 
 * **Fix all of the things.**  (Well, almost.)

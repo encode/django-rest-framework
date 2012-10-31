@@ -236,7 +236,7 @@ class TestInstanceView(TestCase):
         request = factory.put('/1', json.dumps(content),
                               content_type='application/json')
         response = self.view(request, pk=1).render()
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         self.assertEquals(response.data, {'id': 1, 'text': 'foobar'})
         updated = self.objects.get(id=1)
         self.assertEquals(updated.text, 'foobar')
@@ -251,7 +251,7 @@ class TestInstanceView(TestCase):
         request = factory.put('/5', json.dumps(content),
                               content_type='application/json')
         response = self.view(request, pk=5).render()
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         new_obj = self.objects.get(pk=5)
         self.assertEquals(new_obj.text, 'foobar')
 
@@ -264,7 +264,7 @@ class TestInstanceView(TestCase):
         request = factory.put('/test_slug', json.dumps(content),
                               content_type='application/json')
         response = self.slug_based_view(request, slug='test_slug').render()
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         self.assertEquals(response.data, {'slug': 'test_slug', 'text': 'foobar'})
         new_obj = SlugBasedModel.objects.get(slug='test_slug')
         self.assertEquals(new_obj.text, 'foobar')
