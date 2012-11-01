@@ -212,9 +212,9 @@ class ModelField(WritableField):
     def from_native(self, value):
         try:
             rel = self.model_field.rel
+            return rel.to._meta.get_field(rel.field_name).to_python(value)
         except:
             return self.model_field.to_python(value)
-        return rel.to._meta.get_field(rel.field_name).to_python(value)
 
     def field_to_native(self, obj, field_name):
         value = self.model_field._get_val_from_obj(obj)

@@ -31,8 +31,8 @@ The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_C
 
     REST_FRAMEWORK = {
         'DEFAULT_THROTTLE_CLASSES': (
-            'rest_framework.throttles.AnonThrottle',
-            'rest_framework.throttles.UserThrottle'
+            'rest_framework.throttling.AnonRateThrottle',
+            'rest_framework.throttling.UserRateThrottle'
         ),
         'DEFAULT_THROTTLE_RATES': {
             'anon': '100/day',
@@ -136,7 +136,7 @@ For example, given the following views...
 
     REST_FRAMEWORK = {
         'DEFAULT_THROTTLE_CLASSES': (
-            'rest_framework.throttles.ScopedRateThrottle'
+            'rest_framework.throttling.ScopedRateThrottle'
         ),
         'DEFAULT_THROTTLE_RATES': {
             'contacts': '1000/day',
