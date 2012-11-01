@@ -4,7 +4,7 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
-## Master
+## 2.0.1
 
 * Add support for relational fields in the browsable API.
 * Added SlugRelatedField and ManySlugRelatedField.
