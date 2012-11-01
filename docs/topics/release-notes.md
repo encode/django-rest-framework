@@ -6,6 +6,8 @@
 
 ## Master
 
+* Add support for relational fields in the browsable API.
+* Added SlugRelatedField and ManySlugRelatedField.
 * If PUT creates an instance return '201 Created', instead of '200 OK'.
 
 ## 2.0.0
