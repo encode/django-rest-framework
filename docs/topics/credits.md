@@ -51,6 +51,7 @@ The following people have helped make REST framework great.
 * Daniel Vaca Araujo - [diviei]
 * Madis Väin - [madisvain]
 * Stephan Groß - [minddust]
+* Pavel Savchenko - [asfaltboy]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -137,3 +138,4 @@ To contact the author directly:
 [diviei]: https://github.com/diviei
 [madisvain]: https://github.com/madisvain
 [minddust]: https://github.com/minddust
+[asfaltboy]: https://github.com/asfaltboy

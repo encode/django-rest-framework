@@ -52,7 +52,7 @@ if sys.argv[-1] == 'publish':
 
 
 setup(
-    name='rest_framework',
+    name='djangorestframework',
     version=version,
     url='http://django-rest-framework.org',
     download_url='http://pypi.python.org/pypi/rest_framework/',
@@ -63,7 +63,13 @@ setup(
     packages=get_packages('rest_framework'),
     package_data=get_package_data('rest_framework'),
     test_suite='rest_framework.runtests.runtests.main',
-    install_requires=[],
+    install_requires=[
+        'Django>=1.3.0',
+        'django-filter',
+    ],
+    dependency_links = [
+        'git+https://github.com/alex/django-filter.git@0e4b3d703b31574922ab86fc78a86164aad0c1d0#egg=django-filter',
+    ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',

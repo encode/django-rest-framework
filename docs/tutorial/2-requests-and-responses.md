@@ -130,8 +130,6 @@ Go ahead and test the API from the command line, as we did in [tutorial part 1][
 
 Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/snippets/][devserver]."
 
-**Note: Right now the Browseable API only works with the CBV's.  Need to fix that.**
-
 ### Browsability
 
 Because the API chooses a return format based on what the client asks for, it will, by default, return an HTML-formatted representation of the resource when that resource is requested by a browser. This allows for the API to be easily browsable and usable by humans.
