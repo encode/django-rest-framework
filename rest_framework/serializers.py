@@ -126,7 +126,7 @@ class BaseSerializer(Field):
         for key, val in fields.items():
             if key not in ret:
                 ret[key] = val
-            if value.source.primary_key:
+            if val.source.primary_key:
                 pk_field = key
 
         # If 'fields' is specified, use those fields, in that order.
