@@ -126,11 +126,21 @@ class BaseSerializer(Field):
         for key, val in fields.items():
             if key not in ret:
                 ret[key] = val
+            try:
+                # Test if field was marked as pk_field
+                if getattr(val, 'is_pk_field'):
+                    pk_field = key
+            except AttributeError:
+                pass
 
         # If 'fields' is specified, use those fields, in that order.
         if self.opts.fields:
             new = SortedDict()
             for key in self.opts.fields:
+                if key == 'pk':
+                    # User requested the 'pk', use the primary key found
+                    new[key] = ret[pk_field]
+                    continue
                 new[key] = ret[key]
             ret = new
 
@@ -344,12 +354,11 @@ class ModelSerializer(Serializer):
         fields += [field for field in opts.many_to_many if field.serialize]
 
         ret = SortedDict()
-        is_pk = True  # First field in the list is the pk
 
         for model_field in fields:
-            if is_pk:
+            if model_field.primary_key:
+                # Django requires models to have only one primary_key so this should be safe
                 field = self.get_pk_field(model_field)
-                is_pk = False
             elif model_field.rel and nested:
                 field = self.get_nested_field(model_field)
             elif model_field.rel:
@@ -369,7 +378,10 @@ class ModelSerializer(Serializer):
         """
         Returns a default instance of the pk field.
         """
-        return Field()
+        field = Field()
+        # Mark field as primary key
+        field.is_pk_field = True
+        return field
 
     def get_nested_field(self, model_field):
         """
