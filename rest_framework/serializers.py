@@ -127,7 +127,8 @@ class BaseSerializer(Field):
             if key not in ret:
                 ret[key] = val
             try:
-                if getattr(val.source, 'primary_key'):
+                # Test if field was marked as pk_field
+                if getattr(val, 'is_pk_field'):
                     pk_field = key
             except AttributeError:
                 pass
@@ -139,6 +140,7 @@ class BaseSerializer(Field):
                 if key == 'pk':
                     # User requested the 'pk', use the primary key found
                     new[key] = ret[pk_field]
+                    continue
                 new[key] = ret[key]
             ret = new
 
@@ -376,7 +378,10 @@ class ModelSerializer(Serializer):
         """
         Returns a default instance of the pk field.
         """
-        return Field()
+        field = Field()
+        # Mark field as primary key
+        field.is_pk_field = True
+        return field
 
     def get_nested_field(self, model_field):
         """
