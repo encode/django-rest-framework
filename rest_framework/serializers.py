@@ -126,8 +126,11 @@ class BaseSerializer(Field):
         for key, val in fields.items():
             if key not in ret:
                 ret[key] = val
-            if val.source.primary_key:
-                pk_field = key
+            try:
+                if getattr(val.source, primary_key):
+                    pk_field = key
+            except AttributeError:
+                pass
 
         # If 'fields' is specified, use those fields, in that order.
         if self.opts.fields:
