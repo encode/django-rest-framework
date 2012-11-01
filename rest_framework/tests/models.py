@@ -126,3 +126,8 @@ class Person(RESTFrameworkModel):
 # Model for issue #324
 class BlankFieldModel(RESTFrameworkModel):
     title = models.CharField(max_length=100, blank=True)
+
+
+class BlankRelatedFieldModel(RESTFrameworkModel):
+    blank_field = models.OneToOneField('BasicModel', blank=True, null=True)
+

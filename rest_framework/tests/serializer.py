@@ -498,3 +498,17 @@ class BlankFieldTests(TestCase):
         """
         serializer = self.not_blank_model_serializer_class(self.data)
         self.assertEquals(serializer.is_valid(), False)
+
+
+class BlankRelatedFieldModelTests(TestCase):
+    def setUp(self):
+        class BlankRelatedFieldModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlankRelatedFieldModel
+
+        self.serializer_class = BlankRelatedFieldModelSerializer
+        self.data = {'blank_field': None}
+
+    def test_create_blank_related_field(self):
+        serializer = self.serializer_class(self.data)
+        self.assertEquals(serializer.is_valid(), True)
