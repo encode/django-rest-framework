@@ -30,7 +30,7 @@ The default authentication policy may be set globally, using the `DEFAULT_AUTHEN
 
     REST_FRAMEWORK = {
         'DEFAULT_AUTHENTICATION_CLASSES': (
-            'rest_framework.authentication.UserBasicAuthentication',
+            'rest_framework.authentication.BasicAuthentication',
             'rest_framework.authentication.SessionAuthentication',
         )
     }
@@ -38,7 +38,7 @@ The default authentication policy may be set globally, using the `DEFAULT_AUTHEN
 You can also set the authentication policy on a per-view basis, using the `APIView` class based views.
 
     class ExampleView(APIView):
-        authentication_classes = (SessionAuthentication, UserBasicAuthentication)
+        authentication_classes = (SessionAuthentication, BasicAuthentication)
         permission_classes = (IsAuthenticated,)
 
         def get(self, request, format=None):
@@ -51,7 +51,7 @@ You can also set the authentication policy on a per-view basis, using the `APIVi
 Or, if you're using the `@api_view` decorator with function based views.
 
     @api_view(['GET'])
-    @authentication_classes((SessionAuthentication, UserBasicAuthentication))
+    @authentication_classes((SessionAuthentication, BasicAuthentication))
     @permissions_classes((IsAuthenticated,))
     def example_view(request, format=None):
         content = {
