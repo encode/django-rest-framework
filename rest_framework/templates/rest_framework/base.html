@@ -134,7 +134,7 @@
                                 <div class="control-group {% if field.errors %}error{% endif %}">
                                     {{ field.label_tag|add_class:"control-label" }}
                                     <div class="controls">
-                                        {{ field|add_class:"input-xlarge" }}
+                                        {{ field }}
                                         <span class="help-inline">{{ field.help_text }}</span>
                                         {{ field.errors|add_class:"help-block" }}
                                     </div>
@@ -159,7 +159,7 @@
                                 <div class="control-group {% if field.errors %}error{% endif %}">
                                     {{ field.label_tag|add_class:"control-label" }}
                                     <div class="controls">
-                                        {{ field|add_class:"input-xlarge" }}
+                                        {{ field }}
                                         <span class='help-inline'>{{ field.help_text }}</span>
                                         {{ field.errors|add_class:"help-block" }}
                                     </div>
