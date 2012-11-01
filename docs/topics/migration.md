@@ -1,5 +1,9 @@
 # 2.0 Migration Guide
 
+> Move fast and break things
+>
+> &mdash; Mark Zuckerberg, [the Hacker Way][cite].
+
 REST framework 2.0 introduces a radical redesign of the core components, and a large number of backwards breaking changes.
 
 ### Serialization redesign.
@@ -21,7 +25,7 @@ REST framework 2.0's request-response cycle is now much less complex.
 * Responses inherit from `SimpleTemplateResponse`, allowing rendering to be delegated to the response, not handled by the view.
 * Requests extend the regular `HttpRequest`, allowing authentication and parsing to be delegated to the request, not handled by the view.
 
-### Renamed attribnutes & classes.
+### Renamed attributes & classes.
 
 Various attributes and classes have been renamed in order to fit in better with Django's conventions.
 
@@ -82,4 +86,4 @@ Let's start to re-write this for REST framework 2.0.
         model = Comment
         fields = ('username', 'comment', 'created', 'rating', 'url', 'blogpost')
 
-
+[cite]: http://www.wired.com/business/2012/02/zuck-letter/

@@ -1,8 +1,5 @@
 """
-The :mod:`permissions` module bundles a set of permission classes that are used
-for checking if a request passes a certain set of constraints.
-
-Permission behavior is provided by mixing the :class:`mixins.PermissionsMixin` class into a :class:`View` class.
+Provides a set of pluggable permission policies.
 """
 
 
@@ -16,9 +13,20 @@ class BasePermission(object):
 
     def has_permission(self, request, view, obj=None):
         """
-        Should simply return, or raise an :exc:`response.ImmediateResponse`.
+        Return `True` if permission is granted, `False` otherwise.
         """
         raise NotImplementedError(".has_permission() must be overridden.")
+
+
+class AllowAny(BasePermission):
+    """
+    Allow any access.
+    This isn't strictly required, since you could use an empty
+    permission_classes list, but it's useful because it makes the intention
+    more explicit.
+    """
+    def has_permission(self, request, view, obj=None):
+        return True
 
 
 class IsAuthenticated(BasePermission):
@@ -64,7 +72,8 @@ class DjangoModelPermissions(BasePermission):
     It ensures that the user is authenticated, and has the appropriate
     `add`/`change`/`delete` permissions on the model.
 
-    This permission should only be used on views with a `ModelResource`.
+    This permission will only be applied against view classes that
+    provide a `.model` attribute, such as the generic class-based views.
     """
 
     # Map methods into required permission codes.
@@ -87,12 +96,15 @@ class DjangoModelPermissions(BasePermission):
         """
         kwargs = {
             'app_label': model_cls._meta.app_label,
-            'model_name':  model_cls._meta.module_name
+            'model_name': model_cls._meta.module_name
         }
         return [perm % kwargs for perm in self.perms_map[method]]
 
     def has_permission(self, request, view, obj=None):
-        model_cls = view.model
+        model_cls = getattr(view, 'model', None)
+        if not model_cls:
+            return True
+
         perms = self.get_required_permissions(request.method, model_cls)
 
         if (request.user and

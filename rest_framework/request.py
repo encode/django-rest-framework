@@ -11,9 +11,18 @@ The wrapped request then offers a richer API, in particular :
 """
 from StringIO import StringIO
 
+from django.http.multipartparser import parse_header
 from rest_framework import exceptions
 from rest_framework.settings import api_settings
-from rest_framework.utils.mediatypes import is_form_media_type
+
+
+def is_form_media_type(media_type):
+    """
+    Return True if the media type is a valid form media type.
+    """
+    base_media_type, params = parse_header(media_type)
+    return (base_media_type == 'application/x-www-form-urlencoded' or
+            base_media_type == 'multipart/form-data')
 
 
 class Empty(object):
@@ -35,7 +44,8 @@ def clone_request(request, method):
     """
     ret = Request(request._request,
                   request.parsers,
-                  request.authenticators)
+                  request.authenticators,
+                  request.parser_context)
     ret._data = request._data
     ret._files = request._files
     ret._content_type = request._content_type
@@ -65,19 +75,24 @@ class Request(object):
     _CONTENTTYPE_PARAM = api_settings.FORM_CONTENTTYPE_OVERRIDE
 
     def __init__(self, request, parsers=None, authenticators=None,
-                 negotiator=None):
+                 negotiator=None, parser_context=None):
         self._request = request
         self.parsers = parsers or ()
         self.authenticators = authenticators or ()
         self.negotiator = negotiator or self._default_negotiator()
+        self.parser_context = parser_context
         self._data = Empty
         self._files = Empty
         self._method = Empty
         self._content_type = Empty
         self._stream = Empty
 
+        if self.parser_context is None:
+            self.parser_context = {}
+        self.parser_context['request'] = self
+
     def _default_negotiator(self):
-        return api_settings.DEFAULT_CONTENT_NEGOTIATION()
+        return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()
 
     @property
     def method(self):
@@ -96,7 +111,7 @@ class Request(object):
         """
         Returns the content type header.
 
-        This should be used instead of ``request.META.get('HTTP_CONTENT_TYPE')``,
+        This should be used instead of `request.META.get('HTTP_CONTENT_TYPE')`,
         as it allows the content type to be overridden by using a hidden form
         field on a form POST request.
         """
@@ -245,16 +260,19 @@ class Request(object):
 
         May raise an `UnsupportedMediaType`, or `ParseError` exception.
         """
-        if self.stream is None or self.content_type is None:
+        stream = self.stream
+        media_type = self.content_type
+
+        if stream is None or media_type is None:
             return (None, None)
 
-        parser = self.negotiator.select_parser(self.parsers, self.content_type)
+        parser = self.negotiator.select_parser(self, self.parsers)
 
         if not parser:
-            raise exceptions.UnsupportedMediaType(self.content_type)
+            raise exceptions.UnsupportedMediaType(media_type)
 
-        parsed = parser.parse(self.stream, meta=self.META,
-                              upload_handlers=self.upload_handlers)
+        parsed = parser.parse(stream, media_type, self.parser_context)
+
         # Parser classes may return the raw data, or a
         # DataAndFiles object.  Unpack the result as required.
         try:

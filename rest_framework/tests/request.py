@@ -10,9 +10,9 @@ from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from django.test.client import RequestFactory
 from rest_framework.parsers import (
+    BaseParser,
     FormParser,
     MultiPartParser,
-    PlainTextParser,
     JSONParser
 )
 from rest_framework.request import Request
@@ -22,6 +22,19 @@ from rest_framework.views import APIView
 
 
 factory = RequestFactory()
+
+
+class PlainTextParser(BaseParser):
+    media_type = 'text/plain'
+
+    def parse(self, stream, media_type=None, parser_context=None):
+        """
+        Returns a 2-tuple of `(data, files)`.
+
+        `data` will simply be a string representing the body of the request.
+        `files` will always be `None`.
+        """
+        return stream.read()
 
 
 class TestMethodOverloading(TestCase):

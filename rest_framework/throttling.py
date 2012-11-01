@@ -16,13 +16,13 @@ class BaseThrottle(object):
 
     def wait(self):
         """
-        Optionally, return a recommeded number of seconds to wait before
+        Optionally, return a recommended number of seconds to wait before
         the next request.
         """
         return None
 
 
-class SimpleRateThottle(BaseThrottle):
+class SimpleRateThrottle(BaseThrottle):
     """
     A simple cache implementation, that only requires `.get_cache_key()`
     to be overridden.
@@ -60,7 +60,7 @@ class SimpleRateThottle(BaseThrottle):
         Determine the string representation of the allowed request rate.
         """
         if not getattr(self, 'scope', None):
-            msg = ("You must set either `.scope` or `.rate` for '%s' thottle" %
+            msg = ("You must set either `.scope` or `.rate` for '%s' throttle" %
                    self.__class__.__name__)
             raise exceptions.ConfigurationError(msg)
 
@@ -133,11 +133,11 @@ class SimpleRateThottle(BaseThrottle):
         return remaining_duration / float(available_requests)
 
 
-class AnonRateThrottle(SimpleRateThottle):
+class AnonRateThrottle(SimpleRateThrottle):
     """
     Limits the rate of API calls that may be made by a anonymous users.
 
-    The IP address of the request will be used as the unqiue cache key.
+    The IP address of the request will be used as the unique cache key.
     """
     scope = 'anon'
 
@@ -153,7 +153,7 @@ class AnonRateThrottle(SimpleRateThottle):
         }
 
 
-class UserRateThrottle(SimpleRateThottle):
+class UserRateThrottle(SimpleRateThrottle):
     """
     Limits the rate of API calls that may be made by a given user.
 
@@ -175,7 +175,7 @@ class UserRateThrottle(SimpleRateThottle):
         }
 
 
-class ScopedRateThrottle(SimpleRateThottle):
+class ScopedRateThrottle(SimpleRateThrottle):
     """
     Limits the rate of API calls by different amounts for various parts of
     the API.  Any view that has the `throttle_scope` property set will be

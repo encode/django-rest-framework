@@ -1,12 +1,15 @@
 """
-Renderers are used to serialize a View's output into specific media types.
+Renderers are used to serialize a response into specific media types.
 
-Django REST framework also provides HTML and PlainText renderers that help self-document the API,
-by serializing the output along with documentation regarding the View, output status and headers,
-and providing forms and links depending on the allowed methods, renderers and parsers on the View.
+They give us a generic way of being able to handle various media types
+on the response, such as JSON encoded data or HTML output.
+
+REST framework also provides an HTML renderer the renders the browseable API.
 """
+import copy
 import string
 from django import forms
+from django.http.multipartparser import parse_header
 from django.template import RequestContext, loader
 from django.utils import simplejson as json
 from rest_framework.compat import yaml
@@ -16,15 +19,14 @@ from rest_framework.request import clone_request
 from rest_framework.utils import dict2xml
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
-from rest_framework.utils.mediatypes import get_media_type_params
 from rest_framework import VERSION
 from rest_framework import serializers, parsers
 
 
 class BaseRenderer(object):
     """
-    All renderers must extend this class, set the :attr:`media_type` attribute,
-    and override the :meth:`render` method.
+    All renderers should extend this class, setting the `media_type`
+    and `format` attributes, and override the `.render()` method.
     """
 
     media_type = None
@@ -58,7 +60,7 @@ class JSONRenderer(BaseRenderer):
         if accepted_media_type:
             # If the media type looks like 'application/json; indent=4',
             # then pretty print the result.
-            params = get_media_type_params(accepted_media_type)
+            base_media_type, params = parse_header(accepted_media_type)
             indent = params.get('indent', indent)
             try:
                 indent = max(min(int(indent), 8), 0)
@@ -137,13 +139,24 @@ class YAMLRenderer(BaseRenderer):
         return yaml.dump(data, stream=None, Dumper=self.encoder)
 
 
-class HTMLRenderer(BaseRenderer):
+class TemplateHTMLRenderer(BaseRenderer):
     """
-    A Base class provided for convenience.
+    An HTML renderer for use with templates.
 
-    Render the object simply by using the given template.
-    To create a template renderer, subclass this class, and set
-    the :attr:`media_type` and :attr:`template` attributes.
+    The data supplied to the Response object should be a dictionary that will
+    be used as context for the template.
+
+    The template name is determined by (in order of preference):
+
+    1. An explicit `.template_name` attribute set on the response.
+    2. An explicit `.template_name` attribute set on this class.
+    3. The return result of calling `view.get_template_names()`.
+
+    For example:
+        data = {'users': User.objects.all()}
+        return Response(data, template_name='users.html')
+
+    For pre-rendered HTML, see StaticHTMLRenderer.
     """
 
     media_type = 'text/html'
@@ -186,6 +199,26 @@ class HTMLRenderer(BaseRenderer):
         raise ConfigurationError('Returned a template response with no template_name')
 
 
+class StaticHTMLRenderer(BaseRenderer):
+    """
+    An HTML renderer class that simply returns pre-rendered HTML.
+
+    The data supplied to the Response object should be a string representing
+    the pre-rendered HTML content.
+
+    For example:
+        data = '<html><body>example</body></html>'
+        return Response(data)
+
+    For template rendered HTML, see TemplateHTMLRenderer.
+    """
+    media_type = 'text/html'
+    format = 'html'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        return data
+
+
 class BrowsableAPIRenderer(BaseRenderer):
     """
     HTML renderer used to self-document the API.
@@ -222,11 +255,9 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         return content
 
-    def get_form(self, view, method, request):
+    def show_form_for_method(self, view, method, request, obj):
         """
-        Get a form, possibly bound to either the input or output data.
-        In the absence on of the Resource having an associated form then
-        provide a form that can be used to submit arbitrary content.
+        Returns True if a form should be shown for this method.
         """
         if not method in view.allowed_methods:
             return  # Not a valid method
@@ -235,22 +266,14 @@ class BrowsableAPIRenderer(BaseRenderer):
             return  # Cannot use form overloading
 
         request = clone_request(request, method)
-        if not view.has_permission(request):
-            return  # Don't have permission
+        try:
+            if not view.has_permission(request, obj):
+                return  # Don't have permission
+        except:
+            return  # Don't have permission and exception explicitly raise
+        return True
 
-        if method == 'DELETE' or method == 'OPTIONS':
-            return True  # Don't actually need to return a form
-
-        if (not getattr(view, 'get_serializer', None) or
-            not parsers.FormParser in getattr(view, 'parser_classes')):
-            media_types = [parser.media_type for parser in view.parser_classes]
-            return self.get_generic_content_form(media_types)
-
-        #####
-        # TODO: This is a little bit of a hack.  Actually we'd like to remove
-        #       this and just render serializer fields to html directly.
-
-        #  We need to map our Fields to Django's Fields.
+    def serializer_to_form_fields(self, serializer):
         field_mapping = {
             serializers.FloatField: forms.FloatField,
             serializers.IntegerField: forms.IntegerField,
@@ -260,32 +283,69 @@ class BrowsableAPIRenderer(BaseRenderer):
             serializers.CharField: forms.CharField,
             serializers.BooleanField: forms.BooleanField,
             serializers.PrimaryKeyRelatedField: forms.ModelChoiceField,
-            serializers.ManyPrimaryKeyRelatedField: forms.ModelMultipleChoiceField
+            serializers.ManyPrimaryKeyRelatedField: forms.ModelMultipleChoiceField,
+            serializers.HyperlinkedRelatedField: forms.ModelChoiceField,
+            serializers.ManyHyperlinkedRelatedField: forms.ModelMultipleChoiceField
         }
 
-        # Creating an on the fly form see: http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
         fields = {}
-        obj, data = None, None
-        if getattr(view, 'object', None):
-            obj = view.object
-
-        serializer = view.get_serializer(instance=obj)
         for k, v in serializer.get_fields(True).items():
-            if getattr(v, 'readonly', True):
+            if getattr(v, 'read_only', True):
                 continue
 
             kwargs = {}
+            kwargs['required'] = v.required
+
             if getattr(v, 'queryset', None):
-                kwargs['queryset'] = getattr(v, 'queryset', None)
+                kwargs['queryset'] = v.queryset
+
+            if getattr(v, 'widget', None):
+                widget = copy.deepcopy(v.widget)
+                # If choices have friendly readable names,
+                # then add in the identities too
+                if getattr(widget, 'choices', None):
+                    choices = widget.choices
+                    if any([ident != desc for (ident, desc) in choices]):
+                        choices = [(ident, "%s (%s)" % (desc, ident))
+                                   for (ident, desc) in choices]
+                    widget.choices = choices
+                kwargs['widget'] = widget
+
+            if getattr(v, 'default', None) is not None:
+                kwargs['initial'] = v.default
+
+            kwargs['label'] = k
 
             try:
                 fields[k] = field_mapping[v.__class__](**kwargs)
             except KeyError:
-                fields[k] = forms.CharField()
+                fields[k] = forms.CharField(**kwargs)
+        return fields
 
+    def get_form(self, view, method, request):
+        """
+        Get a form, possibly bound to either the input or output data.
+        In the absence on of the Resource having an associated form then
+        provide a form that can be used to submit arbitrary content.
+        """
+        obj = getattr(view, 'object', None)
+        if not self.show_form_for_method(view, method, request, obj):
+            return
+
+        if method == 'DELETE' or method == 'OPTIONS':
+            return True  # Don't actually need to return a form
+
+        if not getattr(view, 'get_serializer', None) or not parsers.FormParser in view.parser_classes:
+            media_types = [parser.media_type for parser in view.parser_classes]
+            return self.get_generic_content_form(media_types)
+
+        serializer = view.get_serializer(instance=obj)
+        fields = self.serializer_to_form_fields(serializer)
+
+        # Creating an on the fly form see:
+        # http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
         OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
-        if obj and not view.request.method == 'DELETE':  # Don't fill in the form when the object is deleted
-            data = serializer.data
+        data = (obj is not None) and serializer.data or None
         form_instance = OnTheFlyForm(data)
         return form_instance
 

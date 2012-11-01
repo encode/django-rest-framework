@@ -1,8 +1,16 @@
-# Change Log
+# Release Notes
+
+> Release Early, Release Often
+>
+> &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
+
+## Master
+
+* If PUT creates an instance return '201 Created', instead of '200 OK'.
 
 ## 2.0.0
 
-* **Fix all of the things.**
+* **Fix all of the things.**  (Well, almost.)
 * For more information please see the [2.0 migration guide][migration].
 
 ---
@@ -108,4 +116,5 @@
 
 * Initial release.
 
+[cite]: http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html
 [migration]: migration.md

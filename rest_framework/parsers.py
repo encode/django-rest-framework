@@ -1,14 +1,8 @@
 """
-Django supports parsing the content of an HTTP request, but only for form POST requests.
-That behavior is sufficient for dealing with standard HTML forms, but it doesn't map well
-to general HTTP requests.
+Parsers are used to parse the content of incoming HTTP requests.
 
-We need a method to be able to:
-
-1.) Determine the parsed content on a request for methods other than POST (eg typically also PUT)
-
-2.) Determine the parsed content on a request for media types other than application/x-www-form-urlencoded
-   and multipart/form-data.  (eg also handle multipart/json)
+They give us a generic way of being able to handle various media types
+on the request, such as form content or json encoded data.
 """
 
 from django.http import QueryDict
@@ -21,7 +15,6 @@ from xml.etree import ElementTree as ET
 from xml.parsers.expat import ExpatError
 import datetime
 import decimal
-from io import BytesIO
 
 
 class DataAndFiles(object):
@@ -33,29 +26,18 @@ class DataAndFiles(object):
 class BaseParser(object):
     """
     All parsers should extend `BaseParser`, specifying a `media_type`
-    attribute, and overriding the `.parse_stream()` method.
+    attribute, and overriding the `.parse()` method.
     """
 
     media_type = None
 
-    def parse(self, string_or_stream, **opts):
+    def parse(self, stream, media_type=None, parser_context=None):
         """
-        The main entry point to parsers.  This is a light wrapper around
-        `parse_stream`, that instead handles both string and stream objects.
-        """
-        if isinstance(string_or_stream, basestring):
-            stream = BytesIO(string_or_stream)
-        else:
-            stream = string_or_stream
-        return self.parse_stream(stream, **opts)
-
-    def parse_stream(self, stream, **opts):
-        """
-        Given a stream to read from, return the deserialized output.
-        Should return parsed data, or a DataAndFiles object consisting of the
+        Given a stream to read from, return the parsed representation.
+        Should return parsed data, or a `DataAndFiles` object consisting of the
         parsed data and files.
         """
-        raise NotImplementedError(".parse_stream() must be overridden.")
+        raise NotImplementedError(".parse() must be overridden.")
 
 
 class JSONParser(BaseParser):
@@ -65,7 +47,7 @@ class JSONParser(BaseParser):
 
     media_type = 'application/json'
 
-    def parse_stream(self, stream, **opts):
+    def parse(self, stream, media_type=None, parser_context=None):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -85,7 +67,7 @@ class YAMLParser(BaseParser):
 
     media_type = 'application/yaml'
 
-    def parse_stream(self, stream, **opts):
+    def parse(self, stream, media_type=None, parser_context=None):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -98,23 +80,6 @@ class YAMLParser(BaseParser):
             raise ParseError('YAML parse error - %s' % unicode(exc))
 
 
-class PlainTextParser(BaseParser):
-    """
-    Plain text parser.
-    """
-
-    media_type = 'text/plain'
-
-    def parse_stream(self, stream, **opts):
-        """
-        Returns a 2-tuple of `(data, files)`.
-
-        `data` will simply be a string representing the body of the request.
-        `files` will always be `None`.
-        """
-        return stream.read()
-
-
 class FormParser(BaseParser):
     """
     Parser for form data.
@@ -122,7 +87,7 @@ class FormParser(BaseParser):
 
     media_type = 'application/x-www-form-urlencoded'
 
-    def parse_stream(self, stream, **opts):
+    def parse(self, stream, media_type=None, parser_context=None):
         """
         Returns a 2-tuple of `(data, files)`.
 
@@ -140,15 +105,18 @@ class MultiPartParser(BaseParser):
 
     media_type = 'multipart/form-data'
 
-    def parse_stream(self, stream, **opts):
+    def parse(self, stream, media_type=None, parser_context=None):
         """
         Returns a DataAndFiles object.
 
         `.data` will be a `QueryDict` containing all the form parameters.
         `.files` will be a `QueryDict` containing all the form files.
         """
-        meta = opts['meta']
-        upload_handlers = opts['upload_handlers']
+        parser_context = parser_context or {}
+        request = parser_context['request']
+        meta = request.META
+        upload_handlers = request.upload_handlers
+
         try:
             parser = DjangoMultiPartParser(meta, stream, upload_handlers)
             data, files = parser.parse()
@@ -164,7 +132,7 @@ class XMLParser(BaseParser):
 
     media_type = 'application/xml'
 
-    def parse_stream(self, stream, **opts):
+    def parse(self, stream, media_type=None, parser_context=None):
         try:
             tree = ET.parse(stream)
         except (ExpatError, ETParseError, ValueError), exc:

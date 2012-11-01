@@ -3,11 +3,11 @@ Settings for REST framework are all namespaced in the REST_FRAMEWORK setting.
 For example your project's `settings.py` file might look like this:
 
 REST_FRAMEWORK = {
-    'DEFAULT_RENDERERS': (
+    'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.YAMLRenderer',
     )
-    'DEFAULT_PARSERS': (
+    'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.YAMLParser',
     )
@@ -24,30 +24,36 @@ from django.utils import importlib
 USER_SETTINGS = getattr(settings, 'REST_FRAMEWORK', None)
 
 DEFAULTS = {
-    'DEFAULT_RENDERERS': (
+    'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
     ),
-    'DEFAULT_PARSERS': (
+    'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser'
     ),
-    'DEFAULT_AUTHENTICATION': (
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.UserBasicAuthentication'
+        'rest_framework.authentication.BasicAuthentication'
     ),
-    'DEFAULT_PERMISSIONS': (),
-    'DEFAULT_THROTTLES': (),
-    'DEFAULT_CONTENT_NEGOTIATION':
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+    'DEFAULT_THROTTLE_CLASSES': (
+    ),
+
+    'DEFAULT_CONTENT_NEGOTIATION_CLASS':
         'rest_framework.negotiation.DefaultContentNegotiation',
+    'DEFAULT_MODEL_SERIALIZER_CLASS':
+        'rest_framework.serializers.ModelSerializer',
+    'DEFAULT_PAGINATION_SERIALIZER_CLASS':
+        'rest_framework.pagination.PaginationSerializer',
+
     'DEFAULT_THROTTLE_RATES': {
         'user': None,
         'anon': None,
     },
-
-    'MODEL_SERIALIZER': 'rest_framework.serializers.ModelSerializer',
-    'PAGINATION_SERIALIZER': 'rest_framework.pagination.PaginationSerializer',
     'PAGINATE_BY': None,
 
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
@@ -65,14 +71,14 @@ DEFAULTS = {
 
 # List of settings that may be in string import notation.
 IMPORT_STRINGS = (
-    'DEFAULT_RENDERERS',
-    'DEFAULT_PARSERS',
-    'DEFAULT_AUTHENTICATION',
-    'DEFAULT_PERMISSIONS',
-    'DEFAULT_THROTTLES',
-    'DEFAULT_CONTENT_NEGOTIATION',
-    'MODEL_SERIALIZER',
-    'PAGINATION_SERIALIZER',
+    'DEFAULT_RENDERER_CLASSES',
+    'DEFAULT_PARSER_CLASSES',
+    'DEFAULT_AUTHENTICATION_CLASSES',
+    'DEFAULT_PERMISSION_CLASSES',
+    'DEFAULT_THROTTLE_CLASSES',
+    'DEFAULT_CONTENT_NEGOTIATION_CLASS',
+    'DEFAULT_MODEL_SERIALIZER_CLASS',
+    'DEFAULT_PAGINATION_SERIALIZER_CLASS',
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN',
 )
@@ -111,7 +117,7 @@ class APISettings(object):
     For example:
 
         from rest_framework.settings import api_settings
-        print api_settings.DEFAULT_RENDERERS
+        print api_settings.DEFAULT_RENDERER_CLASSES
 
     Any setting with string import paths will be automatically resolved
     and return the class, rather than the string literal.

@@ -1,8 +1,5 @@
 """
-The :mod:`views` module provides the Views you will most probably
-be subclassing in your implementation.
-
-By setting or modifying class attributes on your view, you change it's predefined behaviour.
+Provides an APIView class that is used as the base of all class-based views.
 """
 
 import re
@@ -57,12 +54,12 @@ def _camelcase_to_spaces(content):
 class APIView(View):
     settings = api_settings
 
-    renderer_classes = api_settings.DEFAULT_RENDERERS
-    parser_classes = api_settings.DEFAULT_PARSERS
-    authentication_classes = api_settings.DEFAULT_AUTHENTICATION
-    throttle_classes = api_settings.DEFAULT_THROTTLES
-    permission_classes = api_settings.DEFAULT_PERMISSIONS
-    content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+    parser_classes = api_settings.DEFAULT_PARSER_CLASSES
+    authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
+    throttle_classes = api_settings.DEFAULT_THROTTLE_CLASSES
+    permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
+    content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -159,18 +156,31 @@ class APIView(View):
         """
         raise exceptions.Throttled(wait)
 
+    def get_parser_context(self, http_request):
+        """
+        Returns a dict that is passed through to Parser.parse(),
+        as the `parser_context` keyword argument.
+        """
+        # Note: Additionally `request` will also be added to the context
+        #       by the Request object.
+        return {
+            'view': self,
+            'args': getattr(self, 'args', ()),
+            'kwargs': getattr(self, 'kwargs', {})
+        }
+
     def get_renderer_context(self):
         """
-        Returns a dict that is passed through to the Renderer.render(),
+        Returns a dict that is passed through to Renderer.render(),
         as the `renderer_context` keyword argument.
         """
-        # Note: Additionally 'response' will also be set on the context,
+        # Note: Additionally 'response' will also be added to the context,
         #       by the Response object.
         return {
             'view': self,
-            'request': self.request,
-            'args': self.args,
-            'kwargs': self.kwargs
+            'args': getattr(self, 'args', ()),
+            'kwargs': getattr(self, 'kwargs', {}),
+            'request': getattr(self, 'request', None)
         }
 
     # API policy instantiation methods
@@ -208,7 +218,7 @@ class APIView(View):
 
     def get_throttles(self):
         """
-        Instantiates and returns the list of thottles that this view uses.
+        Instantiates and returns the list of throttles that this view uses.
         """
         return [throttle() for throttle in self.throttle_classes]
 
@@ -228,7 +238,13 @@ class APIView(View):
         """
         renderers = self.get_renderers()
         conneg = self.get_content_negotiator()
-        return conneg.negotiate(request, renderers, self.format_kwarg, force)
+
+        try:
+            return conneg.select_renderer(request, renderers, self.format_kwarg)
+        except:
+            if force:
+                return (renderers[0], renderers[0].media_type)
+            raise
 
     def has_permission(self, request, obj=None):
         """
@@ -253,10 +269,13 @@ class APIView(View):
         """
         Returns the initial request object.
         """
+        parser_context = self.get_parser_context(request)
+
         return Request(request,
                        parsers=self.get_parsers(),
                        authenticators=self.get_authenticators(),
-                       negotiator=self.get_content_negotiator())
+                       negotiator=self.get_content_negotiator(),
+                       parser_context=parser_context)
 
     def initial(self, request, *args, **kwargs):
         """

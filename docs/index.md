@@ -5,11 +5,23 @@
 
 **A toolkit for building well-connected, self-describing Web APIs.**
 
-**WARNING: This documentation is for the 2.0 redesign of REST framework.  It is a work in progress.**
+---
+
+**Note**: This documentation is for the 2.0 version of REST framework.  If you are looking for earlier versions please see the [0.4.x branch][0.4] on GitHub.
+
+---
 
 Django REST framework is a lightweight library that makes it easy to build Web APIs.  It is designed as a modular and easy to customize architecture, based on Django's class based views.
 
 Web APIs built using REST framework are fully self-describing and web browseable - a huge useability win for your developers.  It also supports a wide range of media types, authentication and permission policies out of the box.
+
+If you are considering using REST framework for your API, we recommend reading the [REST framework 2 announcment][rest-framework-2-announcement] which gives a good overview of the framework and it's capabilities.
+
+There is also a sandbox API you can use for testing purposes, [available here][sandbox].
+
+**Below**: *Screenshot from the browseable API*
+
+![Screenshot][image]
 
 ## Requirements
 
@@ -24,8 +36,6 @@ The following packages are optional:
 * [PyYAML][yaml] (3.10+) - YAML content-type support.
 
 ## Installation
-
-**WARNING: These instructions will only become valid once this becomes the master version**
 
 Install using `pip`, including any optional packages you want...
 
@@ -47,7 +57,7 @@ Add `rest_framework` to your `INSTALLED_APPS`.
         'rest_framework',        
     )
 
-If you're intending to use the browserable API you'll want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
+If you're intending to use the browseable API you'll want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
 
     urlpatterns = patterns('',
         ...
@@ -56,9 +66,11 @@ If you're intending to use the browserable API you'll want to add REST framework
 
 Note that the URL path can be whatever you want, but you must include `rest_framework.urls` with the `rest_framework` namespace.
 
+<!--
 ## Quickstart
 
 Can't wait to get started?  The [quickstart guide][quickstart] is the fastest way to get up and running with REST framework.
+-->
 
 ## Tutorial
 
@@ -67,9 +79,8 @@ The tutorial will walk you through the building blocks that make up REST framewo
 * [1 - Serialization][tut-1]
 * [2 - Requests & Responses][tut-2]
 * [3 - Class based views][tut-3]
-* [4 - Authentication, permissions & throttling][tut-4]
+* [4 - Authentication & permissions][tut-4]
 * [5 - Relationships & hyperlinked APIs][tut-5]
-<!-- * [6 - Resource orientated projects][tut-6]-->
 
 ## API Guide
 
@@ -98,13 +109,11 @@ The API guide is your complete reference manual to all the functionality provide
 
 General guides to using REST framework.
 
-* [CSRF][csrf]
-* [Browser hacks][browserhacks]
-* [Working with the Browsable API][browsableapi]
+* [Browser enhancements][browser-enhancements]
+* [The Browsable API][browsableapi]
 * [REST, Hypermedia & HATEOAS][rest-hypermedia-hateoas]
-* [Contributing to REST framework][contributing]
-* [2.0 Migration Guide][migration]
-* [Change Log][changelog]
+* [2.0 Announcement][rest-framework-2-announcement]
+* [Release Notes][release-notes]
 * [Credits][credits]
 
 ## Development
@@ -119,7 +128,6 @@ Run the tests:
 
     ./rest_framework/runtests/runtests.py
 
-For more information see the [Contributing to REST framework][contributing] section.
 ## Support
 
 For support please see the [REST framework discussion group][group], or try the  `#restframework` channel on `irc.freenode.net`.
@@ -151,19 +159,21 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-[travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=restframework2
+[travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
 [travis-build-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=restframework2
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [yaml]: http://pypi.python.org/pypi/PyYAML
+[0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
+[image]: img/quickstart.png
+[sandbox]: http://restframework.herokuapp.com/
 
 [quickstart]: tutorial/quickstart.md
 [tut-1]: tutorial/1-serialization.md
 [tut-2]: tutorial/2-requests-and-responses.md
 [tut-3]: tutorial/3-class-based-views.md
-[tut-4]: tutorial/4-authentication-permissions-and-throttling.md
+[tut-4]: tutorial/4-authentication-and-permissions.md
 [tut-5]: tutorial/5-relationships-and-hyperlinked-apis.md
-[tut-6]: tutorial/6-resource-orientated-projects.md
 
 [request]: api-guide/requests.md
 [response]: api-guide/responses.md
@@ -185,12 +195,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [settings]: api-guide/settings.md
 
 [csrf]: topics/csrf.md
-[browserhacks]: topics/browserhacks.md
+[browser-enhancements]: topics/browser-enhancements.md
 [browsableapi]: topics/browsable-api.md
 [rest-hypermedia-hateoas]: topics/rest-hypermedia-hateoas.md
 [contributing]: topics/contributing.md
-[migration]: topics/migration.md
-[changelog]: topics/changelog.md
+[rest-framework-2-announcement]: topics/rest-framework-2-announcement.md
+[release-notes]: topics/release-notes.md
 [credits]: topics/credits.md
 
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework

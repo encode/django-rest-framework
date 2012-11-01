@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <title>Django REST framework</title>
     <link href="{{ base_url }}/img/favicon.ico" rel="icon" type="image/x-icon">
@@ -17,6 +18,21 @@
     <!--[if lt IE 9]>
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
+
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-18852272-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+    </script>
+  </head>
   <body onload="prettyPrint()" class="{{ page_id }}-page">
 
   <div class="wrapper">
@@ -24,7 +40,7 @@
     <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container-fluid">
-            <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/restframework2">GitHub</a>
+            <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -37,13 +53,12 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li><a href="{{ base_url }}/tutorial/quickstart{{ suffix }}">Quickstart</a></li>
+                  <!--<li><a href="{{ base_url }}/tutorial/quickstart{{ suffix }}">Quickstart</a></li>-->
                   <li><a href="{{ base_url }}/tutorial/1-serialization{{ suffix }}">1 - Serialization</a></li>
                   <li><a href="{{ base_url }}/tutorial/2-requests-and-responses{{ suffix }}">2 - Requests and responses</a></li>
                   <li><a href="{{ base_url }}/tutorial/3-class-based-views{{ suffix }}">3 - Class based views</a></li>
-                  <li><a href="{{ base_url }}/tutorial/4-authentication-permissions-and-throttling{{ suffix }}">4 - Authentication, permissions and throttling</a></li>
+                  <li><a href="{{ base_url }}/tutorial/4-authentication-and-permissions{{ suffix }}">4 - Authentication and permissions</a></li>
                   <li><a href="{{ base_url }}/tutorial/5-relationships-and-hyperlinked-apis{{ suffix }}">5 - Relationships and hyperlinked APIs</a></li>
-                  <!-- <li><a href="{{ base_url }}/tutorial/6-resource-orientated-projects{{ suffix }}">6 - Resource orientated projects</a></li> -->
                 </ul>
               </li>
               <li class="dropdown">
@@ -72,13 +87,11 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li><a href="{{ base_url }}/topics/csrf{{ suffix }}">Working with AJAX and CSRF</a></li>
-                  <li><a href="{{ base_url }}/topics/browserhacks{{ suffix }}">Browser hacks</a></li>
-                  <li><a href="{{ base_url }}/topics/browsable-api{{ suffix }}">Working with the Browsable API</a></li>
+                  <li><a href="{{ base_url }}/topics/browser-enhancements{{ suffix }}">Browser enhancements</a></li>
+                  <li><a href="{{ base_url }}/topics/browsable-api{{ suffix }}">The Browsable API</a></li>
                   <li><a href="{{ base_url }}/topics/rest-hypermedia-hateoas{{ suffix }}">REST, Hypermedia & HATEOAS</a></li>
-                  <li><a href="{{ base_url }}/topics/contributing{{ suffix }}">Contributing to REST framework</a></li>
-                  <li><a href="{{ base_url }}/topics/migration{{ suffix }}">2.0 Migration Guide</a></li>
-                  <li><a href="{{ base_url }}/topics/changelog{{ suffix }}">Change Log</a></li>
+                  <li><a href="{{ base_url }}/topics/rest-framework-2-announcement{{ suffix }}">2.0 Announcement</a></li>
+                  <li><a href="{{ base_url }}/topics/release-notes{{ suffix }}">Release Notes</a></li>
                   <li><a href="{{ base_url }}/topics/credits{{ suffix }}">Credits</a></li>
                 </ul>
               </li>

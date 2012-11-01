@@ -5,13 +5,15 @@ import warnings
 
 from django.core import validators
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.urlresolvers import resolve
+from django.core.urlresolvers import resolve, get_script_prefix
 from django.conf import settings
+from django.forms import widgets
 from django.utils.encoding import is_protected_type, smart_unicode
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.reverse import reverse
 from rest_framework.compat import parse_date, parse_datetime
 from rest_framework.compat import timezone
+from urlparse import urlparse
 
 
 def is_simple_callable(obj):
@@ -42,7 +44,7 @@ class Field(object):
         Called to set up a field prior to field_to_native or field_from_native.
 
         parent - The parent serializer.
-        model_field - The model field this field corrosponds to, if one exists.
+        model_field - The model field this field corresponds to, if one exists.
         """
         self.parent = parent
         self.root = parent.root or parent
@@ -70,6 +72,8 @@ class Field(object):
             value = obj
             for component in self.source.split('.'):
                 value = getattr(value, component)
+                if is_simple_callable(value):
+                    value = value()
         else:
             value = getattr(obj, field_name)
         return self.to_native(value)
@@ -105,15 +109,20 @@ class WritableField(Field):
         'required': _('This field is required.'),
         'invalid': _('Invalid value.'),
     }
+    widget = widgets.TextInput
+    default = None
 
-    def __init__(self, source=None, readonly=False, required=None,
-                 validators=[], error_messages=None):
+    def __init__(self, source=None, read_only=False, required=None,
+                 validators=[], error_messages=None, widget=None,
+                 default=None, blank=None):
+
         super(WritableField, self).__init__(source=source)
-        self.readonly = readonly
+
+        self.read_only = read_only
         if required is None:
-            self.required = not(readonly)
+            self.required = not(read_only)
         else:
-            assert not readonly, "Cannot set required=True and readonly=True"
+            assert not read_only, "Cannot set required=True and read_only=True"
             self.required = required
 
         messages = {}
@@ -123,6 +132,14 @@ class WritableField(Field):
         self.error_messages = messages
 
         self.validators = self.default_validators + validators
+        self.default = default or self.default
+        self.blank = blank
+
+        # Widgets are ony used for HTML forms.
+        widget = widget or self.widget
+        if isinstance(widget, type):
+            widget = widget()
+        self.widget = widget
 
     def validate(self, value):
         if value in validators.EMPTY_VALUES and self.required:
@@ -151,15 +168,18 @@ class WritableField(Field):
         Given a dictionary and a field name, updates the dictionary `into`,
         with the field and it's deserialized value.
         """
-        if self.readonly:
+        if self.read_only:
             return
 
         try:
             native = data[field_name]
         except KeyError:
-            if self.required:
-                raise ValidationError(self.error_messages['required'])
-            return
+            if self.default is not None:
+                native = self.default
+            else:
+                if self.required:
+                    raise ValidationError(self.error_messages['required'])
+                return
 
         value = self.from_native(native)
         if self.source == '*':
@@ -179,7 +199,7 @@ class WritableField(Field):
 
 class ModelField(WritableField):
     """
-    A generic field that can be used against an arbirtrary model field.
+    A generic field that can be used against an arbitrary model field.
     """
     def __init__(self, *args, **kwargs):
         try:
@@ -191,9 +211,9 @@ class ModelField(WritableField):
     def from_native(self, value):
         try:
             rel = self.model_field.rel
+            return rel.to._meta.get_field(rel.field_name).to_python(value)
         except:
             return self.model_field.to_python(value)
-        return rel.to._meta.get_field(rel.field_name).to_python(value)
 
     def field_to_native(self, obj, field_name):
         value = self.model_field._get_val_from_obj(obj)
@@ -222,8 +242,11 @@ class RelatedField(WritableField):
         return self.to_native(value)
 
     def field_from_native(self, data, field_name, into):
+        if self.read_only:
+            return
+
         value = data.get(field_name)
-        into[(self.source or field_name) + '_id'] = self.from_native(value)
+        into[(self.source or field_name)] = self.from_native(value)
 
 
 class ManyRelatedMixin(object):
@@ -235,6 +258,9 @@ class ManyRelatedMixin(object):
         return [self.to_native(item) for item in value.all()]
 
     def field_from_native(self, data, field_name, into):
+        if self.read_only:
+            return
+
         try:
             # Form data
             value = data.getlist(self.source or field_name)
@@ -263,6 +289,15 @@ class PrimaryKeyRelatedField(RelatedField):
 
     def to_native(self, pk):
         return pk
+
+    def from_native(self, data):
+        if self.queryset is None:
+            raise Exception('Writable related fields must include a `queryset` argument')
+
+        try:
+            return self.queryset.get(pk=data)
+        except ObjectDoesNotExist:
+            raise ValidationError('Invalid hyperlink - object does not exist.')
 
     def field_to_native(self, obj, field_name):
         try:
@@ -307,14 +342,16 @@ class HyperlinkedRelatedField(RelatedField):
             self.view_name = kwargs.pop('view_name')
         except:
             raise ValueError("Hyperlinked field requires 'view_name' kwarg")
+        self.format = kwargs.pop('format', None)
         super(HyperlinkedRelatedField, self).__init__(*args, **kwargs)
 
     def to_native(self, obj):
         view_name = self.view_name
         request = self.context.get('request', None)
+        format = self.format or self.context.get('format', None)
         kwargs = {self.pk_url_kwarg: obj.pk}
         try:
-            return reverse(view_name, kwargs=kwargs, request=request)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
@@ -325,13 +362,13 @@ class HyperlinkedRelatedField(RelatedField):
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request)
+            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request)
+            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
@@ -340,6 +377,16 @@ class HyperlinkedRelatedField(RelatedField):
     def from_native(self, value):
         # Convert URL -> model instance pk
         # TODO: Use values_list
+        if self.queryset is None:
+            raise Exception('Writable related fields must include a `queryset` argument')
+
+        if value.startswith('http:') or value.startswith('https:'):
+            # If needed convert absolute URLs to relative path
+            value = urlparse(value).path
+            prefix = get_script_prefix()
+            if value.startswith(prefix):
+                value = '/' + value[len(prefix):]
+
         try:
             match = resolve(value)
         except:
@@ -353,7 +400,7 @@ class HyperlinkedRelatedField(RelatedField):
 
         # Try explicit primary key.
         if pk is not None:
-            return pk
+            queryset = self.queryset.filter(pk=pk)
         # Next, try looking up by slug.
         elif slug is not None:
             slug_field = self.get_slug_field()
@@ -366,7 +413,7 @@ class HyperlinkedRelatedField(RelatedField):
             obj = queryset.get()
         except ObjectDoesNotExist:
             raise ValidationError('Invalid hyperlink - object does not exist.')
-        return obj.pk
+        return obj
 
 
 class ManyHyperlinkedRelatedField(ManyRelatedMixin, HyperlinkedRelatedField):
@@ -381,33 +428,38 @@ class HyperlinkedIdentityField(Field):
         # TODO: Make this mandatory, and have the HyperlinkedModelSerializer
         # set it on-the-fly
         self.view_name = kwargs.pop('view_name', None)
+        self.format = kwargs.pop('format', None)
         super(HyperlinkedIdentityField, self).__init__(*args, **kwargs)
 
     def field_to_native(self, obj, field_name):
         request = self.context.get('request', None)
+        format = self.format or self.context.get('format', None)
         view_name = self.view_name or self.parent.opts.view_name
         view_kwargs = {'pk': obj.pk}
-        return reverse(view_name, kwargs=view_kwargs, request=request)
+        return reverse(view_name, kwargs=view_kwargs, request=request, format=format)
 
 
 ##### Typed Fields #####
 
 class BooleanField(WritableField):
     type_name = 'BooleanField'
+    widget = widgets.CheckboxInput
     default_error_messages = {
         'invalid': _(u"'%s' value must be either True or False."),
     }
+    empty = False
+
+    # Note: we set default to `False` in order to fill in missing value not
+    # supplied by html form.  TODO: Fix so that only html form input gets
+    # this behavior.
+    default = False
 
     def from_native(self, value):
-        if value in (True, False):
-            # if value is 1 or 0 than it's equal to True or False, but we want
-            # to return a true bool for semantic reasons.
-            return bool(value)
         if value in ('t', 'True', '1'):
             return True
         if value in ('f', 'False', '0'):
             return False
-        raise ValidationError(self.error_messages['invalid'] % value)
+        return bool(value)
 
 
 class CharField(WritableField):
@@ -421,10 +473,66 @@ class CharField(WritableField):
         if max_length is not None:
             self.validators.append(validators.MaxLengthValidator(max_length))
 
+    def validate(self, value):
+        """
+        Validates that the value is supplied (if required).
+        """
+        # if empty string and allow blank
+        if self.blank and not value:
+            return
+        else:
+            super(CharField, self).validate(value)
+
     def from_native(self, value):
         if isinstance(value, basestring) or value is None:
             return value
         return smart_unicode(value)
+
+
+class ChoiceField(WritableField):
+    type_name = 'ChoiceField'
+    widget = widgets.Select
+    default_error_messages = {
+        'invalid_choice': _('Select a valid choice. %(value)s is not one of the available choices.'),
+    }
+
+    def __init__(self, choices=(), *args, **kwargs):
+        super(ChoiceField, self).__init__(*args, **kwargs)
+        self.choices = choices
+
+    def _get_choices(self):
+        return self._choices
+
+    def _set_choices(self, value):
+        # Setting choices also sets the choices on the widget.
+        # choices can be any iterable, but we call list() on it because
+        # it will be consumed more than once.
+        self._choices = self.widget.choices = list(value)
+
+    choices = property(_get_choices, _set_choices)
+
+    def validate(self, value):
+        """
+        Validates that the input is in self.choices.
+        """
+        super(ChoiceField, self).validate(value)
+        if value and not self.valid_value(value):
+            raise ValidationError(self.error_messages['invalid_choice'] % {'value': value})
+
+    def valid_value(self, value):
+        """
+        Check to see if the provided value is a valid choice.
+        """
+        for k, v in self.choices:
+            if isinstance(v, (list, tuple)):
+                # This is an optgroup, so look inside the group for options
+                for k2, v2 in v:
+                    if value == smart_unicode(k2):
+                        return True
+            else:
+                if value == smart_unicode(k):
+                    return True
+        return False
 
 
 class EmailField(CharField):
@@ -436,7 +544,10 @@ class EmailField(CharField):
     default_validators = [validators.validate_email]
 
     def from_native(self, value):
-        return super(EmailField, self).from_native(value).strip()
+        ret = super(EmailField, self).from_native(value)
+        if ret is None:
+            return None
+        return ret.strip()
 
     def __deepcopy__(self, memo):
         result = copy.copy(self)
@@ -458,8 +569,9 @@ class DateField(WritableField):
     empty = None
 
     def from_native(self, value):
-        if value is None:
-            return value
+        if value in validators.EMPTY_VALUES:
+            return None
+
         if isinstance(value, datetime.datetime):
             if timezone and settings.USE_TZ and timezone.is_aware(value):
                 # Convert aware datetimes to the default time zone
@@ -497,8 +609,9 @@ class DateTimeField(WritableField):
     empty = None
 
     def from_native(self, value):
-        if value is None:
-            return value
+        if value in validators.EMPTY_VALUES:
+            return None
+
         if isinstance(value, datetime.datetime):
             return value
         if isinstance(value, datetime.date):
@@ -556,6 +669,7 @@ class IntegerField(WritableField):
     def from_native(self, value):
         if value in validators.EMPTY_VALUES:
             return None
+
         try:
             value = int(str(value))
         except (ValueError, TypeError):
@@ -571,8 +685,9 @@ class FloatField(WritableField):
     }
 
     def from_native(self, value):
-        if value is None:
-            return value
+        if value in validators.EMPTY_VALUES:
+            return None
+
         try:
             return float(value)
         except (TypeError, ValueError):

@@ -25,7 +25,7 @@ For example, the following request:
     DELETE http://api.example.com/foo/bar HTTP/1.1
     Accept: application/json
 
-Might recieve an error response indicating that the `DELETE` method is not allowed on that resource:
+Might receive an error response indicating that the `DELETE` method is not allowed on that resource:
 
     HTTP/1.1 405 Method Not Allowed
     Content-Type: application/json; charset=utf-8
@@ -33,11 +33,15 @@ Might recieve an error response indicating that the `DELETE` method is not allow
     
     {"detail": "Method 'DELETE' not allowed."}
 
+---
+
+# API Reference
+
 ## APIException
 
 **Signature:** `APIException(detail=None)`
 
-The base class for all exceptions raised inside REST framework.
+The **base class** for all exceptions raised inside REST framework.
 
 To provide a custom exception, subclass `APIException` and set the `.status_code` and `.detail` properties on the class.
 

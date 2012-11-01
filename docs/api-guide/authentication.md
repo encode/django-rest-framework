@@ -26,11 +26,11 @@ The value of `request.user` and `request.auth` for unauthenticated requests can 
 
 ## Setting the authentication policy
 
-The default authentication policy may be set globally, using the `DEFAULT_AUTHENTICATION` setting.  For example.
+The default authentication policy may be set globally, using the `DEFAULT_AUTHENTICATION_CLASSES` setting.  For example.
 
     REST_FRAMEWORK = {
-        'DEFAULT_AUTHENTICATION': (
-            'rest_framework.authentication.UserBasicAuthentication',
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework.authentication.BasicAuthentication',
             'rest_framework.authentication.SessionAuthentication',
         )
     }
@@ -38,7 +38,7 @@ The default authentication policy may be set globally, using the `DEFAULT_AUTHEN
 You can also set the authentication policy on a per-view basis, using the `APIView` class based views.
 
     class ExampleView(APIView):
-        authentication_classes = (SessionAuthentication, UserBasicAuthentication)
+        authentication_classes = (SessionAuthentication, BasicAuthentication)
         permission_classes = (IsAuthenticated,)
 
         def get(self, request, format=None):
@@ -50,8 +50,8 @@ You can also set the authentication policy on a per-view basis, using the `APIVi
 
 Or, if you're using the `@api_view` decorator with function based views.
 
-    @api_view(('GET',)),
-    @authentication_classes((SessionAuthentication, UserBasicAuthentication))
+    @api_view(['GET'])
+    @authentication_classes((SessionAuthentication, BasicAuthentication))
     @permissions_classes((IsAuthenticated,))
     def example_view(request, format=None):
         content = {
@@ -59,6 +59,8 @@ Or, if you're using the `@api_view` decorator with function based views.
             'auth': unicode(request.auth),  # None
         }
         return Response(content)
+
+# API Reference
 
 ## BasicAuthentication
 
@@ -84,7 +86,7 @@ You'll also need to create tokens for your users.
     token = Token.objects.create(user=...)
     print token.key
 
-For clients to authenticate, the token key should be included in the `Authorization` HTTP header.  The key should be prefixed by the string literal "Token", with whitespace seperating the two strings.  For example:
+For clients to authenticate, the token key should be included in the `Authorization` HTTP header.  The key should be prefixed by the string literal "Token", with whitespace separating the two strings.  For example:
 
     Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
 
@@ -113,7 +115,7 @@ If successfully authenticated, `SessionAuthentication` provides the following cr
 * `request.user` will be a `django.contrib.auth.models.User` instance.
 * `request.auth` will be `None`.
 
-## Custom authentication policies
+# Custom authentication
 
 To implement a custom authentication policy, subclass `BaseAuthentication` and override the `.authenticate(self, request)` method.  The method should return a two-tuple of `(user, auth)` if authentication succeeds, or `None` otherwise.
 

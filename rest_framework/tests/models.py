@@ -40,7 +40,7 @@ class RESTFrameworkModel(models.Model):
     Base for test models that sets app_label, so they play nicely.
     """
     class Meta:
-        app_label = 'rest_framework'
+        app_label = 'tests'
         abstract = True
 
 
@@ -52,6 +52,11 @@ class BasicModel(RESTFrameworkModel):
     text = models.CharField(max_length=100)
 
 
+class SlugBasedModel(RESTFrameworkModel):
+    text = models.CharField(max_length=100)
+    slug = models.SlugField(max_length=32)
+
+
 class DefaultValueModel(RESTFrameworkModel):
     text = models.CharField(default='foobar', max_length=100)
 
@@ -61,6 +66,11 @@ class CallableDefaultValueModel(RESTFrameworkModel):
 
 
 class ManyToManyModel(RESTFrameworkModel):
+    rel = models.ManyToManyField(Anchor)
+
+
+class ReadOnlyManyToManyModel(RESTFrameworkModel):
+    text = models.CharField(max_length=100, default='anchor')
     rel = models.ManyToManyField(Anchor)
 
 # Models to test generic relations
@@ -98,3 +108,28 @@ class Comment(RESTFrameworkModel):
     email = models.EmailField()
     content = models.CharField(max_length=200)
     created = models.DateTimeField(auto_now_add=True)
+
+
+class ActionItem(RESTFrameworkModel):
+    title = models.CharField(max_length=200)
+    done = models.BooleanField(default=False)
+
+
+# Models for reverse relations
+class BlogPost(RESTFrameworkModel):
+    title = models.CharField(max_length=100)
+
+
+class BlogPostComment(RESTFrameworkModel):
+    text = models.TextField()
+    blog_post = models.ForeignKey(BlogPost)
+
+
+class Person(RESTFrameworkModel):
+    name = models.CharField(max_length=10)
+    age = models.IntegerField(null=True, blank=True)
+
+
+# Model for issue #324
+class BlankFieldModel(RESTFrameworkModel):
+    title = models.CharField(max_length=100, blank=True)

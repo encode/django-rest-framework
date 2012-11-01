@@ -6,11 +6,23 @@
 
 [![build-status-image]][travis]
 
+---
+
+**Full documentation for REST framework is available on [http://django-rest-framework.org][docs].**
+
+Note that this is the 2.0 version of REST framework.  If you are looking for earlier versions please see the [0.4.x branch][0.4] on GitHub.
+
+---
+
 # Overview
 
-This branch is the redesign of Django REST framework.  It is a work in progress.
+Django REST framework is a lightweight library that makes it easy to build Web APIs.  It is designed as a modular and easy to customize architecture, based on Django's class based views.
 
-For more information, check out [the documentation][docs], in particular, the tutorial is recommended as the best place to get an overview of the redesign.
+Web APIs built using REST framework are fully self-describing and web browseable - a huge useability win for your developers.  It also supports a wide range of media types, authentication and permission policies out of the box.
+
+If you are considering using REST framework for your API, we recommend reading the [REST framework 2 announcment][rest-framework-2-announcement] which gives a good overview of the framework and it's capabilities.
+
+There is also a sandbox API you can use for testing purposes, [available here][sandbox].
 
 # Requirements
 
@@ -24,20 +36,14 @@ For more information, check out [the documentation][docs], in particular, the tu
 
 # Installation
 
-**Leaving these instructions in for the moment, they'll be valid once this becomes the master version**
-
 Install using `pip`...
 
-    pip install rest_framework
+    pip install djangorestframework
 
 ...or clone the project from github.
 
     git clone git@github.com:tomchristie/django-rest-framework.git
     pip install -r requirements.txt
-
-# Quickstart
-
-**TODO**
 
 # Development
 
@@ -82,9 +88,13 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=restframework2
-[travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=restframework2
+[travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
 [twitter]: https://twitter.com/_tomchristie
-[docs]: http://tomchristie.github.com/django-rest-framework/
+[0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
+[sandbox]: http://restframework.herokuapp.com/
+[rest-framework-2-announcement]: topics/rest-framework-2-announcement.md
+
+[docs]: http://django-rest-framework.org/
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [pyyaml]: http://pypi.python.org/pypi/PyYAML

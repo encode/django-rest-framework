@@ -100,11 +100,15 @@ You can also set the pagination style on a per-view basis, using the `ListAPIVie
 
 For more complex requirements such as serialization that differs depending on the requested media type you can override the `.get_paginate_by()` and `.get_pagination_serializer_class()` methods.
 
-## Creating custom pagination serializers
+---
+
+# Custom pagination serializers
 
 To create a custom pagination serializer class you should override `pagination.BasePaginationSerializer` and set the fields that you want the serializer to return.
 
 You can also override the name used for the object list field, by setting the `results_field` attribute, which defaults to `'results'`.
+
+## Example
 
 For example, to nest a pair of links labelled 'prev' and 'next', and set the name for the results field to 'objects', you might use something like this.
 

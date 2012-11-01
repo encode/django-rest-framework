@@ -1,48 +1,38 @@
+from django.http import Http404
 from rest_framework import exceptions
 from rest_framework.settings import api_settings
 from rest_framework.utils.mediatypes import order_by_precedence, media_type_matches
 
 
 class BaseContentNegotiation(object):
-    def negotiate(self, request, renderers, format=None, force=False):
-        raise NotImplementedError('.negotiate() must be implemented')
+    def select_parser(self, request, parsers):
+        raise NotImplementedError('.select_parser() must be implemented')
+
+    def select_renderer(self, request, renderers, format_suffix=None):
+        raise NotImplementedError('.select_renderer() must be implemented')
 
 
-class DefaultContentNegotiation(object):
+class DefaultContentNegotiation(BaseContentNegotiation):
     settings = api_settings
 
-    def select_parser(self, parsers, media_type):
+    def select_parser(self, request, parsers):
         """
         Given a list of parsers and a media type, return the appropriate
         parser to handle the incoming request.
         """
         for parser in parsers:
-            if media_type_matches(parser.media_type, media_type):
+            if media_type_matches(parser.media_type, request.content_type):
                 return parser
         return None
 
-    def negotiate(self, request, renderers, format=None, force=False):
+    def select_renderer(self, request, renderers, format_suffix=None):
         """
         Given a request and a list of renderers, return a two-tuple of:
         (renderer, media type).
-
-        If force is set, then suppress exceptions, and forcibly return a
-        fallback renderer and media_type.
-        """
-        try:
-            return self.unforced_negotiate(request, renderers, format)
-        except (exceptions.InvalidFormat, exceptions.NotAcceptable):
-            if force:
-                return (renderers[0], renderers[0].media_type)
-            raise
-
-    def unforced_negotiate(self, request, renderers, format=None):
-        """
-        As `.negotiate()`, but does not take the optional `force` agument,
-        or suppress exceptions.
         """
         # Allow URL style format override.  eg. "?format=json
-        format = format or request.GET.get(self.settings.URL_FORMAT_OVERRIDE)
+        format_query_param = self.settings.URL_FORMAT_OVERRIDE
+        format = format_suffix or request.GET.get(format_query_param)
 
         if format:
             renderers = self.filter_renderers(renderers, format)
@@ -77,7 +67,7 @@ class DefaultContentNegotiation(object):
         renderers = [renderer for renderer in renderers
                      if renderer.format == format]
         if not renderers:
-            raise exceptions.InvalidFormat(format)
+            raise Http404
         return renderers
 
     def get_accept_list(self, request):

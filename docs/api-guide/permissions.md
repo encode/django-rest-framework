@@ -6,7 +6,7 @@
 >
 > &mdash; [Apple Developer Documentation][cite]
 
-Together with [authentication] and [throttling], permissions determine wheter a request should be granted or denied access.
+Together with [authentication] and [throttling], permissions determine whether a request should be granted or denied access.
 
 Permission checks are always run at the very start of the view, before any other code is allowed to proceed.  Permission checks will typically use the authentication information in the `request.user` and `request.auth` properties to determine if the incoming request should be permitted.
 
@@ -25,13 +25,19 @@ Object level permissions are run by REST framework's generic views when `.get_ob
 
 ## Setting the permission policy
 
-The default permission policy may be set globally, using the `DEFAULT_PERMISSIONS` setting.  For example.
+The default permission policy may be set globally, using the `DEFAULT_PERMISSION_CLASSES` setting.  For example.
 
     REST_FRAMEWORK = {
-        'DEFAULT_PERMISSIONS': (
+        'DEFAULT_PERMISSION_CLASSES': (
             'rest_framework.permissions.IsAuthenticated',
         )
     }
+
+If not specified, this setting defaults to allowing unrestricted access:
+
+    'DEFAULT_PERMISSION_CLASSES': (
+       'rest_framework.permissions.AllowAny',
+    )
 
 You can also set the authentication policy on a per-view basis, using the `APIView` class based views.
 
@@ -54,6 +60,16 @@ Or, if you're using the `@api_view` decorator with function based views.
         }
         return Response(content)
 
+---
+
+# API Reference
+
+## AllowAny
+
+The `AllowAny` permission class will allow unrestricted access, **regardless of if the request was authenticated or unauthenticated**.
+
+This permission is not strictly required, since you can achieve the same result by using an empty list or tuple for the permissions setting, but you may find it useful to specify this class because it makes the intention explicit.
+
 ## IsAuthenticated
 
 The `IsAuthenticated` permission class will deny permission to any unauthenticated user, and allow permission otherwise.
@@ -62,7 +78,7 @@ This permission is suitable if you want your API to only be accessible to regist
 
 ## IsAdminUser
 
-The `IsAdminUser` permission class will deny permission to any user, unless `user.is_staff`is `True` in which case permission will be allowed.
+The `IsAdminUser` permission class will deny permission to any user, unless `user.is_staff` is `True` in which case permission will be allowed.
 
 This permission is suitable is you want your API to only be accessible to a subset of trusted administrators.
 
@@ -86,11 +102,14 @@ To use custom model permissions, override `DjangoModelPermissions` and set the `
 
 The `DjangoModelPermissions` class also supports object-level permissions.  Third-party authorization backends such as [django-guardian][guardian] that provide object-level permissions should work just fine with `DjangoModelPermissions` without any custom configuration required.
 
-## Custom permissions
+---
+
+# Custom permissions
 
 To implement a custom permission, override `BasePermission` and implement the `.has_permission(self, request, view, obj=None)` method.
 
 The method should return `True` if the request should be granted access, and `False` otherwise.
+
 
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md

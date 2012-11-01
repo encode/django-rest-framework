@@ -27,7 +27,7 @@ Notice that we're using hyperlinked relations in this case, with `HyperlinkedMod
 
 ## Views
 
-Right, we'd better right some views then.  Open `quickstart/views.py` and get typing.
+Right, we'd better write some views then.  Open `quickstart/views.py` and get typing.
 
     from django.contrib.auth.models import User, Group
     from rest_framework import generics
@@ -126,7 +126,7 @@ We'd also like to set a few global settings.  We'd like to turn on pagination, a
     )
 
     REST_FRAMEWORK = {
-        'DEFAULT_PERMISSIONS': ('rest_framework.permissions.IsAdminUser',),
+        'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
         'PAGINATE_BY': 10
     }
 

@@ -46,6 +46,12 @@ The following people have helped make REST framework great.
 * Jamie Matthews - [j4mie]
 * Mattbo - [mattbo]
 * Max Hurl - [maximilianhurl]
+* Tomi Pajunen - [eofs]
+* Rob Dobson - [rdobson]
+* Daniel Vaca Araujo - [diviei]
+* Madis Väin - [madisvain]
+* Stephan Groß - [minddust]
+* Pavel Savchenko - [asfaltboy]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -56,6 +62,8 @@ The documentation is built with [Bootstrap] and [Markdown].
 Project hosting is with [GitHub].
 
 Continuous integration testing is managed with [Travis CI][travis-ci].
+
+The [live sandbox][sandbox] is hosted on [Heroku]. 
 
 Various inspiration taken from the [Piston], [Tastypie] and [Dagny] projects.
 
@@ -78,6 +86,8 @@ To contact the author directly:
 [tastypie]: https://github.com/toastdriven/django-tastypie
 [dagny]: https://github.com/zacharyvoase/dagny
 [dabapps]: http://lab.dabapps.com
+[sandbox]: http://restframework.herokuapp.com/
+[heroku]: http://www.heroku.com/
 
 [tomchristie]: https://github.com/tomchristie
 [markotibold]: https://github.com/markotibold
@@ -123,3 +133,9 @@ To contact the author directly:
 [j4mie]: https://github.com/j4mie
 [mattbo]: https://github.com/mattbo
 [maximilianhurl]: https://github.com/maximilianhurl
+[eofs]: https://github.com/eofs
+[rdobson]: https://github.com/rdobson
+[diviei]: https://github.com/diviei
+[madisvain]: https://github.com/madisvain
+[minddust]: https://github.com/minddust
+[asfaltboy]: https://github.com/asfaltboy
