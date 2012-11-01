@@ -63,13 +63,7 @@ setup(
     packages=get_packages('rest_framework'),
     package_data=get_package_data('rest_framework'),
     test_suite='rest_framework.runtests.runtests.main',
-    install_requires=[
-        'Django>=1.3.0',
-        'django-filter',
-    ],
-    dependency_links = [
-        'git+https://github.com/alex/django-filter.git@0e4b3d703b31574922ab86fc78a86164aad0c1d0#egg=django-filter',
-    ],
+    install_requires=[],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
