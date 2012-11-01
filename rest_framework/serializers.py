@@ -73,6 +73,7 @@ class SerializerOptions(object):
         self.depth = getattr(meta, 'depth', 0)
         self.fields = getattr(meta, 'fields', ())
         self.exclude = getattr(meta, 'exclude', ())
+        self.read_only_fields = getattr(meta, 'read_only_fields', ())
 
 
 class BaseSerializer(Field):
@@ -124,14 +125,14 @@ class BaseSerializer(Field):
         # Add in the default fields
         fields = self.default_fields(serialize, obj, data, nested)
         for key, val in fields.items():
+            if key in self.opts.read_only_fields:
+                val.read_only = True
+
             if key not in ret:
                 ret[key] = val
-            try:
                 # Test if field was marked as pk_field
-                if getattr(val, 'is_pk_field'):
-                    pk_field = key
-            except AttributeError:
-                pass
+            if getattr(val, 'is_pk_field', None):
+                pk_field = key
 
         # If 'fields' is specified, use those fields, in that order.
         if self.opts.fields:
