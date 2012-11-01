@@ -127,7 +127,7 @@ class BaseSerializer(Field):
             if key not in ret:
                 ret[key] = val
             try:
-                if getattr(val.source, primary_key):
+                if getattr(val.source, 'primary_key'):
                     pk_field = key
             except AttributeError:
                 pass
