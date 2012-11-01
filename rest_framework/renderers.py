@@ -100,7 +100,7 @@ class JSONPRenderer(JSONRenderer):
         callback = self.get_callback(renderer_context)
         json = super(JSONPRenderer, self).render(data, accepted_media_type,
                                                  renderer_context)
-        return "%s(%s);" % (callback, json)
+        return u"%s(%s);" % (callback, json)
 
 
 class XMLRenderer(BaseRenderer):
@@ -306,7 +306,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                 if getattr(widget, 'choices', None):
                     choices = widget.choices
                     if any([ident != desc for (ident, desc) in choices]):
-                        choices = [(ident, "%s (%s)" % (desc, ident))
+                        choices = [(ident, u"%s (%s)" % (desc, ident))
                                    for (ident, desc) in choices]
                     widget.choices = choices
                 kwargs['widget'] = widget
