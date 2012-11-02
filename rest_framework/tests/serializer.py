@@ -1,7 +1,9 @@
 import datetime
 from django.test import TestCase
 from rest_framework import serializers
-from rest_framework.tests.models import *
+from rest_framework.tests.models import (ActionItem, Anchor, BasicModel,
+    BlankFieldModel, BlogPost, CallableDefaultValueModel, DefaultValueModel,
+    ManyToManyModel, Person, ReadOnlyManyToManyModel)
 
 
 class SubComment(object):
