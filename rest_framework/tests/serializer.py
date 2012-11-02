@@ -46,8 +46,11 @@ class ActionItemSerializer(serializers.ModelSerializer):
 
 
 class PersonSerializer(serializers.ModelSerializer):
+    info = serializers.Field(source='info')
+
     class Meta:
         model = Person
+        fields = ('name', 'age', 'info')
 
 
 class BasicTests(TestCase):
@@ -69,6 +72,9 @@ class BasicTests(TestCase):
             'created': datetime.datetime(2012, 1, 1),
             'sub_comment': 'And Merry Christmas!'
         }
+        self.person_data = {'name': 'dwight', 'age': 35}
+        self.person = Person(**self.person_data)
+        self.person.save()
 
     def test_empty(self):
         serializer = CommentSerializer()
@@ -99,6 +105,13 @@ class BasicTests(TestCase):
         self.assertEquals(serializer.object, expected)
         self.assertTrue(serializer.object is expected)
         self.assertEquals(serializer.data['sub_comment'], 'And Merry Christmas!')
+
+    def test_field_with_dictionary(self):
+        """ Make sure that dictionaries from fields are left intact
+        """
+        serializer = PersonSerializer(instance=self.person)
+        expected = self.person_data
+        self.assertEquals(serializer.data['info'], expected)
 
 
 class ValidationTests(TestCase):
