@@ -230,6 +230,7 @@ class ModelField(WritableField):
 ##### Relational fields #####
 
 
+# Not actually Writable, but subclasses may need to be.
 class RelatedField(WritableField):
     """
     Base class for related model fields.
@@ -240,10 +241,12 @@ class RelatedField(WritableField):
     widget = widgets.Select
     cache_choices = False
     empty_label = None
+    default_read_only = True  # TODO: Remove this
 
     def __init__(self, *args, **kwargs):
         self.queryset = kwargs.pop('queryset', None)
         super(RelatedField, self).__init__(*args, **kwargs)
+        self.read_only = self.default_read_only
 
     ### We need this stuff to make form choices work...
 
@@ -260,7 +263,7 @@ class RelatedField(WritableField):
         Return a readable representation for use with eg. select widgets.
         """
         desc = smart_unicode(obj)
-        ident = self.to_native(obj)
+        ident = smart_unicode(self.to_native(obj))
         if desc == ident:
             return desc
         return "%s - %s" % (desc, ident)
@@ -353,7 +356,23 @@ class PrimaryKeyRelatedField(RelatedField):
     """
     Represents a to-one relationship as a pk value.
     """
+    default_read_only = False
 
+    # TODO: Remove these field hacks...
+    def prepare_value(self, obj):
+        return self.to_native(obj.pk)
+
+    def label_from_instance(self, obj):
+        """
+        Return a readable representation for use with eg. select widgets.
+        """
+        desc = smart_unicode(obj)
+        ident = smart_unicode(self.to_native(obj.pk))
+        if desc == ident:
+            return desc
+        return "%s - %s" % (desc, ident)
+
+    # TODO: Possibly change this to just take `obj`, through prob less performant
     def to_native(self, pk):
         return pk
 
@@ -382,6 +401,21 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
     """
     Represents a to-many relationship as a pk value.
     """
+    default_read_only = False
+
+    def prepare_value(self, obj):
+        return self.to_native(obj.pk)
+
+    def label_from_instance(self, obj):
+        """
+        Return a readable representation for use with eg. select widgets.
+        """
+        desc = smart_unicode(obj)
+        ident = smart_unicode(self.to_native(obj.pk))
+        if desc == ident:
+            return desc
+        return "%s - %s" % (desc, ident)
+
     def to_native(self, pk):
         return pk
 
@@ -400,6 +434,8 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
 
 
 class SlugRelatedField(RelatedField):
+    default_read_only = False
+
     def __init__(self, *args, **kwargs):
         self.slug_field = kwargs.pop('slug_field', None)
         assert self.slug_field, 'slug_field is required'
@@ -429,6 +465,7 @@ class HyperlinkedRelatedField(RelatedField):
     pk_url_kwarg = 'pk'
     slug_url_kwarg = 'slug'
     slug_field = 'slug'
+    default_read_only = False
 
     def __init__(self, *args, **kwargs):
         try:

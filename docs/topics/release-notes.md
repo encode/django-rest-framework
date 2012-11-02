@@ -4,13 +4,23 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
+## 2.0.2
+
+**Date**: 2nd Nov 2012
+
+* Fix issues with pk related fields in the browsable API.
+
 ## 2.0.1
+
+**Date**: 1st Nov 2012
 
 * Add support for relational fields in the browsable API.
 * Added SlugRelatedField and ManySlugRelatedField.
 * If PUT creates an instance return '201 Created', instead of '200 OK'.
 
 ## 2.0.0
+
+**Date**: 30th Oct 2012
 
 * **Fix all of the things.**  (Well, almost.)
 * For more information please see the [2.0 migration guide][migration].
