@@ -57,6 +57,10 @@ To run the tests.
 
 # Changelog
 
+## Master
+
+* Minor field improvements (don't stringify dicts, more robust many-pk fields)
+
 ## 2.0.2
 
 **Date**: 2nd Nov 2012
