@@ -383,7 +383,8 @@ class PrimaryKeyRelatedField(RelatedField):
         try:
             return self.queryset.get(pk=data)
         except ObjectDoesNotExist:
-            raise ValidationError('Invalid hyperlink - object does not exist.')
+            msg = "Invalid pk '%s' - object does not exist." % smart_unicode(data)
+            raise ValidationError(msg)
 
     def field_to_native(self, obj, field_name):
         try:
@@ -429,6 +430,16 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
             return [self.to_native(item.pk) for item in queryset.all()]
         # Forward relationship
         return [self.to_native(item.pk) for item in queryset.all()]
+
+    def from_native(self, data):
+        if self.queryset is None:
+            raise Exception('Writable related fields must include a `queryset` argument')
+
+        try:
+            return self.queryset.get(pk=data)
+        except ObjectDoesNotExist:
+            msg = "Invalid pk '%s' - object does not exist." % smart_unicode(data)
+            raise ValidationError(msg)
 
 ### Slug relationships
 
