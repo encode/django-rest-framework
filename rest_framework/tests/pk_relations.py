@@ -38,7 +38,7 @@ class ForeignKeySource(models.Model):
 
 
 class ForeignKeyTargetSerializer(serializers.ModelSerializer):
-    sources = serializers.ManyPrimaryKeyRelatedField(queryset=ForeignKeySource.objects.all())
+    sources = serializers.ManyPrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = ForeignKeyTarget

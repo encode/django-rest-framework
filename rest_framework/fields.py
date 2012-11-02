@@ -344,7 +344,7 @@ class ManyRelatedField(ManyRelatedMixin, RelatedField):
     """
     Base class for related model managers.
 
-    If not overridden, this represents a to-many relatinship, using the unicode
+    If not overridden, this represents a to-many relationship, using the unicode
     representations of the target, and is read-only.
     """
     pass
