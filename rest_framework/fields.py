@@ -91,7 +91,7 @@ class Field(object):
         elif hasattr(value, '__iter__') and not isinstance(value, (dict, basestring)):
             return [self.to_native(item) for item in value]
         elif isinstance(value, dict):
-            return dict((k, self.to_native(v)) for k, v in value.items())
+            return dict(map(self.to_native, (k, v)) for k, v in value.items())
         return smart_unicode(value)
 
     def attributes(self):
