@@ -105,6 +105,14 @@ class BasicTests(TestCase):
         self.assertEquals(serializer.object, expected)
         self.assertTrue(serializer.object is expected)
         self.assertEquals(serializer.data['sub_comment'], 'And Merry Christmas!')
+    
+    def test_model_fields_as_expected(self):
+        """ Make sure that the fields returned are the same as defined
+        in the Meta data
+        """
+        serializer = PersonSerializer(instance=self.person)
+        self.assertEquals(set(serializer.data.keys()),
+                          set(['name', 'age', 'info']))
 
     def test_field_with_dictionary(self):
         """ Make sure that dictionaries from fields are left intact
