@@ -281,6 +281,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             serializers.DateField: forms.DateField,
             serializers.EmailField: forms.EmailField,
             serializers.CharField: forms.CharField,
+            serializers.ChoiceField: forms.ChoiceField,
             serializers.BooleanField: forms.BooleanField,
             serializers.PrimaryKeyRelatedField: forms.ChoiceField,
             serializers.ManyPrimaryKeyRelatedField: forms.MultipleChoiceField,
@@ -316,7 +317,10 @@ class BrowsableAPIRenderer(BaseRenderer):
             try:
                 fields[k] = field_mapping[v.__class__](**kwargs)
             except KeyError:
-                fields[k] = forms.CharField(**kwargs)
+                if getattr(v, 'choices', None) is not None:
+                    fields[k] = forms.ChoiceField(**kwargs)
+                else:
+                    fields[k] = forms.CharField(**kwargs)
         return fields
 
     def get_form(self, view, method, request):
