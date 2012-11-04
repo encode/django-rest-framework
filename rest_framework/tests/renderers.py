@@ -462,12 +462,13 @@ class CacheRenderTest(TestCase):
     def http_resp(self, http_method, url):
         """
         Simple wrapper for Client http requests
-        Removes the `client' attribute from the response as an instance
-        of `django.test.client.Client' is not pickable
+        Removes the `client' and `request' attributes from as they are
+        added by django.test.client.Client and not part of caching
+        responses outside of tests.
         """
         method = getattr(self.client, http_method)
         resp = method(url)
-        del resp.client
+        del resp.client, resp.request
         return resp
 
     def test_obj_pickling(self):
