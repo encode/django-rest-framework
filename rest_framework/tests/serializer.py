@@ -3,7 +3,7 @@ from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, CallableDefaultValueModel, DefaultValueModel,
-    ManyToManyModel, Person, ReadOnlyManyToManyModel)
+    ManyToManyModel, Person, ReadOnlyManyToManyModel, BlankRelatedFieldModel)
 
 
 class SubComment(object):
@@ -525,12 +525,22 @@ class BlankFieldTests(TestCase):
 
 class BlankRelatedFieldModelTests(TestCase):
     def setUp(self):
+        class BlankInlineRelatedFieldModelSerializer(serializers.ModelSerializer):
+            blank_field = serializers.PrimaryKeyRelatedField(blank=True, queryset=BasicModel.objects.all())
+            class Meta:
+                model = BlankRelatedFieldModel
+
         class BlankRelatedFieldModelSerializer(serializers.ModelSerializer):
             class Meta:
                 model = BlankRelatedFieldModel
 
+        self.inline_serializer_class = BlankInlineRelatedFieldModelSerializer
         self.serializer_class = BlankRelatedFieldModelSerializer
         self.data = {'blank_field': None}
+
+    def test_create_inline_blank_related_field(self):
+        serializer = self.inline_serializer_class(self.data)
+        self.assertEquals(serializer.is_valid(), True)
 
     def test_create_blank_related_field(self):
         serializer = self.serializer_class(self.data)
