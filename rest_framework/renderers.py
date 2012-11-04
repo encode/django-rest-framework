@@ -282,10 +282,12 @@ class BrowsableAPIRenderer(BaseRenderer):
             serializers.EmailField: forms.EmailField,
             serializers.CharField: forms.CharField,
             serializers.BooleanField: forms.BooleanField,
-            serializers.PrimaryKeyRelatedField: forms.ModelChoiceField,
-            serializers.ManyPrimaryKeyRelatedField: forms.ModelMultipleChoiceField,
-            serializers.HyperlinkedRelatedField: forms.ModelChoiceField,
-            serializers.ManyHyperlinkedRelatedField: forms.ModelMultipleChoiceField
+            serializers.PrimaryKeyRelatedField: forms.ChoiceField,
+            serializers.ManyPrimaryKeyRelatedField: forms.MultipleChoiceField,
+            serializers.SlugRelatedField: forms.ChoiceField,
+            serializers.ManySlugRelatedField: forms.MultipleChoiceField,
+            serializers.HyperlinkedRelatedField: forms.ChoiceField,
+            serializers.ManyHyperlinkedRelatedField: forms.MultipleChoiceField
         }
 
         fields = {}
@@ -296,19 +298,14 @@ class BrowsableAPIRenderer(BaseRenderer):
             kwargs = {}
             kwargs['required'] = v.required
 
-            if getattr(v, 'queryset', None):
-                kwargs['queryset'] = v.queryset
+            #if getattr(v, 'queryset', None):
+            #    kwargs['queryset'] = v.queryset
+
+            if getattr(v, 'choices', None) is not None:
+                kwargs['choices'] = v.choices
 
             if getattr(v, 'widget', None):
                 widget = copy.deepcopy(v.widget)
-                # If choices have friendly readable names,
-                # then add in the identities too
-                if getattr(widget, 'choices', None):
-                    choices = widget.choices
-                    if any([ident != desc for (ident, desc) in choices]):
-                        choices = [(ident, u"%s (%s)" % (desc, ident))
-                                   for (ident, desc) in choices]
-                    widget.choices = choices
                 kwargs['widget'] = widget
 
             if getattr(v, 'default', None) is not None:

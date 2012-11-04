@@ -66,11 +66,9 @@ If you're intending to use the browseable API you'll want to add REST framework'
 
 Note that the URL path can be whatever you want, but you must include `rest_framework.urls` with the `rest_framework` namespace.
 
-<!--
 ## Quickstart
 
 Can't wait to get started?  The [quickstart guide][quickstart] is the fastest way to get up and running with REST framework.
--->
 
 ## Tutorial
 

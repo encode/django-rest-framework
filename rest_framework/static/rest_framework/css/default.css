@@ -36,6 +36,13 @@ ul.breadcrumb {
   margin: 58px 0 0 0;
 }
 
+form select, form input {
+  width: 90%;
+}
+
+form select[multiple] {
+  height: 150px;
+}
 /* To allow tooltips to work on disabled elements */
 .disabled-tooltip-shield {
     position: absolute;
