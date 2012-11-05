@@ -55,6 +55,7 @@ The following people have helped make REST framework great.
 * Otto Yiu - [ottoyiu]
 * Jacob Magnusson - [jmagnusson]
 * Osiloke Harold Emoekpere - [osiloke]
+* Michael Shepanski - [mjs7231]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -145,3 +146,4 @@ To contact the author directly:
 [ottoyiu]: https://github.com/OttoYiu
 [jmagnusson]: https://github.com/jmagnusson
 [osiloke]: https://github.com/osiloke
+[mjs7231]: https://github.com/mjs7231
