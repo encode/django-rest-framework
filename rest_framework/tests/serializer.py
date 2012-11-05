@@ -87,11 +87,11 @@ class BasicTests(TestCase):
         self.assertEquals(serializer.data, expected)
 
     def test_retrieve(self):
-        serializer = CommentSerializer(instance=self.comment)
+        serializer = CommentSerializer(self.comment)
         self.assertEquals(serializer.data, self.expected)
 
     def test_create(self):
-        serializer = CommentSerializer(self.data)
+        serializer = CommentSerializer(data=self.data)
         expected = self.comment
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.object, expected)
@@ -99,25 +99,25 @@ class BasicTests(TestCase):
         self.assertEquals(serializer.data['sub_comment'], 'And Merry Christmas!')
 
     def test_update(self):
-        serializer = CommentSerializer(self.data, instance=self.comment)
+        serializer = CommentSerializer(self.comment, data=self.data)
         expected = self.comment
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.object, expected)
         self.assertTrue(serializer.object is expected)
         self.assertEquals(serializer.data['sub_comment'], 'And Merry Christmas!')
-    
+
     def test_model_fields_as_expected(self):
         """ Make sure that the fields returned are the same as defined
         in the Meta data
         """
-        serializer = PersonSerializer(instance=self.person)
+        serializer = PersonSerializer(self.person)
         self.assertEquals(set(serializer.data.keys()),
                           set(['name', 'age', 'info']))
 
     def test_field_with_dictionary(self):
         """ Make sure that dictionaries from fields are left intact
         """
-        serializer = PersonSerializer(instance=self.person)
+        serializer = PersonSerializer(self.person)
         expected = self.person_data
         self.assertEquals(serializer.data['info'], expected)
 
@@ -138,12 +138,12 @@ class ValidationTests(TestCase):
         )
 
     def test_create(self):
-        serializer = CommentSerializer(self.data)
+        serializer = CommentSerializer(data=self.data)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
 
     def test_update(self):
-        serializer = CommentSerializer(self.data, instance=self.comment)
+        serializer = CommentSerializer(self.comment, data=self.data)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
 
@@ -152,7 +152,7 @@ class ValidationTests(TestCase):
             'content': 'xxx',
             'created': datetime.datetime(2012, 1, 1)
         }
-        serializer = CommentSerializer(data, instance=self.comment)
+        serializer = CommentSerializer(self.comment, data=data)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'email': [u'This field is required.']})
 
@@ -163,7 +163,7 @@ class ValidationTests(TestCase):
             'title': 'Some action item',
             #No 'done' value.
         }
-        serializer = ActionItemSerializer(data, instance=self.actionitem)
+        serializer = ActionItemSerializer(self.actionitem, data=data)
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.errors, {})
 
@@ -183,12 +183,12 @@ class ValidationTests(TestCase):
             'created': datetime.datetime(2012, 1, 1)
         }
 
-        serializer = CommentSerializerWithFieldValidator(data)
+        serializer = CommentSerializerWithFieldValidator(data=data)
         self.assertTrue(serializer.is_valid())
 
         data['content'] = 'This should not validate'
 
-        serializer = CommentSerializerWithFieldValidator(data)
+        serializer = CommentSerializerWithFieldValidator(data=data)
         self.assertFalse(serializer.is_valid())
         self.assertEquals(serializer.errors, {'content': [u'Test not in value']})
 
@@ -207,12 +207,12 @@ class ValidationTests(TestCase):
             'created': datetime.datetime(2012, 1, 1)
         }
 
-        serializer = CommentSerializerWithCrossFieldValidator(data)
+        serializer = CommentSerializerWithCrossFieldValidator(data=data)
         self.assertTrue(serializer.is_valid())
 
         data['content'] = 'A comment from foo@bar.com'
 
-        serializer = CommentSerializerWithCrossFieldValidator(data)
+        serializer = CommentSerializerWithCrossFieldValidator(data=data)
         self.assertFalse(serializer.is_valid())
         self.assertEquals(serializer.errors, {'non_field_errors': [u'Email address not in content']})
 
@@ -220,7 +220,7 @@ class ValidationTests(TestCase):
         """
         Omitting a value for null-field should validate.
         """
-        serializer = PersonSerializer({'name': 'marko'})
+        serializer = PersonSerializer(data={'name': 'marko'})
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.errors, {})
 
@@ -270,7 +270,7 @@ class ManyToManyTests(TestCase):
         Create an instance of a model with a ManyToMany relationship.
         """
         data = {'rel': [self.anchor.id]}
-        serializer = self.serializer_class(data)
+        serializer = self.serializer_class(data=data)
         self.assertEquals(serializer.is_valid(), True)
         instance = serializer.save()
         self.assertEquals(len(ManyToManyModel.objects.all()), 2)
@@ -284,7 +284,7 @@ class ManyToManyTests(TestCase):
         new_anchor = Anchor()
         new_anchor.save()
         data = {'rel': [self.anchor.id, new_anchor.id]}
-        serializer = self.serializer_class(data, instance=self.instance)
+        serializer = self.serializer_class(self.instance, data=data)
         self.assertEquals(serializer.is_valid(), True)
         instance = serializer.save()
         self.assertEquals(len(ManyToManyModel.objects.all()), 1)
@@ -297,7 +297,7 @@ class ManyToManyTests(TestCase):
         containing no items.
         """
         data = {'rel': []}
-        serializer = self.serializer_class(data)
+        serializer = self.serializer_class(data=data)
         self.assertEquals(serializer.is_valid(), True)
         instance = serializer.save()
         self.assertEquals(len(ManyToManyModel.objects.all()), 2)
@@ -312,7 +312,7 @@ class ManyToManyTests(TestCase):
         new_anchor = Anchor()
         new_anchor.save()
         data = {'rel': []}
-        serializer = self.serializer_class(data, instance=self.instance)
+        serializer = self.serializer_class(self.instance, data=data)
         self.assertEquals(serializer.is_valid(), True)
         instance = serializer.save()
         self.assertEquals(len(ManyToManyModel.objects.all()), 1)
@@ -326,7 +326,7 @@ class ManyToManyTests(TestCase):
         lists (eg form data).
         """
         data = {'rel': ''}
-        serializer = self.serializer_class(data)
+        serializer = self.serializer_class(data=data)
         self.assertEquals(serializer.is_valid(), True)
         instance = serializer.save()
         self.assertEquals(len(ManyToManyModel.objects.all()), 2)
@@ -364,7 +364,7 @@ class ReadOnlyManyToManyTests(TestCase):
         new_anchor = Anchor()
         new_anchor.save()
         data = {'rel': [self.anchor.id, new_anchor.id]}
-        serializer = self.serializer_class(data, instance=self.instance)
+        serializer = self.serializer_class(self.instance, data=data)
         self.assertEquals(serializer.is_valid(), True)
         instance = serializer.save()
         self.assertEquals(len(ReadOnlyManyToManyModel.objects.all()), 1)
@@ -380,7 +380,7 @@ class ReadOnlyManyToManyTests(TestCase):
         new_anchor = Anchor()
         new_anchor.save()
         data = {}
-        serializer = self.serializer_class(data, instance=self.instance)
+        serializer = self.serializer_class(self.instance, data=data)
         self.assertEquals(serializer.is_valid(), True)
         instance = serializer.save()
         self.assertEquals(len(ReadOnlyManyToManyModel.objects.all()), 1)
@@ -400,7 +400,7 @@ class DefaultValueTests(TestCase):
 
     def test_create_using_default(self):
         data = {}
-        serializer = self.serializer_class(data)
+        serializer = self.serializer_class(data=data)
         self.assertEquals(serializer.is_valid(), True)
         instance = serializer.save()
         self.assertEquals(len(self.objects.all()), 1)
@@ -409,7 +409,7 @@ class DefaultValueTests(TestCase):
 
     def test_create_overriding_default(self):
         data = {'text': 'overridden'}
-        serializer = self.serializer_class(data)
+        serializer = self.serializer_class(data=data)
         self.assertEquals(serializer.is_valid(), True)
         instance = serializer.save()
         self.assertEquals(len(self.objects.all()), 1)
@@ -428,7 +428,7 @@ class CallableDefaultValueTests(TestCase):
 
     def test_create_using_default(self):
         data = {}
-        serializer = self.serializer_class(data)
+        serializer = self.serializer_class(data=data)
         self.assertEquals(serializer.is_valid(), True)
         instance = serializer.save()
         self.assertEquals(len(self.objects.all()), 1)
@@ -437,7 +437,7 @@ class CallableDefaultValueTests(TestCase):
 
     def test_create_overriding_default(self):
         data = {'text': 'overridden'}
-        serializer = self.serializer_class(data)
+        serializer = self.serializer_class(data=data)
         self.assertEquals(serializer.is_valid(), True)
         instance = serializer.save()
         self.assertEquals(len(self.objects.all()), 1)
@@ -499,11 +499,11 @@ class BlankFieldTests(TestCase):
         self.data = {'title': ''}
 
     def test_create_blank_field(self):
-        serializer = self.serializer_class(self.data)
+        serializer = self.serializer_class(data=self.data)
         self.assertEquals(serializer.is_valid(), True)
 
     def test_create_model_blank_field(self):
-        serializer = self.model_serializer_class(self.data)
+        serializer = self.model_serializer_class(data=self.data)
         self.assertEquals(serializer.is_valid(), True)
 
     def test_create_not_blank_field(self):
@@ -511,7 +511,7 @@ class BlankFieldTests(TestCase):
         Test to ensure blank data in a field not marked as blank=True
         is considered invalid in a non-model serializer
         """
-        serializer = self.not_blank_serializer_class(self.data)
+        serializer = self.not_blank_serializer_class(data=self.data)
         self.assertEquals(serializer.is_valid(), False)
 
     def test_create_model_not_blank_field(self):
@@ -519,5 +519,5 @@ class BlankFieldTests(TestCase):
         Test to ensure blank data in a field not marked as blank=True
         is considered invalid in a model serializer
         """
-        serializer = self.not_blank_model_serializer_class(self.data)
+        serializer = self.not_blank_model_serializer_class(data=self.data)
         self.assertEquals(serializer.is_valid(), False)

@@ -47,7 +47,7 @@ The first part of serializer class defines the fields that get serialized/deseri
 
 We can now use `CommentSerializer` to serialize a comment, or list of comments.  Again, using the `Serializer` class looks a lot like using a `Form` class.
 
-    serializer = CommentSerializer(instance=comment)
+    serializer = CommentSerializer(comment)
     serializer.data
     # {'email': u'leila@example.com', 'content': u'foo bar', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774)}
 
@@ -65,12 +65,17 @@ Deserialization is similar.  First we parse a stream into python native datatype
 
 ...then we restore those native datatypes into a fully populated object instance.
 
-    serializer = CommentSerializer(data)
+    serializer = CommentSerializer(data=data)
     serializer.is_valid()
     # True
     serializer.object
     # <Comment object at 0x10633b2d0>
     >>> serializer.deserialize('json', stream)
+
+When deserializing data, we can either create a new instance, or update an existing instance.
+
+    serializer = CommentSerializer(data=data)           # Create new instance
+    serializer = CommentSerializer(comment, data=data)  # Update `instance`
 
 ## Validation
 
@@ -78,7 +83,11 @@ When deserializing data, you always need to call `is_valid()` before attempting 
 
 ### Field-level validation
 
-You can specify custom field-level validation by adding `validate_<fieldname>()` methods to your `Serializer` subclass. These are analagous to `clean_<fieldname>` methods on Django forms, but accept slightly different arguments. They take a dictionary of deserialized attributes as a first argument, and the field name in that dictionary as a second argument (which will be either the name of the field or the value of the `source` argument to the field, if one was provided). Your `validate_<fieldname>` methods should either just return the attrs dictionary or raise a `ValidationError`. For example:
+You can specify custom field-level validation by adding `.validate_<fieldname>` methods to your `Serializer` subclass. These are analagous to `.clean_<fieldname>` methods on Django forms, but accept slightly different arguments.
+
+They take a dictionary of deserialized attributes as a first argument, and the field name in that dictionary as a second argument (which will be either the name of the field or the value of the `source` argument to the field, if one was provided).
+
+Your `validate_<fieldname>` methods should either just return the `attrs` dictionary or raise a `ValidationError`. For example:
 
     from rest_framework import serializers
 
@@ -88,16 +97,22 @@ You can specify custom field-level validation by adding `validate_<fieldname>()`
 
         def validate_title(self, attrs, source):
             """
-            Check that the blog post is about Django
+            Check that the blog post is about Django.
             """
             value = attrs[source]
-            if "Django" not in value:
+            if "django" not in value.lower():
                 raise serializers.ValidationError("Blog post is not about Django")
             return attrs
 
-### Final cross-field validation
+### Object-level validation
 
-To do any other validation that requires access to multiple fields, add a method called `validate` to your `Serializer` subclass. This method takes a single argument, which is the `attrs` dictionary. It should raise a `ValidationError` if necessary, or just return `attrs`.
+To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass. This method takes a single argument, which is the `attrs` dictionary. It should raise a `ValidationError` if necessary, or just return `attrs`.
+
+## Saving object state
+
+Serializers also include a `.save()` method that you can override if you want to provide a method of persisting the state of a deserialized object.  The default behavior of the method is to simply call `.save()` on the deserialized object instance.
+
+The generic views provided by REST framework call the `.save()` method when updating or creating entities.  
 
 ## Dealing with nested objects
 

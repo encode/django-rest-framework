@@ -162,7 +162,7 @@ Okay, once we've got a few imports out of the way, let's create a code snippet t
 
 We've now got a few snippet instances to play with.  Let's take a look at serializing one of those instances.
 
-    serializer = SnippetSerializer(instance=snippet)
+    serializer = SnippetSerializer(snippet)
     serializer.data
     # {'pk': 1, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}
 
@@ -181,7 +181,7 @@ Deserialization is similar.  First we parse a stream into python native datatype
 
 ...then we restore those native datatypes into to a fully populated object instance.
 
-    serializer = SnippetSerializer(data)
+    serializer = SnippetSerializer(data=data)
     serializer.is_valid()
     # True
     serializer.object
@@ -240,12 +240,12 @@ The root of our API is going to be a view that supports listing all the existing
         """
         if request.method == 'GET':
             snippets = Snippet.objects.all()
-            serializer = SnippetSerializer(instance=snippets)
+            serializer = SnippetSerializer(snippets)
             return JSONResponse(serializer.data)
 
         elif request.method == 'POST':
             data = JSONParser().parse(request)
-            serializer = SnippetSerializer(data)
+            serializer = SnippetSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
                 return JSONResponse(serializer.data, status=201)
@@ -267,12 +267,12 @@ We'll also need a view which corresponds to an individual snippet, and can be us
             return HttpResponse(status=404)
  
         if request.method == 'GET':
-            serializer = SnippetSerializer(instance=snippet)
+            serializer = SnippetSerializer(snippet)
             return JSONResponse(serializer.data)
     
         elif request.method == 'PUT':
             data = JSONParser().parse(request)
-            serializer = SnippetSerializer(data, instance=snippet)
+            serializer = SnippetSerializer(snippet, data=data)
             if serializer.is_valid():
                 serializer.save()
                 return JSONResponse(serializer.data)
