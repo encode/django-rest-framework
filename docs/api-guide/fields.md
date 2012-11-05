@@ -239,7 +239,7 @@ Then an example output format for a Bookmark instance would be:
 
 `PrimaryKeyRelatedField` and `ManyPrimaryKeyRelatedField` will represent the target of the relationship using it's primary key.
 
-Be default these fields read-write, although you can change this behaviour using the `read_only` flag.
+By default these fields are read-write, although you can change this behaviour using the `read_only` flag.
 
 **Arguments**:
 
@@ -249,18 +249,18 @@ Be default these fields read-write, although you can change this behaviour using
 
 `SlugRelatedField` and `ManySlugRelatedField` will represent the target of the relationship using a unique slug.
 
-Be default these fields read-write, although you can change this behaviour using the `read_only` flag.
+By default these fields read-write, although you can change this behaviour using the `read_only` flag.
 
 **Arguments**:
 
-* `slug_field` - The field on the target that should used as the representation.  This should be a field that uniquely identifies any given instance.  For example, `username`.
+* `slug_field` - The field on the target that should be used to represent it.  This should be a field that uniquely identifies any given instance.  For example, `username`.
 * `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
 
 ## HyperlinkedRelatedField / ManyHyperlinkedRelatedField
 
 `HyperlinkedRelatedField` and `ManyHyperlinkedRelatedField` will represent the target of the relationship using a hyperlink.
 
-Be default, `HyperlinkedRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
+By default, `HyperlinkedRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
 
 **Arguments**:
 

@@ -184,7 +184,7 @@ class TestCreateWithForeignKeys(TestCase):
 
         request = factory.post('/comments/', data=data)
         response = self.create_view(request).render()
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(self.post.blogpostcomment_set.count(), 1)
         self.assertEqual(self.post.blogpostcomment_set.all()[0].text, 'A test comment')
 
