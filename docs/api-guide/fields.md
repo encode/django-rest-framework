@@ -235,44 +235,48 @@ Then an example output format for a Bookmark instance would be:
         'url': u'https://www.djangoproject.com/'
     }
 
-## PrimaryKeyRelatedField
+## PrimaryKeyRelatedField / ManyPrimaryKeyRelatedField
 
-This field can be applied to any "to-one" relationship, such as a `ForeignKey` field.
+`PrimaryKeyRelatedField` and `ManyPrimaryKeyRelatedField` will represent the target of the relationship using it's primary key.
 
-`PrimaryKeyRelatedField` will represent the target of the field using it's primary key.
+Be default these fields read-write, although you can change this behaviour using the `read_only` flag.
 
-Be default, `PrimaryKeyRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
+**Arguments**:
 
-## ManyPrimaryKeyRelatedField
+* `queryset` - All relational fields must either set a queryset, or set `read_only=True`
 
-This field can be applied to any "to-many" relationship, such as a `ManyToManyField` field, or a reverse `ForeignKey` relationship.
+## SlugRelatedField / ManySlugRelatedField
 
-`PrimaryKeyRelatedField` will represent the targets of the field using their primary key.
+`SlugRelatedField` and `ManySlugRelatedField` will represent the target of the relationship using a unique slug.
 
-Be default, `ManyPrimaryKeyRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
+Be default these fields read-write, although you can change this behaviour using the `read_only` flag.
 
-## HyperlinkedRelatedField
+**Arguments**:
 
-This field can be applied to any "to-one" relationship, such as a `ForeignKey` field.
+* `slug_field` - The field on the target that should used as the representation.  This should be a field that uniquely identifies any given instance.  For example, `username`.
+* `queryset` - All relational fields must either set a queryset, or set `read_only=True`
 
-`HyperlinkedRelatedField` will represent the target of the field using a hyperlink.  You must include a named URL pattern in your URL conf, with a name like `'{model-name}-detail'` that corresponds to the target of the hyperlink.
+## HyperlinkedRelatedField / ManyHyperlinkedRelatedField
+
+`HyperlinkedRelatedField` and `ManyHyperlinkedRelatedField` will represent the target of the relationship using a hyperlink.
 
 Be default, `HyperlinkedRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
 
-## ManyHyperlinkedRelatedField
+**Arguments**:
 
-This field can be applied to any "to-many" relationship, such as a `ManyToManyField` field, or a reverse `ForeignKey` relationship.
-
-`ManyHyperlinkedRelatedField` will represent the targets of the field using hyperlinks.  You must include a named URL pattern in your URL conf, with a name like `'{model-name}-detail'` that corresponds to the target of the hyperlink.
-
-Be default, `ManyHyperlinkedRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
+* `view_name` - The view name that should be used as the target of the relationship.  **required**.
+* `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
+* `queryset` - All relational fields must either set a queryset, or set `read_only=True`
 
 ## HyperLinkedIdentityField
 
 This field can be applied as an identity relationship, such as the `'url'` field on  a HyperlinkedModelSerializer.
 
-You must include a named URL pattern in your URL conf, with a name like `'{model-name}-detail'` that corresponds to the model.
-
 This field is always read-only.
+
+**Arguments**:
+
+* `view_name` - The view name that should be used as the target of the relationship.  **required**.
+* `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
 
 [cite]: http://www.python.org/dev/peps/pep-0020/

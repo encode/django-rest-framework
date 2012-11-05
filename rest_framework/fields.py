@@ -8,6 +8,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import resolve, get_script_prefix
 from django.conf import settings
 from django.forms import widgets
+from django.forms.models import ModelChoiceIterator
 from django.utils.encoding import is_protected_type, smart_unicode
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.reverse import reverse
@@ -89,6 +90,8 @@ class Field(object):
             return value
         elif hasattr(value, '__iter__') and not isinstance(value, (dict, basestring)):
             return [self.to_native(item) for item in value]
+        elif isinstance(value, dict):
+            return dict(map(self.to_native, (k, v)) for k, v in value.items())
         return smart_unicode(value)
 
     def attributes(self):
@@ -211,9 +214,9 @@ class ModelField(WritableField):
     def from_native(self, value):
         try:
             rel = self.model_field.rel
+            return rel.to._meta.get_field(rel.field_name).to_python(value)
         except:
             return self.model_field.to_python(value)
-        return rel.to._meta.get_field(rel.field_name).to_python(value)
 
     def field_to_native(self, obj, field_name):
         value = self.model_field._get_val_from_obj(obj)
@@ -229,13 +232,77 @@ class ModelField(WritableField):
 ##### Relational fields #####
 
 
+# Not actually Writable, but subclasses may need to be.
 class RelatedField(WritableField):
     """
     Base class for related model fields.
+
+    If not overridden, this represents a to-one relatinship, using the unicode
+    representation of the target.
     """
+    widget = widgets.Select
+    cache_choices = False
+    empty_label = None
+    default_read_only = True  # TODO: Remove this
+
     def __init__(self, *args, **kwargs):
         self.queryset = kwargs.pop('queryset', None)
         super(RelatedField, self).__init__(*args, **kwargs)
+        self.read_only = self.default_read_only
+
+    ### We need this stuff to make form choices work...
+
+    # def __deepcopy__(self, memo):
+    #     result = super(RelatedField, self).__deepcopy__(memo)
+    #     result.queryset = result.queryset
+    #     return result
+
+    def prepare_value(self, obj):
+        return self.to_native(obj)
+
+    def label_from_instance(self, obj):
+        """
+        Return a readable representation for use with eg. select widgets.
+        """
+        desc = smart_unicode(obj)
+        ident = smart_unicode(self.to_native(obj))
+        if desc == ident:
+            return desc
+        return "%s - %s" % (desc, ident)
+
+    def _get_queryset(self):
+        return self._queryset
+
+    def _set_queryset(self, queryset):
+        self._queryset = queryset
+        self.widget.choices = self.choices
+
+    queryset = property(_get_queryset, _set_queryset)
+
+    def _get_choices(self):
+        # If self._choices is set, then somebody must have manually set
+        # the property self.choices. In this case, just return self._choices.
+        if hasattr(self, '_choices'):
+            return self._choices
+
+        # Otherwise, execute the QuerySet in self.queryset to determine the
+        # choices dynamically. Return a fresh ModelChoiceIterator that has not been
+        # consumed. Note that we're instantiating a new ModelChoiceIterator *each*
+        # time _get_choices() is called (and, thus, each time self.choices is
+        # accessed) so that we can ensure the QuerySet has not been consumed. This
+        # construct might look complicated but it allows for lazy evaluation of
+        # the queryset.
+        return ModelChoiceIterator(self)
+
+    def _set_choices(self, value):
+        # Setting choices also sets the choices on the widget.
+        # choices can be any iterable, but we call list() on it because
+        # it will be consumed more than once.
+        self._choices = self.widget.choices = list(value)
+
+    choices = property(_get_choices, _set_choices)
+
+    ### Regular serializier stuff...
 
     def field_to_native(self, obj, field_name):
         value = getattr(obj, self.source or field_name)
@@ -253,6 +320,8 @@ class ManyRelatedMixin(object):
     """
     Mixin to convert a related field to a many related field.
     """
+    widget = widgets.SelectMultiple
+
     def field_to_native(self, obj, field_name):
         value = getattr(obj, self.source or field_name)
         return [self.to_native(item) for item in value.all()]
@@ -276,6 +345,9 @@ class ManyRelatedMixin(object):
 class ManyRelatedField(ManyRelatedMixin, RelatedField):
     """
     Base class for related model managers.
+
+    If not overridden, this represents a to-many relationship, using the unicode
+    representations of the target, and is read-only.
     """
     pass
 
@@ -284,9 +356,25 @@ class ManyRelatedField(ManyRelatedMixin, RelatedField):
 
 class PrimaryKeyRelatedField(RelatedField):
     """
-    Serializes a related field or related object to a pk value.
+    Represents a to-one relationship as a pk value.
     """
+    default_read_only = False
 
+    # TODO: Remove these field hacks...
+    def prepare_value(self, obj):
+        return self.to_native(obj.pk)
+
+    def label_from_instance(self, obj):
+        """
+        Return a readable representation for use with eg. select widgets.
+        """
+        desc = smart_unicode(obj)
+        ident = smart_unicode(self.to_native(obj.pk))
+        if desc == ident:
+            return desc
+        return "%s - %s" % (desc, ident)
+
+    # TODO: Possibly change this to just take `obj`, through prob less performant
     def to_native(self, pk):
         return pk
 
@@ -297,7 +385,8 @@ class PrimaryKeyRelatedField(RelatedField):
         try:
             return self.queryset.get(pk=data)
         except ObjectDoesNotExist:
-            raise ValidationError('Invalid hyperlink - object does not exist.')
+            msg = "Invalid pk '%s' - object does not exist." % smart_unicode(data)
+            raise ValidationError(msg)
 
     def field_to_native(self, obj, field_name):
         try:
@@ -313,8 +402,23 @@ class PrimaryKeyRelatedField(RelatedField):
 
 class ManyPrimaryKeyRelatedField(ManyRelatedField):
     """
-    Serializes a to-many related field or related manager to a pk value.
+    Represents a to-many relationship as a pk value.
     """
+    default_read_only = False
+
+    def prepare_value(self, obj):
+        return self.to_native(obj.pk)
+
+    def label_from_instance(self, obj):
+        """
+        Return a readable representation for use with eg. select widgets.
+        """
+        desc = smart_unicode(obj)
+        ident = smart_unicode(self.to_native(obj.pk))
+        if desc == ident:
+            return desc
+        return "%s - %s" % (desc, ident)
+
     def to_native(self, pk):
         return pk
 
@@ -329,13 +433,55 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
         # Forward relationship
         return [self.to_native(item.pk) for item in queryset.all()]
 
+    def from_native(self, data):
+        if self.queryset is None:
+            raise Exception('Writable related fields must include a `queryset` argument')
+
+        try:
+            return self.queryset.get(pk=data)
+        except ObjectDoesNotExist:
+            msg = "Invalid pk '%s' - object does not exist." % smart_unicode(data)
+            raise ValidationError(msg)
+
+### Slug relationships
+
+
+class SlugRelatedField(RelatedField):
+    default_read_only = False
+
+    def __init__(self, *args, **kwargs):
+        self.slug_field = kwargs.pop('slug_field', None)
+        assert self.slug_field, 'slug_field is required'
+        super(SlugRelatedField, self).__init__(*args, **kwargs)
+
+    def to_native(self, obj):
+        return getattr(obj, self.slug_field)
+
+    def from_native(self, data):
+        if self.queryset is None:
+            raise Exception('Writable related fields must include a `queryset` argument')
+
+        try:
+            return self.queryset.get(**{self.slug_field: data})
+        except ObjectDoesNotExist:
+            raise ValidationError('Object with %s=%s does not exist.' %
+                                  (self.slug_field, unicode(data)))
+
+
+class ManySlugRelatedField(ManyRelatedMixin, SlugRelatedField):
+    pass
+
 
 ### Hyperlinked relationships
 
 class HyperlinkedRelatedField(RelatedField):
+    """
+    Represents a to-one relationship, using hyperlinking.
+    """
     pk_url_kwarg = 'pk'
     slug_url_kwarg = 'slug'
     slug_field = 'slug'
+    default_read_only = False
 
     def __init__(self, *args, **kwargs):
         try:
@@ -419,16 +565,20 @@ class HyperlinkedRelatedField(RelatedField):
 
 
 class ManyHyperlinkedRelatedField(ManyRelatedMixin, HyperlinkedRelatedField):
+    """
+    Represents a to-many relationship, using hyperlinking.
+    """
     pass
 
 
 class HyperlinkedIdentityField(Field):
     """
-    A field that represents the model's identity using a hyperlink.
+    Represents the instance, or a property on the instance, using hyperlinking.
     """
+
     def __init__(self, *args, **kwargs):
-        # TODO: Make this mandatory, and have the HyperlinkedModelSerializer
-        # set it on-the-fly
+        # TODO: Make view_name mandatory, and have the
+        # HyperlinkedModelSerializer set it on-the-fly
         self.view_name = kwargs.pop('view_name', None)
         self.format = kwargs.pop('format', None)
         super(HyperlinkedIdentityField, self).__init__(*args, **kwargs)

@@ -32,10 +32,10 @@ def main():
             'Function-based test runners are deprecated. Test runners should be classes with a run_tests() method.',
             DeprecationWarning
         )
-        failures = TestRunner(['rest_framework'])
+        failures = TestRunner(['tests'])
     else:
         test_runner = TestRunner()
-        failures = test_runner.run_tests(['rest_framework'])
+        failures = test_runner.run_tests(['tests'])
     cov.stop()
 
     # Discover the list of all modules that we should test coverage for
