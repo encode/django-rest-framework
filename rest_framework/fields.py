@@ -458,6 +458,9 @@ class SlugRelatedField(RelatedField):
         return getattr(obj, self.slug_field)
 
     def from_native(self, data):
+        if self.queryset is None:
+            raise Exception('Writable related fields must include a `queryset` argument')
+
         try:
             return self.queryset.get(**{self.slug_field: data})
         except ObjectDoesNotExist:
