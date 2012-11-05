@@ -6,6 +6,15 @@ from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
 from rest_framework.compat import get_concrete_model
+
+# Note: We do the following so that users of the framework can use this style:
+#
+#     example_field = serializers.CharField(...)
+#
+# This helps keep the seperation between model fields, form fields, and
+# serializer fields more explicit.
+
+
 from rest_framework.fields import *
 
 
