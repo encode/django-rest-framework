@@ -458,7 +458,7 @@ class ModelSerializer(Serializer):
         """
         self.object.save()
 
-        if self.m2m_data and save_m2m:
+        if getattr(self, 'm2m_data', None) and save_m2m:
             for accessor_name, object_list in self.m2m_data.items():
                 setattr(self.object, accessor_name, object_list)
             self.m2m_data = {}
