@@ -2,7 +2,7 @@ from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
 from django.test.client import RequestFactory
 from rest_framework import generics, status, serializers
-from rest_framework.tests.models import Anchor, BasicModel, ManyToManyModel, BlogPost, BlogPostComment
+from rest_framework.tests.models import Anchor, BasicModel, ManyToManyModel, BlogPost, BlogPostComment, Album, Photo
 
 factory = RequestFactory()
 
@@ -14,6 +14,14 @@ class BlogPostCommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlogPostComment
         fields = ('text', 'blog_post_url')
+
+
+class PhotoSerializer(serializers.Serializer):
+    description = serializers.CharField()
+    album_url = serializers.HyperlinkedRelatedField(source='album', view_name='album-detail', queryset=Album.objects.all(), slug_field='title', slug_url_kwarg='title')
+
+    def restore_object(self, attrs, instance=None):
+        return Photo(**attrs)
 
 
 class BasicList(generics.ListCreateAPIView):
@@ -49,6 +57,16 @@ class BlogPostCommentListCreate(generics.ListCreateAPIView):
 class BlogPostDetail(generics.RetrieveAPIView):
     model = BlogPost
 
+
+class PhotoListCreate(generics.ListCreateAPIView):
+    model = Photo
+    model_serializer_class = PhotoSerializer
+
+
+class AlbumDetail(generics.RetrieveAPIView):
+    model = Album
+
+
 urlpatterns = patterns('',
     url(r'^basic/$', BasicList.as_view(), name='basicmodel-list'),
     url(r'^basic/(?P<pk>\d+)/$', BasicDetail.as_view(), name='basicmodel-detail'),
@@ -56,7 +74,9 @@ urlpatterns = patterns('',
     url(r'^manytomany/$', ManyToManyList.as_view(), name='manytomanymodel-list'),
     url(r'^manytomany/(?P<pk>\d+)/$', ManyToManyDetail.as_view(), name='manytomanymodel-detail'),
     url(r'^posts/(?P<pk>\d+)/$', BlogPostDetail.as_view(), name='blogpost-detail'),
-    url(r'^comments/$', BlogPostCommentListCreate.as_view(), name='blogpostcomment-list')
+    url(r'^comments/$', BlogPostCommentListCreate.as_view(), name='blogpostcomment-list'),
+    url(r'^albums/(?P<title>\w[\w-]*)/$', AlbumDetail.as_view(), name='album-detail'),
+    url(r'^photos/$', PhotoListCreate.as_view(), name='photo-list')
 )
 
 
@@ -167,3 +187,27 @@ class TestCreateWithForeignKeys(TestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(self.post.blogpostcomment_set.count(), 1)
         self.assertEqual(self.post.blogpostcomment_set.all()[0].text, 'A test comment')
+
+
+class TestCreateWithForeignKeysAndCustomSlug(TestCase):
+    urls = 'rest_framework.tests.hyperlinkedserializers'
+
+    def setUp(self):
+        """
+        Create an Album
+        """
+        self.post = Album.objects.create(title='test-album')
+        self.list_create_view = PhotoListCreate.as_view()
+
+    def test_create_photo(self):
+
+        data = {
+            'description': 'A test photo',
+            'album_url': 'http://testserver/albums/test-album/'
+        }
+
+        request = factory.post('/photos/', data=data)
+        response = self.list_create_view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(self.post.photo_set.count(), 1)
+        self.assertEqual(self.post.photo_set.all()[0].description, 'A test photo')
