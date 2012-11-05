@@ -84,7 +84,7 @@ To contact the author directly:
 [twitter]: http://twitter.com/_tomchristie
 [bootstrap]: http://twitter.github.com/bootstrap/
 [markdown]: http://daringfireball.net/projects/markdown/
-[github]: github.com/tomchristie/django-rest-framework
+[github]: https://github.com/tomchristie/django-rest-framework
 [travis-ci]: https://secure.travis-ci.org/tomchristie/django-rest-framework
 [piston]: https://bitbucket.org/jespern/django-piston
 [tastypie]: https://github.com/toastdriven/django-tastypie
