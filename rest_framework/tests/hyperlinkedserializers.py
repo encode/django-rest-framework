@@ -17,7 +17,7 @@ class BlogPostCommentSerializer(serializers.Serializer):
 
 class PhotoSerializer(serializers.Serializer):
     description = serializers.CharField()
-    album_url = serializers.HyperlinkedRelatedField(source='album', view_name='album-detail', queryset=Album.objects.all(), slug_field='title', slug_url_kwargs='title')
+    album_url = serializers.HyperlinkedRelatedField(source='album', view_name='album-detail', queryset=Album.objects.all(), slug_field='title', slug_url_kwarg='title')
 
     def restore_object(self, attrs, instance=None):
         return Photo(**attrs)

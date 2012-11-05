@@ -488,7 +488,7 @@ class HyperlinkedRelatedField(RelatedField):
             self.view_name = kwargs.pop('view_name')
         except:
             raise ValueError("Hyperlinked field requires 'view_name' kwarg")
-        self.slug_url_kwarg = kwargs.pop('slug_url_kwargs', self.slug_url_kwarg)
+        self.slug_url_kwarg = kwargs.pop('slug_url_kwarg', self.slug_url_kwarg)
         self.slug_field = kwargs.pop('slug_field', self.slug_field)
         self.format = kwargs.pop('format', None)
         super(HyperlinkedRelatedField, self).__init__(*args, **kwargs)
