@@ -15,7 +15,7 @@ class ManyToManySource(models.Model):
 
 
 class ManyToManyTargetSerializer(serializers.ModelSerializer):
-    sources = serializers.ManyPrimaryKeyRelatedField(queryset=ManyToManySource.objects.all())
+    sources = serializers.ManyPrimaryKeyRelatedField()
 
     class Meta:
         model = ManyToManyTarget

@@ -40,7 +40,7 @@ class Field(object):
 
         self.source = source
 
-    def initialize(self, parent):
+    def initialize(self, parent, field_name):
         """
         Called to set up a field prior to field_to_native or field_from_native.
 
@@ -248,7 +248,22 @@ class RelatedField(WritableField):
     def __init__(self, *args, **kwargs):
         self.queryset = kwargs.pop('queryset', None)
         super(RelatedField, self).__init__(*args, **kwargs)
-        self.read_only = self.default_read_only
+        self.read_only = kwargs.pop('read_only', self.default_read_only)
+
+    def initialize(self, parent, field_name):
+        super(RelatedField, self).initialize(parent, field_name)
+        if self.queryset is None and not self.read_only:
+            try:
+                manager = getattr(self.parent.opts.model, self.source or field_name)
+                if hasattr(manager, 'related'):  # Forward
+                    self.queryset = manager.related.model._default_manager.all()
+                else:  # Reverse
+                    self.queryset = manager.field.rel.to._default_manager.all()
+            except:
+                raise
+                msg = ('Serializer related fields must include a `queryset`' +
+                       ' argument or set `read_only=True')
+                raise Exception(msg)
 
     ### We need this stuff to make form choices work...
 

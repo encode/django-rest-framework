@@ -11,9 +11,11 @@
 **Warning**: Please read [this thread][2.1.0-notes] regarding the `instance` and `data` keyword args before updating to 2.1.0.
 
 * **Serializer `instance` and `data` keyword args have their position swapped.**
+* `queryset` argument is now optional on writable model fields.
 * Support Django's cache framework.
 * Minor field improvements. (Don't stringify dicts, more robust many-pk fields.)
-* Bugfixes (Support choice field in Browseable API)
+* Bugfix: Support choice field in Browseable API.
+* Bugfix: Related fields with `read_only=True` do not require a `queryset` argument.
 
 ## 2.0.2
 

@@ -93,8 +93,8 @@ class BaseSerializer(Field):
 
     def __init__(self, instance=None, data=None, context=None, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
-        self.fields = copy.deepcopy(self.base_fields)
         self.opts = self._options_class(self.Meta)
+        self.fields = copy.deepcopy(self.base_fields)
         self.parent = None
         self.root = None
 
@@ -128,7 +128,7 @@ class BaseSerializer(Field):
         for key, field in self.fields.items():
             ret[key] = field
             # Set up the field
-            field.initialize(parent=self)
+            field.initialize(parent=self, field_name=key)
 
         # Add in the default fields
         fields = self.default_fields(nested)
@@ -153,12 +153,12 @@ class BaseSerializer(Field):
     #####
     # Field methods - used when the serializer class is itself used as a field.
 
-    def initialize(self, parent):
+    def initialize(self, parent, field_name):
         """
         Same behaviour as usual Field, except that we need to keep track
         of state so that we can deal with handling maximum depth.
         """
-        super(BaseSerializer, self).initialize(parent)
+        super(BaseSerializer, self).initialize(parent, field_name)
         if parent.opts.depth:
             self.opts.depth = parent.opts.depth - 1
 
@@ -369,7 +369,7 @@ class ModelSerializer(Serializer):
                 field = self.get_field(model_field)
 
             if field:
-                field.initialize(parent=self)
+                field.initialize(parent=self, field_name=model_field.name)
                 ret[model_field.name] = field
 
         return ret
