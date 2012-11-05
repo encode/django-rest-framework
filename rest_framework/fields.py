@@ -503,8 +503,16 @@ class HyperlinkedRelatedField(RelatedField):
             self.view_name = kwargs.pop('view_name')
         except:
             raise ValueError("Hyperlinked field requires 'view_name' kwarg")
+        self.slug_url_kwarg = kwargs.pop('slug_url_kwarg', self.slug_url_kwarg)
+        self.slug_field = kwargs.pop('slug_field', self.slug_field)
         self.format = kwargs.pop('format', None)
         super(HyperlinkedRelatedField, self).__init__(*args, **kwargs)
+
+    def get_slug_field(self):
+        """
+        Get the name of a slug field to be used to look up by slug.
+        """
+        return self.slug_field
 
     def to_native(self, obj):
         view_name = self.view_name
