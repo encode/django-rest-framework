@@ -7,12 +7,13 @@ from rest_framework.tests.models import Anchor, BasicModel, ManyToManyModel, Blo
 factory = RequestFactory()
 
 
-class BlogPostCommentSerializer(serializers.Serializer):
+class BlogPostCommentSerializer(serializers.ModelSerializer):
     text = serializers.CharField()
-    blog_post_url = serializers.HyperlinkedRelatedField(source='blog_post', view_name='blogpost-detail', queryset=BlogPost.objects.all())
+    blog_post_url = serializers.HyperlinkedRelatedField(source='blog_post', view_name='blogpost-detail')
 
-    def restore_object(self, attrs, instance=None):
-        return BlogPostComment(**attrs)
+    class Meta:
+        model = BlogPostComment
+        fields = ('text', 'blog_post_url')
 
 
 class BasicList(generics.ListCreateAPIView):
@@ -42,7 +43,7 @@ class ManyToManyDetail(generics.RetrieveAPIView):
 
 class BlogPostCommentListCreate(generics.ListCreateAPIView):
     model = BlogPostComment
-    model_serializer_class = BlogPostCommentSerializer
+    serializer_class = BlogPostCommentSerializer
 
 
 class BlogPostDetail(generics.RetrieveAPIView):
