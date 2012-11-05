@@ -493,6 +493,12 @@ class HyperlinkedRelatedField(RelatedField):
         self.format = kwargs.pop('format', None)
         super(HyperlinkedRelatedField, self).__init__(*args, **kwargs)
 
+    def get_slug_field(self):
+        """
+        Get the name of a slug field to be used to look up by slug.
+        """
+        return self.slug_field
+
     def to_native(self, obj):
         view_name = self.view_name
         request = self.context.get('request', None)
