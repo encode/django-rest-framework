@@ -109,13 +109,13 @@ class BaseSerializer(Field):
     #####
     # Methods to determine which fields to use when (de)serializing objects.
 
-    def default_fields(self, serialize, obj=None, data=None, nested=False):
+    def default_fields(self, nested=False):
         """
         Return the complete set of default fields for the object, as a dict.
         """
         return {}
 
-    def get_fields(self, serialize, obj=None, data=None, nested=False):
+    def get_fields(self, nested=False):
         """
         Returns the complete set of fields for the object as a dict.
 
@@ -131,7 +131,7 @@ class BaseSerializer(Field):
             field.initialize(parent=self)
 
         # Add in the default fields
-        fields = self.default_fields(serialize, obj, data, nested)
+        fields = self.default_fields(nested)
         for key, val in fields.items():
             if key not in ret:
                 ret[key] = val
@@ -179,7 +179,7 @@ class BaseSerializer(Field):
         ret = self._dict_class()
         ret.fields = {}
 
-        fields = self.get_fields(serialize=True, obj=obj, nested=bool(self.opts.depth))
+        fields = self.get_fields(nested=bool(self.opts.depth))
         for field_name, field in fields.items():
             key = self.get_field_key(field_name)
             value = field.field_to_native(obj, field_name)
@@ -192,7 +192,7 @@ class BaseSerializer(Field):
         Core of deserialization, together with `restore_object`.
         Converts a dictionary of data into a dictionary of deserialized fields.
         """
-        fields = self.get_fields(serialize=False, data=data, nested=bool(self.opts.depth))
+        fields = self.get_fields(nested=bool(self.opts.depth))
         reverted_data = {}
         for field_name, field in fields.items():
             try:
@@ -207,7 +207,7 @@ class BaseSerializer(Field):
         Run `validate_<fieldname>()` and `validate()` methods on the serializer
         """
         # TODO: refactor this so we're not determining the fields again
-        fields = self.get_fields(serialize=False, data=attrs, nested=bool(self.opts.depth))
+        fields = self.get_fields(nested=bool(self.opts.depth))
 
         for field_name, field in fields.items():
             try:
@@ -332,7 +332,7 @@ class ModelSerializer(Serializer):
     """
     _options_class = ModelSerializerOptions
 
-    def default_fields(self, serialize, obj=None, data=None, nested=False):
+    def default_fields(self, nested=False):
         """
         Return all the fields that should be serialized for the model.
         """
