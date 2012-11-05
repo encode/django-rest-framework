@@ -12,6 +12,7 @@
 
 * **Serializer `instance` and `data` keyword args have their position swapped.**
 * `queryset` argument is now optional on writable model fields.
+* Hyperlinked related fields optionally take `slug_field` and `slug_field_kwarg` arguments.
 * Support Django's cache framework.
 * Minor field improvements. (Don't stringify dicts, more robust many-pk fields.)
 * Bugfix: Support choice field in Browseable API.
