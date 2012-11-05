@@ -246,11 +246,8 @@ class BaseSerializer(Field):
         """
         Serialize objects -> primatives.
         """
-        if isinstance(obj, dict):
-            return dict([(key, self.to_native(val))
-                         for (key, val) in obj.items()])
-        elif hasattr(obj, '__iter__'):
-            return [self.to_native(item) for item in obj]
+        if hasattr(obj, '__iter__'):
+            return [self.convert_object(item) for item in obj]
         return self.convert_object(obj)
 
     def from_native(self, data):
