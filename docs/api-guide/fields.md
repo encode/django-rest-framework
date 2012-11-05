@@ -243,7 +243,7 @@ Be default these fields read-write, although you can change this behaviour using
 
 **Arguments**:
 
-* `queryset` - All relational fields must either set a queryset, or set `read_only=True`
+* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
 
 ## SlugRelatedField / ManySlugRelatedField
 
@@ -254,7 +254,7 @@ Be default these fields read-write, although you can change this behaviour using
 **Arguments**:
 
 * `slug_field` - The field on the target that should used as the representation.  This should be a field that uniquely identifies any given instance.  For example, `username`.
-* `queryset` - All relational fields must either set a queryset, or set `read_only=True`
+* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
 
 ## HyperlinkedRelatedField / ManyHyperlinkedRelatedField
 
@@ -266,9 +266,9 @@ Be default, `HyperlinkedRelatedField` is read-write, although you can change thi
 
 * `view_name` - The view name that should be used as the target of the relationship.  **required**.
 * `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
-* `queryset` - All relational fields must either set a queryset, or set `read_only=True`
-* `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is `slug`
-* `slug_field` - The field on the target that should be used for the lookup. Default is `slug`
+* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
+* `slug_field` - The field on the target that should be used for the lookup. Default is `'slug'`.
+* `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
 
 ## HyperLinkedIdentityField
 
