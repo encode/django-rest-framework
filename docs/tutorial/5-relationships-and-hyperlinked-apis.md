@@ -167,7 +167,7 @@ We've reached the end of our tutorial.  If you want to get more involved in the 
 * Join the [REST framework discussion group][group], and help build the community.
 * Follow the author [on Twitter][twitter] and say hi.
 
-**Now go build some awesome things.**
+**Now go build awesome things.**
 
 [repo]: https://github.com/tomchristie/rest-framework-tutorial
 [sandbox]: http://restframework.herokuapp.com/

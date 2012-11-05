@@ -57,9 +57,16 @@ To run the tests.
 
 # Changelog
 
-## Master
+## 2.1.0
 
-* Minor field improvements (don't stringify dicts, more robust many-pk fields)
+**Date**: 5th Nov 2012
+
+**Warning**: Please read [this thread][2.1.0-notes] regarding the `instance` and `data` keyword args before updating to 2.1.0.
+
+* **Serializer `instance` and `data` keyword args have their position swapped.**
+* Support Django's cache framework.
+* Minor field improvements. (Don't stringify dicts, more robust many-pk fields.)
+* Bugfixes (Support choice field in Browseable API)
 
 ## 2.0.2
 
@@ -113,6 +120,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [sandbox]: http://restframework.herokuapp.com/
 [rest-framework-2-announcement]: topics/rest-framework-2-announcement.md
+[2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
 
 [docs]: http://django-rest-framework.org/
 [urlobject]: https://github.com/zacharyvoase/urlobject

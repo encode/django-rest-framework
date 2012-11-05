@@ -20,11 +20,11 @@ We'll start by rewriting the root view as a class based view.  All this involves
         """
         def get(self, request, format=None):
             snippets = Snippet.objects.all()
-            serializer = SnippetSerializer(instance=snippets)
+            serializer = SnippetSerializer(snippets)
             return Response(serializer.data)
 
         def post(self, request, format=None):
-            serializer = SnippetSerializer(request.DATA)
+            serializer = SnippetSerializer(data=request.DATA)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -44,12 +44,12 @@ So far, so good.  It looks pretty similar to the previous case, but we've got be
 
         def get(self, request, pk, format=None):
             snippet = self.get_object(pk)
-            serializer = SnippetSerializer(instance=snippet)
+            serializer = SnippetSerializer(snippet)
             return Response(serializer.data)
 
         def put(self, request, pk, format=None):
             snippet = self.get_object(pk)
-            serializer = SnippetSerializer(request.DATA, instance=snippet)
+            serializer = SnippetSerializer(snippet, data=request.DATA)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
