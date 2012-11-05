@@ -6,7 +6,9 @@
 
 ## Master
 
-* Minor field improvements (don't stringify dicts, more robust many-pk fields)
+* Support Django's cache framework.
+* Minor field improvements. (Don't stringify dicts, more robust many-pk fields.)
+* Bugfixes (Support choice field in Browseable API)
 
 ## 2.0.2
 
