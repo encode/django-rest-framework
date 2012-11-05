@@ -267,6 +267,8 @@ Be default, `HyperlinkedRelatedField` is read-write, although you can change thi
 * `view_name` - The view name that should be used as the target of the relationship.  **required**.
 * `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
 * `queryset` - All relational fields must either set a queryset, or set `read_only=True`
+* `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is `slug`
+* `slug_field` - The field on the target that should be used for the lookup. Default is `slug`
 
 ## HyperLinkedIdentityField
 
