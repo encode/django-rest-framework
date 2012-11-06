@@ -122,6 +122,13 @@ class Person(RESTFrameworkModel):
     name = models.CharField(max_length=10)
     age = models.IntegerField(null=True, blank=True)
 
+    @property
+    def info(self):
+        return {
+            'name': self.name,
+            'age': self.age,
+        }
+
 
 # Model for issue #324
 class BlankFieldModel(RESTFrameworkModel):

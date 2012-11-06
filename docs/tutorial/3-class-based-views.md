@@ -92,7 +92,7 @@ Let's take a look at how we can compose our views by using the mixin classes.
 
     class SnippetList(mixins.ListModelMixin,
                       mixins.CreateModelMixin,
-                      generics.MultipleObjectBaseView):
+                      generics.MultipleObjectAPIView):
         model = Snippet
         serializer_class = SnippetSerializer
 
@@ -102,7 +102,7 @@ Let's take a look at how we can compose our views by using the mixin classes.
         def post(self, request, *args, **kwargs):
             return self.create(request, *args, **kwargs)
 
-We'll take a moment to examine exactly what's happening here - We're building our view using `MultipleObjectBaseView`, and adding in `ListModelMixin` and `CreateModelMixin`.
+We'll take a moment to examine exactly what's happening here - We're building our view using `MultipleObjectAPIView`, and adding in `ListModelMixin` and `CreateModelMixin`.
 
 The base class provides the core functionality, and the mixin classes provide the `.list()` and `.create()` actions.  We're then explicitly binding the `get` and `post` methods to the appropriate actions.  Simple enough stuff so far.
 
