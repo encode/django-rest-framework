@@ -7,7 +7,7 @@
 ## Master
 
 * Support use of HTML exception templates.  Eg. `403.html`
-* Hyperlinked related fields optionally take `slug_field`, `slug_url_kwarg` and `pk_url_kwarg` arguments.
+* HyperlinkedIdentityField optionally take `slug_field`, `slug_url_kwarg` and `pk_url_kwarg` arguments.
 
 ## 2.1.0
 
