@@ -87,7 +87,7 @@ Response status codes beginning with the digit "5" indicate cases in which the s
     HTTP_503_SERVICE_UNAVAILABLE
     HTTP_504_GATEWAY_TIMEOUT
     HTTP_505_HTTP_VERSION_NOT_SUPPORTED
-    HTTP_511_NETWORD_AUTHENTICATION_REQUIRED
+    HTTP_511_NETWORK_AUTHENTICATION_REQUIRED
 
 
 [rfc2324]: http://www.ietf.org/rfc/rfc2324.txt
