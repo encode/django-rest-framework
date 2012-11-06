@@ -190,7 +190,7 @@ As an example, let's create a field that can be used represent the class name of
 # ModelSerializers
 
 Often you'll want serializer classes that map closely to model definitions.
-The `ModelSerializer` class lets you automatically create a Serializer class with fields that corrospond to the Model fields.
+The `ModelSerializer` class lets you automatically create a Serializer class with fields that correspond to the Model fields.
 
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
