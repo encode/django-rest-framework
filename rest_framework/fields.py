@@ -212,10 +212,10 @@ class ModelField(WritableField):
         super(ModelField, self).__init__(*args, **kwargs)
 
     def from_native(self, value):
-        try:
-            rel = self.model_field.rel
+        rel = getattr(self.model_field, "rel", None)
+        if rel is not None:
             return rel.to._meta.get_field(rel.field_name).to_python(value)
-        except:
+        else:
             return self.model_field.to_python(value)
 
     def field_to_native(self, obj, field_name):
