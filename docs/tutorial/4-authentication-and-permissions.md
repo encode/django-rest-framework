@@ -59,7 +59,7 @@ Now that we've got some users to work with, we'd better add representations of t
 
         class Meta:
             model = User
-            fields = ('id', 'username', 'snippets')
+            fields = ('pk', 'username', 'snippets')
 
 Because `'snippets'` is a *reverse* relationship on the User model, it will not be included by default when using the `ModelSerializer` class, so we've needed to add an explicit field for it.
 

@@ -50,7 +50,7 @@ class PersonSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Person
-        fields = ('name', 'age', 'info')
+        fields = ('pk', 'name', 'age', 'info')
 
 
 class BasicTests(TestCase):
@@ -112,7 +112,7 @@ class BasicTests(TestCase):
         """
         serializer = PersonSerializer(self.person)
         self.assertEquals(set(serializer.data.keys()),
-                          set(['name', 'age', 'info']))
+                          set(['pk', 'name', 'age', 'info']))
 
     def test_field_with_dictionary(self):
         """ Make sure that dictionaries from fields are left intact
@@ -120,6 +120,14 @@ class BasicTests(TestCase):
         serializer = PersonSerializer(self.person)
         expected = self.person_data
         self.assertEquals(serializer.data['info'], expected)
+
+    def test_pk_field_exists(self):
+        """
+        Verify the `pk` shortcut for primary key (by default: `id`)
+        """
+
+        serializer = PersonSerializer(self.person)
+        self.assertEquals(serializer.data['pk'], self.person.id)
 
 
 class ValidationTests(TestCase):
