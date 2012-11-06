@@ -9,7 +9,8 @@ class Response(SimpleTemplateResponse):
     """
 
     def __init__(self, data=None, status=200,
-                 template_name=None, headers=None):
+                 template_name=None, headers=None,
+                 exception=False):
         """
         Alters the init arguments slightly.
         For example, drop 'template_name', and instead use 'data'.
@@ -21,6 +22,7 @@ class Response(SimpleTemplateResponse):
         self.data = data
         self.headers = headers and headers[:] or []
         self.template_name = template_name
+        self.exception = exception
 
     @property
     def rendered_content(self):

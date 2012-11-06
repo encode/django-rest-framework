@@ -320,13 +320,17 @@ class APIView(View):
             self.headers['X-Throttle-Wait-Seconds'] = '%d' % exc.wait
 
         if isinstance(exc, exceptions.APIException):
-            return Response({'detail': exc.detail}, status=exc.status_code)
+            return Response({'detail': exc.detail},
+                            status=exc.status_code,
+                            exception=True)
         elif isinstance(exc, Http404):
             return Response({'detail': 'Not found'},
-                            status=status.HTTP_404_NOT_FOUND)
+                            status=status.HTTP_404_NOT_FOUND,
+                            exception=True)
         elif isinstance(exc, PermissionDenied):
             return Response({'detail': 'Permission denied'},
-                            status=status.HTTP_403_FORBIDDEN)
+                            status=status.HTTP_403_FORBIDDEN,
+                            exception=True)
         raise
 
     # Note: session based authentication is explicitly CSRF validated,

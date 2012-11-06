@@ -257,6 +257,21 @@ In [the words of Roy Fielding][quote], "A REST API should spend almost all of it
 
 For good examples of custom media types, see GitHub's use of a custom [application/vnd.github+json] media type, and Mike Amundsen's IANA approved [application/vnd.collection+json] JSON-based hypermedia.
 
+## HTML error views
+
+Typically a renderer will behave the same regardless of if it's dealing with a regular response, or with a response caused by an exception being raised, such as an `Http404` or `PermissionDenied` exception, or a subclass of `APIException`.
+
+If you're using either the `TemplateHTMLRenderer` or the `StaticHTMLRenderer` and an exception is raised, the behavior is slightly different, and mirrors [Django's default handling of error views][django-error-views].
+
+Exceptions raised and handled by an HTML renderer will attempt to render using one of the following methods, by order of precedence.
+
+* Load and render a template named `{status_code}.html`.
+* Load and render a template named `api_exception.html`.
+* Render the HTTP status code and text, for example "404 Not Found".
+
+Templates will render with a `RequestContext` which includes the `status_code` and `details` keys.
+
+
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
@@ -265,3 +280,4 @@ For good examples of custom media types, see GitHub's use of a custom [applicati
 [quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [application/vnd.github+json]: http://developer.github.com/v3/media/
 [application/vnd.collection+json]: http://www.amundsen.com/media-types/collection/
+[django-error-views]: https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views
