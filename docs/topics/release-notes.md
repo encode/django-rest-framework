@@ -4,6 +4,10 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
+## Master
+
+* Support use of HTML exception templates.  Eg. `403.html`
+
 ## 2.1.0
 
 **Date**: 5th Nov 2012
