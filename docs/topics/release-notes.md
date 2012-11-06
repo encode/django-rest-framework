@@ -7,6 +7,7 @@
 ## Master
 
 * Support use of HTML exception templates.  Eg. `403.html`
+* HyperlinkedIdentityField optionally take `slug_field`, `slug_url_kwarg` and `pk_url_kwarg` arguments.
 
 ## 2.1.0
 
@@ -16,7 +17,7 @@
 
 * **Serializer `instance` and `data` keyword args have their position swapped.**
 * `queryset` argument is now optional on writable model fields.
-* Hyperlinked related fields optionally take `slug_field` and `slug_field_kwarg` arguments.
+* Hyperlinked related fields optionally take `slug_field` and `slug_url_kwarg` arguments.
 * Support Django's cache framework.
 * Minor field improvements. (Don't stringify dicts, more robust many-pk fields.)
 * Bugfix: Support choice field in Browseable API.
