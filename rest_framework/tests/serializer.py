@@ -51,6 +51,7 @@ class PersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Person
         fields = ('name', 'age', 'info')
+        read_only = ('age',)
 
 
 class BasicTests(TestCase):
@@ -105,7 +106,7 @@ class BasicTests(TestCase):
         self.assertEquals(serializer.object, expected)
         self.assertTrue(serializer.object is expected)
         self.assertEquals(serializer.data['sub_comment'], 'And Merry Christmas!')
-    
+
     def test_model_fields_as_expected(self):
         """ Make sure that the fields returned are the same as defined
         in the Meta data
@@ -120,6 +121,18 @@ class BasicTests(TestCase):
         serializer = PersonSerializer(instance=self.person)
         expected = self.person_data
         self.assertEquals(serializer.data['info'], expected)
+
+    def test_read_only_fields(self):
+        """
+        Attempting to update fields set as read_only should have no effect.
+        """
+
+        serializer = PersonSerializer({'name': 'dwight', 'age': 99}, instance=self.person)
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+        self.assertEquals(serializer.errors, {})
+        # Assert age is unchanged (35)
+        self.assertEquals(instance.age, self.person_data['age'])
 
 
 class ValidationTests(TestCase):
@@ -220,6 +233,7 @@ class ValidationTests(TestCase):
         """
         Omitting a value for null-field should validate.
         """
+
         serializer = PersonSerializer({'name': 'marko'})
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.errors, {})
