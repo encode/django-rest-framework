@@ -43,7 +43,7 @@ class GenericAPIView(views.APIView):
 
         return serializer_class
 
-    def get_serializer(self, data=None, files=None, instance=None):
+    def get_serializer(self, instance=None, data=None, files=None):
         # TODO: add support for files
         # TODO: add support for seperate serializer/deserializer
         serializer_class = self.get_serializer_class()

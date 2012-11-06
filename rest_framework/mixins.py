@@ -51,7 +51,7 @@ class ListModelMixin(object):
             paginator, page, queryset, is_paginated = packed
             serializer = self.get_pagination_serializer(page)
         else:
-            serializer = self.get_serializer(instance=self.object_list)
+            serializer = self.get_serializer(self.object_list)
 
         return Response(serializer.data)
 
@@ -63,7 +63,7 @@ class RetrieveModelMixin(object):
     """
     def retrieve(self, request, *args, **kwargs):
         self.object = self.get_object()
-        serializer = self.get_serializer(instance=self.object)
+        serializer = self.get_serializer(self.object)
         return Response(serializer.data)
 
 
@@ -80,7 +80,7 @@ class UpdateModelMixin(object):
             self.object = None
             success_status = status.HTTP_201_CREATED
 
-        serializer = self.get_serializer(data=request.DATA, instance=self.object)
+        serializer = self.get_serializer(self.object, data=request.DATA)
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
