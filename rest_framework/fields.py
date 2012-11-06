@@ -135,7 +135,7 @@ class WritableField(Field):
         self.error_messages = messages
 
         self.validators = self.default_validators + validators
-        self.default = default or self.default
+        self.default = default if default is not None else self.default
         self.blank = blank
 
         # Widgets are ony used for HTML forms.
