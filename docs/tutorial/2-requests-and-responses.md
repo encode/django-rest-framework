@@ -52,11 +52,11 @@ We don't need our `JSONResponse` class anymore, so go ahead and delete that.  On
         """
         if request.method == 'GET':
             snippets = Snippet.objects.all()
-            serializer = SnippetSerializer(instance=snippets)
+            serializer = SnippetSerializer(snippets)
             return Response(serializer.data)
 
         elif request.method == 'POST':
-            serializer = SnippetSerializer(request.DATA)
+            serializer = SnippetSerializer(data=request.DATA)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -77,11 +77,11 @@ Our instance view is an improvement over the previous example.  It's a little mo
             return Response(status=status.HTTP_404_NOT_FOUND)
  
         if request.method == 'GET':
-            serializer = SnippetSerializer(instance=snippet)
+            serializer = SnippetSerializer(snippet)
             return Response(serializer.data)
     
         elif request.method == 'PUT':
-            serializer = SnippetSerializer(request.DATA, instance=snippet)
+            serializer = SnippetSerializer(snippet, data=request.DATA)
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)

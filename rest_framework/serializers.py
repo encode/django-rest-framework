@@ -6,6 +6,15 @@ from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
 from rest_framework.compat import get_concrete_model
+
+# Note: We do the following so that users of the framework can use this style:
+#
+#     example_field = serializers.CharField(...)
+#
+# This helps keep the seperation between model fields, form fields, and
+# serializer fields more explicit.
+
+
 from rest_framework.fields import *
 
 
@@ -82,10 +91,10 @@ class BaseSerializer(Field):
     _options_class = SerializerOptions
     _dict_class = SortedDictWithMetadata  # Set to unsorted dict for backwards compatability with unsorted implementations.
 
-    def __init__(self, data=None, instance=None, context=None, **kwargs):
+    def __init__(self, instance=None, data=None, context=None, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
-        self.fields = copy.deepcopy(self.base_fields)
         self.opts = self._options_class(self.Meta)
+        self.fields = copy.deepcopy(self.base_fields)
         self.parent = None
         self.root = None
 
@@ -100,13 +109,13 @@ class BaseSerializer(Field):
     #####
     # Methods to determine which fields to use when (de)serializing objects.
 
-    def default_fields(self, serialize, obj=None, data=None, nested=False):
+    def default_fields(self, nested=False):
         """
         Return the complete set of default fields for the object, as a dict.
         """
         return {}
 
-    def get_fields(self, serialize, obj=None, data=None, nested=False):
+    def get_fields(self, nested=False):
         """
         Returns the complete set of fields for the object as a dict.
 
@@ -119,10 +128,10 @@ class BaseSerializer(Field):
         for key, field in self.fields.items():
             ret[key] = field
             # Set up the field
-            field.initialize(parent=self)
+            field.initialize(parent=self, field_name=key)
 
         # Add in the default fields
-        fields = self.default_fields(serialize, obj, data, nested)
+        fields = self.default_fields(nested)
         for key, val in fields.items():
             if key not in ret:
                 ret[key] = val
@@ -154,12 +163,12 @@ class BaseSerializer(Field):
     #####
     # Field methods - used when the serializer class is itself used as a field.
 
-    def initialize(self, parent):
+    def initialize(self, parent, field_name):
         """
         Same behaviour as usual Field, except that we need to keep track
         of state so that we can deal with handling maximum depth.
         """
-        super(BaseSerializer, self).initialize(parent)
+        super(BaseSerializer, self).initialize(parent, field_name)
         if parent.opts.depth:
             self.opts.depth = parent.opts.depth - 1
 
@@ -180,7 +189,7 @@ class BaseSerializer(Field):
         ret = self._dict_class()
         ret.fields = {}
 
-        fields = self.get_fields(serialize=True, obj=obj, nested=bool(self.opts.depth))
+        fields = self.get_fields(nested=bool(self.opts.depth))
         for field_name, field in fields.items():
             key = self.get_field_key(field_name)
             value = field.field_to_native(obj, field_name)
@@ -193,7 +202,7 @@ class BaseSerializer(Field):
         Core of deserialization, together with `restore_object`.
         Converts a dictionary of data into a dictionary of deserialized fields.
         """
-        fields = self.get_fields(serialize=False, data=data, nested=bool(self.opts.depth))
+        fields = self.get_fields(nested=bool(self.opts.depth))
         reverted_data = {}
         for field_name, field in fields.items():
             try:
@@ -208,7 +217,7 @@ class BaseSerializer(Field):
         Run `validate_<fieldname>()` and `validate()` methods on the serializer
         """
         # TODO: refactor this so we're not determining the fields again
-        fields = self.get_fields(serialize=False, data=attrs, nested=bool(self.opts.depth))
+        fields = self.get_fields(nested=bool(self.opts.depth))
 
         for field_name, field in fields.items():
             try:
@@ -247,11 +256,8 @@ class BaseSerializer(Field):
         """
         Serialize objects -> primatives.
         """
-        if isinstance(obj, dict):
-            return dict([(key, self.to_native(val))
-                         for (key, val) in obj.items()])
-        elif hasattr(obj, '__iter__'):
-            return [self.to_native(item) for item in obj]
+        if hasattr(obj, '__iter__'):
+            return [self.convert_object(item) for item in obj]
         return self.convert_object(obj)
 
     def from_native(self, data):
@@ -333,7 +339,7 @@ class ModelSerializer(Serializer):
     """
     _options_class = ModelSerializerOptions
 
-    def default_fields(self, serialize, obj=None, data=None, nested=False):
+    def default_fields(self, nested=False):
         """
         Return all the fields that should be serialized for the model.
         """
@@ -369,7 +375,7 @@ class ModelSerializer(Serializer):
                 field = self.get_field(model_field)
 
             if field:
-                field.initialize(parent=self)
+                field.initialize(parent=self, field_name=model_field.name)
                 ret[model_field.name] = field
 
         return ret
@@ -464,7 +470,7 @@ class ModelSerializer(Serializer):
         """
         self.object.save()
 
-        if self.m2m_data and save_m2m:
+        if getattr(self, 'm2m_data', None) and save_m2m:
             for accessor_name, object_list in self.m2m_data.items():
                 setattr(self.object, accessor_name, object_list)
             self.m2m_data = {}

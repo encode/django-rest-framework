@@ -25,7 +25,7 @@ class TestGenericRelations(TestCase):
                 model = Bookmark
                 exclude = ('id',)
 
-        serializer = BookmarkSerializer(instance=self.bookmark)
+        serializer = BookmarkSerializer(self.bookmark)
         expected = {
             'tags': [u'django', u'python'],
             'url': u'https://www.djangoproject.com/'

@@ -10,7 +10,7 @@ import copy
 import string
 from django import forms
 from django.http.multipartparser import parse_header
-from django.template import RequestContext, loader
+from django.template import RequestContext, loader, Template
 from django.utils import simplejson as json
 from rest_framework.compat import yaml
 from rest_framework.exceptions import ConfigurationError
@@ -100,7 +100,7 @@ class JSONPRenderer(JSONRenderer):
         callback = self.get_callback(renderer_context)
         json = super(JSONPRenderer, self).render(data, accepted_media_type,
                                                  renderer_context)
-        return "%s(%s);" % (callback, json)
+        return u"%s(%s);" % (callback, json)
 
 
 class XMLRenderer(BaseRenderer):
@@ -162,6 +162,10 @@ class TemplateHTMLRenderer(BaseRenderer):
     media_type = 'text/html'
     format = 'html'
     template_name = None
+    exception_template_names = [
+        '%(status_code)s.html',
+        'api_exception.html'
+    ]
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -178,15 +182,21 @@ class TemplateHTMLRenderer(BaseRenderer):
         request = renderer_context['request']
         response = renderer_context['response']
 
-        template_names = self.get_template_names(response, view)
-        template = self.resolve_template(template_names)
-        context = self.resolve_context(data, request)
+        if response.exception:
+            template = self.get_exception_template(response)
+        else:
+            template_names = self.get_template_names(response, view)
+            template = self.resolve_template(template_names)
+
+        context = self.resolve_context(data, request, response)
         return template.render(context)
 
     def resolve_template(self, template_names):
         return loader.select_template(template_names)
 
-    def resolve_context(self, data, request):
+    def resolve_context(self, data, request, response):
+        if response.exception:
+            data['status_code'] = response.status_code
         return RequestContext(request, data)
 
     def get_template_names(self, response, view):
@@ -198,8 +208,21 @@ class TemplateHTMLRenderer(BaseRenderer):
             return view.get_template_names()
         raise ConfigurationError('Returned a template response with no template_name')
 
+    def get_exception_template(self, response):
+        template_names = [name % {'status_code': response.status_code}
+                          for name in self.exception_template_names]
 
-class StaticHTMLRenderer(BaseRenderer):
+        try:
+            # Try to find an appropriate error template
+            return self.resolve_template(template_names)
+        except:
+            # Fall back to using eg '404 Not Found'
+            return Template('%d %s' % (response.status_code,
+                                       response.status_text.title()))
+
+
+# Note, subclass TemplateHTMLRenderer simply for the exception behavior
+class StaticHTMLRenderer(TemplateHTMLRenderer):
     """
     An HTML renderer class that simply returns pre-rendered HTML.
 
@@ -216,6 +239,15 @@ class StaticHTMLRenderer(BaseRenderer):
     format = 'html'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
+        renderer_context = renderer_context or {}
+        response = renderer_context['response']
+
+        if response and response.exception:
+            request = renderer_context['request']
+            template = self.get_exception_template(response)
+            context = self.resolve_context(data, request, response)
+            return template.render(context)
+
         return data
 
 
@@ -281,11 +313,14 @@ class BrowsableAPIRenderer(BaseRenderer):
             serializers.DateField: forms.DateField,
             serializers.EmailField: forms.EmailField,
             serializers.CharField: forms.CharField,
+            serializers.ChoiceField: forms.ChoiceField,
             serializers.BooleanField: forms.BooleanField,
-            serializers.PrimaryKeyRelatedField: forms.ModelChoiceField,
-            serializers.ManyPrimaryKeyRelatedField: forms.ModelMultipleChoiceField,
-            serializers.HyperlinkedRelatedField: forms.ModelChoiceField,
-            serializers.ManyHyperlinkedRelatedField: forms.ModelMultipleChoiceField
+            serializers.PrimaryKeyRelatedField: forms.ChoiceField,
+            serializers.ManyPrimaryKeyRelatedField: forms.MultipleChoiceField,
+            serializers.SlugRelatedField: forms.ChoiceField,
+            serializers.ManySlugRelatedField: forms.MultipleChoiceField,
+            serializers.HyperlinkedRelatedField: forms.ChoiceField,
+            serializers.ManyHyperlinkedRelatedField: forms.MultipleChoiceField
         }
 
         fields = {}
@@ -296,19 +331,14 @@ class BrowsableAPIRenderer(BaseRenderer):
             kwargs = {}
             kwargs['required'] = v.required
 
-            if getattr(v, 'queryset', None):
-                kwargs['queryset'] = v.queryset
+            #if getattr(v, 'queryset', None):
+            #    kwargs['queryset'] = v.queryset
+
+            if getattr(v, 'choices', None) is not None:
+                kwargs['choices'] = v.choices
 
             if getattr(v, 'widget', None):
                 widget = copy.deepcopy(v.widget)
-                # If choices have friendly readable names,
-                # then add in the identities too
-                if getattr(widget, 'choices', None):
-                    choices = widget.choices
-                    if any([ident != desc for (ident, desc) in choices]):
-                        choices = [(ident, "%s (%s)" % (desc, ident))
-                                   for (ident, desc) in choices]
-                    widget.choices = choices
                 kwargs['widget'] = widget
 
             if getattr(v, 'default', None) is not None:
@@ -319,7 +349,10 @@ class BrowsableAPIRenderer(BaseRenderer):
             try:
                 fields[k] = field_mapping[v.__class__](**kwargs)
             except KeyError:
-                fields[k] = forms.CharField(**kwargs)
+                if getattr(v, 'choices', None) is not None:
+                    fields[k] = forms.ChoiceField(**kwargs)
+                else:
+                    fields[k] = forms.CharField(**kwargs)
         return fields
 
     def get_form(self, view, method, request):
