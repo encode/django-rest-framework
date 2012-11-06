@@ -495,7 +495,7 @@ class HyperlinkedRelatedField(RelatedField):
     """
     pk_url_kwarg = 'pk'
     slug_field = 'slug'
-    slug_url_kwarg = None  # Defaults to same as `slug_field`
+    slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
     default_read_only = False
 
     def __init__(self, *args, **kwargs):
@@ -503,8 +503,11 @@ class HyperlinkedRelatedField(RelatedField):
             self.view_name = kwargs.pop('view_name')
         except:
             raise ValueError("Hyperlinked field requires 'view_name' kwarg")
+
         self.slug_field = kwargs.pop('slug_field', self.slug_field)
-        self.slug_url_kwarg = kwargs.pop('slug_url_kwarg', self.slug_field)
+        default_slug_kwarg = self.slug_url_kwarg or self.slug_field
+        self.slug_url_kwarg = kwargs.pop('slug_url_kwarg', default_slug_kwarg)
+
         self.format = kwargs.pop('format', None)
         super(HyperlinkedRelatedField, self).__init__(*args, **kwargs)
 
