@@ -236,6 +236,8 @@ For example:
             model = Account
             exclude = ('id',)
 
+**Note**: All fields names in either `fields` or `exclude` must already be defined in the model or set explicitly, with the exception of `pk` which is a shortcut field to the actual primary key field of the model (by default Django sets this to `id` but can be overidden).
+
 ## Specifiying nested serialization
 
 The default `ModelSerializer` uses primary keys for relationships, but you can also easily generate nested representations using the `depth` option:
