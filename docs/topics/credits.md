@@ -52,6 +52,10 @@ The following people have helped make REST framework great.
 * Madis Väin - [madisvain]
 * Stephan Groß - [minddust]
 * Pavel Savchenko - [asfaltboy]
+* Otto Yiu - [ottoyiu]
+* Jacob Magnusson - [jmagnusson]
+* Osiloke Harold Emoekpere - [osiloke]
+* Michael Shepanski - [mjs7231]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -80,7 +84,7 @@ To contact the author directly:
 [twitter]: http://twitter.com/_tomchristie
 [bootstrap]: http://twitter.github.com/bootstrap/
 [markdown]: http://daringfireball.net/projects/markdown/
-[github]: github.com/tomchristie/django-rest-framework
+[github]: https://github.com/tomchristie/django-rest-framework
 [travis-ci]: https://secure.travis-ci.org/tomchristie/django-rest-framework
 [piston]: https://bitbucket.org/jespern/django-piston
 [tastypie]: https://github.com/toastdriven/django-tastypie
@@ -139,3 +143,7 @@ To contact the author directly:
 [madisvain]: https://github.com/madisvain
 [minddust]: https://github.com/minddust
 [asfaltboy]: https://github.com/asfaltboy
+[ottoyiu]: https://github.com/OttoYiu
+[jmagnusson]: https://github.com/jmagnusson
+[osiloke]: https://github.com/osiloke
+[mjs7231]: https://github.com/mjs7231

@@ -235,44 +235,50 @@ Then an example output format for a Bookmark instance would be:
         'url': u'https://www.djangoproject.com/'
     }
 
-## PrimaryKeyRelatedField
+## PrimaryKeyRelatedField / ManyPrimaryKeyRelatedField
 
-This field can be applied to any "to-one" relationship, such as a `ForeignKey` field.
+`PrimaryKeyRelatedField` and `ManyPrimaryKeyRelatedField` will represent the target of the relationship using it's primary key.
 
-`PrimaryKeyRelatedField` will represent the target of the field using it's primary key.
+By default these fields are read-write, although you can change this behaviour using the `read_only` flag.
 
-Be default, `PrimaryKeyRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
+**Arguments**:
 
-## ManyPrimaryKeyRelatedField
+* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
 
-This field can be applied to any "to-many" relationship, such as a `ManyToManyField` field, or a reverse `ForeignKey` relationship.
+## SlugRelatedField / ManySlugRelatedField
 
-`PrimaryKeyRelatedField` will represent the targets of the field using their primary key.
+`SlugRelatedField` and `ManySlugRelatedField` will represent the target of the relationship using a unique slug.
 
-Be default, `ManyPrimaryKeyRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
+By default these fields read-write, although you can change this behaviour using the `read_only` flag.
 
-## HyperlinkedRelatedField
+**Arguments**:
 
-This field can be applied to any "to-one" relationship, such as a `ForeignKey` field.
+* `slug_field` - The field on the target that should be used to represent it.  This should be a field that uniquely identifies any given instance.  For example, `username`.
+* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
 
-`HyperlinkedRelatedField` will represent the target of the field using a hyperlink.  You must include a named URL pattern in your URL conf, with a name like `'{model-name}-detail'` that corresponds to the target of the hyperlink.
+## HyperlinkedRelatedField / ManyHyperlinkedRelatedField
 
-Be default, `HyperlinkedRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
+`HyperlinkedRelatedField` and `ManyHyperlinkedRelatedField` will represent the target of the relationship using a hyperlink.
 
-## ManyHyperlinkedRelatedField
+By default, `HyperlinkedRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
 
-This field can be applied to any "to-many" relationship, such as a `ManyToManyField` field, or a reverse `ForeignKey` relationship.
+**Arguments**:
 
-`ManyHyperlinkedRelatedField` will represent the targets of the field using hyperlinks.  You must include a named URL pattern in your URL conf, with a name like `'{model-name}-detail'` that corresponds to the target of the hyperlink.
-
-Be default, `ManyHyperlinkedRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
+* `view_name` - The view name that should be used as the target of the relationship.  **required**.
+* `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
+* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
+* `slug_field` - The field on the target that should be used for the lookup. Default is `'slug'`.
+* `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
 
 ## HyperLinkedIdentityField
 
 This field can be applied as an identity relationship, such as the `'url'` field on  a HyperlinkedModelSerializer.
 
-You must include a named URL pattern in your URL conf, with a name like `'{model-name}-detail'` that corresponds to the model.
-
 This field is always read-only.
+
+**Arguments**:
+
+* `view_name` - The view name that should be used as the target of the relationship.  **required**.
+* `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
 
 [cite]: http://www.python.org/dev/peps/pep-0020/

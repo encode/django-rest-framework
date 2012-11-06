@@ -48,7 +48,7 @@ class GenericAPIView(views.APIView):
         # TODO: add support for seperate serializer/deserializer
         serializer_class = self.get_serializer_class()
         context = self.get_serializer_context()
-        return serializer_class(data, instance=instance, context=context)
+        return serializer_class(instance, data=data, context=context)
 
 
 class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):

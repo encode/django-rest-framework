@@ -29,7 +29,7 @@ class CreateModelMixin(object):
 class ListModelMixin(object):
     """
     List a queryset.
-    Should be mixed in with `MultipleObjectBaseView`.
+    Should be mixed in with `MultipleObjectAPIView`.
     """
     empty_error = u"Empty list and '%(class_name)s.allow_empty' is False."
 

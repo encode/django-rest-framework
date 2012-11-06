@@ -100,7 +100,7 @@ class JSONPRenderer(JSONRenderer):
         callback = self.get_callback(renderer_context)
         json = super(JSONPRenderer, self).render(data, accepted_media_type,
                                                  renderer_context)
-        return "%s(%s);" % (callback, json)
+        return u"%s(%s);" % (callback, json)
 
 
 class XMLRenderer(BaseRenderer):
@@ -281,11 +281,14 @@ class BrowsableAPIRenderer(BaseRenderer):
             serializers.DateField: forms.DateField,
             serializers.EmailField: forms.EmailField,
             serializers.CharField: forms.CharField,
+            serializers.ChoiceField: forms.ChoiceField,
             serializers.BooleanField: forms.BooleanField,
-            serializers.PrimaryKeyRelatedField: forms.ModelChoiceField,
-            serializers.ManyPrimaryKeyRelatedField: forms.ModelMultipleChoiceField,
-            serializers.HyperlinkedRelatedField: forms.ModelChoiceField,
-            serializers.ManyHyperlinkedRelatedField: forms.ModelMultipleChoiceField
+            serializers.PrimaryKeyRelatedField: forms.ChoiceField,
+            serializers.ManyPrimaryKeyRelatedField: forms.MultipleChoiceField,
+            serializers.SlugRelatedField: forms.ChoiceField,
+            serializers.ManySlugRelatedField: forms.MultipleChoiceField,
+            serializers.HyperlinkedRelatedField: forms.ChoiceField,
+            serializers.ManyHyperlinkedRelatedField: forms.MultipleChoiceField
         }
 
         fields = {}
@@ -296,19 +299,14 @@ class BrowsableAPIRenderer(BaseRenderer):
             kwargs = {}
             kwargs['required'] = v.required
 
-            if getattr(v, 'queryset', None):
-                kwargs['queryset'] = v.queryset
+            #if getattr(v, 'queryset', None):
+            #    kwargs['queryset'] = v.queryset
+
+            if getattr(v, 'choices', None) is not None:
+                kwargs['choices'] = v.choices
 
             if getattr(v, 'widget', None):
                 widget = copy.deepcopy(v.widget)
-                # If choices have friendly readable names,
-                # then add in the identities too
-                if getattr(widget, 'choices', None):
-                    choices = widget.choices
-                    if any([ident != desc for (ident, desc) in choices]):
-                        choices = [(ident, "%s (%s)" % (desc, ident))
-                                   for (ident, desc) in choices]
-                    widget.choices = choices
                 kwargs['widget'] = widget
 
             if getattr(v, 'default', None) is not None:
@@ -319,7 +317,10 @@ class BrowsableAPIRenderer(BaseRenderer):
             try:
                 fields[k] = field_mapping[v.__class__](**kwargs)
             except KeyError:
-                fields[k] = forms.CharField(**kwargs)
+                if getattr(v, 'choices', None) is not None:
+                    fields[k] = forms.ChoiceField(**kwargs)
+                else:
+                    fields[k] = forms.CharField(**kwargs)
         return fields
 
     def get_form(self, view, method, request):

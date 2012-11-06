@@ -4,14 +4,40 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
-## Master
+## 2.1.0
 
+**Date**: 5th Nov 2012
+
+**Warning**: Please read [this thread][2.1.0-notes] regarding the `instance` and `data` keyword args before updating to 2.1.0.
+
+* **Serializer `instance` and `data` keyword args have their position swapped.**
+* `queryset` argument is now optional on writable model fields.
+* Hyperlinked related fields optionally take `slug_field` and `slug_field_kwarg` arguments.
+* Support Django's cache framework.
+* Minor field improvements. (Don't stringify dicts, more robust many-pk fields.)
+* Bugfix: Support choice field in Browseable API.
+* Bugfix: Related fields with `read_only=True` do not require a `queryset` argument.
+
+## 2.0.2
+
+**Date**: 2nd Nov 2012
+
+* Fix issues with pk related fields in the browsable API.
+
+## 2.0.1
+
+**Date**: 1st Nov 2012
+
+* Add support for relational fields in the browsable API.
+* Added SlugRelatedField and ManySlugRelatedField.
 * If PUT creates an instance return '201 Created', instead of '200 OK'.
 
 ## 2.0.0
 
+**Date**: 30th Oct 2012
+
 * **Fix all of the things.**  (Well, almost.)
-* For more information please see the [2.0 migration guide][migration].
+* For more information please see the [2.0 announcement][announcement].
 
 ---
 
@@ -117,4 +143,5 @@
 * Initial release.
 
 [cite]: http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html
-[migration]: migration.md
+[2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
+[announcement]: rest-framework-2-announcement.md
