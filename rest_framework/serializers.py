@@ -82,6 +82,7 @@ class SerializerOptions(object):
         self.depth = getattr(meta, 'depth', 0)
         self.fields = getattr(meta, 'fields', ())
         self.exclude = getattr(meta, 'exclude', ())
+        self.read_only_fields = getattr(meta, 'read_only_fields', ())
 
 
 class BaseSerializer(Field):
@@ -133,6 +134,9 @@ class BaseSerializer(Field):
         # Add in the default fields
         fields = self.default_fields(nested)
         for key, val in fields.items():
+            if key in self.opts.read_only_fields:
+                val.read_only = True
+
             if key not in ret:
                 ret[key] = val
 
