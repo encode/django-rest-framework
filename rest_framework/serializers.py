@@ -130,6 +130,8 @@ class BaseSerializer(Field):
             # Set up the field
             field.initialize(parent=self, field_name=key)
 
+        pk_field = None
+
         # Add in the default fields
         fields = self.default_fields(nested)
         for key, val in fields.items():
@@ -147,7 +149,7 @@ class BaseSerializer(Field):
             new = SortedDict()
             for key in self.opts.fields:
                 if key == 'pk':
-                    # User requested the 'pk', use the primary key found
+                    # 'pk' shortcut: use the primary key found
                     new[key] = ret[pk_field]
                     continue
                 new[key] = ret[key]
@@ -156,6 +158,9 @@ class BaseSerializer(Field):
         # Remove anything in 'exclude'
         if self.opts.exclude:
             for key in self.opts.exclude:
+                if key == 'pk':
+                    # 'pk' shortcut: remove the primary key found
+                    ret.pop(pk_field)
                 ret.pop(key, None)
 
         return ret
