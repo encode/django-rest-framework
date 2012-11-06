@@ -506,6 +506,7 @@ class HyperlinkedRelatedField(RelatedField):
 
         self.slug_field = kwargs.pop('slug_field', self.slug_field)
         default_slug_kwarg = self.slug_url_kwarg or self.slug_field
+        self.pk_url_kwarg = kwargs.pop('pk_url_kwarg', self.pk_url_kwarg)
         self.slug_url_kwarg = kwargs.pop('slug_url_kwarg', default_slug_kwarg)
 
         self.format = kwargs.pop('format', None)
@@ -611,6 +612,7 @@ class HyperlinkedIdentityField(Field):
 
         self.slug_field = kwargs.pop('slug_field', self.slug_field)
         default_slug_kwarg = self.slug_url_kwarg or self.slug_field
+        self.pk_url_kwarg = kwargs.pop('pk_url_kwarg', self.pk_url_kwarg)
         self.slug_url_kwarg = kwargs.pop('slug_url_kwarg', default_slug_kwarg)
 
         super(HyperlinkedIdentityField, self).__init__(*args, **kwargs)

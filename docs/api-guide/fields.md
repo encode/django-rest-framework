@@ -268,6 +268,7 @@ By default, `HyperlinkedRelatedField` is read-write, although you can change thi
 * `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
 * `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
 * `slug_field` - The field on the target that should be used for the lookup. Default is `'slug'`.
+* `pk_url_kwarg` - The named url parameter for the pk field lookup. Default is `pk`.
 * `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
 
 ## HyperLinkedIdentityField
@@ -281,6 +282,7 @@ This field is always read-only.
 * `view_name` - The view name that should be used as the target of the relationship.  **required**.
 * `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
 * `slug_field` - The field on the target that should be used for the lookup. Default is `'slug'`.
+* `pk_url_kwarg` - The named url parameter for the pk field lookup. Default is `pk`.
 * `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
 
 [cite]: http://www.python.org/dev/peps/pep-0020/
