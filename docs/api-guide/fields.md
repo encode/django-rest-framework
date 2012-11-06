@@ -280,5 +280,7 @@ This field is always read-only.
 
 * `view_name` - The view name that should be used as the target of the relationship.  **required**.
 * `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
+* `slug_field` - The field on the target that should be used for the lookup. Default is `'slug'`.
+* `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
 
 [cite]: http://www.python.org/dev/peps/pep-0020/
