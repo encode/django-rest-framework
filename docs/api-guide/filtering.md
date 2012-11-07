@@ -1,3 +1,5 @@
+<a class="github" href="filters.py"></a>
+
 # Filtering
 
 > The root QuerySet provided by the Manager describes all objects in the database table. Usually, though, you'll need to select only a subset of the complete set of objects.
@@ -74,6 +76,8 @@ We can override `.get_queryset()` to deal with URLs such as `http://example.com/
                 queryset = queryset.filter(purchaser__username=username)
             return queryset
 
+---
+
 # Generic Filtering
 
 As well as being able to override the default queryset, REST framework also includes support for generic filtering backends that allow you to easily construct complex filters that can be specified by the client using query parameters.
@@ -95,6 +99,10 @@ To use REST framework's default filtering backend, first install `django-filter`
 **TODO**: Document setting `.filter_class` on the view.
 
 **TODO**: Note support for `lookup_type`, double underscore relationship spanning, and ordering.
+
+**TODO**: Note that overiding `get_queryset()` can be used together with generic filtering 
+
+---
 
 # Custom generic filtering
 

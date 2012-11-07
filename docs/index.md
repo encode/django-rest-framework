@@ -95,6 +95,7 @@ The API guide is your complete reference manual to all the functionality provide
 * [Authentication][authentication]
 * [Permissions][permissions]
 * [Throttling][throttling]
+* [Filtering][filtering]
 * [Pagination][pagination]
 * [Content negotiation][contentnegotiation]
 * [Format suffixes][formatsuffixes]
@@ -184,6 +185,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [authentication]: api-guide/authentication.md
 [permissions]: api-guide/permissions.md
 [throttling]: api-guide/throttling.md
+[filtering]: api-guide/filtering.md
 [pagination]: api-guide/pagination.md
 [contentnegotiation]: api-guide/content-negotiation.md
 [formatsuffixes]: api-guide/format-suffixes.md
