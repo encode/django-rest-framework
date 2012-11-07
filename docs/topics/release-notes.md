@@ -4,10 +4,15 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
-## Master
+## 2.1.1
+
+**Date**: 7th Nov 2012
 
 * Support use of HTML exception templates.  Eg. `403.html`
-* HyperlinkedIdentityField optionally take `slug_field`, `slug_url_kwarg` and `pk_url_kwarg` arguments.
+* Hyperlinked fields take optional `slug_field`, `slug_url_kwarg` and `pk_url_kwarg` arguments.
+* Bugfix: Deal with optional trailing slashs properly when generating breadcrumbs.
+* Bugfix: Make textareas same width as other fields in browsable API.
+* Private API change: `.get_serializer` now uses same `instance` and `data` ordering as serializer initialization.
 
 ## 2.1.0
 

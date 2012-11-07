@@ -57,6 +57,16 @@ To run the tests.
 
 # Changelog
 
+## 2.1.1
+
+**Date**: 7th Nov 2012
+
+* Support use of HTML exception templates.  Eg. `403.html`
+* Hyperlinked fields take optional `slug_field`, `slug_url_kwarg` and `pk_url_kwarg` arguments.
+* Bugfix: Deal with optional trailing slashs properly when generating breadcrumbs.
+* Bugfix: Make textareas same width as other fields in browsable API.
+* Private API change: `.get_serializer` now uses same `instance` and `data` ordering as serializer initialization.
+
 ## 2.1.0
 
 **Date**: 5th Nov 2012
