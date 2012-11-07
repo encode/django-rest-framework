@@ -4,9 +4,14 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
-## Master
+## 2.1.1
+
+**Date**: 7th Nov 2012
 
 * Support use of HTML exception templates.  Eg. `403.html`
+* Bugfix: Deal with optional trailing slashs properly when generating breadcrumbs.
+* Bugfix: Make textareas same width as other fields in browsable API.
+* Private API change: `.get_serializer` now uses same `instance` and `data` ordering as serializer initialization.
 
 ## 2.1.0
 
