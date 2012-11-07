@@ -4,14 +4,12 @@ from rest_framework.templatetags.rest_framework import replace_query_param
 # TODO: Support URLconf kwarg-style paging
 
 
-class PageField(serializers.Field):
-    page_field = 'page'
-
-
-class NextPageField(PageField):
+class NextPageField(serializers.Field):
     """
     Field that returns a link to the next page in paginated results.
     """
+    page_field = 'page'
+
     def to_native(self, value):
         if not value.has_next():
             return None
@@ -21,10 +19,12 @@ class NextPageField(PageField):
         return replace_query_param(url, self.page_field, page)
 
 
-class PreviousPageField(PageField):
+class PreviousPageField(serializers.Field):
     """
     Field that returns a link to the previous page in paginated results.
     """
+    page_field = 'page'
+
     def to_native(self, value):
         if not value.has_previous():
             return None
