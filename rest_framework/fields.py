@@ -237,7 +237,7 @@ class RelatedField(WritableField):
     """
     Base class for related model fields.
 
-    If not overridden, this represents a to-one relatinship, using the unicode
+    If not overridden, this represents a to-one relationship, using the unicode
     representation of the target.
     """
     widget = widgets.Select
