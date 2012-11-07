@@ -1,2 +1,3 @@
 markdown>=2.1.0
 PyYAML>=3.10
+-e git+https://github.com/alex/django-filter.git@0e4b3d703b31574922ab86fc78a86164aad0c1d0#egg=django-filter
