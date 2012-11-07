@@ -9,6 +9,7 @@
 **Date**: 7th Nov 2012
 
 * Support use of HTML exception templates.  Eg. `403.html`
+* Hyperlinked fields take optional `slug_field`, `slug_url_kwarg` and `pk_url_kwarg` arguments.
 * Bugfix: Deal with optional trailing slashs properly when generating breadcrumbs.
 * Bugfix: Make textareas same width as other fields in browsable API.
 * Private API change: `.get_serializer` now uses same `instance` and `data` ordering as serializer initialization.
@@ -21,7 +22,7 @@
 
 * **Serializer `instance` and `data` keyword args have their position swapped.**
 * `queryset` argument is now optional on writable model fields.
-* Hyperlinked related fields optionally take `slug_field` and `slug_field_kwarg` arguments.
+* Hyperlinked related fields optionally take `slug_field` and `slug_url_kwarg` arguments.
 * Support Django's cache framework.
 * Minor field improvements. (Don't stringify dicts, more robust many-pk fields.)
 * Bugfix: Support choice field in Browseable API.
