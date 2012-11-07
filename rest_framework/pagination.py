@@ -3,7 +3,11 @@ from rest_framework import serializers
 # TODO: Support URLconf kwarg-style paging
 
 
-class NextPageField(serializers.Field):
+class PageField(serializers.Field):
+    page_field = 'page'
+
+
+class NextPageField(PageField):
     """
     Field that returns a link to the next page in paginated results.
     """
@@ -12,13 +16,16 @@ class NextPageField(serializers.Field):
             return None
         page = value.next_page_number()
         request = self.context.get('request')
-        relative_url = '?page=%d' % page
+        relative_url = '?%s=%d' % (self.page_field, page)
         if request:
+            for field, value in request.QUERY_PARAMS.iteritems():
+                if field != self.page_field:
+                    relative_url += '&%s=%s' % (field, value)
             return request.build_absolute_uri(relative_url)
         return relative_url
 
 
-class PreviousPageField(serializers.Field):
+class PreviousPageField(PageField):
     """
     Field that returns a link to the previous page in paginated results.
     """
@@ -27,9 +34,12 @@ class PreviousPageField(serializers.Field):
             return None
         page = value.previous_page_number()
         request = self.context.get('request')
-        relative_url = '?page=%d' % page
+        relative_url = '?%s=%d' % (self.page_field, page)
         if request:
-            return request.build_absolute_uri('?page=%d' % page)
+            for field, value in request.QUERY_PARAMS.iteritems():
+                if field != self.page_field:
+                    relative_url += '&%s=%s' % (field, value)
+            return request.build_absolute_uri(relative_url)
         return relative_url
 
 

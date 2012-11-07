@@ -11,6 +11,7 @@ env:
 
 install:
   - pip install $DJANGO
+  - pip install -r requirements.txt --use-mirrors
   - export PYTHONPATH=.
 
 script:
