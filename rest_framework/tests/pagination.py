@@ -3,9 +3,10 @@ from decimal import Decimal
 from django.core.paginator import Paginator
 from django.test import TestCase
 from django.test.client import RequestFactory
+from django.utils import unittest
 from rest_framework import generics, status, pagination
+from rest_framework.compat import django_filters
 from rest_framework.tests.models import BasicModel, FilterableItem
-import django_filters
 
 factory = RequestFactory()
 
@@ -18,17 +19,18 @@ class RootView(generics.ListCreateAPIView):
     paginate_by = 10
 
 
-class DecimalFilter(django_filters.FilterSet):
-    decimal = django_filters.NumberFilter(lookup_type='lt')
-    class Meta:
+if django_filters:
+    class DecimalFilter(django_filters.FilterSet):
+        decimal = django_filters.NumberFilter(lookup_type='lt')
+
+        class Meta:
+            model = FilterableItem
+            fields = ['text', 'decimal', 'date']
+
+    class FilterFieldsRootView(generics.ListCreateAPIView):
         model = FilterableItem
-        fields = ['text', 'decimal', 'date']
-
-
-class FilterFieldsRootView(generics.ListCreateAPIView):
-    model = FilterableItem
-    paginate_by = 10
-    filter_class = DecimalFilter
+        paginate_by = 10
+        filter_class = DecimalFilter
 
 
 class IntegrationTestPagination(TestCase):
@@ -98,6 +100,7 @@ class IntegrationTestPaginationAndFiltering(TestCase):
         ]
         self.view = FilterFieldsRootView.as_view()
 
+    @unittest.skipUnless(django_filters, 'django-filters not installed')
     def test_get_paginated_filtered_root_view(self):
         """
         GET requests to paginated filtered ListCreateAPIView should return

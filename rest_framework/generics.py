@@ -6,7 +6,7 @@ from rest_framework import views, mixins
 from rest_framework.settings import api_settings
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
-import django_filters
+
 
 ### Base classes for the generic views ###
 
@@ -58,34 +58,13 @@ class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
 
     pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
     paginate_by = api_settings.PAGINATE_BY
-    filter_class = None
-    filter_fields = None
-
-    def get_filter_class(self):
-        """
-        Return the django-filters `FilterSet` used to filter the queryset.
-        """
-        if self.filter_class:
-            return self.filter_class
-
-        if self.filter_fields:
-            class AutoFilterSet(django_filters.FilterSet):
-                class Meta:
-                    model = self.model
-                fields = self.filter_fields
-            return AutoFilterSet
-
-        return None
+    filter_backend = api_settings.FILTER_BACKEND
 
     def filter_queryset(self, queryset):
-        filter_class = self.get_filter_class()
-
-        if filter_class:
-            assert issubclass(filter_class.Meta.model, self.model), \
-                "%s is not a subclass of %s" % (filter_class.Meta.model, self.model)
-            return filter_class(self.request.GET, queryset=queryset)
-
-        return queryset
+        if not self.filter_backend:
+            return queryset
+        backend = self.filter_backend()
+        return backend.filter_queryset(self.request, queryset, self)
 
     def get_filtered_queryset(self):
         return self.filter_queryset(self.get_queryset())

@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.templatetags.rest_framework import replace_query_param
 
 # TODO: Support URLconf kwarg-style paging
 
@@ -16,13 +17,8 @@ class NextPageField(PageField):
             return None
         page = value.next_page_number()
         request = self.context.get('request')
-        relative_url = '?%s=%d' % (self.page_field, page)
-        if request:
-            for field, value in request.QUERY_PARAMS.iteritems():
-                if field != self.page_field:
-                    relative_url += '&%s=%s' % (field, value)
-            return request.build_absolute_uri(relative_url)
-        return relative_url
+        url = request and request.get_full_path() or ''
+        return replace_query_param(url, self.page_field, page)
 
 
 class PreviousPageField(PageField):
@@ -34,13 +30,8 @@ class PreviousPageField(PageField):
             return None
         page = value.previous_page_number()
         request = self.context.get('request')
-        relative_url = '?%s=%d' % (self.page_field, page)
-        if request:
-            for field, value in request.QUERY_PARAMS.iteritems():
-                if field != self.page_field:
-                    relative_url += '&%s=%s' % (field, value)
-            return request.build_absolute_uri(relative_url)
-        return relative_url
+        url = request and request.get_full_path() or ''
+        return replace_query_param(url, self.page_field, page)
 
 
 class PaginationSerializerOptions(serializers.SerializerOptions):

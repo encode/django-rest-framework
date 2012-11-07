@@ -55,6 +55,7 @@ DEFAULTS = {
         'anon': None,
     },
     'PAGINATE_BY': None,
+    'FILTER_BACKEND': 'rest_framework.filters.DjangoFilterBackend',
 
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
@@ -79,6 +80,7 @@ IMPORT_STRINGS = (
     'DEFAULT_CONTENT_NEGOTIATION_CLASS',
     'DEFAULT_MODEL_SERIALIZER_CLASS',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS',
+    'FILTER_BACKEND',
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN',
 )

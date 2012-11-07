@@ -2,44 +2,45 @@ import datetime
 from decimal import Decimal
 from django.test import TestCase
 from django.test.client import RequestFactory
+from django.utils import unittest
 from rest_framework import generics, status
+from rest_framework.compat import django_filters
 from rest_framework.tests.models import FilterableItem, BasicModel
-import django_filters
 
 factory = RequestFactory()
 
-# Basic filter on a list view.
-class FilterFieldsRootView(generics.ListCreateAPIView):
-    model = FilterableItem
-    filter_fields = ['decimal', 'date']
 
-
-# These class are used to test a filter class.
-class SeveralFieldsFilter(django_filters.FilterSet):
-    text = django_filters.CharFilter(lookup_type='icontains')
-    decimal = django_filters.NumberFilter(lookup_type='lt')
-    date = django_filters.DateFilter(lookup_type='gt')
-    class Meta:
+if django_filters:
+    # Basic filter on a list view.
+    class FilterFieldsRootView(generics.ListCreateAPIView):
         model = FilterableItem
-        fields = ['text', 'decimal', 'date']
+        filter_fields = ['decimal', 'date']
 
+    # These class are used to test a filter class.
+    class SeveralFieldsFilter(django_filters.FilterSet):
+        text = django_filters.CharFilter(lookup_type='icontains')
+        decimal = django_filters.NumberFilter(lookup_type='lt')
+        date = django_filters.DateFilter(lookup_type='gt')
 
-class FilterClassRootView(generics.ListCreateAPIView):
-    model = FilterableItem
-    filter_class = SeveralFieldsFilter
+        class Meta:
+            model = FilterableItem
+            fields = ['text', 'decimal', 'date']
 
+    class FilterClassRootView(generics.ListCreateAPIView):
+        model = FilterableItem
+        filter_class = SeveralFieldsFilter
 
-# These classes are used to test a misconfigured filter class.
-class MisconfiguredFilter(django_filters.FilterSet):
-    text = django_filters.CharFilter(lookup_type='icontains')
-    class Meta:
-        model = BasicModel
-        fields = ['text']
+    # These classes are used to test a misconfigured filter class.
+    class MisconfiguredFilter(django_filters.FilterSet):
+        text = django_filters.CharFilter(lookup_type='icontains')
 
+        class Meta:
+            model = BasicModel
+            fields = ['text']
 
-class IncorrectlyConfiguredRootView(generics.ListCreateAPIView):
-    model = FilterableItem
-    filter_class = MisconfiguredFilter
+    class IncorrectlyConfiguredRootView(generics.ListCreateAPIView):
+        model = FilterableItem
+        filter_class = MisconfiguredFilter
 
 
 class IntegrationTestFiltering(TestCase):
@@ -64,6 +65,7 @@ class IntegrationTestFiltering(TestCase):
         for obj in self.objects.all()
         ]
 
+    @unittest.skipUnless(django_filters, 'django-filters not installed')
     def test_get_filtered_fields_root_view(self):
         """
         GET requests to paginated ListCreateAPIView should return paginated results.
@@ -81,7 +83,7 @@ class IntegrationTestFiltering(TestCase):
         request = factory.get('/?decimal=%s' % search_decimal)
         response = view(request).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
-        expected_data = [ f for f in self.data if f['decimal'] == search_decimal ]
+        expected_data = [f for f in self.data if f['decimal'] == search_decimal]
         self.assertEquals(response.data, expected_data)
 
         # Tests that the date filter works.
@@ -89,9 +91,10 @@ class IntegrationTestFiltering(TestCase):
         request = factory.get('/?date=%s' % search_date)  # search_date str: '2012-09-22'
         response = view(request).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
-        expected_data = [ f for f in self.data if f['date'] == search_date ]
+        expected_data = [f for f in self.data if f['date'] == search_date]
         self.assertEquals(response.data, expected_data)
 
+    @unittest.skipUnless(django_filters, 'django-filters not installed')
     def test_get_filtered_class_root_view(self):
         """
         GET requests to filtered ListCreateAPIView that have a filter_class set
@@ -110,7 +113,7 @@ class IntegrationTestFiltering(TestCase):
         request = factory.get('/?decimal=%s' % search_decimal)
         response = view(request).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
-        expected_data = [ f for f in self.data if f['decimal'] < search_decimal ]
+        expected_data = [f for f in self.data if f['decimal'] < search_decimal]
         self.assertEquals(response.data, expected_data)
 
         # Tests that the date filter set with 'gt' in the filter class works.
@@ -118,7 +121,7 @@ class IntegrationTestFiltering(TestCase):
         request = factory.get('/?date=%s' % search_date)  # search_date str: '2012-10-02'
         response = view(request).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
-        expected_data = [ f for f in self.data if f['date'] > search_date ]
+        expected_data = [f for f in self.data if f['date'] > search_date]
         self.assertEquals(response.data, expected_data)
 
         # Tests that the text filter set with 'icontains' in the filter class works.
@@ -126,7 +129,7 @@ class IntegrationTestFiltering(TestCase):
         request = factory.get('/?text=%s' % search_text)
         response = view(request).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
-        expected_data = [ f for f in self.data if search_text in f['text'].lower() ]
+        expected_data = [f for f in self.data if search_text in f['text'].lower()]
         self.assertEquals(response.data, expected_data)
 
         # Tests that multiple filters works.
@@ -135,10 +138,11 @@ class IntegrationTestFiltering(TestCase):
         request = factory.get('/?decimal=%s&date=%s' % (search_decimal, search_date))
         response = view(request).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
-        expected_data = [ f for f in self.data if f['date'] > search_date and
-                                                  f['decimal'] < search_decimal ]
+        expected_data = [f for f in self.data if f['date'] > search_date and
+                                                  f['decimal'] < search_decimal]
         self.assertEquals(response.data, expected_data)
 
+    @unittest.skipUnless(django_filters, 'django-filters not installed')
     def test_incorrectly_configured_filter(self):
         """
         An error should be displayed when the filter class is misconfigured.
@@ -148,6 +152,7 @@ class IntegrationTestFiltering(TestCase):
         request = factory.get('/')
         self.assertRaises(AssertionError, view, request)
 
+    @unittest.skipUnless(django_filters, 'django-filters not installed')
     def test_unknown_filter(self):
         """
         GET requests with filters that aren't configured should return 200.
