@@ -1,9 +1,9 @@
 from django import template
 from django.core.urlresolvers import reverse
+from django.http import QueryDict
 from django.utils.encoding import force_unicode
 from django.utils.html import escape
 from django.utils.safestring import SafeData, mark_safe
-from django.http import QueryDict
 from urlparse import urlsplit, urlunsplit
 import re
 import string
