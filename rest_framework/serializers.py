@@ -480,7 +480,6 @@ class HyperlinkedModelSerializer(ModelSerializer):
     """
     _options_class = HyperlinkedModelSerializerOptions
     _default_view_name = '%(model_name)s-detail'
-    _default_view_namespace =   None                    # default: no namespace is prepend to view_name
 
     url = HyperlinkedIdentityField()
 
@@ -498,14 +497,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
             'app_label': model_meta.app_label,
             'model_name': model_meta.object_name.lower()
         }
-        view_name = self._default_view_name % format_kwargs
-        if self._default_view_namespace:
-            return "%(namespace)s:%(view)s" %  {
-                'view': view_name,
-                'namespace': self._default_view_namespace
-            }
-        else:
-            return view_name
+        return self._default_view_name % format_kwargs
 
     def get_pk_field(self, model_field):
         return None
