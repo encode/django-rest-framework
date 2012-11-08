@@ -65,7 +65,9 @@ DEFAULTS = {
     'URL_ACCEPT_OVERRIDE': 'accept',
     'URL_FORMAT_OVERRIDE': 'format',
 
-    'FORMAT_SUFFIX_KWARG': 'format'
+    'FORMAT_SUFFIX_KWARG': 'format',
+
+    'USE_ABSOLUTE_URLS': True
 }
 
 

@@ -4,6 +4,10 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
+## Master
+
+* Add support and settings option `USE_ABSOLUTE_URLS`
+
 ## 2.1.1
 
 **Date**: 7th Nov 2012
