@@ -17,6 +17,10 @@ class DjangoFilterBackend(BaseFilterBackend):
     """
     A filter backend that uses django-filter.
     """
+    default_filter_set = django_filters.FilterSet
+
+    def __init__(self):
+        assert django_filters, 'Using DjangoFilterBackend, but django-filter is not installed'
 
     def get_filter_class(self, view):
         """
@@ -24,20 +28,21 @@ class DjangoFilterBackend(BaseFilterBackend):
         """
         filter_class = getattr(view, 'filter_class', None)
         filter_fields = getattr(view, 'filter_fields', None)
-        filter_model = getattr(view, 'model', None)
-
-        if filter_class or filter_fields:
-            assert django_filters, 'django-filter is not installed'
+        view_model = getattr(view, 'model', None)
 
         if filter_class:
-            assert issubclass(filter_class.Meta.model, filter_model), \
-                '%s is not a subclass of %s' % (filter_class.Meta.model, filter_model)
+            filter_model = filter_class.Meta.model
+
+            assert issubclass(filter_model, view_model), \
+                'FilterSet model %s does not match view model %s' % \
+                (filter_model, view_model)
+
             return filter_class
 
         if filter_fields:
-            class AutoFilterSet(django_filters.FilterSet):
+            class AutoFilterSet(self.default_filter_set):
                 class Meta:
-                    model = filter_model
+                    model = view_model
                 fields = filter_fields
             return AutoFilterSet
 

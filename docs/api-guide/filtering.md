@@ -82,23 +82,29 @@ We can override `.get_queryset()` to deal with URLs such as `http://example.com/
 
 As well as being able to override the default queryset, REST framework also includes support for generic filtering backends that allow you to easily construct complex filters that can be specified by the client using query parameters.
 
-REST framework supports pluggable backends to implement filtering, and includes a default implementation which uses the [django-filter] package.
+REST framework supports pluggable backends to implement filtering, and provides an implementation which uses the [django-filter] package.
 
 To use REST framework's default filtering backend, first install `django-filter`.
 
     pip install -e git+https://github.com/alex/django-filter.git#egg=django-filter
 
+You must also set the filter backend to `DjangoFilterBackend` in your settings:
+
+    REST_FRAMEWORK = {
+        'FILTER_BACKEND': 'rest_framework.filters.DjangoFilterBackend'
+    }
+
 **Note**: The currently supported version of `django-filter` is the `master` branch.  A PyPI release is expected to be coming soon.
-
-## Specifying filter fields
-
-**TODO**: Document setting `.filter_fields` on the view.
 
 ## Specifying a FilterSet
 
 **TODO**: Document setting `.filter_class` on the view.
 
 **TODO**: Note support for `lookup_type`, double underscore relationship spanning, and ordering.
+
+## Specifying filter fields
+
+**TODO**: Document setting `.filter_fields` on the view.
 
 **TODO**: Note that overiding `get_queryset()` can be used together with generic filtering 
 

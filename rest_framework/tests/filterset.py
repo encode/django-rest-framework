@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import unittest
-from rest_framework import generics, status
+from rest_framework import generics, status, filters
 from rest_framework.compat import django_filters
 from rest_framework.tests.models import FilterableItem, BasicModel
 
@@ -15,6 +15,7 @@ if django_filters:
     class FilterFieldsRootView(generics.ListCreateAPIView):
         model = FilterableItem
         filter_fields = ['decimal', 'date']
+        filter_backend = filters.DjangoFilterBackend
 
     # These class are used to test a filter class.
     class SeveralFieldsFilter(django_filters.FilterSet):
@@ -29,6 +30,7 @@ if django_filters:
     class FilterClassRootView(generics.ListCreateAPIView):
         model = FilterableItem
         filter_class = SeveralFieldsFilter
+        filter_backend = filters.DjangoFilterBackend
 
     # These classes are used to test a misconfigured filter class.
     class MisconfiguredFilter(django_filters.FilterSet):
@@ -41,6 +43,7 @@ if django_filters:
     class IncorrectlyConfiguredRootView(generics.ListCreateAPIView):
         model = FilterableItem
         filter_class = MisconfiguredFilter
+        filter_backend = filters.DjangoFilterBackend
 
 
 class IntegrationTestFiltering(TestCase):

@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import unittest
-from rest_framework import generics, status, pagination
+from rest_framework import generics, status, pagination, filters
 from rest_framework.compat import django_filters
 from rest_framework.tests.models import BasicModel, FilterableItem
 
@@ -31,6 +31,7 @@ if django_filters:
         model = FilterableItem
         paginate_by = 10
         filter_class = DecimalFilter
+        filter_backend = filters.DjangoFilterBackend
 
 
 class IntegrationTestPagination(TestCase):
