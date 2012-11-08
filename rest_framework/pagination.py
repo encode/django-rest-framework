@@ -15,7 +15,7 @@ class NextPageField(serializers.Field):
             return None
         page = value.next_page_number()
         request = self.context.get('request')
-        url = request and request.get_full_path() or ''
+        url = request and request.build_absolute_uri() or ''
         return replace_query_param(url, self.page_field, page)
 
 
@@ -30,7 +30,7 @@ class PreviousPageField(serializers.Field):
             return None
         page = value.previous_page_number()
         request = self.context.get('request')
-        url = request and request.get_full_path() or ''
+        url = request and request.build_absolute_uri() or ''
         return replace_query_param(url, self.page_field, page)
 
 
