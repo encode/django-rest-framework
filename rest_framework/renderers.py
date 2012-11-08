@@ -259,21 +259,21 @@ class BrowsableAPIRenderer(BaseRenderer):
     format = 'api'
     template = 'rest_framework/api.html'
     field_mapping = {
-            serializers.FloatField: forms.FloatField,
-            serializers.IntegerField: forms.IntegerField,
-            serializers.DateTimeField: forms.DateTimeField,
-            serializers.DateField: forms.DateField,
-            serializers.EmailField: forms.EmailField,
-            serializers.CharField: forms.CharField,
-            serializers.ChoiceField: forms.ChoiceField,
-            serializers.BooleanField: forms.BooleanField,
-            serializers.PrimaryKeyRelatedField: forms.ChoiceField,
-            serializers.ManyPrimaryKeyRelatedField: forms.MultipleChoiceField,
-            serializers.SlugRelatedField: forms.ChoiceField,
-            serializers.ManySlugRelatedField: forms.MultipleChoiceField,
-            serializers.HyperlinkedRelatedField: forms.ChoiceField,
-            serializers.ManyHyperlinkedRelatedField: forms.MultipleChoiceField
-        }
+        serializers.FloatField: forms.FloatField,
+        serializers.IntegerField: forms.IntegerField,
+        serializers.DateTimeField: forms.DateTimeField,
+        serializers.DateField: forms.DateField,
+        serializers.EmailField: forms.EmailField,
+        serializers.CharField: forms.CharField,
+        serializers.ChoiceField: forms.ChoiceField,
+        serializers.BooleanField: forms.BooleanField,
+        serializers.PrimaryKeyRelatedField: forms.ChoiceField,
+        serializers.ManyPrimaryKeyRelatedField: forms.MultipleChoiceField,
+        serializers.SlugRelatedField: forms.ChoiceField,
+        serializers.ManySlugRelatedField: forms.MultipleChoiceField,
+        serializers.HyperlinkedRelatedField: forms.ChoiceField,
+        serializers.ManyHyperlinkedRelatedField: forms.MultipleChoiceField
+    }
 
     def get_default_renderer(self, view):
         """
