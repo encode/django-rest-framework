@@ -258,6 +258,22 @@ class BrowsableAPIRenderer(BaseRenderer):
     media_type = 'text/html'
     format = 'api'
     template = 'rest_framework/api.html'
+    field_mapping = {
+            serializers.FloatField: forms.FloatField,
+            serializers.IntegerField: forms.IntegerField,
+            serializers.DateTimeField: forms.DateTimeField,
+            serializers.DateField: forms.DateField,
+            serializers.EmailField: forms.EmailField,
+            serializers.CharField: forms.CharField,
+            serializers.ChoiceField: forms.ChoiceField,
+            serializers.BooleanField: forms.BooleanField,
+            serializers.PrimaryKeyRelatedField: forms.ChoiceField,
+            serializers.ManyPrimaryKeyRelatedField: forms.MultipleChoiceField,
+            serializers.SlugRelatedField: forms.ChoiceField,
+            serializers.ManySlugRelatedField: forms.MultipleChoiceField,
+            serializers.HyperlinkedRelatedField: forms.ChoiceField,
+            serializers.ManyHyperlinkedRelatedField: forms.MultipleChoiceField
+        }
 
     def get_default_renderer(self, view):
         """
@@ -306,22 +322,6 @@ class BrowsableAPIRenderer(BaseRenderer):
         return True
 
     def serializer_to_form_fields(self, serializer):
-        field_mapping = {
-            serializers.FloatField: forms.FloatField,
-            serializers.IntegerField: forms.IntegerField,
-            serializers.DateTimeField: forms.DateTimeField,
-            serializers.DateField: forms.DateField,
-            serializers.EmailField: forms.EmailField,
-            serializers.CharField: forms.CharField,
-            serializers.ChoiceField: forms.ChoiceField,
-            serializers.BooleanField: forms.BooleanField,
-            serializers.PrimaryKeyRelatedField: forms.ChoiceField,
-            serializers.ManyPrimaryKeyRelatedField: forms.MultipleChoiceField,
-            serializers.SlugRelatedField: forms.ChoiceField,
-            serializers.ManySlugRelatedField: forms.MultipleChoiceField,
-            serializers.HyperlinkedRelatedField: forms.ChoiceField,
-            serializers.ManyHyperlinkedRelatedField: forms.MultipleChoiceField
-        }
 
         fields = {}
         for k, v in serializer.get_fields(True).items():
@@ -347,7 +347,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             kwargs['label'] = k
 
             try:
-                fields[k] = field_mapping[v.__class__](**kwargs)
+                fields[k] = self.field_mapping[v.__class__](**kwargs)
             except KeyError:
                 if getattr(v, 'choices', None) is not None:
                     fields[k] = forms.ChoiceField(**kwargs)
