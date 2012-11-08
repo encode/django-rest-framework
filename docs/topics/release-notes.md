@@ -4,6 +4,10 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
+## Master
+
+* Bugfix: Cannot create objects with reversed M2M relations
+
 ## 2.1.1
 
 **Date**: 7th Nov 2012
