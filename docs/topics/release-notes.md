@@ -6,7 +6,7 @@
 
 ## Master
 
-* Bugfix: Cannot create objects with reverse M2M relations
+* Bugfix: Support creation of objects with reverse M2M relations
 
 ## 2.1.1
 
