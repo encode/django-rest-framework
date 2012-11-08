@@ -140,6 +140,7 @@ For example:
         """
         A naive raw file upload parser.
         """
+        media_type = '*/*'  # Accept anything
 
         def parse(self, stream, media_type=None, parser_context=None):
             content = stream.read()
