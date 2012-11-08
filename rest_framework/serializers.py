@@ -447,6 +447,13 @@ class ModelSerializer(Serializer):
                 setattr(instance, key, val)
             return instance
 
+        # Reversed relation
+        for (obj, model) in self.opts.model._meta.get_all_related_m2m_objects_with_model():
+            field_name = obj.field.related_query_name()
+            if field_name in attrs:
+                self.m2m_data[field_name] = attrs.pop(field_name)
+
+        # Forward relation
         for field in self.opts.model._meta.many_to_many:
             if field.name in attrs:
                 self.m2m_data[field.name] = attrs.pop(field.name)
