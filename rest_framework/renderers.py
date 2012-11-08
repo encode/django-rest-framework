@@ -258,22 +258,6 @@ class BrowsableAPIRenderer(BaseRenderer):
     media_type = 'text/html'
     format = 'api'
     template = 'rest_framework/api.html'
-    field_mapping = {
-        serializers.FloatField: forms.FloatField,
-        serializers.IntegerField: forms.IntegerField,
-        serializers.DateTimeField: forms.DateTimeField,
-        serializers.DateField: forms.DateField,
-        serializers.EmailField: forms.EmailField,
-        serializers.CharField: forms.CharField,
-        serializers.ChoiceField: forms.ChoiceField,
-        serializers.BooleanField: forms.BooleanField,
-        serializers.PrimaryKeyRelatedField: forms.ChoiceField,
-        serializers.ManyPrimaryKeyRelatedField: forms.MultipleChoiceField,
-        serializers.SlugRelatedField: forms.ChoiceField,
-        serializers.ManySlugRelatedField: forms.MultipleChoiceField,
-        serializers.HyperlinkedRelatedField: forms.ChoiceField,
-        serializers.ManyHyperlinkedRelatedField: forms.MultipleChoiceField
-    }
 
     def get_default_renderer(self, view):
         """
@@ -346,13 +330,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
             kwargs['label'] = k
 
-            try:
-                fields[k] = self.field_mapping[v.__class__](**kwargs)
-            except KeyError:
-                if getattr(v, 'choices', None) is not None:
-                    fields[k] = forms.ChoiceField(**kwargs)
-                else:
-                    fields[k] = forms.CharField(**kwargs)
+            fields[k] = v.form_field_class(**kwargs)
         return fields
 
     def get_form(self, view, method, request):
