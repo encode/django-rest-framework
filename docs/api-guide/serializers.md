@@ -248,6 +248,15 @@ The default `ModelSerializer` uses primary keys for relationships, but you can a
 
 The `depth` option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.
 
+## Specifying which fields should be read-only 
+
+You may wish to specify multiple fields as read-only. Instead of adding each field explicitely with the `read_only=True` attribute, you may use the `read_only_fields` Meta option, like so:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            read_only_fields = ('created', 'modified')
+
 ## Customising the default fields
 
 You can create customized subclasses of `ModelSerializer` that use a different set of default fields for the representation, by overriding various `get_<field_type>_field` methods.

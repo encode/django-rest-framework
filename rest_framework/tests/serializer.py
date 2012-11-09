@@ -51,6 +51,7 @@ class PersonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Person
         fields = ('name', 'age', 'info')
+        read_only_fields = ('age',)
 
 
 class BasicTests(TestCase):
@@ -107,7 +108,8 @@ class BasicTests(TestCase):
         self.assertEquals(serializer.data['sub_comment'], 'And Merry Christmas!')
 
     def test_model_fields_as_expected(self):
-        """ Make sure that the fields returned are the same as defined
+        """
+        Make sure that the fields returned are the same as defined
         in the Meta data
         """
         serializer = PersonSerializer(self.person)
@@ -115,11 +117,24 @@ class BasicTests(TestCase):
                           set(['name', 'age', 'info']))
 
     def test_field_with_dictionary(self):
-        """ Make sure that dictionaries from fields are left intact
+        """
+        Make sure that dictionaries from fields are left intact
         """
         serializer = PersonSerializer(self.person)
         expected = self.person_data
         self.assertEquals(serializer.data['info'], expected)
+
+    def test_read_only_fields(self):
+        """
+        Attempting to update fields set as read_only should have no effect.
+        """
+
+        serializer = PersonSerializer(self.person, data={'name': 'dwight', 'age': 99})
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+        self.assertEquals(serializer.errors, {})
+        # Assert age is unchanged (35)
+        self.assertEquals(instance.age, self.person_data['age'])
 
 
 class ValidationTests(TestCase):
