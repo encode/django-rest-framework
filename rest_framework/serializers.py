@@ -321,6 +321,7 @@ class ModelSerializerOptions(SerializerOptions):
     def __init__(self, meta):
         super(ModelSerializerOptions, self).__init__(meta)
         self.model = getattr(meta, 'model', None)
+        self.read_only_fields = getattr(meta, 'read_only_fields', ())
 
 
 class ModelSerializer(Serializer):
@@ -368,6 +369,12 @@ class ModelSerializer(Serializer):
             if field:
                 field.initialize(parent=self, field_name=model_field.name)
                 ret[model_field.name] = field
+
+        for field_name in self.opts.read_only_fields:
+            assert field_name in ret, \
+                "read_only_fields on '%s' included invalid item '%s'" % \
+                (self.__class__.__name__, field_name)
+            ret[field_name].read_only = True
 
         return ret
 

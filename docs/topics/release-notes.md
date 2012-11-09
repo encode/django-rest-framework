@@ -4,6 +4,10 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
+## Master
+
+* Support for `read_only_fields` on `ModelSerializer` classes.
+
 ## 2.1.2
 
 **Date**: 9th Nov 2012
