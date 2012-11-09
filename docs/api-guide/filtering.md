@@ -141,7 +141,7 @@ For more details on using filter sets see the [django-filter documentation][djan
 
 ---
 
-## Overriding the intial queryset
+## Overriding the initial queryset
  
 Note that you can use both an overridden `.get_queryset()` and generic filtering together, and everything will work as expected.  For example, if `Product` had a many-to-many relationship with `User`, named `purchase`, you might want to write a view like this:
 
