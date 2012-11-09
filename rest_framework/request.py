@@ -21,8 +21,8 @@ def is_form_media_type(media_type):
     Return True if the media type is a valid form media type.
     """
     base_media_type, params = parse_header(media_type)
-    return base_media_type == 'application/x-www-form-urlencoded' or \
-           base_media_type == 'multipart/form-data'
+    return (base_media_type == 'application/x-www-form-urlencoded' or
+            base_media_type == 'multipart/form-data')
 
 
 class Empty(object):
@@ -88,16 +88,11 @@ class Request(object):
         self._stream = Empty
 
         if self.parser_context is None:
-            self.parser_context = self._default_parser_context(request)
+            self.parser_context = {}
+        self.parser_context['request'] = self
 
     def _default_negotiator(self):
-        return api_settings.DEFAULT_CONTENT_NEGOTIATION()
-
-    def _default_parser_context(self, request):
-        return {
-            'upload_handlers': request.upload_handlers,
-            'meta': request.META,
-        }
+        return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()
 
     @property
     def method(self):
@@ -265,15 +260,19 @@ class Request(object):
 
         May raise an `UnsupportedMediaType`, or `ParseError` exception.
         """
-        if self.stream is None or self.content_type is None:
+        stream = self.stream
+        media_type = self.content_type
+
+        if stream is None or media_type is None:
             return (None, None)
 
-        parser = self.negotiator.select_parser(self.parsers, self.content_type)
+        parser = self.negotiator.select_parser(self, self.parsers)
 
         if not parser:
-            raise exceptions.UnsupportedMediaType(self.content_type)
+            raise exceptions.UnsupportedMediaType(media_type)
 
-        parsed = parser.parse(self.stream, self.parser_context)
+        parsed = parser.parse(stream, media_type, self.parser_context)
+
         # Parser classes may return the raw data, or a
         # DataAndFiles object.  Unpack the result as required.
         try:

@@ -3,9 +3,6 @@ Basic building blocks for generic class based views.
 
 We don't bind behaviour to http method handlers yet,
 which allows mixin classes to be composed in interesting ways.
-
-Eg. Use mixins to build a Resource class, and have a Router class
-    perform the binding of http methods to actions for us.
 """
 from django.http import Http404
 from rest_framework import status
@@ -20,20 +17,24 @@ class CreateModelMixin(object):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA)
         if serializer.is_valid():
+            self.pre_save(serializer.object)
             self.object = serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def pre_save(self, obj):
+        pass
 
 
 class ListModelMixin(object):
     """
     List a queryset.
-    Should be mixed in with `MultipleObjectBaseView`.
+    Should be mixed in with `MultipleObjectAPIView`.
     """
     empty_error = u"Empty list and '%(class_name)s.allow_empty' is False."
 
     def list(self, request, *args, **kwargs):
-        self.object_list = self.get_queryset()
+        self.object_list = self.get_filtered_queryset()
 
         # Default is to allow empty querysets.  This can be altered by setting
         # `.allow_empty = False`, to raise 404 errors on empty querysets.
@@ -46,10 +47,11 @@ class ListModelMixin(object):
         # which may be `None` to disable pagination.
         page_size = self.get_paginate_by(self.object_list)
         if page_size:
-            paginator, page, queryset, is_paginated = self.paginate_queryset(self.object_list, page_size)
+            packed = self.paginate_queryset(self.object_list, page_size)
+            paginator, page, queryset, is_paginated = packed
             serializer = self.get_pagination_serializer(page)
         else:
-            serializer = self.get_serializer(instance=self.object_list)
+            serializer = self.get_serializer(self.object_list)
 
         return Response(serializer.data)
 
@@ -61,7 +63,7 @@ class RetrieveModelMixin(object):
     """
     def retrieve(self, request, *args, **kwargs):
         self.object = self.get_object()
-        serializer = self.get_serializer(instance=self.object)
+        serializer = self.get_serializer(self.object)
         return Response(serializer.data)
 
 
@@ -73,26 +75,25 @@ class UpdateModelMixin(object):
     def update(self, request, *args, **kwargs):
         try:
             self.object = self.get_object()
+            success_status = status.HTTP_200_OK
         except Http404:
             self.object = None
+            success_status = status.HTTP_201_CREATED
 
-        serializer = self.get_serializer(data=request.DATA, instance=self.object)
+        serializer = self.get_serializer(self.object, data=request.DATA)
 
         if serializer.is_valid():
-            if self.object is None:
-                # If PUT occurs to a non existant object, we need to set any
-                # attributes on the object that are implicit in the URL.
-                self.update_urlconf_attributes(serializer.object)
+            self.pre_save(serializer.object)
             self.object = serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=success_status)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def update_urlconf_attributes(self, obj):
+    def pre_save(self, obj):
         """
-        When update (re)creates an object, we need to set any attributes that
-        are tied to the URLconf.
+        Set any attributes on the object that are implicit in the request.
         """
+        # pk and/or slug attributes are implicit in the URL.
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         if pk:
             setattr(obj, 'pk', pk)

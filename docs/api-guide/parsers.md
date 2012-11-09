@@ -8,7 +8,7 @@ sending more complex data than simple forms
 >
 > &mdash; Malcom Tredinnick, [Django developers group][cite]
 
-REST framework includes a number of built in Parser classes, that allow you to accept requests with various media types.  There is also support for defining your own custom parsers, which gives you the flexiblity to design the media types that your API accepts.
+REST framework includes a number of built in Parser classes, that allow you to accept requests with various media types.  There is also support for defining your own custom parsers, which gives you the flexibility to design the media types that your API accepts.
 
 ## How the parser is determined
 
@@ -16,10 +16,10 @@ The set of valid parsers for a view is always defined as a list of classes.  Whe
 
 ## Setting the parsers
 
-The default set of parsers may be set globally, using the `DEFAULT_PARSERS` setting.  For example, the following settings would allow requests with `YAML` content.
+The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSES` setting.  For example, the following settings would allow requests with `YAML` content.
 
     REST_FRAMEWORK = {
-        'DEFAULT_PARSERS': (
+        'DEFAULT_PARSER_CLASSES': (
             'rest_framework.parsers.YAMLParser',
         )
     }
@@ -37,7 +37,7 @@ You can also set the renderers used for an individual view, using the `APIView` 
 
 Or, if you're using the `@api_view` decorator with function based views.
 
-    @api_view(('POST',)),
+    @api_view(['POST'])
     @parser_classes((YAMLParser,))
     def example_view(request, format=None):
         """
@@ -65,7 +65,7 @@ Parses `YAML` request content.
 
 Parses REST framework's default style of `XML` request content.
 
-Note that the `XML` markup language is used typically used as the base language for more strictly defined domain-specific languages, such as `RSS`, `Atom`, and `XHTML`.
+Note that the `XML` markup language is typically used as the base language for more strictly defined domain-specific languages, such as `RSS`, `Atom`, and `XHTML`.
 
 If you are considering using `XML` for your API, you may want to consider implementing a custom renderer and parser for your specific requirements, and using an existing domain-specific media-type, or creating your own custom XML-based media-type.
 
@@ -91,19 +91,27 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 # Custom parsers
 
-To implement a custom parser, you should override `BaseParser`, set the `.media_type` property, and implement the `.parse_stream(self, stream, parser_context)` method.
+To implement a custom parser, you should override `BaseParser`, set the `.media_type` property, and implement the `.parse(self, stream, media_type, parser_context)` method.
 
 The method should return the data that will be used to populate the `request.DATA` property.
 
-The arguments passed to `.parse_stream()` are:
+The arguments passed to `.parse()` are:
 
 ### stream
 
 A stream-like object representing the body of the request.
 
+### media_type
+
+Optional.  If provided, this is the media type of the incoming request content.
+
+Depending on the request's `Content-Type:` header, this may be more specific than the renderer's `media_type` attribute, and may include media type parameters.  For example `"text/plain; charset=utf-8"`.
+
 ### parser_context
 
-If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.  By default it includes the keys `'upload_handlers'` and `'meta'`, which contain the values of the `request.upload_handlers` and `request.meta` properties.
+Optional.  If supplied, this argument will be a dictionary containing any additional context that may be required to parse the request content.
+
+By default this will include the following keys: `view`, `request`, `args`, `kwargs`.
 
 ## Example
 
@@ -116,7 +124,7 @@ The following is an example plaintext parser that will populate the `request.DAT
 
     media_type = 'text/plain'
 
-    def parse_stream(self, stream, parser_context=None):
+    def parse(self, stream, media_type=None, parser_context=None):
         """
         Simply return a string representing the body of the request.
         """
@@ -124,7 +132,7 @@ The following is an example plaintext parser that will populate the `request.DAT
 
 ## Uploading file content
 
-If your custom parser needs to support file uploads, you may return a `DataAndFiles` object from the `.parse_stream()` method.  `DataAndFiles` should be instantiated with two arguments.  The first argument will be used to populate the `request.DATA` property, and the second argument will be used to populate the `request.FILES` property.
+If your custom parser needs to support file uploads, you may return a `DataAndFiles` object from the `.parse()` method.  `DataAndFiles` should be instantiated with two arguments.  The first argument will be used to populate the `request.DATA` property, and the second argument will be used to populate the `request.FILES` property.
 
 For example:
 
@@ -132,8 +140,9 @@ For example:
         """
         A naive raw file upload parser.
         """
+        media_type = '*/*'  # Accept anything
 
-        def parse_stream(self, stream, parser_context):
+        def parse(self, stream, media_type=None, parser_context=None):
             content = stream.read()
             name = 'example.dat'
             content_type = 'application/octet-stream'

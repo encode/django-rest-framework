@@ -109,7 +109,7 @@
 
         <div class="content-main">
             <div class="page-header"><h1>{{ name }}</h1></div>
-            <p class="resource-description">{{ description }}</p>
+            {{ description }}
 
             <div class="request-info">
                 <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
@@ -131,12 +131,12 @@
                             {% csrf_token %}
                             {{ post_form.non_field_errors }}
                             {% for field in post_form %}
-                                <div class="control-group {% if field.errors %}error{% endif %}">
+                                <div class="control-group"> <!--{% if field.errors %}error{% endif %}-->
                                     {{ field.label_tag|add_class:"control-label" }}
                                     <div class="controls">
-                                        {{ field|add_class:"input-xlarge" }}
+                                        {{ field }}
                                         <span class="help-inline">{{ field.help_text }}</span>
-                                        {{ field.errors|add_class:"help-block" }}
+                                        <!--{{ field.errors|add_class:"help-block" }}-->
                                     </div>
                                 </div>
                             {% endfor %}
@@ -156,12 +156,12 @@
                             {% csrf_token %}
                             {{ put_form.non_field_errors }}
                             {% for field in put_form %}
-                                <div class="control-group {% if field.errors %}error{% endif %}">
+                                <div class="control-group"> <!--{% if field.errors %}error{% endif %}-->
                                     {{ field.label_tag|add_class:"control-label" }}
                                     <div class="controls">
-                                        {{ field|add_class:"input-xlarge" }}
+                                        {{ field }}
                                         <span class='help-inline'>{{ field.help_text }}</span>
-                                        {{ field.errors|add_class:"help-block" }}
+                                        <!--{{ field.errors|add_class:"help-block" }}-->
                                     </div>
                                 </div>
                             {% endfor %}

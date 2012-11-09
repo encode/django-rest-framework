@@ -131,12 +131,6 @@ class RendererIntegrationTests(TestCase):
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEquals(resp.status_code, DUMMYSTATUS)
 
-    @unittest.skip('can\'t pass because view is a simple Django view and response is an ImmediateResponse')
-    def test_unsatisfiable_accept_header_on_request_returns_406_status(self):
-        """If the Accept header is unsatisfiable we should return a 406 Not Acceptable response."""
-        resp = self.client.get('/', HTTP_ACCEPT='foo/bar')
-        self.assertEquals(resp.status_code, status.HTTP_406_NOT_ACCEPTABLE)
-
     def test_specified_renderer_serializes_content_on_format_query(self):
         """If a 'format' query is specified, the renderer with the matching
         format attribute should serialize the response."""

@@ -14,6 +14,51 @@ Serializer fields handle converting between primative values and internal dataty
 
 ---
 
+## Core arguments
+
+Each serializer field class constructor takes at least these arguments. Some Field classes take additional, field-specific arguments, but the following should always be accepted:
+
+### `source`
+
+The name of the attribute that will be used to populate the field.  May be a method that only takes a `self` argument, such as `Field(source='get_absolute_url')`, or may use dotted notation to traverse attributes, such as `Field(source='user.email')`.
+
+The value `source='*'` has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations.  (See the implementation of the `PaginationSerializer` class for an example.)
+
+Defaults to the name of the field.
+
+### `read_only`
+
+Set this to `True` to ensure that the field is used when serializing a representation, but is not used when updating an instance dureing deserialization.
+
+Defaults to `False`
+
+### `required`
+
+Normally an error will be raised if a field is not supplied during deserialization.
+Set to false if this field is not required to be present during deserialization.
+
+Defaults to `True`.
+
+### `default`
+
+If set, this gives the default value that will be used for the field if none is supplied.  If not set the default behaviour is to not populate the attribute at all.
+
+### `validators`
+
+A list of Django validators that should be used to validate deserialized values.
+
+### `error_messages`
+
+A dictionary of error codes to error messages.
+
+### `widget`
+
+Used only if rendering the field to HTML.
+This argument sets the widget that should be used to render the field.
+
+
+---
+
 # Generic Fields
 
 These generic fields are used for representing arbitrary model fields or the output of model methods.
@@ -42,7 +87,7 @@ A serializer definition that looked like this:
         class Meta:
             fields = ('url', 'owner', 'name', 'expired')
 
-Would produced output similar to:
+Would produce output similar to:
 
     {
         'url': 'http://example.com/api/accounts/3/',
@@ -51,7 +96,7 @@ Would produced output similar to:
         'expired': True
     }
 
-Be default, the `Field` class will perform a basic translation of the source value into primative datatypes, falling back to unicode representations of complex datatypes when neccesary.
+By default, the `Field` class will perform a basic translation of the source value into primative datatypes, falling back to unicode representations of complex datatypes when necessary.
 
 You can customize this  behaviour by overriding the `.to_native(self, value)` method.
 
@@ -73,34 +118,52 @@ These fields represent basic datatypes, and support both reading and writing val
 
 ## BooleanField
 
-A Boolean representation, corresponds to `django.db.models.fields.BooleanField`.
+A Boolean representation.
+
+Corresponds to `django.db.models.fields.BooleanField`.
 
 ## CharField
 
-A text representation, optionally validates the text to be shorter than `max_length` and longer than `min_length`, corresponds to `django.db.models.fields.CharField`
+A text representation, optionally validates the text to be shorter than `max_length` and longer than `min_length`.
+
+Corresponds to `django.db.models.fields.CharField`
 or `django.db.models.fields.TextField`.
 
-**Signature:** `CharField([max_length=<Integer>[, min_length=<Integer>]])`
+**Signature:** `CharField(max_length=None, min_length=None)`
+
+## ChoiceField
+
+A field that can accept a value out of a limited set of choices.
 
 ## EmailField
 
-A text representation, validates the text to be a valid e-mail adress. Corresponds to `django.db.models.fields.EmailField`
+A text representation, validates the text to be a valid e-mail address.
+
+Corresponds to `django.db.models.fields.EmailField`
 
 ## DateField
 
-A date representation. Corresponds to `django.db.models.fields.DateField`
+A date representation.
+
+Corresponds to `django.db.models.fields.DateField`
 
 ## DateTimeField
 
-A date and time representation. Corresponds to `django.db.models.fields.DateTimeField`
+A date and time representation.
+
+Corresponds to `django.db.models.fields.DateTimeField`
 
 ## IntegerField
 
-An integer representation. Corresponds to `django.db.models.fields.IntegerField`, `django.db.models.fields.SmallIntegerField`, `django.db.models.fields.PositiveIntegerField` and `django.db.models.fields.PositiveSmallIntegerField`
+An integer representation.
+
+Corresponds to `django.db.models.fields.IntegerField`, `django.db.models.fields.SmallIntegerField`, `django.db.models.fields.PositiveIntegerField` and `django.db.models.fields.PositiveSmallIntegerField`
 
 ## FloatField
 
-A floating point representation. Corresponds to `django.db.models.fields.FloatField`.
+A floating point representation.
+
+Corresponds to `django.db.models.fields.FloatField`.
 
 ---
 
@@ -165,33 +228,61 @@ And a model serializer defined like this:
             model = Bookmark
             exclude = ('id',)
 
-The an example output format for a Bookmark instance would be:
+Then an example output format for a Bookmark instance would be:
 
     {
         'tags': [u'django', u'python'],
         'url': u'https://www.djangoproject.com/'
     }
 
-## PrimaryKeyRelatedField
+## PrimaryKeyRelatedField / ManyPrimaryKeyRelatedField
 
-As with `RelatedField` field can be applied to any "to-one" relationship, such as a `ForeignKey` field.
+`PrimaryKeyRelatedField` and `ManyPrimaryKeyRelatedField` will represent the target of the relationship using it's primary key.
 
-`PrimaryKeyRelatedField` will represent the target of the field using it's primary key.
+By default these fields are read-write, although you can change this behaviour using the `read_only` flag.
 
-Be default, `PrimaryKeyRelatedField` is read-write, although you can change this behaviour using the `readonly` flag.
+**Arguments**:
 
-## ManyPrimaryKeyRelatedField
+* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
 
-As with `RelatedField` field can be applied to any "to-many" relationship, such as a `ManyToManyField` field, or a reverse `ForeignKey` relationship.
+## SlugRelatedField / ManySlugRelatedField
 
-`PrimaryKeyRelatedField` will represent the target of the field using their primary key.
+`SlugRelatedField` and `ManySlugRelatedField` will represent the target of the relationship using a unique slug.
 
-Be default, `ManyPrimaryKeyRelatedField` is read-write, although you can change this behaviour using the `readonly` flag.
+By default these fields read-write, although you can change this behaviour using the `read_only` flag.
 
-## HyperlinkedRelatedField
+**Arguments**:
 
-## ManyHyperlinkedRelatedField
+* `slug_field` - The field on the target that should be used to represent it.  This should be a field that uniquely identifies any given instance.  For example, `username`.
+* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
+
+## HyperlinkedRelatedField / ManyHyperlinkedRelatedField
+
+`HyperlinkedRelatedField` and `ManyHyperlinkedRelatedField` will represent the target of the relationship using a hyperlink.
+
+By default, `HyperlinkedRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
+
+**Arguments**:
+
+* `view_name` - The view name that should be used as the target of the relationship.  **required**.
+* `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
+* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
+* `slug_field` - The field on the target that should be used for the lookup. Default is `'slug'`.
+* `pk_url_kwarg` - The named url parameter for the pk field lookup. Default is `pk`.
+* `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
 
 ## HyperLinkedIdentityField
+
+This field can be applied as an identity relationship, such as the `'url'` field on  a HyperlinkedModelSerializer.
+
+This field is always read-only.
+
+**Arguments**:
+
+* `view_name` - The view name that should be used as the target of the relationship.  **required**.
+* `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
+* `slug_field` - The field on the target that should be used for the lookup. Default is `'slug'`.
+* `pk_url_kwarg` - The named url parameter for the pk field lookup. Default is `pk`.
+* `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
 
 [cite]: http://www.python.org/dev/peps/pep-0020/

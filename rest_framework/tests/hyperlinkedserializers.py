@@ -2,9 +2,26 @@ from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
 from django.test.client import RequestFactory
 from rest_framework import generics, status, serializers
-from rest_framework.tests.models import Anchor, BasicModel, ManyToManyModel
+from rest_framework.tests.models import Anchor, BasicModel, ManyToManyModel, BlogPost, BlogPostComment, Album, Photo
 
 factory = RequestFactory()
+
+
+class BlogPostCommentSerializer(serializers.ModelSerializer):
+    text = serializers.CharField()
+    blog_post_url = serializers.HyperlinkedRelatedField(source='blog_post', view_name='blogpost-detail')
+
+    class Meta:
+        model = BlogPostComment
+        fields = ('text', 'blog_post_url')
+
+
+class PhotoSerializer(serializers.Serializer):
+    description = serializers.CharField()
+    album_url = serializers.HyperlinkedRelatedField(source='album', view_name='album-detail', queryset=Album.objects.all(), slug_field='title', slug_url_kwarg='title')
+
+    def restore_object(self, attrs, instance=None):
+        return Photo(**attrs)
 
 
 class BasicList(generics.ListCreateAPIView):
@@ -32,12 +49,34 @@ class ManyToManyDetail(generics.RetrieveAPIView):
     model_serializer_class = serializers.HyperlinkedModelSerializer
 
 
+class BlogPostCommentListCreate(generics.ListCreateAPIView):
+    model = BlogPostComment
+    serializer_class = BlogPostCommentSerializer
+
+
+class BlogPostDetail(generics.RetrieveAPIView):
+    model = BlogPost
+
+
+class PhotoListCreate(generics.ListCreateAPIView):
+    model = Photo
+    model_serializer_class = PhotoSerializer
+
+
+class AlbumDetail(generics.RetrieveAPIView):
+    model = Album
+
+
 urlpatterns = patterns('',
     url(r'^basic/$', BasicList.as_view(), name='basicmodel-list'),
     url(r'^basic/(?P<pk>\d+)/$', BasicDetail.as_view(), name='basicmodel-detail'),
     url(r'^anchor/(?P<pk>\d+)/$', AnchorDetail.as_view(), name='anchor-detail'),
     url(r'^manytomany/$', ManyToManyList.as_view(), name='manytomanymodel-list'),
     url(r'^manytomany/(?P<pk>\d+)/$', ManyToManyDetail.as_view(), name='manytomanymodel-detail'),
+    url(r'^posts/(?P<pk>\d+)/$', BlogPostDetail.as_view(), name='blogpost-detail'),
+    url(r'^comments/$', BlogPostCommentListCreate.as_view(), name='blogpostcomment-list'),
+    url(r'^albums/(?P<title>\w[\w-]*)/$', AlbumDetail.as_view(), name='album-detail'),
+    url(r'^photos/$', PhotoListCreate.as_view(), name='photo-list')
 )
 
 
@@ -124,3 +163,51 @@ class TestManyToManyHyperlinkedView(TestCase):
         response = self.detail_view(request, pk=1).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, self.data[0])
+
+
+class TestCreateWithForeignKeys(TestCase):
+    urls = 'rest_framework.tests.hyperlinkedserializers'
+
+    def setUp(self):
+        """
+        Create a blog post
+        """
+        self.post = BlogPost.objects.create(title="Test post")
+        self.create_view = BlogPostCommentListCreate.as_view()
+
+    def test_create_comment(self):
+
+        data = {
+            'text': 'A test comment',
+            'blog_post_url': 'http://testserver/posts/1/'
+        }
+
+        request = factory.post('/comments/', data=data)
+        response = self.create_view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(self.post.blogpostcomment_set.count(), 1)
+        self.assertEqual(self.post.blogpostcomment_set.all()[0].text, 'A test comment')
+
+
+class TestCreateWithForeignKeysAndCustomSlug(TestCase):
+    urls = 'rest_framework.tests.hyperlinkedserializers'
+
+    def setUp(self):
+        """
+        Create an Album
+        """
+        self.post = Album.objects.create(title='test-album')
+        self.list_create_view = PhotoListCreate.as_view()
+
+    def test_create_photo(self):
+
+        data = {
+            'description': 'A test photo',
+            'album_url': 'http://testserver/albums/test-album/'
+        }
+
+        request = factory.post('/photos/', data=data)
+        response = self.list_create_view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(self.post.photo_set.count(), 1)
+        self.assertEqual(self.post.photo_set.all()[0].description, 'A test photo')

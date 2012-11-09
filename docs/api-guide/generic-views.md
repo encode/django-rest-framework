@@ -30,7 +30,7 @@ For more complex cases you might also want to override various methods on the vi
         serializer_class = UserSerializer
         permission_classes = (IsAdminUser,)
         
-        def get_paginate_by(self):
+        def get_paginate_by(self, queryset):
             """
             Use smaller pagination for HTML representations.
             """
@@ -49,21 +49,21 @@ For very simple cases you might want to pass through any class attributes using 
 
 The following classes are the concrete generic views.  If you're using generic views this is normally the level you'll be working at unless you need heavily customized behavior.
 
+## CreateAPIView
+
+Used for **create-only** endpoints.
+
+Provides `post` method handlers.
+
+Extends: [GenericAPIView], [CreateModelMixin]
+
 ## ListAPIView
 
 Used for **read-only** endpoints to represent a **collection of model instances**.
 
 Provides a `get` method handler.
 
-Extends: [MultipleObjectBaseAPIView], [ListModelMixin]
-
-## ListCreateAPIView
-
-Used for **read-write** endpoints to represent a **collection of model instances**.
-
-Provides `get` and `post` method handlers.
-
-Extends: [MultipleObjectBaseAPIView], [ListModelMixin], [CreateModelMixin]
+Extends: [MultipleObjectAPIView], [ListModelMixin]
 
 ## RetrieveAPIView
 
@@ -71,7 +71,31 @@ Used for **read-only** endpoints to represent a **single model instance**.
 
 Provides a `get` method handler.
 
-Extends: [SingleObjectBaseAPIView], [RetrieveModelMixin]
+Extends: [SingleObjectAPIView], [RetrieveModelMixin]
+
+## DestroyAPIView
+
+Used for **delete-only** endpoints for a **single model instance**.
+
+Provides a `delete` method handler.
+
+Extends: [SingleObjectAPIView], [DestroyModelMixin]
+
+## UpdateAPIView
+
+Used for **update-only** endpoints for a **single model instance**.
+
+Provides a `put` method handler.
+
+Extends: [SingleObjectAPIView], [UpdateModelMixin]
+
+## ListCreateAPIView
+
+Used for **read-write** endpoints to represent a **collection of model instances**.
+
+Provides `get` and `post` method handlers.
+
+Extends: [MultipleObjectAPIView], [ListModelMixin], [CreateModelMixin]
 
 ## RetrieveDestroyAPIView
 
@@ -79,15 +103,15 @@ Used for **read or delete** endpoints to represent a **single model instance**.
 
 Provides `get` and `delete` method handlers.
 
-Extends: [SingleObjectBaseAPIView], [RetrieveModelMixin], [DestroyModelMixin]
+Extends: [SingleObjectAPIView], [RetrieveModelMixin], [DestroyModelMixin]
 
 ## RetrieveUpdateDestroyAPIView
 
-Used for **read-write** endpoints to represent a **single model instance**.
+Used for **read-write-delete** endpoints to represent a **single model instance**.
 
 Provides `get`, `put` and `delete` method handlers.
 
-Extends: [SingleObjectBaseAPIView], [RetrieveModelMixin], [UpdateModelMixin], [DestroyModelMixin]
+Extends: [SingleObjectAPIView], [RetrieveModelMixin], [UpdateModelMixin], [DestroyModelMixin]
 
 ---
 
@@ -95,17 +119,17 @@ Extends: [SingleObjectBaseAPIView], [RetrieveModelMixin], [UpdateModelMixin], [D
 
 Each of the generic views provided is built by combining one of the base views below, with one or more mixin classes.
 
-## BaseAPIView
+## GenericAPIView
 
 Extends REST framework's `APIView` class, adding support for serialization of model instances and model querysets.
 
-## MultipleObjectBaseAPIView
+## MultipleObjectAPIView
 
 Provides a base view for acting on a single object, by combining REST framework's `APIView`, and Django's [MultipleObjectMixin].
 
 **See also:** ccbv.co.uk documentation for [MultipleObjectMixin][multiple-object-mixin-classy].
 
-## SingleObjectBaseAPIView
+## SingleObjectAPIView
 
 Provides a base view for acting on a single object, by combining REST framework's `APIView`, and Django's [SingleObjectMixin].
 
@@ -121,31 +145,31 @@ The mixin classes provide the actions that are used to provide the basic view be
 
 Provides a `.list(request, *args, **kwargs)` method, that implements listing a queryset.
 
-Should be mixed in with [MultipleObjectBaseAPIView].
+Should be mixed in with [MultipleObjectAPIView].
 
 ## CreateModelMixin
 
 Provides a `.create(request, *args, **kwargs)` method, that implements creating and saving a new model instance.
 
-Should be mixed in with any [BaseAPIView].
+Should be mixed in with any [GenericAPIView].
 
 ## RetrieveModelMixin
 
 Provides a `.retrieve(request, *args, **kwargs)` method, that implements returning an existing model instance in a response.
 
-Should be mixed in with [SingleObjectBaseAPIView].
+Should be mixed in with [SingleObjectAPIView].
 
 ## UpdateModelMixin
 
 Provides a `.update(request, *args, **kwargs)` method, that implements updating and saving an existing model instance.
 
-Should be mixed in with [SingleObjectBaseAPIView].
+Should be mixed in with [SingleObjectAPIView].
 
 ## DestroyModelMixin
 
 Provides a `.destroy(request, *args, **kwargs)` method, that implements deletion of an existing model instance.
 
-Should be mixed in with [SingleObjectBaseAPIView].
+Should be mixed in with [SingleObjectAPIView].
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/class-based-views/#base-vs-generic-views
 [MultipleObjectMixin]: https://docs.djangoproject.com/en/dev/ref/class-based-views/mixins-multiple-object/
@@ -153,9 +177,9 @@ Should be mixed in with [SingleObjectBaseAPIView].
 [multiple-object-mixin-classy]: http://ccbv.co.uk/projects/Django/1.4/django.views.generic.list/MultipleObjectMixin/
 [single-object-mixin-classy]: http://ccbv.co.uk/projects/Django/1.4/django.views.generic.detail/SingleObjectMixin/
 
-[BaseAPIView]: #baseapiview
-[SingleObjectBaseAPIView]: #singleobjectbaseapiview
-[MultipleObjectBaseAPIView]: #multipleobjectbaseapiview
+[GenericAPIView]: #genericapiview
+[SingleObjectAPIView]: #singleobjectapiview
+[MultipleObjectAPIView]: #multipleobjectapiview
 [ListModelMixin]: #listmodelmixin
 [CreateModelMixin]: #createmodelmixin
 [RetrieveModelMixin]: #retrievemodelmixin

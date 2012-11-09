@@ -6,7 +6,7 @@
 >
 > &mdash; Roy Fielding, [Architectural Styles and the Design of Network-based Software Architectures][cite]
 
-As a rule, it's probably better practice to return absolute URIs from you Web APIs, such as `http://example.com/foobar`, rather than returning relative URIs, such as `/foobar`.
+As a rule, it's probably better practice to return absolute URIs from your Web APIs, such as `http://example.com/foobar`, rather than returning relative URIs, such as `/foobar`.
 
 The advantages of doing so are:
 

@@ -47,6 +47,17 @@ The following people have helped make REST framework great.
 * Mattbo - [mattbo]
 * Max Hurl - [maximilianhurl]
 * Tomi Pajunen - [eofs]
+* Rob Dobson - [rdobson]
+* Daniel Vaca Araujo - [diviei]
+* Madis Väin - [madisvain]
+* Stephan Groß - [minddust]
+* Pavel Savchenko - [asfaltboy]
+* Otto Yiu - [ottoyiu]
+* Jacob Magnusson - [jmagnusson]
+* Osiloke Harold Emoekpere - [osiloke]
+* Michael Shepanski - [mjs7231]
+* Toni Michel - [tonimichel]
+* Ben Konrath - [benkonrath]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -57,6 +68,8 @@ The documentation is built with [Bootstrap] and [Markdown].
 Project hosting is with [GitHub].
 
 Continuous integration testing is managed with [Travis CI][travis-ci].
+
+The [live sandbox][sandbox] is hosted on [Heroku]. 
 
 Various inspiration taken from the [Piston], [Tastypie] and [Dagny] projects.
 
@@ -73,12 +86,14 @@ To contact the author directly:
 [twitter]: http://twitter.com/_tomchristie
 [bootstrap]: http://twitter.github.com/bootstrap/
 [markdown]: http://daringfireball.net/projects/markdown/
-[github]: github.com/tomchristie/django-rest-framework
+[github]: https://github.com/tomchristie/django-rest-framework
 [travis-ci]: https://secure.travis-ci.org/tomchristie/django-rest-framework
 [piston]: https://bitbucket.org/jespern/django-piston
 [tastypie]: https://github.com/toastdriven/django-tastypie
 [dagny]: https://github.com/zacharyvoase/dagny
 [dabapps]: http://lab.dabapps.com
+[sandbox]: http://restframework.herokuapp.com/
+[heroku]: http://www.heroku.com/
 
 [tomchristie]: https://github.com/tomchristie
 [markotibold]: https://github.com/markotibold
@@ -125,3 +140,14 @@ To contact the author directly:
 [mattbo]: https://github.com/mattbo
 [maximilianhurl]: https://github.com/maximilianhurl
 [eofs]: https://github.com/eofs
+[rdobson]: https://github.com/rdobson
+[diviei]: https://github.com/diviei
+[madisvain]: https://github.com/madisvain
+[minddust]: https://github.com/minddust
+[asfaltboy]: https://github.com/asfaltboy
+[ottoyiu]: https://github.com/OttoYiu
+[jmagnusson]: https://github.com/jmagnusson
+[osiloke]: https://github.com/osiloke
+[mjs7231]: https://github.com/mjs7231
+[tonimichel]: https://github.com/tonimichel
+[benkonrath]: https://github.com/benkonrath

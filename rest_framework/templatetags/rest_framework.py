@@ -11,6 +11,18 @@ import string
 register = template.Library()
 
 
+def replace_query_param(url, key, val):
+    """
+    Given a URL and a key/val pair, set or replace an item in the query
+    parameters of the URL, and return the new URL.
+    """
+    (scheme, netloc, path, query, fragment) = urlsplit(url)
+    query_dict = QueryDict(query).copy()
+    query_dict[key] = val
+    query = query_dict.urlencode()
+    return urlunsplit((scheme, netloc, path, query, fragment))
+
+
 # Regex for adding classes to html snippets
 class_re = re.compile(r'(?<=class=["\'])(.*)(?=["\'])')
 
@@ -29,19 +41,6 @@ link_target_attribute_re = re.compile(r'(<a [^>]*?)target=[^\s>]+')
 html_gunk_re = re.compile(r'(?:<br clear="all">|<i><\/i>|<b><\/b>|<em><\/em>|<strong><\/strong>|<\/?smallcaps>|<\/?uppercase>)', re.IGNORECASE)
 hard_coded_bullets_re = re.compile(r'((?:<p>(?:%s).*?[a-zA-Z].*?</p>\s*)+)' % '|'.join([re.escape(x) for x in DOTS]), re.DOTALL)
 trailing_empty_content_re = re.compile(r'(?:<p>(?:&nbsp;|\s|<br \/>)*?</p>\s*)+\Z')
-
-
-# Helper function for 'add_query_param'
-def replace_query_param(url, key, val):
-    """
-    Given a URL and a key/val pair, set or replace an item in the query
-    parameters of the URL, and return the new URL.
-    """
-    (scheme, netloc, path, query, fragment) = urlsplit(url)
-    query_dict = QueryDict(query).copy()
-    query_dict[key] = val
-    query = query_dict.urlencode()
-    return urlunsplit((scheme, netloc, path, query, fragment))
 
 
 # And the template tags themselves...

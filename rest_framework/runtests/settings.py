@@ -21,6 +21,12 @@ DATABASES = {
     }
 }
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
+}
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -91,6 +97,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'rest_framework',
     'rest_framework.authtoken',
+    'rest_framework.tests'
 )
 
 STATIC_URL = '/static/'
@@ -100,13 +107,6 @@ import django
 if django.VERSION < (1, 3):
     INSTALLED_APPS += ('staticfiles',)
 
-# OAuth support is optional, so we only test oauth if it's installed.
-try:
-    import oauth_provider
-except ImportError:
-    pass
-else:
-    INSTALLED_APPS += ('oauth_provider',)
 
 # If we're running on the Jenkins server we want to archive the coverage reports as XML.
 import os

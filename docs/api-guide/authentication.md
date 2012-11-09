@@ -35,8 +35,8 @@ The value of `request.user` and `request.auth` for unauthenticated requests can 
 The default authentication schemes may be set globally, using the `DEFAULT_AUTHENTICATION` setting.  For example.
 
     REST_FRAMEWORK = {
-        'DEFAULT_AUTHENTICATION': (
-            'rest_framework.authentication.UserBasicAuthentication',
+        'DEFAULT_AUTHENTICATION_CLASSES': (
+            'rest_framework.authentication.BasicAuthentication',
             'rest_framework.authentication.SessionAuthentication',
         )
     }
@@ -44,7 +44,7 @@ The default authentication schemes may be set globally, using the `DEFAULT_AUTHE
 You can also set the authentication scheme on a per-view basis, using the `APIView` class based views.
 
     class ExampleView(APIView):
-        authentication_classes = (SessionAuthentication, UserBasicAuthentication)
+        authentication_classes = (SessionAuthentication, BasicAuthentication)
         permission_classes = (IsAuthenticated,)
 
         def get(self, request, format=None):
@@ -56,8 +56,8 @@ You can also set the authentication scheme on a per-view basis, using the `APIVi
 
 Or, if you're using the `@api_view` decorator with function based views.
 
-    @api_view(('GET',)),
-    @authentication_classes((SessionAuthentication, UserBasicAuthentication))
+    @api_view(['GET'])
+    @authentication_classes((SessionAuthentication, BasicAuthentication))
     @permissions_classes((IsAuthenticated,))
     def example_view(request, format=None):
         content = {
@@ -89,7 +89,7 @@ This authentication scheme uses [HTTP Basic Authentication][basicauth], signed a
 
 If successfully authenticated, `BasicAuthentication` provides the following credentials.
 
-* `request.user` will be a `django.contrib.auth.models.User` instance.
+* `request.user` will be a Django `User` instance.
 * `request.auth` will be `None`.
 
 Unauthenticated responses that are denied permission will result in an `HTTP 401 Unauthorized` response with an appropriate WWW-Authenticate header.  For example:
@@ -111,13 +111,13 @@ You'll also need to create tokens for your users.
     token = Token.objects.create(user=...)
     print token.key
 
-For clients to authenticate, the token key should be included in the `Authorization` HTTP header.  The key should be prefixed by the string literal "Token", with whitespace seperating the two strings.  For example:
+For clients to authenticate, the token key should be included in the `Authorization` HTTP header.  The key should be prefixed by the string literal "Token", with whitespace separating the two strings.  For example:
 
     Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
 
 If successfully authenticated, `TokenAuthentication` provides the following credentials.
 
-* `request.user` will be a `django.contrib.auth.models.User` instance.
+* `request.user` will be a Django `User` instance.
 * `request.auth` will be a `rest_framework.tokenauth.models.BasicToken` instance.
 
 Unauthenticated responses that are denied permission will result in an `HTTP 401 Unauthorized` response with an appropriate WWW-Authenticate header.  For example:
@@ -132,7 +132,7 @@ This authentication scheme uses the [OAuth 2.0][oauth] protocol to authenticate 
 
 If successfully authenticated, `OAuth2Authentication` provides the following credentials.
 
-* `request.user` will be a `django.contrib.auth.models.User` instance.
+* `request.user` will be a Django `User` instance.
 * `request.auth` will be a `rest_framework.models.OAuthToken` instance.
 
 **TODO**: Note type of response (401 vs 403)
@@ -145,7 +145,7 @@ This authentication scheme uses Django's default session backend for authenticat
 
 If successfully authenticated, `SessionAuthentication` provides the following credentials.
 
-* `request.user` will be a `django.contrib.auth.models.User` instance.
+* `request.user` will be a Django `User` instance.
 * `request.auth` will be `None`.
 
 Unauthenticated responses that are denied permission will result in an `HTTP 403 Forbidden` response.

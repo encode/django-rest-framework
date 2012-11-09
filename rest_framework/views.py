@@ -54,12 +54,12 @@ def _camelcase_to_spaces(content):
 class APIView(View):
     settings = api_settings
 
-    renderer_classes = api_settings.DEFAULT_RENDERERS
-    parser_classes = api_settings.DEFAULT_PARSERS
-    authentication_classes = api_settings.DEFAULT_AUTHENTICATION
-    throttle_classes = api_settings.DEFAULT_THROTTLES
-    permission_classes = api_settings.DEFAULT_PERMISSIONS
-    content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION
+    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+    parser_classes = api_settings.DEFAULT_PARSER_CLASSES
+    authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
+    throttle_classes = api_settings.DEFAULT_THROTTLE_CLASSES
+    permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
+    content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -158,12 +158,15 @@ class APIView(View):
 
     def get_parser_context(self, http_request):
         """
-        Returns a dict that is passed through to Parser.parse_stream(),
+        Returns a dict that is passed through to Parser.parse(),
         as the `parser_context` keyword argument.
         """
+        # Note: Additionally `request` will also be added to the context
+        #       by the Request object.
         return {
-            'upload_handlers': http_request.upload_handlers,
-            'meta': http_request.META,
+            'view': self,
+            'args': getattr(self, 'args', ()),
+            'kwargs': getattr(self, 'kwargs', {})
         }
 
     def get_renderer_context(self):
@@ -171,13 +174,13 @@ class APIView(View):
         Returns a dict that is passed through to Renderer.render(),
         as the `renderer_context` keyword argument.
         """
-        # Note: Additionally 'response' will also be set on the context,
+        # Note: Additionally 'response' will also be added to the context,
         #       by the Response object.
         return {
             'view': self,
-            'request': self.request,
-            'args': self.args,
-            'kwargs': self.kwargs
+            'args': getattr(self, 'args', ()),
+            'kwargs': getattr(self, 'kwargs', {}),
+            'request': getattr(self, 'request', None)
         }
 
     # API policy instantiation methods
@@ -215,7 +218,7 @@ class APIView(View):
 
     def get_throttles(self):
         """
-        Instantiates and returns the list of thottles that this view uses.
+        Instantiates and returns the list of throttles that this view uses.
         """
         return [throttle() for throttle in self.throttle_classes]
 
@@ -235,7 +238,13 @@ class APIView(View):
         """
         renderers = self.get_renderers()
         conneg = self.get_content_negotiator()
-        return conneg.negotiate(request, renderers, self.format_kwarg, force)
+
+        try:
+            return conneg.select_renderer(request, renderers, self.format_kwarg)
+        except:
+            if force:
+                return (renderers[0], renderers[0].media_type)
+            raise
 
     def has_permission(self, request, obj=None):
         """
@@ -311,13 +320,17 @@ class APIView(View):
             self.headers['X-Throttle-Wait-Seconds'] = '%d' % exc.wait
 
         if isinstance(exc, exceptions.APIException):
-            return Response({'detail': exc.detail}, status=exc.status_code)
+            return Response({'detail': exc.detail},
+                            status=exc.status_code,
+                            exception=True)
         elif isinstance(exc, Http404):
             return Response({'detail': 'Not found'},
-                            status=status.HTTP_404_NOT_FOUND)
+                            status=status.HTTP_404_NOT_FOUND,
+                            exception=True)
         elif isinstance(exc, PermissionDenied):
             return Response({'detail': 'Permission denied'},
-                            status=status.HTTP_403_FORBIDDEN)
+                            status=status.HTTP_403_FORBIDDEN,
+                            exception=True)
         raise
 
     # Note: session based authentication is explicitly CSRF validated,

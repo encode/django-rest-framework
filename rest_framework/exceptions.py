@@ -47,14 +47,6 @@ class PermissionDenied(APIException):
         self.detail = detail or self.default_detail
 
 
-class InvalidFormat(APIException):
-    status_code = status.HTTP_404_NOT_FOUND
-    default_detail = "Format suffix '.%s' not found."
-
-    def __init__(self, format, detail=None):
-        self.detail = (detail or self.default_detail) % format
-
-
 class MethodNotAllowed(APIException):
     status_code = status.HTTP_405_METHOD_NOT_ALLOWED
     default_detail = "Method '%s' not allowed."
