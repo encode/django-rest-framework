@@ -55,6 +55,7 @@ DEFAULTS = {
         'anon': None,
     },
     'PAGINATE_BY': None,
+    'FILTER_BACKEND': None,
 
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
@@ -79,6 +80,7 @@ IMPORT_STRINGS = (
     'DEFAULT_CONTENT_NEGOTIATION_CLASS',
     'DEFAULT_MODEL_SERIALIZER_CLASS',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS',
+    'FILTER_BACKEND',
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN',
 )
@@ -142,8 +144,15 @@ class APISettings(object):
         if val and attr in self.import_strings:
             val = perform_import(val, attr)
 
+        self.validate_setting(attr, val)
+
         # Cache the result
         setattr(self, attr, val)
         return val
+
+    def validate_setting(self, attr, val):
+        if attr == 'FILTER_BACKEND' and val is not None:
+            # Make sure we can initilize the class
+            val()
 
 api_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)

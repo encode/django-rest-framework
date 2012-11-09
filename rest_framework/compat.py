@@ -5,6 +5,13 @@ versions of django/python, and compatbility wrappers around optional packages.
 # flake8: noqa
 import django
 
+# django-filter is optional
+try:
+    import django_filters
+except:
+    django_filters = None
+
+
 # cStringIO only if it's available, otherwise StringIO
 try:
     import cStringIO as StringIO
@@ -346,33 +353,6 @@ try:
     import yaml
 except ImportError:
     yaml = None
-
-
-import unittest
-try:
-    import unittest.skip
-except ImportError:  # python < 2.7
-    from unittest import TestCase
-    import functools
-
-    def skip(reason):
-        # Pasted from py27/lib/unittest/case.py
-        """
-        Unconditionally skip a test.
-        """
-        def decorator(test_item):
-            if not (isinstance(test_item, type) and issubclass(test_item, TestCase)):
-                @functools.wraps(test_item)
-                def skip_wrapper(*args, **kwargs):
-                    pass
-                test_item = skip_wrapper
-
-            test_item.__unittest_skip__ = True
-            test_item.__unittest_skip_why__ = reason
-            return test_item
-        return decorator
-
-    unittest.skip = skip
 
 
 # xml.etree.parse only throws ParseError for python >= 2.7

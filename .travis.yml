@@ -11,6 +11,8 @@ env:
 
 install:
   - pip install $DJANGO
+  - pip install -r requirements.txt --use-mirrors
+  - pip install -e git+https://github.com/alex/django-filter.git@0e4b3d703b31574922ab86fc78a86164aad0c1d0#egg=django-filter
   - export PYTHONPATH=.
 
 script:
