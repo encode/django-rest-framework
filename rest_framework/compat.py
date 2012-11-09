@@ -340,7 +340,7 @@ try:
         """
 
         extensions = ['headerid(level=2)']
-        safe_mode = False,
+        safe_mode = False
         md = markdown.Markdown(extensions=extensions, safe_mode=safe_mode)
         return md.convert(text)
 
