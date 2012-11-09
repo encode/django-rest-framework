@@ -4,9 +4,12 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
-## Master
+## 2.1.2
 
-* Bugfix: Support creation of objects with reverse M2M relations
+**Date**: 9th Nov 2012
+
+* **Filtering support.**
+* Bugfix: Support creation of objects with reverse M2M relations.
 
 ## 2.1.1
 
