@@ -163,7 +163,7 @@ Note that you can use both an overridden `.get_queryset()` and generic filtering
 
 You can also provide your own generic filtering backend, or write an installable app for other developers to use.
 
-To do so override `BaseFilterBackend`, and override the `.filter_queryset(self, request, queryset, view)` method.
+To do so override `BaseFilterBackend`, and override the `.filter_queryset(self, request, queryset, view)` method.  The method should return a new, filtered queryset.
 
 To install the filter backend, set the `'FILTER_BACKEND'` key in your `'REST_FRAMEWORK'` setting, using the dotted import path of the filter backend class.
 
