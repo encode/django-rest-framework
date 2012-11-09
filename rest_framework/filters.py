@@ -1,5 +1,7 @@
 from rest_framework.compat import django_filters
 
+FilterSet = django_filters and django_filters.FilterSet or None
+
 
 class BaseFilterBackend(object):
     """
@@ -17,7 +19,7 @@ class DjangoFilterBackend(BaseFilterBackend):
     """
     A filter backend that uses django-filter.
     """
-    default_filter_set = django_filters.FilterSet
+    default_filter_set = FilterSet
 
     def __init__(self):
         assert django_filters, 'Using DjangoFilterBackend, but django-filter is not installed'

@@ -30,7 +30,7 @@ For example:
             for the currently authenticated user.
             """
             user = self.request.user
-            return Purchase.objects.filter(purchaser=user)       
+            return Purchase.objects.filter(purchaser=user)
 
 
 ## Filtering against the URL
@@ -96,27 +96,76 @@ You must also set the filter backend to `DjangoFilterBackend` in your settings:
 
 **Note**: The currently supported version of `django-filter` is the `master` branch.  A PyPI release is expected to be coming soon.
 
-## Specifying a FilterSet
-
-**TODO**: Document setting `.filter_class` on the view.
-
-**TODO**: Note support for `lookup_type`, double underscore relationship spanning, and ordering.
-
 ## Specifying filter fields
 
-**TODO**: Document setting `.filter_fields` on the view.
+If all you need is simple equality-based filtering, you can set a `filter_fields` attribute on the view, listing the set of fields you wish to filter against.
 
-**TODO**: Note that overiding `get_queryset()` can be used together with generic filtering 
+    class ProductList(generics.ListAPIView):
+        model = Product
+        serializer_class = ProductSerializer
+        filter_fields = ('category', 'in_stock')
 
+This will automatically create a `FilterSet` class for the given fields, and will allow you to make requests such as:
+
+    http://example.com/api/products?category=clothing&in_stock=True
+
+## Specifying a FilterSet
+
+For more advanced filtering requirements you can specify a `FilterSet` class that should be used by the view.  For example:
+
+    class ProductFilter(django_filters.FilterSet):
+        min_price = django_filters.NumberFilter(lookup_type='gte')
+        max_price = django_filters.NumberFilter(lookup_type='lte')
+        class Meta:
+            model = Product
+            fields = ['category', 'in_stock', 'min_price', 'max_price']
+
+    class ProductList(generics.ListAPIView):
+        model = Product
+        serializer_class = ProductSerializer
+        filter_class = ProductFilter
+
+Which will allow you to make requests such as:
+
+    http://example.com/api/products?category=clothing&max_price=10.00
+
+For more details on using filter sets see the [django-filter documentation][django-filter-docs].
+
+---
+
+**Hints & Tips**
+
+* By default filtering is not enabled.  If you want to use `DjangoFilterBackend` remember to make sure it is installed by using the `'FILTER_BACKEND'` setting.
+* When using boolean fields, you should use the values `True` and `False` in the URL query parameters, rather than `0`, `1`, `true` or `false`.  (The allowed boolean values are currently hardwired in Django's [NullBooleanSelect implementation][nullbooleanselect].) 
+* `django-filter` supports filtering across relationships, using Django's double-underscore syntax.
+
+---
+
+## Overriding the intial queryset
+ 
+Note that you can use both an overridden `.get_queryset()` and generic filtering together, and everything will work as expected.  For example, if `Product` had a many-to-many relationship with `User`, named `purchase`, you might want to write a view like this:
+
+    class PurchasedProductsList(generics.ListAPIView):
+        """
+        Return a list of all the products that the authenticated
+        user has ever purchased, with optional filtering.
+        """
+        model = Product
+        serializer_class = ProductSerializer
+        filter_class = ProductFilter
+        
+        def get_queryset(self):
+            user = self.request.user
+            return user.purchase_set.all()
 ---
 
 # Custom generic filtering
 
 You can also provide your own generic filtering backend, or write an installable app for other developers to use.
 
-To do so overide `BaseFilterBackend`, and override the `.filter_queryset(self, request, queryset, view)` method.
+To do so override `BaseFilterBackend`, and override the `.filter_queryset(self, request, queryset, view)` method.
 
-To install the filter, set the `'FILTER_BACKEND'` key in your `'REST_FRAMEWORK'` setting, using the dotted import path of the filter backend class.
+To install the filter backend, set the `'FILTER_BACKEND'` key in your `'REST_FRAMEWORK'` setting, using the dotted import path of the filter backend class.
 
 For example:
 
@@ -126,3 +175,5 @@ For example:
 
 [cite]: https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter
+[django-filter-docs]: https://django-filter.readthedocs.org/en/latest/index.html
+[nullbooleanselect]: https://github.com/django/django/blob/master/django/forms/widgets.py

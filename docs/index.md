@@ -34,6 +34,7 @@ The following packages are optional:
 
 * [Markdown][markdown] (2.1.0+) - Markdown support for the self describing API.
 * [PyYAML][yaml] (3.10+) - YAML content-type support.
+* [django-filter][django-filter] (master) - Filtering support.
 
 ## Installation
 
@@ -163,6 +164,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [yaml]: http://pypi.python.org/pypi/PyYAML
+[django-filter]: https://github.com/alex/django-filter
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [image]: img/quickstart.png
 [sandbox]: http://restframework.herokuapp.com/
