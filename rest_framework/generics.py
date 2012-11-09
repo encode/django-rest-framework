@@ -58,6 +58,16 @@ class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
 
     pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
     paginate_by = api_settings.PAGINATE_BY
+    filter_backend = api_settings.FILTER_BACKEND
+
+    def filter_queryset(self, queryset):
+        if not self.filter_backend:
+            return queryset
+        backend = self.filter_backend()
+        return backend.filter_queryset(self.request, queryset, self)
+
+    def get_filtered_queryset(self):
+        return self.filter_queryset(self.get_queryset())
 
     def get_pagination_serializer_class(self):
         """

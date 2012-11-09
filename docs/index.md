@@ -34,6 +34,7 @@ The following packages are optional:
 
 * [Markdown][markdown] (2.1.0+) - Markdown support for the self describing API.
 * [PyYAML][yaml] (3.10+) - YAML content-type support.
+* [django-filter][django-filter] (master) - Filtering support.
 
 ## Installation
 
@@ -95,6 +96,7 @@ The API guide is your complete reference manual to all the functionality provide
 * [Authentication][authentication]
 * [Permissions][permissions]
 * [Throttling][throttling]
+* [Filtering][filtering]
 * [Pagination][pagination]
 * [Content negotiation][contentnegotiation]
 * [Format suffixes][formatsuffixes]
@@ -162,6 +164,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [yaml]: http://pypi.python.org/pypi/PyYAML
+[django-filter]: https://github.com/alex/django-filter
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [image]: img/quickstart.png
 [sandbox]: http://restframework.herokuapp.com/
@@ -184,6 +187,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [authentication]: api-guide/authentication.md
 [permissions]: api-guide/permissions.md
 [throttling]: api-guide/throttling.md
+[filtering]: api-guide/filtering.md
 [pagination]: api-guide/pagination.md
 [contentnegotiation]: api-guide/content-negotiation.md
 [formatsuffixes]: api-guide/format-suffixes.md
