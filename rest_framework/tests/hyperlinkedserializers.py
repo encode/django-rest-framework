@@ -224,11 +224,12 @@ class TestOptionalRelationHyperlinkedView(TestCase):
 
     def setUp(self):
         """
-        Create 1 OptionaRelationModel intances.
+        Create 1 OptionalRelationModel intances.
         """
         OptionalRelationModel().save()
         self.objects = OptionalRelationModel.objects
         self.detail_view = OptionalRelationDetail.as_view()
+        self.data = {"url": "http://testserver/optionalrelation/1/", "other": None}
 
     def test_get_detail_view(self):
         """
@@ -238,5 +239,4 @@ class TestOptionalRelationHyperlinkedView(TestCase):
         request = factory.get('/optionalrelationmodel-detail/1')
         response = self.detail_view(request, pk=1).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
-
-
+        self.assertEquals(response.data, self.data)
