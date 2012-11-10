@@ -2,7 +2,7 @@ from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
 from django.test.client import RequestFactory
 from rest_framework import generics, status, serializers
-from rest_framework.tests.models import Anchor, BasicModel, ManyToManyModel, BlogPost, BlogPostComment, Album, Photo
+from rest_framework.tests.models import Anchor, BasicModel, ManyToManyModel, BlogPost, BlogPostComment, Album, Photo, OptionalRelationModel
 
 factory = RequestFactory()
 
@@ -67,6 +67,11 @@ class AlbumDetail(generics.RetrieveAPIView):
     model = Album
 
 
+class OptionalRelationDetail(generics.RetrieveAPIView):
+    model = OptionalRelationModel
+    model_serializer_class = serializers.HyperlinkedModelSerializer
+
+
 urlpatterns = patterns('',
     url(r'^basic/$', BasicList.as_view(), name='basicmodel-list'),
     url(r'^basic/(?P<pk>\d+)/$', BasicDetail.as_view(), name='basicmodel-detail'),
@@ -76,7 +81,8 @@ urlpatterns = patterns('',
     url(r'^posts/(?P<pk>\d+)/$', BlogPostDetail.as_view(), name='blogpost-detail'),
     url(r'^comments/$', BlogPostCommentListCreate.as_view(), name='blogpostcomment-list'),
     url(r'^albums/(?P<title>\w[\w-]*)/$', AlbumDetail.as_view(), name='album-detail'),
-    url(r'^photos/$', PhotoListCreate.as_view(), name='photo-list')
+    url(r'^photos/$', PhotoListCreate.as_view(), name='photo-list'),
+    url(r'^optionalrelation/(?P<pk>\d+)/$', OptionalRelationDetail.as_view(), name='optionalrelationmodel-detail'),
 )
 
 
@@ -211,3 +217,26 @@ class TestCreateWithForeignKeysAndCustomSlug(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(self.post.photo_set.count(), 1)
         self.assertEqual(self.post.photo_set.all()[0].description, 'A test photo')
+
+
+class TestOptionalRelationHyperlinkedView(TestCase):
+    urls = 'rest_framework.tests.hyperlinkedserializers'
+
+    def setUp(self):
+        """
+        Create 1 OptionaRelationModel intances.
+        """
+        OptionalRelationModel().save()
+        self.objects = OptionalRelationModel.objects
+        self.detail_view = OptionalRelationDetail.as_view()
+
+    def test_get_detail_view(self):
+        """
+        GET requests to RetrieveAPIView with optional relations should return None
+        for non existing relations.
+        """
+        request = factory.get('/optionalrelationmodel-detail/1')
+        response = self.detail_view(request, pk=1).render()
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+
+
