@@ -522,7 +522,10 @@ class HyperlinkedRelatedField(RelatedField):
         view_name = self.view_name
         request = self.context.get('request', None)
         format = self.format or self.context.get('format', None)
-        kwargs = {self.pk_url_kwarg: obj.pk}
+        pk = getattr(obj, 'pk', None)
+        if pk is None:
+            return
+        kwargs = {self.pk_url_kwarg: pk}
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
