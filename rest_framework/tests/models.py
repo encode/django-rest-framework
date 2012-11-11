@@ -149,3 +149,8 @@ class Person(RESTFrameworkModel):
 # Model for issue #324
 class BlankFieldModel(RESTFrameworkModel):
     title = models.CharField(max_length=100, blank=True)
+
+
+# Model for issue #380
+class OptionalRelationModel(RESTFrameworkModel):
+    other = models.ForeignKey('OptionalRelationModel', blank=True, null=True)
