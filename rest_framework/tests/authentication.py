@@ -158,41 +158,28 @@ class TokenAuthTests(TestCase):
         """Ensure token login view using JSON POST works."""
         client = Client(enforce_csrf_checks=True)
         response = client.post('/auth-token/login/', 
-                                    json.dumps({'username': self.username, 'password': self.password}), 'application/json')
-        self.assertEqual(response.status_code, 201)
+                               json.dumps({'username': self.username, 'password': self.password}), 'application/json')
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content)['token'], self.key)
 
     def test_token_login_json_bad_creds(self):
         """Ensure token login view using JSON POST fails if bad credentials are used."""
         client = Client(enforce_csrf_checks=True)
         response = client.post('/auth-token/login/', 
-                                    json.dumps({'username': self.username, 'password': "badpass"}), 'application/json')
+                               json.dumps({'username': self.username, 'password': "badpass"}), 'application/json')
         self.assertEqual(response.status_code, 400)
 
     def test_token_login_json_missing_fields(self):
         """Ensure token login view using JSON POST fails if missing fields."""
         client = Client(enforce_csrf_checks=True)
         response = client.post('/auth-token/login/', 
-                                    json.dumps({'username': self.username}), 'application/json')
+                               json.dumps({'username': self.username}), 'application/json')
         self.assertEqual(response.status_code, 400)
 
     def test_token_login_form(self):
         """Ensure token login view using form POST works."""
         client = Client(enforce_csrf_checks=True)
         response = client.post('/auth-token/login/', 
-                                    {'username': self.username, 'password': self.password})
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(json.loads(response.content)['token'], self.key)
-
-    def test_token_logout(self):
-        """Ensure token logout view using JSON POST works."""
-        # Use different User and Token as to isolate this test's effects on other unittests in class
-        username = "ringo"
-        user = User.objects.create_user(username, "starr@thebeatles.com", "pass")
-        token = Token.objects.create(user=user)
-        auth = "Token " + token.key
-        client = Client(enforce_csrf_checks=True)
-        response = client.post('/auth-token/logout/', HTTP_AUTHORIZATION=auth)
+                               {'username': self.username, 'password': self.password})
         self.assertEqual(response.status_code, 200)
-        # Ensure token no longer exists
-        self.assertRaises(Token.DoesNotExist, lambda token: Token.objects.get(key=token.key), token)
+        self.assertEqual(json.loads(response.content)['token'], self.key)
