@@ -13,9 +13,8 @@ your authentication settings include `TokenAuthentication`.
     )
 """
 from django.conf.urls.defaults import patterns, url
-from rest_framework.authtoken.views import AuthTokenLoginView, AuthTokenLogoutView
+from rest_framework.authtoken.views import AuthTokenView
 
 urlpatterns = patterns('rest_framework.authtoken.views',
-    url(r'^login/$', AuthTokenLoginView.as_view(), name='token_login'),
-    url(r'^logout/$', AuthTokenLogoutView.as_view(), name='token_logout'),
+    url(r'^login/$', AuthTokenView.as_view(), name='token_login'),
 )
