@@ -7,6 +7,7 @@
 ## Master
 
 * Support for `read_only_fields` on `ModelSerializer` classes.
+* Add support and settings option `USE_ABSOLUTE_URLS`
 
 ## 2.1.2
 

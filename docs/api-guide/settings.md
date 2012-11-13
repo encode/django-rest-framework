@@ -150,4 +150,8 @@ Default: `'accept'`
 
 Default: `'format'`
 
+## USE_ABSOLUTE_URLS
+
+Default: `'True'`
+
 [cite]: http://www.python.org/dev/peps/pep-0020/
