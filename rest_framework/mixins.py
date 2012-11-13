@@ -7,7 +7,6 @@ which allows mixin classes to be composed in interesting ways.
 from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.fields import HyperlinkedIdentityField
 
 
 class CreateModelMixin(object):
