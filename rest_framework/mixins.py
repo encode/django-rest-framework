@@ -20,17 +20,15 @@ class CreateModelMixin(object):
         if serializer.is_valid():
             self.pre_save(serializer.object)
             self.object = serializer.save()
-            headers = self.get_success_headers(serializer)
+            headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def get_success_headers(self,serializer):
-        headers = {}
-        for name,field in serializer.fields.iteritems():
-                if isinstance(field,HyperlinkedIdentityField):
-                    headers["Location"] = field.field_to_native(self.object,name)
-                    break
-        return headers
+    def get_success_headers(self,data):
+        if "url" in data:
+            return {'Location':data.get("url")}
+        else:
+            return {}
     
     def pre_save(self, obj):
         pass

@@ -8,17 +8,16 @@ factory = RequestFactory()
 
 
 class BlogPostCommentSerializer(serializers.ModelSerializer):
-    custom_identity_field = serializers.HyperlinkedIdentityField(view_name='blogpostcomment-detail')
+    url = serializers.HyperlinkedIdentityField(view_name='blogpostcomment-detail')
     text = serializers.CharField()
     blog_post_url = serializers.HyperlinkedRelatedField(source='blog_post', view_name='blogpost-detail')
 
     class Meta:
         model = BlogPostComment
-        fields = ('text', 'blog_post_url')
+        fields = ('text', 'blog_post_url', 'url')
 
 
 class PhotoSerializer(serializers.Serializer):
-    """ When Adding a HyperlinkedIdentityField to this serializer, the TestCreateWithForeignKeysAndCustomSlug will fail """
     description = serializers.CharField()
     album_url = serializers.HyperlinkedRelatedField(source='album', view_name='album-detail', queryset=Album.objects.all(), slug_field='title', slug_url_kwarg='title')
 
@@ -222,7 +221,7 @@ class TestCreateWithForeignKeysAndCustomSlug(TestCase):
         request = factory.post('/photos/', data=data)
         response = self.list_create_view(request).render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertNotIn("Location",response,msg="A Serializer without HyperlinkedIdentityField can not produce a valid Location header (for now). Thats why there shouldn'd be one")
+        self.assertNotIn("Location", response, msg="Location should only be included if there is a 'url' field on the serializer")
         self.assertEqual(self.post.photo_set.count(), 1)
         self.assertEqual(self.post.photo_set.all()[0].description, 'A test photo')
 
