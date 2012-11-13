@@ -908,7 +908,7 @@ class FloatField(WritableField):
 
 class FileField(WritableField):
     type_name = 'FileField'
-
+    widget = widgets.FileInput
     default_error_messages = {
         'invalid': _("No file was submitted. Check the encoding type on the form."),
         'missing': _("No file was submitted."),

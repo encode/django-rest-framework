@@ -320,7 +320,9 @@ class BrowsableAPIRenderer(BaseRenderer):
             serializers.SlugRelatedField: forms.ChoiceField,
             serializers.ManySlugRelatedField: forms.MultipleChoiceField,
             serializers.HyperlinkedRelatedField: forms.ChoiceField,
-            serializers.ManyHyperlinkedRelatedField: forms.MultipleChoiceField
+            serializers.ManyHyperlinkedRelatedField: forms.MultipleChoiceField,
+            serializers.FileField: forms.FileField,
+            serializers.ImageField: forms.ImageField,
         }
 
         fields = {}
