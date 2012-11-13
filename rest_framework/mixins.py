@@ -15,7 +15,7 @@ class CreateModelMixin(object):
     Should be mixed in with any `BaseView`.
     """
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA)
+        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
         if serializer.is_valid():
             self.pre_save(serializer.object)
             self.object = serializer.save()
@@ -80,7 +80,7 @@ class UpdateModelMixin(object):
             self.object = None
             success_status = status.HTTP_201_CREATED
 
-        serializer = self.get_serializer(self.object, data=request.DATA)
+        serializer = self.get_serializer(self.object, data=request.DATA, files=request.FILES)
 
         if serializer.is_valid():
             self.pre_save(serializer.object)

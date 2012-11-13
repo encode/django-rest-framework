@@ -91,7 +91,7 @@ class BaseSerializer(Field):
     _options_class = SerializerOptions
     _dict_class = SortedDictWithMetadata  # Set to unsorted dict for backwards compatability with unsorted implementations.
 
-    def __init__(self, instance=None, data=None, context=None, **kwargs):
+    def __init__(self, instance=None, data=None, files=None, context=None, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
         self.opts = self._options_class(self.Meta)
         self.fields = copy.deepcopy(self.base_fields)
@@ -101,9 +101,11 @@ class BaseSerializer(Field):
         self.context = context or {}
 
         self.init_data = data
+        self.init_files = files
         self.object = instance
 
         self._data = None
+        self._files = None
         self._errors = None
 
     #####
@@ -187,7 +189,7 @@ class BaseSerializer(Field):
             ret.fields[key] = field
         return ret
 
-    def restore_fields(self, data):
+    def restore_fields(self, data, files):
         """
         Core of deserialization, together with `restore_object`.
         Converts a dictionary of data into a dictionary of deserialized fields.
@@ -196,7 +198,10 @@ class BaseSerializer(Field):
         reverted_data = {}
         for field_name, field in fields.items():
             try:
-                field.field_from_native(data, field_name, reverted_data)
+                if isinstance(field, (FileField, ImageField)):
+                    field.field_from_native(files, field_name, reverted_data)
+                else:
+                    field.field_from_native(data, field_name, reverted_data)
             except ValidationError as err:
                 self._errors[field_name] = list(err.messages)
 
@@ -250,7 +255,7 @@ class BaseSerializer(Field):
             return [self.convert_object(item) for item in obj]
         return self.convert_object(obj)
 
-    def from_native(self, data):
+    def from_native(self, data, files):
         """
         Deserialize primatives -> objects.
         """
@@ -259,8 +264,8 @@ class BaseSerializer(Field):
             return (self.from_native(item) for item in data)
 
         self._errors = {}
-        if data is not None:
-            attrs = self.restore_fields(data)
+        if data is not None or files is not None:
+            attrs = self.restore_fields(data, files)
             attrs = self.perform_validation(attrs)
         else:
             self._errors['non_field_errors'] = ['No input provided']
@@ -288,7 +293,7 @@ class BaseSerializer(Field):
         setting self.object if no errors occurred.
         """
         if self._errors is None:
-            obj = self.from_native(self.init_data)
+            obj = self.from_native(self.init_data, self.init_files)
             if not self._errors:
                 self.object = obj
         return self._errors
@@ -440,6 +445,8 @@ class ModelSerializer(Serializer):
             models.TextField: CharField,
             models.CommaSeparatedIntegerField: CharField,
             models.BooleanField: BooleanField,
+            models.FileField: FileField,
+            models.ImageField: ImageField,
         }
         try:
             return field_mapping[model_field.__class__](**kwargs)
