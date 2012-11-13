@@ -112,6 +112,21 @@ If you've already created some User`'s, you can run a script like this.
     for user in User.objects.all():
         Token.objects.get_or_create(user=user)
 
+When using TokenAuthentication, it may be useful to add a login view for clients to retrieve the token. 
+
+REST framework provides a built-in login view. To use it, add a pattern to include the token login view for clients as follows:
+
+    urlpatterns += patterns('',
+        url(r'^api-token-auth/', include('rest_framework.authtoken.urls',
+                                         namespace='rest_framework'))
+    )
+
+The `r'^api-token-auth/'` part of pattern can actually be whatever URL you want to use.  The only restriction is that the included urls must use the `'rest_framework'` namespace.  
+
+The authtoken login view will render a JSON response when a valid `username` and `password` fields are POST'ed to the view using forms or JSON:
+
+	 { 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
+
 ## OAuthAuthentication
 
 This policy uses the [OAuth 2.0][oauth] protocol to authenticate requests.  OAuth is appropriate for server-server setups, such as when you want to allow a third-party service to access your API on a user's behalf.
