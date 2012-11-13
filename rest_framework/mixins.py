@@ -7,6 +7,7 @@ which allows mixin classes to be composed in interesting ways.
 from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.fields import HyperlinkedIdentityField
 
 
 class CreateModelMixin(object):
@@ -19,9 +20,23 @@ class CreateModelMixin(object):
         if serializer.is_valid():
             self.pre_save(serializer.object)
             self.object = serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            headers = self.get_success_headers(serializer)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
+    def get_success_headers(self,serializer):
+        headers = []
+        identity_field = identity_name = None
+        for name,field in serializer.fields.iteritems():
+                if isinstance(field,HyperlinkedIdentityField):
+                    identity_name, identity_field = name, field
+        if identity_field:
+            #identity_field.initialize(serializer,"url")
+            headers.append(
+                ("Location",identity_field.field_to_native(self.object,identity_name))
+            )
+        return headers
+    
     def pre_save(self, obj):
         pass
 
