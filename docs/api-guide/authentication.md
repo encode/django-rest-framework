@@ -126,7 +126,7 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
 **Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https` only.
 
-## OAuth2Authentication
+<!--## OAuth2Authentication
 
 This authentication scheme uses the [OAuth 2.0][oauth] protocol to authenticate requests.  OAuth is appropriate for server-server setups, such as when you want to allow a third-party service to access your API on a user's behalf.
 
@@ -138,6 +138,7 @@ If successfully authenticated, `OAuth2Authentication` provides the following cre
 **TODO**: Note type of response (401 vs 403)
 
 **TODO**: Implement OAuth2Authentication, using django-oauth2-provider.
+-->
 
 ## SessionAuthentication
 
