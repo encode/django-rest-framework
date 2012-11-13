@@ -15,7 +15,8 @@ def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra
         kwargs = kwargs or {}
         kwargs['format'] = format
     url = django_reverse(viewname, args=args, kwargs=kwargs, **extra)
-    if request and api_settings.USE_ABSOLUTE_URLS:
+    if api_settings.USE_ABSOLUTE_URLS:
+        assert request, "request is required for building absolute url"
         return request.build_absolute_uri(url)
     return url
 
