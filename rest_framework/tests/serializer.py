@@ -342,10 +342,9 @@ class ManyToManyTests(TestCase):
         serializer = self.serializer_class(data=data)
         self.assertEqual(serializer.is_valid(), True)
         instance = serializer.save()
-        self.assertEquals(len(ManyToManyModel.objects.all()), 3)
-        self.assertEquals(instance.pk, 3)
+        self.assertEquals(len(ManyToManyModel.objects.all()), 2)
+        self.assertEquals(instance.pk, 2)
         self.assertEquals(list(instance.rel.all()), [])
-
 
     def test_create_empty_relationship_flat_data(self):
         """

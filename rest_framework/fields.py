@@ -351,9 +351,8 @@ class ManyRelatedMixin(object):
         except:
             # Non-form data
             value = data.get(self.source or field_name)
-        else:
-            if value == ['']:
-                value = []
+        if value == [''] or value is None:
+            value = []
         into[field_name] = [self.from_native(item) for item in value]
 
 
