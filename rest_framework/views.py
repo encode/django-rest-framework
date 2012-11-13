@@ -148,6 +148,8 @@ class APIView(View):
         """
         If request is not permitted, determine what kind of exception to raise.
         """
+        if self.request.successful_authenticator:
+            raise exceptions.NotAuthenticated()
         raise exceptions.PermissionDenied()
 
     def throttled(self, request, wait):
