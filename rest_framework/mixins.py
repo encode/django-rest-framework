@@ -25,16 +25,11 @@ class CreateModelMixin(object):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def get_success_headers(self,serializer):
-        headers = []
-        identity_field = identity_name = None
+        headers = {}
         for name,field in serializer.fields.iteritems():
                 if isinstance(field,HyperlinkedIdentityField):
-                    identity_name, identity_field = name, field
-        if identity_field:
-            #identity_field.initialize(serializer,"url")
-            headers.append(
-                ("Location",identity_field.field_to_native(self.object,identity_name))
-            )
+                    headers["Location"] = field.field_to_native(self.object,name)
+                    break
         return headers
     
     def pre_save(self, obj):
