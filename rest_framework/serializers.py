@@ -388,7 +388,10 @@ class ModelSerializer(Serializer):
         """
         Creates a default instance of a nested relational field.
         """
-        return ModelSerializer()
+        class NestedModelSerializer(ModelSerializer):
+            class Meta:
+                model = model_field.rel.to
+        return NestedModelSerializer()
 
     def get_related_field(self, model_field, to_many=False):
         """

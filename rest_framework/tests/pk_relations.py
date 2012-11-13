@@ -136,6 +136,7 @@ class PrimaryKeyManyToManyTests(TestCase):
         ]
         self.assertEquals(serializer.data, expected)
 
+
 class PrimaryKeyForeignKeyTests(TestCase):
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
