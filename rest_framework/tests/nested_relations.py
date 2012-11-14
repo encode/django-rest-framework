@@ -82,3 +82,19 @@ class ReverseForeignKeyTests(TestCase):
         expected[0]['sources'][0]['name'] = 'source-1-changed'
         expected[0]['sources'][2]['name'] = 'source-3-changed'
         self.assertEquals(serializer.data, expected)
+
+    def test_reverse_foreign_key_delete(self):
+        data = deepcopy(self.target_data)
+        del data['sources'][2]
+        instance = ForeignKeyTarget.objects.get(pk=1)
+        serializer = ForeignKeyTargetSerializer(instance, data=data)
+        self.assertTrue(serializer.is_valid())
+        self.assertEquals(serializer.data, data)
+        serializer.save()
+
+        # Ensure target 1 has 2 sources and everything else is as expected
+        queryset = ForeignKeyTarget.objects.all()
+        serializer = ForeignKeyTargetSerializer(queryset)
+        expected = deepcopy(self.data)
+        del expected[0]['sources'][2]
+        self.assertEquals(serializer.data, expected)
