@@ -114,8 +114,8 @@ class RedirectViewTests(TestCase):
         self.view = RedirectBasicView.as_view()
 
     def test_redirect(self):
-        request = factory.get('/redirect_to_basic', content_type='application/json')
+        request = factory.get('/redirect_to_basic/?foo=bar', content_type='application/json')
         response = self.view(request)
         
         self.assertEquals(response.status_code, status.HTTP_302_FOUND)
-        self.assertEquals(response['Location'], 'http://testserver/basic/')
+        self.assertEquals(response['Location'], 'http://testserver/basic/?foo=bar')
