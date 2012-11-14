@@ -157,4 +157,3 @@ To contact the author directly:
 [glic3rinu]: https://github.com/glic3rinu
 [ludwigkraatz]: https://github.com/ludwigkraatz
 [robromano]: https://github.com/robromano
-
