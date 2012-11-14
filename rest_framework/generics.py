@@ -92,11 +92,11 @@ class SingleObjectAPIView(SingleObjectMixin, GenericAPIView):
     pk_url_kwarg = 'pk'  # Not provided in Django 1.3
     slug_url_kwarg = 'slug'  # Not provided in Django 1.3
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         """
         Override default to add support for object-level permissions.
         """
-        obj = super(SingleObjectAPIView, self).get_object()
+        obj = super(SingleObjectAPIView, self).get_object(queryset)
         if not self.has_permission(self.request, obj):
             self.permission_denied(self.request)
         return obj
