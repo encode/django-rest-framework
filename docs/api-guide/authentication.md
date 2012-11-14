@@ -97,6 +97,21 @@ If successfully authenticated, `TokenAuthentication` provides the following cred
 
 **Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https` only.
 
+If you want every user to have an automatically generated Token, you can simply catch the User's `post_save` signal.
+
+    @receiver(post_save, sender=User)
+    def create_auth_token(sender, instance=None, created=False, **kwargs):
+        if created:
+            Token.objects.create(user=instance)
+
+If you've already created some User`'s, you can run a script like this.
+
+    from django.contrib.auth.models import User
+    from rest_framework.authtoken.models import Token
+
+    for user in User.objects.all():
+        Token.objects.get_or_create(user=user)
+
 ## OAuthAuthentication
 
 This policy uses the [OAuth 2.0][oauth] protocol to authenticate requests.  OAuth is appropriate for server-server setups, such as when you want to allow a third-party service to access your API on a user's behalf.
