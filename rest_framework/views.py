@@ -140,7 +140,7 @@ class APIView(View):
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
-        Called if `request.method` does not corrospond to a handler method.
+        Called if `request.method` does not correspond to a handler method.
         """
         raise exceptions.MethodNotAllowed(request.method)
 

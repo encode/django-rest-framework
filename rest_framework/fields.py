@@ -317,7 +317,7 @@ class RelatedField(WritableField):
 
     choices = property(_get_choices, _set_choices)
 
-    ### Regular serializier stuff...
+    ### Regular serializer stuff...
 
     def field_to_native(self, obj, field_name):
         value = getattr(obj, self.source or field_name)
