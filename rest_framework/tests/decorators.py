@@ -109,7 +109,7 @@ class DecoratorTestCase(TestCase):
 
         request = self.factory.get('/')
         response = view(request)
-        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEquals(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_throttle_classes(self):
         class OncePerDayUserThrottle(UserRateThrottle):

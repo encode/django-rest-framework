@@ -86,6 +86,7 @@ class Request(object):
         self._method = Empty
         self._content_type = Empty
         self._stream = Empty
+        self._authenticated = False
 
         if self.parser_context is None:
             self.parser_context = {}
@@ -288,6 +289,7 @@ class Request(object):
         for authenticator in self.authenticators:
             user_auth_tuple = authenticator.authenticate(self)
             if not user_auth_tuple is None:
+                self._authenticated = True
                 return user_auth_tuple
         return self._not_authenticated()
 

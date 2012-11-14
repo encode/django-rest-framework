@@ -25,8 +25,13 @@ class MockView(APIView):
 
 MockView.authentication_classes += (TokenAuthentication,)
 
+class AdminMockView(MockView):
+    permission_classes = (permissions.IsAdminUser,)
+
+
 urlpatterns = patterns('',
     (r'^$', MockView.as_view()),
+    (r'^admin/$', AdminMockView.as_view()),
 )
 
 
@@ -54,13 +59,14 @@ class BasicAuthTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post_form_failing_basic_auth(self):
-        """Ensure POSTing form over basic auth without correct credentials fails"""
+        """Ensure POSTing form over basic auth without correct credentials is denied with 401"""
         response = self.csrf_client.post('/', {'example': 'example'})
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
-    def test_post_json_failing_basic_auth(self):
-        """Ensure POSTing json over basic auth without correct credentials fails"""
-        response = self.csrf_client.post('/', json.dumps({'example': 'example'}), 'application/json')
+    def test_post_json_no_permissions(self):
+        """Ensure POSTing json over basic auth to restricted endpoint is denied with 403"""
+        auth = 'Basic %s' % base64.encodestring('%s:%s' % (self.username, self.password)).strip()
+        response = self.csrf_client.post('/admin/', json.dumps({'example': 'example'}), 'application/json', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 403)
 
 
@@ -105,10 +111,10 @@ class SessionAuthTests(TestCase):
 
     def test_post_form_session_auth_failing(self):
         """
-        Ensure POSTing form over session authentication without logged in user fails.
+        Ensure POSTing form over session authentication without logged is denied with 401
         """
         response = self.csrf_client.post('/', {'example': 'example'})
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
 
 class TokenAuthTests(TestCase):
@@ -138,13 +144,19 @@ class TokenAuthTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_post_form_failing_token_auth(self):
-        """Ensure POSTing form over token auth without correct credentials fails"""
+        """Ensure POSTing form over token auth without correct credentials is denied with 401"""
         response = self.csrf_client.post('/', {'example': 'example'})
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 401)
 
     def test_post_json_failing_token_auth(self):
-        """Ensure POSTing json over token auth without correct credentials fails"""
+        """Ensure POSTing json over token auth without correct credentials is denied with 401"""
         response = self.csrf_client.post('/', json.dumps({'example': 'example'}), 'application/json')
+        self.assertEqual(response.status_code, 401)
+
+    def test_post_json_no_permissions(self):
+        """Ensure POSTing json over token auth to restricted endpoint is denied with 403"""
+        auth = "Token " + self.key
+        response = self.csrf_client.post('/admin/', json.dumps({'example': 'example'}), 'application/json', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 403)
 
     def test_token_has_auto_assigned_key_if_none_provided(self):
