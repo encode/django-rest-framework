@@ -952,10 +952,7 @@ class FileField(WritableField):
         return data
 
     def to_native(self, value):
-        """
-        No need to return anything, the file can be accessed form its url.
-        """
-        return
+        return value.name
 
 
 class ImageField(FileField):
