@@ -490,6 +490,7 @@ class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
     def __init__(self, meta):
         super(HyperlinkedModelSerializerOptions, self).__init__(meta)
         self.view_name = getattr(meta, 'view_name', None)
+        self.view_namespace = getattr(meta, 'view_namespace', None)
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
@@ -497,6 +498,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
     """
     _options_class = HyperlinkedModelSerializerOptions
     _default_view_name = '%(model_name)s-detail'
+    _default_view_namespace =   None                    # default: no namespace is prepend to view_name
 
     url = HyperlinkedIdentityField()
 
@@ -504,6 +506,8 @@ class HyperlinkedModelSerializer(ModelSerializer):
         super(HyperlinkedModelSerializer, self).__init__(*args, **kwargs)
         if self.opts.view_name is None:
             self.opts.view_name = self._get_default_view_name(self.opts.model)
+        if self.opts.view_namespace is None:
+            self.opts.view_namespace = self._get_default_view_namespace(self.opts.model)
 
     def _get_default_view_name(self, model):
         """
@@ -515,6 +519,20 @@ class HyperlinkedModelSerializer(ModelSerializer):
             'model_name': model_meta.object_name.lower()
         }
         return self._default_view_name % format_kwargs
+
+    def _get_default_view_namespace(self, model):
+        """
+        Return the view namespace to use if 'view_namespace' is not specified in 'Meta'
+        """
+        if self._default_view_namespace is None:
+            return self._default_view_namespace
+        
+        model_meta = model._meta
+        format_kwargs = {
+            'app_label': model_meta.app_label,
+            'model_name': model_meta.object_name.lower()
+        }
+        return self._default_view_namespace % format_kwargs
 
     def get_pk_field(self, model_field):
         return None
@@ -529,7 +547,8 @@ class HyperlinkedModelSerializer(ModelSerializer):
         queryset = rel._default_manager
         kwargs = {
             'queryset': queryset,
-            'view_name': self._get_default_view_name(rel)
+            'view_name': self._get_default_view_name(rel),
+            'view_namespace': self._get_default_view_namespace(rel)
         }
         if to_many:
             return ManyHyperlinkedRelatedField(**kwargs)
