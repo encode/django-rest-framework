@@ -13,7 +13,7 @@ from rest_framework.compat import View, apply_markdown
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
-
+from rest_framework.exceptions import NotAuthenticated
 
 def _remove_trailing_string(content, trailing):
     """
@@ -148,6 +148,8 @@ class APIView(View):
         """
         If request is not permitted, determine what kind of exception to raise.
         """
+        if not request._authenticated:
+            raise exceptions.NotAuthenticated()
         raise exceptions.PermissionDenied()
 
     def throttled(self, request, wait):
@@ -330,6 +332,10 @@ class APIView(View):
         elif isinstance(exc, PermissionDenied):
             return Response({'detail': 'Permission denied'},
                             status=status.HTTP_403_FORBIDDEN,
+                            exception=True)
+        elif isinstance(exc, NotAuthenticated):
+            return Response({'detail': self.get_authenticators()[0].authenticate_header()},
+                            status=status.HTTP_401_FORBIDDEN,
                             exception=True)
         raise
 
