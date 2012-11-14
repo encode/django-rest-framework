@@ -23,7 +23,7 @@ class CreateModelMixin(object):
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def get_success_headers(self,data):
+    def get_success_headers(self, data):
         if 'url' in data:
             return {'Location': data.get('url')}
         else:
