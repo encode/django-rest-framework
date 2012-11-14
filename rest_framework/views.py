@@ -13,6 +13,7 @@ from rest_framework.compat import View, apply_markdown
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
+from rest_framework.reverse import reverse
 
 
 def _remove_trailing_string(content, trailing):
@@ -372,3 +373,36 @@ class APIView(View):
         a less useful default implementation.
         """
         return Response(self.metadata(request), status=status.HTTP_200_OK)
+
+class RedirectAPIView(APIView):    
+    """
+    A view that provides a redirect to a different resource endpoint
+    """
+    permanent = True
+    view_name = None
+
+    def get_redirect_url(self, request, *args, **kwargs):
+        """
+        Return the URL redirect to. Keyword arguments from the
+        URL pattern match generating the redirect request
+        are provided as kwargs to this method.
+        """
+        try:
+            return reverse(self.view_name, args=args, kwargs=kwargs, request=request)
+        except:
+            return None
+
+    def get(self, request, *args, **kwargs):
+        url = self.get_redirect_url(request, *args, **kwargs)
+        if url:
+            if self.permanent:
+                return Response(status=status.HTTP_301_MOVED_PERMANENTLY)
+            else:
+                return Response(status=status.HTTP_302_FOUND)
+        else:
+            logger.warning('Gone: %s', self.request.path,
+                        extra={
+                            'status_code': 410,
+                            'request': self.request
+                        })
+            return Response(status=status.HTTP_410_GONE)
