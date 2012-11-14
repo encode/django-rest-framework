@@ -55,6 +55,16 @@ class ListModelMixin(object):
 
         return Response(serializer.data)
 
+    def get_paginate_by(self, queryset):
+        page_size_param = self.request.QUERY_PARAMS.get('page_size')
+        if page_size_param:
+            try:
+                page_size = int(page_size_param)
+                return page_size
+            except ValueError:
+                pass
+        return super(ListModelMixin, self).get_paginate_by(queryset)
+
 
 class RetrieveModelMixin(object):
     """
