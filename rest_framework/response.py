@@ -20,9 +20,12 @@ class Response(SimpleTemplateResponse):
         """
         super(Response, self).__init__(None, status=status)
         self.data = data
-        self.headers = headers and headers[:] or []
         self.template_name = template_name
         self.exception = exception
+        
+        if headers:
+            for name,value in headers.iteritems():
+                self[name] = value
 
     @property
     def rendered_content(self):
