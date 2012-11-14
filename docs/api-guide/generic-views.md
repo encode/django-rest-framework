@@ -147,6 +147,10 @@ Provides a `.list(request, *args, **kwargs)` method, that implements listing a q
 
 Should be mixed in with [MultipleObjectAPIView].
 
+**Arguments**:
+
+* `page_size` - Hook to adjust page_size per request.
+
 ## CreateModelMixin
 
 Provides a `.create(request, *args, **kwargs)` method, that implements creating and saving a new model instance.
