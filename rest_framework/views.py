@@ -380,10 +380,11 @@ class RedirectAPIView(APIView):
     """
     permanent = True
     view_name = None
+    #http_method_names = ['get', 'post', 'head', 'options', 'delete', 'put']
 
     def get_redirect_url(self, request, *args, **kwargs):
         """
-        Return the URL redirect to. Keyword arguments from the
+        Return the URL redirect to. Arguments and Keyword arguments from the
         URL pattern match generating the redirect request
         are provided as kwargs to this method.
         """
@@ -395,14 +396,30 @@ class RedirectAPIView(APIView):
     def get(self, request, *args, **kwargs):
         url = self.get_redirect_url(request, *args, **kwargs)
         if url:
+            headers = {'Location': url}
             if self.permanent:
-                return Response(status=status.HTTP_301_MOVED_PERMANENTLY)
+                return Response(status=status.HTTP_301_MOVED_PERMANENTLY, headers=headers)
             else:
-                return Response(status=status.HTTP_302_FOUND)
+                return Response(status=status.HTTP_302_FOUND, headers=headers)
         else:
             logger.warning('Gone: %s', self.request.path,
                         extra={
-                            'status_code': 410,
+                            'status_code': status.HTTP_410_GONE,
                             'request': self.request
                         })
             return Response(status=status.HTTP_410_GONE)
+
+    def head(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
+
+    def options(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
