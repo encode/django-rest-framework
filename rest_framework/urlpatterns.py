@@ -4,7 +4,7 @@ from rest_framework.settings import api_settings
 
 def format_suffix_patterns(urlpatterns, suffix_required=False, allowed=None):
     """
-    Supplement existing urlpatterns with corrosponding patterns that also
+    Supplement existing urlpatterns with corresponding patterns that also
     include a '.format' suffix.  Retains urlpattern ordering.
 
     urlpatterns:

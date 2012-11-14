@@ -1,7 +1,7 @@
 """
-Login and logout views for the browseable API.
+Login and logout views for the browsable API.
 
-Add these to your root URLconf if you're using the browseable API and
+Add these to your root URLconf if you're using the browsable API and
 your API requires authentication.
 
 The urls must be namespaced as 'rest_framework', and you should make sure

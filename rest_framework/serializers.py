@@ -89,7 +89,7 @@ class BaseSerializer(Field):
         pass
 
     _options_class = SerializerOptions
-    _dict_class = SortedDictWithMetadata  # Set to unsorted dict for backwards compatability with unsorted implementations.
+    _dict_class = SortedDictWithMetadata  # Set to unsorted dict for backwards compatibility with unsorted implementations.
 
     def __init__(self, instance=None, data=None, context=None, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
@@ -163,7 +163,7 @@ class BaseSerializer(Field):
             self.opts.depth = parent.opts.depth - 1
 
     #####
-    # Methods to convert or revert from objects <--> primative representations.
+    # Methods to convert or revert from objects <--> primitive representations.
 
     def get_field_key(self, field_name):
         """
@@ -244,7 +244,7 @@ class BaseSerializer(Field):
 
     def to_native(self, obj):
         """
-        Serialize objects -> primatives.
+        Serialize objects -> primitives.
         """
         if hasattr(obj, '__iter__'):
             return [self.convert_object(item) for item in obj]
@@ -252,7 +252,7 @@ class BaseSerializer(Field):
 
     def from_native(self, data):
         """
-        Deserialize primatives -> objects.
+        Deserialize primitives -> objects.
         """
         if hasattr(data, '__iter__') and not isinstance(data, dict):
             # TODO: error data when deserializing lists
@@ -334,7 +334,7 @@ class ModelSerializer(Serializer):
         """
         Return all the fields that should be serialized for the model.
         """
-        # TODO: Modfiy this so that it's called on init, and drop
+        # TODO: Modify this so that it's called on init, and drop
         #       serialize/obj/data arguments.
         #
         #       We *could* provide a hook for dynamic fields, but
