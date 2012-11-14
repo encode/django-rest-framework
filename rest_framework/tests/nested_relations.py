@@ -44,57 +44,51 @@ class ReverseForeignKeyTests(TestCase):
         self.new_target_data = {'id': 2, 'name': u'target-2', 'sources': []}
         self.data = [self.target_data, self.new_target_data]
 
-    def test_reverse_foreign_key_retrieve(self):
-        queryset = ForeignKeyTarget.objects.all()
-        serializer = ForeignKeyTargetSerializer(queryset)
-        self.assertEquals(serializer.data, self.data)
-
-    def test_reverse_foreign_key_create(self):
-        data = deepcopy(self.new_target_data)
-        data['sources'].append({'name': u'source-4', 'target': 2})
-        instance = ForeignKeyTarget.objects.get(pk=2)
+    def save_serialized_target(self, instance, data):
         serializer = ForeignKeyTargetSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
         self.assertEquals(serializer.data, data)
         serializer.save()
 
-        # Ensure target 2 has new source and everything else is as expected
+    def check_serialized_targets(self, data):
         queryset = ForeignKeyTarget.objects.all()
         serializer = ForeignKeyTargetSerializer(queryset)
+        self.assertEquals(serializer.data, data)
+
+    def test_reverse_foreign_key_retrieve(self):
+        self.check_serialized_targets(self.data)
+
+    def test_reverse_foreign_key_create(self):
+        data = deepcopy(self.new_target_data)
+        data['sources'].append({'name': u'source-4', 'target': 2})
+        instance = ForeignKeyTarget.objects.get(pk=2)
+        self.save_serialized_target(instance, data)
+
+        # Ensure target 2 has new source and everything else is as expected
         expected = deepcopy(self.data)
         expected[1]['sources'].append({'id': 4, 'name': 'source-4', 'target': 2})
-        self.assertEquals(serializer.data, expected)
+        self.check_serialized_targets(expected)
 
     def test_reverse_foreign_key_update(self):
         data = deepcopy(self.target_data)
         data['sources'][0]['name'] = 'source-1-changed'
         data['sources'][2]['name'] = 'source-3-changed'
         instance = ForeignKeyTarget.objects.get(pk=1)
-        serializer = ForeignKeyTargetSerializer(instance, data=data)
-        self.assertTrue(serializer.is_valid())
-        self.assertEquals(serializer.data, data)
-        serializer.save()
+        self.save_serialized_target(instance, data)
 
         # Ensure target 1 is updated, and everything else is as expected
-        queryset = ForeignKeyTarget.objects.all()
-        serializer = ForeignKeyTargetSerializer(queryset)
         expected = deepcopy(self.data)
         expected[0]['sources'][0]['name'] = 'source-1-changed'
         expected[0]['sources'][2]['name'] = 'source-3-changed'
-        self.assertEquals(serializer.data, expected)
+        self.check_serialized_targets(expected)
 
     def test_reverse_foreign_key_delete(self):
         data = deepcopy(self.target_data)
         del data['sources'][2]
         instance = ForeignKeyTarget.objects.get(pk=1)
-        serializer = ForeignKeyTargetSerializer(instance, data=data)
-        self.assertTrue(serializer.is_valid())
-        self.assertEquals(serializer.data, data)
-        serializer.save()
+        self.save_serialized_target(instance, data)
 
         # Ensure target 1 has 2 sources and everything else is as expected
-        queryset = ForeignKeyTarget.objects.all()
-        serializer = ForeignKeyTargetSerializer(queryset)
         expected = deepcopy(self.data)
         del expected[0]['sources'][2]
-        self.assertEquals(serializer.data, expected)
+        self.check_serialized_targets(expected)
