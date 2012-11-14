@@ -1,20 +1,20 @@
 """
-Login and logout views for token authentication.
+Login view for token authentication.
 
-Add these to your root URLconf if you're using token authentication
+Add this to your root URLconf if you're using token authentication
 your API requires authentication.
 
-The urls must be namespaced as 'rest_framework', and you should make sure
-your authentication settings include `TokenAuthentication`.
+You should make sure your authentication settings include
+`TokenAuthentication`. 
 
     urlpatterns = patterns('',
         ...
-        url(r'^auth-token', include('rest_framework.authtoken.urls', namespace='rest_framework'))
+        url(r'^auth-token/', 'rest_framework.authtoken.obtain_auth_token')
     )
 """
+
 from django.conf.urls.defaults import patterns, url
-from rest_framework.authtoken.views import AuthTokenView
 
 urlpatterns = patterns('rest_framework.authtoken.views',
-    url(r'^login/$', AuthTokenView.as_view(), name='token_login'),
+    url(r'^login/$', 'rest_framework.authtoken.views.obtain_auth_token', name='token_login'),
 )

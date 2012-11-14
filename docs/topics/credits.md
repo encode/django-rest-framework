@@ -59,6 +59,7 @@ The following people have helped make REST framework great.
 * Toni Michel - [tonimichel]
 * Ben Konrath - [benkonrath]
 * Marc Aymerich - [glic3rinu]
+* Rob Romano - [robromano]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -153,3 +154,4 @@ To contact the author directly:
 [tonimichel]: https://github.com/tonimichel
 [benkonrath]: https://github.com/benkonrath
 [glic3rinu]: https://github.com/glic3rinu
+[robromano]: https://github.com/robromano

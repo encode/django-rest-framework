@@ -7,6 +7,7 @@
 ## Master
 
 * Support for `read_only_fields` on `ModelSerializer` classes.
+* Add convenience login view to get tokens when using `TokenAuthentication`
 
 ## 2.1.2
 
