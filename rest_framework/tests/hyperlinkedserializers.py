@@ -196,7 +196,7 @@ class TestCreateWithForeignKeys(TestCase):
         request = factory.post('/comments/', data=data)
         response = self.create_view(request).render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response["Location"], 'http://testserver/comments/1/')
+        self.assertEqual(response['Location'], 'http://testserver/comments/1/')
         self.assertEqual(self.post.blogpostcomment_set.count(), 1)
         self.assertEqual(self.post.blogpostcomment_set.all()[0].text, 'A test comment')
 
@@ -221,7 +221,7 @@ class TestCreateWithForeignKeysAndCustomSlug(TestCase):
         request = factory.post('/photos/', data=data)
         response = self.list_create_view(request).render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertNotIn("Location", response, msg="Location should only be included if there is a 'url' field on the serializer")
+        self.assertNotIn('Location', response, msg='Location should only be included if there is a "url" field on the serializer')
         self.assertEqual(self.post.photo_set.count(), 1)
         self.assertEqual(self.post.photo_set.all()[0].description, 'A test photo')
 
