@@ -198,10 +198,7 @@ class BaseSerializer(Field):
         reverted_data = {}
         for field_name, field in fields.items():
             try:
-                if isinstance(field, (FileField, ImageField)):
-                    field.field_from_native(files, field_name, reverted_data)
-                else:
-                    field.field_from_native(data, field_name, reverted_data)
+                field.field_from_native(data, files, field_name, reverted_data)
             except ValidationError as err:
                 self._errors[field_name] = list(err.messages)
 

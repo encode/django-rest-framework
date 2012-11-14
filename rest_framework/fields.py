@@ -3,6 +3,8 @@ import datetime
 import inspect
 import warnings
 
+from io import BytesIO
+
 from django.core import validators
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import resolve, get_script_prefix
@@ -31,6 +33,7 @@ class Field(object):
     creation_counter = 0
     empty = ''
     type_name = None
+    _use_files = None
 
     def __init__(self, source=None):
         self.parent = None
@@ -51,7 +54,7 @@ class Field(object):
         self.root = parent.root or parent
         self.context = self.root.context
 
-    def field_from_native(self, data, field_name, into):
+    def field_from_native(self, data, files, field_name, into):
         """
         Given a dictionary and a field name, updates the dictionary `into`,
         with the field and it's deserialized value.
@@ -166,7 +169,7 @@ class WritableField(Field):
         if errors:
             raise ValidationError(errors)
 
-    def field_from_native(self, data, field_name, into):
+    def field_from_native(self, data, files, field_name, into):
         """
         Given a dictionary and a field name, updates the dictionary `into`,
         with the field and it's deserialized value.
@@ -175,7 +178,10 @@ class WritableField(Field):
             return
 
         try:
-            native = data[field_name]
+            if self._use_files:
+                native = files[field_name]
+            else:
+                native = data[field_name]
         except KeyError:
             if self.default is not None:
                 native = self.default
@@ -323,7 +329,7 @@ class RelatedField(WritableField):
         value = getattr(obj, self.source or field_name)
         return self.to_native(value)
 
-    def field_from_native(self, data, field_name, into):
+    def field_from_native(self, data, files, field_name, into):
         if self.read_only:
             return
 
@@ -341,7 +347,7 @@ class ManyRelatedMixin(object):
         value = getattr(obj, self.source or field_name)
         return [self.to_native(item) for item in value.all()]
 
-    def field_from_native(self, data, field_name, into):
+    def field_from_native(self, data, files, field_name, into):
         if self.read_only:
             return
 
@@ -907,8 +913,10 @@ class FloatField(WritableField):
 
 
 class FileField(WritableField):
+    _use_files = True
     type_name = 'FileField'
     widget = widgets.FileInput
+
     default_error_messages = {
         'invalid': _("No file was submitted. Check the encoding type on the form."),
         'missing': _("No file was submitted."),
@@ -951,6 +959,8 @@ class FileField(WritableField):
 
 
 class ImageField(FileField):
+    _use_files = True
+
     default_error_messages = {
         'invalid_image': _("Upload a valid image. The file you uploaded was either not an image or a corrupted image."),
     }
@@ -990,7 +1000,7 @@ class ImageField(FileField):
             # _imaging C module isn't available, so an ImportError will be
             # raised. Catch and re-raise.
             raise
-        except Exception: # Python Imaging Library doesn't recognize it as an image
+        except Exception:  # Python Imaging Library doesn't recognize it as an image
             raise ValidationError(self.error_messages['invalid_image'])
         if hasattr(f, 'seek') and callable(f.seek):
             f.seek(0)
