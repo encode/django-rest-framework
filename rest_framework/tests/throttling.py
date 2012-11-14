@@ -106,7 +106,7 @@ class ThrottlingTests(TestCase):
             if expect is not None:
                 self.assertEquals(response['X-Throttle-Wait-Seconds'], expect)
             else:
-                self.assertFalse('X-Throttle-Wait-Seconds' in response.headers)
+                self.assertFalse('X-Throttle-Wait-Seconds' in response)
 
     def test_seconds_fields(self):
         """
