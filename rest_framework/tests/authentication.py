@@ -27,7 +27,7 @@ MockView.authentication_classes += (TokenAuthentication,)
 
 urlpatterns = patterns('',
     (r'^$', MockView.as_view()),
-    (r'^auth-token/', include('rest_framework.authtoken.urls')),
+    (r'^auth-token/', 'rest_framework.authtoken.views.obtain_auth_token'),
 )
 
 
