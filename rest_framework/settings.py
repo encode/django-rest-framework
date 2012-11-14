@@ -152,7 +152,7 @@ class APISettings(object):
 
     def validate_setting(self, attr, val):
         if attr == 'FILTER_BACKEND' and val is not None:
-            # Make sure we can initilize the class
+            # Make sure we can initialize the class
             val()
 
 api_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)
