@@ -4,7 +4,7 @@ Renderers are used to serialize a response into specific media types.
 They give us a generic way of being able to handle various media types
 on the response, such as JSON encoded data or HTML output.
 
-REST framework also provides an HTML renderer the renders the browseable API.
+REST framework also provides an HTML renderer the renders the browsable API.
 """
 import copy
 import string

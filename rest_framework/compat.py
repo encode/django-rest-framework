@@ -1,6 +1,6 @@
 """
 The `compat` module provides support for backwards compatibility with older
-versions of django/python, and compatbility wrappers around optional packages.
+versions of django/python, and compatibility wrappers around optional packages.
 """
 # flake8: noqa
 import django
