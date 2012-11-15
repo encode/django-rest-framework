@@ -380,7 +380,6 @@ class RedirectAPIView(APIView):
     """
     permanent = True
     view_name = None
-    #http_method_names = ['get', 'post', 'head', 'options', 'delete', 'put']
 
     def get_redirect_url(self, request, *args, **kwargs):
         """
@@ -389,9 +388,14 @@ class RedirectAPIView(APIView):
         are provided as kwargs to this method.
         """
         try:
-            return reverse(self.view_name, args=args, kwargs=kwargs, request=request)
+            url = reverse(self.view_name, args=args, kwargs=kwargs, request=request)
         except:
             return None
+        
+        query_string = self.request.META.get('QUERY_STRING', '')
+        if query_string:
+            url = '%(url)s?%(query_string)s' % {'url': url, 'query_string': query_string}
+        return url
 
     def get(self, request, *args, **kwargs):
         url = self.get_redirect_url(request, *args, **kwargs)
@@ -402,11 +406,6 @@ class RedirectAPIView(APIView):
             else:
                 return Response(status=status.HTTP_302_FOUND, headers=headers)
         else:
-            logger.warning('Gone: %s', self.request.path,
-                        extra={
-                            'status_code': status.HTTP_410_GONE,
-                            'request': self.request
-                        })
             return Response(status=status.HTTP_410_GONE)
 
     def head(self, request, *args, **kwargs):
