@@ -150,10 +150,14 @@ Default: `'accept'`
 
 Default: `'format'`
 
-## ALLOW_PAGE_SIZE_PARAM
+## PAGE_SIZE_KWARG
 
 Allows you to globally pass a page size parameter for an individual request.
 
-Default: `'True'`
+The name of the GET parameter of views which inherit ListModelMixin for requesting data with an individual page size.
+
+If the value if this setting is `None` the passing a page size is turned off by default.
+
+Default: `'page_size'`
 
 [cite]: http://www.python.org/dev/peps/pep-0020/

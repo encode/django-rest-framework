@@ -68,7 +68,7 @@ DEFAULTS = {
 
     'FORMAT_SUFFIX_KWARG': 'format',
 
-    'ALLOW_PAGE_SIZE_PARAM': True
+    'PAGE_SIZE_KWARG': 'page_size'
 }
 
 

@@ -33,8 +33,7 @@ class ListModelMixin(object):
     Should be mixed in with `MultipleObjectAPIView`.
     """
     empty_error = u"Empty list and '%(class_name)s.allow_empty' is False."
-    allow_page_size_param = api_settings.ALLOW_PAGE_SIZE_PARAM
-    page_size_param = 'page_size'
+    page_size_kwarg = api_settings.PAGE_SIZE_KWARG
 
     def list(self, request, *args, **kwargs):
         self.object_list = self.get_filtered_queryset()
@@ -59,11 +58,11 @@ class ListModelMixin(object):
         return Response(serializer.data)
 
     def get_paginate_by(self, queryset):
-        if self.allow_page_size_param:
-            page_size_param = self.request.QUERY_PARAMS.get(self.page_size_param)
-            if page_size_param:
+        if self.page_size_kwarg is not None:
+            page_size_kwarg = self.request.QUERY_PARAMS.get(self.page_size_kwarg)
+            if page_size_kwarg:
                 try:
-                    page_size = int(page_size_param)
+                    page_size = int(page_size_kwarg)
                     return page_size
                 except ValueError:
                     pass

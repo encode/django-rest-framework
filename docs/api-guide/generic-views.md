@@ -149,8 +149,7 @@ Should be mixed in with [MultipleObjectAPIView].
 
 **Arguments**:
 
-* `allow_page_size_param` - Allows you to overwrite the global settings `ALLOW_PAGE_SIZE_PARAM` for a specific view.
-* `page_size_param` - Allows you to customize the page_size parameter. Default is `page_size`.
+* `page_size_kwarg` - Allows you to overwrite the global settings `PAGE_SIZE_KWARG` for a specific view.  You can also turn it off for a specific view by setting it to `None`.  Default is `page_size`.
 
 ## CreateModelMixin
 
