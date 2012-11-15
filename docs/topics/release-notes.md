@@ -7,7 +7,9 @@
 ## Master
 
 * Support for `read_only_fields` on `ModelSerializer` classes.
-* Support for `page_size` GET parameter in view which inherit ListModelMixin
+* Support for `page_size` GET parameter in views which inherit ListModelMixin.
+* Support for customizing `page_size` param via `page_size_param` attribute.
+* Support for allowing `page_size` param globally (via `ALLOW_PAGE_SIZE_PARAM`) and for individual views (via `allow_page_size_param`)
 
 ## 2.1.2
 
