@@ -149,7 +149,8 @@ Should be mixed in with [MultipleObjectAPIView].
 
 **Arguments**:
 
-* `page_size` - Hook to adjust page_size per request.
+* `allow_page_size_param` - Allows you to overwrite the global settings `ALLOW_PAGE_SIZE_PARAM` for a specific view.
+* `page_size_param` - Allows you to customize the page_size parameter. Default is `page_size`.
 
 ## CreateModelMixin
 

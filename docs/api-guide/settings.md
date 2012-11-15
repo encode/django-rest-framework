@@ -150,4 +150,10 @@ Default: `'accept'`
 
 Default: `'format'`
 
+## ALLOW_PAGE_SIZE_PARAM
+
+Allows you to globally pass a page size parameter for an individual request.
+
+Default: `'True'`
+
 [cite]: http://www.python.org/dev/peps/pep-0020/

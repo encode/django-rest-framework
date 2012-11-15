@@ -7,6 +7,7 @@ which allows mixin classes to be composed in interesting ways.
 from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.settings import api_settings
 
 
 class CreateModelMixin(object):
@@ -32,6 +33,8 @@ class ListModelMixin(object):
     Should be mixed in with `MultipleObjectAPIView`.
     """
     empty_error = u"Empty list and '%(class_name)s.allow_empty' is False."
+    allow_page_size_param = api_settings.ALLOW_PAGE_SIZE_PARAM
+    page_size_param = 'page_size'
 
     def list(self, request, *args, **kwargs):
         self.object_list = self.get_filtered_queryset()
@@ -56,13 +59,14 @@ class ListModelMixin(object):
         return Response(serializer.data)
 
     def get_paginate_by(self, queryset):
-        page_size_param = self.request.QUERY_PARAMS.get('page_size')
-        if page_size_param:
-            try:
-                page_size = int(page_size_param)
-                return page_size
-            except ValueError:
-                pass
+        if self.allow_page_size_param:
+            page_size_param = self.request.QUERY_PARAMS.get(self.page_size_param)
+            if page_size_param:
+                try:
+                    page_size = int(page_size_param)
+                    return page_size
+                except ValueError:
+                    pass
         return super(ListModelMixin, self).get_paginate_by(queryset)
 
 
