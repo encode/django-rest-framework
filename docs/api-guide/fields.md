@@ -165,6 +165,38 @@ A floating point representation.
 
 Corresponds to `django.db.models.fields.FloatField`.
 
+## FileField
+
+A file representation. Performs Django's standard FileField validation. 
+
+Corresponds to `django.forms.fields.FileField`.
+
+### Optional arguments
+
+#### `max_length`
+
+Maximum length for the file name. This value is obtained from the model when used with a ModelSerializer.
+
+Defaults to `None`, meaning validation is skipped.
+
+#### `allow_empty_file`
+
+Determines if empty file uploads are allowed.
+
+Defaults to `False`
+
+## ImageField
+
+An image representation.
+
+Corresponds to `django.forms.fields.ImageField`.
+
+### Optional arguments
+
+Same as FileField.
+
+Requires the `PIL` package.
+
 ---
 
 # Relational Fields
