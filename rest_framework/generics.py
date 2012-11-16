@@ -66,9 +66,6 @@ class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
         backend = self.filter_backend()
         return backend.filter_queryset(self.request, queryset, self)
 
-    def get_filtered_queryset(self):
-        return self.filter_queryset(self.get_queryset())
-
     def get_pagination_serializer_class(self):
         """
         Return the class to use for the pagination serializer.
