@@ -122,7 +122,7 @@ For example, to nest a pair of links labelled 'prev' and 'next', and set the nam
 
 ## Using your custom pagination serializer
 
-To have your custom pagination serializer be used by default use the `DEFAULT_PAGINATION_SERIALIZER_CLASS` setting:
+To have your custom pagination serializer be used by default, use the `DEFAULT_PAGINATION_SERIALIZER_CLASS` setting:
 
     REST_FRAMEWORK = {
         'DEFAULT_PAGINATION_SERIALIZER_CLASS':
