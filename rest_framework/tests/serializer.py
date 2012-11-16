@@ -239,6 +239,14 @@ class ValidationTests(TestCase):
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.errors, {})
 
+    def test_modelserializer_max_length_exceeded(self):
+        data = {
+            'title': 'x' * 201,
+        }
+        serializer = ActionItemSerializer(data=data)
+        self.assertEquals(serializer.is_valid(), False)
+        self.assertEquals(serializer.errors, {'content': [u'Ensure this value has at most 200 characters (it has 201).']})
+
 
 class MetadataTests(TestCase):
     def test_empty(self):
