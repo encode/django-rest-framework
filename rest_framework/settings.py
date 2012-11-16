@@ -54,12 +54,19 @@ DEFAULTS = {
         'user': None,
         'anon': None,
     },
+
+    # Pagination
     'PAGINATE_BY': None,
+    'PAGINATE_BY_PARAM': None,
+
+    # Filtering
     'FILTER_BACKEND': None,
 
+    # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
 
+    # Browser enhancements
     'FORM_METHOD_OVERRIDE': '_method',
     'FORM_CONTENT_OVERRIDE': '_content',
     'FORM_CONTENTTYPE_OVERRIDE': '_content_type',
@@ -67,8 +74,6 @@ DEFAULTS = {
     'URL_FORMAT_OVERRIDE': 'format',
 
     'FORMAT_SUFFIX_KWARG': 'format',
-
-    'PAGE_SIZE_KWARG': 'page_size'
 }
 
 

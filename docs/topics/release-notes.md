@@ -7,7 +7,8 @@
 ## Master
 
 * Support for `read_only_fields` on `ModelSerializer` classes.
-* Support for individual page sizes per request via `page_size` GET parameter in views which inherit ListModelMixin.
+* Support for clients overriding the pagination page sizes.  Use the `PAGINATE_BY_PARAM` setting or set the `paginate_by_param` attribute on a generic view.
+* 201 Responses now return a 'Location' header.
 
 ## 2.1.2
 

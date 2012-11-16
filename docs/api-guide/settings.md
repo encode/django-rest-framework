@@ -96,11 +96,21 @@ Default: `rest_framework.serializers.ModelSerializer`
 
 Default: `rest_framework.pagination.PaginationSerializer`
 
-## FORMAT_SUFFIX_KWARG
+## FILTER_BACKEND
 
-**TODO**
+The filter backend class that should be used for generic filtering.  If set to `None` then generic filtering is disabled.
 
-Default: `'format'`
+## PAGINATE_BY
+
+The default page size to use for pagination.  If set to `None`, pagination is disabled by default.
+
+Default: `None`
+
+## PAGINATE_BY_KWARG
+
+The name of a query parameter, which can be used by the client to overide the default page size to use for pagination.  If set to `None`, clients may not override the default page size.
+
+Default: `None`
 
 ## UNAUTHENTICATED_USER
 
@@ -150,14 +160,10 @@ Default: `'accept'`
 
 Default: `'format'`
 
-## PAGE_SIZE_KWARG
+## FORMAT_SUFFIX_KWARG
 
-Allows you to globally pass a page size parameter for an individual request.
+**TODO**
 
-The name of the GET parameter of views which inherit ListModelMixin for requesting data with an individual page size.
-
-If the value if this setting is `None` the passing a page size is turned off by default.
-
-Default: `'page_size'`
+Default: `'format'`
 
 [cite]: http://www.python.org/dev/peps/pep-0020/
