@@ -58,6 +58,14 @@ To run the tests.
 
 # Changelog
 
+## 2.1.3
+
+**Date**: 16th Nov 2012
+
+* Support for `read_only_fields` on `ModelSerializer` classes.
+* Support for clients overriding the pagination page sizes.  Use the `PAGINATE_BY_PARAM` setting or set the `paginate_by_param` attribute on a generic view.
+* 201 Responses now return a 'Location' header.
+
 ## 2.1.2
 
 **Date**: 9th Nov 2012
