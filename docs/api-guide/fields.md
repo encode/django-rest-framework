@@ -131,6 +131,18 @@ or `django.db.models.fields.TextField`.
 
 **Signature:** `CharField(max_length=None, min_length=None)`
 
+## URLField
+
+Corresponds to `django.db.models.fields.URLField`. Uses Django's `django.core.validators.URLValidator` for validation.
+
+**Signature:** `CharField(max_length=200, min_length=None)`
+
+## SlugField
+
+Corresponds to `django.db.models.fields.SlugField`.
+
+**Signature:** `CharField(max_length=50, min_length=None)`
+
 ## ChoiceField
 
 A field that can accept a value out of a limited set of choices.
