@@ -14,6 +14,7 @@ class GenericAPIView(views.APIView):
     """
     Base class for all other generic views.
     """
+
     model = None
     serializer_class = None
     model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
@@ -47,7 +48,10 @@ class GenericAPIView(views.APIView):
         return serializer_class
 
     def get_serializer(self, instance=None, data=None, files=None):
-        # TODO: add support for seperate serializer/deserializer
+        """
+        Return the serializer instance that should be used for validating and
+        deserializing input, and for serializing output.
+        """
         serializer_class = self.get_serializer_class()
         context = self.get_serializer_context()
         return serializer_class(instance, data=data, files=files, context=context)
@@ -58,9 +62,9 @@ class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
     Base class for generic views onto a queryset.
     """
 
-    pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
     paginate_by = api_settings.PAGINATE_BY
     paginate_by_param = api_settings.PAGINATE_BY_PARAM
+    pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
     filter_backend = api_settings.FILTER_BACKEND
 
     def filter_queryset(self, queryset):
@@ -89,9 +93,9 @@ class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
         Return the size of pages to use with pagination.
         """
         if self.paginate_by_param:
-            params = self.request.QUERY_PARAMS
+            query_params = self.request.QUERY_PARAMS
             try:
-                return int(params[self.paginate_by_param])
+                return int(query_params[self.paginate_by_param])
             except (KeyError, ValueError):
                 pass
         return self.paginate_by
@@ -101,8 +105,10 @@ class SingleObjectAPIView(SingleObjectMixin, GenericAPIView):
     """
     Base class for generic views onto a model instance.
     """
+
     pk_url_kwarg = 'pk'  # Not provided in Django 1.3
     slug_url_kwarg = 'slug'  # Not provided in Django 1.3
+    slug_field = 'slug'
 
     def get_object(self, queryset=None):
         """
