@@ -429,6 +429,10 @@ class ModelSerializer(Serializer):
             kwargs['choices'] = model_field.flatchoices
             return ChoiceField(**kwargs)
 
+        max_length = getattr(model_field, 'max_length', None)
+        if max_length:
+            kwargs['max_length'] = max_length
+
         field_mapping = {
             models.FloatField: FloatField,
             models.IntegerField: IntegerField,
@@ -439,6 +443,8 @@ class ModelSerializer(Serializer):
             models.DateField: DateField,
             models.EmailField: EmailField,
             models.CharField: CharField,
+            models.URLField: URLField,
+            models.SlugField: SlugField,
             models.TextField: CharField,
             models.CommaSeparatedIntegerField: CharField,
             models.BooleanField: BooleanField,
