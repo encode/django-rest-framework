@@ -441,6 +441,8 @@ class ModelSerializer(Serializer):
             models.DateField: DateField,
             models.EmailField: EmailField,
             models.CharField: CharField,
+            models.URLField: URLField,
+            models.SlugField: SlugField,
             models.TextField: CharField,
             models.CommaSeparatedIntegerField: CharField,
             models.BooleanField: BooleanField,

@@ -245,7 +245,7 @@ class ValidationTests(TestCase):
         }
         serializer = ActionItemSerializer(data=data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'content': [u'Ensure this value has at most 200 characters (it has 201).']})
+        self.assertEquals(serializer.errors, {'title': [u'Ensure this value has at most 200 characters (it has 201).']})
 
 
 class MetadataTests(TestCase):
