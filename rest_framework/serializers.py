@@ -427,6 +427,12 @@ class ModelSerializer(Serializer):
             kwargs['choices'] = model_field.flatchoices
             return ChoiceField(**kwargs)
 
+        max_length = getattr(model_field, 'max_length', None)
+        if max_length:
+            if not isinstance(model_field, models.CharField):
+                import pdb; pdb.set_trace()
+            kwargs['max_length'] = max_length
+
         field_mapping = {
             models.FloatField: FloatField,
             models.IntegerField: IntegerField,
