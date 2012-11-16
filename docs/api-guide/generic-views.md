@@ -147,6 +147,10 @@ Provides a `.list(request, *args, **kwargs)` method, that implements listing a q
 
 Should be mixed in with [MultipleObjectAPIView].
 
+**Arguments**:
+
+* `page_size_kwarg` - Allows you to overwrite the global settings `PAGE_SIZE_KWARG` for a specific view.  You can also turn it off for a specific view by setting it to `None`.  Default is `page_size`.
+
 ## CreateModelMixin
 
 Provides a `.create(request, *args, **kwargs)` method, that implements creating and saving a new model instance.
