@@ -171,19 +171,11 @@ A file representation. Performs Django's standard FileField validation.
 
 Corresponds to `django.forms.fields.FileField`.
 
-### Optional arguments
+**Signature:** `FileField(max_length=None, allow_empty_file=False)`
 
-#### `max_length`
-
-Maximum length for the file name. This value is obtained from the model when used with a ModelSerializer.
-
-Defaults to `None`, meaning validation is skipped.
-
-#### `allow_empty_file`
-
-Determines if empty file uploads are allowed.
-
-Defaults to `False`
+ - `max_length` designates the maximum length for the file name.
+  
+ - `allow_empty_file` designates if empty files are allowed.
 
 ## ImageField
 
@@ -191,11 +183,14 @@ An image representation.
 
 Corresponds to `django.forms.fields.ImageField`.
 
-### Optional arguments
-
-Same as FileField.
-
 Requires the `PIL` package.
+
+Signature and validation is the same as with `FileField`.
+
+---
+
+**Note:** `FileFields` and `ImageFields` are only suitable for use with MultiPartParser, since eg json doesn't support file uploads.
+Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files. 
 
 ---
 
@@ -318,3 +313,4 @@ This field is always read-only.
 * `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
 
 [cite]: http://www.python.org/dev/peps/pep-0020/
+[FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
