@@ -80,23 +80,21 @@ We could now use our pagination serializer in a view like this.
 
 ## Pagination in the generic views
 
-The generic class based views `ListAPIView` and `ListCreateAPIView` provide pagination of the returned querysets by default.  You can customise this behaviour by altering the pagination style, by modifying the default number of results, or by turning pagination off completely.
+The generic class based views `ListAPIView` and `ListCreateAPIView` provide pagination of the returned querysets by default.  You can customise this behaviour by altering the pagination style, by modifying the default number of results, by allowing clients to override the page size using a query parameter, or by turning pagination off completely.
 
-The default pagination style may be set globally, using the `PAGINATION_SERIALIZER` and `PAGINATE_BY` settings.  For example.
+The default pagination style may be set globally, using the `DEFAULT_PAGINATION_SERIALIZER_CLASS`, `PAGINATE_BY` and `PAGINATE_BY_PARAM` settings.  For example.
 
     REST_FRAMEWORK = {
-        'PAGINATION_SERIALIZER': (
-            'example_app.pagination.CustomPaginationSerializer',
-        ),
-        'PAGINATE_BY': 10
+        'PAGINATE_BY': 10,
+        'PAGINATE_BY_PARAM': 'page_size' 
     }
 
 You can also set the pagination style on a per-view basis, using the `ListAPIView` generic class-based view.
 
     class PaginatedListView(ListAPIView):
         model = ExampleModel
-        pagination_serializer_class = CustomPaginationSerializer
         paginate_by = 10
+        paginate_by_param = 'page_size'
 
 For more complex requirements such as serialization that differs depending on the requested media type you can override the `.get_paginate_by()` and `.get_pagination_serializer_class()` methods.
 
@@ -121,5 +119,21 @@ For example, to nest a pair of links labelled 'prev' and 'next', and set the nam
         total_results = serializers.Field(source='paginator.count')
 
         results_field = 'objects'
+
+## Using your custom pagination serializer
+
+To have your custom pagination serializer be used by default use the `DEFAULT_PAGINATION_SERIALIZER_CLASS` setting:
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_SERIALIZER_CLASS':
+            'example_app.pagination.CustomPaginationSerializer',
+    }
+
+Alternatively, to set your custom pagination serializer on a per-view basis, use the `pagination_serializer_class` attribute on a generic class based view:
+
+    class PaginatedListView(ListAPIView):
+        model = ExampleModel
+        pagination_serializer_class = CustomPaginationSerializer
+        paginate_by = 10
 
 [cite]: https://docs.djangoproject.com/en/dev/topics/pagination/
