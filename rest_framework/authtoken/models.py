@@ -4,18 +4,18 @@ from hashlib import sha1
 from django.db import models
 from django import VERSION
 
-try:
-    from django.db.models.auth import User
-    user_model = User
-except ImportError:
-    raise ImportError
-else:
-    raise
 
 if VERSION[:2] in ((1, 5,),):
     from django.conf import settings
     if hasattr(settings, AUTH_USER_MODEL):
         user_model = settings.AUTH_USER_MODEL
+    else:
+        from django.contrib.auth.models import User as user_model
+else:
+    try:
+        from django.db.models.auth import User as user_model
+    except ImportError:
+        raise ImportError('User model is not to be found.')
     
 
 class Token(models.Model):
