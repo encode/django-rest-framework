@@ -47,7 +47,6 @@ class ReverseForeignKeyTests(TestCase):
     def save_serialized_target(self, instance, data):
         serializer = ForeignKeyTargetSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEquals(serializer.data, data)
         serializer.save()
 
     def check_serialized_targets(self, data):
