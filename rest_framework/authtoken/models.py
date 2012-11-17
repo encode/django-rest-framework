@@ -7,7 +7,7 @@ from django import VERSION
 
 if VERSION[:2] in ((1, 5,),):
     from django.conf import settings
-    if hasattr(settings, AUTH_USER_MODEL):
+    if hasattr(settings, 'AUTH_USER_MODEL'):
         user_model = settings.AUTH_USER_MODEL
     else:
         from django.contrib.auth.models import User as user_model
