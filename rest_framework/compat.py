@@ -36,7 +36,7 @@ if django.VERSION >= (1, 5):
         from django.contrib.auth.models import User
 else:
     try:
-        from django.db.models.auth import User
+        from django.contrib.auth.models import User
     except ImportError:
         raise ImportError('User model is not to be found.')
 
