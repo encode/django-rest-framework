@@ -60,6 +60,7 @@ The following people have helped make REST framework great.
 * Ben Konrath - [benkonrath]
 * Marc Aymerich - [glic3rinu]
 * Ludwig Kraatz - [ludwigkraatz]
+* Eugene Mechanism - [mechanism]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -155,3 +156,4 @@ To contact the author directly:
 [benkonrath]: https://github.com/benkonrath
 [glic3rinu]: https://github.com/glic3rinu
 [ludwigkraatz]: https://github.com/ludwigkraatz
+[mechanism]: https://github.com/mechanism
