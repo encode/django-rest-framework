@@ -6,11 +6,11 @@ from django import VERSION
 
 try:
     from django.db.models.auth import User
-        user_model = User
-    except ImportError:
-        raise ImportError
-    else:
-        raise
+    user_model = User
+except ImportError:
+    raise ImportError
+else:
+    raise
 
 if VERSION[:2] in ((1, 5,),):
     from django.conf import settings
