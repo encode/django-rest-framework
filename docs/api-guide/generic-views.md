@@ -163,11 +163,19 @@ The mixin classes provide the actions that are used to provide the basic view be
 
 Provides a `.list(request, *args, **kwargs)` method, that implements listing a queryset.
 
+If the queryset is populated, this returns a `200 OK` response, with a serialized representation of the queryset as the body of the response.  The response data may optionally be paginated.
+
+If the queryset is empty this returns a `200 OK` reponse, unless the `.allow_empty` attribute on the view is set to `False`, in which case it will return a `404 Not Found`.
+
 Should be mixed in with [MultipleObjectAPIView].
 
 ## CreateModelMixin
 
 Provides a `.create(request, *args, **kwargs)` method, that implements creating and saving a new model instance.
+
+If an object is created this returns a `201 Created` response, with a serialized representation of the object as the body of the response.  If the representation contains a key named `url`, then the `Location` header of the response will be populated with that value.
+
+If the request data provided for creating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
 
 Should be mixed in with any [GenericAPIView].
 
@@ -175,17 +183,27 @@ Should be mixed in with any [GenericAPIView].
 
 Provides a `.retrieve(request, *args, **kwargs)` method, that implements returning an existing model instance in a response.
 
+If an object can be retrieve this returns a `200 OK` response, with a serialized representation of the object as the body of the response.  Otherwise it will return a `404 Not Found`.
+
 Should be mixed in with [SingleObjectAPIView].
 
 ## UpdateModelMixin
 
 Provides a `.update(request, *args, **kwargs)` method, that implements updating and saving an existing model instance.
 
+If an object is updated this returns a `200 OK` response, with a serialized representation of the object as the body of the response.
+
+If an object is created, for example when making a `DELETE` request followed by a `PUT` request to the same URL, this returns a `201 Created` response, with a serialized representation of the object as the body of the response.
+
+If the request data provided for updating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
+
 Should be mixed in with [SingleObjectAPIView].
 
 ## DestroyModelMixin
 
 Provides a `.destroy(request, *args, **kwargs)` method, that implements deletion of an existing model instance.
+
+If an object is deleted this returns a `204 No Content` response, otherwise it will return a `404 Not Found`.
 
 Should be mixed in with [SingleObjectAPIView].
 
