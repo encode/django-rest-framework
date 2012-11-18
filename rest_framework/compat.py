@@ -38,7 +38,7 @@ else:
     try:
         from django.contrib.auth.models import User
     except ImportError:
-        raise ImportError('User model is not to be found.')
+        raise ImportError(u"User model is not to be found.")
 
 
 # First implementation of Django class-based views did not include head method
