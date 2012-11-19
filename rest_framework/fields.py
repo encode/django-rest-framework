@@ -215,7 +215,18 @@ class ModelField(WritableField):
             self.model_field = kwargs.pop('model_field')
         except:
             raise ValueError("ModelField requires 'model_field' kwarg")
+
+        self.min_length = kwargs.pop('min_length',
+                            getattr(self.model_field, 'min_length', None))
+        self.max_length = kwargs.pop('max_length',
+                            getattr(self.model_field, 'max_length', None))
+        
         super(ModelField, self).__init__(*args, **kwargs)
+
+        if self.min_length is not None:
+            self.validators.append(validators.MinLengthValidator(self.min_length))
+        if self.max_length is not None:
+            self.validators.append(validators.MaxLengthValidator(self.max_length))
 
     def from_native(self, value):
         rel = getattr(self.model_field, "rel", None)

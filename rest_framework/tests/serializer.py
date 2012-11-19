@@ -41,6 +41,7 @@ class CommentSerializer(serializers.Serializer):
 
 
 class ActionItemSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = ActionItem
 
@@ -246,6 +247,15 @@ class ValidationTests(TestCase):
         serializer = ActionItemSerializer(data=data)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'title': [u'Ensure this value has at most 200 characters (it has 201).']})
+
+    def test_default_modelfield_max_length_exceeded(self):
+        data = {
+            'title': 'Testing "info" field...',
+            'info': 'x' * 13,
+        }
+        serializer = ActionItemSerializer(data=data)
+        self.assertEquals(serializer.is_valid(), False)
+        self.assertEquals(serializer.errors, {'info': [u'Ensure this value has at most 12 characters (it has 13).']})
 
 
 class MetadataTests(TestCase):
