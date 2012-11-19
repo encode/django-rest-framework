@@ -34,6 +34,21 @@ if django_filters:
         filter_backend = filters.DjangoFilterBackend
 
 
+class DefaultPageSizeKwargView(generics.ListAPIView):
+    """
+    View for testing default paginate_by_param usage
+    """
+    model = BasicModel
+
+
+class PaginateByParamView(generics.ListAPIView):
+    """
+    View for testing custom paginate_by_param usage
+    """
+    model = BasicModel
+    paginate_by_param = 'page_size'
+
+
 class IntegrationTestPagination(TestCase):
     """
     Integration tests for paginated list views.
@@ -135,7 +150,7 @@ class IntegrationTestPaginationAndFiltering(TestCase):
 
 class UnitTestPagination(TestCase):
     """
-    Unit tests for pagination of primative objects.
+    Unit tests for pagination of primitive objects.
     """
 
     def setUp(self):
@@ -156,3 +171,68 @@ class UnitTestPagination(TestCase):
         self.assertEquals(serializer.data['next'], None)
         self.assertEquals(serializer.data['previous'], '?page=2')
         self.assertEquals(serializer.data['results'], self.objects[20:])
+
+
+class TestUnpaginated(TestCase):
+    """
+    Tests for list views without pagination.
+    """
+
+    def setUp(self):
+        """
+        Create 13 BasicModel instances.
+        """
+        for i in range(13):
+            BasicModel(text=i).save()
+        self.objects = BasicModel.objects
+        self.data = [
+        {'id': obj.id, 'text': obj.text}
+        for obj in self.objects.all()
+        ]
+        self.view = DefaultPageSizeKwargView.as_view()
+
+    def test_unpaginated(self):
+        """
+        Tests the default page size for this view.
+        no page size --> no limit --> no meta data
+        """
+        request = factory.get('/')
+        response = self.view(request)
+        self.assertEquals(response.data, self.data)
+
+
+class TestCustomPaginateByParam(TestCase):
+    """
+    Tests for list views with default page size kwarg
+    """
+
+    def setUp(self):
+        """
+        Create 13 BasicModel instances.
+        """
+        for i in range(13):
+            BasicModel(text=i).save()
+        self.objects = BasicModel.objects
+        self.data = [
+        {'id': obj.id, 'text': obj.text}
+        for obj in self.objects.all()
+        ]
+        self.view = PaginateByParamView.as_view()
+
+    def test_default_page_size(self):
+        """
+        Tests the default page size for this view.
+        no page size --> no limit --> no meta data
+        """
+        request = factory.get('/')
+        response = self.view(request).render()
+        self.assertEquals(response.data, self.data)
+
+    def test_paginate_by_param(self):
+        """
+        If paginate_by_param is set, the new kwarg should limit per view requests.
+        """
+        request = factory.get('/?page_size=5')
+        response = self.view(request).render()
+        self.assertEquals(response.data['count'], 13)
+        self.assertEquals(response.data['results'], self.data[:5])
