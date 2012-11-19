@@ -45,7 +45,7 @@ class DjangoFilterBackend(BaseFilterBackend):
             class AutoFilterSet(self.default_filter_set):
                 class Meta:
                     model = view_model
-                fields = filter_fields
+                    fields = filter_fields
             return AutoFilterSet
 
         return None
