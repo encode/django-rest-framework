@@ -324,5 +324,11 @@ This field is always read-only.
 * `pk_url_kwarg` - The named url parameter for the pk field lookup. Default is `pk`.
 * `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
 
+# Other Fields
+
+## SerializerMethodField
+
+This is a read-only field gets its value by calling a method on the serializer class it's attached to. It can be used to add any sort of data to the serialized representation of your object. The field's constructor accepts a single argument, which is the name of the method on the serializer to be called. The method should accept a single argument (in addition to `self`), which is the object being serialized. It should return whatever you want to be included in the serialized representation of the object.
+
 [cite]: http://www.python.org/dev/peps/pep-0020/
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
