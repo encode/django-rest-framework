@@ -4,6 +4,8 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
+* Add convenience login view to get tokens when using `TokenAuthentication`
+
 ## 2.1.3
 
 **Date**: 16th Nov 2012
