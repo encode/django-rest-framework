@@ -104,7 +104,7 @@ If you want every user to have an automatically generated Token, you can simply 
         if created:
             Token.objects.create(user=instance)
 
-If you've already created some User's, you can run a script like this.
+If you've already created some users, you can generate tokens for all existing users like this:
 
     from django.contrib.auth.models import User
     from rest_framework.authtoken.models import Token
@@ -112,16 +112,16 @@ If you've already created some User's, you can run a script like this.
     for user in User.objects.all():
         Token.objects.get_or_create(user=user)
 
-When using TokenAuthentication, you may want to provide a mechanism for clients to obtain a token, given the username and password. 
+When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password. 
 REST framework provides a built-in view to provide this behavior.  To use it, add the `obtain_auth_token` view to your URLconf:
 
     urlpatterns += patterns('',
         url(r'^api-token-auth/', 'rest_framework.authtoken.obtain_auth_token')
     )
 
-The `r'^api-token-auth/'` part of pattern can actually be whatever URL you want to use.
+Note that the URL part of the pattern can be whatever you want to use.
 
-The `obtain_auth_token` view will render a JSON response when a valid `username` and `password` fields are POST'ed to the view using form data or JSON:
+The `obtain_auth_token` view will return a JSON response when valid `username` and `password` fields are POSTed to the view using form data or JSON:
 
     { 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
 
