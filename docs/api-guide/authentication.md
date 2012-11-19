@@ -68,7 +68,7 @@ This policy uses [HTTP Basic Authentication][basicauth], signed against a user's
 
 If successfully authenticated, `BasicAuthentication` provides the following credentials.
 
-* `request.user` will be a `django.contrib.auth.models.User` instance.
+* `request.user` will be a Django `User` instance.
 * `request.auth` will be `None`.
 
 **Note:** If you use `BasicAuthentication` in production you must ensure that your API is only available over `https` only.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.
@@ -92,7 +92,7 @@ For clients to authenticate, the token key should be included in the `Authorizat
 
 If successfully authenticated, `TokenAuthentication` provides the following credentials.
 
-* `request.user` will be a `django.contrib.auth.models.User` instance.
+* `request.user` will be a Django `User` instance.
 * `request.auth` will be a `rest_framework.tokenauth.models.BasicToken` instance.
 
 **Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https` only.
@@ -104,7 +104,7 @@ If you want every user to have an automatically generated Token, you can simply 
         if created:
             Token.objects.create(user=instance)
 
-If you've already created some User`'s, you can run a script like this.
+If you've already created some User's, you can run a script like this.
 
     from django.contrib.auth.models import User
     from rest_framework.authtoken.models import Token
@@ -112,26 +112,29 @@ If you've already created some User`'s, you can run a script like this.
     for user in User.objects.all():
         Token.objects.get_or_create(user=user)
 
-When using TokenAuthentication, it may be useful to add a login view for clients to retrieve the token. 
-
-REST framework provides a built-in login view for clients to retrieve the token called `rest_framework.authtoken.obtain_auth_token`. To use it, add a pattern to include the token login view for clients as follows:
+When using TokenAuthentication, you may want to provide a mechanism for clients to obtain a token, given the username and password. 
+REST framework provides a built-in view to provide this behavior.  To use it, add the `obtain_auth_token` view to your URLconf:
 
     urlpatterns += patterns('',
         url(r'^api-token-auth/', 'rest_framework.authtoken.obtain_auth_token')
     )
 
-The `r'^api-token-auth/'` part of pattern can actually be whatever URL you want to use. The authtoken login view will render a JSON response when a valid `username` and `password` fields are POST'ed to the view using forms or JSON:
+The `r'^api-token-auth/'` part of pattern can actually be whatever URL you want to use.
+
+The `obtain_auth_token` view will render a JSON response when a valid `username` and `password` fields are POST'ed to the view using form data or JSON:
 
     { 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
 
+<!--
 ## OAuthAuthentication
 
 This policy uses the [OAuth 2.0][oauth] protocol to authenticate requests.  OAuth is appropriate for server-server setups, such as when you want to allow a third-party service to access your API on a user's behalf.
 
 If successfully authenticated, `OAuthAuthentication` provides the following credentials.
 
-* `request.user` will be a `django.contrib.auth.models.User` instance.
+* `request.user` will be a Django `User` instance.
 * `request.auth` will be a `rest_framework.models.OAuthToken` instance.
+-->
 
 ## SessionAuthentication
 
@@ -139,7 +142,7 @@ This policy uses Django's default session backend for authentication.  Session a
 
 If successfully authenticated, `SessionAuthentication` provides the following credentials.
 
-* `request.user` will be a `django.contrib.auth.models.User` instance.
+* `request.user` will be a Django `User` instance.
 * `request.auth` will be `None`.
 
 # Custom authentication
