@@ -7,6 +7,7 @@
 ## Master
 
 * Support for `read_only_fields` on `ModelSerializer` classes.
+* Added `RegexField`.
 
 ## 2.1.2
 
