@@ -488,6 +488,7 @@ class ManyRelatedTests(TestCase):
             title = serializers.CharField()
             comments = BlogPostCommentSerializer(source='blogpostcomment_set')
 
+        self.comment_serializer_class = BlogPostCommentSerializer
         self.serializer_class = BlogPostSerializer
 
     def test_reverse_relations(self):
@@ -504,6 +505,23 @@ class ManyRelatedTests(TestCase):
             ]
         }
 
+        self.assertEqual(serializer.data, expected)
+
+    def test_callable_source(self):
+        post = BlogPost.objects.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        class ExtendedBlogPostSerializer(self.serializer_class):
+            first_comment = self.comment_serializer_class(source='get_first_comment')
+
+        serializer = ExtendedBlogPostSerializer(post)
+        expected = {
+            'title': 'Test blog post',
+            'comments': [
+                {'text': 'I love this blog post'}
+            ],
+            'first_comment': {'text': 'I love this blog post'}
+        }
         self.assertEqual(serializer.data, expected)
 
 

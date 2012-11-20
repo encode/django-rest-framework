@@ -127,6 +127,9 @@ class ActionItem(RESTFrameworkModel):
 class BlogPost(RESTFrameworkModel):
     title = models.CharField(max_length=100)
 
+    def get_first_comment(self):
+        return self.blogpostcomment_set.all()[0]
+
 
 class BlogPostComment(RESTFrameworkModel):
     text = models.TextField()
