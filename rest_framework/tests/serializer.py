@@ -479,7 +479,10 @@ class CallableDefaultValueTests(TestCase):
 
 
 class ManyRelatedTests(TestCase):
-    def setUp(self):
+    def test_reverse_relations(self):
+        post = BlogPost.objects.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
 
         class BlogPostCommentSerializer(serializers.Serializer):
             text = serializers.CharField()
@@ -488,15 +491,7 @@ class ManyRelatedTests(TestCase):
             title = serializers.CharField()
             comments = BlogPostCommentSerializer(source='blogpostcomment_set')
 
-        self.comment_serializer_class = BlogPostCommentSerializer
-        self.serializer_class = BlogPostSerializer
-
-    def test_reverse_relations(self):
-        post = BlogPost.objects.create(title="Test blog post")
-        post.blogpostcomment_set.create(text="I hate this blog post")
-        post.blogpostcomment_set.create(text="I love this blog post")
-
-        serializer = self.serializer_class(instance=post)
+        serializer = BlogPostSerializer(instance=post)
         expected = {
             'title': 'Test blog post',
             'comments': [
@@ -511,15 +506,17 @@ class ManyRelatedTests(TestCase):
         post = BlogPost.objects.create(title="Test blog post")
         post.blogpostcomment_set.create(text="I love this blog post")
 
-        class ExtendedBlogPostSerializer(self.serializer_class):
-            first_comment = self.comment_serializer_class(source='get_first_comment')
+        class BlogPostCommentSerializer(serializers.Serializer):
+            text = serializers.CharField()
 
-        serializer = ExtendedBlogPostSerializer(post)
+        class BlogPostSerializer(serializers.Serializer):
+            title = serializers.CharField()
+            first_comment = BlogPostCommentSerializer(source='get_first_comment')
+
+        serializer = BlogPostSerializer(post)
+
         expected = {
             'title': 'Test blog post',
-            'comments': [
-                {'text': 'I love this blog post'}
-            ],
             'first_comment': {'text': 'I love this blog post'}
         }
         self.assertEqual(serializer.data, expected)
