@@ -63,6 +63,7 @@ The following people have helped make REST framework great.
 * Rob Romano - [robromano]
 * Eugene Mechanism - [mechanism]
 * Jonas Liljestrand - [jonlil]
+* Justin Davis - [irrelative]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -161,3 +162,4 @@ To contact the author directly:
 [robromano]: https://github.com/robromano
 [mechanism]: https://github.com/mechanism
 [jonlil]: https://github.com/jonlil
+[irrelative]: https://github.com/irrelative
