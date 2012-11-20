@@ -522,6 +522,40 @@ class ManyRelatedTests(TestCase):
         self.assertEqual(serializer.data, expected)
 
 
+class SerializerMethodFieldTests(TestCase):
+    def setUp(self):
+
+        class BoopSerializer(serializers.Serializer):
+            beep = serializers.SerializerMethodField('get_beep')
+            boop = serializers.Field()
+            boop_count = serializers.SerializerMethodField('get_boop_count')
+
+            def get_beep(self, obj):
+                return 'hello!'
+
+            def get_boop_count(self, obj):
+                return len(obj.boop)
+
+        self.serializer_class = BoopSerializer
+
+    def test_serializer_method_field(self):
+
+        class MyModel(object):
+            boop = ['a', 'b', 'c']
+
+        source_data = MyModel()
+
+        serializer = self.serializer_class(source_data)
+
+        expected = {
+            'beep': u'hello!',
+            'boop': [u'a', u'b', u'c'],
+            'boop_count': 3,
+        }
+
+        self.assertEqual(serializer.data, expected)
+
+
 # Test for issue #324
 class BlankFieldTests(TestCase):
     def setUp(self):
