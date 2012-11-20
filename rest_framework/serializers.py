@@ -277,6 +277,9 @@ class BaseSerializer(Field):
         """
         obj = getattr(obj, self.source or field_name)
 
+        if is_simple_callable(obj):
+            obj = obj()
+
         # If the object has an "all" method, assume it's a relationship
         if is_simple_callable(getattr(obj, 'all', None)):
             return [self.to_native(item) for item in obj.all()]
