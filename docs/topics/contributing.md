@@ -20,8 +20,8 @@ Then, invoked the `runtests/runtests.py` script to execute all unittests.
 Here is an example session:
 
 ```
-/home/mydir/djangorestframework$ export PYTHONPATH=/home/mydir/djangorestramework:$PYTHONPATH
-/home/mydir/djangorestframework$ rest_framework/runtests/runtests.py
+/home/mydir/django-rest-framework$ export PYTHONPATH=/home/mydir/djangorestramework:$PYTHONPATH
+/home/mydir/django-rest-framework$ rest_framework/runtests/runtests.py
 ```
 
 ## Building the docs
