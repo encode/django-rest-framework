@@ -110,6 +110,41 @@ To implement a custom permission, override `BasePermission` and implement the `.
 
 The method should return `True` if the request should be granted access, and `False` otherwise.
 
+Example of a custom permission checking authenticated user's first name for an attribute:
+
+```
+    class IsNamedAfterBeatle(permissions.BasePermission):
+        """
+        Custom permission allowing users with first name matching a Beatle
+        """
+        def has_permission(self, request, view, obj=None):
+            if (request.user and
+			    request.user.first_name in ("John", "Paul", "Ringo", "George",)):
+                return True
+            else:
+                return False
+```
+
+Example of a custom permission demonstrating object level permissions:
+
+```
+    class IsOwnerOrReadOnly(permissions.BasePermission):
+        """
+        Custom permission to only allow owners of an object to edit, otherwise
+        allow read only access
+        """
+
+        def has_permission(self, request, view, obj=None):
+            if obj is None:
+                if (request.method in SAFE_METHODS or
+                    request.user and
+                    request.user.is_authenticated()):
+                    return True
+
+            # Write permissions are only allowed to the owner
+            return obj.owner == request.user
+```
+
 
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
