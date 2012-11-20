@@ -6,6 +6,8 @@
 
 ## Master
 
+* Added `SerializerMethodField`
+* Serializer performance improvements.
 * Added `obtain_token_view` to get tokens when using `TokenAuthentication`
 * Bugfix: Django 1.5 configurable user support for `TokenAuthentication`
 
