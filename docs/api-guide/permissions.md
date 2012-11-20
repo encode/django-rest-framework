@@ -119,7 +119,7 @@ Example of a custom permission checking authenticated user's first name for an a
         """
         def has_permission(self, request, view, obj=None):
             if (request.user and
-			    request.user.first_name in ("John", "Paul", "Ringo", "George",)):
+                request.user.first_name in ("John", "Paul", "Ringo", "George",)):
                 return True
             else:
                 return False
