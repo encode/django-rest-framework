@@ -460,7 +460,7 @@ class ModelSerializer(Serializer):
         """
         self.m2m_data = {}
 
-        if instance:
+        if instance is not None:
             for key, val in attrs.items():
                 setattr(instance, key, val)
             return instance
