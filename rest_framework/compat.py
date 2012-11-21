@@ -1,6 +1,6 @@
 """
 The `compat` module provides support for backwards compatibility with older
-versions of django/python, and compatbility wrappers around optional packages.
+versions of django/python, and compatibility wrappers around optional packages.
 """
 # flake8: noqa
 import django
@@ -25,6 +25,20 @@ def get_concrete_model(model_cls):
     except AttributeError:
         # 1.3 does not include concrete model
         return model_cls
+
+
+# Django 1.5 add support for custom auth user model
+if django.VERSION >= (1, 5):
+    from django.conf import settings
+    if hasattr(settings, 'AUTH_USER_MODEL'):
+        User = settings.AUTH_USER_MODEL
+    else:
+        from django.contrib.auth.models import User
+else:
+    try:
+        from django.contrib.auth.models import User
+    except ImportError:
+        raise ImportError(u"User model is not to be found.")
 
 
 # First implementation of Django class-based views did not include head method

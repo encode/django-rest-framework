@@ -35,6 +35,13 @@ def foobar():
     return 'foobar'
 
 
+class CustomField(models.CharField):
+
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = 12
+        super(CustomField, self).__init__(*args, **kwargs)
+
+
 class RESTFrameworkModel(models.Model):
     """
     Base for test models that sets app_label, so they play nicely.
@@ -113,11 +120,15 @@ class Comment(RESTFrameworkModel):
 class ActionItem(RESTFrameworkModel):
     title = models.CharField(max_length=200)
     done = models.BooleanField(default=False)
+    info = CustomField(default='---', max_length=12)
 
 
 # Models for reverse relations
 class BlogPost(RESTFrameworkModel):
     title = models.CharField(max_length=100)
+
+    def get_first_comment(self):
+        return self.blogpostcomment_set.all()[0]
 
 
 class BlogPostComment(RESTFrameworkModel):

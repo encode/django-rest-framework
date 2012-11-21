@@ -131,6 +131,18 @@ or `django.db.models.fields.TextField`.
 
 **Signature:** `CharField(max_length=None, min_length=None)`
 
+## URLField
+
+Corresponds to `django.db.models.fields.URLField`. Uses Django's `django.core.validators.URLValidator` for validation.
+
+**Signature:** `CharField(max_length=200, min_length=None)`
+
+## SlugField
+
+Corresponds to `django.db.models.fields.SlugField`.
+
+**Signature:** `CharField(max_length=50, min_length=None)`
+
 ## ChoiceField
 
 A field that can accept a value out of a limited set of choices.
@@ -174,6 +186,33 @@ Corresponds to `django.db.models.fields.IntegerField`, `django.db.models.fields.
 A floating point representation.
 
 Corresponds to `django.db.models.fields.FloatField`.
+
+## FileField
+
+A file representation. Performs Django's standard FileField validation. 
+
+Corresponds to `django.forms.fields.FileField`.
+
+**Signature:** `FileField(max_length=None, allow_empty_file=False)`
+
+ - `max_length` designates the maximum length for the file name.
+  
+ - `allow_empty_file` designates if empty files are allowed.
+
+## ImageField
+
+An image representation.
+
+Corresponds to `django.forms.fields.ImageField`.
+
+Requires the `PIL` package.
+
+Signature and validation is the same as with `FileField`.
+
+---
+
+**Note:** `FileFields` and `ImageFields` are only suitable for use with MultiPartParser, since eg json doesn't support file uploads.
+Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files. 
 
 ---
 
@@ -295,4 +334,25 @@ This field is always read-only.
 * `pk_url_kwarg` - The named url parameter for the pk field lookup. Default is `pk`.
 * `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
 
+# Other Fields
+
+## SerializerMethodField
+
+This is a read-only field. It gets its value by calling a method on the serializer class it is attached to. It can be used to add any sort of data to the serialized representation of your object. The field's constructor accepts a single argument, which is the name of the method on the serializer to be called. The method should accept a single argument (in addition to `self`), which is the object being serialized. It should return whatever you want to be included in the serialized representation of the object. For example:
+
+    from rest_framework import serializers
+    from django.contrib.auth.models import User
+    from django.utils.timezone import now
+
+    class UserSerializer(serializers.ModelSerializer):
+
+        days_since_joined = serializers.SerializerMethodField('get_days_since_joined')
+
+        class Meta:
+            model = User
+
+        def get_days_since_joined(self, obj):
+            return (now() - obj.date_joined).days
+
 [cite]: http://www.python.org/dev/peps/pep-0020/
+[FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS

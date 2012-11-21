@@ -4,7 +4,7 @@ Renderers are used to serialize a response into specific media types.
 They give us a generic way of being able to handle various media types
 on the response, such as JSON encoded data or HTML output.
 
-REST framework also provides an HTML renderer the renders the browseable API.
+REST framework also provides an HTML renderer the renders the browsable API.
 """
 import copy
 import string
@@ -19,7 +19,7 @@ from rest_framework.request import clone_request
 from rest_framework.utils import dict2xml
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
-from rest_framework import VERSION
+from rest_framework import VERSION, status
 from rest_framework import serializers, parsers
 
 
@@ -320,7 +320,9 @@ class BrowsableAPIRenderer(BaseRenderer):
             serializers.SlugRelatedField: forms.ChoiceField,
             serializers.ManySlugRelatedField: forms.MultipleChoiceField,
             serializers.HyperlinkedRelatedField: forms.ChoiceField,
-            serializers.ManyHyperlinkedRelatedField: forms.MultipleChoiceField
+            serializers.ManyHyperlinkedRelatedField: forms.MultipleChoiceField,
+            serializers.FileField: forms.FileField,
+            serializers.ImageField: forms.ImageField,
         }
 
         fields = {}
@@ -479,7 +481,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         # Munge DELETE Response code to allow us to return content
         # (Do this *after* we've rendered the template so that we include
         # the normal deletion response code in the output)
-        if response.status_code == 204:
-            response.status_code = 200
+        if response.status_code == status.HTTP_204_NO_CONTENT:
+            response.status_code = status.HTTP_200_OK
 
         return ret
