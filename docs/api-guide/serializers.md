@@ -34,7 +34,7 @@ Declaring a serializer looks very similar to declaring a form:
         created = serializers.DateTimeField()
 
         def restore_object(self, attrs, instance=None):
-            if instance:
+            if instance is not None:
                 instance.title = attrs['title']
                 instance.content = attrs['content']
                 instance.created = attrs['created']
