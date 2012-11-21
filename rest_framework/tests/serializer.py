@@ -115,6 +115,18 @@ class BasicTests(TestCase):
         self.assertTrue(serializer.object is expected)
         self.assertEquals(serializer.data['sub_comment'], 'And Merry Christmas!')
 
+    def test_partial_update(self):
+        msg = 'Merry New Year!'
+        partial_data = {'content': msg}
+        serializer = CommentSerializer(self.comment, data=partial_data)
+        self.assertEquals(serializer.is_valid(), False)
+        serializer = CommentSerializer(self.comment, data=partial_data, partial=True)
+        expected = self.comment
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEquals(serializer.object, expected)
+        self.assertTrue(serializer.object is expected)
+        self.assertEquals(serializer.data['content'], msg)
+
     def test_model_fields_as_expected(self):
         """
         Make sure that the fields returned are the same as defined
