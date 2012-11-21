@@ -166,6 +166,7 @@ class BlankFieldModel(RESTFrameworkModel):
 class OptionalRelationModel(RESTFrameworkModel):
     other = models.ForeignKey('OptionalRelationModel', blank=True, null=True)
 
+
 # Model for RegexField
 class Book(RESTFrameworkModel):
     isbn = models.CharField(max_length=13)
