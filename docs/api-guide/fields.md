@@ -153,6 +153,16 @@ A text representation, validates the text to be a valid e-mail address.
 
 Corresponds to `django.db.models.fields.EmailField`
 
+## RegexField
+
+A text representation, that validates the given value matches against a certain regular expression.
+
+Uses Django's `django.core.validators.RegexValidator` for validation.
+
+Corresponds to `django.forms.fields.RegexField`
+
+**Signature:** `RegexField(regex, max_length=None, min_length=None)`
+
 ## DateField
 
 A date representation.

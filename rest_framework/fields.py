@@ -1,6 +1,7 @@
 import copy
 import datetime
 import inspect
+import re
 import warnings
 
 from io import BytesIO
@@ -798,6 +799,34 @@ class EmailField(CharField):
         result = copy.copy(self)
         memo[id(self)] = result
         #result.widget = copy.deepcopy(self.widget, memo)
+        result.validators = self.validators[:]
+        return result
+
+
+class RegexField(CharField):
+    type_name = 'RegexField'
+
+    def __init__(self, regex, max_length=None, min_length=None, *args, **kwargs):
+        super(RegexField, self).__init__(max_length, min_length, *args, **kwargs)
+        self.regex = regex
+
+    def _get_regex(self):
+        return self._regex
+
+    def _set_regex(self, regex):
+        if isinstance(regex, basestring):
+            regex = re.compile(regex)
+        self._regex = regex
+        if hasattr(self, '_regex_validator') and self._regex_validator in self.validators:
+            self.validators.remove(self._regex_validator)
+        self._regex_validator = validators.RegexValidator(regex=regex)
+        self.validators.append(self._regex_validator)
+
+    regex = property(_get_regex, _set_regex)
+
+    def __deepcopy__(self, memo):
+        result = copy.copy(self)
+        memo[id(self)] = result
         result.validators = self.validators[:]
         return result
 
