@@ -50,7 +50,7 @@ class BasicAuthTests(TestCase):
 
     def test_post_json_passing_basic_auth(self):
         """Ensure POSTing form over basic auth with correct credentials passes and does not require CSRF"""
-        auth = 'Basic %s' % base64.encodestring('%s:%s' % (self.username, self.password)).strip()
+        auth = b'Basic %s' % base64.encodestring(('%s:%s' % (self.username, self.password)).encode('utf8')).strip()
         response = self.csrf_client.post('/', json.dumps({'example': 'example'}), 'application/json', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
