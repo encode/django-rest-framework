@@ -153,6 +153,16 @@ A text representation, validates the text to be a valid e-mail address.
 
 Corresponds to `django.db.models.fields.EmailField`
 
+## RegexField
+
+A text representation, that validates the given value matches against a certain regular expression.
+
+Uses Django's `django.core.validators.RegexValidator` for validation.
+
+Corresponds to `django.forms.fields.RegexField`
+
+**Signature:** `RegexField(regex, max_length=None, min_length=None)`
+
 ## DateField
 
 A date representation.
@@ -323,6 +333,26 @@ This field is always read-only.
 * `slug_field` - The field on the target that should be used for the lookup. Default is `'slug'`.
 * `pk_url_kwarg` - The named url parameter for the pk field lookup. Default is `pk`.
 * `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
+
+# Other Fields
+
+## SerializerMethodField
+
+This is a read-only field. It gets its value by calling a method on the serializer class it is attached to. It can be used to add any sort of data to the serialized representation of your object. The field's constructor accepts a single argument, which is the name of the method on the serializer to be called. The method should accept a single argument (in addition to `self`), which is the object being serialized. It should return whatever you want to be included in the serialized representation of the object. For example:
+
+    from rest_framework import serializers
+    from django.contrib.auth.models import User
+    from django.utils.timezone import now
+
+    class UserSerializer(serializers.ModelSerializer):
+
+        days_since_joined = serializers.SerializerMethodField('get_days_since_joined')
+
+        class Meta:
+            model = User
+
+        def get_days_since_joined(self, obj):
+            return (now() - obj.date_joined).days
 
 [cite]: http://www.python.org/dev/peps/pep-0020/
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS

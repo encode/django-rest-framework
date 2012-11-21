@@ -312,6 +312,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             serializers.DateTimeField: forms.DateTimeField,
             serializers.DateField: forms.DateField,
             serializers.EmailField: forms.EmailField,
+            serializers.RegexField: forms.RegexField,
             serializers.CharField: forms.CharField,
             serializers.ChoiceField: forms.ChoiceField,
             serializers.BooleanField: forms.BooleanField,
@@ -326,7 +327,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         }
 
         fields = {}
-        for k, v in serializer.get_fields(True).items():
+        for k, v in serializer.get_fields().items():
             if getattr(v, 'read_only', True):
                 continue
 

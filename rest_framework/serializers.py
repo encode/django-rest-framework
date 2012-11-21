@@ -104,6 +104,7 @@ class BaseSerializer(Field):
         self.init_data = data
         self.init_files = files
         self.object = instance
+        self.default_fields = self.get_default_fields()
 
         self._data = None
         self._files = None
@@ -112,18 +113,18 @@ class BaseSerializer(Field):
     #####
     # Methods to determine which fields to use when (de)serializing objects.
 
-    def default_fields(self, nested=False):
+    def get_default_fields(self):
         """
         Return the complete set of default fields for the object, as a dict.
         """
         return {}
 
-    def get_fields(self, nested=False):
+    def get_fields(self):
         """
         Returns the complete set of fields for the object as a dict.
 
         This will be the set of any explicitly declared fields,
-        plus the set of fields returned by default_fields().
+        plus the set of fields returned by get_default_fields().
         """
         ret = SortedDict()
 
@@ -134,8 +135,7 @@ class BaseSerializer(Field):
             field.initialize(parent=self, field_name=key)
 
         # Add in the default fields
-        fields = self.default_fields(nested)
-        for key, val in fields.items():
+        for key, val in self.default_fields.items():
             if key not in ret:
                 ret[key] = val
 
@@ -182,7 +182,7 @@ class BaseSerializer(Field):
         ret = self._dict_class()
         ret.fields = {}
 
-        fields = self.get_fields(nested=bool(self.opts.depth))
+        fields = self.get_fields()
         for field_name, field in fields.items():
             key = self.get_field_key(field_name)
             value = field.field_to_native(obj, field_name)
@@ -195,7 +195,7 @@ class BaseSerializer(Field):
         Core of deserialization, together with `restore_object`.
         Converts a dictionary of data into a dictionary of deserialized fields.
         """
-        fields = self.get_fields(nested=bool(self.opts.depth))
+        fields = self.get_fields()
         reverted_data = {}
         for field_name, field in fields.items():
             try:
@@ -210,7 +210,7 @@ class BaseSerializer(Field):
         Run `validate_<fieldname>()` and `validate()` methods on the serializer
         """
         # TODO: refactor this so we're not determining the fields again
-        fields = self.get_fields(nested=bool(self.opts.depth))
+        fields = self.get_fields()
 
         for field_name, field in fields.items():
             try:
@@ -336,16 +336,10 @@ class ModelSerializer(Serializer):
     """
     _options_class = ModelSerializerOptions
 
-    def default_fields(self, nested=False):
+    def get_default_fields(self):
         """
         Return all the fields that should be serialized for the model.
         """
-        # TODO: Modify this so that it's called on init, and drop
-        #       serialize/obj/data arguments.
-        #
-        #       We *could* provide a hook for dynamic fields, but
-        #       it'd be nice if the default was to generate fields statically
-        #       at the point of __init__
 
         cls = self.opts.model
         opts = get_concrete_model(cls)._meta
@@ -357,6 +351,7 @@ class ModelSerializer(Serializer):
         fields += [field for field in opts.many_to_many if field.serialize]
 
         ret = SortedDict()
+        nested = bool(self.opts.depth)
         is_pk = True  # First field in the list is the pk
 
         for model_field in fields:
@@ -466,7 +461,7 @@ class ModelSerializer(Serializer):
         """
         self.m2m_data = {}
 
-        if instance:
+        if instance is not None:
             for key, val in attrs.items():
                 setattr(instance, key, val)
             return instance

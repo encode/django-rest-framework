@@ -1,6 +1,7 @@
 import copy
 import datetime
 import inspect
+import re
 import warnings
 
 from io import BytesIO
@@ -804,6 +805,34 @@ class EmailField(CharField):
         return result
 
 
+class RegexField(CharField):
+    type_name = 'RegexField'
+
+    def __init__(self, regex, max_length=None, min_length=None, *args, **kwargs):
+        super(RegexField, self).__init__(max_length, min_length, *args, **kwargs)
+        self.regex = regex
+
+    def _get_regex(self):
+        return self._regex
+
+    def _set_regex(self, regex):
+        if isinstance(regex, basestring):
+            regex = re.compile(regex)
+        self._regex = regex
+        if hasattr(self, '_regex_validator') and self._regex_validator in self.validators:
+            self.validators.remove(self._regex_validator)
+        self._regex_validator = validators.RegexValidator(regex=regex)
+        self.validators.append(self._regex_validator)
+
+    regex = property(_get_regex, _set_regex)
+
+    def __deepcopy__(self, memo):
+        result = copy.copy(self)
+        memo[id(self)] = result
+        result.validators = self.validators[:]
+        return result
+
+
 class DateField(WritableField):
     type_name = 'DateField'
 
@@ -1032,3 +1061,17 @@ class ImageField(FileField):
         if hasattr(f, 'seek') and callable(f.seek):
             f.seek(0)
         return f
+
+
+class SerializerMethodField(Field):
+    """
+    A field that gets its value by calling a method on the serializer it's attached to.
+    """
+
+    def __init__(self, method_name):
+        self.method_name = method_name
+        super(SerializerMethodField, self).__init__()
+
+    def field_to_native(self, obj, field_name):
+        value = getattr(self.parent, self.method_name)(obj)
+        return self.to_native(value)
