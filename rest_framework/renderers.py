@@ -312,6 +312,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             serializers.DateTimeField: forms.DateTimeField,
             serializers.DateField: forms.DateField,
             serializers.EmailField: forms.EmailField,
+            serializers.RegexField: forms.RegexField,
             serializers.CharField: forms.CharField,
             serializers.ChoiceField: forms.ChoiceField,
             serializers.BooleanField: forms.BooleanField,
