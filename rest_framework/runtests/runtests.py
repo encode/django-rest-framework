@@ -30,7 +30,7 @@ def main():
     elif len(sys.argv) == 1:
         test_case = ''
     else:
-        print usage()
+        print(usage())
         sys.exit(1)
     failures = test_runner.run_tests(['tests' + test_case])
 
