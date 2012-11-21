@@ -29,7 +29,7 @@ class FileSerializerTests(TestCase):
 
     def test_create(self):
         now = datetime.datetime.now()
-        file = StringIO.StringIO('stuff')
+        file = StringIO('stuff')
         file.name = 'stuff.txt'
         file.size = file.len
         serializer = UploadedFileSerializer(data={'created': now}, files={'file': file})

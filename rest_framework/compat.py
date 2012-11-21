@@ -17,7 +17,7 @@ except:
 
 # cStringIO only if it's available, otherwise StringIO
 try:
-    import cStringIO as StringIO
+    import cStringIO.StringIO as StringIO
 except ImportError:
     from six import StringIO
 
