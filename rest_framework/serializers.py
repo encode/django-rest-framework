@@ -103,7 +103,7 @@ class BaseSerializer(Field):
         self.init_data = data
         self.init_files = files
         self.object = instance
-        self.default_fields = self.get_default_fields()
+        self.serialize_fields = self.get_fields()
 
         self._data = None
         self._files = None
@@ -134,7 +134,7 @@ class BaseSerializer(Field):
             field.initialize(parent=self, field_name=key)
 
         # Add in the default fields
-        for key, val in self.default_fields.items():
+        for key, val in self.get_default_fields().items():
             if key not in ret:
                 ret[key] = val
 
@@ -181,8 +181,7 @@ class BaseSerializer(Field):
         ret = self._dict_class()
         ret.fields = {}
 
-        fields = self.get_fields()
-        for field_name, field in fields.items():
+        for field_name, field in self.serialize_fields.items():
             key = self.get_field_key(field_name)
             value = field.field_to_native(obj, field_name)
             ret[key] = value
@@ -194,9 +193,8 @@ class BaseSerializer(Field):
         Core of deserialization, together with `restore_object`.
         Converts a dictionary of data into a dictionary of deserialized fields.
         """
-        fields = self.get_fields()
         reverted_data = {}
-        for field_name, field in fields.items():
+        for field_name, field in self.serialize_fields.items():
             try:
                 field.field_from_native(data, files, field_name, reverted_data)
             except ValidationError as err:
@@ -208,10 +206,7 @@ class BaseSerializer(Field):
         """
         Run `validate_<fieldname>()` and `validate()` methods on the serializer
         """
-        # TODO: refactor this so we're not determining the fields again
-        fields = self.get_fields()
-
-        for field_name, field in fields.items():
+        for field_name, field in self.serialize_fields.items():
             try:
                 validate_method = getattr(self, 'validate_%s' % field_name, None)
                 if validate_method:
