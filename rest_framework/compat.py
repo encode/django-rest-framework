@@ -3,6 +3,9 @@ The `compat` module provides support for backwards compatibility with older
 versions of django/python, and compatibility wrappers around optional packages.
 """
 # flake8: noqa
+from __future__ import unicode_literals
+import six
+
 import django
 
 # django-filter is optional
@@ -16,7 +19,7 @@ except:
 try:
     import cStringIO as StringIO
 except ImportError:
-    import StringIO
+    from six import StringIO
 
 
 def get_concrete_model(model_cls):
@@ -38,7 +41,7 @@ else:
     try:
         from django.contrib.auth.models import User
     except ImportError:
-        raise ImportError(u"User model is not to be found.")
+        raise ImportError("User model is not to be found.")
 
 
 # First implementation of Django class-based views did not include head method
@@ -59,11 +62,11 @@ else:
             # sanitize keyword arguments
             for key in initkwargs:
                 if key in cls.http_method_names:
-                    raise TypeError(u"You tried to pass in the %s method name as a "
-                                    u"keyword argument to %s(). Don't do that."
+                    raise TypeError("You tried to pass in the %s method name as a "
+                                    "keyword argument to %s(). Don't do that."
                                     % (key, cls.__name__))
                 if not hasattr(cls, key):
-                    raise TypeError(u"%s() received an invalid keyword %r" % (
+                    raise TypeError("%s() received an invalid keyword %r" % (
                         cls.__name__, key))
 
             def view(request, *args, **kwargs):
@@ -130,7 +133,8 @@ else:
         randrange = random.SystemRandom().randrange
     else:
         randrange = random.randrange
-    _MAX_CSRF_KEY = 18446744073709551616L     # 2 << 63
+
+    _MAX_CSRF_KEY = 18446744073709551616      # 2 << 63
 
     REASON_NO_REFERER = "Referer checking failed - no Referer."
     REASON_BAD_REFERER = "Referer checking failed - %s does not match %s."

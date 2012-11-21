@@ -15,7 +15,7 @@ from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
 from rest_framework.parsers import YAMLParser, XMLParser
 from rest_framework.settings import api_settings
 
-from StringIO import StringIO
+from rest_framework.compat import StringIO
 import datetime
 from decimal import Decimal
 

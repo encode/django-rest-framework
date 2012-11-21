@@ -1,4 +1,5 @@
-import StringIO
+from rest_framework.compat import StringIO
+
 import datetime
 
 from django.test import TestCase

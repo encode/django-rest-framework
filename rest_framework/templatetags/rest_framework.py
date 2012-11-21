@@ -1,10 +1,18 @@
+from __future__ import unicode_literals
+
 from django import template
 from django.core.urlresolvers import reverse
 from django.http import QueryDict
-from django.utils.encoding import force_unicode
+try:
+    from django.utils.encoding import force_text
+except ImportError:
+    from django.utils.encoding import force_unicode as force_text
 from django.utils.html import escape
 from django.utils.safestring import SafeData, mark_safe
-from urlparse import urlsplit, urlunsplit
+try:
+    from urllib.parse import urlsplit, urlunsplit
+except ImportError:
+    from urlparse import urlsplit, urlunsplit
 import re
 import string
 
@@ -130,7 +138,7 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
     """
     trim_url = lambda x, limit=trim_url_limit: limit is not None and (len(x) > limit and ('%s...' % x[:max(0, limit - 3)])) or x
     safe_input = isinstance(text, SafeData)
-    words = word_split_re.split(force_unicode(text))
+    words = word_split_re.split(force_text(text))
     nofollow_attr = nofollow and ' rel="nofollow"' or ''
     for i, word in enumerate(words):
         match = None
@@ -166,4 +174,4 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
             words[i] = mark_safe(word)
         elif autoescape:
             words[i] = escape(word)
-    return mark_safe(u''.join(words))
+    return mark_safe(''.join(words))

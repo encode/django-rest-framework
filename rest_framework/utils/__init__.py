@@ -1,4 +1,8 @@
-from django.utils.encoding import smart_unicode
+
+try:
+    from django.utils.encoding import smart_text
+except ImportError:
+    from django.utils.encoding import smart_unicode as smart_text
 from django.utils.xmlutils import SimplerXMLGenerator
 from rest_framework.compat import StringIO
 import re
@@ -80,10 +84,10 @@ class XMLRenderer():
             pass
 
         else:
-            xml.characters(smart_unicode(data))
+            xml.characters(smart_text(data))
 
     def dict2xml(self, data):
-        stream = StringIO.StringIO()
+        stream = StringIO()
 
         xml = SimplerXMLGenerator(stream, "utf-8")
         xml.startDocument()

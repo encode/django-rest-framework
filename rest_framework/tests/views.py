@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import copy
 from django.test import TestCase
 from django.test.client import RequestFactory
@@ -47,7 +49,7 @@ class ClassBasedViewIntegrationTests(TestCase):
         request = factory.post('/', 'f00bar', content_type='application/json')
         response = self.view(request)
         expected = {
-            'detail': u'JSON parse error - No JSON object could be decoded'
+            'detail': 'JSON parse error - No JSON object could be decoded'
         }
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEquals(sanitise_json_error(response.data), expected)
@@ -62,7 +64,7 @@ class ClassBasedViewIntegrationTests(TestCase):
         request = factory.post('/', form_data)
         response = self.view(request)
         expected = {
-            'detail': u'JSON parse error - No JSON object could be decoded'
+            'detail': 'JSON parse error - No JSON object could be decoded'
         }
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEquals(sanitise_json_error(response.data), expected)
@@ -76,7 +78,7 @@ class FunctionBasedViewIntegrationTests(TestCase):
         request = factory.post('/', 'f00bar', content_type='application/json')
         response = self.view(request)
         expected = {
-            'detail': u'JSON parse error - No JSON object could be decoded'
+            'detail': 'JSON parse error - No JSON object could be decoded'
         }
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEquals(sanitise_json_error(response.data), expected)
@@ -91,7 +93,7 @@ class FunctionBasedViewIntegrationTests(TestCase):
         request = factory.post('/', form_data)
         response = self.view(request)
         expected = {
-            'detail': u'JSON parse error - No JSON object could be decoded'
+            'detail': 'JSON parse error - No JSON object could be decoded'
         }
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEquals(sanitise_json_error(response.data), expected)
