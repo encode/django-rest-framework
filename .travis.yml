@@ -13,6 +13,7 @@ env:
 install:
   - pip install $DJANGO
   - pip install django-filter==0.5.4 --use-mirrors
+  - pip install six --use-mirrors
   - export PYTHONPATH=.
 
 script:
