@@ -2,7 +2,7 @@ import datetime
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (ActionItem, Anchor, BasicModel,
-    BlankFieldModel, BlogPost, CallableDefaultValueModel, DefaultValueModel,
+    BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel)
 
 
@@ -38,6 +38,13 @@ class CommentSerializer(serializers.Serializer):
         for key, val in data.items():
             setattr(instance, key, val)
         return instance
+
+
+class BookSerializer(serializers.ModelSerializer):
+    isbn = serializers.RegexField(regex=r'^[0-9]{13}$', error_messages={'invalid': 'isbn has to be exact 13 numbers'})
+
+    class Meta:
+        model = Book
 
 
 class ActionItemSerializer(serializers.ModelSerializer):
@@ -238,6 +245,25 @@ class ValidationTests(TestCase):
         serializer = PersonSerializer(data={'name': 'marko'})
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.errors, {})
+
+
+class RegexValidationTest(TestCase):
+    def test_create_failed(self):
+        serializer = BookSerializer(data={'isbn': '1234567890'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'isbn': [u'isbn has to be exact 13 numbers']})
+
+        serializer = BookSerializer(data={'isbn': '12345678901234'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'isbn': [u'isbn has to be exact 13 numbers']})
+
+        serializer = BookSerializer(data={'isbn': 'abcdefghijklm'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'isbn': [u'isbn has to be exact 13 numbers']})
+
+    def test_create_success(self):
+        serializer = BookSerializer(data={'isbn': '1234567890123'})
+        self.assertTrue(serializer.is_valid())
 
 
 class MetadataTests(TestCase):
