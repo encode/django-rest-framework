@@ -54,6 +54,8 @@ class Field(object):
         self.parent = parent
         self.root = parent.root or parent
         self.context = self.root.context
+        if self.root.partial:
+            self.required = False 
 
     def field_from_native(self, data, files, field_name, into):
         """

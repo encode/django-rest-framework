@@ -91,12 +91,13 @@ class BaseSerializer(Field):
     _options_class = SerializerOptions
     _dict_class = SortedDictWithMetadata  # Set to unsorted dict for backwards compatibility with unsorted implementations.
 
-    def __init__(self, instance=None, data=None, files=None, context=None, **kwargs):
+    def __init__(self, instance=None, data=None, files=None, context=None, partial=False, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
         self.opts = self._options_class(self.Meta)
         self.fields = copy.deepcopy(self.base_fields)
         self.parent = None
         self.root = None
+        self.partial = partial
 
         self.context = context or {}
 

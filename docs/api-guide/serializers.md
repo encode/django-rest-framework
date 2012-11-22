@@ -77,6 +77,10 @@ When deserializing data, we can either create a new instance, or update an exist
     serializer = CommentSerializer(data=data)           # Create new instance
     serializer = CommentSerializer(comment, data=data)  # Update `instance`
 
+By default, serializers must be passed values for all required fields or they will throw validation errors.  You can use the `partial` argument in order to allow partial updates.
+
+    serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)  # Update `instance` with partial data
+
 ## Validation
 
 When deserializing data, you always need to call `is_valid()` before attempting to access the deserialized object.  If any validation errors occur, the `.errors` and `.non_field_errors` properties will contain the resulting error messages.
