@@ -169,7 +169,7 @@ class ValidationTests(TestCase):
             'content': 'x' * 1001,
             'created': datetime.datetime(2012, 1, 1)
         }
-        self.actionitem = ActionItem('Some to do item',
+        self.actionitem = ActionItem(title='Some to do item',
         )
 
     def test_create(self):

@@ -428,10 +428,6 @@ class ModelSerializer(Serializer):
             kwargs['choices'] = model_field.flatchoices
             return ChoiceField(**kwargs)
 
-        max_length = getattr(model_field, 'max_length', None)
-        if max_length:
-            kwargs['max_length'] = max_length
-
         field_mapping = {
             models.FloatField: FloatField,
             models.IntegerField: IntegerField,
@@ -454,6 +450,59 @@ class ModelSerializer(Serializer):
             return field_mapping[model_field.__class__](**kwargs)
         except KeyError:
             return ModelField(model_field=model_field, **kwargs)
+
+    def from_native(self, data, files):
+        restored_object = super(ModelSerializer, self).from_native(data, files)
+
+        if restored_object is None:
+            return
+
+        self.perform_model_validation(restored_object)
+        return restored_object
+
+    def perform_model_validation(self, restored_object):
+
+  #      if hasattr(restored_object, '__iter__'):  # Iterables are not model instances
+  #          return restored_object
+        #self._errors[field_name] = list(err.messages)
+
+#        opts = self._meta
+        # Update the model instance with self.cleaned_data.
+#        instance = construct_instance(self, self.instance, opts.fields, opts.exclude)
+
+#        exclude = self._get_validation_exclusions()
+
+        # Foreign Keys being used to represent inline relationships
+        # are excluded from basic field value validation. This is for two
+        # reasons: firstly, the value may not be supplied (#12507; the
+        # case of providing new values to the admin); secondly the
+        # object being referred to may not yet fully exist (#12749).
+        # However, these fields *must* be included in uniqueness checks,
+        # so this can't be part of _get_validation_exclusions().
+#        for f_name, field in self.fields.items():
+#            if isinstance(field, InlineForeignKeyField):
+#                exclude.append(f_name)
+
+        # Clean the model instance's fields.
+        try:
+            restored_object.clean_fields()  # exclude=exclude)
+        except ValidationError as e:
+            for field_name, error_messages in e.message_dict.items():
+                self._errors[field_name] = self._errors.get(field_name, []) + list(error_messages)
+
+        # Call the model instance's clean method.
+        try:
+            restored_object.clean()
+        except ValidationError as e:
+            for field_name, error_messages in e.message_dict.items():
+                self._errors[field_name] = self._errors.get(field_name, []) + list(error_messages)
+
+        # Validate uniqueness if needed.
+        # exclude = self._get_validation_exclusions()
+#        try:
+#            restored_object.validate_unique()  # exclude=exclude)
+#        except ValidationError as e:
+#            model_errors.append(e.message_dict)
 
     def restore_object(self, attrs, instance=None):
         """

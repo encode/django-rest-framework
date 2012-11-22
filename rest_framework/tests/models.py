@@ -61,7 +61,7 @@ class BasicModel(RESTFrameworkModel):
 
 class SlugBasedModel(RESTFrameworkModel):
     text = models.CharField(max_length=100)
-    slug = models.SlugField(max_length=32)
+    slug = models.SlugField(max_length=32, blank=True)
 
 
 class DefaultValueModel(RESTFrameworkModel):
@@ -159,7 +159,7 @@ class Person(RESTFrameworkModel):
 
 # Model for issue #324
 class BlankFieldModel(RESTFrameworkModel):
-    title = models.CharField(max_length=100, blank=True)
+    title = models.CharField(max_length=100, blank=True, null=True)
 
 
 # Model for issue #380
