@@ -134,7 +134,8 @@ class BaseSerializer(Field):
             field.initialize(parent=self, field_name=key)
 
         # Add in the default fields
-        for key, val in self.get_default_fields().items():
+        default_fields = self.get_default_fields()
+        for key, val in self.default_fields.items():
             if key not in ret:
                 ret[key] = val
 
