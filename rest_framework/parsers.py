@@ -56,7 +56,7 @@ class JSONParser(BaseParser):
         """
         try:
             return json.load(stream)
-        except ValueError, exc:
+        except ValueError as exc:
             raise ParseError('JSON parse error - %s' % unicode(exc))
 
 
@@ -76,7 +76,7 @@ class YAMLParser(BaseParser):
         """
         try:
             return yaml.safe_load(stream)
-        except (ValueError, yaml.parser.ParserError), exc:
+        except (ValueError, yaml.parser.ParserError) as exc:
             raise ParseError('YAML parse error - %s' % unicode(exc))
 
 
@@ -121,7 +121,7 @@ class MultiPartParser(BaseParser):
             parser = DjangoMultiPartParser(meta, stream, upload_handlers)
             data, files = parser.parse()
             return DataAndFiles(data, files)
-        except MultiPartParserError, exc:
+        except MultiPartParserError as exc:
             raise ParseError('Multipart form parse error - %s' % unicode(exc))
 
 
@@ -135,7 +135,7 @@ class XMLParser(BaseParser):
     def parse(self, stream, media_type=None, parser_context=None):
         try:
             tree = ET.parse(stream)
-        except (ExpatError, ETParseError, ValueError), exc:
+        except (ExpatError, ETParseError, ValueError) as exc:
             raise ParseError('XML parse error - %s' % unicode(exc))
         data = self._xml_convert(tree.getroot())
 

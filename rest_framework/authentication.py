@@ -3,7 +3,11 @@ Provides a set of pluggable authentication policies.
 """
 
 from django.contrib.auth import authenticate
-from django.utils.encoding import smart_unicode, DjangoUnicodeDecodeError
+from django.utils.encoding import DjangoUnicodeDecodeError
+try:
+    from django.utils.encoding import smart_text
+except ImportError:
+    from django.utils.encoding import smart_unicode as smart_text
 from rest_framework import exceptions
 from rest_framework.compat import CsrfViewMiddleware
 from rest_framework.authtoken.models import Token
@@ -36,13 +40,13 @@ class BasicAuthentication(BaseAuthentication):
             auth = request.META['HTTP_AUTHORIZATION'].split()
             if len(auth) == 2 and auth[0].lower() == "basic":
                 try:
-                    auth_parts = base64.b64decode(auth[1]).partition(':')
+                    auth_parts = base64.b64decode(auth[1].encode('utf8')).decode('utf8').partition(':')
                 except TypeError:
                     return None
 
                 try:
-                    userid = smart_unicode(auth_parts[0])
-                    password = smart_unicode(auth_parts[2])
+                    userid = smart_text(auth_parts[0])
+                    password = smart_text(auth_parts[2])
                 except DjangoUnicodeDecodeError:
                     return None
 

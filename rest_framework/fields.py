@@ -1,3 +1,7 @@
+
+from __future__ import unicode_literals
+import six
+
 import copy
 import datetime
 import inspect
@@ -12,12 +16,19 @@ from django.core.urlresolvers import resolve, get_script_prefix
 from django.conf import settings
 from django.forms import widgets
 from django.forms.models import ModelChoiceIterator
-from django.utils.encoding import is_protected_type, smart_unicode
+from django.utils.encoding import is_protected_type
+try:
+    from django.utils.encoding import smart_text
+except ImportError:
+    from django.utils.encoding import smart_unicode as smart_text
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.reverse import reverse
 from rest_framework.compat import parse_date, parse_datetime
 from rest_framework.compat import timezone
-from urlparse import urlparse
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
 
 
 def is_simple_callable(obj):
@@ -92,11 +103,11 @@ class Field(object):
 
         if is_protected_type(value):
             return value
-        elif hasattr(value, '__iter__') and not isinstance(value, (dict, basestring)):
+        elif hasattr(value, '__iter__') and not isinstance(value, (dict, six.string_types)):
             return [self.to_native(item) for item in value]
         elif isinstance(value, dict):
             return dict(map(self.to_native, (k, v)) for k, v in value.items())
-        return smart_unicode(value)
+        return smart_text(value)
 
     def attributes(self):
         """
@@ -297,8 +308,8 @@ class RelatedField(WritableField):
         """
         Return a readable representation for use with eg. select widgets.
         """
-        desc = smart_unicode(obj)
-        ident = smart_unicode(self.to_native(obj))
+        desc = smart_text(obj)
+        ident = smart_text(self.to_native(obj))
         if desc == ident:
             return desc
         return "%s - %s" % (desc, ident)
@@ -401,8 +412,8 @@ class PrimaryKeyRelatedField(RelatedField):
         """
         Return a readable representation for use with eg. select widgets.
         """
-        desc = smart_unicode(obj)
-        ident = smart_unicode(self.to_native(obj.pk))
+        desc = smart_text(obj)
+        ident = smart_text(self.to_native(obj.pk))
         if desc == ident:
             return desc
         return "%s - %s" % (desc, ident)
@@ -418,7 +429,7 @@ class PrimaryKeyRelatedField(RelatedField):
         try:
             return self.queryset.get(pk=data)
         except ObjectDoesNotExist:
-            msg = "Invalid pk '%s' - object does not exist." % smart_unicode(data)
+            msg = "Invalid pk '%s' - object does not exist." % smart_text(data)
             raise ValidationError(msg)
 
     def field_to_native(self, obj, field_name):
@@ -446,8 +457,8 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
         """
         Return a readable representation for use with eg. select widgets.
         """
-        desc = smart_unicode(obj)
-        ident = smart_unicode(self.to_native(obj.pk))
+        desc = smart_text(obj)
+        ident = smart_text(self.to_native(obj.pk))
         if desc == ident:
             return desc
         return "%s - %s" % (desc, ident)
@@ -473,7 +484,7 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
         try:
             return self.queryset.get(pk=data)
         except ObjectDoesNotExist:
-            msg = "Invalid pk '%s' - object does not exist." % smart_unicode(data)
+            msg = "Invalid pk '%s' - object does not exist." % smart_text(data)
             raise ValidationError(msg)
 
 ### Slug relationships
@@ -674,7 +685,7 @@ class BooleanField(WritableField):
     type_name = 'BooleanField'
     widget = widgets.CheckboxInput
     default_error_messages = {
-        'invalid': _(u"'%s' value must be either True or False."),
+        'invalid': _("'%s' value must be either True or False."),
     }
     empty = False
 
@@ -713,9 +724,9 @@ class CharField(WritableField):
             super(CharField, self).validate(value)
 
     def from_native(self, value):
-        if isinstance(value, basestring) or value is None:
+        if isinstance(value, six.string_types) or value is None:
             return value
-        return smart_unicode(value)
+        return smart_text(value)
 
 
 class URLField(CharField):
@@ -773,10 +784,10 @@ class ChoiceField(WritableField):
             if isinstance(v, (list, tuple)):
                 # This is an optgroup, so look inside the group for options
                 for k2, v2 in v:
-                    if value == smart_unicode(k2):
+                    if value == smart_text(k2):
                         return True
             else:
-                if value == smart_unicode(k):
+                if value == smart_text(k):
                     return True
         return False
 
@@ -814,7 +825,7 @@ class RegexField(CharField):
         return self._regex
 
     def _set_regex(self, regex):
-        if isinstance(regex, basestring):
+        if isinstance(regex, six.string_types):
             regex = re.compile(regex)
         self._regex = regex
         if hasattr(self, '_regex_validator') and self._regex_validator in self.validators:
@@ -835,10 +846,10 @@ class DateField(WritableField):
     type_name = 'DateField'
 
     default_error_messages = {
-        'invalid': _(u"'%s' value has an invalid date format. It must be "
-                     u"in YYYY-MM-DD format."),
-        'invalid_date': _(u"'%s' value has the correct format (YYYY-MM-DD) "
-                          u"but it is an invalid date."),
+        'invalid': _("'%s' value has an invalid date format. It must be "
+                     "in YYYY-MM-DD format."),
+        'invalid_date': _("'%s' value has the correct format (YYYY-MM-DD) "
+                          "but it is an invalid date."),
     }
     empty = None
 
@@ -872,13 +883,13 @@ class DateTimeField(WritableField):
     type_name = 'DateTimeField'
 
     default_error_messages = {
-        'invalid': _(u"'%s' value has an invalid format. It must be in "
-                     u"YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ] format."),
-        'invalid_date': _(u"'%s' value has the correct format "
-                          u"(YYYY-MM-DD) but it is an invalid date."),
-        'invalid_datetime': _(u"'%s' value has the correct format "
-                              u"(YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]) "
-                              u"but it is an invalid date/time."),
+        'invalid': _("'%s' value has an invalid format. It must be in "
+                     "YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ] format."),
+        'invalid_date': _("'%s' value has the correct format "
+                          "(YYYY-MM-DD) but it is an invalid date."),
+        'invalid_datetime': _("'%s' value has the correct format "
+                              "(YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]) "
+                              "but it is an invalid date/time."),
     }
     empty = None
 
@@ -895,8 +906,8 @@ class DateTimeField(WritableField):
                 # local time. This won't work during DST change, but we can't
                 # do much about it, so we let the exceptions percolate up the
                 # call stack.
-                warnings.warn(u"DateTimeField received a naive datetime (%s)"
-                              u" while time zone support is active." % value,
+                warnings.warn("DateTimeField received a naive datetime (%s)"
+                              " while time zone support is active." % value,
                               RuntimeWarning)
                 default_timezone = timezone.get_default_timezone()
                 value = timezone.make_aware(value, default_timezone)

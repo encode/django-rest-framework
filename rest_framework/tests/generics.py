@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import simplejson as json
@@ -71,7 +73,7 @@ class TestRootView(TestCase):
                                content_type='application/json')
         response = self.view(request).render()
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
-        self.assertEquals(response.data, {'id': 4, 'text': u'foobar'})
+        self.assertEquals(response.data, {'id': 4, 'text': 'foobar'})
         created = self.objects.get(id=4)
         self.assertEquals(created.text, 'foobar')
 
@@ -126,7 +128,7 @@ class TestRootView(TestCase):
                                content_type='application/json')
         response = self.view(request).render()
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
-        self.assertEquals(response.data, {'id': 4, 'text': u'foobar'})
+        self.assertEquals(response.data, {'id': 4, 'text': 'foobar'})
         created = self.objects.get(id=4)
         self.assertEquals(created.text, 'foobar')
 

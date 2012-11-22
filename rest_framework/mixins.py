@@ -4,6 +4,8 @@ Basic building blocks for generic class based views.
 We don't bind behaviour to http method handlers yet,
 which allows mixin classes to be composed in interesting ways.
 """
+from __future__ import unicode_literals
+
 from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
@@ -38,7 +40,7 @@ class ListModelMixin(object):
     List a queryset.
     Should be mixed in with `MultipleObjectAPIView`.
     """
-    empty_error = u"Empty list and '%(class_name)s.allow_empty' is False."
+    empty_error = "Empty list and '%(class_name)s.allow_empty' is False."
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
