@@ -60,7 +60,7 @@ def _get_declared_fields(bases, attrs):
 
     # If this class is subclassing another Serializer, add that Serializer's
     # fields.  Note that we loop over the bases in *reverse*. This is necessary
-    # in order to the correct order of fields.
+    # in order to maintain the correct order of fields.
     for base in bases[::-1]:
         if hasattr(base, 'base_fields'):
             fields = base.base_fields.items() + fields
@@ -94,7 +94,6 @@ class BaseSerializer(Field):
     def __init__(self, instance=None, data=None, files=None, context=None, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
         self.opts = self._options_class(self.Meta)
-        self.fields = copy.deepcopy(self.base_fields)
         self.parent = None
         self.root = None
 
@@ -103,7 +102,7 @@ class BaseSerializer(Field):
         self.init_data = data
         self.init_files = files
         self.object = instance
-        self.serialize_fields = self.get_fields()
+        self.fields = self.get_fields()
 
         self._data = None
         self._files = None
@@ -128,7 +127,8 @@ class BaseSerializer(Field):
         ret = SortedDict()
 
         # Get the explicitly declared fields
-        for key, field in self.fields.items():
+        base_fields = copy.deepcopy(self.base_fields)
+        for key, field in base_fields.items():
             ret[key] = field
             # Set up the field
             field.initialize(parent=self, field_name=key)
@@ -181,7 +181,7 @@ class BaseSerializer(Field):
         ret = self._dict_class()
         ret.fields = {}
 
-        for field_name, field in self.serialize_fields.items():
+        for field_name, field in self.fields.items():
             key = self.get_field_key(field_name)
             value = field.field_to_native(obj, field_name)
             ret[key] = value
@@ -194,7 +194,7 @@ class BaseSerializer(Field):
         Converts a dictionary of data into a dictionary of deserialized fields.
         """
         reverted_data = {}
-        for field_name, field in self.serialize_fields.items():
+        for field_name, field in self.fields.items():
             try:
                 field.field_from_native(data, files, field_name, reverted_data)
             except ValidationError as err:
@@ -206,7 +206,7 @@ class BaseSerializer(Field):
         """
         Run `validate_<fieldname>()` and `validate()` methods on the serializer
         """
-        for field_name, field in self.serialize_fields.items():
+        for field_name, field in self.fields.items():
             try:
                 validate_method = getattr(self, 'validate_%s' % field_name, None)
                 if validate_method:
