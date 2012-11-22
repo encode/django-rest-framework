@@ -461,48 +461,12 @@ class ModelSerializer(Serializer):
         return restored_object
 
     def perform_model_validation(self, restored_object):
-
-  #      if hasattr(restored_object, '__iter__'):  # Iterables are not model instances
-  #          return restored_object
-        #self._errors[field_name] = list(err.messages)
-
-#        opts = self._meta
-        # Update the model instance with self.cleaned_data.
-#        instance = construct_instance(self, self.instance, opts.fields, opts.exclude)
-
-#        exclude = self._get_validation_exclusions()
-
-        # Foreign Keys being used to represent inline relationships
-        # are excluded from basic field value validation. This is for two
-        # reasons: firstly, the value may not be supplied (#12507; the
-        # case of providing new values to the admin); secondly the
-        # object being referred to may not yet fully exist (#12749).
-        # However, these fields *must* be included in uniqueness checks,
-        # so this can't be part of _get_validation_exclusions().
-#        for f_name, field in self.fields.items():
-#            if isinstance(field, InlineForeignKeyField):
-#                exclude.append(f_name)
-
-        # Clean the model instance's fields.
         try:
-            restored_object.clean_fields()  # exclude=exclude)
+            # Call Django's full_clean() which in turn calls: Model.clean_fields(), Model.clean(), Model.validat_unique()
+            restored_object.full_clean(exclude=list(self.opts.exclude))
         except ValidationError as e:
             for field_name, error_messages in e.message_dict.items():
                 self._errors[field_name] = self._errors.get(field_name, []) + list(error_messages)
-
-        # Call the model instance's clean method.
-        try:
-            restored_object.clean()
-        except ValidationError as e:
-            for field_name, error_messages in e.message_dict.items():
-                self._errors[field_name] = self._errors.get(field_name, []) + list(error_messages)
-
-        # Validate uniqueness if needed.
-        # exclude = self._get_validation_exclusions()
-#        try:
-#            restored_object.validate_unique()  # exclude=exclude)
-#        except ValidationError as e:
-#            model_errors.append(e.message_dict)
 
     def restore_object(self, attrs, instance=None):
         """
