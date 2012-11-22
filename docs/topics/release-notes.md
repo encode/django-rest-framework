@@ -4,7 +4,9 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
-## Master
+## 2.1.4
+
+**Date**: 22nd Nov 2012
 
 * Support for partial updates with serializers.
 * Added `RegexField`.
@@ -17,7 +19,6 @@
 
 **Date**: 16th Nov 2012
 
-* Support for partial updates with serializers.
 * Added `FileField` and `ImageField`.  For use with `MultiPartParser`.
 * Added `URLField` and `SlugField`.
 * Support for `read_only_fields` on `ModelSerializer` classes.
