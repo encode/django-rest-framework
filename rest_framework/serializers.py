@@ -135,7 +135,7 @@ class BaseSerializer(Field):
 
         # Add in the default fields
         default_fields = self.get_default_fields()
-        for key, val in self.default_fields.items():
+        for key, val in default_fields.items():
             if key not in ret:
                 ret[key] = val
 
