@@ -574,6 +574,9 @@ class HyperlinkedRelatedField(RelatedField):
         if self.queryset is None:
             raise Exception('Writable related fields must include a `queryset` argument')
 
+        if value is None:
+            return None
+
         if value.startswith('http:') or value.startswith('https:'):
             # If needed convert absolute URLs to relative path
             value = urlparse(value).path
