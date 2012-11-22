@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from rest_framework import generics, status, serializers
 from rest_framework.tests.models import Anchor, BasicModel, ManyToManyModel, BlogPost, BlogPostComment, Album, Photo, OptionalRelationModel
+import json
 
 factory = RequestFactory()
 
@@ -71,7 +72,7 @@ class AlbumDetail(generics.RetrieveAPIView):
     model = Album
 
 
-class OptionalRelationDetail(generics.RetrieveAPIView):
+class OptionalRelationDetail(generics.RetrieveUpdateDestroyAPIView):
     model = OptionalRelationModel
     model_serializer_class = serializers.HyperlinkedModelSerializer
 
@@ -247,3 +248,14 @@ class TestOptionalRelationHyperlinkedView(TestCase):
         response = self.detail_view(request, pk=1).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, self.data)
+
+    def test_put_detail_view(self):
+        """
+        PUT requests to RetrieveUpdateDestroyAPIView with optional relations
+        should accept None for non existing relations.
+        """
+        # Using the factory, the None somehow becomes u'None', which is not what happens in reality...
+        #request = factory.put('/optionalrelationmodel-detail/1', data=json.dumps(self.data))
+        #response = self.detail_view(request, pk=1).render()
+        response = self.client.put('/optionalrelation/1/', data=json.dumps(self.data), content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
