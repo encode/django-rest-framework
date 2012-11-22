@@ -835,6 +835,7 @@ class RegexField(CharField):
 
 class DateField(WritableField):
     type_name = 'DateField'
+    widget = widgets.DateInput
 
     default_error_messages = {
         'invalid': _(u"'%s' value has an invalid date format. It must be "
@@ -872,6 +873,7 @@ class DateField(WritableField):
 
 class DateTimeField(WritableField):
     type_name = 'DateTimeField'
+    widget = widgets.DateTimeInput
 
     default_error_messages = {
         'invalid': _(u"'%s' value has an invalid format. It must be in "
