@@ -16,6 +16,7 @@
 
 **Date**: 16th Nov 2012
 
+* Support for partial updates with serializers.
 * Added `FileField` and `ImageField`.  For use with `MultiPartParser`.
 * Added `URLField` and `SlugField`.
 * Support for `read_only_fields` on `ModelSerializer` classes.
