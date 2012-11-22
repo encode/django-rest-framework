@@ -6,6 +6,7 @@
 
 ## Master
 
+* Support for partial updates with serializers.
 * Added `RegexField`.
 * Added `SerializerMethodField`.
 * Serializer performance improvements.
