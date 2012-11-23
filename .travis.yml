@@ -6,7 +6,7 @@ python:
 
 env:
   - DJANGO=https://www.djangoproject.com/download/1.5a1/tarball/
-  - DJANGO=django==1.4.1 --use-mirrors
+  - DJANGO=django==1.4.2 --use-mirrors
   - DJANGO=django==1.3.3 --use-mirrors
 
 install:
@@ -17,3 +17,10 @@ install:
 
 script:
   - python rest_framework/runtests/runtests.py
+
+matrix:
+  exclude:
+    - python: "3.2"
+      env: DJANGO=django==1.4.2 --use-mirrors
+    - python: "3.2"
+      env: DJANGO=django==1.3.3 --use-mirrors
