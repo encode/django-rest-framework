@@ -58,6 +58,12 @@ To run the tests.
 
 # Changelog
 
+## 2.1.6
+
+**Date**: 23rd Nov 2012
+
+* Bugfix: Unfix DjangoModelPermissions.  (I am a doofus.)
+
 ## 2.1.5
 
 **Date**: 23rd Nov 2012
