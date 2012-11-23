@@ -44,13 +44,13 @@ class BasicAuthTests(TestCase):
 
     def test_post_form_passing_basic_auth(self):
         """Ensure POSTing json over basic auth with correct credentials passes and does not require CSRF"""
-        auth = 'Basic ' + base64.encodestring(('%s:%s' % (self.username, self.password)).encode('utf8')).strip().decode('utf8')
+        auth = 'Basic ' + base64.encodestring(('%s:%s' % (self.username, self.password)).encode('iso-8859-1')).strip().decode('iso-8859-1')
         response = self.csrf_client.post('/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
     def test_post_json_passing_basic_auth(self):
         """Ensure POSTing form over basic auth with correct credentials passes and does not require CSRF"""
-        auth = 'Basic ' + base64.encodestring(('%s:%s' % (self.username, self.password)).encode('utf8')).strip().decode('utf8')
+        auth = 'Basic ' + base64.encodestring(('%s:%s' % (self.username, self.password)).encode('iso-8859-1')).strip().decode('iso-8859-1')
         response = self.csrf_client.post('/', json.dumps({'example': 'example'}), 'application/json', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 

@@ -40,7 +40,7 @@ class BasicAuthentication(BaseAuthentication):
             auth = request.META['HTTP_AUTHORIZATION'].split()
             if len(auth) == 2 and auth[0].lower() == "basic":
                 try:
-                    auth_parts = base64.b64decode(auth[1].encode('utf8')).decode('utf8').partition(':')
+                    auth_parts = base64.b64decode(auth[1].encode('iso-8859-1')).decode('iso-8859-1').partition(':')
                 except TypeError:
                     return None
 
