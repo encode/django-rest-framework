@@ -2,7 +2,7 @@ import datetime
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (ActionItem, Anchor, BasicModel,
-    BlankFieldModel, BlogPost, CallableDefaultValueModel, DefaultValueModel,
+    BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel)
 
 
@@ -40,7 +40,15 @@ class CommentSerializer(serializers.Serializer):
         return instance
 
 
+class BookSerializer(serializers.ModelSerializer):
+    isbn = serializers.RegexField(regex=r'^[0-9]{13}$', error_messages={'invalid': 'isbn has to be exact 13 numbers'})
+
+    class Meta:
+        model = Book
+
+
 class ActionItemSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = ActionItem
 
@@ -106,6 +114,18 @@ class BasicTests(TestCase):
         self.assertEquals(serializer.object, expected)
         self.assertTrue(serializer.object is expected)
         self.assertEquals(serializer.data['sub_comment'], 'And Merry Christmas!')
+
+    def test_partial_update(self):
+        msg = 'Merry New Year!'
+        partial_data = {'content': msg}
+        serializer = CommentSerializer(self.comment, data=partial_data)
+        self.assertEquals(serializer.is_valid(), False)
+        serializer = CommentSerializer(self.comment, data=partial_data, partial=True)
+        expected = self.comment
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEquals(serializer.object, expected)
+        self.assertTrue(serializer.object is expected)
+        self.assertEquals(serializer.data['content'], msg)
 
     def test_model_fields_as_expected(self):
         """
@@ -238,6 +258,42 @@ class ValidationTests(TestCase):
         serializer = PersonSerializer(data={'name': 'marko'})
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.errors, {})
+
+    def test_modelserializer_max_length_exceeded(self):
+        data = {
+            'title': 'x' * 201,
+        }
+        serializer = ActionItemSerializer(data=data)
+        self.assertEquals(serializer.is_valid(), False)
+        self.assertEquals(serializer.errors, {'title': [u'Ensure this value has at most 200 characters (it has 201).']})
+
+    def test_default_modelfield_max_length_exceeded(self):
+        data = {
+            'title': 'Testing "info" field...',
+            'info': 'x' * 13,
+        }
+        serializer = ActionItemSerializer(data=data)
+        self.assertEquals(serializer.is_valid(), False)
+        self.assertEquals(serializer.errors, {'info': [u'Ensure this value has at most 12 characters (it has 13).']})
+
+
+class RegexValidationTest(TestCase):
+    def test_create_failed(self):
+        serializer = BookSerializer(data={'isbn': '1234567890'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'isbn': [u'isbn has to be exact 13 numbers']})
+
+        serializer = BookSerializer(data={'isbn': '12345678901234'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'isbn': [u'isbn has to be exact 13 numbers']})
+
+        serializer = BookSerializer(data={'isbn': 'abcdefghijklm'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'isbn': [u'isbn has to be exact 13 numbers']})
+
+    def test_create_success(self):
+        serializer = BookSerializer(data={'isbn': '1234567890123'})
+        self.assertTrue(serializer.is_valid())
 
 
 class MetadataTests(TestCase):
@@ -461,7 +517,10 @@ class CallableDefaultValueTests(TestCase):
 
 
 class ManyRelatedTests(TestCase):
-    def setUp(self):
+    def test_reverse_relations(self):
+        post = BlogPost.objects.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
 
         class BlogPostCommentSerializer(serializers.Serializer):
             text = serializers.CharField()
@@ -470,20 +529,66 @@ class ManyRelatedTests(TestCase):
             title = serializers.CharField()
             comments = BlogPostCommentSerializer(source='blogpostcomment_set')
 
-        self.serializer_class = BlogPostSerializer
-
-    def test_reverse_relations(self):
-        post = BlogPost.objects.create(title="Test blog post")
-        post.blogpostcomment_set.create(text="I hate this blog post")
-        post.blogpostcomment_set.create(text="I love this blog post")
-
-        serializer = self.serializer_class(instance=post)
+        serializer = BlogPostSerializer(instance=post)
         expected = {
             'title': 'Test blog post',
             'comments': [
                 {'text': 'I hate this blog post'},
                 {'text': 'I love this blog post'}
             ]
+        }
+
+        self.assertEqual(serializer.data, expected)
+
+    def test_callable_source(self):
+        post = BlogPost.objects.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        class BlogPostCommentSerializer(serializers.Serializer):
+            text = serializers.CharField()
+
+        class BlogPostSerializer(serializers.Serializer):
+            title = serializers.CharField()
+            first_comment = BlogPostCommentSerializer(source='get_first_comment')
+
+        serializer = BlogPostSerializer(post)
+
+        expected = {
+            'title': 'Test blog post',
+            'first_comment': {'text': 'I love this blog post'}
+        }
+        self.assertEqual(serializer.data, expected)
+
+
+class SerializerMethodFieldTests(TestCase):
+    def setUp(self):
+
+        class BoopSerializer(serializers.Serializer):
+            beep = serializers.SerializerMethodField('get_beep')
+            boop = serializers.Field()
+            boop_count = serializers.SerializerMethodField('get_boop_count')
+
+            def get_beep(self, obj):
+                return 'hello!'
+
+            def get_boop_count(self, obj):
+                return len(obj.boop)
+
+        self.serializer_class = BoopSerializer
+
+    def test_serializer_method_field(self):
+
+        class MyModel(object):
+            boop = ['a', 'b', 'c']
+
+        source_data = MyModel()
+
+        serializer = self.serializer_class(source_data)
+
+        expected = {
+            'beep': u'hello!',
+            'boop': [u'a', u'b', u'c'],
+            'boop_count': 3,
         }
 
         self.assertEqual(serializer.data, expected)

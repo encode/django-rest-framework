@@ -50,7 +50,7 @@ def sanitise_json_error(error_dict):
     return ret
 
 
-class ClassBasedViewIntegrationTests(TestCase):    
+class ClassBasedViewIntegrationTests(TestCase):
     def setUp(self):
         self.view = BasicView.as_view()
 

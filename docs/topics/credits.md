@@ -59,6 +59,13 @@ The following people have helped make REST framework great.
 * Toni Michel - [tonimichel]
 * Ben Konrath - [benkonrath]
 * Marc Aymerich - [glic3rinu]
+* Ludwig Kraatz - [ludwigkraatz]
+* Rob Romano - [robromano]
+* Eugene Mechanism - [mechanism]
+* Jonas Liljestrand - [jonlil]
+* Justin Davis - [irrelative]
+* Dustin Bachrach - [dbachrach]
+* Mark Shirley - [maspwr]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -153,3 +160,10 @@ To contact the author directly:
 [tonimichel]: https://github.com/tonimichel
 [benkonrath]: https://github.com/benkonrath
 [glic3rinu]: https://github.com/glic3rinu
+[ludwigkraatz]: https://github.com/ludwigkraatz
+[robromano]: https://github.com/robromano
+[mechanism]: https://github.com/mechanism
+[jonlil]: https://github.com/jonlil
+[irrelative]: https://github.com/irrelative
+[dbachrach]: https://github.com/dbachrach
+[maspwr]: https://github.com/maspwr

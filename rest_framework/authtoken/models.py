@@ -1,6 +1,7 @@
 import uuid
 import hmac
 from hashlib import sha1
+from rest_framework.compat import User
 from django.db import models
 
 
@@ -9,7 +10,7 @@ class Token(models.Model):
     The default authorization token model.
     """
     key = models.CharField(max_length=40, primary_key=True)
-    user = models.OneToOneField('auth.User', related_name='auth_token')
+    user = models.OneToOneField(User, related_name='auth_token')
     created = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):

@@ -17,7 +17,7 @@ def api_view(http_method_names):
         )
 
         # Note, the above allows us to set the docstring.
-        # It is the equivelent of:
+        # It is the equivalent of:
         #
         #     class WrappedAPIView(APIView):
         #         pass

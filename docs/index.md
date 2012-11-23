@@ -34,7 +34,7 @@ The following packages are optional:
 
 * [Markdown][markdown] (2.1.0+) - Markdown support for the browseable API.
 * [PyYAML][yaml] (3.10+) - YAML content-type support.
-* [django-filter][django-filter] (master) - Filtering support.
+* [django-filter][django-filter] (0.5.4+) - Filtering support.
 
 ## Installation
 
@@ -43,7 +43,7 @@ Install using `pip`, including any optional packages you want...
     pip install djangorestframework
     pip install markdown  # Markdown support for the browseable API.
     pip install pyyaml    # YAML content-type support.
-    pip install -e git+https://github.com/alex/django-filter.git#egg=django-filter  # Filtering support
+    pip install django-filter  # Filtering support
 
 ...or clone the project from github.
 

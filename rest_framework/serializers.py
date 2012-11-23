@@ -60,7 +60,7 @@ def _get_declared_fields(bases, attrs):
 
     # If this class is subclassing another Serializer, add that Serializer's
     # fields.  Note that we loop over the bases in *reverse*. This is necessary
-    # in order to the correct order of fields.
+    # in order to maintain the correct order of fields.
     for base in bases[::-1]:
         if hasattr(base, 'base_fields'):
             fields = base.base_fields.items() + fields
@@ -89,50 +89,54 @@ class BaseSerializer(Field):
         pass
 
     _options_class = SerializerOptions
-    _dict_class = SortedDictWithMetadata  # Set to unsorted dict for backwards compatability with unsorted implementations.
+    _dict_class = SortedDictWithMetadata  # Set to unsorted dict for backwards compatibility with unsorted implementations.
 
-    def __init__(self, instance=None, data=None, context=None, **kwargs):
+    def __init__(self, instance=None, data=None, files=None, context=None, partial=False, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
         self.opts = self._options_class(self.Meta)
-        self.fields = copy.deepcopy(self.base_fields)
         self.parent = None
         self.root = None
+        self.partial = partial
 
         self.context = context or {}
 
         self.init_data = data
+        self.init_files = files
         self.object = instance
+        self.fields = self.get_fields()
 
         self._data = None
+        self._files = None
         self._errors = None
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
 
-    def default_fields(self, nested=False):
+    def get_default_fields(self):
         """
         Return the complete set of default fields for the object, as a dict.
         """
         return {}
 
-    def get_fields(self, nested=False):
+    def get_fields(self):
         """
         Returns the complete set of fields for the object as a dict.
 
         This will be the set of any explicitly declared fields,
-        plus the set of fields returned by default_fields().
+        plus the set of fields returned by get_default_fields().
         """
         ret = SortedDict()
 
         # Get the explicitly declared fields
-        for key, field in self.fields.items():
+        base_fields = copy.deepcopy(self.base_fields)
+        for key, field in base_fields.items():
             ret[key] = field
             # Set up the field
             field.initialize(parent=self, field_name=key)
 
         # Add in the default fields
-        fields = self.default_fields(nested)
-        for key, val in fields.items():
+        default_fields = self.get_default_fields()
+        for key, val in default_fields.items():
             if key not in ret:
                 ret[key] = val
 
@@ -163,7 +167,7 @@ class BaseSerializer(Field):
             self.opts.depth = parent.opts.depth - 1
 
     #####
-    # Methods to convert or revert from objects <--> primative representations.
+    # Methods to convert or revert from objects <--> primitive representations.
 
     def get_field_key(self, field_name):
         """
@@ -179,24 +183,22 @@ class BaseSerializer(Field):
         ret = self._dict_class()
         ret.fields = {}
 
-        fields = self.get_fields(nested=bool(self.opts.depth))
-        for field_name, field in fields.items():
+        for field_name, field in self.fields.items():
             key = self.get_field_key(field_name)
             value = field.field_to_native(obj, field_name)
             ret[key] = value
             ret.fields[key] = field
         return ret
 
-    def restore_fields(self, data):
+    def restore_fields(self, data, files):
         """
         Core of deserialization, together with `restore_object`.
         Converts a dictionary of data into a dictionary of deserialized fields.
         """
-        fields = self.get_fields(nested=bool(self.opts.depth))
         reverted_data = {}
-        for field_name, field in fields.items():
+        for field_name, field in self.fields.items():
             try:
-                field.field_from_native(data, field_name, reverted_data)
+                field.field_from_native(data, files, field_name, reverted_data)
             except ValidationError as err:
                 self._errors[field_name] = list(err.messages)
 
@@ -206,10 +208,7 @@ class BaseSerializer(Field):
         """
         Run `validate_<fieldname>()` and `validate()` methods on the serializer
         """
-        # TODO: refactor this so we're not determining the fields again
-        fields = self.get_fields(nested=bool(self.opts.depth))
-
-        for field_name, field in fields.items():
+        for field_name, field in self.fields.items():
             try:
                 validate_method = getattr(self, 'validate_%s' % field_name, None)
                 if validate_method:
@@ -244,23 +243,23 @@ class BaseSerializer(Field):
 
     def to_native(self, obj):
         """
-        Serialize objects -> primatives.
+        Serialize objects -> primitives.
         """
         if hasattr(obj, '__iter__'):
             return [self.convert_object(item) for item in obj]
         return self.convert_object(obj)
 
-    def from_native(self, data):
+    def from_native(self, data, files):
         """
-        Deserialize primatives -> objects.
+        Deserialize primitives -> objects.
         """
         if hasattr(data, '__iter__') and not isinstance(data, dict):
             # TODO: error data when deserializing lists
             return (self.from_native(item) for item in data)
 
         self._errors = {}
-        if data is not None:
-            attrs = self.restore_fields(data)
+        if data is not None or files is not None:
+            attrs = self.restore_fields(data, files)
             attrs = self.perform_validation(attrs)
         else:
             self._errors['non_field_errors'] = ['No input provided']
@@ -275,6 +274,9 @@ class BaseSerializer(Field):
         """
         obj = getattr(obj, self.source or field_name)
 
+        if is_simple_callable(obj):
+            obj = obj()
+
         # If the object has an "all" method, assume it's a relationship
         if is_simple_callable(getattr(obj, 'all', None)):
             return [self.to_native(item) for item in obj.all()]
@@ -288,7 +290,7 @@ class BaseSerializer(Field):
         setting self.object if no errors occurred.
         """
         if self._errors is None:
-            obj = self.from_native(self.init_data)
+            obj = self.from_native(self.init_data, self.init_files)
             if not self._errors:
                 self.object = obj
         return self._errors
@@ -330,16 +332,10 @@ class ModelSerializer(Serializer):
     """
     _options_class = ModelSerializerOptions
 
-    def default_fields(self, nested=False):
+    def get_default_fields(self):
         """
         Return all the fields that should be serialized for the model.
         """
-        # TODO: Modfiy this so that it's called on init, and drop
-        #       serialize/obj/data arguments.
-        #
-        #       We *could* provide a hook for dynamic fields, but
-        #       it'd be nice if the default was to generate fields statically
-        #       at the point of __init__
 
         cls = self.opts.model
         opts = get_concrete_model(cls)._meta
@@ -351,6 +347,7 @@ class ModelSerializer(Serializer):
         fields += [field for field in opts.many_to_many if field.serialize]
 
         ret = SortedDict()
+        nested = bool(self.opts.depth)
         is_pk = True  # First field in the list is the pk
 
         for model_field in fields:
@@ -427,6 +424,10 @@ class ModelSerializer(Serializer):
             kwargs['choices'] = model_field.flatchoices
             return ChoiceField(**kwargs)
 
+        max_length = getattr(model_field, 'max_length', None)
+        if max_length:
+            kwargs['max_length'] = max_length
+
         field_mapping = {
             models.FloatField: FloatField,
             models.IntegerField: IntegerField,
@@ -437,9 +438,13 @@ class ModelSerializer(Serializer):
             models.DateField: DateField,
             models.EmailField: EmailField,
             models.CharField: CharField,
+            models.URLField: URLField,
+            models.SlugField: SlugField,
             models.TextField: CharField,
             models.CommaSeparatedIntegerField: CharField,
             models.BooleanField: BooleanField,
+            models.FileField: FileField,
+            models.ImageField: ImageField,
         }
         try:
             return field_mapping[model_field.__class__](**kwargs)
@@ -452,7 +457,7 @@ class ModelSerializer(Serializer):
         """
         self.m2m_data = {}
 
-        if instance:
+        if instance is not None:
             for key, val in attrs.items():
                 setattr(instance, key, val)
             return instance

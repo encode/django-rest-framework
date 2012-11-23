@@ -15,14 +15,14 @@ class Response(SimpleTemplateResponse):
         Alters the init arguments slightly.
         For example, drop 'template_name', and instead use 'data'.
 
-        Setting 'renderer' and 'media_type' will typically be defered,
+        Setting 'renderer' and 'media_type' will typically be deferred,
         For example being set automatically by the `APIView`.
         """
         super(Response, self).__init__(None, status=status)
         self.data = data
         self.template_name = template_name
         self.exception = exception
-                
+        
         if headers:
             for name,value in headers.iteritems():
                 self[name] = value

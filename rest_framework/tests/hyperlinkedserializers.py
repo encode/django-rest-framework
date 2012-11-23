@@ -8,12 +8,13 @@ factory = RequestFactory()
 
 
 class BlogPostCommentSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='blogpostcomment-detail')
     text = serializers.CharField()
     blog_post_url = serializers.HyperlinkedRelatedField(source='blog_post', view_name='blogpost-detail')
 
     class Meta:
         model = BlogPostComment
-        fields = ('text', 'blog_post_url')
+        fields = ('text', 'blog_post_url', 'url')
 
 
 class PhotoSerializer(serializers.Serializer):
@@ -53,6 +54,9 @@ class BlogPostCommentListCreate(generics.ListCreateAPIView):
     model = BlogPostComment
     serializer_class = BlogPostCommentSerializer
 
+class BlogPostCommentDetail(generics.RetrieveAPIView):
+    model = BlogPostComment
+    serializer_class = BlogPostCommentSerializer
 
 class BlogPostDetail(generics.RetrieveAPIView):
     model = BlogPost
@@ -80,6 +84,7 @@ urlpatterns = patterns('',
     url(r'^manytomany/(?P<pk>\d+)/$', ManyToManyDetail.as_view(), name='manytomanymodel-detail'),
     url(r'^posts/(?P<pk>\d+)/$', BlogPostDetail.as_view(), name='blogpost-detail'),
     url(r'^comments/$', BlogPostCommentListCreate.as_view(), name='blogpostcomment-list'),
+    url(r'^comments/(?P<pk>\d+)/$', BlogPostCommentDetail.as_view(), name='blogpostcomment-detail'),
     url(r'^albums/(?P<title>\w[\w-]*)/$', AlbumDetail.as_view(), name='album-detail'),
     url(r'^photos/$', PhotoListCreate.as_view(), name='photo-list'),
     url(r'^optionalrelation/(?P<pk>\d+)/$', OptionalRelationDetail.as_view(), name='optionalrelationmodel-detail'),
@@ -191,6 +196,7 @@ class TestCreateWithForeignKeys(TestCase):
         request = factory.post('/comments/', data=data)
         response = self.create_view(request).render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response['Location'], 'http://testserver/comments/1/')
         self.assertEqual(self.post.blogpostcomment_set.count(), 1)
         self.assertEqual(self.post.blogpostcomment_set.all()[0].text, 'A test comment')
 
@@ -215,6 +221,7 @@ class TestCreateWithForeignKeysAndCustomSlug(TestCase):
         request = factory.post('/photos/', data=data)
         response = self.list_create_view(request).render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertNotIn('Location', response, msg='Location should only be included if there is a "url" field on the serializer')
         self.assertEqual(self.post.photo_set.count(), 1)
         self.assertEqual(self.post.photo_set.all()[0].description, 'A test photo')
 

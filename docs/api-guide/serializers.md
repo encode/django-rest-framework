@@ -34,7 +34,7 @@ Declaring a serializer looks very similar to declaring a form:
         created = serializers.DateTimeField()
 
         def restore_object(self, attrs, instance=None):
-            if instance:
+            if instance is not None:
                 instance.title = attrs['title']
                 instance.content = attrs['content']
                 instance.created = attrs['created']
@@ -76,6 +76,10 @@ When deserializing data, we can either create a new instance, or update an exist
 
     serializer = CommentSerializer(data=data)           # Create new instance
     serializer = CommentSerializer(comment, data=data)  # Update `instance`
+
+By default, serializers must be passed values for all required fields or they will throw validation errors.  You can use the `partial` argument in order to allow partial updates.
+
+    serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)  # Update `instance` with partial data
 
 ## Validation
 
