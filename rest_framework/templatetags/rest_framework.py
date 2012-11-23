@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+import six
 
 from django import template
 from django.core.urlresolvers import reverse
@@ -104,7 +105,7 @@ def add_class(value, css_class):
     In the case of REST Framework, the filter is used to add Bootstrap-specific
     classes to the forms.
     """
-    html = unicode(value)
+    html = six.text_type(value)
     match = class_re.search(html)
     if match:
         m = re.search(r'^%s$|^%s\s|\s%s\s|\s%s$' % (css_class, css_class,

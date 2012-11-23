@@ -8,8 +8,6 @@ import inspect
 import re
 import warnings
 
-from io import BytesIO
-
 from django.core import validators
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import resolve, get_script_prefix
@@ -25,6 +23,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework.reverse import reverse
 from rest_framework.compat import parse_date, parse_datetime
 from rest_framework.compat import timezone
+from rest_framework.compat import BytesIO
 try:
     from urllib.parse import urlparse
 except ImportError:

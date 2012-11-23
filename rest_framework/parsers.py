@@ -5,6 +5,8 @@ They give us a generic way of being able to handle various media types
 on the request, such as form content or json encoded data.
 """
 
+import six
+
 from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError
@@ -55,9 +57,10 @@ class JSONParser(BaseParser):
         `files` will always be `None`.
         """
         try:
-            return json.load(stream)
+            data = stream.read().decode('iso-8859-1')
+            return json.loads(data)
         except ValueError as exc:
-            raise ParseError('JSON parse error - %s' % unicode(exc))
+            raise ParseError('JSON parse error - %s' % six.text_type(exc))
 
 
 class YAMLParser(BaseParser):
@@ -75,9 +78,10 @@ class YAMLParser(BaseParser):
         `files` will always be `None`.
         """
         try:
-            return yaml.safe_load(stream)
+            data = stream.read().decode('iso-8859-1')
+            return yaml.safe_load(data)
         except (ValueError, yaml.parser.ParserError) as exc:
-            raise ParseError('YAML parse error - %s' % unicode(exc))
+            raise ParseError('YAML parse error - %s' % six.u(exc))
 
 
 class FormParser(BaseParser):
@@ -122,7 +126,7 @@ class MultiPartParser(BaseParser):
             data, files = parser.parse()
             return DataAndFiles(data, files)
         except MultiPartParserError as exc:
-            raise ParseError('Multipart form parse error - %s' % unicode(exc))
+            raise ParseError('Multipart form parse error - %s' % six.u(exc))
 
 
 class XMLParser(BaseParser):
@@ -136,7 +140,7 @@ class XMLParser(BaseParser):
         try:
             tree = ET.parse(stream)
         except (ExpatError, ETParseError, ValueError) as exc:
-            raise ParseError('XML parse error - %s' % unicode(exc))
+            raise ParseError('XML parse error - %s' % six.u(exc))
         data = self._xml_convert(tree.getroot())
 
         return data

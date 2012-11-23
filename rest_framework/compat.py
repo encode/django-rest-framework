@@ -21,6 +21,8 @@ try:
 except ImportError:
     from six import StringIO
 
+from six import BytesIO
+
 
 def get_concrete_model(model_cls):
     try:

@@ -1,4 +1,4 @@
-from rest_framework.compat import StringIO
+from rest_framework.compat import BytesIO
 
 import datetime
 
@@ -29,9 +29,9 @@ class FileSerializerTests(TestCase):
 
     def test_create(self):
         now = datetime.datetime.now()
-        file = StringIO('stuff')
+        file = BytesIO(b'stuff')
         file.name = 'stuff.txt'
-        file.size = file.len
+        file.size = len(file.getvalue())
         serializer = UploadedFileSerializer(data={'created': now}, files={'file': file})
         uploaded_file = UploadedFile(file=file, created=now)
         self.assertTrue(serializer.is_valid())
