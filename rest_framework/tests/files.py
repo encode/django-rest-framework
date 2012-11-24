@@ -1,6 +1,7 @@
 from rest_framework.compat import BytesIO
 
 import datetime
+import six
 
 from django.test import TestCase
 
@@ -29,7 +30,7 @@ class FileSerializerTests(TestCase):
 
     def test_create(self):
         now = datetime.datetime.now()
-        file = BytesIO(b'stuff')
+        file = BytesIO(six.b('stuff'))
         file.name = 'stuff.txt'
         file.size = len(file.getvalue())
         serializer = UploadedFileSerializer(data={'created': now}, files={'file': file})

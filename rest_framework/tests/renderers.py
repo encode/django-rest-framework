@@ -1,5 +1,6 @@
 import pickle
 import re
+import six
 
 from django.conf.urls.defaults import patterns, url, include
 from django.core.cache import cache
@@ -23,8 +24,8 @@ from decimal import Decimal
 DUMMYSTATUS = status.HTTP_200_OK
 DUMMYCONTENT = 'dummycontent'
 
-RENDERER_A_SERIALIZER = lambda x: 'Renderer A: %s' % x
-RENDERER_B_SERIALIZER = lambda x: 'Renderer B: %s' % x
+RENDERER_A_SERIALIZER = lambda x: ('Renderer A: %s' % x).encode('ascii')
+RENDERER_B_SERIALIZER = lambda x: ('Renderer B: %s' % x).encode('ascii')
 
 
 expected_results = [
@@ -141,7 +142,7 @@ class RendererEndToEndTests(TestCase):
         resp = self.client.head('/')
         self.assertEquals(resp.status_code, DUMMYSTATUS)
         self.assertEquals(resp['Content-Type'], RendererA.media_type)
-        self.assertEquals(resp.content, '')
+        self.assertEquals(resp.content, six.b(''))
 
     def test_default_renderer_serializes_content_on_accept_any(self):
         """If the Accept header is set to */* the default renderer should serialize the response."""
@@ -268,7 +269,8 @@ class JSONPRendererTests(TestCase):
                                HTTP_ACCEPT='application/javascript')
         self.assertEquals(resp.status_code, 200)
         self.assertEquals(resp['Content-Type'], 'application/javascript')
-        self.assertEquals(resp.content, 'callback(%s);' % _flat_repr)
+        self.assertEquals(resp.content,
+            ('callback(%s);' % _flat_repr).encode('ascii'))
 
     def test_without_callback_without_json_renderer(self):
         """
@@ -278,7 +280,8 @@ class JSONPRendererTests(TestCase):
                                HTTP_ACCEPT='application/javascript')
         self.assertEquals(resp.status_code, 200)
         self.assertEquals(resp['Content-Type'], 'application/javascript')
-        self.assertEquals(resp.content, 'callback(%s);' % _flat_repr)
+        self.assertEquals(resp.content,
+            ('callback(%s);' % _flat_repr).encode('ascii'))
 
     def test_with_callback(self):
         """
@@ -289,7 +292,8 @@ class JSONPRendererTests(TestCase):
                                HTTP_ACCEPT='application/javascript')
         self.assertEquals(resp.status_code, 200)
         self.assertEquals(resp['Content-Type'], 'application/javascript')
-        self.assertEquals(resp.content, '%s(%s);' % (callback_func, _flat_repr))
+        self.assertEquals(resp.content,
+            ('%s(%s);' % (callback_func, _flat_repr)).encode('ascii'))
 
 
 if yaml:

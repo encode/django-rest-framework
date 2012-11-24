@@ -1,3 +1,5 @@
+import six
+
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
 from django.template.response import SimpleTemplateResponse
 
@@ -22,9 +24,9 @@ class Response(SimpleTemplateResponse):
         self.data = data
         self.template_name = template_name
         self.exception = exception
-        
+
         if headers:
-            for name,value in headers.iteritems():
+            for name, value in six.iteritems(headers):
                 self[name] = value
 
     @property

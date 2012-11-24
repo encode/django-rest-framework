@@ -1,8 +1,11 @@
 
+import six
+
 try:
     from django.utils.encoding import smart_text
 except ImportError:
     from django.utils.encoding import smart_unicode as smart_text
+
 from django.utils.xmlutils import SimplerXMLGenerator
 from rest_framework.compat import StringIO
 import re
@@ -74,7 +77,7 @@ class XMLRenderer():
                 xml.endElement("list-item")
 
         elif isinstance(data, dict):
-            for key, value in data.iteritems():
+            for key, value in six.iteritems(data):
                 xml.startElement(key, {})
                 self._to_xml(xml, value)
                 xml.endElement(key)

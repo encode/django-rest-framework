@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 
+import six
+
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import simplejson as json
@@ -189,7 +191,7 @@ class TestInstanceView(TestCase):
         request = factory.delete('/1')
         response = self.view(request, pk=1).render()
         self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEquals(response.content, '')
+        self.assertEquals(response.content, six.b(''))
         ids = [obj.id for obj in self.objects.all()]
         self.assertEquals(ids, [2, 3])
 
