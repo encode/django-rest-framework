@@ -3,6 +3,8 @@ import datetime
 import inspect
 import warnings
 
+from io import BytesIO
+
 from django.core import validators
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import resolve, get_script_prefix
@@ -31,6 +33,7 @@ class Field(object):
     creation_counter = 0
     empty = ''
     type_name = None
+    _use_files = None
 
     def __init__(self, source=None):
         self.parent = None
@@ -51,7 +54,7 @@ class Field(object):
         self.root = parent.root or parent
         self.context = self.root.context
 
-    def field_from_native(self, data, field_name, into):
+    def field_from_native(self, data, files, field_name, into):
         """
         Given a dictionary and a field name, updates the dictionary `into`,
         with the field and it's deserialized value.
@@ -166,7 +169,7 @@ class WritableField(Field):
         if errors:
             raise ValidationError(errors)
 
-    def field_from_native(self, data, field_name, into):
+    def field_from_native(self, data, files, field_name, into):
         """
         Given a dictionary and a field name, updates the dictionary `into`,
         with the field and it's deserialized value.
@@ -175,7 +178,10 @@ class WritableField(Field):
             return
 
         try:
-            native = data[field_name]
+            if self._use_files:
+                native = files[field_name]
+            else:
+                native = data[field_name]
         except KeyError:
             if self.default is not None:
                 native = self.default
@@ -323,7 +329,7 @@ class RelatedField(WritableField):
         value = getattr(obj, self.source or field_name)
         return self.to_native(value)
 
-    def field_from_native(self, data, field_name, into):
+    def field_from_native(self, data, files, field_name, into):
         if self.read_only:
             return
 
@@ -341,7 +347,7 @@ class ManyRelatedMixin(object):
         value = getattr(obj, self.source or field_name)
         return [self.to_native(item) for item in value.all()]
 
-    def field_from_native(self, data, field_name, into):
+    def field_from_native(self, data, files, field_name, into):
         if self.read_only:
             return
 
@@ -700,6 +706,23 @@ class CharField(WritableField):
         return smart_unicode(value)
 
 
+class URLField(CharField):
+    type_name = 'URLField'
+
+    def __init__(self, **kwargs):
+        kwargs['max_length'] = kwargs.get('max_length', 200)
+        kwargs['validators'] = [validators.URLValidator()]
+        super(URLField, self).__init__(**kwargs)
+
+
+class SlugField(CharField):
+    type_name = 'SlugField'
+
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = kwargs.get('max_length', 50)
+        super(SlugField, self).__init__(*args, **kwargs)
+
+
 class ChoiceField(WritableField):
     type_name = 'ChoiceField'
     widget = widgets.Select
@@ -904,3 +927,95 @@ class FloatField(WritableField):
         except (TypeError, ValueError):
             msg = self.error_messages['invalid'] % value
             raise ValidationError(msg)
+
+
+class FileField(WritableField):
+    _use_files = True
+    type_name = 'FileField'
+    widget = widgets.FileInput
+
+    default_error_messages = {
+        'invalid': _("No file was submitted. Check the encoding type on the form."),
+        'missing': _("No file was submitted."),
+        'empty': _("The submitted file is empty."),
+        'max_length': _('Ensure this filename has at most %(max)d characters (it has %(length)d).'),
+        'contradiction': _('Please either submit a file or check the clear checkbox, not both.')
+    }
+
+    def __init__(self, *args, **kwargs):
+        self.max_length = kwargs.pop('max_length', None)
+        self.allow_empty_file = kwargs.pop('allow_empty_file', False)
+        super(FileField, self).__init__(*args, **kwargs)
+
+    def from_native(self, data):
+        if data in validators.EMPTY_VALUES:
+            return None
+
+        # UploadedFile objects should have name and size attributes.
+        try:
+            file_name = data.name
+            file_size = data.size
+        except AttributeError:
+            raise ValidationError(self.error_messages['invalid'])
+
+        if self.max_length is not None and len(file_name) > self.max_length:
+            error_values = {'max': self.max_length, 'length': len(file_name)}
+            raise ValidationError(self.error_messages['max_length'] % error_values)
+        if not file_name:
+            raise ValidationError(self.error_messages['invalid'])
+        if not self.allow_empty_file and not file_size:
+            raise ValidationError(self.error_messages['empty'])
+
+        return data
+
+    def to_native(self, value):
+        return value.name
+
+
+class ImageField(FileField):
+    _use_files = True
+
+    default_error_messages = {
+        'invalid_image': _("Upload a valid image. The file you uploaded was either not an image or a corrupted image."),
+    }
+
+    def from_native(self, data):
+        """
+        Checks that the file-upload field data contains a valid image (GIF, JPG,
+        PNG, possibly others -- whatever the Python Imaging Library supports).
+        """
+        f = super(ImageField, self).from_native(data)
+        if f is None:
+            return None
+
+        # Try to import PIL in either of the two ways it can end up installed.
+        try:
+            from PIL import Image
+        except ImportError:
+            import Image
+
+        # We need to get a file object for PIL. We might have a path or we might
+        # have to read the data into memory.
+        if hasattr(data, 'temporary_file_path'):
+            file = data.temporary_file_path()
+        else:
+            if hasattr(data, 'read'):
+                file = BytesIO(data.read())
+            else:
+                file = BytesIO(data['content'])
+
+        try:
+            # load() could spot a truncated JPEG, but it loads the entire
+            # image in memory, which is a DoS vector. See #3848 and #18520.
+            # verify() must be called immediately after the constructor.
+            Image.open(file).verify()
+        except ImportError:
+            # Under PyPy, it is possible to import PIL. However, the underlying
+            # _imaging C module isn't available, so an ImportError will be
+            # raised. Catch and re-raise.
+            raise
+        except Exception:  # Python Imaging Library doesn't recognize it as an image
+            raise ValidationError(self.error_messages['invalid_image'])
+        if hasattr(f, 'seek') and callable(f.seek):
+            f.seek(0)
+        return f

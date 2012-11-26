@@ -58,6 +58,17 @@ To run the tests.
 
 # Changelog
 
+## 2.1.3
+
+**Date**: 16th Nov 2012
+
+* Added `FileField` and `ImageField`.  For use with `MultiPartParser`.
+* Added `URLField` and `SlugField`.
+* Support for `read_only_fields` on `ModelSerializer` classes.
+* Support for clients overriding the pagination page sizes.  Use the `PAGINATE_BY_PARAM` setting or set the `paginate_by_param` attribute on a generic view.
+* 201 Responses now return a 'Location' header.
+* Bugfix: Serializer fields now respect `max_length`.
+
 ## 2.1.2
 
 **Date**: 9th Nov 2012
@@ -139,7 +150,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [twitter]: https://twitter.com/_tomchristie
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [sandbox]: http://restframework.herokuapp.com/
-[rest-framework-2-announcement]: topics/rest-framework-2-announcement.md
+[rest-framework-2-announcement]: http://django-rest-framework.org/topics/rest-framework-2-announcement.html
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
 
 [docs]: http://django-rest-framework.org/

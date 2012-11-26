@@ -71,7 +71,7 @@ We can override `.get_queryset()` to deal with URLs such as `http://example.com/
             by filtering against a `username` query parameter in the URL.
             """
             queryset = Purchase.objects.all()
-            username = self.request.QUERY_PARAMS.get('username', None):
+            username = self.request.QUERY_PARAMS.get('username', None)
             if username is not None:
                 queryset = queryset.filter(purchaser__username=username)
             return queryset
@@ -84,9 +84,9 @@ As well as being able to override the default queryset, REST framework also incl
 
 REST framework supports pluggable backends to implement filtering, and provides an implementation which uses the [django-filter] package.
 
-To use REST framework's default filtering backend, first install `django-filter`.
+To use REST framework's filtering backend, first install `django-filter`.
 
-    pip install -e git+https://github.com/alex/django-filter.git#egg=django-filter
+    pip install django-filter
 
 You must also set the filter backend to `DjangoFilterBackend` in your settings:
 
@@ -94,7 +94,6 @@ You must also set the filter backend to `DjangoFilterBackend` in your settings:
         'FILTER_BACKEND': 'rest_framework.filters.DjangoFilterBackend'
     }
 
-**Note**: The currently supported version of `django-filter` is the `master` branch.  A PyPI release is expected to be coming soon.
 
 ## Specifying filter fields
 
