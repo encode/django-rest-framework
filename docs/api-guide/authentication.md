@@ -117,7 +117,7 @@ When using TokenAuthentication, it may be useful to add a login view for clients
 REST framework provides a built-in login view for clients to retrieve the token called `rest_framework.authtoken.obtain_auth_token`. To use it, add a pattern to include the token login view for clients as follows:
 
     urlpatterns += patterns('',
-        url(r'^api-token-auth/', 'rest_framework.authtoken.obtain_auth_token')
+        url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token')
     )
 
 The `r'^api-token-auth/'` part of pattern can actually be whatever URL you want to use. The authtoken login view will render a JSON response when a valid `username` and `password` fields are POST'ed to the view using forms or JSON:
