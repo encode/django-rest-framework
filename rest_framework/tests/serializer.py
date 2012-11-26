@@ -291,6 +291,7 @@ class ValidationTests(TestCase):
         serializer.save()
         second_serializer = AlbumsSerializer(data={'title': 'a'})
         self.assertFalse(second_serializer.is_valid())
+        self.assertEqual(second_serializer.errors,  {'title': [u'Album with this Title already exists.']})
 
 
 class RegexValidationTest(TestCase):
