@@ -119,6 +119,17 @@ class BaseSerializer(Field):
         """
         return {}
 
+    def get_excluded_fieldnames(self):
+        """
+        Returns the fieldnames that should not be validated.
+        """
+        excluded_fields = list(self.opts.exclude)
+        for field in self.fields.keys() + self.default_fields.keys():
+            if self.opts.fields:
+                if field not in self.opts.fields + self.opts.exclude:
+                    excluded_fields.append(field)
+        return excluded_fields
+
     def get_fields(self):
         """
         Returns the complete set of fields for the object as a dict.
@@ -466,7 +477,7 @@ class ModelSerializer(Serializer):
 
     def perform_model_validation(self, restored_object):
         # Call Django's full_clean() which in turn calls: Model.clean_fields(), Model.clean(), Model.validat_unique()
-        restored_object.full_clean(exclude=list(self.opts.exclude))
+        restored_object.full_clean(exclude=list(self.get_excluded_fieldnames()))
 
     def restore_object(self, attrs, instance=None):
         """
