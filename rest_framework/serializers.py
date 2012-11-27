@@ -221,10 +221,17 @@ class BaseSerializer(Field):
             except ValidationError as err:
                 self._errors[field_name] = self._errors.get(field_name, []) + list(err.messages)
 
-        try:
-            attrs = self.validate(attrs)
-        except ValidationError as err:
-            self._errors['non_field_errors'] = err.messages
+        # We don't run .validate() because field-validation failed and thus `attrs` may not be complete.
+        # which in turn can cause inconsistent validation errors.
+        if not self._errors:
+            try:
+                attrs = self.validate(attrs)
+            except ValidationError as err:
+                if hasattr(err, 'message_dict'):
+                    for field_name, error_messages in err.message_dict.items():
+                        self._errors[field_name] = self._errors.get(field_name, []) + list(error_messages)
+                elif hasattr(err, 'messages'):
+                    self._errors['non_field_errors'] = err.messages
 
         return attrs
 
@@ -451,22 +458,15 @@ class ModelSerializer(Serializer):
         except KeyError:
             return ModelField(model_field=model_field, **kwargs)
 
-    def from_native(self, data, files):
-        restored_object = super(ModelSerializer, self).from_native(data, files)
-
-        if restored_object is None:
-            return
-
+    def validate(self, attrs):
+        copied_attrs = copy.deepcopy(attrs)
+        restored_object = self.restore_object(copied_attrs, instance=getattr(self, 'object', None))
         self.perform_model_validation(restored_object)
-        return restored_object
+        return attrs
 
     def perform_model_validation(self, restored_object):
-        try:
-            # Call Django's full_clean() which in turn calls: Model.clean_fields(), Model.clean(), Model.validat_unique()
-            restored_object.full_clean(exclude=list(self.opts.exclude))
-        except ValidationError as e:
-            for field_name, error_messages in e.message_dict.items():
-                self._errors[field_name] = self._errors.get(field_name, []) + list(error_messages)
+        # Call Django's full_clean() which in turn calls: Model.clean_fields(), Model.clean(), Model.validat_unique()
+        restored_object.full_clean(exclude=list(self.opts.exclude))
 
     def restore_object(self, attrs, instance=None):
         """
