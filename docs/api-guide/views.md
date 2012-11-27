@@ -19,7 +19,8 @@ Using the `APIView` class is pretty much the same as using a regular `View` clas
 
 For example:
 
-    from rest_framework.views import APIView, Response
+    from rest_framework.views import APIView
+    from rest_framework.response import Response
     from rest_framework import authentication, permissions
 
     class ListUsers(APIView):
