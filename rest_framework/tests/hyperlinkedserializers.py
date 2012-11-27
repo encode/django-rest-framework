@@ -254,8 +254,6 @@ class TestOptionalRelationHyperlinkedView(TestCase):
         PUT requests to RetrieveUpdateDestroyAPIView with optional relations
         should accept None for non existing relations.
         """
-        # Using the factory, the None somehow becomes u'None', which is not what happens in reality...
-        #request = factory.put('/optionalrelationmodel-detail/1', data=json.dumps(self.data))
-        #response = self.detail_view(request, pk=1).render()
+        # Using the factory, the None incorrectly becomes u'None'. Use the normal test client instead
         response = self.client.put('/optionalrelation/1/', data=json.dumps(self.data), content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
