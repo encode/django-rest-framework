@@ -67,6 +67,7 @@ The following people have helped make REST framework great.
 * Dustin Bachrach - [dbachrach]
 * Mark Shirley - [maspwr]
 * Olivier Aubert - [oaubert]
+* Yuri Prezument - [yprez]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -169,3 +170,4 @@ To contact the author directly:
 [dbachrach]: https://github.com/dbachrach
 [maspwr]: https://github.com/maspwr
 [oaubert]: https://github.com/oaubert
+[yprez]: https://github.com/yprez
