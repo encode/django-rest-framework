@@ -116,7 +116,7 @@ When using `TokenAuthentication`, you may want to provide a mechanism for client
 REST framework provides a built-in view to provide this behavior.  To use it, add the `obtain_auth_token` view to your URLconf:
 
     urlpatterns += patterns('',
-        url(r'^api-token-auth/', 'rest_framework.authtoken.obtain_auth_token')
+        url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token')
     )
 
 Note that the URL part of the pattern can be whatever you want to use.
