@@ -588,11 +588,11 @@ class RelatedTraversalTest(TestCase):
         serializer = BlogPostSerializer(instance=post)
 
         expected = {
-            'title': 'Test blog post',
+            'title': u'Test blog post',
             'comments': [{
-                'text': 'I hate this blog post',
+                'text': u'I love this blog post',
                 'post_owner': {
-                    "name": "django",
+                    "name": u"django",
                     "age": None
                 }
             }]
