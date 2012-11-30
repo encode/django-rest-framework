@@ -167,14 +167,14 @@ class TokenAuthTests(TestCase):
         client = Client(enforce_csrf_checks=True)
         response = client.post('/auth-token/login/', 
                                json.dumps({'username': self.username, 'password': "badpass"}), 'application/json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_token_login_json_missing_fields(self):
         """Ensure token login view using JSON POST fails if missing fields."""
         client = Client(enforce_csrf_checks=True)
         response = client.post('/auth-token/login/', 
                                json.dumps({'username': self.username}), 'application/json')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 401)
 
     def test_token_login_form(self):
         """Ensure token login view using form POST works."""
