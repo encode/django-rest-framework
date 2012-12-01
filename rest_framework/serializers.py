@@ -108,8 +108,7 @@ class BaseSerializer(Field):
         self._data = None
         self._files = None
         self._errors = None
-        self._headers = {}
-        
+        self._headers = {}        
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
@@ -327,16 +326,16 @@ class BaseSerializer(Field):
             
         return self.object
     
-    def generate_header(self):
+    def _generate_headers(self):
         return {}
     
     @property
     def headers(self):
-        #self._headers.update(self.generate_header())
-        return self._headers
+        ret = self._generate_headers()
+        ret.update(self._headers)
+        return ret
     
     def set_location_header(self):
-        self._headers['Location'] = 'x'
         if hasattr(self.object, 'get_absolute_url'):
             self._headers['Location'] = self.object.get_absolute_url()
             return True
@@ -576,10 +575,3 @@ class HyperlinkedModelSerializer(ModelSerializer):
         if to_many:
             return ManyHyperlinkedRelatedField(**kwargs)
         return HyperlinkedRelatedField(**kwargs)
-
-    def set_location_header(self):
-        if not super(HyperlinkedModelSerializer, self).set_location_header():
-            self._headers['Location'] = self.data['url']
-            return True
-        
-        return True
