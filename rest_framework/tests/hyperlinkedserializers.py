@@ -221,7 +221,6 @@ class TestCreateWithForeignKeysAndCustomSlug(TestCase):
         request = factory.post('/photos/', data=data)
         response = self.list_create_view(request).render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertNotIn('Location', response, msg='Location should only be included if there is a "url" field on the serializer')
         self.assertEqual(self.post.photo_set.count(), 1)
         self.assertEqual(self.post.photo_set.all()[0].description, 'A test photo')
 

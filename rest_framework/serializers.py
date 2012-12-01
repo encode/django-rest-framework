@@ -108,6 +108,8 @@ class BaseSerializer(Field):
         self._data = None
         self._files = None
         self._errors = None
+        self._headers = {}
+        
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
@@ -304,12 +306,47 @@ class BaseSerializer(Field):
             self._data = self.to_native(self.object)
         return self._data
 
-    def save(self):
+    def save(self, **kwargs):
         """
         Save the deserialized object and return it.
         """
-        self.object.save()
+        pk_val = self.object._get_pk_val(self.object.__class__._meta)
+        pk_set = pk_val is not None
+        
+        if ((pk_set) and
+                ((('force_update' in kwargs) or ('update_fields' in kwargs)) or
+                ('force_insert' not in kwargs and self.object.__class__.objects.filter(pk=pk_val).exists()))):
+            created = False
+        else:
+            created = True
+            
+        self.object.save(**kwargs)
+        
+        if created:
+            self.set_location_header()
+            
         return self.object
+    
+    def generate_header(self):
+        return {}
+    
+    @property
+    def headers(self):
+        #self._headers.update(self.generate_header())
+        return self._headers
+    
+    def set_location_header(self):
+        self._headers['Location'] = 'x'
+        if hasattr(self.object, 'get_absolute_url'):
+            self._headers['Location'] = self.object.get_absolute_url()
+            return True
+        else:
+            for field_name, field in self.fields.iteritems():
+                if isinstance(field, HyperlinkedIdentityField):
+                    self._headers['Location'] = field.field_to_native(self.object, field_name)
+                    return True
+        
+        return False
 
 
 class Serializer(BaseSerializer):
@@ -474,11 +511,11 @@ class ModelSerializer(Serializer):
                 self.m2m_data[field.name] = attrs.pop(field.name)
         return self.opts.model(**attrs)
 
-    def save(self, save_m2m=True):
+    def save(self, save_m2m=True, **kwargs):
         """
         Save the deserialized object and return it.
         """
-        self.object.save()
+        super(ModelSerializer, self).save(**kwargs)
 
         if getattr(self, 'm2m_data', None) and save_m2m:
             for accessor_name, object_list in self.m2m_data.items():
@@ -539,3 +576,10 @@ class HyperlinkedModelSerializer(ModelSerializer):
         if to_many:
             return ManyHyperlinkedRelatedField(**kwargs)
         return HyperlinkedRelatedField(**kwargs)
+
+    def set_location_header(self):
+        if not super(HyperlinkedModelSerializer, self).set_location_header():
+            self._headers['Location'] = self.data['url']
+            return True
+        
+        return True

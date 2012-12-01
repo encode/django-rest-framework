@@ -18,16 +18,9 @@ class CreateModelMixin(object):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
         if serializer.is_valid():
             self.pre_save(serializer.object)
-            self.object = serializer.save()
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def get_success_headers(self, data):
-        try:
-            return {'Location': data['url']}
-        except (TypeError, KeyError):
-            return {}
+            self.object = serializer.save(force_insert=True)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=serializer.headers)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST, headers=serializer.headers)
 
     def pre_save(self, obj):
         pass
@@ -62,7 +55,7 @@ class ListModelMixin(object):
         else:
             serializer = self.get_serializer(self.object_list)
 
-        return Response(serializer.data)
+        return Response(serializer.data, headers=serializer.headers)
 
 
 class RetrieveModelMixin(object):
@@ -73,7 +66,7 @@ class RetrieveModelMixin(object):
     def retrieve(self, request, *args, **kwargs):
         self.object = self.get_object()
         serializer = self.get_serializer(self.object)
-        return Response(serializer.data)
+        return Response(serializer.data, headers=serializer.headers)
 
 
 class UpdateModelMixin(object):
@@ -93,11 +86,14 @@ class UpdateModelMixin(object):
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
-            self.object = serializer.save()
+            if created:
+                self.object = serializer.save(force_insert=True)
+            else:
+                self.object = serializer.save(force_update=True)
             status_code = created and status.HTTP_201_CREATED or status.HTTP_200_OK
-            return Response(serializer.data, status=status_code)
+            return Response(serializer.data, status=status_code, headers=serializer.headers)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST, headers=serializer.headers)
 
     def pre_save(self, obj):
         """
