@@ -10,7 +10,7 @@ import copy
 import string
 from django import forms
 from django.http.multipartparser import parse_header
-from django.template import RequestContext, loader, Template
+from django.template import loader, Template
 from django.utils import simplejson as json
 from rest_framework.compat import yaml
 from rest_framework.exceptions import ConfigurationError
@@ -28,7 +28,9 @@ class BaseRenderer(object):
     All renderers should extend this class, setting the `media_type`
     and `format` attributes, and override the `.render()` method.
     """
-
+    
+    context_class = api_settings.DEFAULT_CONTEXT_CLASS
+    
     media_type = None
     format = None
 
@@ -197,7 +199,7 @@ class TemplateHTMLRenderer(BaseRenderer):
     def resolve_context(self, data, request, response):
         if response.exception:
             data['status_code'] = response.status_code
-        return RequestContext(request, data)
+        return self.context_class(request, data)
 
     def get_template_names(self, response, view):
         if response.template_name:
@@ -433,7 +435,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         breadcrumb_list = get_breadcrumbs(request.path)
 
         template = loader.get_template(self.template)
-        context = RequestContext(request, {
+        context = self.context_class(request, {
             'content': content,
             'view': view,
             'request': request,
