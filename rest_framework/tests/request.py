@@ -3,6 +3,8 @@ Tests for content parsing, and form-overloaded content parsing.
 """
 from django.conf.urls.defaults import patterns
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import TestCase, Client
 from django.utils import simplejson as json
 
@@ -276,3 +278,29 @@ class TestContentParsingWithAuthentication(TestCase):
 
     #     response = self.csrf_client.post('/', content)
     #     self.assertEqual(status.OK, response.status_code, "POST data is malformed")
+
+
+class TestUserSetter(TestCase):
+
+    def setUp(self):
+        # Pass request object through session middleware so session is
+        # available to login and logout functions
+        self.request = Request(factory.get('/'))
+        SessionMiddleware().process_request(self.request)
+
+        User.objects.create_user('ringo', 'starr@thebeatles.com', 'yellow')
+        self.user = authenticate(username='ringo', password='yellow')
+
+    def test_user_can_be_set(self):
+        self.request.user = self.user
+        self.assertEqual(self.request.user, self.user)
+
+    def test_user_can_login(self):
+        login(self.request, self.user)
+        self.assertEqual(self.request.user, self.user)
+
+    def test_user_can_logout(self):
+        self.request.user = self.user
+        self.assertFalse(self.request.user.is_anonymous())
+        logout(self.request)
+        self.assertTrue(self.request.user.is_anonymous())
