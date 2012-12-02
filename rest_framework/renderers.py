@@ -382,7 +382,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         # Creating an on the fly form see:
         # http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
-        OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
+        OnTheFlyForm = type(str("OnTheFlyForm"), (forms.Form,), fields)
         data = (obj is not None) and serializer.data or None
         form_instance = OnTheFlyForm(data)
         return form_instance
