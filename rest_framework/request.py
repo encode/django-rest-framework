@@ -169,6 +169,15 @@ class Request(object):
             self._user, self._auth = self._authenticate()
         return self._user
 
+    @user.setter
+    def user(self, value):
+         """
+         Sets the user on the current request. This is necessary to maintain
+         compatilbility with django.contrib.auth where the user proprety is
+         set in the login and logout functions.
+         """
+         self._user = value
+
     @property
     def auth(self):
         """
