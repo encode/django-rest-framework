@@ -329,7 +329,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         }
 
         fields = {}
-        for k, v in serializer.get_fields(True).items():
+        for k, v in serializer.get_fields().items():
             if getattr(v, 'read_only', True):
                 continue
 
