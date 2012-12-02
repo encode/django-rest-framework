@@ -308,26 +308,6 @@ class BrowsableAPIRenderer(BaseRenderer):
         return True
 
     def serializer_to_form_fields(self, serializer):
-        field_mapping = {
-            serializers.FloatField: forms.FloatField,
-            serializers.IntegerField: forms.IntegerField,
-            serializers.DateTimeField: forms.DateTimeField,
-            serializers.DateField: forms.DateField,
-            serializers.EmailField: forms.EmailField,
-            serializers.RegexField: forms.RegexField,
-            serializers.CharField: forms.CharField,
-            serializers.ChoiceField: forms.ChoiceField,
-            serializers.BooleanField: forms.BooleanField,
-            serializers.PrimaryKeyRelatedField: forms.ChoiceField,
-            serializers.ManyPrimaryKeyRelatedField: forms.MultipleChoiceField,
-            serializers.SlugRelatedField: forms.ChoiceField,
-            serializers.ManySlugRelatedField: forms.MultipleChoiceField,
-            serializers.HyperlinkedRelatedField: forms.ChoiceField,
-            serializers.ManyHyperlinkedRelatedField: forms.MultipleChoiceField,
-            serializers.FileField: forms.FileField,
-            serializers.ImageField: forms.ImageField,
-        }
-
         fields = {}
         for k, v in serializer.get_fields().items():
             if getattr(v, 'read_only', True):
@@ -351,13 +331,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
             kwargs['label'] = k
 
-            try:
-                fields[k] = field_mapping[v.__class__](**kwargs)
-            except KeyError:
-                if getattr(v, 'choices', None) is not None:
-                    fields[k] = forms.ChoiceField(**kwargs)
-                else:
-                    fields[k] = forms.CharField(**kwargs)
+            fields[k] = v.form_field_class(**kwargs)
         return fields
 
     def get_form(self, view, method, request):

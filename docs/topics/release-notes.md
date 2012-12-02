@@ -4,8 +4,23 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
-## Master
+## 2.1.6
 
+**Date**: 23rd Nov 2012
+
+* Bugfix: Unfix DjangoModelPermissions.  (I am a doofus.)
+
+## 2.1.5
+
+**Date**: 23rd Nov 2012
+
+* Bugfix: Fix DjangoModelPermissions.
+
+## 2.1.4
+
+**Date**: 22nd Nov 2012
+
+* Support for partial updates with serializers.
 * Added `RegexField`.
 * Added `SerializerMethodField`.
 * Serializer performance improvements.

@@ -64,6 +64,11 @@ The following people have helped make REST framework great.
 * Eugene Mechanism - [mechanism]
 * Jonas Liljestrand - [jonlil]
 * Justin Davis - [irrelative]
+* Dustin Bachrach - [dbachrach]
+* Mark Shirley - [maspwr]
+* Olivier Aubert - [oaubert]
+* Yuri Prezument - [yprez]
+* Fabian Buechler - [fabianbuechler]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -163,3 +168,8 @@ To contact the author directly:
 [mechanism]: https://github.com/mechanism
 [jonlil]: https://github.com/jonlil
 [irrelative]: https://github.com/irrelative
+[dbachrach]: https://github.com/dbachrach
+[maspwr]: https://github.com/maspwr
+[oaubert]: https://github.com/oaubert
+[yprez]: https://github.com/yprez
+[fabianbuechler]: https://github.com/fabianbuechler

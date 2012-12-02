@@ -41,8 +41,8 @@ We don't need our `JSONResponse` class anymore, so go ahead and delete that.  On
     from rest_framework import status
     from rest_framework.decorators import api_view
     from rest_framework.response import Response
-    from snippet.models import Snippet
-    from snippet.serializers import SnippetSerializer
+    from snippets.models import Snippet
+    from snippets.serializers import SnippetSerializer
 
 
     @api_view(['GET', 'POST'])
@@ -113,7 +113,7 @@ Now update the `urls.py` file slightly, to append a set of `format_suffix_patter
     from django.conf.urls import patterns, url
     from rest_framework.urlpatterns import format_suffix_patterns
 
-    urlpatterns = patterns('snippet.views',
+    urlpatterns = patterns('snippets.views',
         url(r'^snippets/$', 'snippet_list'),
         url(r'^snippets/(?P<pk>[0-9]+)$', 'snippet_detail')
     )

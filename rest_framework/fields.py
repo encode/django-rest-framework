@@ -12,6 +12,7 @@ from django.core import validators
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import resolve, get_script_prefix
 from django.conf import settings
+from django import forms
 from django.forms import widgets
 from django.forms.models import ModelChoiceIterator
 from django.utils.encoding import is_protected_type
@@ -45,6 +46,7 @@ class Field(object):
     empty = ''
     type_name = None
     _use_files = None
+    form_field_class = forms.CharField
 
     def __init__(self, source=None):
         self.parent = None
@@ -64,6 +66,8 @@ class Field(object):
         self.parent = parent
         self.root = parent.root or parent
         self.context = self.root.context
+        if self.root.partial:
+            self.required = False
 
     def field_from_native(self, data, files, field_name, into):
         """
@@ -231,7 +235,7 @@ class ModelField(WritableField):
                             getattr(self.model_field, 'min_length', None))
         self.max_length = kwargs.pop('max_length',
                             getattr(self.model_field, 'max_length', None))
-        
+
         super(ModelField, self).__init__(*args, **kwargs)
 
         if self.min_length is not None:
@@ -402,6 +406,7 @@ class PrimaryKeyRelatedField(RelatedField):
     Represents a to-one relationship as a pk value.
     """
     default_read_only = False
+    form_field_class = forms.ChoiceField
 
     # TODO: Remove these field hacks...
     def prepare_value(self, obj):
@@ -448,6 +453,7 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
     Represents a to-many relationship as a pk value.
     """
     default_read_only = False
+    form_field_class = forms.MultipleChoiceField
 
     def prepare_value(self, obj):
         return self.to_native(obj.pk)
@@ -491,6 +497,7 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
 
 class SlugRelatedField(RelatedField):
     default_read_only = False
+    form_field_class = forms.ChoiceField
 
     def __init__(self, *args, **kwargs):
         self.slug_field = kwargs.pop('slug_field', None)
@@ -512,7 +519,7 @@ class SlugRelatedField(RelatedField):
 
 
 class ManySlugRelatedField(ManyRelatedMixin, SlugRelatedField):
-    pass
+    form_field_class = forms.MultipleChoiceField
 
 
 ### Hyperlinked relationships
@@ -525,6 +532,7 @@ class HyperlinkedRelatedField(RelatedField):
     slug_field = 'slug'
     slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
     default_read_only = False
+    form_field_class = forms.ChoiceField
 
     def __init__(self, *args, **kwargs):
         try:
@@ -624,7 +632,7 @@ class ManyHyperlinkedRelatedField(ManyRelatedMixin, HyperlinkedRelatedField):
     """
     Represents a to-many relationship, using hyperlinking.
     """
-    pass
+    form_field_class = forms.MultipleChoiceField
 
 
 class HyperlinkedIdentityField(Field):
@@ -682,6 +690,7 @@ class HyperlinkedIdentityField(Field):
 
 class BooleanField(WritableField):
     type_name = 'BooleanField'
+    form_field_class = forms.BooleanField
     widget = widgets.CheckboxInput
     default_error_messages = {
         'invalid': _("'%s' value must be either True or False."),
@@ -703,6 +712,7 @@ class BooleanField(WritableField):
 
 class CharField(WritableField):
     type_name = 'CharField'
+    form_field_class = forms.CharField
 
     def __init__(self, max_length=None, min_length=None, *args, **kwargs):
         self.max_length, self.min_length = max_length, min_length
@@ -747,6 +757,7 @@ class SlugField(CharField):
 
 class ChoiceField(WritableField):
     type_name = 'ChoiceField'
+    form_field_class = forms.ChoiceField
     widget = widgets.Select
     default_error_messages = {
         'invalid_choice': _('Select a valid choice. %(value)s is not one of the available choices.'),
@@ -793,6 +804,7 @@ class ChoiceField(WritableField):
 
 class EmailField(CharField):
     type_name = 'EmailField'
+    form_field_class = forms.EmailField
 
     default_error_messages = {
         'invalid': _('Enter a valid e-mail address.'),
@@ -843,6 +855,8 @@ class RegexField(CharField):
 
 class DateField(WritableField):
     type_name = 'DateField'
+    widget = widgets.DateInput
+    form_field_class = forms.DateField
 
     default_error_messages = {
         'invalid': _("'%s' value has an invalid date format. It must be "
@@ -880,6 +894,8 @@ class DateField(WritableField):
 
 class DateTimeField(WritableField):
     type_name = 'DateTimeField'
+    widget = widgets.DateTimeInput
+    form_field_class = forms.DateTimeField
 
     default_error_messages = {
         'invalid': _("'%s' value has an invalid format. It must be in "
@@ -934,6 +950,7 @@ class DateTimeField(WritableField):
 
 class IntegerField(WritableField):
     type_name = 'IntegerField'
+    form_field_class = forms.IntegerField
 
     default_error_messages = {
         'invalid': _('Enter a whole number.'),
@@ -963,6 +980,7 @@ class IntegerField(WritableField):
 
 class FloatField(WritableField):
     type_name = 'FloatField'
+    form_field_class = forms.FloatField
 
     default_error_messages = {
         'invalid': _("'%s' value must be a float."),
@@ -982,6 +1000,7 @@ class FloatField(WritableField):
 class FileField(WritableField):
     _use_files = True
     type_name = 'FileField'
+    form_field_class = forms.FileField
     widget = widgets.FileInput
 
     default_error_messages = {
@@ -1024,6 +1043,7 @@ class FileField(WritableField):
 
 class ImageField(FileField):
     _use_files = True
+    form_field_class = forms.ImageField
 
     default_error_messages = {
         'invalid_image': _("Upload a valid image. The file you uploaded was either not an image or a corrupted image."),

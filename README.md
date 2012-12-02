@@ -58,6 +58,29 @@ To run the tests.
 
 # Changelog
 
+## 2.1.6
+
+**Date**: 23rd Nov 2012
+
+* Bugfix: Unfix DjangoModelPermissions.  (I am a doofus.)
+
+## 2.1.5
+
+**Date**: 23rd Nov 2012
+
+* Bugfix: Fix DjangoModelPermissions.
+
+## 2.1.4
+
+**Date**: 22nd Nov 2012
+
+* Support for partial updates with serializers.
+* Added `RegexField`.
+* Added `SerializerMethodField`.
+* Serializer performance improvements.
+* Added `obtain_token_view` to get tokens when using `TokenAuthentication`.
+* Bugfix: Django 1.5 configurable user support for `TokenAuthentication`.
+
 ## 2.1.3
 
 **Date**: 16th Nov 2012
