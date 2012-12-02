@@ -69,6 +69,7 @@ The following people have helped make REST framework great.
 * Olivier Aubert - [oaubert]
 * Yuri Prezument - [yprez]
 * Fabian Buechler - [fabianbuechler]
+* Mark Hughes - [mhsparks]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -173,3 +174,4 @@ To contact the author directly:
 [oaubert]: https://github.com/oaubert
 [yprez]: https://github.com/yprez
 [fabianbuechler]: https://github.com/fabianbuechler
+[mhsparks]: https://github.com/mhsparks
