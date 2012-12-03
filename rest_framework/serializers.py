@@ -428,11 +428,11 @@ class ModelSerializer(Serializer):
         if max_length:
             kwargs['max_length'] = max_length
 
-        if model_field.verbose_name:
-            kwargs['label'] = model_field.verbose_name
+        if model_field.verbose_name is not None:
+            kwargs['label'] = smart_unicode(model_field.verbose_name)
 
-        if model_field.help_text:
-            kwargs['help_text'] = model_field.help_text
+        if model_field.help_text is not None:
+            kwargs['help_text'] = smart_unicode(model_field.help_text)
 
         field_mapping = {
             models.FloatField: FloatField,

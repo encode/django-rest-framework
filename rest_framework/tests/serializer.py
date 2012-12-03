@@ -1,6 +1,6 @@
 import datetime
 from django.test import TestCase
-from rest_framework import serializers
+from rest_framework import serializers, fields
 from rest_framework.tests.models import (ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel)
@@ -48,7 +48,7 @@ class BookSerializer(serializers.ModelSerializer):
 
 
 class ActionItemSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = ActionItem
 
@@ -641,3 +641,26 @@ class BlankFieldTests(TestCase):
         """
         serializer = self.not_blank_model_serializer_class(data=self.data)
         self.assertEquals(serializer.is_valid(), False)
+
+
+# Test for issue #467
+class FieldLabelTest(TestCase):
+    def setUp(self):
+        class LabelModelSerializer(serializers.ModelSerializer):
+            # This is check that ctor supports both fields
+            additional = fields.CharField(label='Label', help_text='Help')
+
+            class Meta:
+                model = BasicModel
+
+        self.serializer_class = LabelModelSerializer
+
+    def test_label_from_model(self):
+        """
+        Validates that label and help_text are correctly copied from the model class.
+        """
+        serializer = self.serializer_class()
+        text_field = serializer.fields['text']
+
+        self.assertEquals('Text', text_field.label)
+        self.assertEquals('Text description.', text_field.help_text)

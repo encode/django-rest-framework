@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericForeignKey, GenericRelation
+from django.utils.translation import ugettext_lazy as _
 
 # from django.contrib.auth.models import Group
 
@@ -56,7 +57,7 @@ class Anchor(RESTFrameworkModel):
 
 
 class BasicModel(RESTFrameworkModel):
-    text = models.CharField(max_length=100)
+    text = models.CharField(max_length=100, verbose_name=_("Text"), help_text=_("Text description."))
 
 
 class SlugBasedModel(RESTFrameworkModel):
