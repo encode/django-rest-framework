@@ -107,7 +107,7 @@ class BaseSerializer(Field):
 
         self._data = None
         self._files = None
-        self._errors = None 
+        self._errors = None
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
