@@ -428,6 +428,12 @@ class ModelSerializer(Serializer):
         if max_length:
             kwargs['max_length'] = max_length
 
+        if model_field.verbose_name:
+            kwargs['label'] = model_field.verbose_name
+
+        if model_field.help_text:
+            kwargs['help_text'] = model_field.help_text
+
         field_mapping = {
             models.FloatField: FloatField,
             models.IntegerField: IntegerField,

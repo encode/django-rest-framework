@@ -28,7 +28,7 @@ def is_simple_callable(obj):
     return (
         (inspect.isfunction(obj) and not inspect.getargspec(obj)[0]) or
         (inspect.ismethod(obj) and len(inspect.getargspec(obj)[0]) <= 1)
-    )
+        )
 
 
 class Field(object):
@@ -38,13 +38,15 @@ class Field(object):
     _use_files = None
     form_field_class = forms.CharField
 
-    def __init__(self, source=None):
+    def __init__(self, source=None, label=None, help_text=None):
         self.parent = None
 
         self.creation_counter = Field.creation_counter
         Field.creation_counter += 1
 
         self.source = source
+        self.label = label
+        self.help_text = help_text
 
     def initialize(self, parent, field_name):
         """
@@ -123,11 +125,11 @@ class WritableField(Field):
     widget = widgets.TextInput
     default = None
 
-    def __init__(self, source=None, read_only=False, required=None,
+    def __init__(self, source=None, label=None, help_text=None,
+                 read_only=False, required=None,
                  validators=[], error_messages=None, widget=None,
                  default=None, blank=None):
-
-        super(WritableField, self).__init__(source=source)
+        super(WritableField, self).__init__(source=source, label=label, help_text=help_text)
 
         self.read_only = read_only
         if required is None:
@@ -215,6 +217,7 @@ class ModelField(WritableField):
     """
     A generic field that can be used against an arbitrary model field.
     """
+
     def __init__(self, *args, **kwargs):
         try:
             self.model_field = kwargs.pop('model_field')
@@ -222,9 +225,9 @@ class ModelField(WritableField):
             raise ValueError("ModelField requires 'model_field' kwarg")
 
         self.min_length = kwargs.pop('min_length',
-                            getattr(self.model_field, 'min_length', None))
+            getattr(self.model_field, 'min_length', None))
         self.max_length = kwargs.pop('max_length',
-                            getattr(self.model_field, 'max_length', None))
+            getattr(self.model_field, 'max_length', None))
 
         super(ModelField, self).__init__(*args, **kwargs)
 
@@ -434,7 +437,7 @@ class PrimaryKeyRelatedField(RelatedField):
             # RelatedObject (reverse relationship)
             obj = getattr(obj, self.source or field_name)
             return self.to_native(obj.pk)
-        # Forward relationship
+            # Forward relationship
         return self.to_native(pk)
 
 
@@ -469,7 +472,7 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
             # RelatedManager (reverse relationship)
             queryset = getattr(obj, self.source or field_name)
             return [self.to_native(item.pk) for item in queryset.all()]
-        # Forward relationship
+            # Forward relationship
         return [self.to_native(item.pk) for item in queryset.all()]
 
     def from_native(self, data):
@@ -913,7 +916,7 @@ class DateTimeField(WritableField):
                 # call stack.
                 warnings.warn(u"DateTimeField received a naive datetime (%s)"
                               u" while time zone support is active." % value,
-                              RuntimeWarning)
+                    RuntimeWarning)
                 default_timezone = timezone.get_default_timezone()
                 value = timezone.make_aware(value, default_timezone)
             return value
