@@ -107,8 +107,7 @@ class BaseSerializer(Field):
 
         self._data = None
         self._files = None
-        self._errors = None
-        self._headers = {}        
+        self._errors = None 
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
@@ -119,7 +118,7 @@ class BaseSerializer(Field):
         """
         return {}
 
-    def get_fields(self):
+    def get_all_fields(self):
         """
         Returns the complete set of fields for the object as a dict.
 
@@ -140,6 +139,15 @@ class BaseSerializer(Field):
         for key, val in default_fields.items():
             if key not in ret:
                 ret[key] = val
+
+        return ret
+
+    def get_fields(self):
+        """
+        Returns a subset of fields specified by exclude and fields attr.
+        of the Option Class.
+        """
+        ret = self.get_all_fields()
 
         # If 'fields' is specified, use those fields, in that order.
         if self.opts.fields:
@@ -308,44 +316,9 @@ class BaseSerializer(Field):
     def save(self, **kwargs):
         """
         Save the deserialized object and return it.
-        """
-        pk_val = self.object._get_pk_val(self.object.__class__._meta)
-        pk_set = pk_val is not None
-        
-        if ((pk_set) and
-                ((('force_update' in kwargs) or ('update_fields' in kwargs)) or
-                ('force_insert' not in kwargs and self.object.__class__.objects.filter(pk=pk_val).exists()))):
-            created = False
-        else:
-            created = True
-            
-        self.object.save(**kwargs)
-        
-        if created:
-            self.set_location_header()
-            
+        """            
+        self.object.save(**kwargs)            
         return self.object
-    
-    def _generate_headers(self):
-        return {}
-    
-    @property
-    def headers(self):
-        ret = self._generate_headers()
-        ret.update(self._headers)
-        return ret
-    
-    def set_location_header(self):
-        if hasattr(self.object, 'get_absolute_url'):
-            self._headers['Location'] = self.object.get_absolute_url()
-            return True
-        else:
-            for field_name, field in self.fields.iteritems():
-                if isinstance(field, HyperlinkedIdentityField):
-                    self._headers['Location'] = field.field_to_native(self.object, field_name)
-                    return True
-        
-        return False
 
 
 class Serializer(BaseSerializer):
