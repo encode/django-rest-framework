@@ -16,6 +16,16 @@ class BlogPostCommentSerializer(serializers.ModelSerializer):
         model = BlogPostComment
         fields = ('text', 'blog_post_url', 'url')
 
+class NamespacedBlogPostCommentSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='blogpostcomment-detail')
+    text = serializers.CharField()
+    blog_post_url = serializers.HyperlinkedRelatedField(source='blog_post', view_name='blogpost-detail', view_namespace = None)
+
+    class Meta:
+        model = BlogPostComment
+        view_namespace = 'namespacetests'
+        fields = ('text', 'blog_post_url', 'url')
+
 
 class PhotoSerializer(serializers.Serializer):
     description = serializers.CharField()
@@ -65,6 +75,14 @@ class BlogPostCommentDetail(generics.RetrieveAPIView):
     model = BlogPostComment
     serializer_class = BlogPostCommentSerializer
 
+class NamespacedBlogPostCommentListCreate(generics.ListCreateAPIView):
+    model = BlogPostComment
+    serializer_class = NamespacedBlogPostCommentSerializer
+
+class NamespacedBlogPostCommentDetail(generics.RetrieveAPIView):
+    model = BlogPostComment
+    serializer_class = NamespacedBlogPostCommentSerializer
+
 class BlogPostDetail(generics.RetrieveAPIView):
     model = BlogPost
 
@@ -86,6 +104,8 @@ class OptionalRelationDetail(generics.RetrieveAPIView):
 anchor_urls = patterns('',
     url(r'^(?P<pk>\d+)/$', AnchorDetail.as_view(), name='anchor-detail'),
     url(r'^manytomany/(?P<pk>\d+)/$', NamespacedManyToManyDetail.as_view(), name='manytomanymodel-detail'),   
+    url(r'^comments/$', NamespacedBlogPostCommentListCreate.as_view(), name='blogpostcomment-list'),
+    url(r'^comments/(?P<pk>\d+)/$', NamespacedBlogPostCommentDetail.as_view(), name='blogpostcomment-detail'),   
 )
 
 urlpatterns = patterns('',
@@ -216,6 +236,7 @@ class TestCreateWithForeignKeys(TestCase):
         """
         self.post = BlogPost.objects.create(title="Test post")
         self.create_view = BlogPostCommentListCreate.as_view()
+        self.create_namespaced_view = NamespacedBlogPostCommentListCreate.as_view()
 
     def test_create_comment(self):
 
@@ -230,6 +251,26 @@ class TestCreateWithForeignKeys(TestCase):
         self.assertEqual(response['Location'], 'http://testserver/comments/1/')
         self.assertEqual(self.post.blogpostcomment_set.count(), 1)
         self.assertEqual(self.post.blogpostcomment_set.all()[0].text, 'A test comment')
+
+    def test_create_namespaced_comment(self):
+
+        data = {
+            'text': 'A test comment',
+            'blog_post_url': 'http://testserver/posts/1/'
+        }
+
+        response_data = {
+            'url': 'http://testserver/other/namespace/comments/1/',
+            'text': 'A test comment',
+            'blog_post_url': 'http://testserver/posts/1/'
+        }
+
+        request = factory.post('/other/namespace/comments/', data=data)
+        response = self.create_namespaced_view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response['Location'], 'http://testserver/other/namespace/comments/1/', msg='Not specified Namespace should be inherited from parents Options')
+        self.assertEqual(self.post.blogpostcomment_set.count(), 1)
+        self.assertEquals(response.data, response_data)
 
 
 class TestCreateWithForeignKeysAndCustomSlug(TestCase):

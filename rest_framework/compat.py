@@ -344,12 +344,6 @@ except ImportError:
             return datetime.datetime(**kw)
 
 
-# empty does not exist in 1.3x
-if django.VERSION >= (1, 4):
-    from django.utils.functional import empty
-else:
-    empty = object()
-
 # Markdown is optional
 try:
     import markdown
