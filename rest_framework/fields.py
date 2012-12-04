@@ -817,6 +817,7 @@ class EmailField(CharField):
 
 class RegexField(CharField):
     type_name = 'RegexField'
+    form_field_class = forms.RegexField
 
     def __init__(self, regex, max_length=None, min_length=None, *args, **kwargs):
         super(RegexField, self).__init__(max_length, min_length, *args, **kwargs)
