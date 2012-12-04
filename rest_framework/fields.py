@@ -634,9 +634,11 @@ class HyperlinkedIdentityField(Field):
     slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
 
     def __init__(self, *args, **kwargs):
-        # TODO: Make view_name mandatory, and have the
-        # HyperlinkedModelSerializer set it on-the-fly
-        self.view_name = kwargs.pop('view_name', None)
+        try:
+            self.view_name = kwargs.pop('view_name')
+        except:
+            raise ValueError("Hyperlinked Identity field requires 'view_name' kwarg")
+        
         self.format = kwargs.pop('format', None)
 
         self.slug_field = kwargs.pop('slug_field', self.slug_field)

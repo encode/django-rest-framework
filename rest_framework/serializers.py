@@ -5,6 +5,8 @@ from decimal import Decimal
 from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
+from django.utils.functional import empty
+from django.core.exceptions import ImproperlyConfigured
 from rest_framework.compat import get_concrete_model
 
 # Note: We do the following so that users of the framework can use this style:
@@ -67,10 +69,34 @@ def _get_declared_fields(bases, attrs):
 
     return SortedDict(fields)
 
+def _get_options_instance(bases, attrs):
+    options_class = Meta = empty
+    if '_options_class' in attrs:
+        options_class = attrs['_options_class']
+    else:
+        for base in bases:
+            if hasattr(base, '_options_class'):
+                options_class = getattr(base, '_options_class')
+                break
+        if options_class is empty:
+            raise ImproperlyConfigured, 'A Serializer requires an "_options_class" attribute' 
+            
+    if 'Meta' in attrs:
+        Meta = attrs['Meta']
+    else:
+        for base in bases:
+            if hasattr(base, 'Meta'):
+                Meta = getattr(base, 'Meta')
+                break
+        if Meta is empty:
+            raise ImproperlyConfigured, 'A Serializer requires an "Meta" attribute' 
+    
+    return options_class(Meta)
 
 class SerializerMetaclass(type):
     def __new__(cls, name, bases, attrs):
         attrs['base_fields'] = _get_declared_fields(bases, attrs)
+        attrs['opts'] = _get_options_instance(bases, attrs)
         return super(SerializerMetaclass, cls).__new__(cls, name, bases, attrs)
 
 
@@ -93,7 +119,6 @@ class BaseSerializer(Field):
 
     def __init__(self, instance=None, data=None, files=None, context=None, partial=False, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
-        self.opts = self._options_class(self.Meta)
         self.parent = None
         self.root = None
         self.partial = partial
@@ -503,12 +528,13 @@ class HyperlinkedModelSerializer(ModelSerializer):
     _options_class = HyperlinkedModelSerializerOptions
     _default_view_name = '%(model_name)s-detail'
 
-    url = HyperlinkedIdentityField()
-
     def __init__(self, *args, **kwargs):
-        super(HyperlinkedModelSerializer, self).__init__(*args, **kwargs)
         if self.opts.view_name is None:
             self.opts.view_name = self._get_default_view_name(self.opts.model)
+            
+        self.base_fields.insert(0, 'url', HyperlinkedIdentityField(view_name=self.opts.view_name))
+        
+        super(HyperlinkedModelSerializer, self).__init__(*args, **kwargs)
 
     def _get_default_view_name(self, model):
         """
