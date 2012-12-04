@@ -659,13 +659,13 @@ class FieldLabelTest(TestCase):
         serializer = self.serializer_class()
         text_field = serializer.fields['text']
 
-        self.assertEquals('Text', text_field.label)
-        self.assertEquals('Text description.', text_field.help_text)
+        self.assertEquals(u'Text', text_field.label)
+        self.assertEquals(u'Text description.', text_field.help_text)
 
     def test_field_ctor(self):
         """
         This is check that ctor supports both label and help_text.
         """
-        fields.Field(label='Label', help_text='Help')
-        fields.CharField(label='Label', help_text='Help')
-        fields.ManyHyperlinkedRelatedField(view_name='fake', label='Label', help_text='Help')
+        self.assertEquals(u'Label', fields.Field(label='Label', help_text='Help').label)
+        self.assertEquals(u'Help', fields.CharField(label='Label', help_text='Help').help_text)
+        self.assertEquals(u'Label', fields.ManyHyperlinkedRelatedField(view_name='fake', label='Label', help_text='Help').label)

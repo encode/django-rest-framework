@@ -45,8 +45,12 @@ class Field(object):
         Field.creation_counter += 1
 
         self.source = source
-        self.label = label
-        self.help_text = help_text
+
+        if label is not None:
+            self.label = smart_unicode(label)
+
+        if help_text is not None:
+            self.help_text = smart_unicode(help_text)
 
     def initialize(self, parent, field_name):
         """
