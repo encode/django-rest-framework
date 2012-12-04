@@ -550,7 +550,7 @@ class HyperlinkedRelatedField(RelatedField):
         view_namespace = self.view_namespace or getattr(self.parent.opts, 'view_namespace', None)
         view_name = self.view_name
         if view_namespace:
-            view_name = '%(namespace)s:%(name)' % {'namespace': view_namespace, 'name':view_name}
+            view_name = '%(namespace)s:%(name)s' % {'namespace': view_namespace, 'name': view_name}
             
         request = self.context.get('request', None)
         format = self.format or self.context.get('format', None)
@@ -662,7 +662,7 @@ class HyperlinkedIdentityField(Field):
         view_namespace = self.view_namespace or getattr(self.parent.opts, 'view_namespace', None)
         view_name = self.view_name
         if view_namespace:
-            view_name = '%(namespace)s:%(name)' % {'namespace': view_namespace, 'name':view_name}
+            view_name = '%(namespace)s:%(name)s' % {'namespace': view_namespace, 'name': view_name}
         
         kwargs = {self.pk_url_kwarg: obj.pk}
         try:

@@ -41,7 +41,7 @@ class GenericAPIView(views.APIView):
 
         if serializer_class is None:
             class DefaultSerializer(self.model_serializer_class):
-                class Meta:
+                class Meta(self.model_serializer_class.Meta):
                     model = self.model
             serializer_class = DefaultSerializer
 

@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
 from django.test.client import RequestFactory
 from rest_framework import generics, status, serializers
@@ -49,6 +49,13 @@ class ManyToManyDetail(generics.RetrieveAPIView):
     model = ManyToManyModel
     model_serializer_class = serializers.HyperlinkedModelSerializer
 
+class NamespacedManyToManySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        view_namespace = 'namespacetests'
+
+class NamespacedManyToManyDetail(generics.RetrieveAPIView):
+    model = ManyToManyModel
+    model_serializer_class = NamespacedManyToManySerializer
 
 class BlogPostCommentListCreate(generics.ListCreateAPIView):
     model = BlogPostComment
@@ -76,7 +83,13 @@ class OptionalRelationDetail(generics.RetrieveAPIView):
     model_serializer_class = serializers.HyperlinkedModelSerializer
 
 
+anchor_urls = patterns('',
+    url(r'^(?P<pk>\d+)/$', AnchorDetail.as_view(), name='anchor-detail'),
+    url(r'^manytomany/(?P<pk>\d+)/$', NamespacedManyToManyDetail.as_view(), name='manytomanymodel-detail'),   
+)
+
 urlpatterns = patterns('',
+    url(r'^other/namespace/', include(anchor_urls, namespace='namespacetests', app_name='namespacetests')),
     url(r'^basic/$', BasicList.as_view(), name='basicmodel-list'),
     url(r'^basic/(?P<pk>\d+)/$', BasicDetail.as_view(), name='basicmodel-detail'),
     url(r'^anchor/(?P<pk>\d+)/$', AnchorDetail.as_view(), name='anchor-detail'),
@@ -156,6 +169,15 @@ class TestManyToManyHyperlinkedView(TestCase):
         }]
         self.list_view = ManyToManyList.as_view()
         self.detail_view = ManyToManyDetail.as_view()
+        self.namespaced_data = [{
+            'url': 'http://testserver/other/namespace/manytomany/1/',
+            'rel': [
+                'http://testserver/other/namespace/1/',
+                'http://testserver/other/namespace/2/',
+                'http://testserver/other/namespace/3/',
+            ]
+        }]
+        self.namespaced_detail_view = NamespacedManyToManyDetail.as_view()
 
     def test_get_list_view(self):
         """
@@ -174,6 +196,15 @@ class TestManyToManyHyperlinkedView(TestCase):
         response = self.detail_view(request, pk=1).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, self.data[0])
+
+    def test_get_detail_namespaced_view(self):
+        """
+        GET requests to a View in a namespace should succeed.
+        """
+        request = factory.get('/other/namespace/manytomany/1/')
+        response = self.namespaced_detail_view(request, pk=1).render()
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(response.data, self.namespaced_data[0])
 
 
 class TestCreateWithForeignKeys(TestCase):
