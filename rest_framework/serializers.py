@@ -532,7 +532,8 @@ class HyperlinkedModelSerializer(ModelSerializer):
         if self.opts.view_name is None:
             self.opts.view_name = self._get_default_view_name(self.opts.model)
             
-        self.base_fields.insert(0, 'url', HyperlinkedIdentityField(view_name=self.opts.view_name, view_namespace=self.opts.view_namespace))
+        if not 'url' in self.base_fields:
+            self.base_fields.insert(0, 'url', HyperlinkedIdentityField(view_name=self.opts.view_name, view_namespace=self.opts.view_namespace))
         
         super(HyperlinkedModelSerializer, self).__init__(*args, **kwargs)
 
