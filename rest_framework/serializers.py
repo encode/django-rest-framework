@@ -519,6 +519,7 @@ class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
     def __init__(self, meta):
         super(HyperlinkedModelSerializerOptions, self).__init__(meta)
         self.view_name = getattr(meta, 'view_name', None)
+        self.view_namespace = getattr(meta, 'view_namespace', None)
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
@@ -531,7 +532,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
         if self.opts.view_name is None:
             self.opts.view_name = self._get_default_view_name(self.opts.model)
             
-        self.base_fields.insert(0, 'url', HyperlinkedIdentityField(view_name=self.opts.view_name))
+        self.base_fields.insert(0, 'url', HyperlinkedIdentityField(view_name=self.opts.view_name, view_namespace=self.opts.view_namespace))
         
         super(HyperlinkedModelSerializer, self).__init__(*args, **kwargs)
 
