@@ -647,9 +647,6 @@ class BlankFieldTests(TestCase):
 class FieldLabelTest(TestCase):
     def setUp(self):
         class LabelModelSerializer(serializers.ModelSerializer):
-            # This is check that ctor supports both fields
-            additional = fields.CharField(label='Label', help_text='Help')
-
             class Meta:
                 model = BasicModel
 
@@ -664,3 +661,11 @@ class FieldLabelTest(TestCase):
 
         self.assertEquals('Text', text_field.label)
         self.assertEquals('Text description.', text_field.help_text)
+
+    def test_field_ctor(self):
+        """
+        This is check that ctor supports both label and help_text.
+        """
+        fields.Field(label='Label', help_text='Help')
+        fields.CharField(label='Label', help_text='Help')
+        fields.ManyHyperlinkedRelatedField(view_name='fake', label='Label', help_text='Help')
