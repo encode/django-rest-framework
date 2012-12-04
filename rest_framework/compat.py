@@ -343,7 +343,6 @@ except ImportError:
             kw = dict((k, int(v)) for k, v in kw.iteritems() if v is not None)
             return datetime.datetime(**kw)
 
-
 # Markdown is optional
 try:
     import markdown

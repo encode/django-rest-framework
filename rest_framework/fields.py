@@ -562,8 +562,7 @@ class HyperlinkedRelatedField(RelatedField):
         return self.slug_field
 
     def to_native(self, obj):
-        view_name = self.view_name
-            
+        view_name = self.view_name            
         request = self.context.get('request', None)
         format = self.format or self.context.get('format', None)
         pk = getattr(obj, 'pk', None)
@@ -666,7 +665,7 @@ class HyperlinkedIdentityField(Field):
         self.pk_url_kwarg = kwargs.pop('pk_url_kwarg', self.pk_url_kwarg)
         self.slug_url_kwarg = kwargs.pop('slug_url_kwarg', default_slug_kwarg)
 
-        super(HyperlinkedIdentityField, self).__init__(*args, **kwargs)        
+        super(HyperlinkedIdentityField, self).__init__(*args, **kwargs)
 
     def initialize(self, parent, field_name):
         super(HyperlinkedIdentityField, self).initialize(parent, field_name)
@@ -681,8 +680,7 @@ class HyperlinkedIdentityField(Field):
     def field_to_native(self, obj, field_name):
         request = self.context.get('request', None)
         format = self.format or self.context.get('format', None)
-        view_name = self.view_name
-        
+        view_name = self.view_name        
         kwargs = {self.pk_url_kwarg: obj.pk}
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
