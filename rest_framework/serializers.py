@@ -560,7 +560,9 @@ class HyperlinkedModelSerializer(ModelSerializer):
         queryset = rel._default_manager
         kwargs = {
             'queryset': queryset,
-            'view_name': self._get_default_view_name(rel)
+            'view_name': self._get_default_view_name(rel),
+            # TODO? offer possibility to init related fields with custom namespaces
+            'view_namespace': getattr(self.opts, 'view_namespace', None)
         }
         if to_many:
             return ManyHyperlinkedRelatedField(**kwargs)
