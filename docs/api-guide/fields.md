@@ -314,6 +314,7 @@ By default, `HyperlinkedRelatedField` is read-write, although you can change thi
 **Arguments**:
 
 * `view_name` - The view name that should be used as the target of the relationship.  **required**.
+* `view_namespace` - The namespace of the view, used as the target of the relationship. The default namespace can be set as HyperlinkedModelSerializerOptions attribute. If not set, it's `None`.
 * `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
 * `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
 * `slug_field` - The field on the target that should be used for the lookup. Default is `'slug'`.
@@ -329,6 +330,7 @@ This field is always read-only.
 **Arguments**:
 
 * `view_name` - The view name that should be used as the target of the relationship.  **required**.
+* `view_namespace` - The namespace of the view, used as the target of the relationship. The default namespace can be set as HyperlinkedModelSerializerOptions attribute. If not set, it's `None`.
 * `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
 * `slug_field` - The field on the target that should be used for the lookup. Default is `'slug'`.
 * `pk_url_kwarg` - The named url parameter for the pk field lookup. Default is `pk`.

@@ -547,7 +547,7 @@ class HyperlinkedRelatedField(RelatedField):
         return self.slug_field
 
     def to_native(self, obj):
-        view_namespace = self.view_namespace
+        view_namespace = self.view_namespace or getattr(self.parent.opts, 'view_namespace', None)
         view_name = self.view_name
         if view_namespace:
             view_name = '%(namespace)s:%(name)' % {'namespace': view_namespace, 'name':view_name}
@@ -659,7 +659,7 @@ class HyperlinkedIdentityField(Field):
     def field_to_native(self, obj, field_name):
         request = self.context.get('request', None)
         format = self.format or self.context.get('format', None)
-        view_namespace = self.view_namespace
+        view_namespace = self.view_namespace or getattr(self.parent.opts, 'view_namespace', None)
         view_name = self.view_name
         if view_namespace:
             view_name = '%(namespace)s:%(name)' % {'namespace': view_namespace, 'name':view_name}
