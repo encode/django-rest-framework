@@ -6,7 +6,7 @@ from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
 from django.core.exceptions import ImproperlyConfigured
-from rest_framework.compat import get_concrete_model, empty
+from rest_framework.compat import get_concrete_model
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -69,7 +69,7 @@ def _get_declared_fields(bases, attrs):
     return SortedDict(fields)
 
 def _get_options_instance(bases, attrs):
-    options_class = Meta = empty
+    options_class = Meta = None
     if '_options_class' in attrs:
         options_class = attrs['_options_class']
     else:
@@ -77,7 +77,7 @@ def _get_options_instance(bases, attrs):
             if hasattr(base, '_options_class'):
                 options_class = getattr(base, '_options_class')
                 break
-        if options_class is empty:
+        if options_class is None:
             raise ImproperlyConfigured, 'A Serializer requires an "_options_class" attribute' 
             
     if 'Meta' in attrs:
@@ -87,7 +87,7 @@ def _get_options_instance(bases, attrs):
             if hasattr(base, 'Meta'):
                 Meta = getattr(base, 'Meta')
                 break
-        if Meta is empty:
+        if Meta is None:
             raise ImproperlyConfigured, 'A Serializer requires an "Meta" attribute' 
     
     return options_class(Meta)
