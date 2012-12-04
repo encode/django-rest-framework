@@ -5,9 +5,8 @@ from decimal import Decimal
 from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
-from django.utils.functional import empty
 from django.core.exceptions import ImproperlyConfigured
-from rest_framework.compat import get_concrete_model
+from rest_framework.compat import get_concrete_model, empty
 
 # Note: We do the following so that users of the framework can use this style:
 #
