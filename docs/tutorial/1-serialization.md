@@ -14,7 +14,7 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 ## Setting up a new environment
 
-Before we do anything else we'll create a new virtual environment, using [virtualenv].  This will make sure our package configuration is keep nicely isolated from any other projects we're working on.
+Before we do anything else we'll create a new virtual environment, using [virtualenv].  This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
 
     :::bash
     mkdir ~/env
@@ -39,7 +39,6 @@ To get started, let's create a new project to work with.
     cd tutorial
 
 Once that's done we can create an app that we'll use to create a simple Web API.
-We're going to create a project that 
 
     python manage.py startapp snippets
 
@@ -64,7 +63,7 @@ We'll also need to add our new `snippets` app and the `rest_framework` app to `I
         'snippets'
     )
 
-We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet views.
+We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet app's URLs.
 
     urlpatterns = patterns('',
         url(r'^', include('snippets.urls')),
@@ -105,7 +104,7 @@ Don't forget to sync the database for the first time.
 
 ## Creating a Serializer class
 
-The first thing we need to get started on our Web API is provide a way of serializing and deserializing the snippet instances into representations such as `json`.  We can do this by declaring serializers that work very similarly to Django's forms.  Create a file in the `snippets` directory named `serializers.py` and add the following.
+The first thing we need to get started on our Web API is provide a way of serializing and deserializing the snippet instances into representations such as `json`.  We can do this by declaring serializers that work very similar to Django's forms.  Create a file in the `snippets` directory named `serializers.py` and add the following.
 
     from django.forms import widgets
     from rest_framework import serializers
@@ -146,7 +145,7 @@ We can actually also save ourselves some time by using the `ModelSerializer` cla
 
 ## Working with Serializers
 
-Before we go any further we'll familiarise ourselves with using our new Serializer class.  Let's drop into the Django shell.
+Before we go any further we'll familiarize ourselves with using our new Serializer class.  Let's drop into the Django shell.
 
     python manage.py shell
 
@@ -166,7 +165,7 @@ We've now got a few snippet instances to play with.  Let's take a look at serial
     serializer.data
     # {'pk': 1, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}
 
-At this point we've translated the model instance into python native datatypes.  To finalise the serialization process we render the data into `json`.
+At this point we've translated the model instance into python native datatypes.  To finalize the serialization process we render the data into `json`.
 
     content = JSONRenderer().render(serializer.data)
     content
@@ -292,7 +291,7 @@ Finally we need to wire these views up. Create the `snippets/urls.py` file:
         url(r'^snippets/(?P<pk>[0-9]+)/$', 'snippet_detail')
     )
 
-It's worth noting that there's a couple of edge cases we're not dealing with properly at the moment.  If we send malformed `json`, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.
+It's worth noting that there are a couple of edge cases we're not dealing with properly at the moment.  If we send malformed `json`, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.
 
 ## Testing our first attempt at a Web API
 
@@ -304,7 +303,7 @@ It's worth noting that there's a couple of edge cases we're not dealing with pro
 
 We're doing okay so far, we've got a serialization API that feels pretty similar to Django's Forms API, and some regular Django views.
 
-Our API views don't do anything particularly special at the moment, beyond serve `json` responses, and there's some error handling edge cases we'd still like to clean up, but it's a functioning Web API.
+Our API views don't do anything particularly special at the moment, beyond serving `json` responses, and there are some error handling edge cases we'd still like to clean up, but it's a functioning Web API.
 
 We'll see how we can start to improve things in [part 2 of the tutorial][tut-2].
 
