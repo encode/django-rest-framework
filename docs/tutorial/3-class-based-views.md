@@ -102,7 +102,7 @@ Let's take a look at how we can compose our views by using the mixin classes.
         def post(self, request, *args, **kwargs):
             return self.create(request, *args, **kwargs)
 
-We'll take a moment to examine exactly what's happening here - We're building our view using `MultipleObjectAPIView`, and adding in `ListModelMixin` and `CreateModelMixin`.
+We'll take a moment to examine exactly what's happening here. We're building our view using `MultipleObjectAPIView`, and adding in `ListModelMixin` and `CreateModelMixin`.
 
 The base class provides the core functionality, and the mixin classes provide the `.list()` and `.create()` actions.  We're then explicitly binding the `get` and `post` methods to the appropriate actions.  Simple enough stuff so far.
 
@@ -142,7 +142,7 @@ Using the mixin classes we've rewritten the views to use slightly less code than
         model = Snippet
         serializer_class = SnippetSerializer
 
-Wow, that's pretty concise.  We've got a huge amount for free, and our code looks like good, clean, idiomatic Django.
+Wow, that's pretty concise.  We've gotten a huge amount for free, and our code looks like good, clean, idiomatic Django.
 
 Next we'll move onto [part 4 of the tutorial][tut-4], where we'll take a look at how we can deal with authentication and permissions for our API.
 
