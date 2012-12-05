@@ -66,6 +66,8 @@ We don't need our `JSONResponse` class anymore, so go ahead and delete that.  On
 
 Our instance view is an improvement over the previous example.  It's a little more concise, and the code now feels very similar to if we were working with the Forms API.  We're also using named status codes, which makes the response meanings more obvious.
 
+Here is the view for an individual snippet.
+
     @api_view(['GET', 'PUT', 'DELETE'])
     def snippet_detail(request, pk):
         """
@@ -92,7 +94,7 @@ Our instance view is an improvement over the previous example.  It's a little mo
             snippet.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-This should all feel very familiar - there's not a lot different to working with regular Django views.
+This should all feel very familiar - it is not a lot different from working with regular Django views.
 
 Notice that we're no longer explicitly tying our requests or responses to a given content type.  `request.DATA` can handle incoming `json` requests, but it can also handle `yaml` and other formats.  Similarly we're returning response objects with data, but allowing REST framework to render the response into the correct content type for us.
 
@@ -128,7 +130,7 @@ Go ahead and test the API from the command line, as we did in [tutorial part 1][
 
 **TODO: Describe using accept headers, content-type headers, and format suffixed URLs**
 
-Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/snippets/][devserver]."
+Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/snippets/][devserver].
 
 ### Browsability
 
