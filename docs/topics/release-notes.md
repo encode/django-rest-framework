@@ -4,6 +4,10 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
+## Master
+
+* Bugfix: Fix `RegexField` to work with `BrowsableAPIRenderer`
+
 ## 2.1.6
 
 **Date**: 23rd Nov 2012
