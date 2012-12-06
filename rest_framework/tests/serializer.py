@@ -3,7 +3,7 @@ from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
-    ManyToManyModel, Person, ReadOnlyManyToManyModel, BlogPostComment)
+    ManyToManyModel, Person, ReadOnlyManyToManyModel)
 
 
 class SubComment(object):
@@ -642,27 +642,6 @@ class BlankFieldTests(TestCase):
         serializer = self.not_blank_model_serializer_class(data=self.data)
         self.assertEquals(serializer.is_valid(), False)
 
-
-#class PersonGroup(object):
-#    name = "group"
-#    persons = [Person(name="joe"), Person(name="job")]
-#
-#class PersonGroupSerializer(serializers.Serializer):
-#    name = serializers.CharField()
-#    persons = PersonSerializer()
-#
-#class BlogPostSerializer(serializers.ModelSerializer):
-#    class Meta:
-#        model = BlogPost
-#
-#
-#class BlogPostCommentSerializer(serializers.ModelSerializer):
-#    class Meta:
-#        model = BlogPostComment
-#        fields = ('text', 'blog_post')
-#
-#    blog_post = BlogPostSerializer()
-#
 
 #test for issue #460
 class SerializerPickleTests(TestCase):
