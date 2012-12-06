@@ -1,9 +1,9 @@
-import datetime
+import datetime, pickle
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
-    ManyToManyModel, Person, ReadOnlyManyToManyModel)
+    ManyToManyModel, Person, ReadOnlyManyToManyModel, BlogPostComment)
 
 
 class SubComment(object):
@@ -641,3 +641,46 @@ class BlankFieldTests(TestCase):
         """
         serializer = self.not_blank_model_serializer_class(data=self.data)
         self.assertEquals(serializer.is_valid(), False)
+
+
+#class PersonGroup(object):
+#    name = "group"
+#    persons = [Person(name="joe"), Person(name="job")]
+#
+#class PersonGroupSerializer(serializers.Serializer):
+#    name = serializers.CharField()
+#    persons = PersonSerializer()
+#
+#class BlogPostSerializer(serializers.ModelSerializer):
+#    class Meta:
+#        model = BlogPost
+#
+#
+#class BlogPostCommentSerializer(serializers.ModelSerializer):
+#    class Meta:
+#        model = BlogPostComment
+#        fields = ('text', 'blog_post')
+#
+#    blog_post = BlogPostSerializer()
+#
+
+#test for issue #460
+class SerializerPickleTests(TestCase):
+    """ Test pickleability of the output of Serializers
+    """
+    def test_pickle_simple_model_serializer_data(self):
+        """ Test simple serializer
+        """
+        pickle.dumps(PersonSerializer(Person(name="Methusela", age=969)).data)
+
+
+    def test_pickle_inner_serializer(self):
+        """ Test pickling a serializer whose resulting .data (a SortedDictWithMetadata) will
+         have unpickleable meta data--in order to make sure metadata doesn't get pulled into the pickle.
+         See DictWithMetadata.__getstate__
+        """
+        class InnerPersonSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Person
+                fields = ('name', 'age')
+        pickle.dumps(InnerPersonSerializer(Person(name="Noah", age=950)).data)
