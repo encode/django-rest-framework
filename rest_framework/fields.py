@@ -693,9 +693,9 @@ class BooleanField(WritableField):
     default = False
 
     def from_native(self, value):
-        if value in ('t', 'True', '1'):
+        if value in ('true', 't', 'True', '1'):
             return True
-        if value in ('f', 'False', '0'):
+        if value in ('false', 'f', 'False', '0'):
             return False
         return bool(value)
 
