@@ -71,6 +71,7 @@ The following people have helped make REST framework great.
 * Fabian Buechler - [fabianbuechler]
 * Mark Hughes - [mhsparks]
 * Michael van de Waeter - [mvdwaeter]
+* Reinout van Rees - [reinout]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -177,3 +178,5 @@ To contact the author directly:
 [fabianbuechler]: https://github.com/fabianbuechler
 [mhsparks]: https://github.com/mhsparks
 [mvdwaeter]: https://github.com/mvdwaeter
+[reinout]: https://github.com/reinout
+
