@@ -123,7 +123,7 @@ class BaseSerializer(Field):
         Returns the fieldnames that should not be validated.
         """
         excluded_fields = list(self.opts.exclude)
-        for field in self.fields.keys() + self.default_fields.keys():
+        for field in self.fields.keys() + self.get_default_fields().keys():
             if self.opts.fields:
                 if field not in self.opts.fields + self.opts.exclude:
                     excluded_fields.append(field)
