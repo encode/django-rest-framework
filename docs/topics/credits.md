@@ -73,6 +73,7 @@ The following people have helped make REST framework great.
 * Michael van de Waeter - [mvdwaeter]
 * Reinout van Rees - [reinout]
 * Michael Richards - [justanotherbody]
+* Ben Roberts - [roberts81]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -181,3 +182,4 @@ To contact the author directly:
 [mvdwaeter]: https://github.com/mvdwaeter
 [reinout]: https://github.com/reinout
 [justanotherbody]: https://github.com/justanotherbody
+[roberts81]: https://github.com/roberts81
