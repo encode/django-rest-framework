@@ -53,7 +53,7 @@ You can also set the authentication policy on a per-view basis, using the `APIVi
 Or, if you're using the `@api_view` decorator with function based views.
 
     @api_view('GET')
-    @permission_classes(IsAuthenticated)
+    @permission_classes((IsAuthenticated, ))
     def example_view(request, format=None):
         content = {
             'status': 'request was permitted'

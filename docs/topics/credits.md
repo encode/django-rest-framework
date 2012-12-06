@@ -66,6 +66,13 @@ The following people have helped make REST framework great.
 * Justin Davis - [irrelative]
 * Dustin Bachrach - [dbachrach]
 * Mark Shirley - [maspwr]
+* Olivier Aubert - [oaubert]
+* Yuri Prezument - [yprez]
+* Fabian Buechler - [fabianbuechler]
+* Mark Hughes - [mhsparks]
+* Michael van de Waeter - [mvdwaeter]
+* Reinout van Rees - [reinout]
+* Michael Richards - [justanotherbody]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -167,3 +174,10 @@ To contact the author directly:
 [irrelative]: https://github.com/irrelative
 [dbachrach]: https://github.com/dbachrach
 [maspwr]: https://github.com/maspwr
+[oaubert]: https://github.com/oaubert
+[yprez]: https://github.com/yprez
+[fabianbuechler]: https://github.com/fabianbuechler
+[mhsparks]: https://github.com/mhsparks
+[mvdwaeter]: https://github.com/mvdwaeter
+[reinout]: https://github.com/reinout
+[justanotherbody]: https://github.com/justanotherbody

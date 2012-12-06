@@ -18,7 +18,7 @@ class ObtainAuthToken(APIView):
         if serializer.is_valid():
             token, created = Token.objects.get_or_create(user=serializer.object['user'])
             return Response({'token': token.key})
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
 
 
 obtain_auth_token = ObtainAuthToken.as_view()

@@ -4,6 +4,18 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
+## 2.1.6
+
+**Date**: 23rd Nov 2012
+
+* Bugfix: Unfix DjangoModelPermissions.  (I am a doofus.)
+
+## 2.1.5
+
+**Date**: 23rd Nov 2012
+
+* Bugfix: Fix DjangoModelPermissions.
+
 ## 2.1.4
 
 **Date**: 22nd Nov 2012

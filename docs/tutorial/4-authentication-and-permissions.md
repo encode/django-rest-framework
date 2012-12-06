@@ -61,7 +61,7 @@ Now that we've got some users to work with, we'd better add representations of t
             model = User
             fields = ('id', 'username', 'snippets')
 
-Because `'snippets'` is a *reverse* relationship on the User model, it will not be included by default when using the `ModelSerializer` class, so we've needed to add an explicit field for it.
+Because `'snippets'` is a *reverse* relationship on the User model, it will not be included by default when using the `ModelSerializer` class, so we needed to add an explicit field for it.
 
 We'll also add a couple of views.  We'd like to just use read-only views for the user representations, so we'll use the `ListAPIView` and `RetrieveAPIView` generic class based views.
 
@@ -92,9 +92,7 @@ On **both** the `SnippetList` and `SnippetDetail` view classes, add the followin
 
 ## Updating our serializer
 
-Now that snippets are associated with the user that created them, let's update our SnippetSerializer to reflect that.
-
-Add the following field to the serializer definition:
+Now that snippets are associated with the user that created them, let's update our `SnippetSerializer` to reflect that. Add the following field to the serializer definition:
 
     owner = serializers.Field(source='owner.username')
 
@@ -108,7 +106,7 @@ The field we've added is the untyped `Field` class, in contrast to the other typ
 
 ## Adding required permissions to views
 
-Now that code snippets are associated with users we want to make sure that only authenticated users are able to create, update and delete code snippets.
+Now that code snippets are associated with users, we want to make sure that only authenticated users are able to create, update and delete code snippets.
 
 REST framework includes a number of permission classes that we can use to restrict who can access a given view.  In this case the one we're looking for is `IsAuthenticatedOrReadOnly`, which will ensure that authenticated requests get read-write access, and unauthenticated requests get read-only access.
 
