@@ -14,8 +14,10 @@ class CreateModelMixin(object):
     Create a model instance.
     Should be mixed in with any `BaseView`.
     """
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+    def create(self, request, data=None, *args, **kwargs):
+        if data is None:
+            data = request.DATA
+        serializer = self.get_serializer(data=data, files=request.FILES)
         if serializer.is_valid():
             self.pre_save(serializer.object)
             self.object = serializer.save()
