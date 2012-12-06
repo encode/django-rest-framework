@@ -560,6 +560,47 @@ class ManyRelatedTests(TestCase):
         self.assertEqual(serializer.data, expected)
 
 
+class RelatedTraversalTest(TestCase):
+    def test_nested_traversal(self):
+        user = Person.objects.create(name="django")
+        post = BlogPost.objects.create(title="Test blog post", writer=user)
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        from rest_framework.tests.models import BlogPostComment
+
+        class PersonSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Person
+                fields = ("name", "age")
+
+        class BlogPostCommentSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogPostComment
+                fields = ("text", "post_owner")
+
+            text = serializers.CharField()
+            post_owner = PersonSerializer(source='blog_post.writer')
+
+        class BlogPostSerializer(serializers.Serializer):
+            title = serializers.CharField()
+            comments = BlogPostCommentSerializer(source='blogpostcomment_set')
+
+        serializer = BlogPostSerializer(instance=post)
+
+        expected = {
+            'title': u'Test blog post',
+            'comments': [{
+                'text': u'I love this blog post',
+                'post_owner': {
+                    "name": u"django",
+                    "age": None
+                }
+            }]
+        }
+
+        self.assertEqual(serializer.data, expected)
+
+
 class SerializerMethodFieldTests(TestCase):
     def setUp(self):
 
