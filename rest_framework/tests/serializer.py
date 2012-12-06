@@ -645,18 +645,20 @@ class BlankFieldTests(TestCase):
 
 #test for issue #460
 class SerializerPickleTests(TestCase):
-    """ Test pickleability of the output of Serializers
+    """
+    Test pickleability of the output of Serializers
     """
     def test_pickle_simple_model_serializer_data(self):
-        """ Test simple serializer
+        """
+        Test simple serializer
         """
         pickle.dumps(PersonSerializer(Person(name="Methusela", age=969)).data)
 
-
     def test_pickle_inner_serializer(self):
-        """ Test pickling a serializer whose resulting .data (a SortedDictWithMetadata) will
-         have unpickleable meta data--in order to make sure metadata doesn't get pulled into the pickle.
-         See DictWithMetadata.__getstate__
+        """
+        Test pickling a serializer whose resulting .data (a SortedDictWithMetadata) will
+        have unpickleable meta data--in order to make sure metadata doesn't get pulled into the pickle.
+        See DictWithMetadata.__getstate__
         """
         class InnerPersonSerializer(serializers.ModelSerializer):
             class Meta:

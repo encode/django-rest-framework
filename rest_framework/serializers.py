@@ -22,11 +22,11 @@ class DictWithMetadata(dict):
     """
     A dict-like object, that can have additional properties attached.
     """
-
     def __getstate__(self):
-        """  Used by pickle (e.g., caching).
-             Overriden to remove metadata from the dict, since it shouldn't be pickled
-             and may in some instances be unpickleable.
+        """
+        Used by pickle (e.g., caching).
+        Overriden to remove metadata from the dict, since it shouldn't be pickled
+        and may in some instances be unpickleable.
         """
         # return an instance of the first dict in MRO that isn't a DictWithMetadata
         for base in self.__class__.__mro__:
@@ -39,7 +39,6 @@ class SortedDictWithMetadata(SortedDict, DictWithMetadata):
     A sorted dict-like object, that can have additional properties attached.
     """
     pass
-
 
 
 def _is_protected_type(obj):
