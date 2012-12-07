@@ -570,17 +570,17 @@ class HyperlinkedRelatedField(RelatedField):
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
-        raise ValidationError('Could not resolve URL for field using view name "%s"', view_name)
+        raise ValidationError('Could not resolve URL for field using view name "%s"' % view_name)
 
     def from_native(self, value):
         # Convert URL -> model instance pk
@@ -640,9 +640,11 @@ class HyperlinkedIdentityField(Field):
     slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
 
     def __init__(self, *args, **kwargs):
-        # TODO: Make view_name mandatory, and have the
-        # HyperlinkedModelSerializer set it on-the-fly
-        self.view_name = kwargs.pop('view_name', None)
+        try:
+            self.view_name = kwargs.pop('view_name')
+        except:
+            raise ValueError("Hyperlinked Identity field requires 'view_name' kwarg")
+        
         self.format = kwargs.pop('format', None)
 
         self.slug_field = kwargs.pop('slug_field', self.slug_field)
@@ -655,7 +657,7 @@ class HyperlinkedIdentityField(Field):
     def field_to_native(self, obj, field_name):
         request = self.context.get('request', None)
         format = self.format or self.context.get('format', None)
-        view_name = self.view_name or self.parent.opts.view_name
+        view_name = self.view_name
         kwargs = {self.pk_url_kwarg: obj.pk}
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
@@ -669,13 +671,13 @@ class HyperlinkedIdentityField(Field):
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
