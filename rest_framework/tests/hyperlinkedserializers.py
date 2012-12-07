@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
 from django.test.client import RequestFactory
+from django.utils import simplejson as json
 from rest_framework import generics, status, serializers
 from rest_framework.tests.models import Anchor, BasicModel, ManyToManyModel, BlogPost, BlogPostComment, Album, Photo, OptionalRelationModel
 
@@ -54,9 +55,11 @@ class BlogPostCommentListCreate(generics.ListCreateAPIView):
     model = BlogPostComment
     serializer_class = BlogPostCommentSerializer
 
+
 class BlogPostCommentDetail(generics.RetrieveAPIView):
     model = BlogPostComment
     serializer_class = BlogPostCommentSerializer
+
 
 class BlogPostDetail(generics.RetrieveAPIView):
     model = BlogPost
@@ -71,7 +74,7 @@ class AlbumDetail(generics.RetrieveAPIView):
     model = Album
 
 
-class OptionalRelationDetail(generics.RetrieveAPIView):
+class OptionalRelationDetail(generics.RetrieveUpdateDestroyAPIView):
     model = OptionalRelationModel
     model_serializer_class = serializers.HyperlinkedModelSerializer
 
@@ -162,7 +165,7 @@ class TestManyToManyHyperlinkedView(TestCase):
         GET requests to ListCreateAPIView should return list of objects.
         """
         request = factory.get('/manytomany/')
-        response = self.list_view(request).render()
+        response = self.list_view(request)
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, self.data)
 
@@ -171,7 +174,7 @@ class TestManyToManyHyperlinkedView(TestCase):
         GET requests to ListCreateAPIView should return list of objects.
         """
         request = factory.get('/manytomany/1/')
-        response = self.detail_view(request, pk=1).render()
+        response = self.detail_view(request, pk=1)
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, self.data[0])
 
@@ -194,7 +197,7 @@ class TestCreateWithForeignKeys(TestCase):
         }
 
         request = factory.post('/comments/', data=data)
-        response = self.create_view(request).render()
+        response = self.create_view(request)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response['Location'], 'http://testserver/comments/1/')
         self.assertEqual(self.post.blogpostcomment_set.count(), 1)
@@ -219,7 +222,7 @@ class TestCreateWithForeignKeysAndCustomSlug(TestCase):
         }
 
         request = factory.post('/photos/', data=data)
-        response = self.list_create_view(request).render()
+        response = self.list_create_view(request)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertNotIn('Location', response, msg='Location should only be included if there is a "url" field on the serializer')
         self.assertEqual(self.post.photo_set.count(), 1)
@@ -244,6 +247,16 @@ class TestOptionalRelationHyperlinkedView(TestCase):
         for non existing relations.
         """
         request = factory.get('/optionalrelationmodel-detail/1')
-        response = self.detail_view(request, pk=1).render()
+        response = self.detail_view(request, pk=1)
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, self.data)
+
+    def test_put_detail_view(self):
+        """
+        PUT requests to RetrieveUpdateDestroyAPIView with optional relations
+        should accept None for non existing relations.
+        """
+        response = self.client.put('/optionalrelation/1/',
+                                   data=json.dumps(self.data),
+                                   content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

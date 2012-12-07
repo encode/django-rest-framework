@@ -431,10 +431,14 @@ class ModelSerializer(Serializer):
         """
         # TODO: filter queryset using:
         # .using(db).complex_filter(self.rel.limit_choices_to)
-        queryset = model_field.rel.to._default_manager
+        kwargs = {
+            'blank': model_field.blank,
+            'queryset': model_field.rel.to._default_manager
+        }
+
         if to_many:
-            return ManyPrimaryKeyRelatedField(queryset=queryset)
-        return PrimaryKeyRelatedField(queryset=queryset)
+            return ManyPrimaryKeyRelatedField(**kwargs)
+        return PrimaryKeyRelatedField(**kwargs)
 
     def get_field(self, model_field):
         """
@@ -572,9 +576,9 @@ class HyperlinkedModelSerializer(ModelSerializer):
         # TODO: filter queryset using:
         # .using(db).complex_filter(self.rel.limit_choices_to)
         rel = model_field.rel.to
-        queryset = rel._default_manager
         kwargs = {
-            'queryset': queryset,
+            'blank': model_field.blank,
+            'queryset': rel._default_manager,
             'view_name': self._get_default_view_name(rel)
         }
         if to_many:

@@ -49,9 +49,22 @@ class ForeignKeySourceSerializer(serializers.ModelSerializer):
         model = ForeignKeySource
 
 
+# Nullable ForeignKey
+
+class NullableForeignKeySource(models.Model):
+    name = models.CharField(max_length=100)
+    target = models.ForeignKey(ForeignKeyTarget, null=True, blank=True,
+                               related_name='nullable_sources')
+
+
+class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NullableForeignKeySource
+
+
 # TODO: Add test that .data cannot be accessed prior to .is_valid
 
-class PrimaryKeyManyToManyTests(TestCase):
+class PKManyToManyTests(TestCase):
     def setUp(self):
         for idx in range(1, 4):
             target = ManyToManyTarget(name='target-%d' % idx)
@@ -137,7 +150,7 @@ class PrimaryKeyManyToManyTests(TestCase):
         self.assertEquals(serializer.data, expected)
 
 
-class PrimaryKeyForeignKeyTests(TestCase):
+class PKForeignKeyTests(TestCase):
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
         target.save()
@@ -174,11 +187,45 @@ class PrimaryKeyForeignKeyTests(TestCase):
         self.assertEquals(serializer.data, data)
         serializer.save()
 
-        # # Ensure source 1 is updated, and everything else is as expected
+        # Ensure source 1 is updated, and everything else is as expected
         queryset = ForeignKeySource.objects.all()
         serializer = ForeignKeySourceSerializer(queryset)
         expected = [
             {'id': 1, 'name': u'source-1', 'target': 2},
+            {'id': 2, 'name': u'source-2', 'target': 1},
+            {'id': 3, 'name': u'source-3', 'target': 1}
+        ]
+        self.assertEquals(serializer.data, expected)
+
+    def test_foreign_key_update_with_invalid_null(self):
+        data = {'id': 1, 'name': u'source-1', 'target': None}
+        instance = ForeignKeySource.objects.get(pk=1)
+        serializer = ForeignKeySourceSerializer(instance, data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'target': [u'Value may not be null']})
+
+
+class PKNullableForeignKeyTests(TestCase):
+    def setUp(self):
+        target = ForeignKeyTarget(name='target-1')
+        target.save()
+        for idx in range(1, 4):
+            source = NullableForeignKeySource(name='source-%d' % idx, target=target)
+            source.save()
+
+    def test_foreign_key_update_with_valid_null(self):
+        data = {'id': 1, 'name': u'source-1', 'target': None}
+        instance = NullableForeignKeySource.objects.get(pk=1)
+        serializer = NullableForeignKeySourceSerializer(instance, data=data)
+        self.assertTrue(serializer.is_valid())
+        self.assertEquals(serializer.data, data)
+        serializer.save()
+
+        # Ensure source 1 is updated, and everything else is as expected
+        queryset = NullableForeignKeySource.objects.all()
+        serializer = NullableForeignKeySourceSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': u'source-1', 'target': None},
             {'id': 2, 'name': u'source-2', 'target': 1},
             {'id': 3, 'name': u'source-3', 'target': 1}
         ]

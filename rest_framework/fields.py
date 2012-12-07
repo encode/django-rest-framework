@@ -350,7 +350,13 @@ class RelatedField(WritableField):
             return
 
         value = data.get(field_name)
-        into[(self.source or field_name)] = self.from_native(value)
+
+        if value is None and not self.blank:
+            raise ValidationError('Value may not be null')
+        elif value is None and self.blank:
+            into[(self.source or field_name)] = None
+        else:
+            into[(self.source or field_name)] = self.from_native(value)
 
 
 class ManyRelatedMixin(object):
