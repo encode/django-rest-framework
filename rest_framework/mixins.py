@@ -105,11 +105,11 @@ class UpdateModelMixin(object):
         """
         # pk and/or slug attributes are implicit in the URL.
         pk = self.kwargs.get(self.pk_url_kwarg, None)
-        try:
-            pk = int(pk)
-        except ValueError:
-            pass
         if pk:
+            try:
+                pk = int(pk)
+            except ValueError:
+                pass
             setattr(obj, 'pk', pk)
 
         slug = self.kwargs.get(self.slug_url_kwarg, None)
