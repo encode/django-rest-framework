@@ -58,6 +58,18 @@ To run the tests.
 
 # Changelog
 
+## 2.1.7
+
+**Date**: 7th Dec 2012
+
+* Serializers now properly support nullable Foreign Keys.
+* Serializer validation now includes model field validation, such as uniqueness constraints.
+* Support 'true' and 'false' string values for BooleanField.
+* Added pickle support for serialized data.
+* Support `source='dotted.notation'` style for nested serializers.
+* Make `Request.user` settable.
+* Bugfix: Fix `RegexField` to work with `BrowsableAPIRenderer`
+
 ## 2.1.6
 
 **Date**: 23rd Nov 2012

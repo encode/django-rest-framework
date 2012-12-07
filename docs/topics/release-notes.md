@@ -4,7 +4,9 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
-## Master
+## 2.1.7
+
+**Date**: 7th Dec 2012
 
 * Serializers now properly support nullable Foreign Keys.
 * Serializer validation now includes model field validation, such as uniqueness constraints.
