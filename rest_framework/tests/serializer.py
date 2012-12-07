@@ -1,7 +1,7 @@
 import datetime, pickle
 from django.test import TestCase
 from rest_framework import serializers
-from rest_framework.tests.models import (ActionItem, Anchor, BasicModel,
+from rest_framework.tests.models import (Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel)
 
@@ -48,7 +48,7 @@ class BookSerializer(serializers.ModelSerializer):
 
 
 class ActionItemSerializer(serializers.ModelSerializer):
-    
+
     class Meta:
         model = ActionItem
 
@@ -60,6 +60,12 @@ class PersonSerializer(serializers.ModelSerializer):
         model = Person
         fields = ('name', 'age', 'info')
         read_only_fields = ('age',)
+
+
+class AlbumsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Album
 
 
 class BasicTests(TestCase):
@@ -169,7 +175,7 @@ class ValidationTests(TestCase):
             'content': 'x' * 1001,
             'created': datetime.datetime(2012, 1, 1)
         }
-        self.actionitem = ActionItem('Some to do item',
+        self.actionitem = ActionItem(title='Some to do item',
         )
 
     def test_create(self):
@@ -275,6 +281,17 @@ class ValidationTests(TestCase):
         serializer = ActionItemSerializer(data=data)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'info': [u'Ensure this value has at most 12 characters (it has 13).']})
+
+    def test_validate_unique(self):
+        """
+        Just check if serializers.ModelSerializer.perform_model_validation() handles unique checks via .full_clean()
+        """
+        serializer = AlbumsSerializer(data={'title': 'a'})
+        serializer.is_valid()
+        serializer.save()
+        second_serializer = AlbumsSerializer(data={'title': 'a'})
+        self.assertFalse(second_serializer.is_valid())
+        self.assertEqual(second_serializer.errors,  {'title': [u'Album with this Title already exists.']})
 
 
 class RegexValidationTest(TestCase):
