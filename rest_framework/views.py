@@ -13,6 +13,7 @@ from rest_framework.compat import View, apply_markdown
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
+from rest_framework import fields
 
 
 def _remove_trailing_string(content, trailing):
@@ -291,6 +292,23 @@ class APIView(View):
         # Perform content negotiation and store the accepted info on the request
         neg = self.perform_content_negotiation(request)
         request.accepted_renderer, request.accepted_media_type = neg
+    
+    def get_response_headers(self, request, status_code=status.HTTP_200_OK, serializer=None, object=None):
+        headers = {}
+        
+        obj = object or (serializer and serializer.object)
+        serializer_fields = serializer and serializer.get_all_fields()
+        
+        if status_code == status.HTTP_201_CREATED:
+            
+            if obj and hasattr(obj, 'get_absolute_url'):
+                headers['Location'] = obj.get_absolute_url()
+            elif obj and serializer_fields:
+                for field_name, field in serializer_fields.iteritems():
+                    if isinstance(field, fields.HyperlinkedIdentityField):
+                        headers['Location'] = field.field_to_native(obj, field_name)
+        
+        return headers
 
     def finalize_response(self, request, response, *args, **kwargs):
         """
@@ -371,4 +389,5 @@ class APIView(View):
         We may as well implement this as Django will otherwise provide
         a less useful default implementation.
         """
-        return Response(self.metadata(request), status=status.HTTP_200_OK)
+        headers = self.get_response_headers(request)
+        return Response(self.metadata(request), status=status.HTTP_200_OK, headers=headers)

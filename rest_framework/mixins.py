@@ -18,16 +18,12 @@ class CreateModelMixin(object):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
         if serializer.is_valid():
             self.pre_save(serializer.object)
-            self.object = serializer.save()
-            headers = self.get_success_headers(serializer.data)
+            self.object = serializer.save(force_insert=True)
+            headers = self.get_response_headers(request, status.HTTP_201_CREATED, serializer=serializer)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def get_success_headers(self, data):
-        try:
-            return {'Location': data['url']}
-        except (TypeError, KeyError):
-            return {}
+        
+        headers = self.get_response_headers(request, status.HTTP_400_BAD_REQUEST, serializer=serializer)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST, headers=headers)        
 
     def pre_save(self, obj):
         pass
@@ -62,7 +58,8 @@ class ListModelMixin(object):
         else:
             serializer = self.get_serializer(self.object_list)
 
-        return Response(serializer.data)
+        headers = self.get_response_headers(request, serializer=serializer)
+        return Response(serializer.data, headers=headers)
 
 
 class RetrieveModelMixin(object):
@@ -73,7 +70,8 @@ class RetrieveModelMixin(object):
     def retrieve(self, request, *args, **kwargs):
         self.object = self.get_object()
         serializer = self.get_serializer(self.object)
-        return Response(serializer.data)
+        headers = self.get_response_headers(request, serializer=serializer)
+        return Response(serializer.data, headers=headers)
 
 
 class UpdateModelMixin(object):
@@ -93,11 +91,16 @@ class UpdateModelMixin(object):
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
-            self.object = serializer.save()
+            if created:
+                self.object = serializer.save(force_insert=True)
+            else:
+                self.object = serializer.save(force_update=True)
             status_code = created and status.HTTP_201_CREATED or status.HTTP_200_OK
-            return Response(serializer.data, status=status_code)
+            headers = self.get_response_headers(request, status_code, serializer=serializer)
+            return Response(serializer.data, status=status_code, headers=headers)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        headers = self.get_response_headers(request, status.HTTP_400_BAD_REQUEST, serializer=serializer)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST, headers=headers)
 
     def pre_save(self, obj):
         """
@@ -122,4 +125,5 @@ class DestroyModelMixin(object):
     def destroy(self, request, *args, **kwargs):
         self.object = self.get_object()
         self.object.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        headers = self.get_response_headers(request, status.HTTP_204_NO_CONTENT, object=self.object)
+        return Response(status=status.HTTP_204_NO_CONTENT, headers=headers)

@@ -127,7 +127,7 @@ class BaseSerializer(Field):
         """
         return {}
 
-    def get_fields(self):
+    def get_all_fields(self):
         """
         Returns the complete set of fields for the object as a dict.
 
@@ -148,6 +148,15 @@ class BaseSerializer(Field):
         for key, val in default_fields.items():
             if key not in ret:
                 ret[key] = val
+
+        return ret
+
+    def get_fields(self):
+        """
+        Returns a subset of fields specified by exclude and fields attr.
+        of the Option Class.
+        """
+        ret = self.get_all_fields()
 
         # If 'fields' is specified, use those fields, in that order.
         if self.opts.fields:
@@ -321,11 +330,11 @@ class BaseSerializer(Field):
             self._data = self.to_native(self.object)
         return self._data
 
-    def save(self):
+    def save(self, **kwargs):
         """
         Save the deserialized object and return it.
-        """
-        self.object.save()
+        """            
+        self.object.save(**kwargs)            
         return self.object
 
 
@@ -491,11 +500,11 @@ class ModelSerializer(Serializer):
                 self.m2m_data[field.name] = attrs.pop(field.name)
         return self.opts.model(**attrs)
 
-    def save(self, save_m2m=True):
+    def save(self, save_m2m=True, **kwargs):
         """
         Save the deserialized object and return it.
         """
-        self.object.save()
+        super(ModelSerializer, self).save(**kwargs)
 
         if getattr(self, 'm2m_data', None) and save_m2m:
             for accessor_name, object_list in self.m2m_data.items():

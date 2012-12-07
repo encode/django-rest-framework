@@ -54,6 +54,9 @@ DEFAULTS = {
         'user': None,
         'anon': None,
     },
+    
+    'DEFAULT_CONTEXT_CLASS':
+        'django.template.RequestContext',
 
     # Pagination
     'PAGINATE_BY': None,
@@ -84,6 +87,7 @@ IMPORT_STRINGS = (
     'DEFAULT_AUTHENTICATION_CLASSES',
     'DEFAULT_PERMISSION_CLASSES',
     'DEFAULT_THROTTLE_CLASSES',
+    'DEFAULT_CONTEXT_CLASS',
     'DEFAULT_CONTENT_NEGOTIATION_CLASS',
     'DEFAULT_MODEL_SERIALIZER_CLASS',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS',
