@@ -58,6 +58,13 @@ To run the tests.
 
 # Changelog
 
+## 2.1.8
+
+**Date**: 8th Dec 2012
+
+* Fix for creating nullable Foreign Keys with `''` as well as `None`.
+* Added `null=<bool>` related field option.
+
 ## 2.1.7
 
 **Date**: 7th Dec 2012

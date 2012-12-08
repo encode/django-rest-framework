@@ -4,6 +4,13 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
+## 2.1.8
+
+**Date**: 8th Dec 2012
+
+* Fix for creating nullable Foreign Keys with `''` as well as `None`.
+* Added `null=<bool>` related field option.
+
 ## 2.1.7
 
 **Date**: 7th Dec 2012
@@ -14,7 +21,7 @@
 * Added pickle support for serialized data.
 * Support `source='dotted.notation'` style for nested serializers.
 * Make `Request.user` settable.
-* Bugfix: Fix `RegexField` to work with `BrowsableAPIRenderer`
+* Bugfix: Fix `RegexField` to work with `BrowsableAPIRenderer`.
 
 ## 2.1.6
 

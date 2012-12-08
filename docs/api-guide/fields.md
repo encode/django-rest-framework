@@ -293,6 +293,7 @@ By default these fields are read-write, although you can change this behaviour u
 **Arguments**:
 
 * `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
+* `null` - If set to `True`, the field will accept values of `None` or the emptystring for nullable relationships.
 
 ## SlugRelatedField / ManySlugRelatedField
 
@@ -304,6 +305,7 @@ By default these fields read-write, although you can change this behaviour using
 
 * `slug_field` - The field on the target that should be used to represent it.  This should be a field that uniquely identifies any given instance.  For example, `username`.
 * `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
+* `null` - If set to `True`, the field will accept values of `None` or the emptystring for nullable relationships.
 
 ## HyperlinkedRelatedField / ManyHyperlinkedRelatedField
 
@@ -319,6 +321,7 @@ By default, `HyperlinkedRelatedField` is read-write, although you can change thi
 * `slug_field` - The field on the target that should be used for the lookup. Default is `'slug'`.
 * `pk_url_kwarg` - The named url parameter for the pk field lookup. Default is `pk`.
 * `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
+* `null` - If set to `True`, the field will accept values of `None` or the emptystring for nullable relationships.
 
 ## HyperLinkedIdentityField
 
