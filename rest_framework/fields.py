@@ -351,9 +351,9 @@ class RelatedField(WritableField):
 
         value = data.get(field_name)
 
-        if value is None and not self.blank:
+        if value in (None, '') and not self.blank:
             raise ValidationError('Value may not be null')
-        elif value is None and self.blank:
+        elif value in (None, '') and self.blank:
             into[(self.source or field_name)] = None
         else:
             into[(self.source or field_name)] = self.from_native(value)
