@@ -7,6 +7,7 @@ which allows mixin classes to be composed in interesting ways.
 from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 
 
 class CreateModelMixin(object):
@@ -123,3 +124,42 @@ class DestroyModelMixin(object):
         self.object = self.get_object()
         self.object.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class RedirectMixin(object):    
+    """
+    A Mixin that provides a redirect method,
+    redirecting to a different resource endpoint
+    """
+    redirect_permanent = True
+    redirect_with_query_string = True
+    redirect_to_view_name = None
+    redirect_to_url = None
+
+    def get_redirect_url(self, request, *args, **kwargs):
+        """
+        Returning where to redirect to.
+        To url, view-name or nowhere
+        """
+        if self.redirect_to_url:
+            url = self.redirect_to_url % kwargs
+        else:
+            try:
+                url = reverse(self.redirect_view_name, args=args, kwargs=kwargs, request=request)
+            except:
+                return None
+        
+        query_string = self.request.META.get('QUERY_STRING', '')
+        if query_string and self.redirect_with_query_string:
+            url = '%(url)s?%(query_string)s' % {'url': url, 'query_string': query_string}
+        return url
+
+    def redirect(self, request, *args, **kwargs):
+        url = self.get_redirect_url(request, *args, **kwargs)
+        if url:
+            headers = {'Location': url}
+            if self.redirect_permanent:
+                return Response(status=status.HTTP_301_MOVED_PERMANENTLY, headers=headers)
+            else:
+                return Response(status=status.HTTP_302_FOUND, headers=headers)
+        else:
+            return Response(status=status.HTTP_410_GONE)

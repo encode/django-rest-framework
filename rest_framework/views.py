@@ -13,7 +13,6 @@ from rest_framework.compat import View, apply_markdown
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
-from rest_framework.reverse import reverse
 
 
 def _remove_trailing_string(content, trailing):
@@ -373,52 +372,3 @@ class APIView(View):
         a less useful default implementation.
         """
         return Response(self.metadata(request), status=status.HTTP_200_OK)
-
-class RedirectAPIView(APIView):    
-    """
-    A view that provides a redirect to a different resource endpoint
-    """
-    permanent = True
-    view_name = None
-
-    def get_redirect_url(self, request, *args, **kwargs):
-        """
-        Return the URL redirect to. Arguments and Keyword arguments from the
-        URL pattern match generating the redirect request
-        are provided as kwargs to this method.
-        """
-        try:
-            url = reverse(self.view_name, args=args, kwargs=kwargs, request=request)
-        except:
-            return None
-        
-        query_string = self.request.META.get('QUERY_STRING', '')
-        if query_string:
-            url = '%(url)s?%(query_string)s' % {'url': url, 'query_string': query_string}
-        return url
-
-    def get(self, request, *args, **kwargs):
-        url = self.get_redirect_url(request, *args, **kwargs)
-        if url:
-            headers = {'Location': url}
-            if self.permanent:
-                return Response(status=status.HTTP_301_MOVED_PERMANENTLY, headers=headers)
-            else:
-                return Response(status=status.HTTP_302_FOUND, headers=headers)
-        else:
-            return Response(status=status.HTTP_410_GONE)
-
-    def head(self, request, *args, **kwargs):
-        return self.get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return self.get(request, *args, **kwargs)
-
-    def options(self, request, *args, **kwargs):
-        return self.get(request, *args, **kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return self.get(request, *args, **kwargs)
-
-    def put(self, request, *args, **kwargs):
-        return self.get(request, *args, **kwargs)

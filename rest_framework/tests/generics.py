@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.conf.urls.defaults import patterns, url
 from django.test.client import RequestFactory
 from django.utils import simplejson as json
 from rest_framework import generics, serializers, status
@@ -14,13 +15,19 @@ class RootView(generics.ListCreateAPIView):
     """
     model = BasicModel
 
-
 class InstanceView(generics.RetrieveUpdateDestroyAPIView):
     """
     Example description for OPTIONS.
     """
     model = BasicModel
 
+class RedirectToRootView(generics.RedirectAPIView):
+    redirect_permanent = False
+    redirect_view_name = 'root-view'
+
+class RedirectToURL(generics.RedirectAPIView):
+    redirect_to_url = 'http://foo.bar'
+    redirect_with_query_string = False
 
 class SlugSerializer(serializers.ModelSerializer):
     slug = serializers.Field()  # read only
@@ -37,6 +44,10 @@ class SlugBasedInstanceView(InstanceView):
     model = SlugBasedModel
     serializer_class = SlugSerializer
 
+
+urlpatterns = patterns('',
+    url(r'^root/$', RootView.as_view(), name='root-view'),
+)
 
 class TestRootView(TestCase):
     def setUp(self):
@@ -301,3 +312,28 @@ class TestCreateModelWithAutoNowAddField(TestCase):
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         created = self.objects.get(id=1)
         self.assertEquals(created.content, 'foobar')
+
+class RedirectViewTests(TestCase):
+    urls = 'rest_framework.tests.generics'
+
+    def test_redirect(self):
+        request = factory.get('/redirect_to_root/?foo=bar')
+        response = RedirectToRootView.as_view()(request)
+        
+        self.assertEquals(response.status_code, status.HTTP_302_FOUND)
+        self.assertEquals(response['Location'], 'http://testserver/root/?foo=bar')
+    
+    def test_redirect_to_nowhere(self):
+        request = factory.get('/redirect_to_nowhere/')
+        response = generics.RedirectAPIView.as_view()(request)
+        
+        self.assertEquals(response.status_code, status.HTTP_410_GONE)
+    
+    def test_redirect_to_url(self):
+        request = factory.get('/redirect_to_url/?foo=bar')
+        response = RedirectToURL.as_view()(request)
+        
+        self.assertEquals(response.status_code, status.HTTP_301_MOVED_PERMANENTLY)
+        self.assertEquals(response['Location'], 'http://foo.bar')
+        
+        

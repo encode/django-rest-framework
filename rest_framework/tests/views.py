@@ -1,12 +1,11 @@
 import copy
-from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
 from django.test.client import RequestFactory
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.views import APIView, RedirectAPIView
+from rest_framework.views import APIView
 
 factory = RequestFactory()
 
@@ -17,16 +16,6 @@ class BasicView(APIView):
 
     def post(self, request, *args, **kwargs):
         return Response({'method': 'POST', 'data': request.DATA})
-
-class RedirectBasicView(RedirectAPIView):
-    permanent = False
-    view_name = 'basic-view'
-
-
-urlpatterns = patterns('',
-    url(r'^basic/$', BasicView.as_view(), name='basic-view'),
-    url(r'^redirect_to_basic/$', RedirectBasicView.as_view(), name='old-basic-view'),
-)
 
 
 @api_view(['GET', 'POST', 'PUT'])
@@ -106,16 +95,3 @@ class FunctionBasedViewIntegrationTests(TestCase):
         }
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEquals(sanitise_json_error(response.data), expected)
-
-class RedirectViewTests(TestCase):
-    urls = 'rest_framework.tests.views'
-    
-    def setUp(self):
-        self.view = RedirectBasicView.as_view()
-
-    def test_redirect(self):
-        request = factory.get('/redirect_to_basic/?foo=bar', content_type='application/json')
-        response = self.view(request)
-        
-        self.assertEquals(response.status_code, status.HTTP_302_FOUND)
-        self.assertEquals(response['Location'], 'http://testserver/basic/?foo=bar')
