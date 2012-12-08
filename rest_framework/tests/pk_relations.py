@@ -130,6 +130,25 @@ class PKManyToManyTests(TestCase):
         ]
         self.assertEquals(serializer.data, expected)
 
+    def test_many_to_many_create(self):
+        data = {'id': 4, 'name': u'source-4', 'targets': [1, 3]}
+        serializer = ManyToManySourceSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        obj = serializer.save()
+        self.assertEquals(serializer.data, data)
+        self.assertEqual(obj.name, u'source-4')
+
+        # Ensure source 4 is added, and everything else is as expected
+        queryset = ManyToManySource.objects.all()
+        serializer = ManyToManySourceSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': u'source-1', 'targets': [1]},
+            {'id': 2, 'name': u'source-2', 'targets': [1, 2]},
+            {'id': 3, 'name': u'source-3', 'targets': [1, 2, 3]},
+            {'id': 4, 'name': u'source-4', 'targets': [1, 3]},
+        ]
+        self.assertEquals(serializer.data, expected)
+
     def test_reverse_many_to_many_create(self):
         data = {'id': 4, 'name': u'target-4', 'sources': [1, 3]}
         serializer = ManyToManyTargetSerializer(data=data)
