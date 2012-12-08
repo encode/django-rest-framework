@@ -269,6 +269,7 @@ class RelatedField(WritableField):
 
     def __init__(self, *args, **kwargs):
         self.queryset = kwargs.pop('queryset', None)
+        self.null = kwargs.pop('null', False)
         super(RelatedField, self).__init__(*args, **kwargs)
         self.read_only = kwargs.pop('read_only', self.default_read_only)
 
@@ -351,9 +352,9 @@ class RelatedField(WritableField):
 
         value = data.get(field_name)
 
-        if value in (None, '') and not self.blank:
+        if value in (None, '') and not self.null:
             raise ValidationError('Value may not be null')
-        elif value in (None, '') and self.blank:
+        elif value in (None, '') and self.null:
             into[(self.source or field_name)] = None
         else:
             into[(self.source or field_name)] = self.from_native(value)

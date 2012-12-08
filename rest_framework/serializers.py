@@ -432,7 +432,7 @@ class ModelSerializer(Serializer):
         # TODO: filter queryset using:
         # .using(db).complex_filter(self.rel.limit_choices_to)
         kwargs = {
-            'blank': model_field.blank,
+            'null': model_field.null,
             'queryset': model_field.rel.to._default_manager
         }
 
@@ -577,7 +577,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
         # .using(db).complex_filter(self.rel.limit_choices_to)
         rel = model_field.rel.to
         kwargs = {
-            'blank': model_field.blank,
+            'null': model_field.null,
             'queryset': rel._default_manager,
             'view_name': self._get_default_view_name(rel)
         }
