@@ -339,11 +339,11 @@ class BaseSerializer(Field):
             self._data = self.to_native(self.object)
         return self._data
 
-    def save(self):
+    def save(self,**kwargs):
         """
         Save the deserialized object and return it.
         """
-        self.object.save()
+        self.object.save(**kwargs)
         return self.object
 
 
@@ -519,18 +519,18 @@ class ModelSerializer(Serializer):
                 self.m2m_data[field.name] = attrs.pop(field.name)
         return self.opts.model(**attrs)
 
-    def save(self, save_m2m=True):
+    def save(self, save_m2m=True, **kwargs):
         """
         Save the deserialized object and return it.
         """
-        self.object.save()
+        obj = super(ModelSerializer, self).save(**kwargs)
 
         if getattr(self, 'm2m_data', None) and save_m2m:
             for accessor_name, object_list in self.m2m_data.items():
                 setattr(self.object, accessor_name, object_list)
             self.m2m_data = {}
 
-        return self.object
+        return obj
 
 
 class HyperlinkedModelSerializerOptions(ModelSerializerOptions):

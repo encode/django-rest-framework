@@ -18,7 +18,7 @@ class CreateModelMixin(object):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
         if serializer.is_valid():
             self.pre_save(serializer.object)
-            self.object = serializer.save()
+            self.object = serializer.save(force_insert=True)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -93,7 +93,10 @@ class UpdateModelMixin(object):
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
-            self.object = serializer.save()
+            if created:
+                self.object = serializer.save(force_insert=True)
+            else:
+                self.object = serializer.save(force_update=True)
             status_code = created and status.HTTP_201_CREATED or status.HTTP_200_OK
             return Response(serializer.data, status=status_code)
 
