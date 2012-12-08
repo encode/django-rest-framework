@@ -16,6 +16,14 @@ class BlogPostCommentSerializer(serializers.ModelSerializer):
         model = BlogPostComment
         fields = ('text', 'blog_post_url', 'url')
 
+class BlogPostCommentHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = BlogPostComment
+
+class BlogPostCommentCustomViewHyperlinkedSerializer(serializers.HyperlinkedModelSerializer):
+    _default_view_name = '%(model_name)s-detail-customized'
+    class Meta:
+        model = BlogPostComment
 
 class PhotoSerializer(serializers.Serializer):
     description = serializers.CharField()
@@ -247,3 +255,20 @@ class TestOptionalRelationHyperlinkedView(TestCase):
         response = self.detail_view(request, pk=1).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, self.data)
+
+class TestHyperlinkedIdentityField(TestCase):
+    
+    def test_view_name_mandatory(self):
+        self.assertRaises(
+            excClass=ValueError,
+            callableObj=serializers.HyperlinkedIdentityField,
+            msg = 'view-name should be mandatory'
+            )
+    
+    def test_hyperlinked_model_serializer(self):
+        serializer = BlogPostCommentHyperlinkedSerializer()
+        self.assertEquals(serializer.fields['url'].view_name, 'blogpostcomment-detail')
+        
+        serializer = BlogPostCommentCustomViewHyperlinkedSerializer()
+        self.assertEquals(serializer.fields['url'].view_name, 'blogpostcomment-detail-customized')
+    

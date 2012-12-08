@@ -7,6 +7,7 @@ from django.forms import widgets
 from django.utils.datastructures import SortedDict
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework.compat import get_concrete_model
+from rest_framework.settings import api_settings
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -518,21 +519,17 @@ class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
     """
     def __init__(self, meta):
         super(HyperlinkedModelSerializerOptions, self).__init__(meta)
-        self.view_name = getattr(meta, 'view_name', None)
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
     """
     """
     _options_class = HyperlinkedModelSerializerOptions
-    _default_view_name = '%(model_name)s-detail'
+    _default_view_name = api_settings.DEFAULT_DETAIL_VIEW_NAME
 
     def __init__(self, *args, **kwargs):
-        if self.opts.view_name is None:
-            self.opts.view_name = self._get_default_view_name(self.opts.model)
-        
         if not 'url' in self.base_fields:
-            self.base_fields.insert(0, 'url', HyperlinkedIdentityField(view_name=self.opts.view_name))
+            self.base_fields.insert(0, 'url', HyperlinkedIdentityField(view_name=self._get_default_view_name(self.opts.model)))
         
         super(HyperlinkedModelSerializer, self).__init__(*args, **kwargs)
 

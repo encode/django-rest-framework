@@ -74,6 +74,9 @@ DEFAULTS = {
     'URL_FORMAT_OVERRIDE': 'format',
 
     'FORMAT_SUFFIX_KWARG': 'format',
+    
+    # Hyperlinked Serializer
+    'DEFAULT_DETAIL_VIEW_NAME': '%(model_name)s-detail',
 }
 
 
