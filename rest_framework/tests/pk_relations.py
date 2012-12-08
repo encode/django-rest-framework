@@ -232,12 +232,78 @@ class PKNullableForeignKeyTests(TestCase):
             source = NullableForeignKeySource(name='source-%d' % idx, target=target)
             source.save()
 
+    def test_foreign_key_create_with_valid_null(self):
+        data = {'id': 4, 'name': u'source-4', 'target': None}
+        serializer = NullableForeignKeySourceSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        obj = serializer.save()
+        self.assertEquals(serializer.data, data)
+        self.assertEqual(obj.name, u'source-4')
+
+        # Ensure source 4 is created, and everything else is as expected
+        queryset = NullableForeignKeySource.objects.all()
+        serializer = NullableForeignKeySourceSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': u'source-1', 'target': 1},
+            {'id': 2, 'name': u'source-2', 'target': 1},
+            {'id': 3, 'name': u'source-3', 'target': 1},
+            {'id': 4, 'name': u'source-4', 'target': None}
+        ]
+        self.assertEquals(serializer.data, expected)
+
+    def test_foreign_key_create_with_valid_emptystring(self):
+        """
+        The emptystring should be interpreted as null in the context
+        of relationships.
+        """
+        data = {'id': 4, 'name': u'source-4', 'target': ''}
+        expected_data = {'id': 4, 'name': u'source-4', 'target': None}
+        serializer = NullableForeignKeySourceSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        obj = serializer.save()
+        self.assertEquals(serializer.data, expected_data)
+        self.assertEqual(obj.name, u'source-4')
+
+        # Ensure source 4 is created, and everything else is as expected
+        queryset = NullableForeignKeySource.objects.all()
+        serializer = NullableForeignKeySourceSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': u'source-1', 'target': 1},
+            {'id': 2, 'name': u'source-2', 'target': 1},
+            {'id': 3, 'name': u'source-3', 'target': 1},
+            {'id': 4, 'name': u'source-4', 'target': None}
+        ]
+        self.assertEquals(serializer.data, expected)
+
     def test_foreign_key_update_with_valid_null(self):
         data = {'id': 1, 'name': u'source-1', 'target': None}
         instance = NullableForeignKeySource.objects.get(pk=1)
         serializer = NullableForeignKeySourceSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
         self.assertEquals(serializer.data, data)
+        serializer.save()
+
+        # Ensure source 1 is updated, and everything else is as expected
+        queryset = NullableForeignKeySource.objects.all()
+        serializer = NullableForeignKeySourceSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': u'source-1', 'target': None},
+            {'id': 2, 'name': u'source-2', 'target': 1},
+            {'id': 3, 'name': u'source-3', 'target': 1}
+        ]
+        self.assertEquals(serializer.data, expected)
+
+    def test_foreign_key_update_with_valid_emptystring(self):
+        """
+        The emptystring should be interpreted as null in the context
+        of relationships.
+        """
+        data = {'id': 1, 'name': u'source-1', 'target': ''}
+        expected_data = {'id': 1, 'name': u'source-1', 'target': None}
+        instance = NullableForeignKeySource.objects.get(pk=1)
+        serializer = NullableForeignKeySourceSerializer(instance, data=data)
+        self.assertTrue(serializer.is_valid())
+        self.assertEquals(serializer.data, expected_data)
         serializer.save()
 
         # Ensure source 1 is updated, and everything else is as expected
