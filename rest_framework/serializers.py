@@ -283,7 +283,7 @@ class BaseSerializer(Field):
         """
         Serialize objects -> primitives.
         """
-        if hasattr(obj, '__iter__'):
+        if hasattr(obj, '__iter__') and not hasattr(obj, '__dict__'):
             return [self.convert_object(item) for item in obj]
         return self.convert_object(obj)
 
