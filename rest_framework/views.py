@@ -275,7 +275,7 @@ class APIView(View):
                        parsers=self.get_parsers(),
                        authenticators=self.get_authenticators(),
                        negotiator=self.get_content_negotiator(),
-                       parser_context=parser_context)
+                       parser_context=parser_context, kargs=kargs)
 
     def initial(self, request, *args, **kwargs):
         """
