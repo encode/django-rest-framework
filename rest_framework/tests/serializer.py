@@ -726,3 +726,24 @@ class SerializerPickleTests(TestCase):
                 model = Person
                 fields = ('name', 'age')
         pickle.dumps(InnerPersonSerializer(Person(name="Noah", age=950)).data)
+
+class DepthTest(TestCase):
+    def test_depth(self):
+        user = Person.objects.create(name="django",age=1)
+        post = BlogPost.objects.create(title="Test blog post", writer=user)
+
+        class PersonSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Person
+                fields = ("name", "age")
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogPost
+                depth = 1
+
+        serializer = BlogPostSerializer(instance=post)
+        expected = {'id': 1, 'title': u'Test blog post',
+                    'writer': {'id': 1, 'name': u'django', 'age':1}}
+
+        self.assertEqual(serializer.data, expected)

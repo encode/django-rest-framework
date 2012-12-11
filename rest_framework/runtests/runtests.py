@@ -5,6 +5,11 @@
 # http://code.djangoproject.com/svn/django/trunk/tests/runtests.py
 import os
 import sys
+"""
+Need to fix sys path so following works without specifically messing with PYTHONPATH
+python ./rest_framework/runtests/runtests.py
+"""
+sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))  
 os.environ['DJANGO_SETTINGS_MODULE'] = 'rest_framework.runtests.settings'
 
 from django.conf import settings
