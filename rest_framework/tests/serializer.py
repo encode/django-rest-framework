@@ -66,6 +66,7 @@ class AlbumsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Album
+        fields = ['title']  # lists are also valid options
 
 
 class BasicTests(TestCase):
@@ -282,9 +283,11 @@ class ValidationTests(TestCase):
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'info': [u'Ensure this value has at most 12 characters (it has 13).']})
 
+
+class ModelValidationTests(TestCase):
     def test_validate_unique(self):
         """
-        Just check if serializers.ModelSerializer.perform_model_validation() handles unique checks via .full_clean()
+        Just check if serializers.ModelSerializer handles unique checks via .full_clean()
         """
         serializer = AlbumsSerializer(data={'title': 'a'})
         serializer.is_valid()
