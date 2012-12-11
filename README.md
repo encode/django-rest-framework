@@ -58,6 +58,14 @@ To run the tests.
 
 # Changelog
 
+## 2.1.9
+
+**Date**: 11th Dec 2012
+
+* Bugfix: Fix broken nested serialization.
+* Bugfix: Fix `Meta.fields` only working as tuple not as list.
+* Bugfix: Edge case if unnecessarily specifying `required=False` on read only field.
+
 ## 2.1.8
 
 **Date**: 8th Dec 2012
