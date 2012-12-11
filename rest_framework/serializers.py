@@ -237,7 +237,8 @@ class BaseSerializer(Field):
             except ValidationError as err:
                 self._errors[field_name] = self._errors.get(field_name, []) + list(err.messages)
 
-        # We don't run .validate() because field-validation failed and thus `attrs` may not be complete.
+        # If there are already errors, we don't run .validate() because
+        # field-validation failed and thus `attrs` may not be complete.
         # which in turn can cause inconsistent validation errors.
         if not self._errors:
             try:
@@ -299,17 +300,14 @@ class BaseSerializer(Field):
         Override default so that we can apply ModelSerializer as a nested
         field to relationships.
         """
-
         if self.source:
-            value = obj
             for component in self.source.split('.'):
-                value = getattr(value, component)
-                if is_simple_callable(value):
-                    value = value()
-            obj = value
+                obj = getattr(obj, component)
+                if is_simple_callable(obj):
+                    obj = obj()
         else:
-            value = getattr(obj, field_name)
-            if is_simple_callable(value):
+            obj = getattr(obj, field_name)
+            if is_simple_callable(obj):
                 obj = value()
 
         # If the object has an "all" method, assume it's a relationship
@@ -486,15 +484,10 @@ class ModelSerializer(Serializer):
         except KeyError:
             return ModelField(model_field=model_field, **kwargs)
 
-    def validate(self, attrs):
-        copied_attrs = copy.deepcopy(attrs)
-        restored_object = self.restore_object(copied_attrs, instance=getattr(self, 'object', None))
-        self.perform_model_validation(restored_object)
-        return attrs
-
-    def perform_model_validation(self, restored_object):
-        # Call Django's full_clean() which in turn calls: Model.clean_fields(), Model.clean(), Model.validat_unique()
-        restored_object.full_clean(exclude=list(self.get_excluded_fieldnames()))
+    # def validate(self, attrs):
+    #     restored_object = self.restore_object(attrs, instance=getattr(self, 'object', None))
+    #     restored_object.full_clean(exclude=list(self.get_excluded_fieldnames()))
+    #     return attrs
 
     def restore_object(self, attrs, instance=None):
         """
@@ -517,7 +510,14 @@ class ModelSerializer(Serializer):
         for field in self.opts.model._meta.many_to_many:
             if field.name in attrs:
                 self.m2m_data[field.name] = attrs.pop(field.name)
-        return self.opts.model(**attrs)
+
+        instance = self.opts.model(**attrs)
+        try:
+            instance.full_clean(exclude=list(self.get_excluded_fieldnames()))
+        except ValidationError, err:
+            self._errors = err.message_dict
+            return None
+        return instance
 
     def save(self, save_m2m=True):
         """

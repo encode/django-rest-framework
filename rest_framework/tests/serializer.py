@@ -1,4 +1,5 @@
-import datetime, pickle
+import datetime
+import pickle
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (Album, ActionItem, Anchor, BasicModel,
@@ -727,15 +728,11 @@ class SerializerPickleTests(TestCase):
                 fields = ('name', 'age')
         pickle.dumps(InnerPersonSerializer(Person(name="Noah", age=950)).data)
 
-class DepthTest(TestCase):
-    def test_depth(self):
-        user = Person.objects.create(name="django",age=1)
-        post = BlogPost.objects.create(title="Test blog post", writer=user)
 
-        class PersonSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = Person
-                fields = ("name", "age")
+class DepthTest(TestCase):
+    def test_implicit_nesting(self):
+        writer = Person.objects.create(name="django", age=1)
+        post = BlogPost.objects.create(title="Test blog post", writer=writer)
 
         class BlogPostSerializer(serializers.ModelSerializer):
             class Meta:
@@ -744,6 +741,26 @@ class DepthTest(TestCase):
 
         serializer = BlogPostSerializer(instance=post)
         expected = {'id': 1, 'title': u'Test blog post',
-                    'writer': {'id': 1, 'name': u'django', 'age':1}}
+                    'writer': {'id': 1, 'name': u'django', 'age': 1}}
+
+        self.assertEqual(serializer.data, expected)
+
+    def test_explicit_nesting(self):
+        writer = Person.objects.create(name="django", age=1)
+        post = BlogPost.objects.create(title="Test blog post", writer=writer)
+
+        class PersonSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Person
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            writer = PersonSerializer()
+
+            class Meta:
+                model = BlogPost
+
+        serializer = BlogPostSerializer(instance=post)
+        expected = {'id': 1, 'title': u'Test blog post',
+                    'writer': {'id': 1, 'name': u'django', 'age': 1}}
 
         self.assertEqual(serializer.data, expected)
