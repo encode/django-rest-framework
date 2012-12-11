@@ -75,12 +75,13 @@ class Request(object):
     _CONTENTTYPE_PARAM = api_settings.FORM_CONTENTTYPE_OVERRIDE
 
     def __init__(self, request, parsers=None, authenticators=None,
-                 negotiator=None, parser_context=None):
+                 negotiator=None, parser_context=None, kargs = {}):
         self._request = request
         self.parsers = parsers or ()
         self.authenticators = authenticators or ()
         self.negotiator = negotiator or self._default_negotiator()
         self.parser_context = parser_context
+        self.kwargs = kargs
         self._data = Empty
         self._files = Empty
         self._method = Empty
