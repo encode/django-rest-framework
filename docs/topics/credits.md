@@ -75,6 +75,7 @@ The following people have helped make REST framework great.
 * Michael Richards - [justanotherbody]
 * Ben Roberts - [roberts81]
 * Venkata Subramanian Mahalingam - [annacoder]
+* George Kappel - [gkappel]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -185,3 +186,4 @@ To contact the author directly:
 [justanotherbody]: https://github.com/justanotherbody
 [roberts81]: https://github.com/roberts81
 [annacoder]: https://github.com/annacoder
+[gkappel]: https://github.com/gkappel
