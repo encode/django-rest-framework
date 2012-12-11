@@ -484,11 +484,6 @@ class ModelSerializer(Serializer):
         except KeyError:
             return ModelField(model_field=model_field, **kwargs)
 
-    # def validate(self, attrs):
-    #     restored_object = self.restore_object(attrs, instance=getattr(self, 'object', None))
-    #     restored_object.full_clean(exclude=list(self.get_excluded_fieldnames()))
-    #     return attrs
-
     def restore_object(self, attrs, instance=None):
         """
         Restore the model instance.
