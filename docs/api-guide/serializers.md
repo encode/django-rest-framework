@@ -254,12 +254,23 @@ The `depth` option should be set to an integer value that indicates the depth of
 
 ## Specifying which fields should be read-only 
 
-You may wish to specify multiple fields as read-only. Instead of adding each field explicitely with the `read_only=True` attribute, you may use the `read_only_fields` Meta option, like so:
+You may wish to specify multiple fields as read-only. Instead of adding each field explicitly with the `read_only=True` attribute, you may use the `read_only_fields` Meta option, like so:
 
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
             read_only_fields = ('created', 'modified')
+
+## Specifying partial updates
+
+You may want to allow partial updates to your Model. To do so, you can set `partial = True` as a Meta option to your serializer:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            partial = True
+
+By default `partial` will be `False`.
 
 ## Customising the default fields
 

@@ -41,6 +41,12 @@ class CommentSerializer(serializers.Serializer):
         return instance
 
 
+class CommentPartialSerializer(CommentSerializer):
+
+    class Meta:
+        partial = True
+
+
 class BookSerializer(serializers.ModelSerializer):
     isbn = serializers.RegexField(regex=r'^[0-9]{13}$', error_messages={'invalid': 'isbn has to be exact 13 numbers'})
 
@@ -129,6 +135,14 @@ class BasicTests(TestCase):
         serializer = CommentSerializer(self.comment, data=partial_data)
         self.assertEquals(serializer.is_valid(), False)
         serializer = CommentSerializer(self.comment, data=partial_data, partial=True)
+        expected = self.comment
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEquals(serializer.object, expected)
+        self.assertTrue(serializer.object is expected)
+        self.assertEquals(serializer.data['content'], msg)
+        msg = 'Merry New Year wishes for 2013!'
+        partial_data = {'content': msg}
+        serializer = CommentPartialSerializer(self.comment, data=partial_data)
         expected = self.comment
         self.assertEqual(serializer.is_valid(), True)
         self.assertEquals(serializer.object, expected)
