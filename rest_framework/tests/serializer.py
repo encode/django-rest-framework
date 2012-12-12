@@ -4,7 +4,7 @@ from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
-    ManyToManyModel, Person, ReadOnlyManyToManyModel)
+    ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
 
 
 class SubComment(object):
@@ -764,3 +764,48 @@ class DepthTest(TestCase):
                     'writer': {'id': 1, 'name': u'django', 'age': 1}}
 
         self.assertEqual(serializer.data, expected)
+
+
+class NestedSerializerContextTests(TestCase):
+
+    def test_nested_serializer_context(self):
+        class AlbumCollection(object):
+            albums = None
+
+        class PhotoSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Photo
+                fields = ("description", "callable")
+
+            callable = serializers.SerializerMethodField('_callable')
+
+            def _callable(self, instance):
+                if not 'context_item' in self.context:
+                    raise RuntimeError("context isn't getting passed into 2nd level nested serializer")
+                return "callable in AlbumSerializer"
+
+        class AlbumSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Album
+                fields = ("photo_set", "callable")
+
+            photo_set = PhotoSerializer(source="photo_set")
+            callable = serializers.SerializerMethodField("_callable")
+
+            def _callable(self, instance):
+                if not 'context_item' in self.context:
+                    raise RuntimeError("context isn't getting passed into 1st level nested serializer")
+                return "callable in AlbumSerializer"
+
+        class AlbumCollectionSerializer(serializers.Serializer):
+            albums = AlbumSerializer(source="albums", )
+        album1 = Album.objects.create(title="album 1")
+        album1.photo_set.add(Photo(description="Dog"), Photo(description="Cat"))
+        album2 = Album.objects.create(title="album 2")
+        album2.photo_set.add(Photo(description="Yeti"), Photo(description="Sasquatch"), Photo(description="Bigfoot"))
+        album_collection = AlbumCollection()
+        album_collection.albums = [album1, album2]
+
+        data = AlbumCollectionSerializer(album_collection, context={'context_item': 'album context'}).data
+
+
