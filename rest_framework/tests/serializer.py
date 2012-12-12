@@ -782,7 +782,7 @@ class NestedSerializerContextTests(TestCase):
             def _callable(self, instance):
                 if not 'context_item' in self.context:
                     raise RuntimeError("context isn't getting passed into 2nd level nested serializer")
-                return "callable in AlbumSerializer"
+                return "success"
 
         class AlbumSerializer(serializers.ModelSerializer):
             class Meta:
@@ -795,7 +795,7 @@ class NestedSerializerContextTests(TestCase):
             def _callable(self, instance):
                 if not 'context_item' in self.context:
                     raise RuntimeError("context isn't getting passed into 1st level nested serializer")
-                return "callable in AlbumSerializer"
+                return "success"
 
         class AlbumCollectionSerializer(serializers.Serializer):
             albums = AlbumSerializer(source="albums", )
