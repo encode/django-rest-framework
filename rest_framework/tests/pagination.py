@@ -160,13 +160,13 @@ class UnitTestPagination(TestCase):
         self.last_page = paginator.page(3)
 
     def test_native_pagination(self):
-        serializer = pagination.PaginationSerializer(self.first_page)
+        serializer = pagination.PaginationSerializer(self.first_page, use_absolute_urls=False)
         self.assertEquals(serializer.data['count'], 26)
         self.assertEquals(serializer.data['next'], '?page=2')
         self.assertEquals(serializer.data['previous'], None)
         self.assertEquals(serializer.data['results'], self.objects[:10])
 
-        serializer = pagination.PaginationSerializer(self.last_page)
+        serializer = pagination.PaginationSerializer(self.last_page, use_absolute_urls=False)
         self.assertEquals(serializer.data['count'], 26)
         self.assertEquals(serializer.data['next'], None)
         self.assertEquals(serializer.data['previous'], '?page=2')

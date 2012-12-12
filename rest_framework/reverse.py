@@ -1,9 +1,9 @@
 """
 Provide reverse functions that return fully qualified URLs
 """
-from rest_framework.settings import api_settings
 from django.core.urlresolvers import reverse as django_reverse
 from django.utils.functional import lazy
+from rest_framework.settings import api_settings
 
 
 def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra):
