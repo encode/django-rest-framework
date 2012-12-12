@@ -106,7 +106,7 @@ class BaseSerializer(Field):
         self.opts = self._options_class(self.Meta)
         self.parent = None
         self.root = None
-        self.partial = partial or self.opts.partial
+        self.partial = partial if partial is not None else self.opts.partial
 
         self.context = context or {}
 
