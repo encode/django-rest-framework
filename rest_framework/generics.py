@@ -213,3 +213,23 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+class RedirectAPIView(mixins.RedirectMixin,
+                    GenericAPIView):
+    """
+    Redirect View used to redirect requests to a different/moved endpoint
+    """
+    def get(self, request, *args, **kwargs):
+        return self.redirect(request, *args, **kwargs)
+    
+    def post(self, request, *args, **kwargs):
+        return self.redirect(request, *args, **kwargs)
+    
+    def options(self, request, *args, **kwargs):
+        return self.redirect(request, *args, **kwargs)
+    
+    def delete(self, request, *args, **kwargs):
+        return self.redirect(request, *args, **kwargs)
+    
+    def put(self, request, *args, **kwargs):
+        return self.redirect(request, *args, **kwargs)
