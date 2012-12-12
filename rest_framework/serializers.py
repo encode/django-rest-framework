@@ -91,6 +91,7 @@ class SerializerOptions(object):
         self.depth = getattr(meta, 'depth', 0)
         self.fields = getattr(meta, 'fields', ())
         self.exclude = getattr(meta, 'exclude', ())
+        self.partial = getattr(meta, 'partial', False)
 
 
 class BaseSerializer(Field):
@@ -100,12 +101,12 @@ class BaseSerializer(Field):
     _options_class = SerializerOptions
     _dict_class = SortedDictWithMetadata  # Set to unsorted dict for backwards compatibility with unsorted implementations.
 
-    def __init__(self, instance=None, data=None, files=None, context=None, partial=False, **kwargs):
+    def __init__(self, instance=None, data=None, files=None, context=None, partial=None, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
         self.opts = self._options_class(self.Meta)
         self.parent = None
         self.root = None
-        self.partial = partial
+        self.partial = partial if partial is not None else self.opts.partial
 
         self.context = context or {}
 
