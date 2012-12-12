@@ -100,7 +100,8 @@ class BaseSerializer(Field):
     _options_class = SerializerOptions
     _dict_class = SortedDictWithMetadata  # Set to unsorted dict for backwards compatibility with unsorted implementations.
 
-    def __init__(self, instance=None, data=None, files=None, context=None, partial=False, **kwargs):
+    def __init__(self, instance=None, data=None, files=None,
+                 context=None, partial=False, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
         self.opts = self._options_class(self.Meta)
         self.parent = None
@@ -151,8 +152,6 @@ class BaseSerializer(Field):
         base_fields = copy.deepcopy(self.base_fields)
         for key, field in base_fields.items():
             ret[key] = field
-            # Set up the field
-            field.initialize(parent=self, field_name=key)
 
         # Add in the default fields
         default_fields = self.get_default_fields()
@@ -172,6 +171,10 @@ class BaseSerializer(Field):
             for key in self.opts.exclude:
                 ret.pop(key, None)
 
+        # Initialize the fields
+        for key, field in ret.items():
+            field.initialize(parent=self, field_name=key)
+
         return ret
 
     #####
@@ -185,6 +188,13 @@ class BaseSerializer(Field):
         super(BaseSerializer, self).initialize(parent, field_name)
         if parent.opts.depth:
             self.opts.depth = parent.opts.depth - 1
+
+        # We need to call initialize here to ensure any nested
+        # serializers that will have already called initialize on their
+        # descendants get updated with *their* parent.
+        # We could be a bit more smart about this, but it'll do for now.
+        for key, field in self.fields.items():
+            field.initialize(parent=self, field_name=key)
 
     #####
     # Methods to convert or revert from objects <--> primitive representations.
