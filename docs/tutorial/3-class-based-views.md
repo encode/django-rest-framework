@@ -109,7 +109,7 @@ The base class provides the core functionality, and the mixin classes provide th
     class SnippetDetail(mixins.RetrieveModelMixin,
                         mixins.UpdateModelMixin,
                         mixins.DestroyModelMixin,
-                        generics.SingleObjectBaseView):
+                        generics.SingleObjectAPIView):
         model = Snippet
         serializer_class = SnippetSerializer
 
@@ -122,7 +122,7 @@ The base class provides the core functionality, and the mixin classes provide th
         def delete(self, request, *args, **kwargs):
             return self.destroy(request, *args, **kwargs)
 
-Pretty similar.  This time we're using the `SingleObjectBaseView` class to provide the core functionality, and adding in mixins to provide the `.retrieve()`, `.update()` and `.destroy()` actions.
+Pretty similar.  This time we're using the `SingleObjectAPIView` class to provide the core functionality, and adding in mixins to provide the `.retrieve()`, `.update()` and `.destroy()` actions.
 
 ## Using generic class based views
 
