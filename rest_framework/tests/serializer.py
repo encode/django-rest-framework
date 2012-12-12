@@ -769,8 +769,6 @@ class DepthTest(TestCase):
 class NestedSerializerContextTests(TestCase):
 
     def test_nested_serializer_context(self):
-        class AlbumCollection(object):
-            albums = None
 
         class PhotoSerializer(serializers.ModelSerializer):
             class Meta:
@@ -797,15 +795,24 @@ class NestedSerializerContextTests(TestCase):
                     raise RuntimeError("context isn't getting passed into 1st level nested serializer")
                 return "success"
 
+        class AlbumCollection(object):
+            albums = None
+
         class AlbumCollectionSerializer(serializers.Serializer):
-            albums = AlbumSerializer(source="albums", )
+            albums = AlbumSerializer(source="albums")
+
         album1 = Album.objects.create(title="album 1")
-        album1.photo_set.add(Photo(description="Dog"), Photo(description="Cat"))
+        album1.photo_set.add(
+            Photo.objects.create(description="Bigfoot"),
+            Photo.objects.create(description="Unicorn"))
         album2 = Album.objects.create(title="album 2")
-        album2.photo_set.add(Photo(description="Yeti"), Photo(description="Sasquatch"), Photo(description="Bigfoot"))
+        album2.photo_set.add(
+            Photo.objects.create(description="Yeti"),
+            Photo.objects.create(description="Sasquatch"))
         album_collection = AlbumCollection()
         album_collection.albums = [album1, album2]
 
+        #the test.  (will raise RuntimeError if context doesn't get passed correctly to the nested Serializers)
         data = AlbumCollectionSerializer(album_collection, context={'context_item': 'album context'}).data
 
 
