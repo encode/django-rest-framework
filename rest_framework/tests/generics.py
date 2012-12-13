@@ -301,3 +301,34 @@ class TestCreateModelWithAutoNowAddField(TestCase):
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         created = self.objects.get(id=1)
         self.assertEquals(created.content, 'foobar')
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        exclude = ('created', 'email')
+
+
+class ViewUsingPreSave(generics.CreateAPIView):
+     serializer_class = CommentSerializer
+     model = Comment
+
+     def pre_save(self, obj):
+         obj.email = 'overriden@address.com'
+
+
+class TestPreSave(TestCase):
+    def setUp(self):
+        self.view = ViewUsingPreSave.as_view()
+
+    def test_pre_save_gets_called(self):
+        """
+        The email address is set at pre_save time.
+        """
+        content = {'content': 'some content'}
+        request = factory.post('/', json.dumps(content),
+                               content_type='application/json')
+        response = self.view(request).render()
+        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+        self.assertEquals(Comment.objects.get(pk=1).email, 'overriden@address.com')
+
