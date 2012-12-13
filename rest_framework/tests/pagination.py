@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import unittest
-from rest_framework import generics, status, pagination, filters
+from rest_framework import generics, status, pagination, filters, serializers
 from rest_framework.compat import django_filters
 from rest_framework.tests.models import BasicModel, FilterableItem
 
@@ -236,3 +236,32 @@ class TestCustomPaginateByParam(TestCase):
         response = self.view(request).render()
         self.assertEquals(response.data['count'], 13)
         self.assertEquals(response.data['results'], self.data[:5])
+
+
+class CustomField(serializers.Field):
+    def to_native(self, value):
+        if not 'view' in self.context:
+            raise RuntimeError("context isn't getting passed into custom field")
+        return "value"
+
+
+class BasicModelSerializer(serializers.Serializer):
+    text = CustomField()
+
+
+class TestContextPassedToCustomField(TestCase):
+    def setUp(self):
+        BasicModel.objects.create(text='ala ma kota')
+
+    def test_with_pagination(self):
+        class ListView(generics.ListCreateAPIView):
+            model = BasicModel
+            serializer_class = BasicModelSerializer
+            paginate_by = 1
+
+        self.view = ListView.as_view()
+        request = factory.get('/')
+        response = self.view(request).render()
+
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+
