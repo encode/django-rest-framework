@@ -543,6 +543,9 @@ class HyperlinkedRelatedField(RelatedField):
         self.slug_url_kwarg = kwargs.pop('slug_url_kwarg', default_slug_kwarg)
 
         self.format = kwargs.pop('format', None)
+
+        self.use_absolute_urls = kwargs.pop('use_absolute_urls', self.parent.use_absolute_urls)
+
         super(HyperlinkedRelatedField, self).__init__(*args, **kwargs)
 
     def get_slug_field(self):
@@ -555,12 +558,13 @@ class HyperlinkedRelatedField(RelatedField):
         view_name = self.view_name
         request = self.context.get('request', None)
         format = self.format or self.context.get('format', None)
+        use_absolute_urls = self.use_absolute_urls
         pk = getattr(obj, 'pk', None)
         if pk is None:
             return
         kwargs = {self.pk_url_kwarg: pk}
         try:
-            return reverse(view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format, use_absolute_urls=use_absolute_urls)
         except:
             pass
 
@@ -571,13 +575,13 @@ class HyperlinkedRelatedField(RelatedField):
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(self.view_name, kwargs=kwargs, request=request, format=format, use_absolute_urls=use_absolute_urls)
         except:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(self.view_name, kwargs=kwargs, request=request, format=format, use_absolute_urls=use_absolute_urls)
         except:
             pass
 
@@ -651,6 +655,8 @@ class HyperlinkedIdentityField(Field):
         self.pk_url_kwarg = kwargs.pop('pk_url_kwarg', self.pk_url_kwarg)
         self.slug_url_kwarg = kwargs.pop('slug_url_kwarg', default_slug_kwarg)
 
+        self.use_absolute_urls = kwargs.pop('use_absolute_urls', self.parent.use_absolute_urls)
+
         super(HyperlinkedIdentityField, self).__init__(*args, **kwargs)
 
     def field_to_native(self, obj, field_name):
@@ -658,8 +664,9 @@ class HyperlinkedIdentityField(Field):
         format = self.format or self.context.get('format', None)
         view_name = self.view_name or self.parent.opts.view_name
         kwargs = {self.pk_url_kwarg: obj.pk}
+        use_absolute_urls = self.use_absolute_urls
         try:
-            return reverse(view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format, use_absolute_urls=use_absolute_urls)
         except:
             pass
 
@@ -670,13 +677,13 @@ class HyperlinkedIdentityField(Field):
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(self.view_name, kwargs=kwargs, request=request, format=format, use_absolute_urls=use_absolute_urls)
         except:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(self.view_name, kwargs=kwargs, request=request, format=format, use_absolute_urls=use_absolute_urls)
         except:
             pass
 
