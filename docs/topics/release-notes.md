@@ -4,6 +4,10 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
+## Master
+
+* Added `RetrieveUpdateAPIView`
+
 ## 2.1.9
 
 **Date**: 11th Dec 2012
