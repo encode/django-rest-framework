@@ -6,8 +6,8 @@ python:
 
 env:
   - DJANGO=https://github.com/django/django/zipball/master
-  - DJANGO=django==1.4.1 --use-mirrors
-  - DJANGO=django==1.3.3 --use-mirrors
+  - DJANGO=django==1.4.3 --use-mirrors
+  - DJANGO=django==1.3.5 --use-mirrors
 
 install:
   - pip install $DJANGO
