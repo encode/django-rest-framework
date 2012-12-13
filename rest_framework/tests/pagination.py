@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import unittest
-from rest_framework import generics, status, pagination, filters
+from rest_framework import generics, status, pagination, filters, serializers
 from rest_framework.compat import django_filters
 from rest_framework.tests.models import BasicModel, FilterableItem
 
@@ -148,6 +148,12 @@ class IntegrationTestPaginationAndFiltering(TestCase):
         self.assertEquals(response.data['previous'], None)
 
 
+class PassOnContextPaginationSerializer(pagination.PaginationSerializer):
+
+    class Meta:
+        object_serializer_class = serializers.Serializer
+
+
 class UnitTestPagination(TestCase):
     """
     Unit tests for pagination of primitive objects.
@@ -171,6 +177,12 @@ class UnitTestPagination(TestCase):
         self.assertEquals(serializer.data['next'], None)
         self.assertEquals(serializer.data['previous'], '?page=2')
         self.assertEquals(serializer.data['results'], self.objects[20:])
+
+    def test_context_available_in_result(self):
+        serializer = PassOnContextPaginationSerializer(self.first_page)
+        results = serializer.fields[serializer.results_field]
+        # assertIs is available in Python 2.7
+        self.assertTrue(serializer.context is results.context)
 
 
 class TestUnpaginated(TestCase):
