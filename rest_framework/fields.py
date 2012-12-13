@@ -544,9 +544,12 @@ class HyperlinkedRelatedField(RelatedField):
 
         self.format = kwargs.pop('format', None)
 
-        self.use_absolute_urls = kwargs.pop('use_absolute_urls', self.parent.use_absolute_urls)
-
+        self.use_absolute_urls = kwargs.pop('use_absolute_urls', None)
         super(HyperlinkedRelatedField, self).__init__(*args, **kwargs)
+
+    def initialize(self, parent, field_name):
+        super(HyperlinkedRelatedField, self).initialize(parent, field_name)
+        self.use_absolute_urls = self.use_absolute_urls or self.parent.use_absolute_urls
 
     def get_slug_field(self):
         """
@@ -655,9 +658,12 @@ class HyperlinkedIdentityField(Field):
         self.pk_url_kwarg = kwargs.pop('pk_url_kwarg', self.pk_url_kwarg)
         self.slug_url_kwarg = kwargs.pop('slug_url_kwarg', default_slug_kwarg)
 
-        self.use_absolute_urls = kwargs.pop('use_absolute_urls', self.parent.use_absolute_urls)
-
+        self.use_absolute_urls = kwargs.pop('use_absolute_urls', None)
         super(HyperlinkedIdentityField, self).__init__(*args, **kwargs)
+
+    def initialize(self, parent, field_name):
+        super(HyperlinkedIdentityField, self).initialize(parent, field_name)
+        self.use_absolute_urls = self.use_absolute_urls or self.parent.use_absolute_urls
 
     def field_to_native(self, obj, field_name):
         request = self.context.get('request', None)
