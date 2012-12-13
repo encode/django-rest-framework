@@ -189,6 +189,14 @@ As an example, let's create a field that can be used represent the class name of
             """
             pass
 
+## Meta options
+
+**TODO** add remaining serializer meta options
+
+### `use_absolute_urls`
+
+This setting will overwrite the `REST_FRAMEWORK` option `USE_ABSOLUTE_URLS` and can also be overwritten by the field attribute `use_absolute_urls`.
+
 ---
 
 # ModelSerializers

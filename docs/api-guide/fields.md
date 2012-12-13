@@ -322,6 +322,7 @@ By default, `HyperlinkedRelatedField` is read-write, although you can change thi
 * `pk_url_kwarg` - The named url parameter for the pk field lookup. Default is `pk`.
 * `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
 * `null` - If set to `True`, the field will accept values of `None` or the emptystring for nullable relationships.
+* `use_absolute_urls` - This option will overwrite the serializer option `use_absolute_urls`.
 
 ## HyperLinkedIdentityField
 
