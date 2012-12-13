@@ -197,6 +197,7 @@ class RetrieveUpdateAPIView(mixins.RetrieveModelMixin,
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
+
 class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
                              mixins.DestroyModelMixin,
                              SingleObjectAPIView):
