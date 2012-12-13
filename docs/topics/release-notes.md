@@ -4,6 +4,11 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
+## Master
+
+* Added support for absolute/relative url switching
+* Bugfix: Fix absolute/relative url mix
+
 ## 2.1.9
 
 **Date**: 11th Dec 2012

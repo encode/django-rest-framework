@@ -26,6 +26,14 @@ class PhotoSerializer(serializers.Serializer):
         return Photo(**attrs)
 
 
+class PhotoUrlSerializer(PhotoSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='photoswithmixedurls-detail', use_absolute_urls=True)
+
+    class Meta:
+        model = Photo
+        use_absolute_urls = False
+
+
 class BasicList(generics.ListCreateAPIView):
     model = BasicModel
     model_serializer_class = serializers.HyperlinkedModelSerializer
@@ -74,6 +82,16 @@ class AlbumDetail(generics.RetrieveAPIView):
     model = Album
 
 
+class PhotoUrlList(generics.ListAPIView):
+    model = Photo
+    serializer_class = PhotoUrlSerializer
+
+
+class PhotoUrlDetail(generics.RetrieveAPIView):
+    model = Photo
+    serializer_class = PhotoUrlSerializer
+
+
 class OptionalRelationDetail(generics.RetrieveUpdateDestroyAPIView):
     model = OptionalRelationModel
     model_serializer_class = serializers.HyperlinkedModelSerializer
@@ -90,6 +108,8 @@ urlpatterns = patterns('',
     url(r'^comments/(?P<pk>\d+)/$', BlogPostCommentDetail.as_view(), name='blogpostcomment-detail'),
     url(r'^albums/(?P<title>\w[\w-]*)/$', AlbumDetail.as_view(), name='album-detail'),
     url(r'^photos/$', PhotoListCreate.as_view(), name='photo-list'),
+    url(r'^photos-with-mixed-urls/$', PhotoUrlList.as_view(), name='photoswithmixedurls-list'),
+    url(r'^photos-with-mixed-urls/(?P<pk>\d+)/$', PhotoUrlDetail.as_view(), name='photoswithmixedurls-detail'),
     url(r'^optionalrelation/(?P<pk>\d+)/$', OptionalRelationDetail.as_view(), name='optionalrelationmodel-detail'),
 )
 
@@ -260,3 +280,47 @@ class TestOptionalRelationHyperlinkedView(TestCase):
                                    data=json.dumps(self.data),
                                    content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class TestUrlOptionsView(TestCase):
+    urls = 'rest_framework.tests.hyperlinkedserializers'
+
+    def setUp(self):
+        """
+        Create a album and photos
+        """
+        self.album = Album.objects.create(title="test-album")
+        items = ['beach', 'sunset', 'moon']
+        for item in items:
+            Photo(description=item, album=self.album).save()
+        self.objects = Photo.objects
+        self.data = [
+            {
+                'url': 'http://testserver/photos-with-mixed-urls/%d/' % obj.id,
+                'description': obj.description,
+                'album_url': '/albums/%s/' % obj.album.title
+            }
+            for obj in self.objects.all()
+        ]
+        self.list_view = PhotoUrlList.as_view()
+        self.detail_view = PhotoUrlDetail.as_view()
+
+    def test_get_list_view(self):
+        """
+        GET requests to RetrieveAPIView with optional relations should return None
+        for non existing relations.
+        """
+        request = factory.get('/photos-with-mixed-urls/')
+        response = self.list_view(request)
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(response.data, self.data[:])
+
+    def test_get_detail_view(self):
+        """
+        GET requests to RetrieveAPIView with optional relations should return None
+        for non existing relations.
+        """
+        request = factory.get('/photos-with-mixed-urls/1/')
+        response = self.detail_view(request, pk=1)
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(response.data, self.data[0])

@@ -16,6 +16,7 @@ from rest_framework.compat import get_concrete_model
 
 
 from rest_framework.fields import *
+from rest_framework.settings import api_settings
 
 
 class DictWithMetadata(dict):
@@ -91,6 +92,7 @@ class SerializerOptions(object):
         self.depth = getattr(meta, 'depth', 0)
         self.fields = getattr(meta, 'fields', ())
         self.exclude = getattr(meta, 'exclude', ())
+        self.use_absolute_urls = getattr(meta, 'use_absolute_urls', api_settings.USE_ABSOLUTE_URLS)
 
 
 class BaseSerializer(Field):
@@ -101,12 +103,13 @@ class BaseSerializer(Field):
     _dict_class = SortedDictWithMetadata  # Set to unsorted dict for backwards compatibility with unsorted implementations.
 
     def __init__(self, instance=None, data=None, files=None,
-                 context=None, partial=False, **kwargs):
+                 context=None, partial=False, use_absolute_urls=None, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
         self.opts = self._options_class(self.Meta)
         self.parent = None
         self.root = None
         self.partial = partial
+        self.use_absolute_urls = use_absolute_urls if use_absolute_urls is not None else self.opts.use_absolute_urls
 
         self.context = context or {}
 

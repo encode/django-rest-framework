@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import unittest
-from rest_framework import generics, status, pagination, filters
+from rest_framework import generics, status, pagination, filters, serializers
 from rest_framework.compat import django_filters
 from rest_framework.tests.models import BasicModel, FilterableItem
 
@@ -32,6 +32,23 @@ if django_filters:
         paginate_by = 10
         filter_class = DecimalFilter
         filter_backend = filters.DjangoFilterBackend
+
+
+class AbsoluteUrlsSerializer(serializers.ModelSerializer):
+    """
+    Serializer for testing absolute urls
+    """
+    class Meta:
+        use_absolute_urls = True
+
+
+class AbsoluteUrlsView(generics.ListAPIView):
+    """
+    View for testing absolute urls
+    """
+    model = BasicModel
+    paginate_by = 1
+
 
 
 class DefaultPageSizeKwargView(generics.ListAPIView):
@@ -160,17 +177,57 @@ class UnitTestPagination(TestCase):
         self.last_page = paginator.page(3)
 
     def test_native_pagination(self):
-        serializer = pagination.PaginationSerializer(self.first_page)
+        serializer = pagination.PaginationSerializer(self.first_page, use_absolute_urls=False)
         self.assertEquals(serializer.data['count'], 26)
         self.assertEquals(serializer.data['next'], '?page=2')
         self.assertEquals(serializer.data['previous'], None)
         self.assertEquals(serializer.data['results'], self.objects[:10])
 
-        serializer = pagination.PaginationSerializer(self.last_page)
+        serializer = pagination.PaginationSerializer(self.last_page, use_absolute_urls=False)
         self.assertEquals(serializer.data['count'], 26)
         self.assertEquals(serializer.data['next'], None)
         self.assertEquals(serializer.data['previous'], '?page=2')
         self.assertEquals(serializer.data['results'], self.objects[20:])
+
+
+class TestPaginationWithAbsoluteUrls(TestCase):
+    """
+    Tests for using absolute urls
+    """
+
+    def setUp(self):
+        items = ['foo', 'bar', 'baz']
+        for item in items:
+            BasicModel(text=item).save()
+        self.objects = BasicModel.objects
+        self.data = [
+            {'id': obj.id, 'text': obj.text}
+            for obj in self.objects.all()
+        ]
+        self.view = AbsoluteUrlsView.as_view()
+
+    def test_paginated_root_view_urls(self):
+        """
+        Tests absolute/relative url switch
+        """
+        request = factory.get('/')
+        response = self.view(request).render()
+        self.assertEquals(response.data['count'], 3)
+        self.assertEquals(response.data['next'], 'http://testserver/?page=2')
+        self.assertEquals(response.data['previous'], None)
+        self.assertEquals(response.data['results'], self.data[0:1])
+        request = factory.get('/?page=2')
+        response = self.view(request).render()
+        self.assertEquals(response.data['count'], 3)
+        self.assertEquals(response.data['next'], 'http://testserver/?page=3')
+        self.assertEquals(response.data['previous'], 'http://testserver/?page=1')
+        self.assertEquals(response.data['results'], self.data[1:2])
+        request = factory.get('/?page=3')
+        response = self.view(request).render()
+        self.assertEquals(response.data['count'], 3)
+        self.assertEquals(response.data['next'], None)
+        self.assertEquals(response.data['previous'], 'http://testserver/?page=2')
+        self.assertEquals(response.data['results'], self.data[2:3])
 
 
 class TestUnpaginated(TestCase):

@@ -166,4 +166,10 @@ Default: `'format'`
 
 Default: `'format'`
 
+## USE_ABSOLUTE_URLS
+
+Default: `True`
+
+This setting can overwritten by the serializer meta option `use_absolute_urls` which also can be overwritten by the field attribute `use_absolute_urls`.
+
 [cite]: http://www.python.org/dev/peps/pep-0020/
