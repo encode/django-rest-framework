@@ -1,9 +1,10 @@
-import datetime, pickle
+import datetime
+import pickle
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
-    ManyToManyModel, Person, ReadOnlyManyToManyModel)
+    ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
 
 
 class SubComment(object):
@@ -66,6 +67,7 @@ class AlbumsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Album
+        fields = ['title']  # lists are also valid options
 
 
 class BasicTests(TestCase):
@@ -282,9 +284,11 @@ class ValidationTests(TestCase):
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'info': [u'Ensure this value has at most 12 characters (it has 13).']})
 
+
+class ModelValidationTests(TestCase):
     def test_validate_unique(self):
         """
-        Just check if serializers.ModelSerializer.perform_model_validation() handles unique checks via .full_clean()
+        Just check if serializers.ModelSerializer handles unique checks via .full_clean()
         """
         serializer = AlbumsSerializer(data={'title': 'a'})
         serializer.is_valid()
@@ -723,3 +727,92 @@ class SerializerPickleTests(TestCase):
                 model = Person
                 fields = ('name', 'age')
         pickle.dumps(InnerPersonSerializer(Person(name="Noah", age=950)).data)
+
+
+class DepthTest(TestCase):
+    def test_implicit_nesting(self):
+        writer = Person.objects.create(name="django", age=1)
+        post = BlogPost.objects.create(title="Test blog post", writer=writer)
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogPost
+                depth = 1
+
+        serializer = BlogPostSerializer(instance=post)
+        expected = {'id': 1, 'title': u'Test blog post',
+                    'writer': {'id': 1, 'name': u'django', 'age': 1}}
+
+        self.assertEqual(serializer.data, expected)
+
+    def test_explicit_nesting(self):
+        writer = Person.objects.create(name="django", age=1)
+        post = BlogPost.objects.create(title="Test blog post", writer=writer)
+
+        class PersonSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Person
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            writer = PersonSerializer()
+
+            class Meta:
+                model = BlogPost
+
+        serializer = BlogPostSerializer(instance=post)
+        expected = {'id': 1, 'title': u'Test blog post',
+                    'writer': {'id': 1, 'name': u'django', 'age': 1}}
+
+        self.assertEqual(serializer.data, expected)
+
+
+class NestedSerializerContextTests(TestCase):
+
+    def test_nested_serializer_context(self):
+        """
+        Regression for #497
+
+        https://github.com/tomchristie/django-rest-framework/issues/497
+        """
+        class PhotoSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Photo
+                fields = ("description", "callable")
+
+            callable = serializers.SerializerMethodField('_callable')
+
+            def _callable(self, instance):
+                if not 'context_item' in self.context:
+                    raise RuntimeError("context isn't getting passed into 2nd level nested serializer")
+                return "success"
+
+        class AlbumSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Album
+                fields = ("photo_set", "callable")
+
+            photo_set = PhotoSerializer(source="photo_set")
+            callable = serializers.SerializerMethodField("_callable")
+
+            def _callable(self, instance):
+                if not 'context_item' in self.context:
+                    raise RuntimeError("context isn't getting passed into 1st level nested serializer")
+                return "success"
+
+        class AlbumCollection(object):
+            albums = None
+
+        class AlbumCollectionSerializer(serializers.Serializer):
+            albums = AlbumSerializer(source="albums")
+
+        album1 = Album.objects.create(title="album 1")
+        album2 = Album.objects.create(title="album 2")
+        Photo.objects.create(description="Bigfoot", album=album1)
+        Photo.objects.create(description="Unicorn", album=album1)
+        Photo.objects.create(description="Yeti", album=album2)
+        Photo.objects.create(description="Sasquatch", album=album2)
+        album_collection = AlbumCollection()
+        album_collection.albums = [album1, album2]
+
+        # This will raise RuntimeError if context doesn't get passed correctly to the nested Serializers
+        AlbumCollectionSerializer(album_collection, context={'context_item': 'album context'}).data

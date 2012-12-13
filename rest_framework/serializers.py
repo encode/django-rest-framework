@@ -100,7 +100,8 @@ class BaseSerializer(Field):
     _options_class = SerializerOptions
     _dict_class = SortedDictWithMetadata  # Set to unsorted dict for backwards compatibility with unsorted implementations.
 
-    def __init__(self, instance=None, data=None, files=None, context=None, partial=False, **kwargs):
+    def __init__(self, instance=None, data=None, files=None,
+                 context=None, partial=False, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
         self.opts = self._options_class(self.Meta)
         self.parent = None
@@ -132,9 +133,9 @@ class BaseSerializer(Field):
         Returns the fieldnames that should not be validated.
         """
         excluded_fields = list(self.opts.exclude)
-        for field in self.fields.keys() + self.get_default_fields().keys():
-            if self.opts.fields:
-                if field not in self.opts.fields + self.opts.exclude:
+        if self.opts.fields:
+            for field in self.fields.keys() + self.get_default_fields().keys():
+                if field not in list(self.opts.fields) + excluded_fields:
                     excluded_fields.append(field)
         return excluded_fields
 
@@ -151,8 +152,6 @@ class BaseSerializer(Field):
         base_fields = copy.deepcopy(self.base_fields)
         for key, field in base_fields.items():
             ret[key] = field
-            # Set up the field
-            field.initialize(parent=self, field_name=key)
 
         # Add in the default fields
         default_fields = self.get_default_fields()
@@ -172,6 +171,10 @@ class BaseSerializer(Field):
             for key in self.opts.exclude:
                 ret.pop(key, None)
 
+        # Initialize the fields
+        for key, field in ret.items():
+            field.initialize(parent=self, field_name=key)
+
         return ret
 
     #####
@@ -185,6 +188,13 @@ class BaseSerializer(Field):
         super(BaseSerializer, self).initialize(parent, field_name)
         if parent.opts.depth:
             self.opts.depth = parent.opts.depth - 1
+
+        # We need to call initialize here to ensure any nested
+        # serializers that will have already called initialize on their
+        # descendants get updated with *their* parent.
+        # We could be a bit more smart about this, but it'll do for now.
+        for key, field in self.fields.items():
+            field.initialize(parent=self, field_name=key)
 
     #####
     # Methods to convert or revert from objects <--> primitive representations.
@@ -237,7 +247,8 @@ class BaseSerializer(Field):
             except ValidationError as err:
                 self._errors[field_name] = self._errors.get(field_name, []) + list(err.messages)
 
-        # We don't run .validate() because field-validation failed and thus `attrs` may not be complete.
+        # If there are already errors, we don't run .validate() because
+        # field-validation failed and thus `attrs` may not be complete.
         # which in turn can cause inconsistent validation errors.
         if not self._errors:
             try:
@@ -299,17 +310,14 @@ class BaseSerializer(Field):
         Override default so that we can apply ModelSerializer as a nested
         field to relationships.
         """
-
         if self.source:
-            value = obj
             for component in self.source.split('.'):
-                value = getattr(value, component)
-                if is_simple_callable(value):
-                    value = value()
-            obj = value
+                obj = getattr(obj, component)
+                if is_simple_callable(obj):
+                    obj = obj()
         else:
-            value = getattr(obj, field_name)
-            if is_simple_callable(value):
+            obj = getattr(obj, field_name)
+            if is_simple_callable(obj):
                 obj = value()
 
         # If the object has an "all" method, assume it's a relationship
@@ -486,16 +494,6 @@ class ModelSerializer(Serializer):
         except KeyError:
             return ModelField(model_field=model_field, **kwargs)
 
-    def validate(self, attrs):
-        copied_attrs = copy.deepcopy(attrs)
-        restored_object = self.restore_object(copied_attrs, instance=getattr(self, 'object', None))
-        self.perform_model_validation(restored_object)
-        return attrs
-
-    def perform_model_validation(self, restored_object):
-        # Call Django's full_clean() which in turn calls: Model.clean_fields(), Model.clean(), Model.validat_unique()
-        restored_object.full_clean(exclude=list(self.get_excluded_fieldnames()))
-
     def restore_object(self, attrs, instance=None):
         """
         Restore the model instance.
@@ -517,7 +515,14 @@ class ModelSerializer(Serializer):
         for field in self.opts.model._meta.many_to_many:
             if field.name in attrs:
                 self.m2m_data[field.name] = attrs.pop(field.name)
-        return self.opts.model(**attrs)
+
+        instance = self.opts.model(**attrs)
+        try:
+            instance.full_clean(exclude=list(self.get_excluded_fieldnames()))
+        except ValidationError, err:
+            self._errors = err.message_dict
+            return None
+        return instance
 
     def save(self, save_m2m=True):
         """

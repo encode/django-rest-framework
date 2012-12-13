@@ -74,6 +74,9 @@ The following people have helped make REST framework great.
 * Reinout van Rees - [reinout]
 * Michael Richards - [justanotherbody]
 * Ben Roberts - [roberts81]
+* Venkata Subramanian Mahalingam - [annacoder]
+* George Kappel - [gkappel]
+* Colin Murtaugh - [cmurtaugh]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -183,3 +186,6 @@ To contact the author directly:
 [reinout]: https://github.com/reinout
 [justanotherbody]: https://github.com/justanotherbody
 [roberts81]: https://github.com/roberts81
+[annacoder]: https://github.com/annacoder
+[gkappel]: https://github.com/gkappel
+[cmurtaugh]: https://github.com/cmurtaugh
