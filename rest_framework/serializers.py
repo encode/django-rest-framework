@@ -3,6 +3,7 @@ import datetime
 import types
 from decimal import Decimal
 from django.db import models
+from django.db.models.query import QuerySet
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
 from rest_framework.compat import get_concrete_model
@@ -283,7 +284,7 @@ class BaseSerializer(Field):
         """
         Serialize objects -> primitives.
         """
-        if hasattr(obj, '__iter__') and not hasattr(obj, '__dict__'):
+        if hasattr(obj, '__iter__') and (isinstance(obj, QuerySet) or not hasattr(obj, '__dict__')):
             return [self.convert_object(item) for item in obj]
         return self.convert_object(obj)
 
