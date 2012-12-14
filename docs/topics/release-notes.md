@@ -4,7 +4,13 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
-## 2.1.9
+## 2.1.x series
+
+### Master
+
+* Bugfix: Fix hyperlinked fields in paginated results.
+
+### 2.1.9
 
 **Date**: 11th Dec 2012
 
@@ -12,14 +18,14 @@
 * Bugfix: Fix `Meta.fields` only working as tuple not as list.
 * Bugfix: Edge case if unnecessarily specifying `required=False` on read only field.
 
-## 2.1.8
+### 2.1.8
 
 **Date**: 8th Dec 2012
 
 * Fix for creating nullable Foreign Keys with `''` as well as `None`.
 * Added `null=<bool>` related field option.
 
-## 2.1.7
+### 2.1.7
 
 **Date**: 7th Dec 2012
 
@@ -31,19 +37,19 @@
 * Make `Request.user` settable.
 * Bugfix: Fix `RegexField` to work with `BrowsableAPIRenderer`.
 
-## 2.1.6
+### 2.1.6
 
 **Date**: 23rd Nov 2012
 
 * Bugfix: Unfix DjangoModelPermissions.  (I am a doofus.)
 
-## 2.1.5
+### 2.1.5
 
 **Date**: 23rd Nov 2012
 
 * Bugfix: Fix DjangoModelPermissions.
 
-## 2.1.4
+### 2.1.4
 
 **Date**: 22nd Nov 2012
 
@@ -54,7 +60,7 @@
 * Added `obtain_token_view` to get tokens when using `TokenAuthentication`.
 * Bugfix: Django 1.5 configurable user support for `TokenAuthentication`.
 
-## 2.1.3
+### 2.1.3
 
 **Date**: 16th Nov 2012
 
@@ -65,14 +71,14 @@
 * 201 Responses now return a 'Location' header.
 * Bugfix: Serializer fields now respect `max_length`.
 
-## 2.1.2
+### 2.1.2
 
 **Date**: 9th Nov 2012
 
 * **Filtering support.**
 * Bugfix: Support creation of objects with reverse M2M relations.
 
-## 2.1.1
+### 2.1.1
 
 **Date**: 7th Nov 2012
 
@@ -82,7 +88,7 @@
 * Bugfix: Make textareas same width as other fields in browsable API.
 * Private API change: `.get_serializer` now uses same `instance` and `data` ordering as serializer initialization.
 
-## 2.1.0
+### 2.1.0
 
 **Date**: 5th Nov 2012
 
@@ -96,13 +102,17 @@
 * Bugfix: Support choice field in Browseable API.
 * Bugfix: Related fields with `read_only=True` do not require a `queryset` argument.
 
-## 2.0.2
+---
+
+## 2.0.x series
+
+### 2.0.2
 
 **Date**: 2nd Nov 2012
 
 * Fix issues with pk related fields in the browsable API.
 
-## 2.0.1
+### 2.0.1
 
 **Date**: 1st Nov 2012
 
@@ -110,7 +120,7 @@
 * Added SlugRelatedField and ManySlugRelatedField.
 * If PUT creates an instance return '201 Created', instead of '200 OK'.
 
-## 2.0.0
+### 2.0.0
 
 **Date**: 30th Oct 2012
 
@@ -119,7 +129,9 @@
 
 ---
 
-## 0.4.0
+## 0.4.x series
+
+### 0.4.0
 
 * Supports Django 1.5.
 * Fixes issues with 'HEAD' method.
@@ -131,7 +143,11 @@
 * Improve setup (eg use staticfiles, not the defunct ADMIN_MEDIA_PREFIX)
 * Sensible absolute URL generation, not using hacky set_script_prefix
 
-## 0.3.3
+---
+
+## 0.3.x series
+
+### 0.3.3
 
 * Added DjangoModelPermissions class to support `django.contrib.auth` style permissions.
 * Use `staticfiles` for css files.
@@ -146,7 +162,7 @@
 * Bugfixes:
   - Bug with PerUserThrottling when user contains unicode chars.
 
-## 0.3.2
+### 0.3.2
 
 * Bugfixes:
   * Fix 403 for POST and PUT from the UI with UserLoggedInAuthentication (#115)
@@ -158,37 +174,41 @@
 * get_name, get_description become methods on the view - makes them overridable.
 * Improved model mixin API - Hooks for build_query, get_instance_data, get_model, get_queryset, get_ordering
 
-## 0.3.1
+### 0.3.1
 
 * [not documented]
 
-## 0.3.0
+### 0.3.0
 
 * JSONP Support
 * Bugfixes, including support for latest markdown release
 
-## 0.2.4
+---
+
+## 0.2.x series
+
+### 0.2.4
 
 * Fix broken IsAdminUser permission.
 * OPTIONS support.
 * XMLParser.
 * Drop mentions of Blog, BitBucket.
 
-## 0.2.3
+### 0.2.3
 
 * Fix some throttling bugs.
 * ``X-Throttle`` header on throttling.
 * Support for nesting resources on related models.
 
-## 0.2.2
+### 0.2.2
 
 * Throttling support complete.
 
-## 0.2.1
+### 0.2.1
 
 * Couple of simple bugfixes over 0.2.0
 
-## 0.2.0
+### 0.2.0
 
 * Big refactoring changes since 0.1.0, ask on the discussion group if anything isn't clear.
   The public API has been massively cleaned up.  Expect it to be fairly stable from here on in.
@@ -212,11 +232,15 @@
 * The mixin classes have been nicely refactored, the basic mixins are now ``RequestMixin``, ``ResponseMixin``, ``AuthMixin``, and ``ResourceMixin``
   You can reuse these mixin classes individually without using the ``View`` class.
 
-## 0.1.1
+---
+
+## 0.1.x series
+
+### 0.1.1
 
 * Final build before pulling in all the refactoring changes for 0.2, in case anyone needs to hang on to 0.1.
 
-## 0.1.0
+### 0.1.0
 
 * Initial release.
 
