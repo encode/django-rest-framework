@@ -171,10 +171,6 @@ class BaseSerializer(Field):
             for key in self.opts.exclude:
                 ret.pop(key, None)
 
-        # Initialize the fields
-        for key, field in ret.items():
-            field.initialize(parent=self, field_name=key)
-
         return ret
 
     #####
@@ -214,6 +210,7 @@ class BaseSerializer(Field):
         ret.fields = {}
 
         for field_name, field in self.fields.items():
+            field.initialize(parent=self, field_name=field_name)
             key = self.get_field_key(field_name)
             value = field.field_to_native(obj, field_name)
             ret[key] = value
@@ -227,6 +224,7 @@ class BaseSerializer(Field):
         """
         reverted_data = {}
         for field_name, field in self.fields.items():
+            field.initialize(parent=self, field_name=field_name)
             try:
                 field.field_from_native(data, files, field_name, reverted_data)
             except ValidationError as err:
@@ -407,7 +405,6 @@ class ModelSerializer(Serializer):
                 field = self.get_field(model_field)
 
             if field:
-                field.initialize(parent=self, field_name=model_field.name)
                 ret[model_field.name] = field
 
         for field_name in self.opts.read_only_fields:

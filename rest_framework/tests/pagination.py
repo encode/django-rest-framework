@@ -149,7 +149,6 @@ class IntegrationTestPaginationAndFiltering(TestCase):
 
 
 class PassOnContextPaginationSerializer(pagination.PaginationSerializer):
-
     class Meta:
         object_serializer_class = serializers.Serializer
 
@@ -179,9 +178,12 @@ class UnitTestPagination(TestCase):
         self.assertEquals(serializer.data['results'], self.objects[20:])
 
     def test_context_available_in_result(self):
+        """
+        Ensure context gets passed through to the object serializer.
+        """
         serializer = PassOnContextPaginationSerializer(self.first_page)
+        serializer.data
         results = serializer.fields[serializer.results_field]
-        # assertIs is available in Python 2.7
         self.assertTrue(serializer.context is results.context)
 
 
