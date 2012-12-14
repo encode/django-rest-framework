@@ -97,6 +97,14 @@ Provides `get` and `post` method handlers.
 
 Extends: [MultipleObjectAPIView], [ListModelMixin], [CreateModelMixin]
 
+## RetrieveUpdateAPIView
+
+Used for **read or update** endpoints to represent a **single model instance**.
+
+Provides `get` and `put` method handlers.
+
+Extends: [SingleObjectAPIView], [RetrieveModelMixin], [UpdateModelMixin]
+
 ## RetrieveDestroyAPIView
 
 Used for **read or delete** endpoints to represent a **single model instance**.
