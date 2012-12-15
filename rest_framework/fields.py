@@ -32,6 +32,7 @@ def is_simple_callable(obj):
 
 
 class Field(object):
+    read_only = True
     creation_counter = 0
     empty = ''
     type_name = None
