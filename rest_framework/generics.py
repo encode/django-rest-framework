@@ -47,14 +47,14 @@ class GenericAPIView(views.APIView):
 
         return serializer_class
 
-    def get_serializer(self, instance=None, data=None, files=None):
+    def get_serializer(self, instance=None, data=None, files=None, partial=False):
         """
         Return the serializer instance that should be used for validating and
         deserializing input, and for serializing output.
         """
         serializer_class = self.get_serializer_class()
         context = self.get_serializer_context()
-        return serializer_class(instance, data=data, files=files, context=context)
+        return serializer_class(instance, data=data, files=files, partial=partial, context=context)
 
 
 class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
@@ -169,7 +169,17 @@ class UpdateAPIView(mixins.UpdateModelMixin,
     Concrete view for updating a model instance.
     """
     def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
+        return self.update(request, partial=False, *args, **kwargs)
+
+
+class ParitalUpdateAPIView(mixins.UpdateModelMixin,
+                            SingleObjectAPIView):
+
+    """
+    Concrete view for paritally updating a model instance.
+    """
+    def patch(self, request, *args, **kwargs):
+        return self.update(request, partial=True, *args, **kwargs)
 
 
 class ListCreateAPIView(mixins.ListModelMixin,
@@ -209,7 +219,29 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
         return self.retrieve(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
-        return self.update(request, *args, **kwargs)
+        return self.update(request, partial=False, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
+
+
+class RetrievePartialUpdateDestroyAPIView(mixins.RetrieveModelMixin,
+                                          mixins.UpdateModelMixin,
+                                          mixins.DestroyModelMixin,
+                                          SingleObjectAPIView):
+
+    """
+    Concrete view for retrieving, updating via PATCH (partial) or PUT (full),
+    or deleting a model instance.
+    """
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, partial=False, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        return self.update(request, partial=True, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)

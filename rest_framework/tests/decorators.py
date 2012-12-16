@@ -63,6 +63,20 @@ class DecoratorTestCase(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 405)
 
+    # def test_calling_patch_method(self):
+
+    #     @api_view(['GET', 'PATCH'])
+    #     def view(request):
+    #         return Response({})
+
+    #     request = self.factory.patch('/')
+    #     response = view(request)
+    #     self.assertEqual(response.status_code, 200)
+
+    #     request = self.factory.post('/')
+    #     response = view(request)
+    #     self.assertEqual(response.status_code, 405)
+
     def test_renderer_classes(self):
 
         @api_view(['GET'])

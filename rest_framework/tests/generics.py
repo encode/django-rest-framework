@@ -180,6 +180,19 @@ class TestInstanceView(TestCase):
         updated = self.objects.get(id=1)
         self.assertEquals(updated.text, 'foobar')
 
+    # def test_patch_instance_view(self):
+    #     """
+    #     PATCH requests to RetrieveUpdateDestroyAPIView should update an object.
+    #     """
+    #     content = {'text': 'foobar'}
+    #     request = factory.patch('/1', json.dumps(content),
+    #                           content_type='application/json')
+    #     response = self.view(request, pk=1).render()
+    #     self.assertEquals(response.status_code, status.HTTP_200_OK)
+    #     self.assertEquals(response.data, {'id': 1, 'text': 'foobar'})
+    #     updated = self.objects.get(id=1)
+    #     self.assertEquals(updated.text, 'foobar')
+
     def test_delete_instance_view(self):
         """
         DELETE requests to RetrieveUpdateDestroyAPIView should delete an object.
