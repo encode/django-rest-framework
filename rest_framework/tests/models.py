@@ -149,6 +149,11 @@ class BlogPostComment(RESTFrameworkModel):
     blog_post = models.ForeignKey(BlogPost)
 
 
+class BlogPostRelatedComment(RESTFrameworkModel):
+    text = models.TextField()
+    blog_post = models.ForeignKey(BlogPost, related_name="comments")
+
+
 class Album(RESTFrameworkModel):
     title = models.CharField(max_length=100, unique=True)
 
