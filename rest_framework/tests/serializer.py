@@ -816,3 +816,82 @@ class NestedSerializerContextTests(TestCase):
 
         # This will raise RuntimeError if context doesn't get passed correctly to the nested Serializers
         AlbumCollectionSerializer(album_collection, context={'context_item': 'album context'}).data
+
+
+class ManyPrimaryKeyRelatedCreateTest(TestCase):
+
+    def test_create_is_valid_with_title_and_empty_comments_list(self):
+        data = {'title': 'foobar', 'comments': []}
+        serializer = self.build_model_serializer(data)
+        self.assertEquals(serializer.is_valid(), True)
+
+    def test_create_is_valid_with_title_and_comment(self):
+        data = {'title': 'foobar', 'comments': [self.comment.pk]}
+        serializer = self.build_model_serializer(data)
+        self.assertEquals(serializer.is_valid(), True)
+
+    def test_create_is_not_valid_when_title_is_empty_string(self):
+        data = {'title': '', 'comments': [self.comment.pk]}
+        serializer = self.build_model_serializer(data)
+        self.assertEquals(serializer.is_valid(), False)
+        self.assertEquals(serializer.errors, {'title': [u'This field is required.']})
+
+    def test_create_is_not_valid_when_title_present_but_no_comments(self):
+        data = {'title': 'foobar'}
+        serializer = self.build_model_serializer(data)
+        try:
+            self.assertEquals(serializer.is_valid(), False)
+        except TypeError as e:
+            self.assertEqual(e.message, "'NoneType' object is not iterable")
+
+    def test_create_without_comment_returns_expected_json_result(self):
+        data = {'title': 'foobar', 'comments': []}
+        serializer = self.build_model_serializer(data)
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+        expected = {
+            'title': u'foobar',
+            'comments': []
+        }
+        self.assertEqual(serializer.data, expected)
+
+    def test_create_with_comment_returns_expected_json_result(self):
+        data = {'title': 'foobar', 'comments': [self.comment.pk]}
+        serializer = self.build_model_serializer(data)
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+        expected = {
+            'title': u'foobar',
+            'comments': [self.comment.pk]
+        }
+        self.assertEqual(serializer.data, expected)
+
+    @property
+    def comment(self):
+        if not hasattr(self, '_comment'):
+            from rest_framework.tests.models import BlogPostRelatedComment
+            self._comment = BlogPostRelatedComment.objects.create(text="I love this blog post", blog_post=self.post)
+        return self._comment
+
+    @property
+    def post(self):
+        if not hasattr(self, '_post'):
+            from rest_framework.tests.models import BlogPost
+            self._post = BlogPost.objects.create(title="Test blog post")
+        return self._post
+
+    def build_model_serializer(self, data):
+        from rest_framework.tests.models import BlogPost, BlogPostRelatedComment
+
+        class BlogPostRelatedCommentSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogPostRelatedComment
+                fields = ("text")
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            comments = serializers.ManyPrimaryKeyRelatedField()
+            class Meta:
+                model = BlogPost
+                fields = ("title", "comments")
+
+        return BlogPostSerializer(data=data)
