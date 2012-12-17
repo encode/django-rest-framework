@@ -160,6 +160,9 @@ class BaseSerializer(Field):
             for key in self.opts.exclude:
                 ret.pop(key, None)
 
+        for key, field in ret.items():
+            field.initialize(parent=self, field_name=key)
+
         return ret
 
     #####
@@ -173,13 +176,6 @@ class BaseSerializer(Field):
         super(BaseSerializer, self).initialize(parent, field_name)
         if parent.opts.depth:
             self.opts.depth = parent.opts.depth - 1
-
-        # We need to call initialize here to ensure any nested
-        # serializers that will have already called initialize on their
-        # descendants get updated with *their* parent.
-        # We could be a bit more smart about this, but it'll do for now.
-        for key, field in self.fields.items():
-            field.initialize(parent=self, field_name=key)
 
     #####
     # Methods to convert or revert from objects <--> primitive representations.
