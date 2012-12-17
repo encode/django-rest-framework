@@ -6,6 +6,12 @@
 
 ## 2.1.x series
 
+### 2.1.11
+
+**Date**: 17th Dec 2012
+
+* Bugfix: Fix issue with M2M fields in browseable API.
+
 ### 2.1.10
 
 **Date**: 17th Dec 2012
