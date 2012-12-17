@@ -6,7 +6,9 @@
 
 ## 2.1.x series
 
-### Master
+### 2.1.10
+
+**Date**: 17th Dec 2012
 
 * Bugfix: Ensure read-only fields don't have model validation applied.
 * Bugfix: Fix hyperlinked fields in paginated results.

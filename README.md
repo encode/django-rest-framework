@@ -58,6 +58,13 @@ To run the tests.
 
 # Changelog
 
+## 2.1.10
+
+**Date**: 17th Dec 2012
+
+* Bugfix: Ensure read-only fields don't have model validation applied.
+* Bugfix: Fix hyperlinked fields in paginated results.
+
 ## 2.1.9
 
 **Date**: 11th Dec 2012
