@@ -160,7 +160,7 @@ class Photo(RESTFrameworkModel):
 
 # Model for issue #324
 class BlankFieldModel(RESTFrameworkModel):
-    title = models.CharField(max_length=100, blank=True, null=True)
+    title = models.CharField(max_length=100, blank=True, null=False)
 
 
 # Model for issue #380
