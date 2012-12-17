@@ -58,6 +58,40 @@ To run the tests.
 
 # Changelog
 
+## 2.1.10
+
+**Date**: 17th Dec 2012
+
+* Bugfix: Ensure read-only fields don't have model validation applied.
+* Bugfix: Fix hyperlinked fields in paginated results.
+
+## 2.1.9
+
+**Date**: 11th Dec 2012
+
+* Bugfix: Fix broken nested serialization.
+* Bugfix: Fix `Meta.fields` only working as tuple not as list.
+* Bugfix: Edge case if unnecessarily specifying `required=False` on read only field.
+
+## 2.1.8
+
+**Date**: 8th Dec 2012
+
+* Fix for creating nullable Foreign Keys with `''` as well as `None`.
+* Added `null=<bool>` related field option.
+
+## 2.1.7
+
+**Date**: 7th Dec 2012
+
+* Serializers now properly support nullable Foreign Keys.
+* Serializer validation now includes model field validation, such as uniqueness constraints.
+* Support 'true' and 'false' string values for BooleanField.
+* Added pickle support for serialized data.
+* Support `source='dotted.notation'` style for nested serializers.
+* Make `Request.user` settable.
+* Bugfix: Fix `RegexField` to work with `BrowsableAPIRenderer`
+
 ## 2.1.6
 
 **Date**: 23rd Nov 2012

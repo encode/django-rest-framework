@@ -22,7 +22,16 @@ class DictWithMetadata(dict):
     """
     A dict-like object, that can have additional properties attached.
     """
-    pass
+    def __getstate__(self):
+        """
+        Used by pickle (e.g., caching).
+        Overriden to remove metadata from the dict, since it shouldn't be pickled
+        and may in some instances be unpickleable.
+        """
+        # return an instance of the first dict in MRO that isn't a DictWithMetadata
+        for base in self.__class__.__mro__:
+            if not isinstance(base, DictWithMetadata) and isinstance(base, dict):
+                return base(self)
 
 
 class SortedDictWithMetadata(SortedDict, DictWithMetadata):
@@ -91,7 +100,8 @@ class BaseSerializer(Field):
     _options_class = SerializerOptions
     _dict_class = SortedDictWithMetadata  # Set to unsorted dict for backwards compatibility with unsorted implementations.
 
-    def __init__(self, instance=None, data=None, files=None, context=None, partial=False, **kwargs):
+    def __init__(self, instance=None, data=None, files=None,
+                 context=None, partial=False, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
         self.opts = self._options_class(self.Meta)
         self.parent = None
@@ -131,8 +141,6 @@ class BaseSerializer(Field):
         base_fields = copy.deepcopy(self.base_fields)
         for key, field in base_fields.items():
             ret[key] = field
-            # Set up the field
-            field.initialize(parent=self, field_name=key)
 
         # Add in the default fields
         default_fields = self.get_default_fields()
@@ -166,6 +174,13 @@ class BaseSerializer(Field):
         if parent.opts.depth:
             self.opts.depth = parent.opts.depth - 1
 
+        # We need to call initialize here to ensure any nested
+        # serializers that will have already called initialize on their
+        # descendants get updated with *their* parent.
+        # We could be a bit more smart about this, but it'll do for now.
+        for key, field in self.fields.items():
+            field.initialize(parent=self, field_name=key)
+
     #####
     # Methods to convert or revert from objects <--> primitive representations.
 
@@ -184,6 +199,7 @@ class BaseSerializer(Field):
         ret.fields = {}
 
         for field_name, field in self.fields.items():
+            field.initialize(parent=self, field_name=field_name)
             key = self.get_field_key(field_name)
             value = field.field_to_native(obj, field_name)
             ret[key] = value
@@ -197,6 +213,7 @@ class BaseSerializer(Field):
         """
         reverted_data = {}
         for field_name, field in self.fields.items():
+            field.initialize(parent=self, field_name=field_name)
             try:
                 field.field_from_native(data, files, field_name, reverted_data)
             except ValidationError as err:
@@ -217,10 +234,18 @@ class BaseSerializer(Field):
             except ValidationError as err:
                 self._errors[field_name] = self._errors.get(field_name, []) + list(err.messages)
 
-        try:
-            attrs = self.validate(attrs)
-        except ValidationError as err:
-            self._errors['non_field_errors'] = err.messages
+        # If there are already errors, we don't run .validate() because
+        # field-validation failed and thus `attrs` may not be complete.
+        # which in turn can cause inconsistent validation errors.
+        if not self._errors:
+            try:
+                attrs = self.validate(attrs)
+            except ValidationError as err:
+                if hasattr(err, 'message_dict'):
+                    for field_name, error_messages in err.message_dict.items():
+                        self._errors[field_name] = self._errors.get(field_name, []) + list(error_messages)
+                elif hasattr(err, 'messages'):
+                    self._errors['non_field_errors'] = err.messages
 
         return attrs
 
@@ -272,10 +297,15 @@ class BaseSerializer(Field):
         Override default so that we can apply ModelSerializer as a nested
         field to relationships.
         """
-        obj = getattr(obj, self.source or field_name)
-
-        if is_simple_callable(obj):
-            obj = obj()
+        if self.source:
+            for component in self.source.split('.'):
+                obj = getattr(obj, component)
+                if is_simple_callable(obj):
+                    obj = obj()
+        else:
+            obj = getattr(obj, field_name)
+            if is_simple_callable(obj):
+                obj = value()
 
         # If the object has an "all" method, assume it's a relationship
         if is_simple_callable(getattr(obj, 'all', None)):
@@ -364,7 +394,6 @@ class ModelSerializer(Serializer):
                 field = self.get_field(model_field)
 
             if field:
-                field.initialize(parent=self, field_name=model_field.name)
                 ret[model_field.name] = field
 
         for field_name in self.opts.read_only_fields:
@@ -396,10 +425,14 @@ class ModelSerializer(Serializer):
         """
         # TODO: filter queryset using:
         # .using(db).complex_filter(self.rel.limit_choices_to)
-        queryset = model_field.rel.to._default_manager
+        kwargs = {
+            'null': model_field.null,
+            'queryset': model_field.rel.to._default_manager
+        }
+
         if to_many:
-            return ManyPrimaryKeyRelatedField(queryset=queryset)
-        return PrimaryKeyRelatedField(queryset=queryset)
+            return ManyPrimaryKeyRelatedField(**kwargs)
+        return PrimaryKeyRelatedField(**kwargs)
 
     def get_field(self, model_field):
         """
@@ -423,10 +456,6 @@ class ModelSerializer(Serializer):
         if model_field.flatchoices:  # This ModelField contains choices
             kwargs['choices'] = model_field.flatchoices
             return ChoiceField(**kwargs)
-
-        max_length = getattr(model_field, 'max_length', None)
-        if max_length:
-            kwargs['max_length'] = max_length
 
         if model_field.verbose_name is not None:
             kwargs['label'] = model_field.verbose_name
@@ -457,6 +486,18 @@ class ModelSerializer(Serializer):
         except KeyError:
             return ModelField(model_field=model_field, **kwargs)
 
+    def get_validation_exclusions(self):
+        """
+        Return a list of field names to exclude from model validation.
+        """
+        cls = self.opts.model
+        opts = get_concrete_model(cls)._meta
+        exclusions = [field.name for field in opts.fields + opts.many_to_many]
+        for field_name, field in self.fields.items():
+            if field_name in exclusions and not field.read_only:
+                exclusions.remove(field_name)
+        return exclusions
+
     def restore_object(self, attrs, instance=None):
         """
         Restore the model instance.
@@ -478,7 +519,14 @@ class ModelSerializer(Serializer):
         for field in self.opts.model._meta.many_to_many:
             if field.name in attrs:
                 self.m2m_data[field.name] = attrs.pop(field.name)
-        return self.opts.model(**attrs)
+
+        instance = self.opts.model(**attrs)
+        try:
+            instance.full_clean(exclude=self.get_validation_exclusions())
+        except ValidationError, err:
+            self._errors = err.message_dict
+            return None
+        return instance
 
     def save(self, save_m2m=True):
         """
@@ -537,9 +585,9 @@ class HyperlinkedModelSerializer(ModelSerializer):
         # TODO: filter queryset using:
         # .using(db).complex_filter(self.rel.limit_choices_to)
         rel = model_field.rel.to
-        queryset = rel._default_manager
         kwargs = {
-            'queryset': queryset,
+            'null': model_field.null,
+            'queryset': rel._default_manager,
             'view_name': self._get_default_view_name(rel)
         }
         if to_many:

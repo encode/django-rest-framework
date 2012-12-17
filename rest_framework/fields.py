@@ -32,6 +32,7 @@ def is_simple_callable(obj):
 
 
 class Field(object):
+    read_only = True
     creation_counter = 0
     empty = ''
     type_name = None
@@ -139,7 +140,7 @@ class WritableField(Field):
         if required is None:
             self.required = not(read_only)
         else:
-            assert not read_only, "Cannot set required=True and read_only=True"
+            assert not (read_only and required), "Cannot set required=True and read_only=True"
             self.required = required
 
         messages = {}
@@ -275,6 +276,7 @@ class RelatedField(WritableField):
 
     def __init__(self, *args, **kwargs):
         self.queryset = kwargs.pop('queryset', None)
+        self.null = kwargs.pop('null', False)
         super(RelatedField, self).__init__(*args, **kwargs)
         self.read_only = kwargs.pop('read_only', self.default_read_only)
 
@@ -356,7 +358,13 @@ class RelatedField(WritableField):
             return
 
         value = data.get(field_name)
-        into[(self.source or field_name)] = self.from_native(value)
+
+        if value in (None, '') and not self.null:
+            raise ValidationError('Value may not be null')
+        elif value in (None, '') and self.null:
+            into[(self.source or field_name)] = None
+        else:
+            into[(self.source or field_name)] = self.from_native(value)
 
 
 class ManyRelatedMixin(object):
@@ -580,7 +588,7 @@ class HyperlinkedRelatedField(RelatedField):
         except:
             pass
 
-        raise ValidationError('Could not resolve URL for field using view name "%s"', view_name)
+        raise ValidationError('Could not resolve URL for field using view name "%s"' % view_name)
 
     def from_native(self, value):
         # Convert URL -> model instance pk
@@ -679,7 +687,7 @@ class HyperlinkedIdentityField(Field):
         except:
             pass
 
-        raise ValidationError('Could not resolve URL for field using view name "%s"', view_name)
+        raise ValidationError('Could not resolve URL for field using view name "%s"' % view_name)
 
 
 ##### Typed Fields #####
@@ -699,9 +707,9 @@ class BooleanField(WritableField):
     default = False
 
     def from_native(self, value):
-        if value in ('t', 'True', '1'):
+        if value in ('true', 't', 'True', '1'):
             return True
-        if value in ('f', 'False', '0'):
+        if value in ('false', 'f', 'False', '0'):
             return False
         return bool(value)
 
@@ -823,6 +831,7 @@ class EmailField(CharField):
 
 class RegexField(CharField):
     type_name = 'RegexField'
+    form_field_class = forms.RegexField
 
     def __init__(self, regex, max_length=None, min_length=None, *args, **kwargs):
         super(RegexField, self).__init__(max_length, min_length, *args, **kwargs)
@@ -1054,11 +1063,8 @@ class ImageField(FileField):
         if f is None:
             return None
 
-        # Try to import PIL in either of the two ways it can end up installed.
-        try:
-            from PIL import Image
-        except ImportError:
-            import Image
+        from compat import Image
+        assert Image is not None, 'PIL must be installed for ImageField support'
 
         # We need to get a file object for PIL. We might have a path or we might
         # have to read the data into memory.

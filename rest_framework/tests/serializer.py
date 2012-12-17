@@ -1,9 +1,10 @@
 import datetime
+import pickle
 from django.test import TestCase
 from rest_framework import serializers, fields
-from rest_framework.tests.models import (ActionItem, Anchor, BasicModel,
+from rest_framework.tests.models import (Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
-    ManyToManyModel, Person, ReadOnlyManyToManyModel)
+    ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
 
 
 class SubComment(object):
@@ -60,6 +61,13 @@ class PersonSerializer(serializers.ModelSerializer):
         model = Person
         fields = ('name', 'age', 'info')
         read_only_fields = ('age',)
+
+
+class AlbumsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Album
+        fields = ['title']  # lists are also valid options
 
 
 class BasicTests(TestCase):
@@ -169,7 +177,7 @@ class ValidationTests(TestCase):
             'content': 'x' * 1001,
             'created': datetime.datetime(2012, 1, 1)
         }
-        self.actionitem = ActionItem('Some to do item',
+        self.actionitem = ActionItem(title='Some to do item',
         )
 
     def test_create(self):
@@ -275,6 +283,19 @@ class ValidationTests(TestCase):
         serializer = ActionItemSerializer(data=data)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'info': [u'Ensure this value has at most 12 characters (it has 13).']})
+
+
+class ModelValidationTests(TestCase):
+    def test_validate_unique(self):
+        """
+        Just check if serializers.ModelSerializer handles unique checks via .full_clean()
+        """
+        serializer = AlbumsSerializer(data={'title': 'a'})
+        serializer.is_valid()
+        serializer.save()
+        second_serializer = AlbumsSerializer(data={'title': 'a'})
+        self.assertFalse(second_serializer.is_valid())
+        self.assertEqual(second_serializer.errors,  {'title': [u'Album with this Title already exists.']})
 
 
 class RegexValidationTest(TestCase):
@@ -560,6 +581,47 @@ class ManyRelatedTests(TestCase):
         self.assertEqual(serializer.data, expected)
 
 
+class RelatedTraversalTest(TestCase):
+    def test_nested_traversal(self):
+        user = Person.objects.create(name="django")
+        post = BlogPost.objects.create(title="Test blog post", writer=user)
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        from rest_framework.tests.models import BlogPostComment
+
+        class PersonSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Person
+                fields = ("name", "age")
+
+        class BlogPostCommentSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogPostComment
+                fields = ("text", "post_owner")
+
+            text = serializers.CharField()
+            post_owner = PersonSerializer(source='blog_post.writer')
+
+        class BlogPostSerializer(serializers.Serializer):
+            title = serializers.CharField()
+            comments = BlogPostCommentSerializer(source='blogpostcomment_set')
+
+        serializer = BlogPostSerializer(instance=post)
+
+        expected = {
+            'title': u'Test blog post',
+            'comments': [{
+                'text': u'I love this blog post',
+                'post_owner': {
+                    "name": u"django",
+                    "age": None
+                }
+            }]
+        }
+
+        self.assertEqual(serializer.data, expected)
+
+
 class SerializerMethodFieldTests(TestCase):
     def setUp(self):
 
@@ -642,6 +704,118 @@ class BlankFieldTests(TestCase):
         serializer = self.not_blank_model_serializer_class(data=self.data)
         self.assertEquals(serializer.is_valid(), False)
 
+
+#test for issue #460
+class SerializerPickleTests(TestCase):
+    """
+    Test pickleability of the output of Serializers
+    """
+    def test_pickle_simple_model_serializer_data(self):
+        """
+        Test simple serializer
+        """
+        pickle.dumps(PersonSerializer(Person(name="Methusela", age=969)).data)
+
+    def test_pickle_inner_serializer(self):
+        """
+        Test pickling a serializer whose resulting .data (a SortedDictWithMetadata) will
+        have unpickleable meta data--in order to make sure metadata doesn't get pulled into the pickle.
+        See DictWithMetadata.__getstate__
+        """
+        class InnerPersonSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Person
+                fields = ('name', 'age')
+        pickle.dumps(InnerPersonSerializer(Person(name="Noah", age=950)).data)
+
+
+class DepthTest(TestCase):
+    def test_implicit_nesting(self):
+        writer = Person.objects.create(name="django", age=1)
+        post = BlogPost.objects.create(title="Test blog post", writer=writer)
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogPost
+                depth = 1
+
+        serializer = BlogPostSerializer(instance=post)
+        expected = {'id': 1, 'title': u'Test blog post',
+                    'writer': {'id': 1, 'name': u'django', 'age': 1}}
+
+        self.assertEqual(serializer.data, expected)
+
+    def test_explicit_nesting(self):
+        writer = Person.objects.create(name="django", age=1)
+        post = BlogPost.objects.create(title="Test blog post", writer=writer)
+
+        class PersonSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Person
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            writer = PersonSerializer()
+
+            class Meta:
+                model = BlogPost
+
+        serializer = BlogPostSerializer(instance=post)
+        expected = {'id': 1, 'title': u'Test blog post',
+                    'writer': {'id': 1, 'name': u'django', 'age': 1}}
+
+        self.assertEqual(serializer.data, expected)
+
+
+class NestedSerializerContextTests(TestCase):
+
+    def test_nested_serializer_context(self):
+        """
+        Regression for #497
+
+        https://github.com/tomchristie/django-rest-framework/issues/497
+        """
+        class PhotoSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Photo
+                fields = ("description", "callable")
+
+            callable = serializers.SerializerMethodField('_callable')
+
+            def _callable(self, instance):
+                if not 'context_item' in self.context:
+                    raise RuntimeError("context isn't getting passed into 2nd level nested serializer")
+                return "success"
+
+        class AlbumSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Album
+                fields = ("photo_set", "callable")
+
+            photo_set = PhotoSerializer(source="photo_set")
+            callable = serializers.SerializerMethodField("_callable")
+
+            def _callable(self, instance):
+                if not 'context_item' in self.context:
+                    raise RuntimeError("context isn't getting passed into 1st level nested serializer")
+                return "success"
+
+        class AlbumCollection(object):
+            albums = None
+
+        class AlbumCollectionSerializer(serializers.Serializer):
+            albums = AlbumSerializer(source="albums")
+
+        album1 = Album.objects.create(title="album 1")
+        album2 = Album.objects.create(title="album 2")
+        Photo.objects.create(description="Bigfoot", album=album1)
+        Photo.objects.create(description="Unicorn", album=album1)
+        Photo.objects.create(description="Yeti", album=album2)
+        Photo.objects.create(description="Sasquatch", album=album2)
+        album_collection = AlbumCollection()
+        album_collection.albums = [album1, album2]
+
+        # This will raise RuntimeError if context doesn't get passed correctly to the nested Serializers
+        AlbumCollectionSerializer(album_collection, context={'context_item': 'album context'}).data
 
 # Test for issue #467
 class FieldLabelTest(TestCase):

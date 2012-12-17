@@ -137,7 +137,7 @@ We'd also like to set a few global settings.  We'd like to turn on pagination, a
         'PAGINATE_BY': 10
     }
 
-Okay, that's us done.
+Okay, we're done.
 
 ---
 

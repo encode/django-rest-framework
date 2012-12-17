@@ -320,6 +320,9 @@ class BrowsableAPIRenderer(BaseRenderer):
             if getattr(v, 'choices', None) is not None:
                 kwargs['choices'] = v.choices
 
+            if getattr(v, 'regex', None) is not None:
+                kwargs['regex'] = v.regex
+
             if getattr(v, 'widget', None):
                 widget = copy.deepcopy(v.widget)
                 kwargs['widget'] = widget
