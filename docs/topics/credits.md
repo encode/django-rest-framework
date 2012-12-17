@@ -98,10 +98,9 @@ Development of REST framework 2.0 was sponsored by [DabApps].
 
 ## Contact
 
-To contact the author directly:
+For usage questions please see the [REST framework discussion group][group].
 
-* twitter: [@_tomchristie][twitter]
-* email: [tom@tomchristie.com][email]
+You can also contact [@_tomchristie][twitter] directly on twitter.
  
 [email]: mailto:tom@tomchristie.com
 [twitter]: http://twitter.com/_tomchristie
@@ -115,6 +114,7 @@ To contact the author directly:
 [dabapps]: http://lab.dabapps.com
 [sandbox]: http://restframework.herokuapp.com/
 [heroku]: http://www.heroku.com/
+[group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 
 [tomchristie]: https://github.com/tomchristie
 [markotibold]: https://github.com/markotibold

@@ -2,7 +2,9 @@
 
 **A toolkit for building well-connected, self-describing web APIs.**
 
-**Author:** Tom Christie.  [Follow me on Twitter][twitter]
+**Author:** Tom Christie.  [Follow me on Twitter][twitter].
+
+**Support:** [REST framework discussion group][group].
 
 [![build-status-image]][travis]
 
@@ -205,6 +207,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=restframework2
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
 [twitter]: https://twitter.com/_tomchristie
+[group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [sandbox]: http://restframework.herokuapp.com/
 [rest-framework-2-announcement]: http://django-rest-framework.org/topics/rest-framework-2-announcement.html
