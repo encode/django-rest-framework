@@ -6,6 +6,10 @@
 
 ## 2.1.x series
 
+### Master
+
+* Bugfix: Fix issue where pk was was being set to a string if set by URL kwarg.
+
 ### 2.1.11
 
 **Date**: 17th Dec 2012
