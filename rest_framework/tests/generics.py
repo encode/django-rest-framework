@@ -175,7 +175,7 @@ class TestInstanceView(TestCase):
         content = {'text': 'foobar'}
         request = factory.put('/1', json.dumps(content),
                               content_type='application/json')
-        response = self.view(request, pk=1).render()
+        response = self.view(request, pk='1').render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, {'id': 1, 'text': 'foobar'})
         updated = self.objects.get(id=1)

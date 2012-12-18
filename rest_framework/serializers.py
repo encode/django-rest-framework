@@ -497,25 +497,27 @@ class ModelSerializer(Serializer):
         if instance is not None:
             for key, val in attrs.items():
                 setattr(instance, key, val)
-            return instance
 
-        # Reverse relations
-        for (obj, model) in self.opts.model._meta.get_all_related_m2m_objects_with_model():
-            field_name = obj.field.related_query_name()
-            if field_name in attrs:
-                self.m2m_data[field_name] = attrs.pop(field_name)
+        else:
+            # Reverse relations
+            for (obj, model) in self.opts.model._meta.get_all_related_m2m_objects_with_model():
+                field_name = obj.field.related_query_name()
+                if field_name in attrs:
+                    self.m2m_data[field_name] = attrs.pop(field_name)
 
-        # Forward relations
-        for field in self.opts.model._meta.many_to_many:
-            if field.name in attrs:
-                self.m2m_data[field.name] = attrs.pop(field.name)
+            # Forward relations
+            for field in self.opts.model._meta.many_to_many:
+                if field.name in attrs:
+                    self.m2m_data[field.name] = attrs.pop(field.name)
 
-        instance = self.opts.model(**attrs)
+            instance = self.opts.model(**attrs)
+
         try:
             instance.full_clean(exclude=self.get_validation_exclusions())
         except ValidationError, err:
             self._errors = err.message_dict
             return None
+
         return instance
 
     def save(self, save_m2m=True):

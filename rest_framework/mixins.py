@@ -113,6 +113,10 @@ class UpdateModelMixin(object):
             slug_field = self.get_slug_field()
             setattr(obj, slug_field, slug)
 
+        # Ensure we clean the attributes so that we don't eg return integer
+        # pk using a string representation, as provided by the url conf kwarg.
+        obj.full_clean()
+
 
 class DestroyModelMixin(object):
     """
