@@ -384,6 +384,7 @@ class ManyRelatedMixin(object):
         else:
             if value == ['']:
                 value = []
+
         into[field_name] = [self.from_native(item) for item in value]
 
 
