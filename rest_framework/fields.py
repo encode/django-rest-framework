@@ -384,6 +384,10 @@ class ManyRelatedMixin(object):
         else:
             if value == ['']:
                 value = []
+
+        if value is None and self.required:
+            raise ValidationError("Field '%s' is required" % field_name)
+
         into[field_name] = [self.from_native(item) for item in value]
 
 

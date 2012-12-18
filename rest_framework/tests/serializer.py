@@ -411,6 +411,14 @@ class ManyToManyTests(TestCase):
         self.assertEquals(instance.pk, 1)
         self.assertEquals(list(instance.rel.all()), [])
 
+    def test_create_relationship_missing(self):
+        """
+        Create an instance of a model with a missing ManyToMany relationship
+        """
+        data = {}
+        serializer = self.serializer_class(data=data)
+        self.assertEqual(serializer.is_valid(), False)
+
     def test_create_empty_relationship_flat_data(self):
         """
         Create an instance of a model with a ManyToMany relationship,
