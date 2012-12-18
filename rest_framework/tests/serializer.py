@@ -297,6 +297,38 @@ class ModelValidationTests(TestCase):
         self.assertFalse(second_serializer.is_valid())
         self.assertEqual(second_serializer.errors,  {'title': [u'Album with this Title already exists.']})
 
+    def test_foreign_key_with_partial(self):
+        """
+        Test ModelSerializer validation with partial=True
+
+        Specifically test foreign key validation.
+        """
+
+        album = Album(title='test')
+        album.save()
+
+        class PhotoSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Photo
+
+        photo_serializer = PhotoSerializer(data={'description': 'test', 'album': album.pk})
+        self.assertTrue(photo_serializer.is_valid())
+        photo = photo_serializer.save()
+
+        # Updating only the album (foreign key)
+        photo_serializer = PhotoSerializer(instance=photo, data={'album': album.pk}, partial=True)
+        self.assertTrue(photo_serializer.is_valid())
+        self.assertTrue(photo_serializer.save())
+
+        # Updating only the description
+        photo_serializer = PhotoSerializer(instance=photo,
+                                           data={'description': 'new'},
+                                           partial=True)
+
+        self.assertTrue(photo_serializer.is_valid())
+        self.assertTrue(photo_serializer.save())
+
+
 
 class RegexValidationTest(TestCase):
     def test_create_failed(self):
