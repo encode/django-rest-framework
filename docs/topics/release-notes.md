@@ -8,6 +8,7 @@
 
 ### Master
 
+* Bugfix: Fix exception in browseable API on DELETE.
 * Bugfix: Fix issue where pk was was being set to a string if set by URL kwarg.
 
 ### 2.1.11
