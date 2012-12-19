@@ -51,6 +51,10 @@ class RESTFrameworkModel(models.Model):
         abstract = True
 
 
+class HasPositiveIntegerAsChoice(RESTFrameworkModel):
+    some_choices = ((1,'A'),(2,'B'),(3,'C'))
+    some_integer = models.PositiveIntegerField(choices=some_choices)
+
 class Anchor(RESTFrameworkModel):
     text = models.CharField(max_length=100, default='anchor')
 
