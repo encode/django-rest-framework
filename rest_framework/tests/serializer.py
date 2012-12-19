@@ -699,6 +699,10 @@ class BlankFieldTests(TestCase):
         serializer = self.model_serializer_class(data=self.data)
         self.assertEquals(serializer.is_valid(), True)
 
+    def test_create_model_null_field(self):
+        serializer = self.model_serializer_class(data={'title': None})
+        self.assertEquals(serializer.is_valid(), True)
+
     def test_create_not_blank_field(self):
         """
         Test to ensure blank data in a field not marked as blank=True

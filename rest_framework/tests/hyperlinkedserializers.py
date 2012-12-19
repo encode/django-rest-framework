@@ -1,8 +1,8 @@
-from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import simplejson as json
 from rest_framework import generics, status, serializers
+from rest_framework.compat import patterns, url
 from rest_framework.tests.models import Anchor, BasicModel, ManyToManyModel, BlogPost, BlogPostComment, Album, Photo, OptionalRelationModel
 
 factory = RequestFactory()
