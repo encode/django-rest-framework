@@ -351,6 +351,11 @@ class RelatedField(WritableField):
         if self.read_only:
             return
 
+        if field_name not in data and self.required:
+            raise ValidationError(self.error_messages['required'])
+        elif field_name not in data:
+            return
+
         value = data.get(field_name)
 
         if value in (None, '') and not self.null:
