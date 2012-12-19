@@ -444,19 +444,19 @@ class CacheRenderTest(TestCase):
             return
         if state == None:
             return
-        if isinstance(state,tuple):
-            if not isinstance(state[0],dict):
-                state=state[1]
+        if isinstance(state, tuple):
+            if not isinstance(state[0], dict):
+                state = state[1]
             else:
-                state=state[0].update(state[1])
+                state = state[0].update(state[1])
         result = {}
         for i in state:
             try:
-                pickle.dumps(state[i],protocol=2)
+                pickle.dumps(state[i], protocol=2)
             except pickle.PicklingError:
                 if not state[i] in seen:
                     seen.append(state[i])
-                    result[i] = cls._get_pickling_errors(state[i],seen)
+                    result[i] = cls._get_pickling_errors(state[i], seen)
         return result
 
     def http_resp(self, http_method, url):

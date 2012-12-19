@@ -124,6 +124,6 @@ class DestroyModelMixin(object):
     Should be mixed in with `SingleObjectBaseView`.
     """
     def destroy(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.delete()
+        obj = self.get_object()
+        obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
