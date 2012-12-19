@@ -1,16 +1,15 @@
 """
 Tests for content parsing, and form-overloaded content parsing.
 """
-from django.conf.urls.defaults import patterns
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.test import TestCase, Client
+from django.test.client import RequestFactory
 from django.utils import simplejson as json
-
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
-from django.test.client import RequestFactory
+from rest_framework.compat import patterns
 from rest_framework.parsers import (
     BaseParser,
     FormParser,

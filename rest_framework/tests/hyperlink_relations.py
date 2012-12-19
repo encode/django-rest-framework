@@ -1,7 +1,7 @@
-from django.conf.urls import patterns, url
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
+from rest_framework.compat import patterns, url
 
 
 def dummy_view(request, pk):
