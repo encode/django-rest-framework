@@ -796,7 +796,7 @@ class ChoiceField(WritableField):
                     if value == smart_unicode(k2):
                         return True
             else:
-                if value == smart_unicode(k):
+                if value == smart_unicode(k) or value == k:
                     return True
         return False
 
