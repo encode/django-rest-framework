@@ -1,13 +1,12 @@
 import pickle
 import re
 
-from django.conf.urls.defaults import patterns, url, include
 from django.core.cache import cache
 from django.test import TestCase
 from django.test.client import RequestFactory
 
 from rest_framework import status, permissions
-from rest_framework.compat import yaml
+from rest_framework.compat import yaml, patterns, url, include
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \

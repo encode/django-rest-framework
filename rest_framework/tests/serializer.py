@@ -2,7 +2,7 @@ import datetime
 import pickle
 from django.test import TestCase
 from rest_framework import serializers
-from rest_framework.tests.models import (Album, ActionItem, Anchor, BasicModel,
+from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
 
@@ -68,6 +68,11 @@ class AlbumsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
         fields = ['title']  # lists are also valid options
+
+class PositiveIntegerAsChoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HasPositiveIntegerAsChoice
+        fields = ['some_integer']
 
 
 class BasicTests(TestCase):
@@ -284,6 +289,12 @@ class ValidationTests(TestCase):
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'info': [u'Ensure this value has at most 12 characters (it has 13).']})
 
+
+class PositiveIntegerAsChoiceTests(TestCase):
+    def test_positive_integer_in_json_is_correctly_parsed(self):
+        data = {'some_integer':1}
+        serializer = PositiveIntegerAsChoiceSerializer(data=data)
+        self.assertEquals(serializer.is_valid(), True)
 
 class ModelValidationTests(TestCase):
     def test_validate_unique(self):
@@ -686,6 +697,10 @@ class BlankFieldTests(TestCase):
 
     def test_create_model_blank_field(self):
         serializer = self.model_serializer_class(data=self.data)
+        self.assertEquals(serializer.is_valid(), True)
+
+    def test_create_model_null_field(self):
+        serializer = self.model_serializer_class(data={'title': None})
         self.assertEquals(serializer.is_valid(), True)
 
     def test_create_not_blank_field(self):

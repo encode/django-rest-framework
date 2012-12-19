@@ -79,6 +79,7 @@ The following people have helped make REST framework great.
 * Colin Murtaugh - [cmurtaugh]
 * Simon Pantzare - [pilt]
 * Szymon Teżewski - [sunscrapers]
+* Joel Marcotte - [joual]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -193,3 +194,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [cmurtaugh]: https://github.com/cmurtaugh
 [pilt]: https://github.com/pilt
 [sunscrapers]: https://github.com/sunscrapers
+[joual]: https://github.com/joual

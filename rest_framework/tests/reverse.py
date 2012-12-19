@@ -1,6 +1,6 @@
-from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
 from django.test.client import RequestFactory
+from rest_framework.compat import patterns, url
 from rest_framework.reverse import reverse
 
 factory = RequestFactory()
