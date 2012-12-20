@@ -1,7 +1,7 @@
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.response import Response
-from django.test.client import RequestFactory
+# from django.test.client import RequestFactory
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.authentication import BasicAuthentication
@@ -17,11 +17,13 @@ from rest_framework.decorators import (
     permission_classes,
 )
 
+from rest_framework.tests.utils import DRFRequestFactory
+
 
 class DecoratorTestCase(TestCase):
 
     def setUp(self):
-        self.factory = RequestFactory()
+        self.factory = DRFRequestFactory()
 
     def _finalize_response(self, request, response, *args, **kwargs):
         response.request = request
@@ -63,19 +65,19 @@ class DecoratorTestCase(TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 405)
 
-    # def test_calling_patch_method(self):
+    def test_calling_patch_method(self):
 
-    #     @api_view(['GET', 'PATCH'])
-    #     def view(request):
-    #         return Response({})
+        @api_view(['GET', 'PATCH'])
+        def view(request):
+            return Response({})
 
-    #     request = self.factory.patch('/')
-    #     response = view(request)
-    #     self.assertEqual(response.status_code, 200)
+        request = self.factory.patch('/')
+        response = view(request)
+        self.assertEqual(response.status_code, 200)
 
-    #     request = self.factory.post('/')
-    #     response = view(request)
-    #     self.assertEqual(response.status_code, 405)
+        request = self.factory.post('/')
+        response = view(request)
+        self.assertEqual(response.status_code, 405)
 
     def test_renderer_classes(self):
 

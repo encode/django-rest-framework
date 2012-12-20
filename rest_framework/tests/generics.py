@@ -1,11 +1,11 @@
 from django.test import TestCase
-from django.test.client import RequestFactory
 from django.utils import simplejson as json
 from rest_framework import generics, serializers, status
+from rest_framework.tests.utils import DRFRequestFactory
 from rest_framework.tests.models import BasicModel, Comment, SlugBasedModel
 
 
-factory = RequestFactory()
+factory = DRFRequestFactory()
 
 
 class RootView(generics.ListCreateAPIView):
@@ -15,7 +15,7 @@ class RootView(generics.ListCreateAPIView):
     model = BasicModel
 
 
-class InstanceView(generics.RetrieveUpdateDestroyAPIView):
+class InstanceView(generics.RetrievePartialUpdateDestroyAPIView):
     """
     Example description for OPTIONS.
     """
@@ -180,18 +180,19 @@ class TestInstanceView(TestCase):
         updated = self.objects.get(id=1)
         self.assertEquals(updated.text, 'foobar')
 
-    # def test_patch_instance_view(self):
-    #     """
-    #     PATCH requests to RetrieveUpdateDestroyAPIView should update an object.
-    #     """
-    #     content = {'text': 'foobar'}
-    #     request = factory.patch('/1', json.dumps(content),
-    #                           content_type='application/json')
-    #     response = self.view(request, pk=1).render()
-    #     self.assertEquals(response.status_code, status.HTTP_200_OK)
-    #     self.assertEquals(response.data, {'id': 1, 'text': 'foobar'})
-    #     updated = self.objects.get(id=1)
-    #     self.assertEquals(updated.text, 'foobar')
+    def test_patch_instance_view(self):
+        """
+        PATCH requests to RetrieveUpdateDestroyAPIView should update an object.
+        """
+        content = {'text': 'foobar'}
+        request = factory.patch('/1', json.dumps(content),
+                              content_type='application/json')
+
+        response = self.view(request, pk=1).render()
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(response.data, {'id': 1, 'text': 'foobar'})
+        updated = self.objects.get(id=1)
+        self.assertEquals(updated.text, 'foobar')
 
     def test_delete_instance_view(self):
         """
