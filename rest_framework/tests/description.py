@@ -1,6 +1,9 @@
+import unittest
+
 from django.test import TestCase
 from rest_framework.views import APIView
 from rest_framework.compat import apply_markdown
+from rest_framework.compat import apply_restructuredtext
 
 # We check that docstrings get nicely un-indented.
 DESCRIPTION = """an example docstring
@@ -105,9 +108,17 @@ class TestViewNamesAndDescriptions(TestCase):
             pass
         self.assertEquals(MockView().get_description(), '')
 
+    @unittest.skipUnless(apply_markdown, 'markdown not installed')
     def test_markdown(self):
         """Ensure markdown to HTML works as expected"""
-        if apply_markdown:
-            gte_21_match = apply_markdown(DESCRIPTION) == MARKED_DOWN_gte_21
-            lt_21_match = apply_markdown(DESCRIPTION) == MARKED_DOWN_lt_21
-            self.assertTrue(gte_21_match or lt_21_match)
+        gte_21_match = apply_markdown(DESCRIPTION) == MARKED_DOWN_gte_21
+        lt_21_match = apply_markdown(DESCRIPTION) == MARKED_DOWN_lt_21
+        self.assertTrue(gte_21_match or lt_21_match)
+
+    @unittest.skipUnless(apply_restructuredtext, 'docutils not installed')
+    def test_restructuredtext(self):
+        """Ensure restructuredtext to HTML works as expected."""
+        # The output isn't tested verbatim because of small rendering changes
+        # between docutils versions.
+        self.assertTrue('<h3>another header</h3>'
+                        in apply_restructuredtext(DESCRIPTION))

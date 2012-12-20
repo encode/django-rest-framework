@@ -377,6 +377,20 @@ try:
 except ImportError:
     apply_markdown = None
 
+# Restructured text (docutils) is optional
+try:
+    import docutils.core
+
+    def apply_restructuredtext(text):
+        parts = docutils.core.publish_parts(
+            text,
+            writer_name='html',
+            settings_overrides={'initial_header_level': 2,
+                                'doctitle_xform': False})
+        return parts['html_body']
+
+except ImportError:
+    apply_restructuredtext = None
 
 # Yaml is optional
 try:
