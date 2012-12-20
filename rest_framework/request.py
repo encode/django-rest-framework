@@ -188,6 +188,14 @@ class Request(object):
             self._user, self._auth = self._authenticate()
         return self._auth
 
+    @auth.setter
+    def auth(self, value):
+        """
+        Sets any non-user authentication information associated with the
+        request, such as an authentication token.
+        """
+        self._auth = value
+
     def _load_data_and_files(self):
         """
         Parses the request content into self.DATA and self.FILES.
