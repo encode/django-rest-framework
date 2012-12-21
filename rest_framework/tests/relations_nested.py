@@ -1,4 +1,3 @@
-from copy import deepcopy
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
