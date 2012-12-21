@@ -303,3 +303,11 @@ class TestUserSetter(TestCase):
         self.assertFalse(self.request.user.is_anonymous())
         logout(self.request)
         self.assertTrue(self.request.user.is_anonymous())
+
+
+class TestAuthSetter(TestCase):
+
+    def test_auth_can_be_set(self):
+        request = Request(factory.get('/'))
+        request.auth = 'DUMMY'
+        self.assertEqual(request.auth, 'DUMMY')
