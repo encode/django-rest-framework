@@ -78,7 +78,7 @@ class NullableForeignKeySourceSerializer(serializers.HyperlinkedModelSerializer)
 # TODO: Add test that .data cannot be accessed prior to .is_valid
 
 class HyperlinkedManyToManyTests(TestCase):
-    urls = 'rest_framework.tests.hyperlink_relations'
+    urls = 'rest_framework.tests.relations_hyperlink'
 
     def setUp(self):
         for idx in range(1, 4):
@@ -186,7 +186,7 @@ class HyperlinkedManyToManyTests(TestCase):
 
 
 class HyperlinkedForeignKeyTests(TestCase):
-    urls = 'rest_framework.tests.hyperlink_relations'
+    urls = 'rest_framework.tests.relations_hyperlink'
 
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
@@ -243,7 +243,7 @@ class HyperlinkedForeignKeyTests(TestCase):
 
 
 class HyperlinkedNullableForeignKeyTests(TestCase):
-    urls = 'rest_framework.tests.hyperlink_relations'
+    urls = 'rest_framework.tests.relations_hyperlink'
 
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
