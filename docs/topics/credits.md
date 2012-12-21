@@ -80,6 +80,7 @@ The following people have helped make REST framework great.
 * Simon Pantzare - [pilt]
 * Szymon Teżewski - [sunscrapers]
 * Joel Marcotte - [joual]
+* Trey Hunner - [treyhunner]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -195,3 +196,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [pilt]: https://github.com/pilt
 [sunscrapers]: https://github.com/sunscrapers
 [joual]: https://github.com/joual
+[treyhunner]: https://github.com/treyhunner
