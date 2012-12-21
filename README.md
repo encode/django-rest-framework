@@ -60,6 +60,14 @@ To run the tests.
 
 # Changelog
 
+### 2.1.12
+
+**Date**: 21st Dec 2012
+
+* Bugfix: Fix bug that could occur using ChoiceField.
+* Bugfix: Fix exception in browseable API on DELETE.
+* Bugfix: Fix issue where pk was was being set to a string if set by URL kwarg.
+
 ## 2.1.11
 
 **Date**: 17th Dec 2012

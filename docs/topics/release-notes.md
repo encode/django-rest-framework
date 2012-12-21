@@ -6,7 +6,9 @@
 
 ## 2.1.x series
 
-### Master
+### 2.1.12
+
+**Date**: 21st Dec 2012
 
 * Bugfix: Fix bug that could occur using ChoiceField.
 * Bugfix: Fix exception in browseable API on DELETE.
