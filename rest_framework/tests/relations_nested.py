@@ -35,18 +35,17 @@ class ReverseForeignKeyTests(TestCase):
         for idx in range(1, 4):
             source = ForeignKeySource(name='source-%d' % idx, target=target)
             source.save()
-        self.target_data = {'id': 1, 'name': u'target-1', 'sources': [
+
+    def test_reverse_foreign_key_retrieve(self):
+        queryset = ForeignKeyTarget.objects.all()
+        serializer = ForeignKeyTargetSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': u'target-1', 'sources': [
                 {'id': 1, 'name': u'source-1', 'target': 1},
                 {'id': 2, 'name': u'source-2', 'target': 1},
                 {'id': 3, 'name': u'source-3', 'target': 1},
+            ]},
+            {'id': 2, 'name': u'target-2', 'sources': [
             ]}
-        self.new_target_data = {'id': 2, 'name': u'target-2', 'sources': []}
-        self.data = [self.target_data, self.new_target_data]
-
-    def check_serialized_targets(self, data):
-        queryset = ForeignKeyTarget.objects.all()
-        serializer = ForeignKeyTargetSerializer(queryset)
-        self.assertEquals(serializer.data, data)
-
-    def test_reverse_foreign_key_retrieve(self):
-        self.check_serialized_targets(self.data)
+        ]
+        self.assertEquals(serializer.data, expected)
