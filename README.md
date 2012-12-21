@@ -2,7 +2,9 @@
 
 **A toolkit for building well-connected, self-describing web APIs.**
 
-**Author:** Tom Christie.  [Follow me on Twitter][twitter]
+**Author:** Tom Christie.  [Follow me on Twitter][twitter].
+
+**Support:** [REST framework discussion group][group].
 
 [![build-status-image]][travis]
 
@@ -57,6 +59,20 @@ To run the tests.
     ./rest_framework/runtests/runtests.py
 
 # Changelog
+
+### 2.1.12
+
+**Date**: 21st Dec 2012
+
+* Bugfix: Fix bug that could occur using ChoiceField.
+* Bugfix: Fix exception in browseable API on DELETE.
+* Bugfix: Fix issue where pk was was being set to a string if set by URL kwarg.
+
+## 2.1.11
+
+**Date**: 17th Dec 2012
+
+* Bugfix: Fix issue with M2M fields in browseable API.
 
 ## 2.1.10
 
@@ -205,6 +221,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=restframework2
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
 [twitter]: https://twitter.com/_tomchristie
+[group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [sandbox]: http://restframework.herokuapp.com/
 [rest-framework-2-announcement]: http://django-rest-framework.org/topics/rest-framework-2-announcement.html

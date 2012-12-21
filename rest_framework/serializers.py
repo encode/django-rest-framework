@@ -160,6 +160,9 @@ class BaseSerializer(Field):
             for key in self.opts.exclude:
                 ret.pop(key, None)
 
+        for key, field in ret.items():
+            field.initialize(parent=self, field_name=key)
+
         return ret
 
     #####
@@ -173,13 +176,6 @@ class BaseSerializer(Field):
         super(BaseSerializer, self).initialize(parent, field_name)
         if parent.opts.depth:
             self.opts.depth = parent.opts.depth - 1
-
-        # We need to call initialize here to ensure any nested
-        # serializers that will have already called initialize on their
-        # descendants get updated with *their* parent.
-        # We could be a bit more smart about this, but it'll do for now.
-        for key, field in self.fields.items():
-            field.initialize(parent=self, field_name=key)
 
     #####
     # Methods to convert or revert from objects <--> primitive representations.
@@ -507,25 +503,27 @@ class ModelSerializer(Serializer):
         if instance is not None:
             for key, val in attrs.items():
                 setattr(instance, key, val)
-            return instance
 
-        # Reverse relations
-        for (obj, model) in self.opts.model._meta.get_all_related_m2m_objects_with_model():
-            field_name = obj.field.related_query_name()
-            if field_name in attrs:
-                self.m2m_data[field_name] = attrs.pop(field_name)
+        else:
+            # Reverse relations
+            for (obj, model) in self.opts.model._meta.get_all_related_m2m_objects_with_model():
+                field_name = obj.field.related_query_name()
+                if field_name in attrs:
+                    self.m2m_data[field_name] = attrs.pop(field_name)
 
-        # Forward relations
-        for field in self.opts.model._meta.many_to_many:
-            if field.name in attrs:
-                self.m2m_data[field.name] = attrs.pop(field.name)
+            # Forward relations
+            for field in self.opts.model._meta.many_to_many:
+                if field.name in attrs:
+                    self.m2m_data[field.name] = attrs.pop(field.name)
 
-        instance = self.opts.model(**attrs)
+            instance = self.opts.model(**attrs)
+
         try:
             instance.full_clean(exclude=self.get_validation_exclusions())
         except ValidationError, err:
             self._errors = err.message_dict
             return None
+
         return instance
 
     def save(self, save_m2m=True):

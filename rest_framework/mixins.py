@@ -113,6 +113,10 @@ class UpdateModelMixin(object):
             slug_field = self.get_slug_field()
             setattr(obj, slug_field, slug)
 
+        # Ensure we clean the attributes so that we don't eg return integer
+        # pk using a string representation, as provided by the url conf kwarg.
+        obj.full_clean()
+
 
 class DestroyModelMixin(object):
     """
@@ -120,6 +124,6 @@ class DestroyModelMixin(object):
     Should be mixed in with `SingleObjectBaseView`.
     """
     def destroy(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        self.object.delete()
+        obj = self.get_object()
+        obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

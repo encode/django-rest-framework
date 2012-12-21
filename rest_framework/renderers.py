@@ -20,7 +20,7 @@ from rest_framework.utils import dict2xml
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework import VERSION, status
-from rest_framework import serializers, parsers
+from rest_framework import parsers
 
 
 class BaseRenderer(object):
