@@ -257,7 +257,7 @@ class BaseSerializer(Field):
         You should override this method to control how deserialized objects
         are instantiated.
         """
-        if instance is not None:
+        if instance is not None and not hasattr(instance, '__iter__'):
             instance.update(attrs)
             return instance
         return attrs
@@ -276,7 +276,7 @@ class BaseSerializer(Field):
         """
         if hasattr(data, '__iter__') and not isinstance(data, dict):
             # TODO: error data when deserializing lists
-            return (self.from_native(item) for item in data)
+            return [self.from_native(item, files) for item in data]
 
         self._errors = {}
         if data is not None or files is not None:
@@ -334,7 +334,11 @@ class BaseSerializer(Field):
         """
         Save the deserialized object and return it.
         """
-        self.object.save()
+        if hasattr(self.object, '__iter__'):
+            for obj in self.object:
+                obj.save()
+        else:
+            self.object.save()
         return self.object
 
 
