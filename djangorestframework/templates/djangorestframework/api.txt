@@ -1,8 +1,0 @@
-{% autoescape off %}{{ name }}
-
-{{ description }}
-
-HTTP/1.0 {{ response.status }} {{ response.status_text }}
-{% for key, val in response.headers.items %}{{ key }}: {{ val }}
-{% endfor %}
-{{ content }}{% endautoescape %}

@@ -3,18 +3,17 @@
 *~
 .*
 
-assetplatform.egg-info/*
-coverage.xml
-env
-docs/build
-html
-htmlcov
-examples/media/pygments/[A-Za-z0-9]*
-examples/media/objectstore/[A-Za-z0-9]*
-build/*
-dist/*
-xmlrunner/*
-djangorestframework.egg-info/*
+html/
+coverage/
+build/
+dist/
+*.egg-info/
 MANIFEST
 
+bin/
+include/
+lib/
+local/
+
 !.gitignore
+!.travis.yml

@@ -1,0 +1,204 @@
+{% load url from future %}
+{% load rest_framework %}
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+    {% block head %}
+
+        {% block meta %}
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta name="robots" content="NONE,NOARCHIVE" />
+        {% endblock %}
+
+        <title>{% block title %}Django REST framework{% endblock %}</title>
+
+        {% block style %}
+        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}rest_framework/css/bootstrap.min.css"/>
+        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}rest_framework/css/bootstrap-tweaks.css"/>
+        <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}rest_framework/css/prettify.css'/>
+        <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}rest_framework/css/default.css'/>
+        {% endblock %}
+
+    {% endblock %}
+    </head>
+
+  <body class="{% block bodyclass %}{% endblock %} container">
+
+    <div class="wrapper">
+
+    {% block navbar %}
+    <div class="navbar {% block bootstrap_navbar_variant %}navbar-inverse{% endblock %}">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <span class="brand" href="/">
+                    {% block branding %}<a href='http://django-rest-framework.org'>Django REST framework <span class="version">{{ version }}</span></a>{% endblock %}
+                </span>
+                <ul class="nav pull-right">
+                    {% block userlinks %}
+                        {% if user.is_authenticated %}
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    {{ user }}
+                                    <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li>{% optional_logout request %}</li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li>{% optional_login request %}</li>
+                        {% endif %}
+                    {% endblock %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+
+    {% block breadcrumbs %}
+    <ul class="breadcrumb">
+        {% for breadcrumb_name, breadcrumb_url in breadcrumblist %}
+            <li>
+                <a href="{{ breadcrumb_url }}" {% if forloop.last %}class="active"{% endif %}>{{ breadcrumb_name }}</a> {% if not forloop.last %}<span class="divider">&rsaquo;</span>{% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+    {% endblock %}
+
+    <!-- Content -->
+    <div id="content">
+
+        {% if 'GET' in allowed_methods %}
+            <form id="get-form" class="pull-right">
+                <fieldset>
+                    <div class="btn-group format-selection">
+                        <a class="btn btn-primary js-tooltip" href='{{ request.get_full_path }}' rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
+
+                        <button class="btn btn-primary dropdown-toggle js-tooltip" data-toggle="dropdown" title="Specify a format for the GET request">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            {% for format in available_formats %}
+                                <li>
+                                    <a class="js-tooltip format-option" href='{% add_query_param request api_settings.URL_FORMAT_OVERRIDE format %}' rel="nofollow" title="Make a GET request on the {{ name }} resource with the format set to `{{ format }}`">{{ format }}</a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                </fieldset>
+            </form>
+        {% endif %}
+
+        {% if options_form %}
+            <form class="button-form" action="{{ request.get_full_path }}" method="POST" class="pull-right">
+                {% csrf_token %}
+                <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
+                <button class="btn btn-primary js-tooltip" title="Make an OPTIONS request on the {{ name }} resource">OPTIONS</button>
+            </form>
+        {% endif %}
+
+        {% if delete_form %}
+            <form class="button-form" action="{{ request.get_full_path }}" method="POST" class="pull-right">
+                {% csrf_token %}
+                <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
+                <button class="btn btn-danger js-tooltip" title="Make a DELETE request on the {{ name }} resource">DELETE</button>
+            </form>
+        {% endif %}
+
+        <div class="content-main">
+            <div class="page-header"><h1>{{ name }}</h1></div>
+            {{ description }}
+
+            <div class="request-info">
+                <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
+            <div>
+            <div class="response-info">
+                <pre class="prettyprint"><div class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
+{% for key, val in response.items %}<b>{{ key }}:</b> <span class="lit">{{ val|urlize_quoted_links }}</span>
+{% endfor %}
+</div>{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
+            </div>
+        </div>
+
+            {% if response.status_code != 403 %}
+
+                {% if post_form %}
+                <div class="well">
+                    <form action="{{ request.get_full_path }}" method="POST" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
+                        <fieldset>
+                            {% csrf_token %}
+                            {{ post_form.non_field_errors }}
+                            {% for field in post_form %}
+                                <div class="control-group"> <!--{% if field.errors %}error{% endif %}-->
+                                    {{ field.label_tag|add_class:"control-label" }}
+                                    <div class="controls">
+                                        {{ field }}
+                                        <span class="help-inline">{{ field.help_text }}</span>
+                                        <!--{{ field.errors|add_class:"help-block" }}-->
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <div class="form-actions">
+                                <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                {% endif %}
+
+                {% if put_form %}
+                <div class="well">
+                    <form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
+                        <fieldset>
+                            <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" />
+                            {% csrf_token %}
+                            {{ put_form.non_field_errors }}
+                            {% for field in put_form %}
+                                <div class="control-group"> <!--{% if field.errors %}error{% endif %}-->
+                                    {{ field.label_tag|add_class:"control-label" }}
+                                    <div class="controls">
+                                        {{ field }}
+                                        <span class='help-inline'>{{ field.help_text }}</span>
+                                        <!--{{ field.errors|add_class:"help-block" }}-->
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <div class="form-actions">
+                                <button class="btn btn-primary js-tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>
+                            </div>
+
+                        </fieldset>
+                    </form>
+                </div>
+                {% endif %}
+
+            {% endif %}
+
+        </div>
+        <!-- END content-main -->
+
+    </div>
+    <!-- END Content -->
+
+        <div id="push"></div>
+
+    </div>
+
+    </div><!-- ./wrapper -->
+
+    {% block footer %}
+    <!--<div id="footer">
+        <a class="powered-by" href='http://django-rest-framework.org'>Django REST framework</a>
+    </div>-->
+    {% endblock %}
+
+    {% block script %}
+    <script src="{% get_static_prefix %}rest_framework/js/jquery-1.8.1-min.js"></script>
+    <script src="{% get_static_prefix %}rest_framework/js/bootstrap.min.js"></script>
+    <script src="{% get_static_prefix %}rest_framework/js/prettify-min.js"></script>
+    <script src="{% get_static_prefix %}rest_framework/js/default.js"></script>
+    {% endblock %}
+  </body>
+</html>

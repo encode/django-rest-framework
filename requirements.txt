@@ -1,6 +1,1 @@
-# We need Django.  Duh.
-# coverage isn't strictly a requirement, but it's useful.
-
-Django>=1.2
-coverage>=3.4
-URLObject>=0.6.0
+Django>=1.3

@@ -1,0 +1,177 @@
+
+/* The navbar is fixed at >= 980px wide, so add padding to the body to prevent
+content running up underneath it. */
+
+h1 {
+    font-weight: 500;
+}
+
+h2, h3 {
+    font-weight: 300;
+}
+
+.resource-description, .response-info {
+    margin-bottom: 2em;
+}
+.version:before {
+    content: "v";
+    opacity: 0.6;
+    padding-right: 0.25em;
+}
+
+.version {
+  font-size: 70%;
+}
+
+.format-option {
+    font-family: Menlo, Consolas, "Andale Mono", "Lucida Console", monospace;
+}
+
+.button-form {
+    float: right;
+    margin-right: 1em;
+}
+
+ul.breadcrumb {
+  margin: 58px 0 0 0;
+}
+
+form select, form input, form textarea {
+  width: 90%;
+}
+
+form select[multiple] {
+  height: 150px;
+}
+/* To allow tooltips to work on disabled elements */
+.disabled-tooltip-shield {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.errorlist {
+    margin-top: 0.5em;
+}
+
+pre {
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
+  font-size: 12px;
+}
+
+.page-header {
+    border-bottom: none;
+    padding-bottom: 0px;
+    margin-bottom: 20px;
+}
+
+
+/*=== dabapps bootstrap styles ====*/
+
+html{
+  width:100%;
+  background: none;
+}
+
+body, .navbar .navbar-inner .container-fluid {
+  max-width: 1150px;
+  margin: 0 auto;
+}
+
+body{
+  background: url("../img/grid.png") repeat-x;
+  background-attachment: fixed;
+}
+
+#content{
+    margin: 0;
+}
+/* custom navigation styles */
+.wrapper .navbar{
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.navbar .navbar-inner{
+  background: #2C2C2C;
+  color: white;
+  border: none;
+  border-top: 5px solid #A30000;
+  border-radius: 0px;
+}
+
+.navbar .navbar-inner .nav li, .navbar .navbar-inner .nav li a, .navbar .navbar-inner .brand{
+  color: white; 
+}
+
+.nav-list > .active > a, .nav-list > .active > a:hover {
+  background: #2c2c2c;
+}
+
+.navbar .navbar-inner .dropdown-menu li a, .navbar .navbar-inner .dropdown-menu li{
+ color: #A30000; 
+}
+.navbar .navbar-inner .dropdown-menu li a:hover{
+  background: #eeeeee;
+  color: #c20000;
+}
+
+/* custom general page styles */
+.hero-unit h2, .hero-unit h1{
+  color: #A30000;
+}
+
+body a, body a{
+  color: #A30000;
+}
+
+body a:hover{
+  color: #c20000;
+}
+
+#content a span{
+    text-decoration: underline;
+ }
+
+/* sticky footer and footer */
+html, body {
+  height: 100%;
+}
+.wrapper {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -60px;
+}
+
+
+#footer, #push {
+  height: 60px; /* .push must be the same height as .footer */
+}
+
+#footer{
+    text-align: right;
+}
+
+#footer p {
+  text-align: center;
+  color: gray;
+  border-top: 1px solid #DDD;
+  padding-top: 10px;
+}
+
+#footer a {
+  color: gray;
+  font-weight: bold;
+}
+
+#footer a:hover {
+  color: gray;
+}
+
