@@ -6,6 +6,10 @@
 
 ## 2.1.x series
 
+### Master
+
+* Bugfix: Related fields now respect the required flag, and may be required=False.
+
 ### 2.1.12
 
 **Date**: 21st Dec 2012
