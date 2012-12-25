@@ -340,7 +340,6 @@ class ModelValidationTests(TestCase):
         self.assertTrue(photo_serializer.save())
 
 
-
 class RegexValidationTest(TestCase):
     def test_create_failed(self):
         serializer = BookSerializer(data={'isbn': '1234567890'})
@@ -549,6 +548,21 @@ class DefaultValueTests(TestCase):
         instance = serializer.save()
         self.assertEquals(len(self.objects.all()), 1)
         self.assertEquals(instance.pk, 1)
+        self.assertEquals(instance.text, 'overridden')
+
+    def test_partial_update_default(self):
+        """ Regression test for issue #532 """
+        data = {'text': 'overridden'}
+        serializer = self.serializer_class(data=data, partial=True)
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+
+        data = {'extra': 'extra_value'}
+        serializer = self.serializer_class(instance=instance, data=data, partial=True)
+        self.assertEquals(serializer.is_valid(), True)
+        instance = serializer.save()
+
+        self.assertEquals(instance.extra, 'extra_value')
         self.assertEquals(instance.text, 'overridden')
 
 
