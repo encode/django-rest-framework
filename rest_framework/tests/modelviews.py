@@ -1,4 +1,4 @@
-# from django.conf.urls.defaults import patterns, url
+# from rest_framework.compat import patterns, url
 # from django.forms import ModelForm
 # from django.contrib.auth.models import Group, User
 # from rest_framework.resources import ModelResource
