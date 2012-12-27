@@ -39,14 +39,46 @@ There is also a sandbox API you can use for testing purposes, [available here][s
 
 # Installation
 
-Install using `pip`...
+Install using `pip`, including any optional packages you want...
 
     pip install djangorestframework
+    pip install markdown  # Markdown support for the browseable API.
+    pip install pyyaml    # YAML content-type support.
+    pip install django-filter  # Filtering support
 
 ...or clone the project from github.
 
     git clone git@github.com:tomchristie/django-rest-framework.git
+    cd django-rest-framework
     pip install -r requirements.txt
+    pip install -r optionals.txt
+
+Add `'rest_framework'` to your `INSTALLED_APPS` setting.
+
+    INSTALLED_APPS = (
+        ...
+        'rest_framework',        
+    )
+
+## Browseable API requirements
+
+If you're intending to use the browseable API you'll also want to also ensure you include `'django.contrib.staticfiles'` in your `INSTALLED_APPS` setting.
+
+    INSTALLED_APPS = (
+        ...
+        'django.contrib.staticfiles',
+        'rest_framework',
+    )
+
+You'll proabably also want to add REST framework's login and logout views.
+Add the following to your root `urls.py` file.
+
+    urlpatterns = patterns('',
+        ...
+        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    )
+
+Note that the URL path can be whatever you want, but you must include `'rest_framework.urls'` with the `'rest_framework'` namespace.
 
 # Development
 
