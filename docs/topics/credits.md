@@ -81,6 +81,7 @@ The following people have helped make REST framework great.
 * Szymon Teżewski - [sunscrapers]
 * Joel Marcotte - [joual]
 * Trey Hunner - [treyhunner]
+* Roman Akinfold - [akinfold]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -197,3 +198,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [sunscrapers]: https://github.com/sunscrapers
 [joual]: https://github.com/joual
 [treyhunner]: https://github.com/treyhunner
+[akinfold]: https://github.com/akinfold
