@@ -59,18 +59,7 @@ Add `'rest_framework'` to your `INSTALLED_APPS` setting.
         'rest_framework',        
     )
 
-### Browseable API requirements
-
-If you're intending to use the browseable API you'll also want to also ensure you include `'django.contrib.staticfiles'` in your `INSTALLED_APPS` setting.
-
-    INSTALLED_APPS = (
-        ...
-        'django.contrib.staticfiles',
-        'rest_framework',
-    )
-
-You'll proabably also want to add REST framework's login and logout views.
-Add the following to your root `urls.py` file.
+If you're intending to use the browseable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
 
     urlpatterns = patterns('',
         ...

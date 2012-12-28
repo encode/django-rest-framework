@@ -10,20 +10,18 @@ Minor version numbers (0.0.x) are used for changes that are API compatible.  You
 
 Medium version numbers (0.x.0) may include minor API changes.  You should read the release notes carefully before upgrading between medium point releases.
 
-## 2.2.x series
-
-### 2.2.0
-
-**Date**: 27th Dec 2012
-
-* Support configurable `STATICFILES_STORAGE` storage.
-* Bugfix: Related fields now respect the required flag, and may be required=False.
-
-**API-incompatible changes**: From 2.2.0 Onwards you must make sure to include `'django.contrib.staticfiles'` in your `INSTALLED_APPS`.  This is in line with Django's 1.4's recommended usage of [the `'staticfiles'` template tag][staticfiles14] instead of Django 1.3's recommended usage of [the `'static'` template tag][staticfiles13].
+Major version numbers (x.0.0) are reserved for project milestones.  No major point releases are currently planned.
 
 ---
 
 ## 2.1.x series
+
+### 2.1.13
+
+**Date**: 28th Dec 2012
+
+* Support configurable `STATICFILES_STORAGE` storage.
+* Bugfix: Related fields now respect the required flag, and may be required=False.
 
 ### 2.1.12
 
