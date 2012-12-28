@@ -81,6 +81,13 @@ To run the tests.
 
 # Changelog
 
+### 2.1.13
+
+**Date**: 28th Dec 2012
+
+* Support configurable `STATICFILES_STORAGE` storage.
+* Bugfix: Related fields now respect the required flag, and may be required=False.
+
 ### 2.1.12
 
 **Date**: 21st Dec 2012
