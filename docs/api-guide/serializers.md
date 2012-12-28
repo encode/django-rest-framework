@@ -110,7 +110,22 @@ Your `validate_<fieldname>` methods should either just return the `attrs` dictio
 
 ### Object-level validation
 
-To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass. This method takes a single argument, which is the `attrs` dictionary. It should raise a `ValidationError` if necessary, or just return `attrs`.
+To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass. This method takes a single argument, which is the `attrs` dictionary. It should raise a `ValidationError` if necessary, or just return `attrs`.  For example:
+
+    from rest_framework import serializers
+
+    class EventSerializer(serializers.Serializer):
+        description = serializers.CahrField(max_length=100)
+        start = serializers.DateTimeField()
+        finish = serializers.DateTimeField()
+
+        def validate(self, attrs):
+            """
+            Check that the start is before the stop.
+            """
+            if attrs['start'] < attrs['finish']:
+                raise serializers.ValidationError("finish must occur after start")
+            return attrs
 
 ## Saving object state
 
