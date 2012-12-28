@@ -112,6 +112,21 @@ Your `validate_<fieldname>` methods should either just return the `attrs` dictio
 
 To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass. This method takes a single argument, which is the `attrs` dictionary. It should raise a `ValidationError` if necessary, or just return `attrs`.
 
+    from rest_framework import serializers
+
+    class QueryParameterSerializer(serializers.Serializer):
+        start = serializers.DateTimeField(required=False, default='')
+        stop = serializers.DateTimeField(required=False, default='')
+
+        def validate(self, attrs):
+            """
+            Check that the start is before the stop.
+            """
+            if attrs['start'] and attrs['stop']:
+                if attrs['start'] < attrs['stop']:
+                    raise serializers.ValidationError("Range finish must come after start")
+            return attrs
+
 ## Saving object state
 
 Serializers also include a `.save()` method that you can override if you want to provide a method of persisting the state of a deserialized object.  The default behavior of the method is to simply call `.save()` on the deserialized object instance.
