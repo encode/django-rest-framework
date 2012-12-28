@@ -11,6 +11,89 @@ import string
 register = template.Library()
 
 
+# Note we don't use 'load staticfiles', because we need a 1.3 compatible
+# version, so instead we include the `static` template tag ourselves.
+
+# When 1.3 becomes unsupported by REST framework, we can instead start to
+# use the {% load staticfiles %} tag, remove the following code,
+# and add a dependancy that `django.contrib.staticfiles` must be installed.
+
+# Note: We can't put this into the `compat` module because the compat import
+# from rest_framework.compat import ...
+# conflicts with this rest_framework template tag module.
+
+try:  # Django 1.5+
+    from django.contrib.staticfiles.templatetags import StaticFilesNode
+
+    @register.tag('static')
+    def do_static(parser, token):
+        return StaticFilesNode.handle_token(parser, token)
+
+except:
+    try:  # Django 1.4
+        from django.contrib.staticfiles.storage import staticfiles_storage
+
+        @register.simple_tag
+        def static(path):
+            """
+            A template tag that returns the URL to a file
+            using staticfiles' storage backend
+            """
+            return staticfiles_storage.url(path)
+
+    except:  # Django 1.3
+        from urlparse import urljoin
+        from django import template
+        from django.templatetags.static import PrefixNode
+
+        class StaticNode(template.Node):
+            def __init__(self, varname=None, path=None):
+                if path is None:
+                    raise template.TemplateSyntaxError(
+                        "Static template nodes must be given a path to return.")
+                self.path = path
+                self.varname = varname
+
+            def url(self, context):
+                path = self.path.resolve(context)
+                return self.handle_simple(path)
+
+            def render(self, context):
+                url = self.url(context)
+                if self.varname is None:
+                    return url
+                context[self.varname] = url
+                return ''
+
+            @classmethod
+            def handle_simple(cls, path):
+                return urljoin(PrefixNode.handle_simple("STATIC_URL"), path)
+
+            @classmethod
+            def handle_token(cls, parser, token):
+                """
+                Class method to parse prefix node and return a Node.
+                """
+                bits = token.split_contents()
+
+                if len(bits) < 2:
+                    raise template.TemplateSyntaxError(
+                        "'%s' takes at least one argument (path to file)" % bits[0])
+
+                path = parser.compile_filter(bits[1])
+
+                if len(bits) >= 2 and bits[-2] == 'as':
+                    varname = bits[3]
+                else:
+                    varname = None
+
+                return cls(varname, path)
+
+        @register.tag('static')
+        def do_static_13(parser, token):
+            return StaticNode.handle_token(parser, token)
+
+
 def replace_query_param(url, key, val):
     """
     Given a URL and a key/val pair, set or replace an item in the query
