@@ -18,6 +18,7 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 
 ### Master
 
+* Bugfix: Model fields with `blank=True` are now `required=False` by default.
 * Bugfix: Nested serializers now support nullable relationships.
 
 ### 2.1.13
