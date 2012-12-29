@@ -229,8 +229,20 @@ class PKNullableForeignKeyTests(TestCase):
         target = ForeignKeyTarget(name='target-1')
         target.save()
         for idx in range(1, 4):
+            if idx == 3:
+                target = None
             source = NullableForeignKeySource(name='source-%d' % idx, target=target)
             source.save()
+
+    def test_foreign_key_retrieve_with_null(self):
+        queryset = NullableForeignKeySource.objects.all()
+        serializer = NullableForeignKeySourceSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': u'source-1', 'target': 1},
+            {'id': 2, 'name': u'source-2', 'target': 1},
+            {'id': 3, 'name': u'source-3', 'target': None},
+        ]
+        self.assertEquals(serializer.data, expected)
 
     def test_foreign_key_create_with_valid_null(self):
         data = {'id': 4, 'name': u'source-4', 'target': None}
@@ -246,7 +258,7 @@ class PKNullableForeignKeyTests(TestCase):
         expected = [
             {'id': 1, 'name': u'source-1', 'target': 1},
             {'id': 2, 'name': u'source-2', 'target': 1},
-            {'id': 3, 'name': u'source-3', 'target': 1},
+            {'id': 3, 'name': u'source-3', 'target': None},
             {'id': 4, 'name': u'source-4', 'target': None}
         ]
         self.assertEquals(serializer.data, expected)
@@ -270,7 +282,7 @@ class PKNullableForeignKeyTests(TestCase):
         expected = [
             {'id': 1, 'name': u'source-1', 'target': 1},
             {'id': 2, 'name': u'source-2', 'target': 1},
-            {'id': 3, 'name': u'source-3', 'target': 1},
+            {'id': 3, 'name': u'source-3', 'target': None},
             {'id': 4, 'name': u'source-4', 'target': None}
         ]
         self.assertEquals(serializer.data, expected)
@@ -289,7 +301,7 @@ class PKNullableForeignKeyTests(TestCase):
         expected = [
             {'id': 1, 'name': u'source-1', 'target': None},
             {'id': 2, 'name': u'source-2', 'target': 1},
-            {'id': 3, 'name': u'source-3', 'target': 1}
+            {'id': 3, 'name': u'source-3', 'target': None}
         ]
         self.assertEquals(serializer.data, expected)
 
@@ -312,7 +324,7 @@ class PKNullableForeignKeyTests(TestCase):
         expected = [
             {'id': 1, 'name': u'source-1', 'target': None},
             {'id': 2, 'name': u'source-2', 'target': 1},
-            {'id': 3, 'name': u'source-3', 'target': 1}
+            {'id': 3, 'name': u'source-3', 'target': None}
         ]
         self.assertEquals(serializer.data, expected)
 
