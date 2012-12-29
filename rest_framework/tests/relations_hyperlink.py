@@ -51,7 +51,7 @@ class ForeignKeySource(models.Model):
 
 
 class ForeignKeyTargetSerializer(serializers.HyperlinkedModelSerializer):
-    sources = serializers.ManyHyperlinkedRelatedField(view_name='foreignkeysource-detail', read_only=True)
+    sources = serializers.ManyHyperlinkedRelatedField(view_name='foreignkeysource-detail')
 
     class Meta:
         model = ForeignKeyTarget
@@ -253,24 +253,23 @@ class HyperlinkedForeignKeyTests(TestCase):
         ]
         self.assertEquals(serializer.data, expected)
 
-    # TODO: Check this - is this a bug or is the test incorrect?
-    # def test_reverse_foreign_key_create(self):
-    #     data = {'url': '/foreignkeytarget/3/', 'name': u'target-3', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']}
-    #     serializer = ForeignKeyTargetSerializer(data=data)
-    #     self.assertTrue(serializer.is_valid())
-    #     obj = serializer.save()
-    #     self.assertEquals(serializer.data, data)
-    #     self.assertEqual(obj.name, u'target-3')
+    def test_reverse_foreign_key_create(self):
+        data = {'url': '/foreignkeytarget/3/', 'name': u'target-3', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']}
+        serializer = ForeignKeyTargetSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        obj = serializer.save()
+        self.assertEquals(serializer.data, data)
+        self.assertEqual(obj.name, u'target-3')
 
-    #     # Ensure target 4 is added, and everything else is as expected
-    #     queryset = ForeignKeyTarget.objects.all()
-    #     serializer = ForeignKeyTargetSerializer(queryset)
-    #     expected = [
-    #         {'url': '/foreignkeytarget/1/', 'name': u'target-1', 'sources': ['/foreignkeysource/2/']},
-    #         {'url': '/foreignkeytarget/2/', 'name': u'target-2', 'sources': []},
-    #         {'url': '/foreignkeytarget/3/', 'name': u'target-3', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']},
-    #     ]
-    #     self.assertEquals(serializer.data, expected)
+        # Ensure target 4 is added, and everything else is as expected
+        queryset = ForeignKeyTarget.objects.all()
+        serializer = ForeignKeyTargetSerializer(queryset)
+        expected = [
+            {'url': '/foreignkeytarget/1/', 'name': u'target-1', 'sources': ['/foreignkeysource/2/']},
+            {'url': '/foreignkeytarget/2/', 'name': u'target-2', 'sources': []},
+            {'url': '/foreignkeytarget/3/', 'name': u'target-3', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']},
+        ]
+        self.assertEquals(serializer.data, expected)
 
     def test_foreign_key_update_with_invalid_null(self):
         data = {'url': '/foreignkeysource/1/', 'name': u'source-1', 'target': None}
