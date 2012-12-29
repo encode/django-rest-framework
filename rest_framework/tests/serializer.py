@@ -877,3 +877,12 @@ class MultipleObjectsTests(TestCase):
         self.assertEquals(serializer.object, expected)
         self.assertFalse(serializer.object is expected)
         self.assertEquals(serializer.data, self.expected)
+
+    def test_update(self):
+        serializer = CommentSerializer(instance=self.comments, data=self.data)
+        expected = self.comments
+        self.assertEquals(serializer.is_valid(), True)
+        self.assertEquals(serializer.object, expected)
+        for obj, exp in zip(serializer.object, expected):
+            self.assertTrue(obj is exp)
+        self.assertEquals(serializer.data, self.expected)
