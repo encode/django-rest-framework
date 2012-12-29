@@ -253,6 +253,7 @@ class HyperlinkedForeignKeyTests(TestCase):
         ]
         self.assertEquals(serializer.data, expected)
 
+    # TODO: Check this - is this a bug or is the test incorrect?
     # def test_reverse_foreign_key_create(self):
     #     data = {'url': '/foreignkeytarget/3/', 'name': u'target-3', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']}
     #     serializer = ForeignKeyTargetSerializer(data=data)
