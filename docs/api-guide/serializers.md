@@ -4,8 +4,7 @@
 
 > Expanding the usefulness of the serializers is something that we would
 like to address. However, it's not a trivial problem, and it
-will take some serious design work. Any offers to help out in this
-area would be gratefully accepted.
+will take some serious design work.
 >
 > &mdash; Russell Keith-Magee, [Django users group][cite]
 
