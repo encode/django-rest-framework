@@ -234,6 +234,23 @@ class HyperlinkedForeignKeyTests(TestCase):
         ]
         self.assertEquals(serializer.data, expected)
 
+    def test_reverse_foreign_key_update(self):
+        data = {'url': '/foreignkeytarget/2/', 'name': u'target-2', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']}
+        instance = ForeignKeyTarget.objects.get(pk=2)
+        serializer = ForeignKeyTargetSerializer(instance, data=data)
+        self.assertTrue(serializer.is_valid())
+        self.assertEquals(serializer.data, data)
+        serializer.save()
+
+        # Ensure target 2 is update, and everything else is as expected
+        queryset = ForeignKeyTarget.objects.all()
+        serializer = ForeignKeyTargetSerializer(queryset)
+        expected = [
+            {'url': '/foreignkeytarget/1/', 'name': u'target-1', 'sources': ['/foreignkeysource/2/']},
+            {'url': '/foreignkeytarget/2/', 'name': u'target-2', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']},
+        ]
+        self.assertEquals(serializer.data, expected)
+
     def test_foreign_key_create(self):
         data = {'url': '/foreignkeysource/4/', 'name': u'source-4', 'target': '/foreignkeytarget/2/'}
         serializer = ForeignKeySourceSerializer(data=data)
