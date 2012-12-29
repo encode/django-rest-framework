@@ -32,6 +32,20 @@ class ForeignKeyTargetSerializer(serializers.ModelSerializer):
         model = ForeignKeyTarget
 
 
+# Nullable ForeignKey
+
+class NullableForeignKeySource(models.Model):
+    name = models.CharField(max_length=100)
+    target = models.ForeignKey(ForeignKeyTarget, null=True, blank=True,
+                               related_name='nullable_sources')
+
+
+class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        depth = 1
+        model = NullableForeignKeySource
+
+
 class ReverseForeignKeyTests(TestCase):
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
@@ -63,5 +77,26 @@ class ReverseForeignKeyTests(TestCase):
             ]},
             {'id': 2, 'name': u'target-2', 'sources': [
             ]}
+        ]
+        self.assertEquals(serializer.data, expected)
+
+
+class NestedNullableForeignKeyTests(TestCase):
+    def setUp(self):
+        target = ForeignKeyTarget(name='target-1')
+        target.save()
+        for idx in range(1, 4):
+            if idx == 3:
+                target = None
+            source = NullableForeignKeySource(name='source-%d' % idx, target=target)
+            source.save()
+
+    def test_foreign_key_retrieve_with_null(self):
+        queryset = NullableForeignKeySource.objects.all()
+        serializer = NullableForeignKeySourceSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': u'source-1', 'target': {'id': 1, 'name': u'target-1'}},
+            {'id': 2, 'name': u'source-2', 'target': {'id': 1, 'name': u'target-1'}},
+            {'id': 3, 'name': u'source-3', 'target': None},
         ]
         self.assertEquals(serializer.data, expected)

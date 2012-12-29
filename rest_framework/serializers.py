@@ -307,6 +307,9 @@ class BaseSerializer(Field):
         if is_simple_callable(getattr(obj, 'all', None)):
             return [self.to_native(item) for item in obj.all()]
 
+        if obj is None:
+            return None
+
         return self.to_native(obj)
 
     @property

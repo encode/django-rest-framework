@@ -16,6 +16,10 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 
 ## 2.1.x series
 
+### Master
+
+* Bugfix: Nested serializers now support nullable relationships.
+
 ### 2.1.13
 
 **Date**: 28th Dec 2012
