@@ -441,7 +441,7 @@ class ModelSerializer(Serializer):
 
         kwargs['blank'] = model_field.blank
 
-        if model_field.null:
+        if model_field.null or model_field.blank:
             kwargs['required'] = False
 
         if model_field.has_default():

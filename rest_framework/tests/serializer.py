@@ -751,6 +751,10 @@ class BlankFieldTests(TestCase):
         serializer = self.not_blank_model_serializer_class(data=self.data)
         self.assertEquals(serializer.is_valid(), False)
 
+    def test_create_model_null_field(self):
+        serializer = self.model_serializer_class(data={})
+        self.assertEquals(serializer.is_valid(), True)
+
 
 #test for issue #460
 class SerializerPickleTests(TestCase):
