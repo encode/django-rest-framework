@@ -216,6 +216,44 @@ class PKForeignKeyTests(TestCase):
         ]
         self.assertEquals(serializer.data, expected)
 
+    def test_foreign_key_create(self):
+        data = {'id': 4, 'name': u'source-4', 'target': 2}
+        serializer = ForeignKeySourceSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        obj = serializer.save()
+        self.assertEquals(serializer.data, data)
+        self.assertEqual(obj.name, u'source-4')
+
+        # Ensure source 1 is updated, and everything else is as expected
+        queryset = ForeignKeySource.objects.all()
+        serializer = ForeignKeySourceSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': u'source-1', 'target': 1},
+            {'id': 2, 'name': u'source-2', 'target': 1},
+            {'id': 3, 'name': u'source-3', 'target': 1},
+            {'id': 4, 'name': u'source-4', 'target': 2},
+        ]
+        self.assertEquals(serializer.data, expected)
+
+    # TODO: See #511
+    # def test_reverse_foreign_key_create(self):
+    #     data = {'id': 3, 'name': u'target-3', 'sources': [1, 3]}
+    #     serializer = ForeignKeyTargetSerializer(data=data)
+    #     self.assertTrue(serializer.is_valid())
+    #     obj = serializer.save()
+    #     self.assertEquals(serializer.data, data)
+    #     self.assertEqual(obj.name, u'target-3')
+
+    #     # Ensure target 4 is added, and everything else is as expected
+    #     queryset = ForeignKeyTarget.objects.all()
+    #     serializer = ForeignKeyTargetSerializer(queryset)
+    #     expected = [
+    #         {'id': 1, 'name': u'target-1', 'sources': [1, 2, 3]},
+    #         {'id': 2, 'name': u'target-2', 'sources': []},
+    #         {'id': 3, 'name': u'target-3', 'sources': [1, 3]},
+    #     ]
+    #     self.assertEquals(serializer.data, expected)
+
     def test_foreign_key_update_with_invalid_null(self):
         data = {'id': 1, 'name': u'source-1', 'target': None}
         instance = ForeignKeySource.objects.get(pk=1)
