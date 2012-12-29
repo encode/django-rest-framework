@@ -496,19 +496,26 @@ class ModelSerializer(Serializer):
         Restore the model instance.
         """
         self.m2m_data = {}
+        self.related_data = {}
 
         if instance is not None:
             for key, val in attrs.items():
                 setattr(instance, key, val)
 
         else:
-            # Reverse relations
+            # Reverse fk relations
+            for (obj, model) in self.opts.model._meta.get_all_related_objects_with_model():
+                field_name = obj.field.related_query_name()
+                if field_name in attrs:
+                    self.related_data[field_name] = attrs.pop(field_name)
+
+            # Reverse m2m relations
             for (obj, model) in self.opts.model._meta.get_all_related_m2m_objects_with_model():
                 field_name = obj.field.related_query_name()
                 if field_name in attrs:
                     self.m2m_data[field_name] = attrs.pop(field_name)
 
-            # Forward relations
+            # Forward m2m relations
             for field in self.opts.model._meta.many_to_many:
                 if field.name in attrs:
                     self.m2m_data[field.name] = attrs.pop(field.name)
@@ -533,6 +540,11 @@ class ModelSerializer(Serializer):
             for accessor_name, object_list in self.m2m_data.items():
                 setattr(self.object, accessor_name, object_list)
             self.m2m_data = {}
+
+        if getattr(self, 'related_data', None):
+            for accessor_name, object_list in self.related_data.items():
+                setattr(self.object, accessor_name, object_list)
+            self.related_data = {}
 
         return self.object
 
