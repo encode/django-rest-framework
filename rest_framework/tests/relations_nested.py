@@ -16,11 +16,17 @@ class ForeignKeySource(models.Model):
 
 class ForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
+        depth = 1
+        model = ForeignKeySource
+
+
+class FlatForeignKeySourceSerializer(serializers.ModelSerializer):
+    class Meta:
         model = ForeignKeySource
 
 
 class ForeignKeyTargetSerializer(serializers.ModelSerializer):
-    sources = ForeignKeySourceSerializer()
+    sources = FlatForeignKeySourceSerializer()
 
     class Meta:
         model = ForeignKeyTarget
@@ -35,6 +41,16 @@ class ReverseForeignKeyTests(TestCase):
         for idx in range(1, 4):
             source = ForeignKeySource(name='source-%d' % idx, target=target)
             source.save()
+
+    def test_foreign_key_retrieve(self):
+        queryset = ForeignKeySource.objects.all()
+        serializer = ForeignKeySourceSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': u'source-1', 'target': {'id': 1, 'name': u'target-1'}},
+            {'id': 2, 'name': u'source-2', 'target': {'id': 1, 'name': u'target-1'}},
+            {'id': 3, 'name': u'source-3', 'target': {'id': 1, 'name': u'target-1'}},
+        ]
+        self.assertEquals(serializer.data, expected)
 
     def test_reverse_foreign_key_retrieve(self):
         queryset = ForeignKeyTarget.objects.all()
