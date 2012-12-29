@@ -82,6 +82,7 @@ The following people have helped make REST framework great.
 * Joel Marcotte - [joual]
 * Trey Hunner - [treyhunner]
 * Roman Akinfold - [akinfold]
+* Toran Billups - [toranb]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -199,3 +200,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [joual]: https://github.com/joual
 [treyhunner]: https://github.com/treyhunner
 [akinfold]: https://github.com/akinfold
+[toranb]: https://github.com/toranb
