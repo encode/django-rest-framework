@@ -1,7 +1,6 @@
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.response import Response
-# from django.test.client import RequestFactory
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.authentication import BasicAuthentication
@@ -17,13 +16,13 @@ from rest_framework.decorators import (
     permission_classes,
 )
 
-from rest_framework.tests.utils import DRFRequestFactory
+from rest_framework.tests.utils import RequestFactory
 
 
 class DecoratorTestCase(TestCase):
 
     def setUp(self):
-        self.factory = DRFRequestFactory()
+        self.factory = RequestFactory()
 
     def _finalize_response(self, request, response, *args, **kwargs):
         response.request = request

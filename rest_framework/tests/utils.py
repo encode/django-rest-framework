@@ -3,10 +3,10 @@ from django.test.client import MULTIPART_CONTENT
 from urlparse import urlparse
 
 
-class DRFRequestFactory(RequestFactory):
+class RequestFactory(RequestFactory):
 
     def __init__(self, **defaults):
-        super(DRFRequestFactory, self).__init__(**defaults)
+        super(RequestFactory, self).__init__(**defaults)
 
     def patch(self, path, data={}, content_type=MULTIPART_CONTENT,
             **extra):

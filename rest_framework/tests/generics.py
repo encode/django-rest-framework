@@ -1,11 +1,11 @@
 from django.test import TestCase
 from django.utils import simplejson as json
 from rest_framework import generics, serializers, status
-from rest_framework.tests.utils import DRFRequestFactory
+from rest_framework.tests.utils import RequestFactory
 from rest_framework.tests.models import BasicModel, Comment, SlugBasedModel
 
 
-factory = DRFRequestFactory()
+factory = RequestFactory()
 
 
 class RootView(generics.ListCreateAPIView):
@@ -15,7 +15,7 @@ class RootView(generics.ListCreateAPIView):
     model = BasicModel
 
 
-class InstanceView(generics.RetrievePartialUpdateDestroyAPIView):
+class InstanceView(generics.RetrieveUpdateDestroyAPIView):
     """
     Example description for OPTIONS.
     """
