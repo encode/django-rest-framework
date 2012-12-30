@@ -171,13 +171,6 @@ class UpdateAPIView(mixins.UpdateModelMixin,
     def put(self, request, *args, **kwargs):
         return self.update(request, partial=False, *args, **kwargs)
 
-
-class ParitalUpdateAPIView(mixins.UpdateModelMixin,
-                            SingleObjectAPIView):
-
-    """
-    Concrete view for paritally updating a model instance.
-    """
     def patch(self, request, *args, **kwargs):
         return self.update(request, partial=True, *args, **kwargs)
 
@@ -224,24 +217,5 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
 
-
-class RetrievePartialUpdateDestroyAPIView(mixins.RetrieveModelMixin,
-                                          mixins.UpdateModelMixin,
-                                          mixins.DestroyModelMixin,
-                                          SingleObjectAPIView):
-
-    """
-    Concrete view for retrieving, updating via PATCH (partial) or PUT (full),
-    or deleting a model instance.
-    """
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
-
-    def put(self, request, *args, **kwargs):
-        return self.update(request, partial=False, *args, **kwargs)
-
     def patch(self, request, *args, **kwargs):
         return self.update(request, partial=True, *args, **kwargs)
-
-    def delete(self, request, *args, **kwargs):
-        return self.destroy(request, *args, **kwargs)
