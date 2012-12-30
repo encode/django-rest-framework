@@ -99,8 +99,8 @@ class PKManyToManyTests(TestCase):
         instance = ManyToManySource.objects.get(pk=1)
         serializer = ManyToManySourceSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEquals(serializer.data, data)
         serializer.save()
+        self.assertEquals(serializer.data, data)
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = ManyToManySource.objects.all()
@@ -117,8 +117,8 @@ class PKManyToManyTests(TestCase):
         instance = ManyToManyTarget.objects.get(pk=1)
         serializer = ManyToManyTargetSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEquals(serializer.data, data)
         serializer.save()
+        self.assertEquals(serializer.data, data)
 
         # Ensure target 1 is updated, and everything else is as expected
         queryset = ManyToManyTarget.objects.all()
@@ -221,8 +221,8 @@ class PKForeignKeyTests(TestCase):
         instance = ForeignKeyTarget.objects.get(pk=2)
         serializer = ForeignKeyTargetSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEquals(serializer.data, data)
         serializer.save()
+        self.assertEquals(serializer.data, data)
 
         # Ensure target 2 is update, and everything else is as expected
         queryset = ForeignKeyTarget.objects.all()

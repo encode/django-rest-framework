@@ -93,7 +93,7 @@ class SerializerOptions(object):
         self.exclude = getattr(meta, 'exclude', ())
 
 
-class BaseSerializer(Field):
+class BaseSerializer(WritableField):
     class Meta(object):
         pass
 
@@ -118,6 +118,7 @@ class BaseSerializer(Field):
         self._data = None
         self._files = None
         self._errors = None
+        self._siblings = []
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
@@ -276,7 +277,11 @@ class BaseSerializer(Field):
         """
         if hasattr(data, '__iter__') and not isinstance(data, dict):
             # TODO: error data when deserializing lists
-            return (self.from_native(item) for item in data)
+            for item in data:
+                sibling = copy.deepcopy(self)
+                self._siblings.append(sibling)
+                sibling.object = sibling.from_native(item, None)
+            return [sibling.object for sibling in self._siblings]
 
         self._errors = {}
         if data is not None or files is not None:
@@ -360,6 +365,24 @@ class ModelSerializer(Serializer):
     A serializer that deals with model instances and querysets.
     """
     _options_class = ModelSerializerOptions
+
+    def field_from_native(self, data, files, field_name, into):
+        if self.read_only:
+            return
+
+        # TODO handle partial option
+        # TODO handle errors
+
+        # deserialize the nested object
+        try:
+            native = data[field_name]
+        except KeyError:
+            if self.required:
+                raise ValidationError(self.error_messages['required'])
+            return
+
+        self.object = self.from_native(native, files)
+        into[self.source or field_name] = self
 
     def get_default_fields(self):
         """
@@ -498,28 +521,27 @@ class ModelSerializer(Serializer):
         self.m2m_data = {}
         self.related_data = {}
 
+        # Reverse fk relations
+        for (obj, model) in self.opts.model._meta.get_all_related_objects_with_model():
+            field_name = obj.field.related_query_name()
+            if field_name in attrs:
+                self.related_data[field_name] = attrs.pop(field_name)            
+
+        # Reverse m2m relations
+        for (obj, model) in self.opts.model._meta.get_all_related_m2m_objects_with_model():
+            field_name = obj.field.related_query_name()
+            if field_name in attrs:
+                self.m2m_data[field_name] = attrs.pop(field_name)
+
+        # Forward m2m relations
+        for field in self.opts.model._meta.many_to_many:
+            if field.name in attrs:
+                self.m2m_data[field.name] = attrs.pop(field.name)
+
         if instance is not None:
             for key, val in attrs.items():
                 setattr(instance, key, val)
-
         else:
-            # Reverse fk relations
-            for (obj, model) in self.opts.model._meta.get_all_related_objects_with_model():
-                field_name = obj.field.related_query_name()
-                if field_name in attrs:
-                    self.related_data[field_name] = attrs.pop(field_name)
-
-            # Reverse m2m relations
-            for (obj, model) in self.opts.model._meta.get_all_related_m2m_objects_with_model():
-                field_name = obj.field.related_query_name()
-                if field_name in attrs:
-                    self.m2m_data[field_name] = attrs.pop(field_name)
-
-            # Forward m2m relations
-            for field in self.opts.model._meta.many_to_many:
-                if field.name in attrs:
-                    self.m2m_data[field.name] = attrs.pop(field.name)
-
             instance = self.opts.model(**attrs)
 
         try:
@@ -530,10 +552,17 @@ class ModelSerializer(Serializer):
 
         return instance
 
-    def save(self, save_m2m=True):
+    def save(self, save_m2m=True, parent=None, fk_field=None):
         """
         Save the deserialized object and return it.
         """
+        if hasattr(self.object, '__iter__'):
+            for obj in self._siblings:
+                obj.save(parent=parent, fk_field=fk_field)
+            return self.object
+
+        if parent and fk_field:
+            setattr(self.object, fk_field, parent)
         self.object.save()
 
         if getattr(self, 'm2m_data', None) and save_m2m:
@@ -543,7 +572,11 @@ class ModelSerializer(Serializer):
 
         if getattr(self, 'related_data', None):
             for accessor_name, object_list in self.related_data.items():
-                setattr(self.object, accessor_name, object_list)
+                if isinstance(object_list, ModelSerializer):
+                    fk_field = self.object._meta.get_field_by_name(accessor_name)[0].field.name
+                    object_list.save(parent=self.object, fk_field=fk_field)
+                else:
+                    setattr(self.object, accessor_name, object_list)
             self.related_data = {}
 
         return self.object
