@@ -189,7 +189,7 @@ class WritableField(Field):
             else:
                 native = data[field_name]
         except KeyError:
-            if self.default is not None:
+            if self.default is not None and not self.root.partial:
                 native = self.default
             else:
                 if self.required:
