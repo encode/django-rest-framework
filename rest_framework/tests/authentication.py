@@ -1,15 +1,13 @@
-from django.conf.urls.defaults import patterns
 from django.contrib.auth.models import User
-from django.test import Client, TestCase
-
-from django.utils import simplejson as json
 from django.http import HttpResponse
+from django.test import Client, TestCase
+from django.utils import simplejson as json
 
-from rest_framework.views import APIView
 from rest_framework import permissions
-
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.compat import patterns
+from rest_framework.views import APIView
 
 import base64
 

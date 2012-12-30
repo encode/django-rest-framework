@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.test.client import RequestFactory
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer

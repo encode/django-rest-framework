@@ -160,6 +160,9 @@ class BaseSerializer(Field):
             for key in self.opts.exclude:
                 ret.pop(key, None)
 
+        for key, field in ret.items():
+            field.initialize(parent=self, field_name=key)
+
         return ret
 
     #####
@@ -173,13 +176,6 @@ class BaseSerializer(Field):
         super(BaseSerializer, self).initialize(parent, field_name)
         if parent.opts.depth:
             self.opts.depth = parent.opts.depth - 1
-
-        # We need to call initialize here to ensure any nested
-        # serializers that will have already called initialize on their
-        # descendants get updated with *their* parent.
-        # We could be a bit more smart about this, but it'll do for now.
-        for key, field in self.fields.items():
-            field.initialize(parent=self, field_name=key)
 
     #####
     # Methods to convert or revert from objects <--> primitive representations.
@@ -310,6 +306,9 @@ class BaseSerializer(Field):
         # If the object has an "all" method, assume it's a relationship
         if is_simple_callable(getattr(obj, 'all', None)):
             return [self.to_native(item) for item in obj.all()]
+
+        if obj is None:
+            return None
 
         return self.to_native(obj)
 
@@ -442,7 +441,7 @@ class ModelSerializer(Serializer):
 
         kwargs['blank'] = model_field.blank
 
-        if model_field.null:
+        if model_field.null or model_field.blank:
             kwargs['required'] = False
 
         if model_field.has_default():
@@ -497,29 +496,38 @@ class ModelSerializer(Serializer):
         Restore the model instance.
         """
         self.m2m_data = {}
+        self.related_data = {}
 
         if instance is not None:
             for key, val in attrs.items():
                 setattr(instance, key, val)
-            return instance
 
-        # Reverse relations
-        for (obj, model) in self.opts.model._meta.get_all_related_m2m_objects_with_model():
-            field_name = obj.field.related_query_name()
-            if field_name in attrs:
-                self.m2m_data[field_name] = attrs.pop(field_name)
+        else:
+            # Reverse fk relations
+            for (obj, model) in self.opts.model._meta.get_all_related_objects_with_model():
+                field_name = obj.field.related_query_name()
+                if field_name in attrs:
+                    self.related_data[field_name] = attrs.pop(field_name)
 
-        # Forward relations
-        for field in self.opts.model._meta.many_to_many:
-            if field.name in attrs:
-                self.m2m_data[field.name] = attrs.pop(field.name)
+            # Reverse m2m relations
+            for (obj, model) in self.opts.model._meta.get_all_related_m2m_objects_with_model():
+                field_name = obj.field.related_query_name()
+                if field_name in attrs:
+                    self.m2m_data[field_name] = attrs.pop(field_name)
 
-        instance = self.opts.model(**attrs)
+            # Forward m2m relations
+            for field in self.opts.model._meta.many_to_many:
+                if field.name in attrs:
+                    self.m2m_data[field.name] = attrs.pop(field.name)
+
+            instance = self.opts.model(**attrs)
+
         try:
             instance.full_clean(exclude=self.get_validation_exclusions())
         except ValidationError, err:
             self._errors = err.message_dict
             return None
+
         return instance
 
     def save(self, save_m2m=True):
@@ -532,6 +540,11 @@ class ModelSerializer(Serializer):
             for accessor_name, object_list in self.m2m_data.items():
                 setattr(self.object, accessor_name, object_list)
             self.m2m_data = {}
+
+        if getattr(self, 'related_data', None):
+            for accessor_name, object_list in self.related_data.items():
+                setattr(self.object, accessor_name, object_list)
+            self.related_data = {}
 
         return self.object
 

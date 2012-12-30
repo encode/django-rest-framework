@@ -2,7 +2,7 @@ import datetime
 import pickle
 from django.test import TestCase
 from rest_framework import serializers
-from rest_framework.tests.models import (Album, ActionItem, Anchor, BasicModel,
+from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
 
@@ -68,6 +68,11 @@ class AlbumsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Album
         fields = ['title']  # lists are also valid options
+
+class PositiveIntegerAsChoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HasPositiveIntegerAsChoice
+        fields = ['some_integer']
 
 
 class BasicTests(TestCase):
@@ -285,6 +290,12 @@ class ValidationTests(TestCase):
         self.assertEquals(serializer.errors, {'info': [u'Ensure this value has at most 12 characters (it has 13).']})
 
 
+class PositiveIntegerAsChoiceTests(TestCase):
+    def test_positive_integer_in_json_is_correctly_parsed(self):
+        data = {'some_integer':1}
+        serializer = PositiveIntegerAsChoiceSerializer(data=data)
+        self.assertEquals(serializer.is_valid(), True)
+
 class ModelValidationTests(TestCase):
     def test_validate_unique(self):
         """
@@ -296,6 +307,38 @@ class ModelValidationTests(TestCase):
         second_serializer = AlbumsSerializer(data={'title': 'a'})
         self.assertFalse(second_serializer.is_valid())
         self.assertEqual(second_serializer.errors,  {'title': [u'Album with this Title already exists.']})
+
+    def test_foreign_key_with_partial(self):
+        """
+        Test ModelSerializer validation with partial=True
+
+        Specifically test foreign key validation.
+        """
+
+        album = Album(title='test')
+        album.save()
+
+        class PhotoSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Photo
+
+        photo_serializer = PhotoSerializer(data={'description': 'test', 'album': album.pk})
+        self.assertTrue(photo_serializer.is_valid())
+        photo = photo_serializer.save()
+
+        # Updating only the album (foreign key)
+        photo_serializer = PhotoSerializer(instance=photo, data={'album': album.pk}, partial=True)
+        self.assertTrue(photo_serializer.is_valid())
+        self.assertTrue(photo_serializer.save())
+
+        # Updating only the description
+        photo_serializer = PhotoSerializer(instance=photo,
+                                           data={'description': 'new'},
+                                           partial=True)
+
+        self.assertTrue(photo_serializer.is_valid())
+        self.assertTrue(photo_serializer.save())
+
 
 
 class RegexValidationTest(TestCase):
@@ -688,6 +731,10 @@ class BlankFieldTests(TestCase):
         serializer = self.model_serializer_class(data=self.data)
         self.assertEquals(serializer.is_valid(), True)
 
+    def test_create_model_null_field(self):
+        serializer = self.model_serializer_class(data={'title': None})
+        self.assertEquals(serializer.is_valid(), True)
+
     def test_create_not_blank_field(self):
         """
         Test to ensure blank data in a field not marked as blank=True
@@ -703,6 +750,10 @@ class BlankFieldTests(TestCase):
         """
         serializer = self.not_blank_model_serializer_class(data=self.data)
         self.assertEquals(serializer.is_valid(), False)
+
+    def test_create_model_null_field(self):
+        serializer = self.model_serializer_class(data={})
+        self.assertEquals(serializer.is_valid(), True)
 
 
 #test for issue #460

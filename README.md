@@ -2,7 +2,9 @@
 
 **A toolkit for building well-connected, self-describing web APIs.**
 
-**Author:** Tom Christie.  [Follow me on Twitter][twitter]
+**Author:** Tom Christie.  [Follow me on Twitter][twitter].
+
+**Support:** [REST framework discussion group][group].
 
 [![build-status-image]][travis]
 
@@ -37,14 +39,35 @@ There is also a sandbox API you can use for testing purposes, [available here][s
 
 # Installation
 
-Install using `pip`...
+Install using `pip`, including any optional packages you want...
 
     pip install djangorestframework
+    pip install markdown  # Markdown support for the browseable API.
+    pip install pyyaml    # YAML content-type support.
+    pip install django-filter  # Filtering support
 
 ...or clone the project from github.
 
     git clone git@github.com:tomchristie/django-rest-framework.git
+    cd django-rest-framework
     pip install -r requirements.txt
+    pip install -r optionals.txt
+
+Add `'rest_framework'` to your `INSTALLED_APPS` setting.
+
+    INSTALLED_APPS = (
+        ...
+        'rest_framework',        
+    )
+
+If you're intending to use the browseable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
+
+    urlpatterns = patterns('',
+        ...
+        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    )
+
+Note that the URL path can be whatever you want, but you must include `'rest_framework.urls'` with the `'rest_framework'` namespace.
 
 # Development
 
@@ -57,6 +80,34 @@ To run the tests.
     ./rest_framework/runtests/runtests.py
 
 # Changelog
+
+### 2.1.13
+
+**Date**: 28th Dec 2012
+
+* Support configurable `STATICFILES_STORAGE` storage.
+* Bugfix: Related fields now respect the required flag, and may be required=False.
+
+### 2.1.12
+
+**Date**: 21st Dec 2012
+
+* Bugfix: Fix bug that could occur using ChoiceField.
+* Bugfix: Fix exception in browseable API on DELETE.
+* Bugfix: Fix issue where pk was was being set to a string if set by URL kwarg.
+
+## 2.1.11
+
+**Date**: 17th Dec 2012
+
+* Bugfix: Fix issue with M2M fields in browseable API.
+
+## 2.1.10
+
+**Date**: 17th Dec 2012
+
+* Bugfix: Ensure read-only fields don't have model validation applied.
+* Bugfix: Fix hyperlinked fields in paginated results.
 
 ## 2.1.9
 
@@ -198,6 +249,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=restframework2
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
 [twitter]: https://twitter.com/_tomchristie
+[group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [sandbox]: http://restframework.herokuapp.com/
 [rest-framework-2-announcement]: http://django-rest-framework.org/topics/rest-framework-2-announcement.html

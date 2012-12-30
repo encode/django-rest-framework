@@ -163,9 +163,9 @@ You can review the final [tutorial code][repo] on GitHub, or try out a live exam
 
 We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here's a few places you can start:
 
-* Contribute on [GitHub][github] by reviewing and subitting issues, and making pull requests.
+* Contribute on [GitHub][github] by reviewing and submitting issues, and making pull requests.
 * Join the [REST framework discussion group][group], and help build the community.
-* Follow the author [on Twitter][twitter] and say hi.
+* [Follow the author on Twitter][twitter] and say hi.
 
 **Now go build awesome things.**
 

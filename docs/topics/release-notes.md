@@ -4,9 +4,48 @@
 >
 > &mdash; Eric S. Raymond, [The Cathedral and the Bazaar][cite].
 
+## Versioning
+
+Minor version numbers (0.0.x) are used for changes that are API compatible.  You should be able to upgrade between minor point releases without any other code changes.
+
+Medium version numbers (0.x.0) may include minor API changes.  You should read the release notes carefully before upgrading between medium point releases.
+
+Major version numbers (x.0.0) are reserved for project milestones.  No major point releases are currently planned.
+
+---
+
 ## 2.1.x series
 
 ### Master
+
+* Bugfix: ModelSerializers now include reverse FK fields on creation.
+* Bugfix: Model fields with `blank=True` are now `required=False` by default.
+* Bugfix: Nested serializers now support nullable relationships.
+
+### 2.1.13
+
+**Date**: 28th Dec 2012
+
+* Support configurable `STATICFILES_STORAGE` storage.
+* Bugfix: Related fields now respect the required flag, and may be required=False.
+
+### 2.1.12
+
+**Date**: 21st Dec 2012
+
+* Bugfix: Fix bug that could occur using ChoiceField.
+* Bugfix: Fix exception in browseable API on DELETE.
+* Bugfix: Fix issue where pk was was being set to a string if set by URL kwarg.
+
+### 2.1.11
+
+**Date**: 17th Dec 2012
+
+* Bugfix: Fix issue with M2M fields in browseable API.
+
+### 2.1.10
+
+**Date**: 17th Dec 2012
 
 * Bugfix: Ensure read-only fields don't have model validation applied.
 * Bugfix: Fix hyperlinked fields in paginated results.
@@ -85,15 +124,13 @@
 
 * Support use of HTML exception templates.  Eg. `403.html`
 * Hyperlinked fields take optional `slug_field`, `slug_url_kwarg` and `pk_url_kwarg` arguments.
-* Bugfix: Deal with optional trailing slashs properly when generating breadcrumbs.
+* Bugfix: Deal with optional trailing slashes properly when generating breadcrumbs.
 * Bugfix: Make textareas same width as other fields in browsable API.
 * Private API change: `.get_serializer` now uses same `instance` and `data` ordering as serializer initialization.
 
 ### 2.1.0
 
 **Date**: 5th Nov 2012
-
-**Warning**: Please read [this thread][2.1.0-notes] regarding the `instance` and `data` keyword args before updating to 2.1.0.
 
 * **Serializer `instance` and `data` keyword args have their position swapped.**
 * `queryset` argument is now optional on writable model fields.
@@ -102,6 +139,8 @@
 * Minor field improvements. (Don't stringify dicts, more robust many-pk fields.)
 * Bugfix: Support choice field in Browseable API.
 * Bugfix: Related fields with `read_only=True` do not require a `queryset` argument.
+
+**API-incompatible changes**: Please read [this thread][2.1.0-notes] regarding the `instance` and `data` keyword args before updating to 2.1.0.
 
 ---
 
@@ -139,9 +178,9 @@
 * Allow views to specify template used by TemplateRenderer
 * More consistent error responses
 * Some serializer fixes
-* Fix internet explorer ajax behaviour
+* Fix internet explorer ajax behavior
 * Minor xml and yaml fixes
-* Improve setup (eg use staticfiles, not the defunct ADMIN_MEDIA_PREFIX)
+* Improve setup (e.g. use staticfiles, not the defunct ADMIN_MEDIA_PREFIX)
 * Sensible absolute URL generation, not using hacky set_script_prefix
 
 ---
@@ -152,13 +191,13 @@
 
 * Added DjangoModelPermissions class to support `django.contrib.auth` style permissions.
 * Use `staticfiles` for css files.
-  - Easier to override.  Won't conflict with customised admin styles (eg grappelli)
+  - Easier to override.  Won't conflict with customized admin styles (e.g. grappelli)
 * Templates are now nicely namespaced.
   - Allows easier overriding.
 * Drop implied 'pk' filter if last arg in urlconf is unnamed.
-  - Too magical.  Explict is better than implicit.
-* Saner template variable autoescaping.
-* Tider setup.py
+  - Too magical.  Explicit is better than implicit.
+* Saner template variable auto-escaping.
+* Tidier setup.py
 * Updated for URLObject 2.0
 * Bugfixes:
   - Bug with PerUserThrottling when user contains unicode chars.
@@ -246,5 +285,7 @@
 * Initial release.
 
 [cite]: http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html
+[staticfiles14]: https://docs.djangoproject.com/en/1.4/howto/static-files/#with-a-template-tag
+[staticfiles13]: https://docs.djangoproject.com/en/1.3/howto/static-files/#with-a-template-tag
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
 [announcement]: rest-framework-2-announcement.md

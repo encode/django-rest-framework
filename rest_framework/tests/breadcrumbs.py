@@ -1,5 +1,5 @@
-from django.conf.urls.defaults import patterns, url
 from django.test import TestCase
+from rest_framework.compat import patterns, url
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework.views import APIView
 

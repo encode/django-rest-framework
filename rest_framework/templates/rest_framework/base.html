@@ -1,6 +1,5 @@
 {% load url from future %}
 {% load rest_framework %}
-{% load static %}
 <!DOCTYPE html>
 <html>
     <head>
@@ -14,10 +13,10 @@
         <title>{% block title %}Django REST framework{% endblock %}</title>
 
         {% block style %}
-        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}rest_framework/css/bootstrap.min.css"/>
-        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}rest_framework/css/bootstrap-tweaks.css"/>
-        <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}rest_framework/css/prettify.css'/>
-        <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}rest_framework/css/default.css'/>
+        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap.min.css" %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap-tweaks.css" %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
         {% endblock %}
 
     {% endblock %}
@@ -195,10 +194,10 @@
     {% endblock %}
 
     {% block script %}
-    <script src="{% get_static_prefix %}rest_framework/js/jquery-1.8.1-min.js"></script>
-    <script src="{% get_static_prefix %}rest_framework/js/bootstrap.min.js"></script>
-    <script src="{% get_static_prefix %}rest_framework/js/prettify-min.js"></script>
-    <script src="{% get_static_prefix %}rest_framework/js/default.js"></script>
+    <script src="{% static "rest_framework/js/jquery-1.8.1-min.js" %}"></script>
+    <script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "rest_framework/js/prettify-min.js" %}"></script>
+    <script src="{% static "rest_framework/js/default.js" %}"></script>
     {% endblock %}
   </body>
 </html>

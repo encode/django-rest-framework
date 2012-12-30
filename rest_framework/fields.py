@@ -351,7 +351,12 @@ class RelatedField(WritableField):
         if self.read_only:
             return
 
-        value = data.get(field_name)
+        try:
+            value = data[field_name]
+        except KeyError:
+            if self.required:
+                raise ValidationError(self.error_messages['required'])
+            return
 
         if value in (None, '') and not self.null:
             raise ValidationError('Value may not be null')
@@ -384,6 +389,7 @@ class ManyRelatedMixin(object):
         else:
             if value == ['']:
                 value = []
+
         into[field_name] = [self.from_native(item) for item in value]
 
 
@@ -795,7 +801,7 @@ class ChoiceField(WritableField):
                     if value == smart_unicode(k2):
                         return True
             else:
-                if value == smart_unicode(k):
+                if value == smart_unicode(k) or value == k:
                     return True
         return False
 

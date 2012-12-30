@@ -1,3 +1,4 @@
+from django.db import models
 from django.test import TestCase
 from django.utils import simplejson as json
 from rest_framework import generics, serializers, status
@@ -174,7 +175,7 @@ class TestInstanceView(TestCase):
         content = {'text': 'foobar'}
         request = factory.put('/1', json.dumps(content),
                               content_type='application/json')
-        response = self.view(request, pk=1).render()
+        response = self.view(request, pk='1').render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, {'id': 1, 'text': 'foobar'})
         updated = self.objects.get(id=1)
@@ -315,3 +316,36 @@ class TestCreateModelWithAutoNowAddField(TestCase):
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         created = self.objects.get(id=1)
         self.assertEquals(created.content, 'foobar')
+
+
+# Test for particularly ugly reression with m2m in browseable API
+class ClassB(models.Model):
+    name = models.CharField(max_length=255)
+
+
+class ClassA(models.Model):
+    name = models.CharField(max_length=255)
+    childs = models.ManyToManyField(ClassB, blank=True, null=True)
+
+
+class ClassASerializer(serializers.ModelSerializer):
+    childs = serializers.ManyPrimaryKeyRelatedField(source='childs')
+
+    class Meta:
+        model = ClassA
+
+
+class ExampleView(generics.ListCreateAPIView):
+    serializer_class = ClassASerializer
+    model = ClassA
+
+
+class TestM2MBrowseableAPI(TestCase):
+    def test_m2m_in_browseable_api(self):
+        """
+        Test for particularly ugly reression with m2m in browseable API
+        """
+        request = factory.get('/', HTTP_ACCEPT='text/html')
+        view = ExampleView().as_view()
+        response = view(request).render()
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
