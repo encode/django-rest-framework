@@ -81,6 +81,18 @@ To run the tests.
 
 # Changelog
 
+### 2.1.14
+
+**Date**: 31st Dec 2012
+
+* Bugfix: ModelSerializers now include reverse FK fields on creation.
+* Bugfix: Model fields with `blank=True` are now `required=False` by default.
+* Bugfix: Nested serializers now support nullable relationships.
+
+**Note**: From 2.1.14 onwards, relational fields move out of the `fields.py` module and into the new `relations.py` module, in order to seperate them from regular data type fields, such as `CharField` and `IntegerField`.
+
+This change will not affect user code, so long as it's following the recommended import style of `from rest_framework import serializers` and refering to fields using the style `serializers.PrimaryKeyRelatedField`.
+
 ### 2.1.13
 
 **Date**: 28th Dec 2012
