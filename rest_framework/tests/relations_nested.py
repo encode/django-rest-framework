@@ -82,15 +82,20 @@ class ReverseForeignKeyTests(TestCase):
 
     def test_reverse_foreign_key_create(self):
         target = ForeignKeyTarget.objects.get(name='target-2')
-        data = {'sources': [{'name': u'source-4', 'target': 2}], 'name': u'target-2a'}
-        expected = {'id': 2, 'name': u'target-2a', 'sources': [{'id': 4, 'name': u'source-4', 'target': 2}]}
+        # The value for target here should be ignored
+        data = {'sources': [{'name': u'source-4', 'target': 1},
+                            {'name': u'source-5', 'target': 1}],
+                'name': u'target-2'
+                }
+        expected = {'sources': [{'id': 4, 'name': u'source-4', 'target': 2},
+                                {'id': 5, 'name': u'source-5', 'target': 2}],
+                    'id': 2, 'name': u'target-2'
+                    }
         serializer = ForeignKeyTargetSerializer(target, data=data, partial=True)
-        # serializer.is_valid()
-        # print serializer.errors
         self.assertTrue(serializer.is_valid())
         serializer.save()
         # Ensure target 2 has new source and everything else is as expected
-        target = ForeignKeyTarget.objects.get(name='target-2a')
+        target = ForeignKeyTarget.objects.get(name='target-2')
         serializer = ForeignKeyTargetSerializer(target)
         self.assertEquals(serializer.data, expected)
 
