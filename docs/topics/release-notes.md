@@ -16,6 +16,10 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 
 ## 2.1.x series
 
+### Master
+
+* Relation changes are no longer persisted in `.restore_object`
+
 ### 2.1.14
 
 **Date**: 31st Dec 2012

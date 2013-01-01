@@ -99,8 +99,8 @@ class PKManyToManyTests(TestCase):
         instance = ManyToManySource.objects.get(pk=1)
         serializer = ManyToManySourceSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEquals(serializer.data, data)
         serializer.save()
+        self.assertEquals(serializer.data, data)
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = ManyToManySource.objects.all()
@@ -117,8 +117,8 @@ class PKManyToManyTests(TestCase):
         instance = ManyToManyTarget.objects.get(pk=1)
         serializer = ManyToManyTargetSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEquals(serializer.data, data)
         serializer.save()
+        self.assertEquals(serializer.data, data)
 
         # Ensure target 1 is updated, and everything else is as expected
         queryset = ManyToManyTarget.objects.all()
@@ -221,8 +221,18 @@ class PKForeignKeyTests(TestCase):
         instance = ForeignKeyTarget.objects.get(pk=2)
         serializer = ForeignKeyTargetSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEquals(serializer.data, data)
+        # We shouldn't have saved anything to the db yet since save
+        # hasn't been called.
+        queryset = ForeignKeyTarget.objects.all()
+        new_serializer = ForeignKeyTargetSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': u'target-1', 'sources': [1, 2, 3]},
+            {'id': 2, 'name': u'target-2', 'sources': []},
+        ]        
+        self.assertEquals(new_serializer.data, expected)
+
         serializer.save()
+        self.assertEquals(serializer.data, data)
 
         # Ensure target 2 is update, and everything else is as expected
         queryset = ForeignKeyTarget.objects.all()
@@ -241,7 +251,7 @@ class PKForeignKeyTests(TestCase):
         self.assertEquals(serializer.data, data)
         self.assertEqual(obj.name, u'source-4')
 
-        # Ensure source 1 is updated, and everything else is as expected
+        # Ensure source 4 is added, and everything else is as expected
         queryset = ForeignKeySource.objects.all()
         serializer = ForeignKeySourceSerializer(queryset)
         expected = [
@@ -260,7 +270,7 @@ class PKForeignKeyTests(TestCase):
         self.assertEquals(serializer.data, data)
         self.assertEqual(obj.name, u'target-3')
 
-        # Ensure target 4 is added, and everything else is as expected
+        # Ensure target 3 is added, and everything else is as expected
         queryset = ForeignKeyTarget.objects.all()
         serializer = ForeignKeyTargetSerializer(queryset)
         expected = [
