@@ -14,7 +14,7 @@ from rest_framework.compat import get_concrete_model
 # This helps keep the seperation between model fields, form fields, and
 # serializer fields more explicit.
 
-
+from rest_framework.relations import *
 from rest_framework.fields import *
 
 
