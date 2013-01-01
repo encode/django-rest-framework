@@ -239,6 +239,16 @@ class HyperlinkedForeignKeyTests(TestCase):
         instance = ForeignKeyTarget.objects.get(pk=2)
         serializer = ForeignKeyTargetSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
+        # We shouldn't have saved anything to the db yet since save
+        # hasn't been called.
+        queryset = ForeignKeyTarget.objects.all()
+        new_serializer = ForeignKeyTargetSerializer(queryset)
+        expected = [
+            {'url': '/foreignkeytarget/1/', 'name': u'target-1', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/2/', '/foreignkeysource/3/']},
+            {'url': '/foreignkeytarget/2/', 'name': u'target-2', 'sources': []},
+        ]        
+        self.assertEquals(new_serializer.data, expected)
+
         serializer.save()
         self.assertEquals(serializer.data, data)
 
