@@ -84,6 +84,7 @@ The following people have helped make REST framework great.
 * Roman Akinfold - [akinfold]
 * Toran Billups - [toranb]
 * Sébastien Béal - [sebastibe]
+* Andrew Hankinson - [ahankinson]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -203,3 +204,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [akinfold]: https://github.com/akinfold
 [toranb]: https://github.com/toranb
 [sebastibe]: https://github.com/sebastibe
+[ahankinson]: https://github.com/ahankinson
