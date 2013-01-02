@@ -16,11 +16,14 @@ class CreateModelMixin(object):
     """
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+
         if serializer.is_valid():
             self.pre_save(serializer.object)
             self.object = serializer.save()
             headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+            return Response(serializer.data, status=status.HTTP_201_CREATED,
+                            headers=headers)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_success_headers(self, data):
@@ -82,20 +85,21 @@ class UpdateModelMixin(object):
     Should be mixed in with `SingleObjectBaseView`.
     """
     def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
         try:
             self.object = self.get_object()
-            created = False
+            success_status_code = status.HTTP_200_OK
         except Http404:
             self.object = None
-            created = True
+            success_status_code = status.HTTP_201_CREATED
 
-        serializer = self.get_serializer(self.object, data=request.DATA, files=request.FILES)
+        serializer = self.get_serializer(self.object, data=request.DATA,
+                                         files=request.FILES, partial=partial)
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
             self.object = serializer.save()
-            status_code = created and status.HTTP_201_CREATED or status.HTTP_200_OK
-            return Response(serializer.data, status=status_code)
+            return Response(serializer.data, status=success_status_code)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -115,7 +119,8 @@ class UpdateModelMixin(object):
 
         # Ensure we clean the attributes so that we don't eg return integer
         # pk using a string representation, as provided by the url conf kwarg.
-        obj.full_clean()
+        if hasattr(obj, 'full_clean'):
+            obj.full_clean()
 
 
 class DestroyModelMixin(object):

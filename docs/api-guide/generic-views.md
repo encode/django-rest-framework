@@ -85,7 +85,7 @@ Extends: [SingleObjectAPIView], [DestroyModelMixin]
 
 Used for **update-only** endpoints for a **single model instance**.
 
-Provides a `put` method handler.
+Provides `put` and `patch` method handlers.
 
 Extends: [SingleObjectAPIView], [UpdateModelMixin]
 
@@ -96,6 +96,14 @@ Used for **read-write** endpoints to represent a **collection of model instances
 Provides `get` and `post` method handlers.
 
 Extends: [MultipleObjectAPIView], [ListModelMixin], [CreateModelMixin]
+
+## RetrieveUpdateAPIView
+
+Used for **read or update** endpoints to represent a **single model instance**.
+
+Provides `get`, `put` and `patch` method handlers.
+
+Extends: [SingleObjectAPIView], [RetrieveModelMixin], [UpdateModelMixin]
 
 ## RetrieveDestroyAPIView
 
@@ -109,7 +117,7 @@ Extends: [SingleObjectAPIView], [RetrieveModelMixin], [DestroyModelMixin]
 
 Used for **read-write-delete** endpoints to represent a **single model instance**.
 
-Provides `get`, `put` and `delete` method handlers.
+Provides `get`, `put`, `patch` and `delete` method handlers.
 
 Extends: [SingleObjectAPIView], [RetrieveModelMixin], [UpdateModelMixin], [DestroyModelMixin]
 
@@ -196,6 +204,8 @@ If an object is updated this returns a `200 OK` response, with a serialized repr
 If an object is created, for example when making a `DELETE` request followed by a `PUT` request to the same URL, this returns a `201 Created` response, with a serialized representation of the object as the body of the response.
 
 If the request data provided for updating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
+
+A boolean `partial` keyword argument may be supplied to the `.update()` method.  If `partial` is set to `True`, all fields for the update will be optional.  This allows support for HTTP `PATCH` requests.
 
 Should be mixed in with [SingleObjectAPIView].
 
