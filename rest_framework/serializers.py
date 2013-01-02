@@ -526,7 +526,7 @@ class ModelSerializer(Serializer):
 
         try:
             instance.full_clean(exclude=self.get_validation_exclusions())
-        except ValidationError, err:
+        except ValidationError as err:
             self._errors = err.message_dict
             return None
 
