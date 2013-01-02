@@ -308,7 +308,7 @@ class ModelValidationTests(TestCase):
         serializer.save()
         second_serializer = AlbumsSerializer(data={'title': 'a'})
         self.assertFalse(second_serializer.is_valid())
-        self.assertEqual(second_serializer.errors,  {'title': [u'Album with this Title already exists.']})
+        self.assertEqual(second_serializer.errors,  {'title': ['Album with this Title already exists.']})
 
     def test_foreign_key_with_partial(self):
         """
@@ -654,11 +654,11 @@ class RelatedTraversalTest(TestCase):
         serializer = BlogPostSerializer(instance=post)
 
         expected = {
-            'title': u'Test blog post',
+            'title': 'Test blog post',
             'comments': [{
-                'text': u'I love this blog post',
+                'text': 'I love this blog post',
                 'post_owner': {
-                    "name": u"django",
+                    "name": "django",
                     "age": None
                 }
             }]
@@ -793,8 +793,8 @@ class DepthTest(TestCase):
                 depth = 1
 
         serializer = BlogPostSerializer(instance=post)
-        expected = {'id': 1, 'title': u'Test blog post',
-                    'writer': {'id': 1, 'name': u'django', 'age': 1}}
+        expected = {'id': 1, 'title': 'Test blog post',
+                    'writer': {'id': 1, 'name': 'django', 'age': 1}}
 
         self.assertEqual(serializer.data, expected)
 
@@ -813,8 +813,8 @@ class DepthTest(TestCase):
                 model = BlogPost
 
         serializer = BlogPostSerializer(instance=post)
-        expected = {'id': 1, 'title': u'Test blog post',
-                    'writer': {'id': 1, 'name': u'django', 'age': 1}}
+        expected = {'id': 1, 'title': 'Test blog post',
+                    'writer': {'id': 1, 'name': 'django', 'age': 1}}
 
         self.assertEqual(serializer.data, expected)
 

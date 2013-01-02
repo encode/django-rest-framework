@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
@@ -60,9 +62,9 @@ class ReverseForeignKeyTests(TestCase):
         queryset = ForeignKeySource.objects.all()
         serializer = ForeignKeySourceSerializer(queryset)
         expected = [
-            {'id': 1, 'name': u'source-1', 'target': {'id': 1, 'name': u'target-1'}},
-            {'id': 2, 'name': u'source-2', 'target': {'id': 1, 'name': u'target-1'}},
-            {'id': 3, 'name': u'source-3', 'target': {'id': 1, 'name': u'target-1'}},
+            {'id': 1, 'name': 'source-1', 'target': {'id': 1, 'name': 'target-1'}},
+            {'id': 2, 'name': 'source-2', 'target': {'id': 1, 'name': 'target-1'}},
+            {'id': 3, 'name': 'source-3', 'target': {'id': 1, 'name': 'target-1'}},
         ]
         self.assertEquals(serializer.data, expected)
 
@@ -70,12 +72,12 @@ class ReverseForeignKeyTests(TestCase):
         queryset = ForeignKeyTarget.objects.all()
         serializer = ForeignKeyTargetSerializer(queryset)
         expected = [
-            {'id': 1, 'name': u'target-1', 'sources': [
-                {'id': 1, 'name': u'source-1', 'target': 1},
-                {'id': 2, 'name': u'source-2', 'target': 1},
-                {'id': 3, 'name': u'source-3', 'target': 1},
+            {'id': 1, 'name': 'target-1', 'sources': [
+                {'id': 1, 'name': 'source-1', 'target': 1},
+                {'id': 2, 'name': 'source-2', 'target': 1},
+                {'id': 3, 'name': 'source-3', 'target': 1},
             ]},
-            {'id': 2, 'name': u'target-2', 'sources': [
+            {'id': 2, 'name': 'target-2', 'sources': [
             ]}
         ]
         self.assertEquals(serializer.data, expected)
@@ -95,8 +97,8 @@ class NestedNullableForeignKeyTests(TestCase):
         queryset = NullableForeignKeySource.objects.all()
         serializer = NullableForeignKeySourceSerializer(queryset)
         expected = [
-            {'id': 1, 'name': u'source-1', 'target': {'id': 1, 'name': u'target-1'}},
-            {'id': 2, 'name': u'source-2', 'target': {'id': 1, 'name': u'target-1'}},
-            {'id': 3, 'name': u'source-3', 'target': None},
+            {'id': 1, 'name': 'source-1', 'target': {'id': 1, 'name': 'target-1'}},
+            {'id': 2, 'name': 'source-2', 'target': {'id': 1, 'name': 'target-1'}},
+            {'id': 3, 'name': 'source-3', 'target': None},
         ]
         self.assertEquals(serializer.data, expected)
