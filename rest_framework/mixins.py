@@ -81,7 +81,7 @@ class UpdateModelMixin(object):
     Update a model instance.
     Should be mixed in with `SingleObjectBaseView`.
     """
-    def update(self, request, *args, **kwargs):
+    def update(self, request, partial=False, *args, **kwargs):
         try:
             self.object = self.get_object()
             created = False
@@ -89,7 +89,7 @@ class UpdateModelMixin(object):
             self.object = None
             created = True
 
-        serializer = self.get_serializer(self.object, data=request.DATA, files=request.FILES)
+        serializer = self.get_serializer(self.object, data=request.DATA, files=request.FILES, partial=partial)
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
