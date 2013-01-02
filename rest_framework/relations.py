@@ -12,7 +12,7 @@ except ImportError:
     from django.utils.encoding import smart_unicode as smart_text
 from rest_framework.fields import Field, WritableField
 from rest_framework.reverse import reverse
-from urlparse import urlparse
+from rest_framework.compat import urlparse
 
 ##### Relational fields #####
 
@@ -360,7 +360,7 @@ class HyperlinkedRelatedField(RelatedField):
 
         if value.startswith('http:') or value.startswith('https:'):
             # If needed convert absolute URLs to relative path
-            value = urlparse(value).path
+            value = urlparse.urlparse(value).path
             prefix = get_script_prefix()
             if value.startswith(prefix):
                 value = '/' + value[len(prefix):]

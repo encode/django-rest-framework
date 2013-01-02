@@ -1,4 +1,4 @@
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 import six
 
 from django import template
@@ -10,10 +10,7 @@ except ImportError:
     from django.utils.encoding import force_unicode as force_text
 from django.utils.html import escape
 from django.utils.safestring import SafeData, mark_safe
-try:
-    from urllib.parse import urlsplit, urlunsplit
-except ImportError:
-    from urlparse import urlsplit, urlunsplit
+from rest_framework.compat import urlparse
 import re
 import string
 
@@ -108,11 +105,11 @@ def replace_query_param(url, key, val):
     Given a URL and a key/val pair, set or replace an item in the query
     parameters of the URL, and return the new URL.
     """
-    (scheme, netloc, path, query, fragment) = urlsplit(url)
+    (scheme, netloc, path, query, fragment) = urlparse.urlsplit(url)
     query_dict = QueryDict(query).copy()
     query_dict[key] = val
     query = query_dict.urlencode()
-    return urlunsplit((scheme, netloc, path, query, fragment))
+    return urlparse.urlunsplit((scheme, netloc, path, query, fragment))
 
 
 # Regex for adding classes to html snippets

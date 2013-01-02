@@ -30,6 +30,13 @@ except ImportError:
 from six import BytesIO
 
 
+# urlparse compat import (Required because it changed in python 3.x)
+try:
+    from urllib import parse as urlparse
+except ImportError:
+    import urlparse as urlparse
+
+
 # Try to import PIL in either of the two ways it can end up installed.
 try:
     from PIL import Image
@@ -109,7 +116,6 @@ else:
     import re
     import random
     import logging
-    import urlparse
 
     from django.conf import settings
     from django.core.urlresolvers import get_callable
