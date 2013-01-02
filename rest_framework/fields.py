@@ -22,10 +22,6 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework.compat import parse_date, parse_datetime
 from rest_framework.compat import timezone
 from rest_framework.compat import BytesIO
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
 
 
 def is_simple_callable(obj):
