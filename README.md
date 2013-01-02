@@ -2,7 +2,9 @@
 
 **A toolkit for building well-connected, self-describing web APIs.**
 
-**Author:** Tom Christie.  [Follow me on Twitter][twitter]
+**Author:** Tom Christie.  [Follow me on Twitter][twitter].
+
+**Support:** [REST framework discussion group][group].
 
 [![build-status-image]][travis]
 
@@ -37,14 +39,35 @@ There is also a sandbox API you can use for testing purposes, [available here][s
 
 # Installation
 
-Install using `pip`...
+Install using `pip`, including any optional packages you want...
 
     pip install djangorestframework
+    pip install markdown  # Markdown support for the browseable API.
+    pip install pyyaml    # YAML content-type support.
+    pip install django-filter  # Filtering support
 
 ...or clone the project from github.
 
     git clone git@github.com:tomchristie/django-rest-framework.git
+    cd django-rest-framework
     pip install -r requirements.txt
+    pip install -r optionals.txt
+
+Add `'rest_framework'` to your `INSTALLED_APPS` setting.
+
+    INSTALLED_APPS = (
+        ...
+        'rest_framework',        
+    )
+
+If you're intending to use the browseable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
+
+    urlpatterns = patterns('',
+        ...
+        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    )
+
+Note that the URL path can be whatever you want, but you must include `'rest_framework.urls'` with the `'rest_framework'` namespace.
 
 # Development
 
@@ -57,6 +80,73 @@ To run the tests.
     ./rest_framework/runtests/runtests.py
 
 # Changelog
+
+### 2.1.14
+
+**Date**: 31st Dec 2012
+
+* Bugfix: ModelSerializers now include reverse FK fields on creation.
+* Bugfix: Model fields with `blank=True` are now `required=False` by default.
+* Bugfix: Nested serializers now support nullable relationships.
+
+**Note**: From 2.1.14 onwards, relational fields move out of the `fields.py` module and into the new `relations.py` module, in order to seperate them from regular data type fields, such as `CharField` and `IntegerField`.
+
+This change will not affect user code, so long as it's following the recommended import style of `from rest_framework import serializers` and refering to fields using the style `serializers.PrimaryKeyRelatedField`.
+
+### 2.1.13
+
+**Date**: 28th Dec 2012
+
+* Support configurable `STATICFILES_STORAGE` storage.
+* Bugfix: Related fields now respect the required flag, and may be required=False.
+
+### 2.1.12
+
+**Date**: 21st Dec 2012
+
+* Bugfix: Fix bug that could occur using ChoiceField.
+* Bugfix: Fix exception in browseable API on DELETE.
+* Bugfix: Fix issue where pk was was being set to a string if set by URL kwarg.
+
+## 2.1.11
+
+**Date**: 17th Dec 2012
+
+* Bugfix: Fix issue with M2M fields in browseable API.
+
+## 2.1.10
+
+**Date**: 17th Dec 2012
+
+* Bugfix: Ensure read-only fields don't have model validation applied.
+* Bugfix: Fix hyperlinked fields in paginated results.
+
+## 2.1.9
+
+**Date**: 11th Dec 2012
+
+* Bugfix: Fix broken nested serialization.
+* Bugfix: Fix `Meta.fields` only working as tuple not as list.
+* Bugfix: Edge case if unnecessarily specifying `required=False` on read only field.
+
+## 2.1.8
+
+**Date**: 8th Dec 2012
+
+* Fix for creating nullable Foreign Keys with `''` as well as `None`.
+* Added `null=<bool>` related field option.
+
+## 2.1.7
+
+**Date**: 7th Dec 2012
+
+* Serializers now properly support nullable Foreign Keys.
+* Serializer validation now includes model field validation, such as uniqueness constraints.
+* Support 'true' and 'false' string values for BooleanField.
+* Added pickle support for serialized data.
+* Support `source='dotted.notation'` style for nested serializers.
+* Make `Request.user` settable.
+* Bugfix: Fix `RegexField` to work with `BrowsableAPIRenderer`
 
 ## 2.1.6
 
@@ -171,6 +261,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=restframework2
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
 [twitter]: https://twitter.com/_tomchristie
+[group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [sandbox]: http://restframework.herokuapp.com/
 [rest-framework-2-announcement]: http://django-rest-framework.org/topics/rest-framework-2-announcement.html

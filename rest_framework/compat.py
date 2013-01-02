@@ -8,6 +8,12 @@ import six
 
 import django
 
+# location of patterns, url, include changes in 1.4 onwards
+try:
+    from django.conf.urls import patterns, url, include
+except:
+    from django.conf.urls.defaults import patterns, url, include
+
 # django-filter is optional
 try:
     import django_filters
@@ -22,6 +28,16 @@ except ImportError:
     from six import StringIO
 
 from six import BytesIO
+
+
+# Try to import PIL in either of the two ways it can end up installed.
+try:
+    from PIL import Image
+except ImportError:
+    try:
+        import Image
+    except ImportError:
+        Image = None
 
 
 def get_concrete_model(model_cls):

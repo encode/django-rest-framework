@@ -2,13 +2,12 @@ import pickle
 import re
 import six
 
-from django.conf.urls.defaults import patterns, url, include
 from django.core.cache import cache
 from django.test import TestCase
 from django.test.client import RequestFactory
 
 from rest_framework import status, permissions
-from rest_framework.compat import yaml
+from rest_framework.compat import yaml, patterns, url, include
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
@@ -448,19 +447,19 @@ class CacheRenderTest(TestCase):
             return
         if state == None:
             return
-        if isinstance(state,tuple):
-            if not isinstance(state[0],dict):
-                state=state[1]
+        if isinstance(state, tuple):
+            if not isinstance(state[0], dict):
+                state = state[1]
             else:
-                state=state[0].update(state[1])
+                state = state[0].update(state[1])
         result = {}
         for i in state:
             try:
-                pickle.dumps(state[i],protocol=2)
+                pickle.dumps(state[i], protocol=2)
             except pickle.PicklingError:
                 if not state[i] in seen:
                     seen.append(state[i])
-                    result[i] = cls._get_pickling_errors(state[i],seen)
+                    result[i] = cls._get_pickling_errors(state[i], seen)
         return result
 
     def http_resp(self, http_method, url):

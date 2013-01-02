@@ -69,6 +69,21 @@ The following people have helped make REST framework great.
 * Olivier Aubert - [oaubert]
 * Yuri Prezument - [yprez]
 * Fabian Buechler - [fabianbuechler]
+* Mark Hughes - [mhsparks]
+* Michael van de Waeter - [mvdwaeter]
+* Reinout van Rees - [reinout]
+* Michael Richards - [justanotherbody]
+* Ben Roberts - [roberts81]
+* Venkata Subramanian Mahalingam - [annacoder]
+* George Kappel - [gkappel]
+* Colin Murtaugh - [cmurtaugh]
+* Simon Pantzare - [pilt]
+* Szymon Teżewski - [sunscrapers]
+* Joel Marcotte - [joual]
+* Trey Hunner - [treyhunner]
+* Roman Akinfold - [akinfold]
+* Toran Billups - [toranb]
+* Sébastien Béal - [sebastibe]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -88,10 +103,9 @@ Development of REST framework 2.0 was sponsored by [DabApps].
 
 ## Contact
 
-To contact the author directly:
+For usage questions please see the [REST framework discussion group][group].
 
-* twitter: [@_tomchristie][twitter]
-* email: [tom@tomchristie.com][email]
+You can also contact [@_tomchristie][twitter] directly on twitter.
  
 [email]: mailto:tom@tomchristie.com
 [twitter]: http://twitter.com/_tomchristie
@@ -105,6 +119,7 @@ To contact the author directly:
 [dabapps]: http://lab.dabapps.com
 [sandbox]: http://restframework.herokuapp.com/
 [heroku]: http://www.heroku.com/
+[group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 
 [tomchristie]: https://github.com/tomchristie
 [markotibold]: https://github.com/markotibold
@@ -173,3 +188,18 @@ To contact the author directly:
 [oaubert]: https://github.com/oaubert
 [yprez]: https://github.com/yprez
 [fabianbuechler]: https://github.com/fabianbuechler
+[mhsparks]: https://github.com/mhsparks
+[mvdwaeter]: https://github.com/mvdwaeter
+[reinout]: https://github.com/reinout
+[justanotherbody]: https://github.com/justanotherbody
+[roberts81]: https://github.com/roberts81
+[annacoder]: https://github.com/annacoder
+[gkappel]: https://github.com/gkappel
+[cmurtaugh]: https://github.com/cmurtaugh
+[pilt]: https://github.com/pilt
+[sunscrapers]: https://github.com/sunscrapers
+[joual]: https://github.com/joual
+[treyhunner]: https://github.com/treyhunner
+[akinfold]: https://github.com/akinfold
+[toranb]: https://github.com/toranb
+[sebastibe]: https://github.com/sebastibe

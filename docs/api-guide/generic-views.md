@@ -7,11 +7,11 @@
 >
 > &mdash; [Django Documentation][cite]
 
-One of the key benefits of class based views is the way they allow you to compose bits of reusable behaviour.  REST framework takes advantage of this by providing a number of pre-built views that provide for commonly used patterns. 
+One of the key benefits of class based views is the way they allow you to compose bits of reusable behaviour.  REST framework takes advantage of this by providing a number of pre-built views that provide for commonly used patterns.
 
 The generic views provided by REST framework allow you to quickly build API views that map closely to your database models.
 
-If the generic views don't suit the needs of your API, you can drop down to using the regular `APIView` class, or reuse the mixins and base classes used by the generic views to compose your own set of reusable generic views. 
+If the generic views don't suit the needs of your API, you can drop down to using the regular `APIView` class, or reuse the mixins and base classes used by the generic views to compose your own set of reusable generic views.
 
 ## Examples
 
@@ -29,7 +29,7 @@ For more complex cases you might also want to override various methods on the vi
         model = User
         serializer_class = UserSerializer
         permission_classes = (IsAdminUser,)
-        
+
         def get_paginate_by(self, queryset):
             """
             Use smaller pagination for HTML representations.
@@ -150,14 +150,14 @@ Provides a base view for acting on a single object, by combining REST framework'
 
 * `queryset` - The queryset that should be used when retrieving an object from this view.  If unset, defaults to the default queryset manager for `self.model`.
 * `pk_kwarg` - The URL kwarg that should be used to look up objects by primary key. Defaults to `'pk'`. [Can only be set to non-default on Django 1.4+]
-* `slug_kwarg` - The URL kwarg that should be used to look up objects by a slug. Defaults to `'slug'`.  [Can only be set to non-default on Django 1.4+]
+* `slug_url_kwarg` - The URL kwarg that should be used to look up objects by a slug. Defaults to `'slug'`.  [Can only be set to non-default on Django 1.4+]
 * `slug_field` - The field on the model that should be used to look up objects by a slug.  If used, this should typically be set to a field with `unique=True`. Defaults to `'slug'`.
 
 ---
 
 # Mixins
 
-The mixin classes provide the actions that are used to provide the basic view behaviour.  Note that the mixin classes provide action methods rather than defining the handler methods such as `.get()` and `.post()` directly.  This allows for more flexible composition of behaviour. 
+The mixin classes provide the actions that are used to provide the basic view behaviour.  Note that the mixin classes provide action methods rather than defining the handler methods such as `.get()` and `.post()` directly.  This allows for more flexible composition of behaviour.
 
 ## ListModelMixin
 

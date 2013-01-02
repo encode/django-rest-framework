@@ -6,6 +6,7 @@ from django.test import TestCase
 
 NO_SETTING = ('!', None)
 
+
 class TestSettingsManager(object):
     """
     A class which can modify some Django settings temporarily for a
@@ -19,7 +20,7 @@ class TestSettingsManager(object):
         self._original_settings = {}
 
     def set(self, **kwargs):
-        for k,v in kwargs.iteritems():
+        for k, v in kwargs.iteritems():
             self._original_settings.setdefault(k, getattr(settings, k,
                                                           NO_SETTING))
             setattr(settings, k, v)
@@ -31,7 +32,7 @@ class TestSettingsManager(object):
         call_command('syncdb', verbosity=0)
 
     def revert(self):
-        for k,v in self._original_settings.iteritems():
+        for k, v in self._original_settings.iteritems():
             if v == NO_SETTING:
                 delattr(settings, k)
             else:
@@ -56,6 +57,7 @@ class SettingsTestCase(TestCase):
 
     def tearDown(self):
         self.settings_manager.revert()
+
 
 class TestModelsTestCase(SettingsTestCase):
     def setUp(self, *args, **kwargs):

@@ -51,6 +51,11 @@ class RESTFrameworkModel(models.Model):
         abstract = True
 
 
+class HasPositiveIntegerAsChoice(RESTFrameworkModel):
+    some_choices = ((1, 'A'), (2, 'B'), (3, 'C'))
+    some_integer = models.PositiveIntegerField(choices=some_choices)
+
+
 class Anchor(RESTFrameworkModel):
     text = models.CharField(max_length=100, default='anchor')
 
@@ -124,8 +129,21 @@ class ActionItem(RESTFrameworkModel):
 
 
 # Models for reverse relations
+class Person(RESTFrameworkModel):
+    name = models.CharField(max_length=10)
+    age = models.IntegerField(null=True, blank=True)
+
+    @property
+    def info(self):
+        return {
+            'name': self.name,
+            'age': self.age,
+        }
+
+
 class BlogPost(RESTFrameworkModel):
     title = models.CharField(max_length=100)
+    writer = models.ForeignKey(Person, null=True, blank=True)
 
     def get_first_comment(self):
         return self.blogpostcomment_set.all()[0]
@@ -145,21 +163,9 @@ class Photo(RESTFrameworkModel):
     album = models.ForeignKey(Album)
 
 
-class Person(RESTFrameworkModel):
-    name = models.CharField(max_length=10)
-    age = models.IntegerField(null=True, blank=True)
-
-    @property
-    def info(self):
-        return {
-            'name': self.name,
-            'age': self.age,
-        }
-
-
 # Model for issue #324
 class BlankFieldModel(RESTFrameworkModel):
-    title = models.CharField(max_length=100, blank=True)
+    title = models.CharField(max_length=100, blank=True, null=False)
 
 
 # Model for issue #380

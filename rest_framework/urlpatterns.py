@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import url
+from rest_framework.compat import url
 from rest_framework.settings import api_settings
 
 

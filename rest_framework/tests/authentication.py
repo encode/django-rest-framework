@@ -1,15 +1,13 @@
-from django.conf.urls.defaults import patterns, include
 from django.contrib.auth.models import User
-from django.test import Client, TestCase
-
-from django.utils import simplejson as json
 from django.http import HttpResponse
+from django.test import Client, TestCase
+from django.utils import simplejson as json
 
-from rest_framework.views import APIView
 from rest_framework import permissions
-
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.compat import patterns
+from rest_framework.views import APIView
 
 import base64
 
@@ -27,7 +25,7 @@ MockView.authentication_classes += (TokenAuthentication,)
 
 urlpatterns = patterns('',
     (r'^$', MockView.as_view()),
-    (r'^auth-token/', 'rest_framework.authtoken.views.obtain_auth_token'),
+    (r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
 )
 
 
@@ -157,7 +155,7 @@ class TokenAuthTests(TestCase):
     def test_token_login_json(self):
         """Ensure token login view using JSON POST works."""
         client = Client(enforce_csrf_checks=True)
-        response = client.post('/auth-token/login/',
+        response = client.post('/auth-token/',
                                json.dumps({'username': self.username, 'password': self.password}), 'application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content.decode('ascii'))['token'], self.key)
@@ -165,21 +163,21 @@ class TokenAuthTests(TestCase):
     def test_token_login_json_bad_creds(self):
         """Ensure token login view using JSON POST fails if bad credentials are used."""
         client = Client(enforce_csrf_checks=True)
-        response = client.post('/auth-token/login/',
+        response = client.post('/auth-token/',
                                json.dumps({'username': self.username, 'password': "badpass"}), 'application/json')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 400)
 
     def test_token_login_json_missing_fields(self):
         """Ensure token login view using JSON POST fails if missing fields."""
         client = Client(enforce_csrf_checks=True)
-        response = client.post('/auth-token/login/',
+        response = client.post('/auth-token/',
                                json.dumps({'username': self.username}), 'application/json')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 400)
 
     def test_token_login_form(self):
         """Ensure token login view using form POST works."""
         client = Client(enforce_csrf_checks=True)
-        response = client.post('/auth-token/login/',
+        response = client.post('/auth-token/',
                                {'username': self.username, 'password': self.password})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content.decode('ascii'))['token'], self.key)

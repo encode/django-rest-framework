@@ -12,7 +12,7 @@ your authentication settings include `SessionAuthentication`.
         url(r'^auth', include('rest_framework.urls', namespace='rest_framework'))
     )
 """
-from django.conf.urls.defaults import patterns, url
+from rest_framework.compat import patterns, url
 
 
 template_name = {'template_name': 'rest_framework/login.html'}

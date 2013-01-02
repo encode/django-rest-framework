@@ -2,11 +2,11 @@
 
 # Serializer fields
 
-> Flat is better than nested.
+> Each field in a Form class is responsible not only for validating data, but also for "cleaning" it -- normalizing it to a consistent format. 
 >
-> &mdash; [The Zen of Python][cite]
+> &mdash; [Django documentation][cite]
 
-Serializer fields handle converting between primative values and internal datatypes.  They also deal with validating input values, as well as retrieving and setting the values from their parent objects.
+Serializer fields handle converting between primitive values and internal datatypes.  They also deal with validating input values, as well as retrieving and setting the values from their parent objects.
 
 ---
 
@@ -28,7 +28,7 @@ Defaults to the name of the field.
 
 ### `read_only`
 
-Set this to `True` to ensure that the field is used when serializing a representation, but is not used when updating an instance dureing deserialization.
+Set this to `True` to ensure that the field is used when serializing a representation, but is not used when updating an instance during deserialization.
 
 Defaults to `False`
 
@@ -41,7 +41,7 @@ Defaults to `True`.
 
 ### `default`
 
-If set, this gives the default value that will be used for the field if none is supplied.  If not set the default behaviour is to not populate the attribute at all.
+If set, this gives the default value that will be used for the field if none is supplied.  If not set the default behavior is to not populate the attribute at all.
 
 ### `validators`
 
@@ -96,9 +96,9 @@ Would produce output similar to:
         'expired': True
     }
 
-By default, the `Field` class will perform a basic translation of the source value into primative datatypes, falling back to unicode representations of complex datatypes when necessary.
+By default, the `Field` class will perform a basic translation of the source value into primitive datatypes, falling back to unicode representations of complex datatypes when necessary.
 
-You can customize this  behaviour by overriding the `.to_native(self, value)` method.
+You can customize this  behavior by overriding the `.to_native(self, value)` method.
 
 ## WritableField
 
@@ -109,6 +109,24 @@ A field that supports both read and write operations.  By itself `WriteableField
 A generic field that can be tied to any arbitrary model field.  The `ModelField` class delegates the task of serialization/deserialization to it's associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.
 
 **Signature:** `ModelField(model_field=<Django ModelField class>)`
+
+## SerializerMethodField
+
+This is a read-only field. It gets its value by calling a method on the serializer class it is attached to. It can be used to add any sort of data to the serialized representation of your object. The field's constructor accepts a single argument, which is the name of the method on the serializer to be called. The method should accept a single argument (in addition to `self`), which is the object being serialized. It should return whatever you want to be included in the serialized representation of the object. For example:
+
+    from rest_framework import serializers
+    from django.contrib.auth.models import User
+    from django.utils.timezone import now
+
+    class UserSerializer(serializers.ModelSerializer):
+
+        days_since_joined = serializers.SerializerMethodField('get_days_since_joined')
+
+        class Meta:
+            model = User
+
+        def get_days_since_joined(self, obj):
+            return (now() - obj.date_joined).days
 
 ---
 
@@ -211,148 +229,8 @@ Signature and validation is the same as with `FileField`.
 
 ---
 
-**Note:** `FileFields` and `ImageFields` are only suitable for use with MultiPartParser, since eg json doesn't support file uploads.
+**Note:** `FileFields` and `ImageFields` are only suitable for use with MultiPartParser, since e.g. json doesn't support file uploads.
 Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files. 
 
----
-
-# Relational Fields
-
-Relational fields are used to represent model relationships.  They can be applied to `ForeignKey`, `ManyToManyField` and `OneToOneField` relationships, as well as to reverse relationships, and custom relationships such as `GenericForeignKey`.
-
-## RelatedField
-
-This field can be applied to any of the following:
-
-* A `ForeignKey` field.
-* A `OneToOneField` field.
-* A reverse OneToOne relationship
-* Any other "to-one" relationship.
-
-By default `RelatedField` will represent the target of the field using it's `__unicode__` method.
-
-You can customise this behaviour by subclassing `ManyRelatedField`, and overriding the `.to_native(self, value)` method.
-
-## ManyRelatedField
-
-This field can be applied to any of the following:
- 
-* A `ManyToManyField` field.
-* A reverse ManyToMany relationship.
-* A reverse ForeignKey relationship
-* Any other "to-many" relationship.
-
-By default `ManyRelatedField` will represent the targets of the field using their `__unicode__` method.
-
-For example, given the following models:
-
-    class TaggedItem(models.Model):
-        """
-        Tags arbitrary model instances using a generic relation.
-        
-        See: https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/
-        """
-        tag = models.SlugField()
-        content_type = models.ForeignKey(ContentType)
-        object_id = models.PositiveIntegerField()
-        content_object = GenericForeignKey('content_type', 'object_id')
-    
-        def __unicode__(self):
-            return self.tag
-    
-    
-    class Bookmark(models.Model):
-        """
-        A bookmark consists of a URL, and 0 or more descriptive tags.
-        """
-        url = models.URLField()
-        tags = GenericRelation(TaggedItem)
-
-And a model serializer defined like this:
-
-    class BookmarkSerializer(serializers.ModelSerializer):
-        tags = serializers.ManyRelatedField(source='tags')
-
-        class Meta:
-            model = Bookmark
-            exclude = ('id',)
-
-Then an example output format for a Bookmark instance would be:
-
-    {
-        'tags': [u'django', u'python'],
-        'url': u'https://www.djangoproject.com/'
-    }
-
-## PrimaryKeyRelatedField / ManyPrimaryKeyRelatedField
-
-`PrimaryKeyRelatedField` and `ManyPrimaryKeyRelatedField` will represent the target of the relationship using it's primary key.
-
-By default these fields are read-write, although you can change this behaviour using the `read_only` flag.
-
-**Arguments**:
-
-* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
-
-## SlugRelatedField / ManySlugRelatedField
-
-`SlugRelatedField` and `ManySlugRelatedField` will represent the target of the relationship using a unique slug.
-
-By default these fields read-write, although you can change this behaviour using the `read_only` flag.
-
-**Arguments**:
-
-* `slug_field` - The field on the target that should be used to represent it.  This should be a field that uniquely identifies any given instance.  For example, `username`.
-* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
-
-## HyperlinkedRelatedField / ManyHyperlinkedRelatedField
-
-`HyperlinkedRelatedField` and `ManyHyperlinkedRelatedField` will represent the target of the relationship using a hyperlink.
-
-By default, `HyperlinkedRelatedField` is read-write, although you can change this behaviour using the `read_only` flag.
-
-**Arguments**:
-
-* `view_name` - The view name that should be used as the target of the relationship.  **required**.
-* `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
-* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
-* `slug_field` - The field on the target that should be used for the lookup. Default is `'slug'`.
-* `pk_url_kwarg` - The named url parameter for the pk field lookup. Default is `pk`.
-* `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
-
-## HyperLinkedIdentityField
-
-This field can be applied as an identity relationship, such as the `'url'` field on  a HyperlinkedModelSerializer.
-
-This field is always read-only.
-
-**Arguments**:
-
-* `view_name` - The view name that should be used as the target of the relationship.  **required**.
-* `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
-* `slug_field` - The field on the target that should be used for the lookup. Default is `'slug'`.
-* `pk_url_kwarg` - The named url parameter for the pk field lookup. Default is `pk`.
-* `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
-
-# Other Fields
-
-## SerializerMethodField
-
-This is a read-only field. It gets its value by calling a method on the serializer class it is attached to. It can be used to add any sort of data to the serialized representation of your object. The field's constructor accepts a single argument, which is the name of the method on the serializer to be called. The method should accept a single argument (in addition to `self`), which is the object being serialized. It should return whatever you want to be included in the serialized representation of the object. For example:
-
-    from rest_framework import serializers
-    from django.contrib.auth.models import User
-    from django.utils.timezone import now
-
-    class UserSerializer(serializers.ModelSerializer):
-
-        days_since_joined = serializers.SerializerMethodField('get_days_since_joined')
-
-        class Meta:
-            model = User
-
-        def get_days_since_joined(self, obj):
-            return (now() - obj.date_joined).days
-
-[cite]: http://www.python.org/dev/peps/pep-0020/
+[cite]: https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
