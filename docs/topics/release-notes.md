@@ -18,7 +18,9 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 
 ### Master
 
-* Relation changes are no longer persisted in `.restore_object`
+* Added `PATCH` support.
+* Added `RetrieveUpdateAPIView`.
+* Relation changes are now persisted in `save` instead of in `.restore_object`.
 
 ### 2.1.14
 
@@ -61,7 +63,7 @@ This change will not affect user code, so long as it's following the recommended
 * Bugfix: Ensure read-only fields don't have model validation applied.
 * Bugfix: Fix hyperlinked fields in paginated results.
 
-### 2.1.9
+## 2.1.9
 
 **Date**: 11th Dec 2012
 
