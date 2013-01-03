@@ -2,7 +2,7 @@ from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.compat import patterns, url
-
+from rest_framework.tests.models import ManyToManyTarget, ManyToManySource, ForeignKeyTarget, ForeignKeySource
 
 def dummy_view(request, pk):
     pass
@@ -15,18 +15,6 @@ urlpatterns = patterns('',
     url(r'^nullableforeignkeysource/(?P<pk>[0-9]+)/$', dummy_view, name='nullableforeignkeysource-detail'),
 )
 
-
-# ManyToMany
-
-class ManyToManyTarget(models.Model):
-    name = models.CharField(max_length=100)
-
-
-class ManyToManySource(models.Model):
-    name = models.CharField(max_length=100)
-    targets = models.ManyToManyField(ManyToManyTarget, related_name='sources')
-
-
 class ManyToManyTargetSerializer(serializers.HyperlinkedModelSerializer):
     sources = serializers.ManyHyperlinkedRelatedField(view_name='manytomanysource-detail')
 
@@ -37,17 +25,6 @@ class ManyToManyTargetSerializer(serializers.HyperlinkedModelSerializer):
 class ManyToManySourceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ManyToManySource
-
-
-# ForeignKey
-
-class ForeignKeyTarget(models.Model):
-    name = models.CharField(max_length=100)
-
-
-class ForeignKeySource(models.Model):
-    name = models.CharField(max_length=100)
-    target = models.ForeignKey(ForeignKeyTarget, related_name='sources')
 
 
 class ForeignKeyTargetSerializer(serializers.HyperlinkedModelSerializer):

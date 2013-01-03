@@ -1,17 +1,7 @@
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
-
-
-# ManyToMany
-
-class ManyToManyTarget(models.Model):
-    name = models.CharField(max_length=100)
-
-
-class ManyToManySource(models.Model):
-    name = models.CharField(max_length=100)
-    targets = models.ManyToManyField(ManyToManyTarget, related_name='sources')
+from rest_framework.tests.models import ManyToManyTarget, ManyToManySource, ForeignKeyTarget, ForeignKeySource, NullableForeignKeySource
 
 
 class ManyToManyTargetSerializer(serializers.ModelSerializer):
@@ -26,17 +16,6 @@ class ManyToManySourceSerializer(serializers.ModelSerializer):
         model = ManyToManySource
 
 
-# ForeignKey
-
-class ForeignKeyTarget(models.Model):
-    name = models.CharField(max_length=100)
-
-
-class ForeignKeySource(models.Model):
-    name = models.CharField(max_length=100)
-    target = models.ForeignKey(ForeignKeyTarget, related_name='sources')
-
-
 class ForeignKeyTargetSerializer(serializers.ModelSerializer):
     sources = serializers.ManyPrimaryKeyRelatedField()
 
@@ -47,14 +26,6 @@ class ForeignKeyTargetSerializer(serializers.ModelSerializer):
 class ForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForeignKeySource
-
-
-# Nullable ForeignKey
-
-class NullableForeignKeySource(models.Model):
-    name = models.CharField(max_length=100)
-    target = models.ForeignKey(ForeignKeyTarget, null=True, blank=True,
-                               related_name='nullable_sources')
 
 
 class NullableForeignKeySourceSerializer(serializers.ModelSerializer):

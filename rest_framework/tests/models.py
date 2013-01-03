@@ -176,3 +176,31 @@ class OptionalRelationModel(RESTFrameworkModel):
 # Model for RegexField
 class Book(RESTFrameworkModel):
     isbn = models.CharField(max_length=13)
+
+
+# Models for relations tests
+# ManyToMany
+class ManyToManyTarget(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+
+
+class ManyToManySource(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+    targets = models.ManyToManyField(ManyToManyTarget, related_name='sources')
+
+
+# ForeignKey
+class ForeignKeyTarget(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+
+
+class ForeignKeySource(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+    target = models.ForeignKey(ForeignKeyTarget, related_name='sources')
+
+
+# Nullable ForeignKey
+class NullableForeignKeySource(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+    target = models.ForeignKey(ForeignKeyTarget, null=True, blank=True,
+                               related_name='nullable_sources')
