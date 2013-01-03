@@ -25,7 +25,6 @@ class UploadedFileSerializer(serializers.Serializer):
 
 
 class FileSerializerTests(TestCase):
-
     def test_create(self):
         now = datetime.datetime.now()
         file = StringIO.StringIO('stuff')
@@ -37,3 +36,16 @@ class FileSerializerTests(TestCase):
         self.assertEquals(serializer.object.created, uploaded_file.created)
         self.assertEquals(serializer.object.file, uploaded_file.file)
         self.assertFalse(serializer.object is uploaded_file)
+
+    def test_creation_failure(self):
+        """
+        Passing files=None should result in an ValidationError
+
+        Regression test for:
+        https://github.com/tomchristie/django-rest-framework/issues/542
+        """
+        now = datetime.datetime.now()
+
+        serializer = UploadedFileSerializer(data={'created': now})
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('file', serializer.errors)
