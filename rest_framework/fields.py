@@ -186,8 +186,10 @@ class WritableField(Field):
             else:
                 native = data[field_name]
         except KeyError:
-            if self.default is not None:
+            if self.default is not None and not self.root.partial:
                 native = self.default
+                # partial serializers shouldn't set the default field to avoid
+                # overriding the previously set value
             else:
                 if self.required:
                     raise ValidationError(self.error_messages['required'])
