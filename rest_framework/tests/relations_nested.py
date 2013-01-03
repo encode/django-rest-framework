@@ -1,17 +1,7 @@
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
-
-
-# ForeignKey
-
-class ForeignKeyTarget(models.Model):
-    name = models.CharField(max_length=100)
-
-
-class ForeignKeySource(models.Model):
-    name = models.CharField(max_length=100)
-    target = models.ForeignKey(ForeignKeyTarget, related_name='sources')
+from rest_framework.tests.models import ForeignKeyTarget, ForeignKeySource, NullableForeignKeySource
 
 
 class ForeignKeySourceSerializer(serializers.ModelSerializer):
@@ -30,14 +20,6 @@ class ForeignKeyTargetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ForeignKeyTarget
-
-
-# Nullable ForeignKey
-
-class NullableForeignKeySource(models.Model):
-    name = models.CharField(max_length=100)
-    target = models.ForeignKey(ForeignKeyTarget, null=True, blank=True,
-                               related_name='nullable_sources')
 
 
 class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
