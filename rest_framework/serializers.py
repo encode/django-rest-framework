@@ -530,13 +530,13 @@ class ModelSerializer(Serializer):
 
         return instance
 
-    def save(self, save_m2m=True):
+    def save(self):
         """
         Save the deserialized object and return it.
         """
         self.object.save()
 
-        if getattr(self, 'm2m_data', None) and save_m2m:
+        if getattr(self, 'm2m_data', None):
             for accessor_name, object_list in self.m2m_data.items():
                 setattr(self.object, accessor_name, object_list)
             self.m2m_data = {}
