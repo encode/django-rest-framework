@@ -4,12 +4,9 @@ Provides a set of pluggable authentication policies.
 
 from django.contrib.auth import authenticate
 from django.utils.encoding import DjangoUnicodeDecodeError
-try:
-    from django.utils.encoding import smart_text
-except ImportError:
-    from django.utils.encoding import smart_unicode as smart_text
 from rest_framework import exceptions
 from rest_framework.compat import CsrfViewMiddleware
+from rest_framework.compat import smart_text
 from rest_framework.authtoken.models import Token
 import base64
 
