@@ -235,7 +235,7 @@ This change will not affect user code, so long as it's following the recommended
 
 # License
 
-Copyright (c) 2011, Tom Christie
+Copyright (c) 2011-2013, Tom Christie
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -258,7 +258,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-[build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=restframework2
+[build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
 [twitter]: https://twitter.com/_tomchristie
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
