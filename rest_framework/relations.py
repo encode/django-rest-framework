@@ -4,6 +4,7 @@ from django import forms
 from django.forms import widgets
 from django.forms.models import ModelChoiceIterator
 from django.utils.encoding import smart_unicode
+from django.utils.translation import ugettext_lazy as _
 from rest_framework.fields import Field, WritableField
 from rest_framework.reverse import reverse
 from urlparse import urlparse
@@ -168,6 +169,11 @@ class PrimaryKeyRelatedField(RelatedField):
     default_read_only = False
     form_field_class = forms.ChoiceField
 
+    default_error_messages = {
+        'does_not_exist': _("Invalid pk '%s' - object does not exist."),
+        'invalid': _('Invalid value.'),
+    }
+
     # TODO: Remove these field hacks...
     def prepare_value(self, obj):
         return self.to_native(obj.pk)
@@ -193,7 +199,10 @@ class PrimaryKeyRelatedField(RelatedField):
         try:
             return self.queryset.get(pk=data)
         except ObjectDoesNotExist:
-            msg = "Invalid pk '%s' - object does not exist." % smart_unicode(data)
+            msg = self.error_messages['does_not_exist'] % smart_unicode(data)
+            raise ValidationError(msg)
+        except (TypeError, ValueError):
+            msg = self.error_messages['invalid']
             raise ValidationError(msg)
 
     def field_to_native(self, obj, field_name):
@@ -214,6 +223,11 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
     """
     default_read_only = False
     form_field_class = forms.MultipleChoiceField
+
+    default_error_messages = {
+        'does_not_exist': _("Invalid pk '%s' - object does not exist."),
+        'invalid': _('Invalid value.'),
+    }
 
     def prepare_value(self, obj):
         return self.to_native(obj.pk)
@@ -249,7 +263,10 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
         try:
             return self.queryset.get(pk=data)
         except ObjectDoesNotExist:
-            msg = "Invalid pk '%s' - object does not exist." % smart_unicode(data)
+            msg = self.error_messages['does_not_exist'] % smart_unicode(data)
+            raise ValidationError(msg)
+        except (TypeError, ValueError):
+            msg = self.error_messages['invalid']
             raise ValidationError(msg)
 
 ### Slug relationships
