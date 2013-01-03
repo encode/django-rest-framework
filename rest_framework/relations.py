@@ -407,6 +407,7 @@ class HyperlinkedIdentityField(Field):
         # TODO: Make view_name mandatory, and have the
         # HyperlinkedModelSerializer set it on-the-fly
         self.view_name = kwargs.pop('view_name', None)
+        # Optionally the format of the target hyperlink may be specified
         self.format = kwargs.pop('format', None)
 
         self.slug_field = kwargs.pop('slug_field', self.slug_field)
@@ -418,9 +419,22 @@ class HyperlinkedIdentityField(Field):
 
     def field_to_native(self, obj, field_name):
         request = self.context.get('request', None)
-        format = self.format or self.context.get('format', None)
+        format = self.context.get('format', None)
         view_name = self.view_name or self.parent.opts.view_name
         kwargs = {self.pk_url_kwarg: obj.pk}
+
+        # By default use whatever format is given for the current context
+        # unless the target is a different type to the source.
+        #
+        # Eg. Consider a HyperlinkedIdentityField pointing from a json
+        # representation to an html property of that representation...
+        #
+        # '/snippets/1/' should link to '/snippets/1/highlight/'
+        # ...but...
+        # '/snippets/1/.json' should link to '/snippets/1/highlight/.html'
+        if format and self.format and self.format != format:
+            format = self.format
+
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
