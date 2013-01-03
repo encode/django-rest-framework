@@ -21,6 +21,7 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 * Added `PATCH` support.
 * Added `RetrieveUpdateAPIView`.
 * Relation changes are now persisted in `save` instead of in `.restore_object`.
+* Bugfix: Fix issue with FileField validation with files=None.
 
 ### 2.1.14
 
