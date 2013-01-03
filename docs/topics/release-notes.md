@@ -16,7 +16,9 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 
 ## 2.1.x series
 
-### Master
+### 2.1.15
+
+**Date**: 3rd Jan 2013
 
 * Added `PATCH` support.
 * Added `RetrieveUpdateAPIView`.
