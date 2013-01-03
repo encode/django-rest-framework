@@ -181,7 +181,7 @@ class WritableField(Field):
 
         try:
             if self._use_files:
-                files = files or {}  # For the case when files==None
+                files = files or {}
                 native = files[field_name]
             else:
                 native = data[field_name]

@@ -46,6 +46,6 @@ class FileSerializerTests(TestCase):
         """
         now = datetime.datetime.now()
 
-        serializer = UploadedFileSerializer(data={'created': now}, files=None)
+        serializer = UploadedFileSerializer(data={'created': now})
         self.assertFalse(serializer.is_valid())
         self.assertIn('file', serializer.errors)
