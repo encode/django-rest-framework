@@ -65,7 +65,7 @@ setup(
     packages=get_packages('rest_framework'),
     package_data=get_package_data('rest_framework'),
     test_suite='rest_framework.runtests.runtests.main',
-    install_requires=['six'],
+    install_requires=[],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
