@@ -1,6 +1,5 @@
 
 from __future__ import unicode_literals
-import six
 
 import copy
 import datetime
@@ -14,14 +13,12 @@ from django.conf import settings
 from django import forms
 from django.forms import widgets
 from django.utils.encoding import is_protected_type
-try:
-    from django.utils.encoding import smart_text
-except ImportError:
-    from django.utils.encoding import smart_unicode as smart_text
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.compat import parse_date, parse_datetime
 from rest_framework.compat import timezone
 from rest_framework.compat import BytesIO
+from rest_framework.compat import six
+from rest_framework.compat import smart_text
 
 
 def is_simple_callable(obj):

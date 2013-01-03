@@ -1,6 +1,5 @@
 import pickle
 import re
-import six
 
 from django.core.cache import cache
 from django.test import TestCase
@@ -16,6 +15,7 @@ from rest_framework.parsers import YAMLParser, XMLParser
 from rest_framework.settings import api_settings
 
 from rest_framework.compat import StringIO
+from rest_framework.compat import six
 import datetime
 from decimal import Decimal
 

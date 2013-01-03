@@ -1,5 +1,3 @@
-import six
-
 import copy
 import datetime
 import types
@@ -8,6 +6,7 @@ from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
 from rest_framework.compat import get_concrete_model
+from rest_framework.compat import six
 
 # Note: We do the following so that users of the framework can use this style:
 #

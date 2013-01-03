@@ -1,16 +1,14 @@
 from __future__ import unicode_literals, absolute_import
-import six
 
 from django import template
 from django.core.urlresolvers import reverse
 from django.http import QueryDict
-try:
-    from django.utils.encoding import force_text
-except ImportError:
-    from django.utils.encoding import force_unicode as force_text
 from django.utils.html import escape
 from django.utils.safestring import SafeData, mark_safe
 from rest_framework.compat import urlparse
+from rest_framework.compat import force_text
+from rest_framework.compat import six
+
 import re
 import string
 

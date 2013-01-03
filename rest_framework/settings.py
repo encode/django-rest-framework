@@ -19,8 +19,7 @@ back to the defaults.
 """
 from django.conf import settings
 from django.utils import importlib
-from six import string_types
-
+from rest_framework.compat import six
 
 
 USER_SETTINGS = getattr(settings, 'REST_FRAMEWORK', None)
@@ -100,7 +99,7 @@ def perform_import(val, setting_name):
     If the given setting is a string import notation,
     then perform the necessary import or imports.
     """
-    if isinstance(val, string_types):
+    if isinstance(val, six.string_types):
         return import_from_string(val, setting_name)
     elif isinstance(val, (list, tuple)):
         return [import_from_string(item, setting_name) for item in val]
@@ -118,6 +117,7 @@ def import_from_string(val, setting_name):
         module = importlib.import_module(module_path)
         return getattr(module, class_name)
     except:
+        raise
         msg = "Could not import '%s' for API setting '%s'" % (val, setting_name)
         raise ImportError(msg)
 

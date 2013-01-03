@@ -1,6 +1,3 @@
-import unittest
-import six
-
 from django.test import TestCase
 from rest_framework.compat import patterns, url, include
 from rest_framework.response import Response
@@ -12,6 +9,7 @@ from rest_framework.renderers import (
     BrowsableAPIRenderer
 )
 from rest_framework.settings import api_settings
+from rest_framework.compat import six
 
 
 class MockPickleRenderer(BaseRenderer):

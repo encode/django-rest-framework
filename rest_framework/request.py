@@ -9,7 +9,6 @@ The wrapped request then offers a richer API, in particular :
     - full support of PUT method, including support for file uploads
     - form overloading of HTTP method, content type and content
 """
-import six
 from rest_framework.compat import BytesIO
 
 from django.http.multipartparser import parse_header

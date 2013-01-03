@@ -6,13 +6,10 @@ from django.core.urlresolvers import resolve, get_script_prefix
 from django import forms
 from django.forms import widgets
 from django.forms.models import ModelChoiceIterator
-try:
-    from django.utils.encoding import smart_text
-except ImportError:
-    from django.utils.encoding import smart_unicode as smart_text
 from rest_framework.fields import Field, WritableField
 from rest_framework.reverse import reverse
 from rest_framework.compat import urlparse
+from rest_framework.compat import smart_text
 
 ##### Relational fields #####
 

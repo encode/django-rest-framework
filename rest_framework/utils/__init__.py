@@ -1,13 +1,7 @@
-
-import six
-
-try:
-    from django.utils.encoding import smart_text
-except ImportError:
-    from django.utils.encoding import smart_unicode as smart_text
-
 from django.utils.xmlutils import SimplerXMLGenerator
 from rest_framework.compat import StringIO
+from rest_framework.compat import six
+from rest_framework.compat import smart_text
 import re
 import xml.etree.ElementTree as ET
 

@@ -1,11 +1,10 @@
-from rest_framework.compat import BytesIO
-
 import datetime
-import six
 
 from django.test import TestCase
 
 from rest_framework import serializers
+from rest_framework.compat import BytesIO
+from rest_framework.compat import six
 
 
 class UploadedFile(object):

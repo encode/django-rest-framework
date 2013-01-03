@@ -4,15 +4,33 @@ versions of django/python, and compatibility wrappers around optional packages.
 """
 # flake8: noqa
 from __future__ import unicode_literals
-import six
 
 import django
+
+# Try to import six from Django, fallback to six itself (1.3.x)
+try:
+    from django.utils import six
+except:
+    import six
 
 # location of patterns, url, include changes in 1.4 onwards
 try:
     from django.conf.urls import patterns, url, include
 except:
     from django.conf.urls.defaults import patterns, url, include
+
+# Handle django.utils.encoding rename:
+# smart_unicode -> smart_text
+# force_unicode -> force_text
+try:
+    from django.utils.encoding import smart_text
+except ImportError:
+    from django.utils.encoding import smart_unicode as smart_text
+try:
+    from django.utils.encoding import force_text
+except ImportError:
+    from django.utils.encoding import force_unicode as force_text
+
 
 # django-filter is optional
 try:
@@ -25,9 +43,9 @@ except:
 try:
     import cStringIO.StringIO as StringIO
 except ImportError:
-    from six import StringIO
+    StringIO = six.StringIO
 
-from six import BytesIO
+BytesIO = six.BytesIO
 
 
 # urlparse compat import (Required because it changed in python 3.x)

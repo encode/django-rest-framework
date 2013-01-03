@@ -1,14 +1,12 @@
 from __future__ import unicode_literals
 
-import six
-
 from django.db import models
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import simplejson as json
 from rest_framework import generics, serializers, status
 from rest_framework.tests.models import BasicModel, Comment, SlugBasedModel
-
+from rest_framework.compat import six
 
 factory = RequestFactory()
 

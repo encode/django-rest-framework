@@ -5,14 +5,13 @@ They give us a generic way of being able to handle various media types
 on the request, such as form content or json encoded data.
 """
 
-import six
-
 from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError
 from django.utils import simplejson as json
 from rest_framework.compat import yaml, ETParseError
 from rest_framework.exceptions import ParseError
+from rest_framework.compat import six
 from xml.etree import ElementTree as ET
 from xml.parsers.expat import ExpatError
 import datetime
