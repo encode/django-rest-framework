@@ -22,6 +22,7 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 * Added `RetrieveUpdateAPIView`.
 * Relation changes are now persisted in `save` instead of in `.restore_object`.
 * Cleanup unused internal `save_m2m` flag on `ModelSerializer.save()`.
+* Tweak behavior of hyperlinked fields with an explicit format suffix.
 * Relation changes are now persisted in `.save()` instead of in `.restore_object()`.
 * Bugfix: Fix issue with FileField validation with files=None.
 
