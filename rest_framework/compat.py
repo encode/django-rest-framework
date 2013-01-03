@@ -34,7 +34,7 @@ from six import BytesIO
 try:
     from urllib import parse as urlparse
 except ImportError:
-    import urlparse as urlparse
+    import urlparse
 
 
 # Try to import PIL in either of the two ways it can end up installed.
