@@ -66,7 +66,8 @@ class NestedOneToOneTests(TestCase):
         self.assertEquals(serializer.data, data)
         self.assertEqual(obj.name, u'target-4')
 
-        # Ensure (source 4, target 4) is added, and everything else is as expected
+        # Ensure (target 4, target_source 4, source 4) are added, and
+        # everything else is as expected.
         queryset = OneToOneTarget.objects.all()
         serializer = OneToOneTargetSerializer(queryset)
         expected = [
