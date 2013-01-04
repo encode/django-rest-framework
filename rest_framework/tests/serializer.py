@@ -69,6 +69,7 @@ class AlbumsSerializer(serializers.ModelSerializer):
         model = Album
         fields = ['title']  # lists are also valid options
 
+
 class PositiveIntegerAsChoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = HasPositiveIntegerAsChoice
@@ -239,6 +240,25 @@ class ValidationTests(TestCase):
         serializer = CommentSerializerWithFieldValidator(data=data)
         self.assertFalse(serializer.is_valid())
         self.assertEquals(serializer.errors, {'content': [u'Test not in value']})
+
+    def test_bad_type_data_is_false(self):
+        """
+        Data of the wrong type is not valid.
+        """
+        data = ['i am', 'a', 'list']
+        serializer = CommentSerializer(self.comment, data=data)
+        self.assertEquals(serializer.is_valid(), False)
+        self.assertEquals(serializer.errors, {'non_field_errors': [u'Invalid data']})
+
+        data = 'and i am a string'
+        serializer = CommentSerializer(self.comment, data=data)
+        self.assertEquals(serializer.is_valid(), False)
+        self.assertEquals(serializer.errors, {'non_field_errors': [u'Invalid data']})
+
+        data = 42
+        serializer = CommentSerializer(self.comment, data=data)
+        self.assertEquals(serializer.is_valid(), False)
+        self.assertEquals(serializer.errors, {'non_field_errors': [u'Invalid data']})
 
     def test_cross_field_validation(self):
 

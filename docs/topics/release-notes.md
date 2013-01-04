@@ -18,6 +18,7 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 
 ### Master
 
+* Bugfix: Validation errors instead of exceptions when serializers receive incorrect types.
 * Bugfix: Validation errors instead of exceptions when related fields receive incorrect types.
 
 ### 2.1.15
