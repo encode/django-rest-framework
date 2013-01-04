@@ -1,7 +1,7 @@
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
-from rest_framework.tests.models import ForeignKeyTarget, ForeignKeySource, NullableForeignKeySource
+from rest_framework.tests.models import ForeignKeyTarget, ForeignKeySource, NullableForeignKeySource, NullableOneToOneSource
 
 
 class ForeignKeySourceSerializer(serializers.ModelSerializer):
@@ -26,6 +26,13 @@ class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
         depth = 1
         model = NullableForeignKeySource
+
+
+class NullableForeignKeyTargetSerializer(serializers.ModelSerializer):
+    nullable_source = serializers.PrimaryKeyRelatedField()
+
+    class Meta:
+        model = ForeignKeyTarget
 
 
 class ReverseForeignKeyTests(TestCase):
@@ -67,6 +74,10 @@ class NestedNullableForeignKeyTests(TestCase):
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
         target.save()
+        new_target = ForeignKeyTarget(name='target-2')
+        new_target.save()
+        one_source = NullableOneToOneSource(name='one-source-1', target=target)
+        one_source.save()
         for idx in range(1, 4):
             if idx == 3:
                 target = None
@@ -80,5 +91,14 @@ class NestedNullableForeignKeyTests(TestCase):
             {'id': 1, 'name': u'source-1', 'target': {'id': 1, 'name': u'target-1'}},
             {'id': 2, 'name': u'source-2', 'target': {'id': 1, 'name': u'target-1'}},
             {'id': 3, 'name': u'source-3', 'target': None},
+        ]
+        self.assertEquals(serializer.data, expected)
+
+    def test_reverse_foreign_key_retrieve_with_null(self):
+        queryset = ForeignKeyTarget.objects.all()
+        serializer = NullableForeignKeyTargetSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': u'target-1', 'nullable_source': 1},
+            {'id': 2, 'name': u'target-2', 'nullable_source': None},
         ]
         self.assertEquals(serializer.data, expected)
