@@ -47,7 +47,7 @@ class NestedOneToOneTests(TestCase):
             source = OneToOneSource(name='source-%d' % idx, target_source=target_source)
             source.save()
 
-    def test_foreign_key_retrieve(self):
+    def test_one_to_one_retrieve(self):
         queryset = OneToOneTarget.objects.all()
         serializer = OneToOneTargetSerializer(queryset)
         expected = [
@@ -58,7 +58,7 @@ class NestedOneToOneTests(TestCase):
         self.assertEquals(serializer.data, expected)
         
 
-    def test_foreign_key_create(self):
+    def test_one_to_one_create(self):
         data = {'id': 4, 'name': u'target-4', 'target_source': {'id': 4, 'name': u'target-source-4', 'source': {'id': 4, 'name': u'source-4'}}}
         serializer = OneToOneTargetSerializer(data=data)
         self.assertTrue(serializer.is_valid())
@@ -77,7 +77,7 @@ class NestedOneToOneTests(TestCase):
         ]
         self.assertEquals(serializer.data, expected)
 
-    def test_foreign_key_create_with_invalid_data(self):
+    def test_one_to_one_create_with_invalid_data(self):
         data = {'id': 4, 'name': u'target-4', 'target_source': {'id': 4, 'name': u'target-source-4', 'source': {'id': 4}}}
         serializer = OneToOneTargetSerializer(data=data)
         self.assertFalse(serializer.is_valid())
