@@ -107,6 +107,7 @@ class BaseSerializer(WritableField):
         self.parent = None
         self.root = None
         self.partial = partial
+        self.delete = False
 
         self.context = context or {}
 
@@ -215,6 +216,15 @@ class BaseSerializer(WritableField):
 
         for field_name, field in self.fields.items():
             field.initialize(parent=self, field_name=field_name)
+            if isinstance(field, ModelSerializer) and self.object:
+                # Set the serializer object if it exists
+                pk_field_name = field.opts.model._meta.pk.name
+                obj = getattr(self.object, field_name)
+                nested_data = data.get(field_name)
+                pk_val = nested_data.get(pk_field_name) if nested_data else None
+                if obj and (getattr(obj, pk_field_name) == pk_val):
+                    field.object = obj
+                    field.delete = nested_data.get('_delete')
             try:
                 field.field_from_native(data, files, field_name, reverted_data)
             except ValidationError as err:
@@ -565,6 +575,10 @@ class ModelSerializer(Serializer):
         return instance
 
     def _save(self, parent=None, fk_field=None):
+        if self.delete:
+            self.object.delete()
+            return
+
         if parent and fk_field:
             setattr(self.object, fk_field, parent)
         self.object.save()

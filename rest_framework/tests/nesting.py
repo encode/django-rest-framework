@@ -9,7 +9,8 @@ class OneToOneTarget(models.Model):
 
 class OneToOneTargetSource(models.Model):
     name = models.CharField(max_length=100)
-    target = models.OneToOneField(OneToOneTarget, related_name='target_source')
+    target = models.OneToOneField(OneToOneTarget, null=True, blank=True,
+                                  related_name='target_source')
 
 
 class OneToOneSource(models.Model):
@@ -83,3 +84,41 @@ class NestedOneToOneTests(TestCase):
         serializer = OneToOneTargetSerializer(data=data)
         self.assertFalse(serializer.is_valid())
         self.assertEquals(serializer.errors, {'target_source': [{'source': [{'name': [u'This field is required.']}]}]})
+
+    def test_one_to_one_update(self):
+        data = {'id': 3, 'name': u'target-3-updated', 'target_source': {'id': 3, 'name': u'target-source-3-updated', 'source': {'id': 3, 'name': u'source-3-updated'}}}
+        instance = OneToOneTarget.objects.get(pk=3)
+        serializer = OneToOneTargetSerializer(instance, data=data)
+        self.assertTrue(serializer.is_valid())
+        obj = serializer.save()
+        self.assertEquals(serializer.data, data)
+        self.assertEqual(obj.name, u'target-3-updated')
+
+        # Ensure (target 3, target_source 3, source 3) are updated,
+        # and everything else is as expected.
+        queryset = OneToOneTarget.objects.all()
+        serializer = OneToOneTargetSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': u'target-1', 'target_source': {'id': 1, 'name': u'target-source-1', 'source': {'id': 1, 'name': u'source-1'}}},
+            {'id': 2, 'name': u'target-2', 'target_source': {'id': 2, 'name': u'target-source-2', 'source': {'id': 2, 'name': u'source-2'}}},
+            {'id': 3, 'name': u'target-3-updated', 'target_source': {'id': 3, 'name': u'target-source-3-updated', 'source': {'id': 3, 'name': u'source-3-updated'}}}
+        ]
+        self.assertEquals(serializer.data, expected)
+
+    def test_one_to_one_delete(self):
+        data = {'id': 3, 'name': u'target-3', 'target_source': {'_delete': True, 'id': 3, 'name': u'target-source-3', 'source': {'id': 3, 'name': u'source-3'}}}
+        instance = OneToOneTarget.objects.get(pk=3)
+        serializer = OneToOneTargetSerializer(instance, data=data)
+        self.assertTrue(serializer.is_valid())
+        obj = serializer.save()
+
+        # Ensure (target_source 3, source 3) are deleted,
+        # and everything else is as expected.
+        queryset = OneToOneTarget.objects.all()
+        serializer = OneToOneTargetSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': u'target-1', 'target_source': {'id': 1, 'name': u'target-source-1', 'source': {'id': 1, 'name': u'source-1'}}},
+            {'id': 2, 'name': u'target-2', 'target_source': {'id': 2, 'name': u'target-source-2', 'source': {'id': 2, 'name': u'source-2'}}},
+            {'id': 3, 'name': u'target-3', 'target_source': None}
+        ]
+        self.assertEquals(serializer.data, expected)
