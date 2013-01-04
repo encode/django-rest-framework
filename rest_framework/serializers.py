@@ -118,6 +118,7 @@ class BaseSerializer(Field):
         self._data = None
         self._files = None
         self._errors = None
+        self._instance = instance
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
@@ -257,7 +258,7 @@ class BaseSerializer(Field):
         You should override this method to control how deserialized objects
         are instantiated.
         """
-        if instance is not None:
+        if instance is not None and not hasattr(instance, '__iter__'):
             instance.update(attrs)
             return instance
         return attrs
@@ -276,7 +277,12 @@ class BaseSerializer(Field):
         """
         if hasattr(data, '__iter__') and not isinstance(data, dict):
             # TODO: error data when deserializing lists
-            return (self.from_native(item) for item in data)
+            objects = []
+            for i, item in enumerate(data):
+                if hasattr(self.object, '__iter__'):
+                    self._instance = self.object[i] 
+                objects.append(self.from_native(item, files))
+            return objects
 
         self._errors = {}
         if data is not None or files is not None:
@@ -286,7 +292,7 @@ class BaseSerializer(Field):
             self._errors['non_field_errors'] = ['No input provided']
 
         if not self._errors:
-            return self.restore_object(attrs, instance=getattr(self, 'object', None))
+            return self.restore_object(attrs, instance=getattr(self, '_instance', None))
 
     def field_to_native(self, obj, field_name):
         """
@@ -337,7 +343,11 @@ class BaseSerializer(Field):
         """
         Save the deserialized object and return it.
         """
-        self.object.save()
+        if hasattr(self.object, '__iter__'):
+            for obj in self.object:
+                obj.save()
+        else:
+            self.object.save()
         return self.object
 
 

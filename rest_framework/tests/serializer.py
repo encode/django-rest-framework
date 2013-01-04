@@ -34,7 +34,7 @@ class CommentSerializer(serializers.Serializer):
     sub_comment = serializers.Field(source='get_sub_comment.sub_comment')
 
     def restore_object(self, data, instance=None):
-        if instance is None:
+        if instance is None or hasattr(instance, '__iter__'):
             return Comment(**data)
         for key, val in data.items():
             setattr(instance, key, val)
@@ -881,3 +881,58 @@ class NestedSerializerContextTests(TestCase):
 
         # This will raise RuntimeError if context doesn't get passed correctly to the nested Serializers
         AlbumCollectionSerializer(album_collection, context={'context_item': 'album context'}).data
+
+
+class MultipleObjectsTests(TestCase):
+    def setUp(self):
+        self.comments = [Comment(
+            'tom@example.com',
+            'Happy new year!',
+            datetime.datetime(2012, 1, 1)
+            ),
+                         Comment(
+                'seb@example.com',
+                'Thank you!',
+                datetime.datetime(2012, 1, 2)
+                )]
+        self.data = [{
+                'email': 'tom@example.com',
+                'content': 'Happy new year!',
+                'created': datetime.datetime(2012, 1, 1),
+                'sub_comment': 'This wont change'
+                },
+                     {
+                'email': 'seb@example.com',
+                'content': 'Thank you!',
+                'created': datetime.datetime(2012, 1, 2),
+                'sub_comment': 'This wont change'
+                }]
+        self.expected = [{
+                'email': 'tom@example.com',
+                'content': 'Happy new year!',
+                'created': datetime.datetime(2012, 1, 1),
+                'sub_comment': 'And Merry Christmas!'
+                },
+                         {
+                'email': 'seb@example.com',
+                'content': 'Thank you!',
+                'created': datetime.datetime(2012, 1, 2),
+                'sub_comment': 'And Merry Christmas!'
+                }]
+
+    def test_create(self):
+        serializer = CommentSerializer(data=self.data)
+        expected = self.comments
+        self.assertEquals(serializer.is_valid(), True)
+        self.assertEquals(serializer.object, expected)
+        self.assertFalse(serializer.object is expected)
+        self.assertEquals(serializer.data, self.expected)
+
+    def test_update(self):
+        serializer = CommentSerializer(instance=self.comments, data=self.data)
+        expected = self.comments
+        self.assertEquals(serializer.is_valid(), True)
+        self.assertEquals(serializer.object, expected)
+        for obj, exp in zip(serializer.object, expected):
+            self.assertTrue(obj is exp)
+        self.assertEquals(serializer.data, self.expected)
