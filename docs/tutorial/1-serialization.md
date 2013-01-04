@@ -8,7 +8,7 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 ---
 
-**Note**: The final code for this tutorial is available in the [tomchristie/rest-framework-tutorial][repo] repository on GitHub.  There is also a sandbox version for testing, [available here][sandbox].
+**Note**: The code for this tutorial is available in the [tomchristie/rest-framework-tutorial][repo] repository on GitHub. As pieces of code are introduced, they are committed to this repository. The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
 
 ---
 
@@ -73,7 +73,7 @@ Okay, we're ready to roll.
 
 ## Creating a model to work with
 
-For the purposes of this tutorial we're going to start by creating a simple `Snippet` model that is used to store code snippets.  Go ahead and edit the  `snippets` app's `models.py` file.
+For the purposes of this tutorial we're going to start by creating a simple `Snippet` model that is used to store code snippets.  Go ahead and edit the  `snippets` app's `models.py` file. Note: Good programming practices include comments. Although you will find them in our repository version of this tutorial code, we have omitted them here to focus on the code itself.
 
     from django.db import models
     from pygments.lexers import get_all_lexers
