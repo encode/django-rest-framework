@@ -60,7 +60,7 @@ We'll also need to add our new `snippets` app and the `rest_framework` app to `I
     INSTALLED_APPS = (
         ...
         'rest_framework',
-        'snippets'
+        'snippets',
     )
 
 We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet app's URLs.
@@ -288,7 +288,7 @@ Finally we need to wire these views up. Create the `snippets/urls.py` file:
 
     urlpatterns = patterns('snippets.views',
         url(r'^snippets/$', 'snippet_list'),
-        url(r'^snippets/(?P<pk>[0-9]+)/$', 'snippet_detail')
+        url(r'^snippets/(?P<pk>[0-9]+)/$', 'snippet_detail'),
     )
 
 It's worth noting that there are a couple of edge cases we're not dealing with properly at the moment.  If we send malformed `json`, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.
