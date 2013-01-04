@@ -39,7 +39,6 @@ class OneToOneTargetSerializer(serializers.ModelSerializer):
 
 class NestedOneToOneTests(TestCase):
     def setUp(self):
-        #import pdb ; pdb.set_trace()
         for idx in range(1, 4):
             target = OneToOneTarget(name='target-%d' % idx)
             target.save()
