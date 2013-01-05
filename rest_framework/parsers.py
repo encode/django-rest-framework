@@ -8,7 +8,7 @@ on the request, such as form content or json encoded data.
 from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError
-from rest_framework.compat import yaml, ETParseError
+from rest_framework.compat import yaml, msgpack, ETParseError
 from rest_framework.exceptions import ParseError
 from xml.etree import ElementTree as ET
 from xml.parsers.expat import ExpatError
@@ -78,6 +78,42 @@ class YAMLParser(BaseParser):
             return yaml.safe_load(stream)
         except (ValueError, yaml.parser.ParserError), exc:
             raise ParseError('YAML parse error - %s' % unicode(exc))
+
+
+class MessagePackParser(BaseParser):
+    """
+    Parses MessagePack-serialized data.
+    """
+
+    media_type = 'application/msgpack'
+
+    def parse(self, stream, media_type=None, parser_context=None):
+        """
+        Returns a 2-tuple of `(data, files)`.
+
+        `data` will be an object which is the parsed content of the response.
+        `files` will always be `None`.
+        """
+        try:
+            return msgpack.Unpacker(
+                stream,
+                use_list=True,
+                object_hook=self._decode_object).unpack()
+        except Exception, exc:
+            raise ParseError('MessagePack parse error - %s' % unicode(exc))
+
+    def _decode_object(self, o):
+        # TODO(juanriaza): decode objects
+        if b'__datetime__' in o:
+            return o['as_str']
+        elif b'__date__' in o:
+            return o['as_str']
+        elif b'__time__' in o:
+            return o['as_str']
+        elif b'__decimal__' in o:
+            return o['as_str']
+        else:
+            return o
 
 
 class FormParser(BaseParser):

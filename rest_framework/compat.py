@@ -391,6 +391,13 @@ except ImportError:
     yaml = None
 
 
+# MessagePack is optional
+try:
+    import msgpack
+except ImportError:
+    msgpack = None
+
+
 # xml.etree.parse only throws ParseError for python >= 2.7
 try:
     from xml.etree import ParseError as ETParseError

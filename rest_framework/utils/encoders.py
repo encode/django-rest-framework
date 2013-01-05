@@ -6,7 +6,7 @@ import decimal
 import types
 import json
 from django.utils.datastructures import SortedDict
-from rest_framework.compat import timezone
+from rest_framework.compat import timezone, msgpack
 from rest_framework.serializers import DictWithMetadata, SortedDictWithMetadata
 
 
@@ -89,3 +89,32 @@ else:
             yaml.representer.SafeRepresenter.represent_dict)
     SafeDumper.add_representer(types.GeneratorType,
             yaml.representer.SafeRepresenter.represent_list)
+
+
+if msgpack:
+    def msgpack_encoder(o):
+        # For Date Time string spec, see ECMA 262
+        # http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
+        if isinstance(o, datetime.datetime):
+            r = o.isoformat()
+            if o.microsecond:
+                r = r[:23] + r[26:]
+            if r.endswith('+00:00'):
+                r = r[:-6] + 'Z'
+            return {'__datetime__': True, 'as_str': r}
+        elif isinstance(o, datetime.date):
+            r = o.isoformat()
+            return {'__date__': True, 'as_str': r}
+        elif isinstance(o, datetime.time):
+            if timezone and timezone.is_aware(o):
+                raise ValueError("MessagePack can't represent timezone-aware times.")
+            r = o.isoformat()
+            if o.microsecond:
+                r = r[:12]
+            return {'__time__': True, 'as_str': r}
+        elif isinstance(o, decimal.Decimal):
+            return {'__decimal__': True, 'as_str': str(o)}
+        else:
+            return o
+else:
+    msgpack_encoder = None
