@@ -1,6 +1,6 @@
+import json
 from django.db import models
 from django.test import TestCase
-from django.utils import simplejson as json
 from rest_framework import generics, serializers, status
 from rest_framework.tests.utils import RequestFactory
 from rest_framework.tests.models import BasicModel, Comment, SlugBasedModel
