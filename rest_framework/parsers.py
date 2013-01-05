@@ -102,16 +102,16 @@ class MessagePackParser(BaseParser):
             raise ParseError('MessagePack parse error - %s' % unicode(exc))
 
     def _decode_object(self, obj):
-        if '__datetime__' in obj:
-            return dateutil_parser.parse(obj['as_str'])
-        elif b'__date__' in obj:
-            return dateutil_parser.parse(obj['as_str']).date()
-        elif b'__time__' in obj:
-            return dateutil_parser.parse(obj['as_str']).time()
-        elif b'__decimal__' in obj:
-            return decimal.Decimal(obj['as_str'])
-        else:
-            return obj
+        if dateutil_parser:
+            if '__datetime__' in obj:
+                return dateutil_parser.parse(obj['as_str'])
+            elif b'__date__' in obj:
+                return dateutil_parser.parse(obj['as_str']).date()
+            elif b'__time__' in obj:
+                return dateutil_parser.parse(obj['as_str']).time()
+        if b'__decimal__' in obj:
+                return decimal.Decimal(obj['as_str'])
+        return obj
 
 
 class FormParser(BaseParser):
