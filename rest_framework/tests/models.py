@@ -205,3 +205,18 @@ class NullableForeignKeySource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
     target = models.ForeignKey(ForeignKeyTarget, null=True, blank=True,
                                related_name='nullable_sources')
+
+# Doubly Nested Models
+class NestedTarget(RESTFrameworkModel):
+    name = models.CharField(max_length=100)    
+
+
+class NestedTargetSource(RESTFrameworkModel):
+    name = models.CharField(max_length=100)    
+    target = models.ForeignKey(NestedTarget, related_name='target_sources')
+
+
+class NestedSource(RESTFrameworkModel):
+    name = models.CharField(max_length=100)    
+    target = models.ForeignKey(NestedTarget, related_name='sources')
+    target_source = models.ForeignKey(NestedTargetSource, related_name='sources')
