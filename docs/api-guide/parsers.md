@@ -61,6 +61,12 @@ Parses `YAML` request content.
 
 **.media_type**: `application/yaml`
 
+## MessagePackParser
+
+Parses `MessagePack` request content.
+
+**.media_type**: `application/msgpack`
+
 ## XMLParser
 
 Parses REST framework's default style of `XML` request content.

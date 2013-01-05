@@ -12,7 +12,7 @@ import json
 from django import forms
 from django.http.multipartparser import parse_header
 from django.template import RequestContext, loader, Template
-from rest_framework.compat import yaml
+from rest_framework.compat import yaml, msgpack
 from rest_framework.exceptions import ConfigurationError
 from rest_framework.settings import api_settings
 from rest_framework.request import clone_request
@@ -137,6 +137,23 @@ class YAMLRenderer(BaseRenderer):
             return ''
 
         return yaml.dump(data, stream=None, Dumper=self.encoder)
+
+
+class MessagePackRenderer(BaseRenderer):
+    """
+    Renderer which serializes to MessagePack.
+    """
+
+    media_type = 'application/msgpack'
+    format = 'msgpack'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        """
+        Renders *obj* into serialized MessagePack.
+        """
+        if data is None:
+            return ''
+        return msgpack.packb(data, default=encoders.msgpack_encoder)
 
 
 class TemplateHTMLRenderer(BaseRenderer):

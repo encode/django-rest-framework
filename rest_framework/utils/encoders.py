@@ -6,7 +6,7 @@ import decimal
 import types
 import json
 from django.utils.datastructures import SortedDict
-from rest_framework.compat import timezone
+from rest_framework.compat import timezone, msgpack
 from rest_framework.serializers import DictWithMetadata, SortedDictWithMetadata
 
 
@@ -89,3 +89,19 @@ else:
             yaml.representer.SafeRepresenter.represent_dict)
     SafeDumper.add_representer(types.GeneratorType,
             yaml.representer.SafeRepresenter.represent_list)
+
+
+if msgpack:
+    def msgpack_encoder(obj):
+        if isinstance(obj, datetime.datetime):
+            return {'__datetime__': True, 'as_str': obj.isoformat()}
+        elif isinstance(obj, datetime.date):
+            return {'__date__': True, 'as_str': obj.isoformat()}
+        elif isinstance(obj, datetime.time):
+            return {'__time__': True, 'as_str': obj.isoformat()}
+        elif isinstance(obj, decimal.Decimal):
+            return {'__decimal__': True, 'as_str': str(obj)}
+        else:
+            return obj
+else:
+    msgpack_encoder = None

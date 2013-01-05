@@ -6,12 +6,12 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 
 from rest_framework import status, permissions
-from rest_framework.compat import yaml, patterns, url, include
+from rest_framework.compat import yaml, msgpack, patterns, url, include
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
-    XMLRenderer, JSONPRenderer, BrowsableAPIRenderer
-from rest_framework.parsers import YAMLParser, XMLParser
+    XMLRenderer, JSONPRenderer, MessagePackRenderer, BrowsableAPIRenderer
+from rest_framework.parsers import YAMLParser, XMLParser, MessagePackParser
 from rest_framework.settings import api_settings
 
 from StringIO import StringIO
@@ -320,6 +320,38 @@ if yaml:
 
             content = renderer.render(obj, 'application/yaml')
             data = parser.parse(StringIO(content))
+            self.assertEquals(obj, data)
+
+
+if msgpack:
+    _msgpack_repr = '\x81\xa3foo\x92\xa3bar\xa3baz'
+
+    class MessagePackRendererTests(TestCase):
+        """
+        Tests specific to the MessagePack Renderer
+        """
+
+        def test_render(self):
+            """
+            Test basic MessagePack rendering.
+            """
+            obj = {'foo': ['bar', 'baz']}
+            renderer = MessagePackRenderer()
+            content = renderer.render(obj, 'application/msgpack')
+            self.assertEquals(content, _msgpack_repr)
+
+        def test_render_and_parse(self):
+            """
+            Test rendering and then parsing returns the original object.
+            IE obj -> render -> parse -> obj.
+            """
+            obj = {'foo': ['bar', 'baz']}
+
+            renderer = MessagePackRenderer()
+            parser = MessagePackParser()
+
+            content = renderer.render(obj, 'application/msgpack')
+            data = parser.parse(content)
             self.assertEquals(obj, data)
 
 
