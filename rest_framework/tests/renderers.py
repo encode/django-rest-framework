@@ -351,7 +351,7 @@ if msgpack:
             parser = MessagePackParser()
 
             content = renderer.render(obj, 'application/msgpack')
-            data = parser.parse(StringIO(content))
+            data = parser.parse(content)
             self.assertEquals(obj, data)
 
 

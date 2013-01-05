@@ -95,10 +95,9 @@ class MessagePackParser(BaseParser):
         `files` will always be `None`.
         """
         try:
-            return msgpack.Unpacker(
-                stream,
+            return msgpack.unpackb(stream,
                 use_list=True,
-                object_hook=self._decode_object).unpack()
+                object_hook=self._decode_object)
         except Exception, exc:
             raise ParseError('MessagePack parse error - %s' % unicode(exc))
 
