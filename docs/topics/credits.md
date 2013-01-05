@@ -2,7 +2,7 @@
 
 The following people have helped make REST framework great.
 
-* Tom Christie - [tomchristie] 
+* Tom Christie - [tomchristie]
 * Marko Tibold - [markotibold]
 * Paul Bagwell - [pbgwl]
 * Sébastien Piquemal - [sebpiq]
@@ -85,6 +85,7 @@ The following people have helped make REST framework great.
 * Toran Billups - [toranb]
 * Sébastien Béal - [sebastibe]
 * Andrew Hankinson - [ahankinson]
+* Juan Riaza - [juanriaza]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -96,7 +97,7 @@ Project hosting is with [GitHub].
 
 Continuous integration testing is managed with [Travis CI][travis-ci].
 
-The [live sandbox][sandbox] is hosted on [Heroku]. 
+The [live sandbox][sandbox] is hosted on [Heroku].
 
 Various inspiration taken from the [Piston], [Tastypie] and [Dagny] projects.
 
@@ -107,7 +108,7 @@ Development of REST framework 2.0 was sponsored by [DabApps].
 For usage questions please see the [REST framework discussion group][group].
 
 You can also contact [@_tomchristie][twitter] directly on twitter.
- 
+
 [email]: mailto:tom@tomchristie.com
 [twitter]: http://twitter.com/_tomchristie
 [bootstrap]: http://twitter.github.com/bootstrap/
@@ -205,3 +206,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [toranb]: https://github.com/toranb
 [sebastibe]: https://github.com/sebastibe
 [ahankinson]: https://github.com/ahankinson
+[juanriaza]: https://github.com/juanriaza
