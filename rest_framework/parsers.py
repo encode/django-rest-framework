@@ -8,7 +8,7 @@ on the request, such as form content or json encoded data.
 from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError
-from rest_framework.compat import yaml, msgpack, ETParseError
+from rest_framework.compat import yaml, msgpack, dateutil_parser, ETParseError
 from rest_framework.exceptions import ParseError
 from xml.etree import ElementTree as ET
 from xml.parsers.expat import ExpatError
@@ -101,18 +101,17 @@ class MessagePackParser(BaseParser):
         except Exception, exc:
             raise ParseError('MessagePack parse error - %s' % unicode(exc))
 
-    def _decode_object(self, o):
-        # TODO(juanriaza): decode objects
-        if b'__datetime__' in o:
-            return o['as_str']
-        elif b'__date__' in o:
-            return o['as_str']
-        elif b'__time__' in o:
-            return o['as_str']
-        elif b'__decimal__' in o:
-            return o['as_str']
+    def _decode_object(self, obj):
+        if '__datetime__' in obj:
+            return dateutil_parser.parse(obj['as_str'])
+        elif b'__date__' in obj:
+            return dateutil_parser.parse(obj['as_str']).date()
+        elif b'__time__' in obj:
+            return dateutil_parser.parse(obj['as_str']).time()
+        elif b'__decimal__' in obj:
+            return decimal.Decimal(obj['as_str'])
         else:
-            return o
+            return obj
 
 
 class FormParser(BaseParser):

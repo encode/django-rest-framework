@@ -397,6 +397,12 @@ try:
 except ImportError:
     msgpack = None
 
+# dateutil is optional
+try:
+    from dateutil import parser as dateutil_parser
+except ImportError:
+    dateutil_parser = None
+
 
 # xml.etree.parse only throws ParseError for python >= 2.7
 try:

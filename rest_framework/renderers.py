@@ -146,7 +146,6 @@ class MessagePackRenderer(BaseRenderer):
 
     media_type = 'application/msgpack'
     format = 'msgpack'
-    encoder = encoders.msgpack_encoder
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -154,7 +153,7 @@ class MessagePackRenderer(BaseRenderer):
         """
         if data is None:
             return ''
-        return msgpack.packb(data, default=self.encoder)
+        return msgpack.packb(data, default=encoders.msgpack_encoder)
 
 
 class TemplateHTMLRenderer(BaseRenderer):
