@@ -94,6 +94,14 @@ Renders the request data into `YAML`.
 
 **.format**: `'.yaml'`
 
+## MessagePackRenderer
+
+Renders the request data into `MessagePack`.
+
+**.media_type**: `application/msgpack`
+
+**.format**: `'.msgpack'`
+
 ## XMLRenderer
 
 Renders REST framework's default style of `XML` response content.

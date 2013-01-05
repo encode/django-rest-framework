@@ -35,6 +35,8 @@ The following packages are optional:
 * [Markdown][markdown] (2.1.0+) - Markdown support for the browseable API.
 * [PyYAML][yaml] (3.10+) - YAML content-type support.
 * [django-filter][django-filter] (0.5.4+) - Filtering support.
+* [python-dateutil] - Date parsing for MessagePack.
+* [django-filter] - Filtering support.
 
 ## Installation
 
@@ -167,6 +169,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [yaml]: http://pypi.python.org/pypi/PyYAML
 [django-filter]: https://github.com/alex/django-filter
+[msgpack-python]: https://github.com/msgpack/msgpack-python
+[python-dateutil]: http://labix.org/python-dateutil
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [image]: img/quickstart.png
 [sandbox]: http://restframework.herokuapp.com/
