@@ -4,7 +4,7 @@ Helper classes for parsers.
 import datetime
 import decimal
 import types
-from django.utils import simplejson as json
+import json
 from django.utils.datastructures import SortedDict
 from rest_framework.compat import timezone
 from rest_framework.serializers import DictWithMetadata, SortedDictWithMetadata

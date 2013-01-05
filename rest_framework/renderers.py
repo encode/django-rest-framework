@@ -8,10 +8,10 @@ REST framework also provides an HTML renderer the renders the browsable API.
 """
 import copy
 import string
+import json
 from django import forms
 from django.http.multipartparser import parse_header
 from django.template import RequestContext, loader, Template
-from django.utils import simplejson as json
 from rest_framework.compat import yaml
 from rest_framework.exceptions import ConfigurationError
 from rest_framework.settings import api_settings
