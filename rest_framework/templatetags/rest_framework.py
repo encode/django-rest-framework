@@ -23,7 +23,7 @@ register = template.Library()
 # conflicts with this rest_framework template tag module.
 
 try:  # Django 1.5+
-    from django.contrib.staticfiles.templatetags import StaticFilesNode
+    from django.contrib.staticfiles.templatetags.staticfiles import StaticFilesNode
 
     @register.tag('static')
     def do_static(parser, token):
