@@ -15,7 +15,7 @@ Django REST framework is a lightweight library that makes it easy to build Web A
 
 Web APIs built using REST framework are fully self-describing and web browseable - a huge useability win for your developers.  It also supports a wide range of media types, authentication and permission policies out of the box.
 
-If you are considering using REST framework for your API, we recommend reading the [REST framework 2 announcment][rest-framework-2-announcement] which gives a good overview of the framework and it's capabilities.
+If you are considering using REST framework for your API, we recommend reading the [REST framework 2 announcement][rest-framework-2-announcement] which gives a good overview of the framework and it's capabilities.
 
 There is also a sandbox API you can use for testing purposes, [available here][sandbox].
 
@@ -32,17 +32,18 @@ REST framework requires the following:
 
 The following packages are optional:
 
-* [Markdown][markdown] (2.1.0+) - Markdown support for the self describing API.
+* [Markdown][markdown] (2.1.0+) - Markdown support for the browseable API.
 * [PyYAML][yaml] (3.10+) - YAML content-type support.
-* [django-filter][django-filter] (master) - Filtering support.
+* [django-filter][django-filter] (0.5.4+) - Filtering support.
 
 ## Installation
 
 Install using `pip`, including any optional packages you want...
 
     pip install djangorestframework
-    pip install markdown  # Recommended if using the browseable API.
-    pip install pyyaml    # Required for yaml content-type support.
+    pip install markdown  # Markdown support for the browseable API.
+    pip install pyyaml    # YAML content-type support.
+    pip install django-filter  # Filtering support
 
 ...or clone the project from github.
 
@@ -51,21 +52,21 @@ Install using `pip`, including any optional packages you want...
     pip install -r requirements.txt
     pip install -r optionals.txt
 
-Add `rest_framework` to your `INSTALLED_APPS`.
+Add `'rest_framework'` to your `INSTALLED_APPS` setting.
 
     INSTALLED_APPS = (
         ...
         'rest_framework',        
     )
 
-If you're intending to use the browseable API you'll want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
+If you're intending to use the browseable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
 
     urlpatterns = patterns('',
         ...
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     )
 
-Note that the URL path can be whatever you want, but you must include `rest_framework.urls` with the `rest_framework` namespace.
+Note that the URL path can be whatever you want, but you must include `'rest_framework.urls'` with the `'rest_framework'` namespace.
 
 ## Quickstart
 
@@ -93,6 +94,7 @@ The API guide is your complete reference manual to all the functionality provide
 * [Renderers][renderers]
 * [Serializers][serializers]
 * [Serializer fields][fields]
+* [Serializer relations][relations]
 * [Authentication][authentication]
 * [Permissions][permissions]
 * [Throttling][throttling]
@@ -136,7 +138,7 @@ Paid support is also available from [DabApps], and can include work on REST fram
 
 ## License
 
-Copyright (c) 2011-2012, Tom Christie
+Copyright (c) 2011-2013, Tom Christie
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without 
@@ -160,7 +162,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
-[travis-build-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=restframework2
+[travis-build-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [yaml]: http://pypi.python.org/pypi/PyYAML
@@ -184,6 +186,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [renderers]: api-guide/renderers.md
 [serializers]: api-guide/serializers.md
 [fields]: api-guide/fields.md
+[relations]: api-guide/relations.md
 [authentication]: api-guide/authentication.md
 [permissions]: api-guide/permissions.md
 [throttling]: api-guide/throttling.md

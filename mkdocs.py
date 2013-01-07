@@ -11,6 +11,7 @@ docs_dir = os.path.join(root_dir, 'docs')
 html_dir = os.path.join(root_dir, 'html')
 
 local = not '--deploy' in sys.argv
+preview = '-p' in sys.argv
 
 if local:
     base_url = 'file://%s/' % os.path.normpath(os.path.join(os.getcwd(), html_dir))
@@ -80,3 +81,15 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
         output = re.sub(r'<pre>', r'<pre class="prettyprint lang-py">', output)
         output = re.sub(r'<a class="github" href="([^"]*)"></a>', code_label, output)
         open(output_path, 'w').write(output.encode('utf-8'))
+
+if preview:
+    import subprocess
+
+    url = 'html/index.html'
+
+    try:
+        subprocess.Popen(["open", url])  # Mac
+    except OSError:
+        subprocess.Popen(["xdg-open", url])  # Linux
+    except:
+        os.startfile(url)  # Windows

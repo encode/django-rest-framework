@@ -126,19 +126,36 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
 **Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https` only.
 
+<<<<<<< HEAD
 <!--## OAuth2Authentication
+=======
+If you want every user to have an automatically generated Token, you can simply catch the User's `post_save` signal.
 
-This authentication scheme uses the [OAuth 2.0][oauth] protocol to authenticate requests.  OAuth is appropriate for server-server setups, such as when you want to allow a third-party service to access your API on a user's behalf.
+    @receiver(post_save, sender=User)
+    def create_auth_token(sender, instance=None, created=False, **kwargs):
+        if created:
+            Token.objects.create(user=instance)
 
-If successfully authenticated, `OAuth2Authentication` provides the following credentials.
+If you've already created some users, you can generate tokens for all existing users like this:
 
-* `request.user` will be a Django `User` instance.
-* `request.auth` will be a `rest_framework.models.OAuthToken` instance.
+    from django.contrib.auth.models import User
+    from rest_framework.authtoken.models import Token
 
-**TODO**: Note type of response (401 vs 403)
+    for user in User.objects.all():
+        Token.objects.get_or_create(user=user)
 
-**TODO**: Implement OAuth2Authentication, using django-oauth2-provider.
--->
+When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password. 
+REST framework provides a built-in view to provide this behavior.  To use it, add the `obtain_auth_token` view to your URLconf:
+
+    urlpatterns += patterns('',
+        url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token')
+    )
+
+Note that the URL part of the pattern can be whatever you want to use.
+
+The `obtain_auth_token` view will return a JSON response when valid `username` and `password` fields are POSTed to the view using form data or JSON:
+
+    { 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
 
 ## SessionAuthentication
 

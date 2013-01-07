@@ -35,6 +35,13 @@ def foobar():
     return 'foobar'
 
 
+class CustomField(models.CharField):
+
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = 12
+        super(CustomField, self).__init__(*args, **kwargs)
+
+
 class RESTFrameworkModel(models.Model):
     """
     Base for test models that sets app_label, so they play nicely.
@@ -42,6 +49,11 @@ class RESTFrameworkModel(models.Model):
     class Meta:
         app_label = 'tests'
         abstract = True
+
+
+class HasPositiveIntegerAsChoice(RESTFrameworkModel):
+    some_choices = ((1, 'A'), (2, 'B'), (3, 'C'))
+    some_integer = models.PositiveIntegerField(choices=some_choices)
 
 
 class Anchor(RESTFrameworkModel):
@@ -59,6 +71,7 @@ class SlugBasedModel(RESTFrameworkModel):
 
 class DefaultValueModel(RESTFrameworkModel):
     text = models.CharField(default='foobar', max_length=100)
+    extra = models.CharField(blank=True, null=True, max_length=100)
 
 
 class CallableDefaultValueModel(RESTFrameworkModel):
@@ -113,11 +126,28 @@ class Comment(RESTFrameworkModel):
 class ActionItem(RESTFrameworkModel):
     title = models.CharField(max_length=200)
     done = models.BooleanField(default=False)
+    info = CustomField(default='---', max_length=12)
 
 
 # Models for reverse relations
+class Person(RESTFrameworkModel):
+    name = models.CharField(max_length=10)
+    age = models.IntegerField(null=True, blank=True)
+
+    @property
+    def info(self):
+        return {
+            'name': self.name,
+            'age': self.age,
+        }
+
+
 class BlogPost(RESTFrameworkModel):
     title = models.CharField(max_length=100)
+    writer = models.ForeignKey(Person, null=True, blank=True)
+
+    def get_first_comment(self):
+        return self.blogpostcomment_set.all()[0]
 
 
 class BlogPostComment(RESTFrameworkModel):
@@ -134,18 +164,44 @@ class Photo(RESTFrameworkModel):
     album = models.ForeignKey(Album)
 
 
-class Person(RESTFrameworkModel):
-    name = models.CharField(max_length=10)
-    age = models.IntegerField(null=True, blank=True)
-
-    @property
-    def info(self):
-        return {
-            'name': self.name,
-            'age': self.age,
-        }
-
-
 # Model for issue #324
 class BlankFieldModel(RESTFrameworkModel):
-    title = models.CharField(max_length=100, blank=True)
+    title = models.CharField(max_length=100, blank=True, null=False)
+
+
+# Model for issue #380
+class OptionalRelationModel(RESTFrameworkModel):
+    other = models.ForeignKey('OptionalRelationModel', blank=True, null=True)
+
+
+# Model for RegexField
+class Book(RESTFrameworkModel):
+    isbn = models.CharField(max_length=13)
+
+
+# Models for relations tests
+# ManyToMany
+class ManyToManyTarget(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+
+
+class ManyToManySource(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+    targets = models.ManyToManyField(ManyToManyTarget, related_name='sources')
+
+
+# ForeignKey
+class ForeignKeyTarget(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+
+
+class ForeignKeySource(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+    target = models.ForeignKey(ForeignKeyTarget, related_name='sources')
+
+
+# Nullable ForeignKey
+class NullableForeignKeySource(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+    target = models.ForeignKey(ForeignKeyTarget, null=True, blank=True,
+                               related_name='nullable_sources')

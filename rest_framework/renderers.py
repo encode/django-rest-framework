@@ -4,14 +4,14 @@ Renderers are used to serialize a response into specific media types.
 They give us a generic way of being able to handle various media types
 on the response, such as JSON encoded data or HTML output.
 
-REST framework also provides an HTML renderer the renders the browseable API.
+REST framework also provides an HTML renderer the renders the browsable API.
 """
 import copy
 import string
+import json
 from django import forms
 from django.http.multipartparser import parse_header
 from django.template import RequestContext, loader, Template
-from django.utils import simplejson as json
 from rest_framework.compat import yaml
 from rest_framework.exceptions import ConfigurationError
 from rest_framework.settings import api_settings
@@ -19,8 +19,8 @@ from rest_framework.request import clone_request
 from rest_framework.utils import dict2xml
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
-from rest_framework import VERSION
-from rest_framework import serializers, parsers
+from rest_framework import VERSION, status
+from rest_framework import parsers
 
 
 class BaseRenderer(object):
@@ -306,25 +306,8 @@ class BrowsableAPIRenderer(BaseRenderer):
         return True
 
     def serializer_to_form_fields(self, serializer):
-        field_mapping = {
-            serializers.FloatField: forms.FloatField,
-            serializers.IntegerField: forms.IntegerField,
-            serializers.DateTimeField: forms.DateTimeField,
-            serializers.DateField: forms.DateField,
-            serializers.EmailField: forms.EmailField,
-            serializers.CharField: forms.CharField,
-            serializers.ChoiceField: forms.ChoiceField,
-            serializers.BooleanField: forms.BooleanField,
-            serializers.PrimaryKeyRelatedField: forms.ChoiceField,
-            serializers.ManyPrimaryKeyRelatedField: forms.MultipleChoiceField,
-            serializers.SlugRelatedField: forms.ChoiceField,
-            serializers.ManySlugRelatedField: forms.MultipleChoiceField,
-            serializers.HyperlinkedRelatedField: forms.ChoiceField,
-            serializers.ManyHyperlinkedRelatedField: forms.MultipleChoiceField
-        }
-
         fields = {}
-        for k, v in serializer.get_fields(True).items():
+        for k, v in serializer.get_fields().items():
             if getattr(v, 'read_only', True):
                 continue
 
@@ -337,6 +320,9 @@ class BrowsableAPIRenderer(BaseRenderer):
             if getattr(v, 'choices', None) is not None:
                 kwargs['choices'] = v.choices
 
+            if getattr(v, 'regex', None) is not None:
+                kwargs['regex'] = v.regex
+
             if getattr(v, 'widget', None):
                 widget = copy.deepcopy(v.widget)
                 kwargs['widget'] = widget
@@ -346,13 +332,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
             kwargs['label'] = k
 
-            try:
-                fields[k] = field_mapping[v.__class__](**kwargs)
-            except KeyError:
-                if getattr(v, 'choices', None) is not None:
-                    fields[k] = forms.ChoiceField(**kwargs)
-                else:
-                    fields[k] = forms.CharField(**kwargs)
+            fields[k] = v.form_field_class(**kwargs)
         return fields
 
     def get_form(self, view, method, request):
@@ -479,7 +459,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         # Munge DELETE Response code to allow us to return content
         # (Do this *after* we've rendered the template so that we include
         # the normal deletion response code in the output)
-        if response.status_code == 204:
-            response.status_code = 200
+        if response.status_code == status.HTTP_204_NO_CONTENT:
+            response.status_code = status.HTTP_200_OK
 
         return ret

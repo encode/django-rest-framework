@@ -96,11 +96,21 @@ Default: `rest_framework.serializers.ModelSerializer`
 
 Default: `rest_framework.pagination.PaginationSerializer`
 
-## FORMAT_SUFFIX_KWARG
+## FILTER_BACKEND
 
-**TODO**
+The filter backend class that should be used for generic filtering.  If set to `None` then generic filtering is disabled.
 
-Default: `'format'`
+## PAGINATE_BY
+
+The default page size to use for pagination.  If set to `None`, pagination is disabled by default.
+
+Default: `None`
+
+## PAGINATE_BY_PARAM
+
+The name of a query parameter, which can be used by the client to overide the default page size to use for pagination.  If set to `None`, clients may not override the default page size.
+
+Default: `None`
 
 ## UNAUTHENTICATED_USER
 
@@ -147,6 +157,12 @@ If the value of this setting is `None` then URL accept overloading will be disab
 Default: `'accept'`
 
 ## URL_FORMAT_OVERRIDE
+
+Default: `'format'`
+
+## FORMAT_SUFFIX_KWARG
+
+**TODO**
 
 Default: `'format'`
 

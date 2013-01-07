@@ -1,7 +1,7 @@
 """
-Login and logout views for the browseable API.
+Login and logout views for the browsable API.
 
-Add these to your root URLconf if you're using the browseable API and
+Add these to your root URLconf if you're using the browsable API and
 your API requires authentication.
 
 The urls must be namespaced as 'rest_framework', and you should make sure
@@ -12,7 +12,7 @@ your authentication settings include `SessionAuthentication`.
         url(r'^auth', include('rest_framework.urls', namespace='rest_framework'))
     )
 """
-from django.conf.urls.defaults import patterns, url
+from rest_framework.compat import patterns, url
 
 
 template_name = {'template_name': 'rest_framework/login.html'}

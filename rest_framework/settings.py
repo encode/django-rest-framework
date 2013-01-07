@@ -54,19 +54,26 @@ DEFAULTS = {
         'user': None,
         'anon': None,
     },
+
+    # Pagination
     'PAGINATE_BY': None,
+    'PAGINATE_BY_PARAM': None,
+
+    # Filtering
     'FILTER_BACKEND': None,
 
+    # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
 
+    # Browser enhancements
     'FORM_METHOD_OVERRIDE': '_method',
     'FORM_CONTENT_OVERRIDE': '_content',
     'FORM_CONTENTTYPE_OVERRIDE': '_content_type',
     'URL_ACCEPT_OVERRIDE': 'accept',
     'URL_FORMAT_OVERRIDE': 'format',
 
-    'FORMAT_SUFFIX_KWARG': 'format'
+    'FORMAT_SUFFIX_KWARG': 'format',
 }
 
 
@@ -108,8 +115,8 @@ def import_from_string(val, setting_name):
         module_path, class_name = '.'.join(parts[:-1]), parts[-1]
         module = importlib.import_module(module_path)
         return getattr(module, class_name)
-    except:
-        msg = "Could not import '%s' for API setting '%s'" % (val, setting_name)
+    except ImportError as e:
+        msg = "Could not import '%s' for API setting '%s'. %s: %s." % (val, setting_name, e.__class__.__name__, e)
         raise ImportError(msg)
 
 
@@ -152,7 +159,7 @@ class APISettings(object):
 
     def validate_setting(self, attr, val):
         if attr == 'FILTER_BACKEND' and val is not None:
-            # Make sure we can initilize the class
+            # Make sure we can initialize the class
             val()
 
 api_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)

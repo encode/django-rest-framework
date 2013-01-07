@@ -2,7 +2,7 @@
 
 The following people have helped make REST framework great.
 
-* Tom Christie - [tomchristie] 
+* Tom Christie - [tomchristie]
 * Marko Tibold - [markotibold]
 * Paul Bagwell - [pbgwl]
 * Sébastien Piquemal - [sebpiq]
@@ -58,6 +58,36 @@ The following people have helped make REST framework great.
 * Michael Shepanski - [mjs7231]
 * Toni Michel - [tonimichel]
 * Ben Konrath - [benkonrath]
+* Marc Aymerich - [glic3rinu]
+* Ludwig Kraatz - [ludwigkraatz]
+* Rob Romano - [robromano]
+* Eugene Mechanism - [mechanism]
+* Jonas Liljestrand - [jonlil]
+* Justin Davis - [irrelative]
+* Dustin Bachrach - [dbachrach]
+* Mark Shirley - [maspwr]
+* Olivier Aubert - [oaubert]
+* Yuri Prezument - [yprez]
+* Fabian Buechler - [fabianbuechler]
+* Mark Hughes - [mhsparks]
+* Michael van de Waeter - [mvdwaeter]
+* Reinout van Rees - [reinout]
+* Michael Richards - [justanotherbody]
+* Ben Roberts - [roberts81]
+* Venkata Subramanian Mahalingam - [annacoder]
+* George Kappel - [gkappel]
+* Colin Murtaugh - [cmurtaugh]
+* Simon Pantzare - [pilt]
+* Szymon Teżewski - [sunscrapers]
+* Joel Marcotte - [joual]
+* Trey Hunner - [treyhunner]
+* Roman Akinfold - [akinfold]
+* Toran Billups - [toranb]
+* Sébastien Béal - [sebastibe]
+* Andrew Hankinson - [ahankinson]
+* Juan Riaza - [juanriaza]
+* Michael Mior - [michaelmior]
+* Marc Tamlyn - [mjtamlyn]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -69,7 +99,7 @@ Project hosting is with [GitHub].
 
 Continuous integration testing is managed with [Travis CI][travis-ci].
 
-The [live sandbox][sandbox] is hosted on [Heroku]. 
+The [live sandbox][sandbox] is hosted on [Heroku].
 
 Various inspiration taken from the [Piston], [Tastypie] and [Dagny] projects.
 
@@ -77,11 +107,10 @@ Development of REST framework 2.0 was sponsored by [DabApps].
 
 ## Contact
 
-To contact the author directly:
+For usage questions please see the [REST framework discussion group][group].
 
-* twitter: [@_tomchristie][twitter]
-* email: [tom@tomchristie.com][email]
- 
+You can also contact [@_tomchristie][twitter] directly on twitter.
+
 [email]: mailto:tom@tomchristie.com
 [twitter]: http://twitter.com/_tomchristie
 [bootstrap]: http://twitter.github.com/bootstrap/
@@ -94,6 +123,7 @@ To contact the author directly:
 [dabapps]: http://lab.dabapps.com
 [sandbox]: http://restframework.herokuapp.com/
 [heroku]: http://www.heroku.com/
+[group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 
 [tomchristie]: https://github.com/tomchristie
 [markotibold]: https://github.com/markotibold
@@ -151,3 +181,33 @@ To contact the author directly:
 [mjs7231]: https://github.com/mjs7231
 [tonimichel]: https://github.com/tonimichel
 [benkonrath]: https://github.com/benkonrath
+[glic3rinu]: https://github.com/glic3rinu
+[ludwigkraatz]: https://github.com/ludwigkraatz
+[robromano]: https://github.com/robromano
+[mechanism]: https://github.com/mechanism
+[jonlil]: https://github.com/jonlil
+[irrelative]: https://github.com/irrelative
+[dbachrach]: https://github.com/dbachrach
+[maspwr]: https://github.com/maspwr
+[oaubert]: https://github.com/oaubert
+[yprez]: https://github.com/yprez
+[fabianbuechler]: https://github.com/fabianbuechler
+[mhsparks]: https://github.com/mhsparks
+[mvdwaeter]: https://github.com/mvdwaeter
+[reinout]: https://github.com/reinout
+[justanotherbody]: https://github.com/justanotherbody
+[roberts81]: https://github.com/roberts81
+[annacoder]: https://github.com/annacoder
+[gkappel]: https://github.com/gkappel
+[cmurtaugh]: https://github.com/cmurtaugh
+[pilt]: https://github.com/pilt
+[sunscrapers]: https://github.com/sunscrapers
+[joual]: https://github.com/joual
+[treyhunner]: https://github.com/treyhunner
+[akinfold]: https://github.com/akinfold
+[toranb]: https://github.com/toranb
+[sebastibe]: https://github.com/sebastibe
+[ahankinson]: https://github.com/ahankinson
+[juanriaza]: https://github.com/juanriaza
+[michaelmior]: https://github.com/michaelmior
+[mjtamlyn]: https://github.com/mjtamlyn

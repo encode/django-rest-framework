@@ -4,8 +4,7 @@
 
 > Expanding the usefulness of the serializers is something that we would
 like to address. However, it's not a trivial problem, and it
-will take some serious design work. Any offers to help out in this
-area would be gratefully accepted.
+will take some serious design work.
 >
 > &mdash; Russell Keith-Magee, [Django users group][cite]
 
@@ -34,7 +33,7 @@ Declaring a serializer looks very similar to declaring a form:
         created = serializers.DateTimeField()
 
         def restore_object(self, attrs, instance=None):
-            if instance:
+            if instance is not None:
                 instance.title = attrs['title']
                 instance.content = attrs['content']
                 instance.created = attrs['created']
@@ -77,6 +76,10 @@ When deserializing data, we can either create a new instance, or update an exist
     serializer = CommentSerializer(data=data)           # Create new instance
     serializer = CommentSerializer(comment, data=data)  # Update `instance`
 
+By default, serializers must be passed values for all required fields or they will throw validation errors.  You can use the `partial` argument in order to allow partial updates.
+
+    serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)  # Update `instance` with partial data
+
 ## Validation
 
 When deserializing data, you always need to call `is_valid()` before attempting to access the deserialized object.  If any validation errors occur, the `.errors` and `.non_field_errors` properties will contain the resulting error messages.
@@ -106,7 +109,22 @@ Your `validate_<fieldname>` methods should either just return the `attrs` dictio
 
 ### Object-level validation
 
-To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass. This method takes a single argument, which is the `attrs` dictionary. It should raise a `ValidationError` if necessary, or just return `attrs`.
+To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass. This method takes a single argument, which is the `attrs` dictionary. It should raise a `ValidationError` if necessary, or just return `attrs`.  For example:
+
+    from rest_framework import serializers
+
+    class EventSerializer(serializers.Serializer):
+        description = serializers.CahrField(max_length=100)
+        start = serializers.DateTimeField()
+        finish = serializers.DateTimeField()
+
+        def validate(self, attrs):
+            """
+            Check that the start is before the stop.
+            """
+            if attrs['start'] < attrs['finish']:
+                raise serializers.ValidationError("finish must occur after start")
+            return attrs
 
 ## Saving object state
 
@@ -247,6 +265,15 @@ The default `ModelSerializer` uses primary keys for relationships, but you can a
             depth = 1
 
 The `depth` option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.
+
+## Specifying which fields should be read-only 
+
+You may wish to specify multiple fields as read-only. Instead of adding each field explicitely with the `read_only=True` attribute, you may use the `read_only_fields` Meta option, like so:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            read_only_fields = ('created', 'modified')
 
 ## Customising the default fields
 

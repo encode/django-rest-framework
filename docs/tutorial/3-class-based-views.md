@@ -6,8 +6,8 @@ We can also write our API views using class based views, rather than function ba
 
 We'll start by rewriting the root view as a class based view.  All this involves is a little bit of refactoring.
 
-    from snippet.models import Snippet
-    from snippet.serializers import SnippetSerializer
+    from snippets.models import Snippet
+    from snippets.serializers import SnippetSerializer
     from django.http import Http404
     from rest_framework.views import APIView
     from rest_framework.response import Response
@@ -66,7 +66,7 @@ We'll also need to refactor our URLconf slightly now we're using class based vie
 
     from django.conf.urls import patterns, url
     from rest_framework.urlpatterns import format_suffix_patterns
-    from snippetpost import views
+    from snippets import views
 
     urlpatterns = patterns('',
         url(r'^snippets/$', views.SnippetList.as_view()),
@@ -85,8 +85,8 @@ The create/retrieve/update/delete operations that we've been using so far are go
 
 Let's take a look at how we can compose our views by using the mixin classes.
 
-    from snippet.models import Snippet
-    from snippet.serializers import SnippetSerializer
+    from snippets.models import Snippet
+    from snippets.serializers import SnippetSerializer
     from rest_framework import mixins
     from rest_framework import generics
 
@@ -102,14 +102,14 @@ Let's take a look at how we can compose our views by using the mixin classes.
         def post(self, request, *args, **kwargs):
             return self.create(request, *args, **kwargs)
 
-We'll take a moment to examine exactly what's happening here - We're building our view using `MultipleObjectAPIView`, and adding in `ListModelMixin` and `CreateModelMixin`.
+We'll take a moment to examine exactly what's happening here. We're building our view using `MultipleObjectAPIView`, and adding in `ListModelMixin` and `CreateModelMixin`.
 
 The base class provides the core functionality, and the mixin classes provide the `.list()` and `.create()` actions.  We're then explicitly binding the `get` and `post` methods to the appropriate actions.  Simple enough stuff so far.
 
     class SnippetDetail(mixins.RetrieveModelMixin,
                         mixins.UpdateModelMixin,
                         mixins.DestroyModelMixin,
-                        generics.SingleObjectBaseView):
+                        generics.SingleObjectAPIView):
         model = Snippet
         serializer_class = SnippetSerializer
 
@@ -122,14 +122,14 @@ The base class provides the core functionality, and the mixin classes provide th
         def delete(self, request, *args, **kwargs):
             return self.destroy(request, *args, **kwargs)
 
-Pretty similar.  This time we're using the `SingleObjectBaseView` class to provide the core functionality, and adding in mixins to provide the `.retrieve()`, `.update()` and `.destroy()` actions.
+Pretty similar.  This time we're using the `SingleObjectAPIView` class to provide the core functionality, and adding in mixins to provide the `.retrieve()`, `.update()` and `.destroy()` actions.
 
 ## Using generic class based views
 
 Using the mixin classes we've rewritten the views to use slightly less code than before, but we can go one step further.  REST framework provides a set of already mixed-in generic views that we can use.
 
-    from snippet.models import Snippet
-    from snippet.serializers import SnippetSerializer
+    from snippets.models import Snippet
+    from snippets.serializers import SnippetSerializer
     from rest_framework import generics
 
 
@@ -142,7 +142,7 @@ Using the mixin classes we've rewritten the views to use slightly less code than
         model = Snippet
         serializer_class = SnippetSerializer
 
-Wow, that's pretty concise.  We've got a huge amount for free, and our code looks like good, clean, idiomatic Django.
+Wow, that's pretty concise.  We've gotten a huge amount for free, and our code looks like good, clean, idiomatic Django.
 
 Next we'll move onto [part 4 of the tutorial][tut-4], where we'll take a look at how we can deal with authentication and permissions for our API.
 

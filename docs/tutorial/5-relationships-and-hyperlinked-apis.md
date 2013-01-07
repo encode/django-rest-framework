@@ -25,7 +25,7 @@ Notice that we're using REST framework's `reverse` function in order to return f
 
 The other obvious thing that's still missing from our pastebin API is the code highlighting endpoints.
 
-Unlike all our other API endpoints, we don't want to use JSON, but instead just present an HTML representation.  There are two style of HTML renderer provided by REST framework, one for dealing with HTML rendered using templates, the other for dealing with pre-rendered HTML.  The second renderer is the one we'd like to use for this endpoint.
+Unlike all our other API endpoints, we don't want to use JSON, but instead just present an HTML representation.  There are two styles of HTML renderer provided by REST framework, one for dealing with HTML rendered using templates, the other for dealing with pre-rendered HTML.  The second renderer is the one we'd like to use for this endpoint.
 
 The other thing we need to consider when creating the code highlight view is that there's no existing concrete generic view that we can use.  We're not returning an object instance, but instead a property of an object instance.
 
@@ -151,7 +151,7 @@ We could also customize the pagination style if we needed too, but in this case 
 
 If we open a browser and navigate to the browseable API, you'll find that you can now work your way around the API simply by following links.
 
-You'll also be able to see the 'highlight' links on the snippet instances, that will take you to the hightlighted code HTML representations.
+You'll also be able to see the 'highlight' links on the snippet instances, that will take you to the highlighted code HTML representations.
 
 We've now got a complete pastebin Web API, which is fully web browseable, and comes complete with authentication, per-object permissions, and multiple renderer formats.
 
@@ -163,9 +163,9 @@ You can review the final [tutorial code][repo] on GitHub, or try out a live exam
 
 We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here's a few places you can start:
 
-* Contribute on [GitHub][github] by reviewing and subitting issues, and making pull requests.
+* Contribute on [GitHub][github] by reviewing and submitting issues, and making pull requests.
 * Join the [REST framework discussion group][group], and help build the community.
-* Follow the author [on Twitter][twitter] and say hi.
+* [Follow the author on Twitter][twitter] and say hi.
 
 **Now go build awesome things.**
 

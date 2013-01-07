@@ -271,6 +271,15 @@ Exceptions raised and handled by an HTML renderer will attempt to render using o
 
 Templates will render with a `RequestContext` which includes the `status_code` and `details` keys.
 
+---
+
+# Third party packages
+
+The following third party packages are also available.
+
+## MessagePack
+
+[MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the `djangorestframework-msgpack` package which provides MessagePack renderer and parser support for REST framework.  Documentation is [available here][djangorestframework-msgpack].
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
@@ -281,3 +290,6 @@ Templates will render with a `RequestContext` which includes the `status_code` a
 [application/vnd.github+json]: http://developer.github.com/v3/media/
 [application/vnd.collection+json]: http://www.amundsen.com/media-types/collection/
 [django-error-views]: https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views
+[messagepack]: https://github.com/juanriaza/django-rest-framework-msgpack
+[juanriaza]: https://github.com/juanriaza
+[djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack

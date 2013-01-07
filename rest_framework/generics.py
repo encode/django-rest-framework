@@ -14,6 +14,8 @@ class GenericAPIView(views.APIView):
     """
     Base class for all other generic views.
     """
+
+    model = None
     serializer_class = None
     model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
 
@@ -30,8 +32,10 @@ class GenericAPIView(views.APIView):
     def get_serializer_class(self):
         """
         Return the class to use for the serializer.
-        Use `self.serializer_class`, falling back to constructing a
-        model serializer class from `self.model_serializer_class`
+
+        Defaults to using `self.serializer_class`, falls back to constructing a
+        model serializer class using `self.model_serializer_class`, with
+        `self.model` as the model.
         """
         serializer_class = self.serializer_class
 
@@ -43,12 +47,16 @@ class GenericAPIView(views.APIView):
 
         return serializer_class
 
-    def get_serializer(self, instance=None, data=None, files=None):
-        # TODO: add support for files
-        # TODO: add support for seperate serializer/deserializer
+    def get_serializer(self, instance=None, data=None,
+                       files=None, partial=False):
+        """
+        Return the serializer instance that should be used for validating and
+        deserializing input, and for serializing output.
+        """
         serializer_class = self.get_serializer_class()
         context = self.get_serializer_context()
-        return serializer_class(instance, data=data, context=context)
+        return serializer_class(instance, data=data, files=files,
+                                partial=partial, context=context)
 
 
 class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
@@ -56,47 +64,59 @@ class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
     Base class for generic views onto a queryset.
     """
 
-    pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
     paginate_by = api_settings.PAGINATE_BY
+    paginate_by_param = api_settings.PAGINATE_BY_PARAM
+    pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
     filter_backend = api_settings.FILTER_BACKEND
 
     def filter_queryset(self, queryset):
+        """
+        Given a queryset, filter it with whichever filter backend is in use.
+        """
         if not self.filter_backend:
             return queryset
         backend = self.filter_backend()
         return backend.filter_queryset(self.request, queryset, self)
 
-    def get_filtered_queryset(self):
-        return self.filter_queryset(self.get_queryset())
-
-    def get_pagination_serializer_class(self):
+    def get_pagination_serializer(self, page=None):
         """
-        Return the class to use for the pagination serializer.
+        Return a serializer instance to use with paginated data.
         """
         class SerializerClass(self.pagination_serializer_class):
             class Meta:
                 object_serializer_class = self.get_serializer_class()
 
-        return SerializerClass
-
-    def get_pagination_serializer(self, page=None):
-        pagination_serializer_class = self.get_pagination_serializer_class()
+        pagination_serializer_class = SerializerClass
         context = self.get_serializer_context()
         return pagination_serializer_class(instance=page, context=context)
+
+    def get_paginate_by(self, queryset):
+        """
+        Return the size of pages to use with pagination.
+        """
+        if self.paginate_by_param:
+            query_params = self.request.QUERY_PARAMS
+            try:
+                return int(query_params[self.paginate_by_param])
+            except (KeyError, ValueError):
+                pass
+        return self.paginate_by
 
 
 class SingleObjectAPIView(SingleObjectMixin, GenericAPIView):
     """
     Base class for generic views onto a model instance.
     """
+
     pk_url_kwarg = 'pk'  # Not provided in Django 1.3
     slug_url_kwarg = 'slug'  # Not provided in Django 1.3
+    slug_field = 'slug'
 
-    def get_object(self):
+    def get_object(self, queryset=None):
         """
         Override default to add support for object-level permissions.
         """
-        obj = super(SingleObjectAPIView, self).get_object()
+        obj = super(SingleObjectAPIView, self).get_object(queryset)
         if not self.has_permission(self.request, obj):
             self.permission_denied(self.request)
         return obj
@@ -153,6 +173,10 @@ class UpdateAPIView(mixins.UpdateModelMixin,
     def put(self, request, *args, **kwargs):
         return self.update(request, *args, **kwargs)
 
+    def patch(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
+
 
 class ListCreateAPIView(mixins.ListModelMixin,
                         mixins.CreateModelMixin,
@@ -165,6 +189,23 @@ class ListCreateAPIView(mixins.ListModelMixin,
 
     def post(self, request, *args, **kwargs):
         return self.create(request, *args, **kwargs)
+
+
+class RetrieveUpdateAPIView(mixins.RetrieveModelMixin,
+                            mixins.UpdateModelMixin,
+                            SingleObjectAPIView):
+    """
+    Concrete view for retrieving, updating a model instance.
+    """
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
 
 
 class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
@@ -191,6 +232,10 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
         return self.retrieve(request, *args, **kwargs)
 
     def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    def patch(self, request, *args, **kwargs):
+        kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):

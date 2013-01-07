@@ -8,7 +8,7 @@ Create a new Django project, and start a new app called `quickstart`.  Once you'
 
 First up we're going to define some serializers in `quickstart/serializers.py` that we'll use for our data representations.
 
-    from django.contrib.auth.models import User, Group
+    from django.contrib.auth.models import User, Group, Permission
     from rest_framework import serializers
     
     
@@ -137,7 +137,7 @@ We'd also like to set a few global settings.  We'd like to turn on pagination, a
         'PAGINATE_BY': 10
     }
 
-Okay, that's us done.
+Okay, we're done.
 
 ---
 

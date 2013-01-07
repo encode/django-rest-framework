@@ -4,7 +4,7 @@ from django.core.paginator import Paginator
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import unittest
-from rest_framework import generics, status, pagination, filters
+from rest_framework import generics, status, pagination, filters, serializers
 from rest_framework.compat import django_filters
 from rest_framework.tests.models import BasicModel, FilterableItem
 
@@ -32,6 +32,21 @@ if django_filters:
         paginate_by = 10
         filter_class = DecimalFilter
         filter_backend = filters.DjangoFilterBackend
+
+
+class DefaultPageSizeKwargView(generics.ListAPIView):
+    """
+    View for testing default paginate_by_param usage
+    """
+    model = BasicModel
+
+
+class PaginateByParamView(generics.ListAPIView):
+    """
+    View for testing custom paginate_by_param usage
+    """
+    model = BasicModel
+    paginate_by_param = 'page_size'
 
 
 class IntegrationTestPagination(TestCase):
@@ -133,9 +148,14 @@ class IntegrationTestPaginationAndFiltering(TestCase):
         self.assertEquals(response.data['previous'], None)
 
 
+class PassOnContextPaginationSerializer(pagination.PaginationSerializer):
+    class Meta:
+        object_serializer_class = serializers.Serializer
+
+
 class UnitTestPagination(TestCase):
     """
-    Unit tests for pagination of primative objects.
+    Unit tests for pagination of primitive objects.
     """
 
     def setUp(self):
@@ -156,3 +176,106 @@ class UnitTestPagination(TestCase):
         self.assertEquals(serializer.data['next'], None)
         self.assertEquals(serializer.data['previous'], '?page=2')
         self.assertEquals(serializer.data['results'], self.objects[20:])
+
+    def test_context_available_in_result(self):
+        """
+        Ensure context gets passed through to the object serializer.
+        """
+        serializer = PassOnContextPaginationSerializer(self.first_page)
+        serializer.data
+        results = serializer.fields[serializer.results_field]
+        self.assertTrue(serializer.context is results.context)
+
+
+class TestUnpaginated(TestCase):
+    """
+    Tests for list views without pagination.
+    """
+
+    def setUp(self):
+        """
+        Create 13 BasicModel instances.
+        """
+        for i in range(13):
+            BasicModel(text=i).save()
+        self.objects = BasicModel.objects
+        self.data = [
+        {'id': obj.id, 'text': obj.text}
+        for obj in self.objects.all()
+        ]
+        self.view = DefaultPageSizeKwargView.as_view()
+
+    def test_unpaginated(self):
+        """
+        Tests the default page size for this view.
+        no page size --> no limit --> no meta data
+        """
+        request = factory.get('/')
+        response = self.view(request)
+        self.assertEquals(response.data, self.data)
+
+
+class TestCustomPaginateByParam(TestCase):
+    """
+    Tests for list views with default page size kwarg
+    """
+
+    def setUp(self):
+        """
+        Create 13 BasicModel instances.
+        """
+        for i in range(13):
+            BasicModel(text=i).save()
+        self.objects = BasicModel.objects
+        self.data = [
+        {'id': obj.id, 'text': obj.text}
+        for obj in self.objects.all()
+        ]
+        self.view = PaginateByParamView.as_view()
+
+    def test_default_page_size(self):
+        """
+        Tests the default page size for this view.
+        no page size --> no limit --> no meta data
+        """
+        request = factory.get('/')
+        response = self.view(request).render()
+        self.assertEquals(response.data, self.data)
+
+    def test_paginate_by_param(self):
+        """
+        If paginate_by_param is set, the new kwarg should limit per view requests.
+        """
+        request = factory.get('/?page_size=5')
+        response = self.view(request).render()
+        self.assertEquals(response.data['count'], 13)
+        self.assertEquals(response.data['results'], self.data[:5])
+
+
+class CustomField(serializers.Field):
+    def to_native(self, value):
+        if not 'view' in self.context:
+            raise RuntimeError("context isn't getting passed into custom field")
+        return "value"
+
+
+class BasicModelSerializer(serializers.Serializer):
+    text = CustomField()
+
+
+class TestContextPassedToCustomField(TestCase):
+    def setUp(self):
+        BasicModel.objects.create(text='ala ma kota')
+
+    def test_with_pagination(self):
+        class ListView(generics.ListCreateAPIView):
+            model = BasicModel
+            serializer_class = BasicModelSerializer
+            paginate_by = 1
+
+        self.view = ListView.as_view()
+        request = factory.get('/')
+        response = self.view(request).render()
+
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+

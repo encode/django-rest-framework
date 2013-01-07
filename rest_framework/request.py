@@ -170,6 +170,15 @@ class Request(object):
             self._authenticator, self._user, self._auth = self._authenticate()
         return self._user
 
+    @user.setter
+    def user(self, value):
+         """
+         Sets the user on the current request. This is necessary to maintain
+         compatilbility with django.contrib.auth where the user proprety is
+         set in the login and logout functions.
+         """
+         self._user = value
+
     @property
     def auth(self):
         """
@@ -179,6 +188,14 @@ class Request(object):
         if not hasattr(self, '_auth'):
             self._authenticator, self._user, self._auth = self._authenticate()
         return self._auth
+
+    @auth.setter
+    def auth(self, value):
+        """
+        Sets any non-user authentication information associated with the
+        request, such as an authentication token.
+        """
+        self._auth = value
 
     @property
     def successful_authenticator(self):

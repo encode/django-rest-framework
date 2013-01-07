@@ -1,8 +1,5 @@
-import unittest
-
-from django.conf.urls.defaults import patterns, url, include
 from django.test import TestCase
-
+from rest_framework.compat import patterns, url, include
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status

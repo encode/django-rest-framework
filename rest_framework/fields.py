@@ -1,20 +1,20 @@
 import copy
 import datetime
 import inspect
+import re
 import warnings
 
+from io import BytesIO
+
 from django.core import validators
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.urlresolvers import resolve, get_script_prefix
+from django.core.exceptions import ValidationError
 from django.conf import settings
+from django import forms
 from django.forms import widgets
-from django.forms.models import ModelChoiceIterator
 from django.utils.encoding import is_protected_type, smart_unicode
 from django.utils.translation import ugettext_lazy as _
-from rest_framework.reverse import reverse
 from rest_framework.compat import parse_date, parse_datetime
 from rest_framework.compat import timezone
-from urlparse import urlparse
 
 
 def is_simple_callable(obj):
@@ -28,9 +28,12 @@ def is_simple_callable(obj):
 
 
 class Field(object):
+    read_only = True
     creation_counter = 0
     empty = ''
     type_name = None
+    _use_files = None
+    form_field_class = forms.CharField
 
     def __init__(self, source=None):
         self.parent = None
@@ -50,8 +53,10 @@ class Field(object):
         self.parent = parent
         self.root = parent.root or parent
         self.context = self.root.context
+        if self.root.partial:
+            self.required = False
 
-    def field_from_native(self, data, field_name, into):
+    def field_from_native(self, data, files, field_name, into):
         """
         Given a dictionary and a field name, updates the dictionary `into`,
         with the field and it's deserialized value.
@@ -125,7 +130,7 @@ class WritableField(Field):
         if required is None:
             self.required = not(read_only)
         else:
-            assert not read_only, "Cannot set required=True and read_only=True"
+            assert not (read_only and required), "Cannot set required=True and read_only=True"
             self.required = required
 
         messages = {}
@@ -166,7 +171,7 @@ class WritableField(Field):
         if errors:
             raise ValidationError(errors)
 
-    def field_from_native(self, data, field_name, into):
+    def field_from_native(self, data, files, field_name, into):
         """
         Given a dictionary and a field name, updates the dictionary `into`,
         with the field and it's deserialized value.
@@ -175,9 +180,14 @@ class WritableField(Field):
             return
 
         try:
-            native = data[field_name]
+            if self._use_files:
+                files = files or {}
+                native = files[field_name]
+            else:
+                native = data[field_name]
         except KeyError:
-            if self.default is not None:
+            if self.default is not None and not self.root.partial:
+                # Note: partial updates shouldn't set defaults
                 native = self.default
             else:
                 if self.required:
@@ -209,7 +219,18 @@ class ModelField(WritableField):
             self.model_field = kwargs.pop('model_field')
         except:
             raise ValueError("ModelField requires 'model_field' kwarg")
+
+        self.min_length = kwargs.pop('min_length',
+                            getattr(self.model_field, 'min_length', None))
+        self.max_length = kwargs.pop('max_length',
+                            getattr(self.model_field, 'max_length', None))
+
         super(ModelField, self).__init__(*args, **kwargs)
+
+        if self.min_length is not None:
+            self.validators.append(validators.MinLengthValidator(self.min_length))
+        if self.max_length is not None:
+            self.validators.append(validators.MaxLengthValidator(self.max_length))
 
     def from_native(self, value):
         rel = getattr(self.model_field, "rel", None)
@@ -229,428 +250,12 @@ class ModelField(WritableField):
             "type": self.model_field.get_internal_type()
         }
 
-##### Relational fields #####
-
-
-# Not actually Writable, but subclasses may need to be.
-class RelatedField(WritableField):
-    """
-    Base class for related model fields.
-
-    If not overridden, this represents a to-one relationship, using the unicode
-    representation of the target.
-    """
-    widget = widgets.Select
-    cache_choices = False
-    empty_label = None
-    default_read_only = True  # TODO: Remove this
-
-    def __init__(self, *args, **kwargs):
-        self.queryset = kwargs.pop('queryset', None)
-        super(RelatedField, self).__init__(*args, **kwargs)
-        self.read_only = kwargs.pop('read_only', self.default_read_only)
-
-    def initialize(self, parent, field_name):
-        super(RelatedField, self).initialize(parent, field_name)
-        if self.queryset is None and not self.read_only:
-            try:
-                manager = getattr(self.parent.opts.model, self.source or field_name)
-                if hasattr(manager, 'related'):  # Forward
-                    self.queryset = manager.related.model._default_manager.all()
-                else:  # Reverse
-                    self.queryset = manager.field.rel.to._default_manager.all()
-            except:
-                raise
-                msg = ('Serializer related fields must include a `queryset`' +
-                       ' argument or set `read_only=True')
-                raise Exception(msg)
-
-    ### We need this stuff to make form choices work...
-
-    # def __deepcopy__(self, memo):
-    #     result = super(RelatedField, self).__deepcopy__(memo)
-    #     result.queryset = result.queryset
-    #     return result
-
-    def prepare_value(self, obj):
-        return self.to_native(obj)
-
-    def label_from_instance(self, obj):
-        """
-        Return a readable representation for use with eg. select widgets.
-        """
-        desc = smart_unicode(obj)
-        ident = smart_unicode(self.to_native(obj))
-        if desc == ident:
-            return desc
-        return "%s - %s" % (desc, ident)
-
-    def _get_queryset(self):
-        return self._queryset
-
-    def _set_queryset(self, queryset):
-        self._queryset = queryset
-        self.widget.choices = self.choices
-
-    queryset = property(_get_queryset, _set_queryset)
-
-    def _get_choices(self):
-        # If self._choices is set, then somebody must have manually set
-        # the property self.choices. In this case, just return self._choices.
-        if hasattr(self, '_choices'):
-            return self._choices
-
-        # Otherwise, execute the QuerySet in self.queryset to determine the
-        # choices dynamically. Return a fresh ModelChoiceIterator that has not been
-        # consumed. Note that we're instantiating a new ModelChoiceIterator *each*
-        # time _get_choices() is called (and, thus, each time self.choices is
-        # accessed) so that we can ensure the QuerySet has not been consumed. This
-        # construct might look complicated but it allows for lazy evaluation of
-        # the queryset.
-        return ModelChoiceIterator(self)
-
-    def _set_choices(self, value):
-        # Setting choices also sets the choices on the widget.
-        # choices can be any iterable, but we call list() on it because
-        # it will be consumed more than once.
-        self._choices = self.widget.choices = list(value)
-
-    choices = property(_get_choices, _set_choices)
-
-    ### Regular serializier stuff...
-
-    def field_to_native(self, obj, field_name):
-        value = getattr(obj, self.source or field_name)
-        return self.to_native(value)
-
-    def field_from_native(self, data, field_name, into):
-        if self.read_only:
-            return
-
-        value = data.get(field_name)
-        into[(self.source or field_name)] = self.from_native(value)
-
-
-class ManyRelatedMixin(object):
-    """
-    Mixin to convert a related field to a many related field.
-    """
-    widget = widgets.SelectMultiple
-
-    def field_to_native(self, obj, field_name):
-        value = getattr(obj, self.source or field_name)
-        return [self.to_native(item) for item in value.all()]
-
-    def field_from_native(self, data, field_name, into):
-        if self.read_only:
-            return
-
-        try:
-            # Form data
-            value = data.getlist(self.source or field_name)
-        except:
-            # Non-form data
-            value = data.get(self.source or field_name)
-        else:
-            if value == ['']:
-                value = []
-        into[field_name] = [self.from_native(item) for item in value]
-
-
-class ManyRelatedField(ManyRelatedMixin, RelatedField):
-    """
-    Base class for related model managers.
-
-    If not overridden, this represents a to-many relationship, using the unicode
-    representations of the target, and is read-only.
-    """
-    pass
-
-
-### PrimaryKey relationships
-
-class PrimaryKeyRelatedField(RelatedField):
-    """
-    Represents a to-one relationship as a pk value.
-    """
-    default_read_only = False
-
-    # TODO: Remove these field hacks...
-    def prepare_value(self, obj):
-        return self.to_native(obj.pk)
-
-    def label_from_instance(self, obj):
-        """
-        Return a readable representation for use with eg. select widgets.
-        """
-        desc = smart_unicode(obj)
-        ident = smart_unicode(self.to_native(obj.pk))
-        if desc == ident:
-            return desc
-        return "%s - %s" % (desc, ident)
-
-    # TODO: Possibly change this to just take `obj`, through prob less performant
-    def to_native(self, pk):
-        return pk
-
-    def from_native(self, data):
-        if self.queryset is None:
-            raise Exception('Writable related fields must include a `queryset` argument')
-
-        try:
-            return self.queryset.get(pk=data)
-        except ObjectDoesNotExist:
-            msg = "Invalid pk '%s' - object does not exist." % smart_unicode(data)
-            raise ValidationError(msg)
-
-    def field_to_native(self, obj, field_name):
-        try:
-            # Prefer obj.serializable_value for performance reasons
-            pk = obj.serializable_value(self.source or field_name)
-        except AttributeError:
-            # RelatedObject (reverse relationship)
-            obj = getattr(obj, self.source or field_name)
-            return self.to_native(obj.pk)
-        # Forward relationship
-        return self.to_native(pk)
-
-
-class ManyPrimaryKeyRelatedField(ManyRelatedField):
-    """
-    Represents a to-many relationship as a pk value.
-    """
-    default_read_only = False
-
-    def prepare_value(self, obj):
-        return self.to_native(obj.pk)
-
-    def label_from_instance(self, obj):
-        """
-        Return a readable representation for use with eg. select widgets.
-        """
-        desc = smart_unicode(obj)
-        ident = smart_unicode(self.to_native(obj.pk))
-        if desc == ident:
-            return desc
-        return "%s - %s" % (desc, ident)
-
-    def to_native(self, pk):
-        return pk
-
-    def field_to_native(self, obj, field_name):
-        try:
-            # Prefer obj.serializable_value for performance reasons
-            queryset = obj.serializable_value(self.source or field_name)
-        except AttributeError:
-            # RelatedManager (reverse relationship)
-            queryset = getattr(obj, self.source or field_name)
-            return [self.to_native(item.pk) for item in queryset.all()]
-        # Forward relationship
-        return [self.to_native(item.pk) for item in queryset.all()]
-
-    def from_native(self, data):
-        if self.queryset is None:
-            raise Exception('Writable related fields must include a `queryset` argument')
-
-        try:
-            return self.queryset.get(pk=data)
-        except ObjectDoesNotExist:
-            msg = "Invalid pk '%s' - object does not exist." % smart_unicode(data)
-            raise ValidationError(msg)
-
-### Slug relationships
-
-
-class SlugRelatedField(RelatedField):
-    default_read_only = False
-
-    def __init__(self, *args, **kwargs):
-        self.slug_field = kwargs.pop('slug_field', None)
-        assert self.slug_field, 'slug_field is required'
-        super(SlugRelatedField, self).__init__(*args, **kwargs)
-
-    def to_native(self, obj):
-        return getattr(obj, self.slug_field)
-
-    def from_native(self, data):
-        if self.queryset is None:
-            raise Exception('Writable related fields must include a `queryset` argument')
-
-        try:
-            return self.queryset.get(**{self.slug_field: data})
-        except ObjectDoesNotExist:
-            raise ValidationError('Object with %s=%s does not exist.' %
-                                  (self.slug_field, unicode(data)))
-
-
-class ManySlugRelatedField(ManyRelatedMixin, SlugRelatedField):
-    pass
-
-
-### Hyperlinked relationships
-
-class HyperlinkedRelatedField(RelatedField):
-    """
-    Represents a to-one relationship, using hyperlinking.
-    """
-    pk_url_kwarg = 'pk'
-    slug_field = 'slug'
-    slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
-    default_read_only = False
-
-    def __init__(self, *args, **kwargs):
-        try:
-            self.view_name = kwargs.pop('view_name')
-        except:
-            raise ValueError("Hyperlinked field requires 'view_name' kwarg")
-
-        self.slug_field = kwargs.pop('slug_field', self.slug_field)
-        default_slug_kwarg = self.slug_url_kwarg or self.slug_field
-        self.pk_url_kwarg = kwargs.pop('pk_url_kwarg', self.pk_url_kwarg)
-        self.slug_url_kwarg = kwargs.pop('slug_url_kwarg', default_slug_kwarg)
-
-        self.format = kwargs.pop('format', None)
-        super(HyperlinkedRelatedField, self).__init__(*args, **kwargs)
-
-    def get_slug_field(self):
-        """
-        Get the name of a slug field to be used to look up by slug.
-        """
-        return self.slug_field
-
-    def to_native(self, obj):
-        view_name = self.view_name
-        request = self.context.get('request', None)
-        format = self.format or self.context.get('format', None)
-        kwargs = {self.pk_url_kwarg: obj.pk}
-        try:
-            return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except:
-            pass
-
-        slug = getattr(obj, self.slug_field, None)
-
-        if not slug:
-            raise ValidationError('Could not resolve URL for field using view name "%s"' % view_name)
-
-        kwargs = {self.slug_url_kwarg: slug}
-        try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
-        except:
-            pass
-
-        kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
-        try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
-        except:
-            pass
-
-        raise ValidationError('Could not resolve URL for field using view name "%s"', view_name)
-
-    def from_native(self, value):
-        # Convert URL -> model instance pk
-        # TODO: Use values_list
-        if self.queryset is None:
-            raise Exception('Writable related fields must include a `queryset` argument')
-
-        if value.startswith('http:') or value.startswith('https:'):
-            # If needed convert absolute URLs to relative path
-            value = urlparse(value).path
-            prefix = get_script_prefix()
-            if value.startswith(prefix):
-                value = '/' + value[len(prefix):]
-
-        try:
-            match = resolve(value)
-        except:
-            raise ValidationError('Invalid hyperlink - No URL match')
-
-        if match.url_name != self.view_name:
-            raise ValidationError('Invalid hyperlink - Incorrect URL match')
-
-        pk = match.kwargs.get(self.pk_url_kwarg, None)
-        slug = match.kwargs.get(self.slug_url_kwarg, None)
-
-        # Try explicit primary key.
-        if pk is not None:
-            queryset = self.queryset.filter(pk=pk)
-        # Next, try looking up by slug.
-        elif slug is not None:
-            slug_field = self.get_slug_field()
-            queryset = self.queryset.filter(**{slug_field: slug})
-        # If none of those are defined, it's an error.
-        else:
-            raise ValidationError('Invalid hyperlink')
-
-        try:
-            obj = queryset.get()
-        except ObjectDoesNotExist:
-            raise ValidationError('Invalid hyperlink - object does not exist.')
-        return obj
-
-
-class ManyHyperlinkedRelatedField(ManyRelatedMixin, HyperlinkedRelatedField):
-    """
-    Represents a to-many relationship, using hyperlinking.
-    """
-    pass
-
-
-class HyperlinkedIdentityField(Field):
-    """
-    Represents the instance, or a property on the instance, using hyperlinking.
-    """
-    pk_url_kwarg = 'pk'
-    slug_field = 'slug'
-    slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
-
-    def __init__(self, *args, **kwargs):
-        # TODO: Make view_name mandatory, and have the
-        # HyperlinkedModelSerializer set it on-the-fly
-        self.view_name = kwargs.pop('view_name', None)
-        self.format = kwargs.pop('format', None)
-
-        self.slug_field = kwargs.pop('slug_field', self.slug_field)
-        default_slug_kwarg = self.slug_url_kwarg or self.slug_field
-        self.pk_url_kwarg = kwargs.pop('pk_url_kwarg', self.pk_url_kwarg)
-        self.slug_url_kwarg = kwargs.pop('slug_url_kwarg', default_slug_kwarg)
-
-        super(HyperlinkedIdentityField, self).__init__(*args, **kwargs)
-
-    def field_to_native(self, obj, field_name):
-        request = self.context.get('request', None)
-        format = self.format or self.context.get('format', None)
-        view_name = self.view_name or self.parent.opts.view_name
-        kwargs = {self.pk_url_kwarg: obj.pk}
-        try:
-            return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except:
-            pass
-
-        slug = getattr(obj, self.slug_field, None)
-
-        if not slug:
-            raise ValidationError('Could not resolve URL for field using view name "%s"' % view_name)
-
-        kwargs = {self.slug_url_kwarg: slug}
-        try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
-        except:
-            pass
-
-        kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
-        try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
-        except:
-            pass
-
-        raise ValidationError('Could not resolve URL for field using view name "%s"', view_name)
-
 
 ##### Typed Fields #####
 
 class BooleanField(WritableField):
     type_name = 'BooleanField'
+    form_field_class = forms.BooleanField
     widget = widgets.CheckboxInput
     default_error_messages = {
         'invalid': _(u"'%s' value must be either True or False."),
@@ -663,15 +268,16 @@ class BooleanField(WritableField):
     default = False
 
     def from_native(self, value):
-        if value in ('t', 'True', '1'):
+        if value in ('true', 't', 'True', '1'):
             return True
-        if value in ('f', 'False', '0'):
+        if value in ('false', 'f', 'False', '0'):
             return False
         return bool(value)
 
 
 class CharField(WritableField):
     type_name = 'CharField'
+    form_field_class = forms.CharField
 
     def __init__(self, max_length=None, min_length=None, *args, **kwargs):
         self.max_length, self.min_length = max_length, min_length
@@ -697,8 +303,26 @@ class CharField(WritableField):
         return smart_unicode(value)
 
 
+class URLField(CharField):
+    type_name = 'URLField'
+
+    def __init__(self, **kwargs):
+        kwargs['max_length'] = kwargs.get('max_length', 200)
+        kwargs['validators'] = [validators.URLValidator()]
+        super(URLField, self).__init__(**kwargs)
+
+
+class SlugField(CharField):
+    type_name = 'SlugField'
+
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = kwargs.get('max_length', 50)
+        super(SlugField, self).__init__(*args, **kwargs)
+
+
 class ChoiceField(WritableField):
     type_name = 'ChoiceField'
+    form_field_class = forms.ChoiceField
     widget = widgets.Select
     default_error_messages = {
         'invalid_choice': _('Select a valid choice. %(value)s is not one of the available choices.'),
@@ -738,13 +362,14 @@ class ChoiceField(WritableField):
                     if value == smart_unicode(k2):
                         return True
             else:
-                if value == smart_unicode(k):
+                if value == smart_unicode(k) or value == k:
                     return True
         return False
 
 
 class EmailField(CharField):
     type_name = 'EmailField'
+    form_field_class = forms.EmailField
 
     default_error_messages = {
         'invalid': _('Enter a valid e-mail address.'),
@@ -765,8 +390,39 @@ class EmailField(CharField):
         return result
 
 
+class RegexField(CharField):
+    type_name = 'RegexField'
+    form_field_class = forms.RegexField
+
+    def __init__(self, regex, max_length=None, min_length=None, *args, **kwargs):
+        super(RegexField, self).__init__(max_length, min_length, *args, **kwargs)
+        self.regex = regex
+
+    def _get_regex(self):
+        return self._regex
+
+    def _set_regex(self, regex):
+        if isinstance(regex, basestring):
+            regex = re.compile(regex)
+        self._regex = regex
+        if hasattr(self, '_regex_validator') and self._regex_validator in self.validators:
+            self.validators.remove(self._regex_validator)
+        self._regex_validator = validators.RegexValidator(regex=regex)
+        self.validators.append(self._regex_validator)
+
+    regex = property(_get_regex, _set_regex)
+
+    def __deepcopy__(self, memo):
+        result = copy.copy(self)
+        memo[id(self)] = result
+        result.validators = self.validators[:]
+        return result
+
+
 class DateField(WritableField):
     type_name = 'DateField'
+    widget = widgets.DateInput
+    form_field_class = forms.DateField
 
     default_error_messages = {
         'invalid': _(u"'%s' value has an invalid date format. It must be "
@@ -804,6 +460,8 @@ class DateField(WritableField):
 
 class DateTimeField(WritableField):
     type_name = 'DateTimeField'
+    widget = widgets.DateTimeInput
+    form_field_class = forms.DateTimeField
 
     default_error_messages = {
         'invalid': _(u"'%s' value has an invalid format. It must be in "
@@ -858,6 +516,7 @@ class DateTimeField(WritableField):
 
 class IntegerField(WritableField):
     type_name = 'IntegerField'
+    form_field_class = forms.IntegerField
 
     default_error_messages = {
         'invalid': _('Enter a whole number.'),
@@ -887,6 +546,7 @@ class IntegerField(WritableField):
 
 class FloatField(WritableField):
     type_name = 'FloatField'
+    form_field_class = forms.FloatField
 
     default_error_messages = {
         'invalid': _("'%s' value must be a float."),
@@ -901,3 +561,108 @@ class FloatField(WritableField):
         except (TypeError, ValueError):
             msg = self.error_messages['invalid'] % value
             raise ValidationError(msg)
+
+
+class FileField(WritableField):
+    _use_files = True
+    type_name = 'FileField'
+    form_field_class = forms.FileField
+    widget = widgets.FileInput
+
+    default_error_messages = {
+        'invalid': _("No file was submitted. Check the encoding type on the form."),
+        'missing': _("No file was submitted."),
+        'empty': _("The submitted file is empty."),
+        'max_length': _('Ensure this filename has at most %(max)d characters (it has %(length)d).'),
+        'contradiction': _('Please either submit a file or check the clear checkbox, not both.')
+    }
+
+    def __init__(self, *args, **kwargs):
+        self.max_length = kwargs.pop('max_length', None)
+        self.allow_empty_file = kwargs.pop('allow_empty_file', False)
+        super(FileField, self).__init__(*args, **kwargs)
+
+    def from_native(self, data):
+        if data in validators.EMPTY_VALUES:
+            return None
+
+        # UploadedFile objects should have name and size attributes.
+        try:
+            file_name = data.name
+            file_size = data.size
+        except AttributeError:
+            raise ValidationError(self.error_messages['invalid'])
+
+        if self.max_length is not None and len(file_name) > self.max_length:
+            error_values = {'max': self.max_length, 'length': len(file_name)}
+            raise ValidationError(self.error_messages['max_length'] % error_values)
+        if not file_name:
+            raise ValidationError(self.error_messages['invalid'])
+        if not self.allow_empty_file and not file_size:
+            raise ValidationError(self.error_messages['empty'])
+
+        return data
+
+    def to_native(self, value):
+        return value.name
+
+
+class ImageField(FileField):
+    _use_files = True
+    form_field_class = forms.ImageField
+
+    default_error_messages = {
+        'invalid_image': _("Upload a valid image. The file you uploaded was either not an image or a corrupted image."),
+    }
+
+    def from_native(self, data):
+        """
+        Checks that the file-upload field data contains a valid image (GIF, JPG,
+        PNG, possibly others -- whatever the Python Imaging Library supports).
+        """
+        f = super(ImageField, self).from_native(data)
+        if f is None:
+            return None
+
+        from compat import Image
+        assert Image is not None, 'PIL must be installed for ImageField support'
+
+        # We need to get a file object for PIL. We might have a path or we might
+        # have to read the data into memory.
+        if hasattr(data, 'temporary_file_path'):
+            file = data.temporary_file_path()
+        else:
+            if hasattr(data, 'read'):
+                file = BytesIO(data.read())
+            else:
+                file = BytesIO(data['content'])
+
+        try:
+            # load() could spot a truncated JPEG, but it loads the entire
+            # image in memory, which is a DoS vector. See #3848 and #18520.
+            # verify() must be called immediately after the constructor.
+            Image.open(file).verify()
+        except ImportError:
+            # Under PyPy, it is possible to import PIL. However, the underlying
+            # _imaging C module isn't available, so an ImportError will be
+            # raised. Catch and re-raise.
+            raise
+        except Exception:  # Python Imaging Library doesn't recognize it as an image
+            raise ValidationError(self.error_messages['invalid_image'])
+        if hasattr(f, 'seek') and callable(f.seek):
+            f.seek(0)
+        return f
+
+
+class SerializerMethodField(Field):
+    """
+    A field that gets its value by calling a method on the serializer it's attached to.
+    """
+
+    def __init__(self, method_name):
+        self.method_name = method_name
+        super(SerializerMethodField, self).__init__()
+
+    def field_to_native(self, obj, field_name):
+        value = getattr(self.parent, self.method_name)(obj)
+        return self.to_native(value)
