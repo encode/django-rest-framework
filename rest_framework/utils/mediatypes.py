@@ -47,7 +47,7 @@ class _MediaType(object):
         if media_type_str is None:
             media_type_str = ''
         self.orig = media_type_str
-        self.full_type, self.params = parse_header(media_type_str)
+        self.full_type, self.params = parse_header(media_type_str.encode('iso-8859-1'))
         self.main_type, sep, self.sub_type = self.full_type.partition('/')
 
     def match(self, other):

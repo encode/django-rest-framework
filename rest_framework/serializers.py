@@ -6,6 +6,7 @@ from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
 from rest_framework.compat import get_concrete_model
+from rest_framework.compat import six
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -63,7 +64,7 @@ def _get_declared_fields(bases, attrs):
     Note that all fields from the base classes are used.
     """
     fields = [(field_name, attrs.pop(field_name))
-              for field_name, obj in attrs.items()
+              for field_name, obj in list(six.iteritems(attrs))
               if isinstance(obj, Field)]
     fields.sort(key=lambda x: x[1].creation_counter)
 
@@ -72,7 +73,7 @@ def _get_declared_fields(bases, attrs):
     # in order to maintain the correct order of fields.
     for base in bases[::-1]:
         if hasattr(base, 'base_fields'):
-            fields = base.base_fields.items() + fields
+            fields = list(base.base_fields.items()) + fields
 
     return SortedDict(fields)
 
@@ -341,8 +342,8 @@ class BaseSerializer(Field):
         return self.object
 
 
-class Serializer(BaseSerializer):
-    __metaclass__ = SerializerMetaclass
+class Serializer(six.with_metaclass(SerializerMetaclass, BaseSerializer)):
+    pass
 
 
 class ModelSerializerOptions(SerializerOptions):
@@ -524,7 +525,7 @@ class ModelSerializer(Serializer):
 
         try:
             instance.full_clean(exclude=self.get_validation_exclusions())
-        except ValidationError, err:
+        except ValidationError as err:
             self._errors = err.message_dict
             return None
 

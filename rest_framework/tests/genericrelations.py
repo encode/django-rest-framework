@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import *
@@ -27,7 +29,7 @@ class TestGenericRelations(TestCase):
 
         serializer = BookmarkSerializer(self.bookmark)
         expected = {
-            'tags': [u'django', u'python'],
-            'url': u'https://www.djangoproject.com/'
+            'tags': ['django', 'python'],
+            'url': 'https://www.djangoproject.com/'
         }
         self.assertEquals(serializer.data, expected)
