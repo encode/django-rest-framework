@@ -25,6 +25,6 @@ script:
 matrix:
   exclude:
     - python: "3.2"
-      env: DJANGO=django==1.4.3 --use-mirrors
+      env: DJANGO="django==1.4.3 --use-mirrors"
     - python: "3.2"
-      env: DJANGO=django==1.3.5 --use-mirrors
+      env: DJANGO="django==1.3.5 --use-mirrors"
