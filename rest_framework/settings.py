@@ -115,8 +115,8 @@ def import_from_string(val, setting_name):
         module_path, class_name = '.'.join(parts[:-1]), parts[-1]
         module = importlib.import_module(module_path)
         return getattr(module, class_name)
-    except:
-        msg = "Could not import '%s' for API setting '%s'" % (val, setting_name)
+    except ImportError as e:
+        msg = "Could not import '%s' for API setting '%s'. %s: %s." % (val, setting_name, e.__class__.__name__, e)
         raise ImportError(msg)
 
 
