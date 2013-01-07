@@ -63,7 +63,7 @@ class BasePaginationSerializer(serializers.Serializer):
         results_field = self.results_field
         object_serializer = self.opts.object_serializer_class
         kwargs['source'] = 'object_list'
-        self.fields[results_field] = object_serializer(*args, **kwargs)
+        self.fields[results_field] = object_serializer(**kwargs)
 
     def to_native(self, obj):
         """
