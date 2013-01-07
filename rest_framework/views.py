@@ -9,7 +9,7 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
-from rest_framework.compat import View, apply_markdown
+from rest_framework.compat import View, apply_markdown, apply_restructuredtext
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
@@ -119,6 +119,8 @@ class APIView(View):
         # TODO: deprecate?
         if apply_markdown:
             description = apply_markdown(description)
+        elif apply_restructuredtext:
+            description = apply_restructuredtext(description)
         else:
             description = escape(description).replace('\n', '<br />')
         return mark_safe(description)
