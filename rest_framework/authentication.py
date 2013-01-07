@@ -8,6 +8,7 @@ from rest_framework import exceptions
 from rest_framework.compat import CsrfViewMiddleware
 from rest_framework.compat import smart_text
 from rest_framework.authtoken.models import Token
+from rest_framework.settings import api_settings
 import base64
 
 
@@ -37,7 +38,9 @@ class BasicAuthentication(BaseAuthentication):
             auth = request.META['HTTP_AUTHORIZATION'].split()
             if len(auth) == 2 and auth[0].lower() == "basic":
                 try:
-                    auth_parts = base64.b64decode(auth[1].encode('iso-8859-1')).decode('iso-8859-1').partition(':')
+                    encoding = api_settings.HTTP_HEADER_ENCODING
+                    b = base64.b64decode(auth[1].encode(encoding))
+                    auth_parts = b.decode(encoding).partition(':')
                 except TypeError:
                     return None
 

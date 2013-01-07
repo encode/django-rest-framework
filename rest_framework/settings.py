@@ -75,6 +75,9 @@ DEFAULTS = {
     'URL_FORMAT_OVERRIDE': 'format',
 
     'FORMAT_SUFFIX_KWARG': 'format',
+
+    # Header encoding (see RFC5987)
+    'HTTP_HEADER_ENCODING': 'iso-8859-1',
 }
 
 
