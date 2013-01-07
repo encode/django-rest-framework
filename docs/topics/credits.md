@@ -87,6 +87,7 @@ The following people have helped make REST framework great.
 * Andrew Hankinson - [ahankinson]
 * Juan Riaza - [juanriaza]
 * Michael Mior - [michaelmior]
+* Marc Tamlyn - [mjtamlyn]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -209,3 +210,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [ahankinson]: https://github.com/ahankinson
 [juanriaza]: https://github.com/juanriaza
 [michaelmior]: https://github.com/michaelmior
+[mjtamlyn]: https://github.com/mjtamlyn
