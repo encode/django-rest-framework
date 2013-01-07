@@ -430,7 +430,7 @@ class ModelSerializer(Serializer):
         # TODO: filter queryset using:
         # .using(db).complex_filter(self.rel.limit_choices_to)
         kwargs = {
-            'null': model_field.null,
+            'null': model_field.null or model_field.blank,
             'queryset': model_field.rel.to._default_manager
         }
 
