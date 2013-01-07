@@ -403,7 +403,7 @@ class HyperlinkedRelatedField(RelatedField):
         except:
             raise ValidationError(self.error_messages['no_match'])
 
-        if match.url_name != self.view_name:
+        if match.view_name != self.view_name:
             raise ValidationError(self.error_messages['incorrect_match'])
 
         pk = match.kwargs.get(self.pk_url_kwarg, None)
