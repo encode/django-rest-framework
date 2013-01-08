@@ -87,10 +87,9 @@ To run the tests.
 
 * Added `PATCH` support.
 * Added `RetrieveUpdateAPIView`.
-* Relation changes are now persisted in `save` instead of in `.restore_object`.
+* Relation changes are now persisted in `.save` instead of in `.restore_object`.
 * Remove unused internal `save_m2m` flag on `ModelSerializer.save()`.
 * Tweak behavior of hyperlinked fields with an explicit format suffix.
-* Relation changes are now persisted in `.save()` instead of in `.restore_object()`.
 * Bugfix: Fix issue with FileField raising exception instead of validation error when files=None.
 * Bugfix: Partial updates should not set default values if field is not included.
 

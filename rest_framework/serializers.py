@@ -208,6 +208,11 @@ class BaseSerializer(Field):
         Converts a dictionary of data into a dictionary of deserialized fields.
         """
         reverted_data = {}
+
+        if data is not None and not isinstance(data, dict):
+            self._errors['non_field_errors'] = [u'Invalid data']
+            return None
+
         for field_name, field in self.fields.items():
             field.initialize(parent=self, field_name=field_name)
             try:
@@ -276,7 +281,7 @@ class BaseSerializer(Field):
         """
         if hasattr(data, '__iter__') and not isinstance(data, dict):
             # TODO: error data when deserializing lists
-            return (self.from_native(item) for item in data)
+            return [self.from_native(item, None) for item in data]
 
         self._errors = {}
         if data is not None or files is not None:
@@ -428,7 +433,7 @@ class ModelSerializer(Serializer):
         # TODO: filter queryset using:
         # .using(db).complex_filter(self.rel.limit_choices_to)
         kwargs = {
-            'null': model_field.null,
+            'null': model_field.null or model_field.blank,
             'queryset': model_field.rel.to._default_manager
         }
 

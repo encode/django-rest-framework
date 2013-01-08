@@ -4,6 +4,7 @@ from django import forms
 from django.forms import widgets
 from django.forms.models import ModelChoiceIterator
 from django.utils.encoding import smart_unicode
+from django.utils.translation import ugettext_lazy as _
 from rest_framework.fields import Field, WritableField
 from rest_framework.reverse import reverse
 from urlparse import urlparse
@@ -171,6 +172,11 @@ class PrimaryKeyRelatedField(RelatedField):
     default_read_only = False
     form_field_class = forms.ChoiceField
 
+    default_error_messages = {
+        'does_not_exist': _("Invalid pk '%s' - object does not exist."),
+        'invalid': _('Invalid value.'),
+    }
+
     # TODO: Remove these field hacks...
     def prepare_value(self, obj):
         return self.to_native(obj.pk)
@@ -196,7 +202,10 @@ class PrimaryKeyRelatedField(RelatedField):
         try:
             return self.queryset.get(pk=data)
         except ObjectDoesNotExist:
-            msg = "Invalid pk '%s' - object does not exist." % smart_unicode(data)
+            msg = self.error_messages['does_not_exist'] % smart_unicode(data)
+            raise ValidationError(msg)
+        except (TypeError, ValueError):
+            msg = self.error_messages['invalid']
             raise ValidationError(msg)
 
     def field_to_native(self, obj, field_name):
@@ -220,6 +229,11 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
     """
     default_read_only = False
     form_field_class = forms.MultipleChoiceField
+
+    default_error_messages = {
+        'does_not_exist': _("Invalid pk '%s' - object does not exist."),
+        'invalid': _('Invalid value.'),
+    }
 
     def prepare_value(self, obj):
         return self.to_native(obj.pk)
@@ -255,7 +269,10 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
         try:
             return self.queryset.get(pk=data)
         except ObjectDoesNotExist:
-            msg = "Invalid pk '%s' - object does not exist." % smart_unicode(data)
+            msg = self.error_messages['does_not_exist'] % smart_unicode(data)
+            raise ValidationError(msg)
+        except (TypeError, ValueError):
+            msg = self.error_messages['invalid']
             raise ValidationError(msg)
 
 ### Slug relationships
@@ -264,6 +281,11 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
 class SlugRelatedField(RelatedField):
     default_read_only = False
     form_field_class = forms.ChoiceField
+
+    default_error_messages = {
+        'does_not_exist': _("Object with %s=%s does not exist."),
+        'invalid': _('Invalid value.'),
+    }
 
     def __init__(self, *args, **kwargs):
         self.slug_field = kwargs.pop('slug_field', None)
@@ -280,8 +302,11 @@ class SlugRelatedField(RelatedField):
         try:
             return self.queryset.get(**{self.slug_field: data})
         except ObjectDoesNotExist:
-            raise ValidationError('Object with %s=%s does not exist.' %
+            raise ValidationError(self.error_messages['does_not_exist'] %
                                   (self.slug_field, unicode(data)))
+        except (TypeError, ValueError):
+            msg = self.error_messages['invalid']
+            raise ValidationError(msg)
 
 
 class ManySlugRelatedField(ManyRelatedMixin, SlugRelatedField):
@@ -299,6 +324,14 @@ class HyperlinkedRelatedField(RelatedField):
     slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
     default_read_only = False
     form_field_class = forms.ChoiceField
+
+    default_error_messages = {
+        'no_match': _('Invalid hyperlink - No URL match'),
+        'incorrect_match': _('Invalid hyperlink - Incorrect URL match'),
+        'configuration_error': _('Invalid hyperlink due to configuration error'),
+        'does_not_exist': _("Invalid hyperlink - object does not exist."),
+        'invalid': _('Invalid value.'),
+    }
 
     def __init__(self, *args, **kwargs):
         try:
@@ -336,21 +369,21 @@ class HyperlinkedRelatedField(RelatedField):
         slug = getattr(obj, self.slug_field, None)
 
         if not slug:
-            raise ValidationError('Could not resolve URL for field using view name "%s"' % view_name)
+            raise Exception('Could not resolve URL for field using view name "%s"' % view_name)
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
-        raise ValidationError('Could not resolve URL for field using view name "%s"' % view_name)
+        raise Exception('Could not resolve URL for field using view name "%s"' % view_name)
 
     def from_native(self, value):
         # Convert URL -> model instance pk
@@ -358,7 +391,13 @@ class HyperlinkedRelatedField(RelatedField):
         if self.queryset is None:
             raise Exception('Writable related fields must include a `queryset` argument')
 
-        if value.startswith('http:') or value.startswith('https:'):
+        try:
+            http_prefix = value.startswith('http:') or value.startswith('https:')
+        except AttributeError:
+            msg = self.error_messages['invalid']
+            raise ValidationError(msg)
+
+        if http_prefix:
             # If needed convert absolute URLs to relative path
             value = urlparse(value).path
             prefix = get_script_prefix()
@@ -368,10 +407,10 @@ class HyperlinkedRelatedField(RelatedField):
         try:
             match = resolve(value)
         except:
-            raise ValidationError('Invalid hyperlink - No URL match')
+            raise ValidationError(self.error_messages['no_match'])
 
-        if match.url_name != self.view_name:
-            raise ValidationError('Invalid hyperlink - Incorrect URL match')
+        if match.view_name != self.view_name:
+            raise ValidationError(self.error_messages['incorrect_match'])
 
         pk = match.kwargs.get(self.pk_url_kwarg, None)
         slug = match.kwargs.get(self.slug_url_kwarg, None)
@@ -383,14 +422,18 @@ class HyperlinkedRelatedField(RelatedField):
         elif slug is not None:
             slug_field = self.get_slug_field()
             queryset = self.queryset.filter(**{slug_field: slug})
-        # If none of those are defined, it's an error.
+        # If none of those are defined, it's probably a configuation error.
         else:
-            raise ValidationError('Invalid hyperlink')
+            raise ValidationError(self.error_messages['configuration_error'])
 
         try:
             obj = queryset.get()
         except ObjectDoesNotExist:
-            raise ValidationError('Invalid hyperlink - object does not exist.')
+            raise ValidationError(self.error_messages['does_not_exist'])
+        except (TypeError, ValueError):
+            msg = self.error_messages['invalid']
+            raise ValidationError(msg)
+
         return obj
 
 
@@ -449,18 +492,18 @@ class HyperlinkedIdentityField(Field):
         slug = getattr(obj, self.slug_field, None)
 
         if not slug:
-            raise ValidationError('Could not resolve URL for field using view name "%s"' % view_name)
+            raise Exception('Could not resolve URL for field using view name "%s"' % view_name)
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
-        raise ValidationError('Could not resolve URL for field using view name "%s"' % view_name)
+        raise Exception('Could not resolve URL for field using view name "%s"' % view_name)

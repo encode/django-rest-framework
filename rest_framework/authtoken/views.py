@@ -12,10 +12,11 @@ class ObtainAuthToken(APIView):
     permission_classes = ()
     parser_classes = (parsers.FormParser, parsers.MultiPartParser, parsers.JSONParser,)
     renderer_classes = (renderers.JSONRenderer,)
+    serializer_class = AuthTokenSerializer
     model = Token
 
     def post(self, request):
-        serializer = AuthTokenSerializer(data=request.DATA)
+        serializer = self.serializer_class(data=request.DATA)
         if serializer.is_valid():
             token, created = Token.objects.get_or_create(user=serializer.object['user'])
             return Response({'token': token.key})

@@ -159,4 +159,17 @@ For example:
             files = {name: uploaded}
             return DataAndFiles(data, files)
 
+---
+
+# Third party packages
+
+The following third party packages are also available.
+
+## MessagePack
+
+[MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the `djangorestframework-msgpack` package which provides MessagePack renderer and parser support for REST framework.  Documentation is [available here][djangorestframework-msgpack].
+
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion
+[messagepack]: https://github.com/juanriaza/django-rest-framework-msgpack
+[juanriaza]: https://github.com/juanriaza
+[djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack

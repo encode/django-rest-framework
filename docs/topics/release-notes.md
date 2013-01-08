@@ -16,13 +16,18 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 
 ## 2.1.x series
 
+### Master
+
+* Deprecate django.utils.simplejson in favor of Python 2.6's built-in json module.
+* Bugfix: Validation errors instead of exceptions when serializers receive incorrect types.
+* Bugfix: Validation errors instead of exceptions when related fields receive incorrect types.
+
 ### 2.1.15
 
 **Date**: 3rd Jan 2013
 
 * Added `PATCH` support.
 * Added `RetrieveUpdateAPIView`.
-* Relation changes are now persisted in `save` instead of in `.restore_object`.
 * Remove unused internal `save_m2m` flag on `ModelSerializer.save()`.
 * Tweak behavior of hyperlinked fields with an explicit format suffix.
 * Relation changes are now persisted in `.save()` instead of in `.restore_object()`.
@@ -37,9 +42,9 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 * Bugfix: Model fields with `blank=True` are now `required=False` by default.
 * Bugfix: Nested serializers now support nullable relationships.
 
-**Note**: From 2.1.14 onwards, relational fields move out of the `fields.py` module and into the new `relations.py` module, in order to seperate them from regular data type fields, such as `CharField` and `IntegerField`.
+**Note**: From 2.1.14 onwards, relational fields move out of the `fields.py` module and into the new `relations.py` module, in order to separate them from regular data type fields, such as `CharField` and `IntegerField`.
 
-This change will not affect user code, so long as it's following the recommended import style of `from rest_framework import serializers` and refering to fields using the style `serializers.PrimaryKeyRelatedField`.
+This change will not affect user code, so long as it's following the recommended import style of `from rest_framework import serializers` and referring to fields using the style `serializers.PrimaryKeyRelatedField`.
 
 
 ### 2.1.13
