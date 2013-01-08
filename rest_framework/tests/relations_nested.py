@@ -1,7 +1,7 @@
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
-from rest_framework.tests.models import ForeignKeyTarget, ForeignKeySource, NullableForeignKeySource, NullableOneToOneSource
+from rest_framework.tests.models import ForeignKeyTarget, ForeignKeySource, NullableForeignKeySource, OneToOneTarget, NullableOneToOneSource
 
 
 class ForeignKeySourceSerializer(serializers.ModelSerializer):
@@ -28,11 +28,16 @@ class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
         model = NullableForeignKeySource
 
 
-class NullableForeignKeyTargetSerializer(serializers.ModelSerializer):
-    nullable_source = serializers.PrimaryKeyRelatedField()
+class NullableOneToOneSourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NullableOneToOneSource
+
+
+class NullableOneToOneTargetSerializer(serializers.ModelSerializer):
+    nullable_source = NullableOneToOneSourceSerializer()
 
     class Meta:
-        model = ForeignKeyTarget
+        model = OneToOneTarget
 
 
 class ReverseForeignKeyTests(TestCase):
@@ -74,10 +79,6 @@ class NestedNullableForeignKeyTests(TestCase):
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
         target.save()
-        new_target = ForeignKeyTarget(name='target-2')
-        new_target.save()
-        one_source = NullableOneToOneSource(name='one-source-1', target=target)
-        one_source.save()
         for idx in range(1, 4):
             if idx == 3:
                 target = None
@@ -94,11 +95,21 @@ class NestedNullableForeignKeyTests(TestCase):
         ]
         self.assertEquals(serializer.data, expected)
 
+
+class NestedNullableOneToOneTests(TestCase):
+    def setUp(self):
+        target = OneToOneTarget(name='target-1')
+        target.save()
+        new_target = OneToOneTarget(name='target-2')
+        new_target.save()
+        source = NullableOneToOneSource(name='source-1', target=target)
+        source.save()
+
     def test_reverse_foreign_key_retrieve_with_null(self):
-        queryset = ForeignKeyTarget.objects.all()
-        serializer = NullableForeignKeyTargetSerializer(queryset)
+        queryset = OneToOneTarget.objects.all()
+        serializer = NullableOneToOneTargetSerializer(queryset)
         expected = [
-            {'id': 1, 'name': u'target-1', 'nullable_source': 1},
+            {'id': 1, 'name': u'target-1', 'nullable_source': {'id': 1, 'name': u'source-1', 'target': 1}},
             {'id': 2, 'name': u'target-2', 'nullable_source': None},
         ]
         self.assertEquals(serializer.data, expected)
