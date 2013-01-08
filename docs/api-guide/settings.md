@@ -65,7 +65,7 @@ Default:
 
     (
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.UserBasicAuthentication'
+        'rest_framework.authentication.BasicAuthentication'
     )
 
 ## DEFAULT_PERMISSION_CLASSES
