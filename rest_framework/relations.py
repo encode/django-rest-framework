@@ -367,13 +367,13 @@ class HyperlinkedRelatedField(RelatedField):
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
@@ -490,13 +490,13 @@ class HyperlinkedIdentityField(Field):
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
