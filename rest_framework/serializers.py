@@ -216,15 +216,6 @@ class BaseSerializer(WritableField):
 
         for field_name, field in self.fields.items():
             field.initialize(parent=self, field_name=field_name)
-            if isinstance(field, ModelSerializer) and self.object:
-                # Set the serializer object if it exists
-                pk_field_name = field.opts.model._meta.pk.name
-                obj = getattr(self.object, field_name)
-                nested_data = data.get(field_name)
-                pk_val = nested_data.get(pk_field_name) if nested_data else None
-                if obj and (getattr(obj, pk_field_name) == pk_val):
-                    field.object = obj
-                    field.delete = nested_data.get('_delete')
             try:
                 field.field_from_native(data, files, field_name, reverted_data)
             except ValidationError as err:
@@ -392,6 +383,15 @@ class ModelSerializer(Serializer):
             if self.required:
                 raise ValidationError(self.error_messages['required'])
             return
+
+        if self.parent.object:
+            # Set the serializer object if it exists
+            pk_field_name = self.opts.model._meta.pk.name
+            pk_val = native.get(pk_field_name)
+            obj = getattr(self.parent.object, field_name)
+            if obj and (getattr(obj, pk_field_name) == pk_val):
+                self.object = obj
+                self.delete = native.get('_delete')
 
         obj = self.from_native(native, files)
         if not self._errors:
