@@ -298,15 +298,18 @@ class BaseSerializer(Field):
         Override default so that we can apply ModelSerializer as a nested
         field to relationships.
         """
-        if self.source:
-            for component in self.source.split('.'):
-                obj = getattr(obj, component)
+        try:
+            if self.source:
+                for component in self.source.split('.'):
+                    obj = getattr(obj, component)
+                    if is_simple_callable(obj):
+                        obj = obj()
+            else:
+                obj = getattr(obj, field_name)
                 if is_simple_callable(obj):
                     obj = obj()
-        else:
-            obj = getattr(obj, field_name)
-            if is_simple_callable(obj):
-                obj = value()
+        except ObjectDoesNotExist:
+            return None
 
         # If the object has an "all" method, assume it's a relationship
         if is_simple_callable(getattr(obj, 'all', None)):

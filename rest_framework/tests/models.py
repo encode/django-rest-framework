@@ -205,3 +205,14 @@ class NullableForeignKeySource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
     target = models.ForeignKey(ForeignKeyTarget, null=True, blank=True,
                                related_name='nullable_sources')
+
+
+# OneToOne
+class OneToOneTarget(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+
+
+class NullableOneToOneSource(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+    target = models.OneToOneField(OneToOneTarget, null=True, blank=True,
+                                  related_name='nullable_source')
