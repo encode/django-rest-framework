@@ -97,6 +97,8 @@ You can also set the pagination style on a per-view basis, using the `ListAPIVie
         paginate_by = 10
         paginate_by_param = 'page_size'
 
+Note that using a `paginate_by` value of `None` will turn off pagination for the view.
+
 For more complex requirements such as serialization that differs depending on the requested media type you can override the `.get_paginate_by()` and `.get_pagination_serializer_class()` methods.
 
 ---
