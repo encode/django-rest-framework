@@ -295,9 +295,38 @@ It's worth noting that there are a couple of edge cases we're not dealing with p
 
 ## Testing our first attempt at a Web API
 
-**TODO: Describe using runserver and making example requests from console**
+Now we can start up a sample server that serves our snippets.
 
-**TODO: Describe opening in a web browser and viewing json output**
+Quit out of the shell
+
+	quit()
+
+and start up Django's development server
+
+	python manage.py runserver
+
+	Validating models...
+
+	0 errors found
+	Django version 1.4.3, using settings 'tutorial.settings'
+	Development server is running at http://127.0.0.1:8000/
+	Quit the server with CONTROL-C.
+
+In another terminal window, we can test the server.
+
+We can get a list of all of the snippets (we only have one at the moment)
+
+	curl http://127.0.0.1:8000/snippets/
+
+	[{"id": 1, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}]
+
+or we can get a particular snippet by referencing its id
+
+	curl http://127.0.0.1:8000/snippets/1/
+
+	{"id": 1, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}
+
+Similarly, you can have the same json displayed by referencing these URLs from your favorite web browser.
 
 ## Where are we now
 
