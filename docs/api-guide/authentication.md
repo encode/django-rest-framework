@@ -125,17 +125,6 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
 
     { 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
 
-<!--
-## OAuthAuthentication
-
-This policy uses the [OAuth 2.0][oauth] protocol to authenticate requests.  OAuth is appropriate for server-server setups, such as when you want to allow a third-party service to access your API on a user's behalf.
-
-If successfully authenticated, `OAuthAuthentication` provides the following credentials.
-
-* `request.user` will be a Django `User` instance.
-* `request.auth` will be a `rest_framework.models.OAuthToken` instance.
--->
-
 ## SessionAuthentication
 
 This policy uses Django's default session backend for authentication.  Session authentication is appropriate for AJAX clients that are running in the same session context as your website.
@@ -144,6 +133,8 @@ If successfully authenticated, `SessionAuthentication` provides the following cr
 
 * `request.user` will be a Django `User` instance.
 * `request.auth` will be `None`.
+
+If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
 
 # Custom authentication
 
@@ -154,3 +145,4 @@ To implement a custom authentication policy, subclass `BaseAuthentication` and o
 [oauth]: http://oauth.net/2/
 [permission]: permissions.md
 [throttling]: throttling.md
+[csrf-ajax]: https://docs.djangoproject.com/en/dev/ref/contrib/csrf/#ajax
