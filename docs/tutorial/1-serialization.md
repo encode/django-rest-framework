@@ -8,7 +8,7 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 ---
 
-**Note**: The final code for this tutorial is available in the [tomchristie/rest-framework-tutorial][repo] repository on GitHub.  There is also a sandbox version for testing, [available here][sandbox].
+**Note**: The code for this tutorial is available in the [tomchristie/rest-framework-tutorial][repo] repository on GitHub. As pieces of code are introduced, they are committed to this repository. The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
 
 ---
 
@@ -60,7 +60,7 @@ We'll also need to add our new `snippets` app and the `rest_framework` app to `I
     INSTALLED_APPS = (
         ...
         'rest_framework',
-        'snippets'
+        'snippets',
     )
 
 We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet app's URLs.
@@ -73,7 +73,7 @@ Okay, we're ready to roll.
 
 ## Creating a model to work with
 
-For the purposes of this tutorial we're going to start by creating a simple `Snippet` model that is used to store code snippets.  Go ahead and edit the  `snippets` app's `models.py` file.
+For the purposes of this tutorial we're going to start by creating a simple `Snippet` model that is used to store code snippets.  Go ahead and edit the  `snippets` app's `models.py` file. Note: Good programming practices include comments. Although you will find them in our repository version of this tutorial code, we have omitted them here to focus on the code itself.
 
     from django.db import models
     from pygments.lexers import get_all_lexers
@@ -288,16 +288,45 @@ Finally we need to wire these views up. Create the `snippets/urls.py` file:
 
     urlpatterns = patterns('snippets.views',
         url(r'^snippets/$', 'snippet_list'),
-        url(r'^snippets/(?P<pk>[0-9]+)/$', 'snippet_detail')
+        url(r'^snippets/(?P<pk>[0-9]+)/$', 'snippet_detail'),
     )
 
 It's worth noting that there are a couple of edge cases we're not dealing with properly at the moment.  If we send malformed `json`, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.
 
 ## Testing our first attempt at a Web API
 
-**TODO: Describe using runserver and making example requests from console**
+Now we can start up a sample server that serves our snippets.
 
-**TODO: Describe opening in a web browser and viewing json output**
+Quit out of the shell
+
+	quit()
+
+and start up Django's development server
+
+	python manage.py runserver
+
+	Validating models...
+
+	0 errors found
+	Django version 1.4.3, using settings 'tutorial.settings'
+	Development server is running at http://127.0.0.1:8000/
+	Quit the server with CONTROL-C.
+
+In another terminal window, we can test the server.
+
+We can get a list of all of the snippets (we only have one at the moment)
+
+	curl http://127.0.0.1:8000/snippets/
+
+	[{"id": 1, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}]
+
+or we can get a particular snippet by referencing its id
+
+	curl http://127.0.0.1:8000/snippets/1/
+
+	{"id": 1, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}
+
+Similarly, you can have the same json displayed by referencing these URLs from your favorite web browser.
 
 ## Where are we now
 
