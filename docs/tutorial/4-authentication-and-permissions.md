@@ -77,7 +77,7 @@ We'll also add a couple of views.  We'd like to just use read-only views for the
 Finally we need to add those views into the API, by referencing them from the URL conf.
 
     url(r'^users/$', views.UserList.as_view()),
-    url(r'^users/(?P<pk>[0-9]+)/$', views.UserInstance.as_view())
+    url(r'^users/(?P<pk>[0-9]+)/$', views.UserInstance.as_view()),
 
 ## Associating Snippets with Users
 
@@ -134,7 +134,7 @@ And, at the end of the file, add a pattern to include the login and logout views
 
     urlpatterns += patterns('',
         url(r'^api-auth/', include('rest_framework.urls',
-                                   namespace='rest_framework'))
+                                   namespace='rest_framework')),
     )
 
 The `r'^api-auth/'` part of pattern can actually be whatever URL you want to use.  The only restriction is that the included urls must use the `'rest_framework'` namespace.
