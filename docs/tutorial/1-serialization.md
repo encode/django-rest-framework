@@ -202,8 +202,6 @@ Open the file `snippets/serializers.py` again, and edit the `SnippetSerializer` 
             model = Snippet
             fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
 
-
-
 ## Writing regular Django views using our Serializer
 
 Let's see how we can write some API views using our new Serializer class.
@@ -228,7 +226,6 @@ Edit the `snippet/views.py` file, and add the following.
             content = JSONRenderer().render(data)
             kwargs['content_type'] = 'application/json'
             super(JSONResponse, self).__init__(content, **kwargs)
-
 
 The root of our API is going to be a view that supports listing all the existing snippets, or creating a new snippet.
 
