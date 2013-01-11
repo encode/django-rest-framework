@@ -29,7 +29,7 @@ And now we can add a `.save()` method to our model class:
 
     def save(self, *args, **kwargs):
         """
-        Use the `pygments` library to create an highlighted HTML
+        Use the `pygments` library to create a highlighted HTML
         representation of the code snippet.
         """
         lexer = get_lexer_by_name(self.language)
