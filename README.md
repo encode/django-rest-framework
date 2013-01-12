@@ -283,5 +283,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [pyyaml]: http://pypi.python.org/pypi/PyYAML
-[django-filter]: https://github.com/alex/django-filter
+[django-filter]: http://pypi.python.org/pypi/django-filter
 
