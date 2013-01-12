@@ -12,9 +12,18 @@ class TimestampedModel(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
 
+class CharPrimaryKeyModel(models.Model):
+    id = models.CharField(max_length=20, primary_key=True)
+
+
 class TimestampedModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = TimestampedModel
+
+
+class CharPrimaryKeyModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CharPrimaryKeyModel
 
 
 class ReadOnlyFieldTests(TestCase):
@@ -24,3 +33,11 @@ class ReadOnlyFieldTests(TestCase):
         """
         serializer = TimestampedModelSerializer()
         self.assertEquals(serializer.fields['added'].read_only, True)
+
+    def test_auto_pk_fields_read_only(self):
+        serializer = TimestampedModelSerializer()
+        self.assertEquals(serializer.fields['id'].read_only, True)
+
+    def test_non_auto_pk_fields_not_read_only(self):
+        serializer = CharPrimaryKeyModelSerializer()
+        self.assertEquals(serializer.fields['id'].read_only, False)
