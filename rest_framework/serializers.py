@@ -452,6 +452,9 @@ class ModelSerializer(Serializer):
         if model_field.null or model_field.blank:
             kwargs['required'] = False
 
+        if not model_field.editable:
+            kwargs['read_only'] = True
+
         if model_field.has_default():
             kwargs['required'] = False
             kwargs['default'] = model_field.get_default()
