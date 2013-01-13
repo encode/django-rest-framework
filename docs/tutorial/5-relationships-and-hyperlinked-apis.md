@@ -15,8 +15,8 @@ Right now we have endpoints for 'snippets' and 'users', but we don't have a sing
     @api_view(('GET',))
     def api_root(request, format=None):
         return Response({
-            'users': reverse('user-list', request=request),
-            'snippets': reverse('snippet-list', request=request)
+            'users': reverse('user-list', request=request, format=format),
+            'snippets': reverse('snippet-list', request=request, format=format)
         })
 
 Notice that we're using REST framework's `reverse` function in order to return fully-qualified URLs.
