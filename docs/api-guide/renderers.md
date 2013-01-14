@@ -279,7 +279,8 @@ The following third party packages are also available.
 
 ## MessagePack
 
-[MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the `djangorestframework-msgpack` package which provides MessagePack renderer and parser support for REST framework.  Documentation is [available here][djangorestframework-msgpack].
+[MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
+
 ## CSV
 
 Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications.  [Mjumbe Poe][mjumbewu] maintains the [djangorestframework-csv][djangorestframework-csv] package which provides CSV renderer support for REST framework.
@@ -293,7 +294,8 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [application/vnd.github+json]: http://developer.github.com/v3/media/
 [application/vnd.collection+json]: http://www.amundsen.com/media-types/collection/
 [django-error-views]: https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views
-[messagepack]: https://github.com/juanriaza/django-rest-framework-msgpack
+[messagepack]: http://msgpack.org/
 [juanriaza]: https://github.com/juanriaza
-[djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack[mjumbewu]: https://github.com/mjumbewu
+[mjumbewu]: https://github.com/mjumbewu
+[djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv

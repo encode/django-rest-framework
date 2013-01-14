@@ -167,7 +167,7 @@ The following third party packages are also available.
 
 ## MessagePack
 
-[MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the `djangorestframework-msgpack` package which provides MessagePack renderer and parser support for REST framework.  Documentation is [available here][djangorestframework-msgpack].
+[MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
 
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion
 [messagepack]: https://github.com/juanriaza/django-rest-framework-msgpack
