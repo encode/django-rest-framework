@@ -439,18 +439,17 @@ class ModelSerializer(Serializer):
         """
         Creates a default instance of a nested relational field.
         """
-
         # Field has reverse relation if it's  referring to different model
         if self.opts.model is not model_field.rel.to:
             # Get correct model from the relation
-            obj_model = model_field.rel.to
+            model_class = model_field.rel.to
         else:
             # Forward relation, no need for magic
-            obj_model = model_field.model
+            model_class = model_field.model
 
         class NestedModelSerializer(ModelSerializer):
             class Meta:
-                model = obj_model
+                model = model_class
         return NestedModelSerializer()
 
     def get_related_field(self, model_field, to_many=False):
