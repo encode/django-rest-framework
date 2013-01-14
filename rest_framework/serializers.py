@@ -432,7 +432,7 @@ class ModelSerializer(Serializer):
         """
         Returns a default instance of the pk field.
         """
-        return Field()
+        return self.get_field(model_field)
 
     def get_nested_field(self, model_field):
         """
@@ -478,6 +478,9 @@ class ModelSerializer(Serializer):
         if model_field.null or model_field.blank:
             kwargs['required'] = False
 
+        if isinstance(model_field, models.AutoField) or not model_field.editable:
+            kwargs['read_only'] = True
+
         if model_field.has_default():
             kwargs['required'] = False
             kwargs['default'] = model_field.get_default()
@@ -491,6 +494,7 @@ class ModelSerializer(Serializer):
             return ChoiceField(**kwargs)
 
         field_mapping = {
+            models.AutoField: IntegerField,
             models.FloatField: FloatField,
             models.IntegerField: IntegerField,
             models.PositiveIntegerField: IntegerField,

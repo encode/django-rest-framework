@@ -52,7 +52,7 @@ Or, if you're using the `@api_view` decorator with function based views.
 
     @api_view(['GET'])
     @authentication_classes((SessionAuthentication, BasicAuthentication))
-    @permissions_classes((IsAuthenticated,))
+    @permission_classes((IsAuthenticated,))
     def example_view(request, format=None):
         content = {
             'user': unicode(request.user),  # `django.contrib.auth.User` instance.

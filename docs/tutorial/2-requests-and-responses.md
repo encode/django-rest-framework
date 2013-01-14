@@ -31,7 +31,6 @@ These wrappers provide a few bits of functionality such as making sure you recei
 
 The wrappers also provide behaviour such as returning `405 Method Not Allowed` responses when appropriate, and handling any `ParseError` exception that occurs when accessing `request.DATA` with malformed input.
 
-
 ## Pulling it all together
 
 Okay, let's go ahead and start using these new components to write a few views. 
@@ -62,7 +61,6 @@ We don't need our `JSONResponse` class anymore, so go ahead and delete that.  On
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 Our instance view is an improvement over the previous example.  It's a little more concise, and the code now feels very similar to if we were working with the Forms API.  We're also using named status codes, which makes the response meanings more obvious.
 
@@ -117,7 +115,7 @@ Now update the `urls.py` file slightly, to append a set of `format_suffix_patter
 
     urlpatterns = patterns('snippets.views',
         url(r'^snippets/$', 'snippet_list'),
-        url(r'^snippets/(?P<pk>[0-9]+)$', 'snippet_detail')
+        url(r'^snippets/(?P<pk>[0-9]+)$', 'snippet_detail'),
     )
     
     urlpatterns = format_suffix_patterns(urlpatterns)
@@ -137,7 +135,6 @@ Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/sni
 Because the API chooses a return format based on what the client asks for, it will, by default, return an HTML-formatted representation of the resource when that resource is requested by a browser. This allows for the API to be easily browsable and usable by humans.
 
 See the [browsable api][browseable-api] topic for more information about the browsable API feature and how to customize it.
-
 
 ## What's next?
 
