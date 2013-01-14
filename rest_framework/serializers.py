@@ -370,7 +370,9 @@ class ModelSerializer(Serializer):
     _options_class = ModelSerializerOptions
 
     def get_reverse_fields(self, opts, fields):
-        relations = [obj for obj in opts.get_all_related_many_to_many_objects() if obj.field.serialize]
+        relations = []
+        relations += [obj for obj in opts.get_all_related_objects() if obj.field.serialize]
+        relations += [obj for obj in opts.get_all_related_many_to_many_objects() if obj.field.serialize]
         return [rel.field for rel in relations]
 
     def get_default_fields(self):
@@ -411,7 +413,10 @@ class ModelSerializer(Serializer):
 
             if field:
                 if model_field in reverse_fields:
-                    ret[model_field.rel.related_name] = field
+                    # Get user set 'related_name' or automatically set field
+                    # name e.g. 'comment_set'
+                    name = model_field.related.get_accessor_name()
+                    ret[name] = field
                 else:
                     ret[model_field.name] = field
 
