@@ -102,6 +102,16 @@ class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
                 pass
         return self.paginate_by
 
+    def paginate_queryset(self, queryset, page_size):
+        """
+        Paginate queryset object, if filtering enabled, not a filter object.
+        """
+
+        if self.filter_backend:
+            queryset = queryset.qs
+
+        return super(MultipleObjectAPIView, self).paginate_queryset(queryset, page_size)
+
 
 class SingleObjectAPIView(SingleObjectMixin, GenericAPIView):
     """
