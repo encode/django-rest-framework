@@ -613,7 +613,6 @@ class CallableDefaultValueTests(TestCase):
         self.assertEquals(instance.pk, 1)
         self.assertEquals(instance.text, 'overridden')
 
-
 class ManyRelatedTests(TestCase):
     def test_reverse_relations(self):
         post = BlogPost.objects.create(title="Test blog post")
@@ -636,6 +635,30 @@ class ManyRelatedTests(TestCase):
             ]
         }
 
+        self.assertEqual(serializer.data, expected)
+
+    def test_include_reverse_relations(self):
+        post = BlogPost.objects.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        class BlogPostCommentSerializer(serializers.Serializer):
+            text = serializers.CharField()
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogPost
+                include_reverse_relations = True
+                depth = 1
+
+        serializer = BlogPostSerializer(instance=post)
+        expected = {
+            'id': 1, 'title': u'Test blog post', 'writer': None,
+            'blogpostcomment_set': [
+                {'id': 1, 'text': u'I hate this blog post', 'blog_post': 1},
+                {'id': 2, 'text': u'I love this blog post', 'blog_post': 1}
+            ]
+        }
         self.assertEqual(serializer.data, expected)
 
     def test_callable_source(self):
@@ -901,3 +924,4 @@ class NestedSerializerContextTests(TestCase):
 
         # This will raise RuntimeError if context doesn't get passed correctly to the nested Serializers
         AlbumCollectionSerializer(album_collection, context={'context_item': 'album context'}).data
+
