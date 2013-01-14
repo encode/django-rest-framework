@@ -360,7 +360,7 @@ class ModelSerializerOptions(SerializerOptions):
         super(ModelSerializerOptions, self).__init__(meta)
         self.model = getattr(meta, 'model', None)
         self.read_only_fields = getattr(meta, 'read_only_fields', ())
-        self.include_reversed_relations = getattr(meta, 'include_reversed_relations', False)
+        self.include_reverse_relations = getattr(meta, 'include_reverse_relations', False)
 
 
 class ModelSerializer(Serializer):
@@ -368,6 +368,10 @@ class ModelSerializer(Serializer):
     A serializer that deals with model instances and querysets.
     """
     _options_class = ModelSerializerOptions
+
+    def get_reverse_fields(self, opts, fields):
+        relations = [obj for obj in opts.get_all_related_many_to_many_objects() if obj.field.serialize]
+        return [rel.field for rel in relations]
 
     def get_default_fields(self):
         """
@@ -383,11 +387,10 @@ class ModelSerializer(Serializer):
         fields += [field for field in opts.fields if field.serialize]
         fields += [field for field in opts.many_to_many if field.serialize]
 
-        reversed_fields = ()
-        if self.opts.include_reversed_relations:
-            reversed_fields = [obj.field for obj in opts.get_all_related_objects() if obj.field.serialize]
-            reversed_fields = [obj.field for obj in opts.get_all_related_many_to_many_objects() if obj.field.serialize]
-            fields += reversed_fields
+        reverse_fields = []
+        if self.opts.include_reverse_relations:
+            reverse_fields = self.get_reverse_fields(opts, fields)
+            fields += reverse_fields
 
         ret = SortedDict()
         nested = bool(self.opts.depth)
@@ -407,7 +410,7 @@ class ModelSerializer(Serializer):
                 field = self.get_field(model_field)
 
             if field:
-                if model_field in reversed_fields:
+                if model_field in reverse_fields:
                     ret[model_field.rel.related_name] = field
                 else:
                     ret[model_field.name] = field
@@ -431,8 +434,14 @@ class ModelSerializer(Serializer):
         Creates a default instance of a nested relational field.
         """
 
-        # If field is reversed relation, get model from relation
-        obj_model = model_field.rel.to if self.opts.model is not model_field.rel.to else model_field.model
+        # Field has reverse relation if it's  referring to different model
+        if self.opts.model is not model_field.rel.to:
+            # Get correct model from the relation
+            obj_model = model_field.rel.to
+        else:
+            # Forward relation, no need for magic
+            obj_model = model_field.model
+
         class NestedModelSerializer(ModelSerializer):
             class Meta:
                 model = obj_model
