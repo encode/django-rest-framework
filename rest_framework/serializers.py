@@ -6,6 +6,7 @@ from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
 from rest_framework.compat import get_concrete_model
+from rest_framework.settings import api_settings
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -360,7 +361,7 @@ class ModelSerializerOptions(SerializerOptions):
         super(ModelSerializerOptions, self).__init__(meta)
         self.model = getattr(meta, 'model', None)
         self.read_only_fields = getattr(meta, 'read_only_fields', ())
-        self.include_reverse_relations = getattr(meta, 'include_reverse_relations', False)
+        self.include_reverse_relations = getattr(meta, 'include_reverse_relations', api_settings.INCLUDE_REVERSE_RELATIONS)
 
 
 class ModelSerializer(Serializer):

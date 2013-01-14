@@ -55,6 +55,9 @@ DEFAULTS = {
         'anon': None,
     },
 
+    # ModelSerializer
+    'INCLUDE_REVERSE_RELATIONS': False,
+
     # Pagination
     'PAGINATE_BY': None,
     'PAGINATE_BY_PARAM': None,
