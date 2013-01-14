@@ -16,15 +16,16 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 
 ## 2.1.x series
 
-### Master
+### 2.1.16
+
+**Date**: 14th Jan 2013
 
 * Deprecate django.utils.simplejson in favor of Python 2.6's built-in json module.
-* Bugfix: PK fields now only default to `read_only=True` if they are an AutoField or if `editable=False`.
+* Bugfix: `auto_now`, `auto_now_add` and other `editable=False` fields now default to read-only.
+* Bugfix: PK fields now only default to read-only if they are an AutoField or if `editable=False`.
 * Bugfix: Validation errors instead of exceptions when serializers receive incorrect types.
 * Bugfix: Validation errors instead of exceptions when related fields receive incorrect types.
 * Bugfix: Handle ObjectDoesNotExist exception when serializing null reverse one-to-one
-
-**Note**: If you are using auto UUID fields as your primary keys, you probably want to make sure that the model fields correctly set `editable=False`.
 
 ### 2.1.15
 
