@@ -11,20 +11,21 @@ docs_dir = os.path.join(root_dir, 'docs')
 html_dir = os.path.join(root_dir, 'html')
 
 local = not '--deploy' in sys.argv
+preview = '-p' in sys.argv
 
 if local:
     base_url = 'file://%s/' % os.path.normpath(os.path.join(os.getcwd(), html_dir))
     suffix = '.html'
     index = 'index.html'
 else:
-    base_url = 'http://tomchristie.github.com/django-rest-framework'
-    suffix = ''
+    base_url = 'http://django-rest-framework.org'
+    suffix = '.html'
     index = ''
 
 
 main_header = '<li class="main"><a href="#{{ anchor }}">{{ title }}</a></li>'
 sub_header = '<li><a href="#{{ anchor }}">{{ title }}</a></li>'
-code_label = r'<a class="github" href="https://github.com/tomchristie/django-rest-framework/blob/restframework2/rest_framework/\1"><span class="label label-info">\1</span></a>'
+code_label = r'<a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/\1"><span class="label label-info">\1</span></a>'
 
 page = open(os.path.join(docs_dir, 'template.html'), 'r').read()
 
@@ -80,3 +81,15 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
         output = re.sub(r'<pre>', r'<pre class="prettyprint lang-py">', output)
         output = re.sub(r'<a class="github" href="([^"]*)"></a>', code_label, output)
         open(output_path, 'w').write(output.encode('utf-8'))
+
+if preview:
+    import subprocess
+
+    url = 'html/index.html'
+
+    try:
+        subprocess.Popen(["open", url])  # Mac
+    except OSError:
+        subprocess.Popen(["xdg-open", url])  # Linux
+    except:
+        os.startfile(url)  # Windows

@@ -8,6 +8,9 @@ Useful tool to run the test suite for rest_framework and generate a coverage rep
 # http://code.djangoproject.com/svn/django/trunk/tests/runtests.py
 import os
 import sys
+
+# fix sys path so we don't need to setup PYTHONPATH
+sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'rest_framework.runtests.settings'
 
 from coverage import coverage
@@ -32,10 +35,10 @@ def main():
             'Function-based test runners are deprecated. Test runners should be classes with a run_tests() method.',
             DeprecationWarning
         )
-        failures = TestRunner(['rest_framework'])
+        failures = TestRunner(['tests'])
     else:
         test_runner = TestRunner()
-        failures = test_runner.run_tests(['rest_framework'])
+        failures = test_runner.run_tests(['tests'])
     cov.stop()
 
     # Discover the list of all modules that we should test coverage for
@@ -54,6 +57,12 @@ def main():
         # (Because we'll end up getting different coverage reports for it for each environment)
         if 'compat.py' in files:
             files.remove('compat.py')
+
+        # Same applies to template tags module.
+        # This module has to include branching on Django versions,
+        # so it's never possible for it to have full coverage.
+        if 'rest_framework.py' in files:
+            files.remove('rest_framework.py')
 
         cov_files.extend([os.path.join(path, file) for file in files if file.endswith('.py')])
 

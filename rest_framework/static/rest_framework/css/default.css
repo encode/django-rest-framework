@@ -32,6 +32,17 @@ h2, h3 {
     margin-right: 1em;
 }
 
+ul.breadcrumb {
+  margin: 58px 0 0 0;
+}
+
+form select, form input, form textarea {
+  width: 90%;
+}
+
+form select[multiple] {
+  height: 150px;
+}
 /* To allow tooltips to work on disabled elements */
 .disabled-tooltip-shield {
     position: absolute;
@@ -55,6 +66,7 @@ pre {
 .page-header {
     border-bottom: none;
     padding-bottom: 0px;
+    margin-bottom: 20px;
 }
 
 
@@ -65,7 +77,7 @@ html{
   background: none;
 }
 
-body, .navbar .navbar-inner .container-fluid{
+body, .navbar .navbar-inner .container-fluid {
   max-width: 1150px;
   margin: 0 auto;
 }
@@ -76,13 +88,14 @@ body{
 }
 
 #content{
-    margin: 40px 0 0 0;
+    margin: 0;
 }
 /* custom navigation styles */
 .wrapper .navbar{
-  width:100%;
+  width: 100%;
   position: absolute;
-  left:0;
+  left: 0;
+  top: 0;
 }
 
 .navbar .navbar-inner{

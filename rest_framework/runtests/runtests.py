@@ -5,6 +5,9 @@
 # http://code.djangoproject.com/svn/django/trunk/tests/runtests.py
 import os
 import sys
+
+# fix sys path so we don't need to setup PYTHONPATH
+sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'rest_framework.runtests.settings'
 
 from django.conf import settings
@@ -32,7 +35,7 @@ def main():
     else:
         print usage()
         sys.exit(1)
-    failures = test_runner.run_tests(['rest_framework' + test_case])
+    failures = test_runner.run_tests(['tests' + test_case])
 
     sys.exit(failures)
 

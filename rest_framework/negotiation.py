@@ -1,6 +1,8 @@
+from django.http import Http404
 from rest_framework import exceptions
 from rest_framework.settings import api_settings
 from rest_framework.utils.mediatypes import order_by_precedence, media_type_matches
+from rest_framework.utils.mediatypes import _MediaType
 
 
 class BaseContentNegotiation(object):
@@ -47,7 +49,8 @@ class DefaultContentNegotiation(BaseContentNegotiation):
                 for media_type in media_type_set:
                     if media_type_matches(renderer.media_type, media_type):
                         # Return the most specific media type as accepted.
-                        if len(renderer.media_type) > len(media_type):
+                        if (_MediaType(renderer.media_type).precedence >
+                            _MediaType(media_type).precedence):
                             # Eg client requests '*/*'
                             # Accepted media type is 'application/json'
                             return renderer, renderer.media_type
@@ -66,7 +69,7 @@ class DefaultContentNegotiation(BaseContentNegotiation):
         renderers = [renderer for renderer in renderers
                      if renderer.format == format]
         if not renderers:
-            raise exceptions.InvalidFormat(format)
+            raise Http404
         return renderers
 
     def get_accept_list(self, request):

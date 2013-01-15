@@ -13,7 +13,7 @@ For example your project's `settings.py` file might include something like this:
     REST_FRAMEWORK = {
         'DEFAULT_RENDERER_CLASSES': (
             'rest_framework.renderers.YAMLRenderer',
-        )
+        ),
         'DEFAULT_PARSER_CLASSES': (
             'rest_framework.parsers.YAMLParser',
         )
@@ -42,7 +42,7 @@ Default:
 
     (
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.BrowsableAPIRenderer'
+        'rest_framework.renderers.BrowsableAPIRenderer',
         'rest_framework.renderers.TemplateHTMLRenderer'
     )
 
@@ -65,14 +65,18 @@ Default:
 
     (
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.UserBasicAuthentication'
+        'rest_framework.authentication.BasicAuthentication'
     )
 
 ## DEFAULT_PERMISSION_CLASSES
 
 A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view.
 
-Default: `()`
+Default:
+
+    (
+        'rest_framework.permissions.AllowAny',
+    )
 
 ## DEFAULT_THROTTLE_CLASSES
 
@@ -92,11 +96,21 @@ Default: `rest_framework.serializers.ModelSerializer`
 
 Default: `rest_framework.pagination.PaginationSerializer`
 
-## FORMAT_SUFFIX_KWARG
+## FILTER_BACKEND
 
-**TODO**
+The filter backend class that should be used for generic filtering.  If set to `None` then generic filtering is disabled.
 
-Default: `'format'`
+## PAGINATE_BY
+
+The default page size to use for pagination.  If set to `None`, pagination is disabled by default.
+
+Default: `None`
+
+## PAGINATE_BY_PARAM
+
+The name of a query parameter, which can be used by the client to overide the default page size to use for pagination.  If set to `None`, clients may not override the default page size.
+
+Default: `None`
 
 ## UNAUTHENTICATED_USER
 
@@ -143,6 +157,12 @@ If the value of this setting is `None` then URL accept overloading will be disab
 Default: `'accept'`
 
 ## URL_FORMAT_OVERRIDE
+
+Default: `'format'`
+
+## FORMAT_SUFFIX_KWARG
+
+**TODO**
 
 Default: `'format'`
 

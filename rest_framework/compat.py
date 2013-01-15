@@ -1,7 +1,22 @@
 """
-The :mod:`compat` module provides support for backwards compatibility with older versions of django/python.
+The `compat` module provides support for backwards compatibility with older
+versions of django/python, and compatibility wrappers around optional packages.
 """
+# flake8: noqa
 import django
+
+# location of patterns, url, include changes in 1.4 onwards
+try:
+    from django.conf.urls import patterns, url, include
+except:
+    from django.conf.urls.defaults import patterns, url, include
+
+# django-filter is optional
+try:
+    import django_filters
+except:
+    django_filters = None
+
 
 # cStringIO only if it's available, otherwise StringIO
 try:
@@ -10,12 +25,36 @@ except ImportError:
     import StringIO
 
 
+# Try to import PIL in either of the two ways it can end up installed.
+try:
+    from PIL import Image
+except ImportError:
+    try:
+        import Image
+    except ImportError:
+        Image = None
+
+
 def get_concrete_model(model_cls):
     try:
         return model_cls._meta.concrete_model
     except AttributeError:
         # 1.3 does not include concrete model
         return model_cls
+
+
+# Django 1.5 add support for custom auth user model
+if django.VERSION >= (1, 5):
+    from django.conf import settings
+    if hasattr(settings, 'AUTH_USER_MODEL'):
+        User = settings.AUTH_USER_MODEL
+    else:
+        from django.contrib.auth.models import User
+else:
+    try:
+        from django.contrib.auth.models import User
+    except ImportError:
+        raise ImportError(u"User model is not to be found.")
 
 
 # First implementation of Django class-based views did not include head method
@@ -56,6 +95,12 @@ else:
             # like csrf_exempt from dispatch
             update_wrapper(view, cls.dispatch, assigned=())
             return view
+
+# Taken from @markotibold's attempt at supporting PATCH.
+# https://github.com/markotibold/django-rest-framework/tree/patch
+http_method_names = set(View.http_method_names)
+http_method_names.add('patch')
+View.http_method_names = list(http_method_names)  # PATCH method is not implemented by Django
 
 # PUT, DELETE do not require CSRF until 1.4.  They should.  Make it better.
 if django.VERSION >= (1, 4):
@@ -331,7 +376,7 @@ try:
         """
 
         extensions = ['headerid(level=2)']
-        safe_mode = False,
+        safe_mode = False
         md = markdown.Markdown(extensions=extensions, safe_mode=safe_mode)
         return md.convert(text)
 
@@ -344,33 +389,6 @@ try:
     import yaml
 except ImportError:
     yaml = None
-
-
-import unittest
-try:
-    import unittest.skip
-except ImportError:  # python < 2.7
-    from unittest import TestCase
-    import functools
-
-    def skip(reason):
-        # Pasted from py27/lib/unittest/case.py
-        """
-        Unconditionally skip a test.
-        """
-        def decorator(test_item):
-            if not (isinstance(test_item, type) and issubclass(test_item, TestCase)):
-                @functools.wraps(test_item)
-                def skip_wrapper(*args, **kwargs):
-                    pass
-                test_item = skip_wrapper
-
-            test_item.__unittest_skip__ = True
-            test_item.__unittest_skip_why__ = reason
-            return test_item
-        return decorator
-
-    unittest.skip = skip
 
 
 # xml.etree.parse only throws ParseError for python >= 2.7

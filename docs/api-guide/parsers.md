@@ -37,7 +37,7 @@ You can also set the renderers used for an individual view, using the `APIView` 
 
 Or, if you're using the `@api_view` decorator with function based views.
 
-    @api_view(('POST',)),
+    @api_view(['POST'])
     @parser_classes((YAMLParser,))
     def example_view(request, format=None):
         """
@@ -140,6 +140,7 @@ For example:
         """
         A naive raw file upload parser.
         """
+        media_type = '*/*'  # Accept anything
 
         def parse(self, stream, media_type=None, parser_context=None):
             content = stream.read()
@@ -158,4 +159,17 @@ For example:
             files = {name: uploaded}
             return DataAndFiles(data, files)
 
+---
+
+# Third party packages
+
+The following third party packages are also available.
+
+## MessagePack
+
+[MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
+
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion
+[messagepack]: https://github.com/juanriaza/django-rest-framework-msgpack
+[juanriaza]: https://github.com/juanriaza
+[djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack

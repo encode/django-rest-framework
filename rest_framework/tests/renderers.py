@@ -1,11 +1,12 @@
+import pickle
 import re
 
-from django.conf.urls.defaults import patterns, url, include
+from django.core.cache import cache
 from django.test import TestCase
 from django.test.client import RequestFactory
 
 from rest_framework import status, permissions
-from rest_framework.compat import yaml
+from rest_framework.compat import yaml, patterns, url, include
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
@@ -83,6 +84,7 @@ class HTMLView1(APIView):
 urlpatterns = patterns('',
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
     url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
+    url(r'^cache$', MockGETView.as_view()),
     url(r'^jsonp/jsonrenderer$', MockGETView.as_view(renderer_classes=[JSONRenderer, JSONPRenderer])),
     url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(renderer_classes=[JSONPRenderer])),
     url(r'^html$', HTMLView.as_view()),
@@ -416,3 +418,89 @@ class XMLRendererTestCase(TestCase):
         self.assertTrue(xml.startswith('<?xml version="1.0" encoding="utf-8"?>\n<root>'))
         self.assertTrue(xml.endswith('</root>'))
         self.assertTrue(string in xml, '%r not in %r' % (string, xml))
+
+
+# Tests for caching issue, #346
+class CacheRenderTest(TestCase):
+    """
+    Tests specific to caching responses
+    """
+
+    urls = 'rest_framework.tests.renderers'
+
+    cache_key = 'just_a_cache_key'
+
+    @classmethod
+    def _get_pickling_errors(cls, obj, seen=None):
+        """ Return any errors that would be raised if `obj' is pickled
+        Courtesy of koffie @ http://stackoverflow.com/a/7218986/109897
+        """
+        if seen == None:
+            seen = []
+        try:
+            state = obj.__getstate__()
+        except AttributeError:
+            return
+        if state == None:
+            return
+        if isinstance(state, tuple):
+            if not isinstance(state[0], dict):
+                state = state[1]
+            else:
+                state = state[0].update(state[1])
+        result = {}
+        for i in state:
+            try:
+                pickle.dumps(state[i], protocol=2)
+            except pickle.PicklingError:
+                if not state[i] in seen:
+                    seen.append(state[i])
+                    result[i] = cls._get_pickling_errors(state[i], seen)
+        return result
+
+    def http_resp(self, http_method, url):
+        """
+        Simple wrapper for Client http requests
+        Removes the `client' and `request' attributes from as they are
+        added by django.test.client.Client and not part of caching
+        responses outside of tests.
+        """
+        method = getattr(self.client, http_method)
+        resp = method(url)
+        del resp.client, resp.request
+        return resp
+
+    def test_obj_pickling(self):
+        """
+        Test that responses are properly pickled
+        """
+        resp = self.http_resp('get', '/cache')
+
+        # Make sure that no pickling errors occurred
+        self.assertEqual(self._get_pickling_errors(resp), {})
+
+        # Unfortunately LocMem backend doesn't raise PickleErrors but returns
+        # None instead.
+        cache.set(self.cache_key, resp)
+        self.assertTrue(cache.get(self.cache_key) is not None)
+
+    def test_head_caching(self):
+        """
+        Test caching of HEAD requests
+        """
+        resp = self.http_resp('head', '/cache')
+        cache.set(self.cache_key, resp)
+
+        cached_resp = cache.get(self.cache_key)
+        self.assertIsInstance(cached_resp, Response)
+
+    def test_get_caching(self):
+        """
+        Test caching of GET requests
+        """
+        resp = self.http_resp('get', '/cache')
+        cache.set(self.cache_key, resp)
+
+        cached_resp = cache.get(self.cache_key)
+        self.assertIsInstance(cached_resp, Response)
+        self.assertEqual(cached_resp.content, resp.content)

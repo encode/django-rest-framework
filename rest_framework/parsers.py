@@ -8,11 +8,11 @@ on the request, such as form content or json encoded data.
 from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError
-from django.utils import simplejson as json
 from rest_framework.compat import yaml, ETParseError
 from rest_framework.exceptions import ParseError
 from xml.etree import ElementTree as ET
 from xml.parsers.expat import ExpatError
+import json
 import datetime
 import decimal
 

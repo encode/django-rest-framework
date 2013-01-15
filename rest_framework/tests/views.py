@@ -18,7 +18,7 @@ class BasicView(APIView):
         return Response({'method': 'POST', 'data': request.DATA})
 
 
-@api_view(['GET', 'POST', 'PUT'])
+@api_view(['GET', 'POST', 'PUT', 'PATCH'])
 def basic_view(request):
     if request.method == 'GET':
         return {'method': 'GET'}
@@ -26,6 +26,8 @@ def basic_view(request):
         return {'method': 'POST', 'data': request.DATA}
     elif request.method == 'PUT':
         return {'method': 'PUT', 'data': request.DATA}
+    elif request.method == 'PATCH':
+        return {'method': 'PATCH', 'data': request.DATA}
 
 
 def sanitise_json_error(error_dict):

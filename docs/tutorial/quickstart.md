@@ -8,7 +8,7 @@ Create a new Django project, and start a new app called `quickstart`.  Once you'
 
 First up we're going to define some serializers in `quickstart/serializers.py` that we'll use for our data representations.
 
-    from django.contrib.auth.models import User, Group
+    from django.contrib.auth.models import User, Group, Permission
     from rest_framework import serializers
     
     
@@ -19,11 +19,18 @@ First up we're going to define some serializers in `quickstart/serializers.py` t
     
     
     class GroupSerializer(serializers.HyperlinkedModelSerializer):
+        permissions = serializers.ManySlugRelatedField(
+            slug_field='codename',
+            queryset=Permission.objects.all()
+        )
+
         class Meta:
             model = Group
             fields = ('url', 'name', 'permissions')
 
 Notice that we're using hyperlinked relations in this case, with `HyperlinkedModelSerializer`.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.
+
+We've also overridden the `permission` field on the `GroupSerializer`.  In this case we don't want to use a hyperlinked representation, but instead use the list of permission codenames associated with the group, so we've used a `ManySlugRelatedField`, using the `codename` field for the representation.
 
 ## Views
 
@@ -130,7 +137,7 @@ We'd also like to set a few global settings.  We'd like to turn on pagination, a
         'PAGINATE_BY': 10
     }
 
-Okay, that's us done.
+Okay, we're done.
 
 ---
 
@@ -152,7 +159,7 @@ We can now access our API, both from the command-line, using tools like `curl`..
             }, 
             {
                 "email": "tom@example.com", 
-                "groups": [], 
+                "groups": [                ], 
                 "url": "http://127.0.0.1:8000/users/2/", 
                 "username": "tom"
             }

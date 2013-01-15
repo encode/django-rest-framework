@@ -1,6 +1,5 @@
 {% load url from future %}
 {% load rest_framework %}
-{% load static %}
 <!DOCTYPE html>
 <html>
     <head>
@@ -14,10 +13,10 @@
         <title>{% block title %}Django REST framework{% endblock %}</title>
 
         {% block style %}
-        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}rest_framework/css/bootstrap.min.css"/>
-        <link rel="stylesheet" type="text/css" href="{% get_static_prefix %}rest_framework/css/bootstrap-tweaks.css"/>
-        <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}rest_framework/css/prettify.css'/>
-        <link rel="stylesheet" type="text/css" href='{% get_static_prefix %}rest_framework/css/default.css'/>
+        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap.min.css" %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap-tweaks.css" %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
         {% endblock %}
 
     {% endblock %}
@@ -109,11 +108,11 @@
 
         <div class="content-main">
             <div class="page-header"><h1>{{ name }}</h1></div>
-            <p class="resource-description">{{ description }}</p>
+            {{ description }}
 
             <div class="request-info">
                 <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
-            <div>
+            </div>
             <div class="response-info">
                 <pre class="prettyprint"><div class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
 {% for key, val in response.items %}<b>{{ key }}:</b> <span class="lit">{{ val|urlize_quoted_links }}</span>
@@ -131,12 +130,12 @@
                             {% csrf_token %}
                             {{ post_form.non_field_errors }}
                             {% for field in post_form %}
-                                <div class="control-group {% if field.errors %}error{% endif %}">
+                                <div class="control-group"> <!--{% if field.errors %}error{% endif %}-->
                                     {{ field.label_tag|add_class:"control-label" }}
                                     <div class="controls">
-                                        {{ field|add_class:"input-xlarge" }}
+                                        {{ field }}
                                         <span class="help-inline">{{ field.help_text }}</span>
-                                        {{ field.errors|add_class:"help-block" }}
+                                        <!--{{ field.errors|add_class:"help-block" }}-->
                                     </div>
                                 </div>
                             {% endfor %}
@@ -156,12 +155,12 @@
                             {% csrf_token %}
                             {{ put_form.non_field_errors }}
                             {% for field in put_form %}
-                                <div class="control-group {% if field.errors %}error{% endif %}">
+                                <div class="control-group"> <!--{% if field.errors %}error{% endif %}-->
                                     {{ field.label_tag|add_class:"control-label" }}
                                     <div class="controls">
-                                        {{ field|add_class:"input-xlarge" }}
+                                        {{ field }}
                                         <span class='help-inline'>{{ field.help_text }}</span>
-                                        {{ field.errors|add_class:"help-block" }}
+                                        <!--{{ field.errors|add_class:"help-block" }}-->
                                     </div>
                                 </div>
                             {% endfor %}
@@ -195,10 +194,10 @@
     {% endblock %}
 
     {% block script %}
-    <script src="{% get_static_prefix %}rest_framework/js/jquery-1.8.1-min.js"></script>
-    <script src="{% get_static_prefix %}rest_framework/js/bootstrap.min.js"></script>
-    <script src="{% get_static_prefix %}rest_framework/js/prettify-min.js"></script>
-    <script src="{% get_static_prefix %}rest_framework/js/default.js"></script>
+    <script src="{% static "rest_framework/js/jquery-1.8.1-min.js" %}"></script>
+    <script src="{% static "rest_framework/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "rest_framework/js/prettify-min.js" %}"></script>
+    <script src="{% static "rest_framework/js/default.js" %}"></script>
     {% endblock %}
   </body>
 </html>

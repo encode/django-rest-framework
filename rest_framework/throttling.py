@@ -16,7 +16,7 @@ class BaseThrottle(object):
 
     def wait(self):
         """
-        Optionally, return a recommeded number of seconds to wait before
+        Optionally, return a recommended number of seconds to wait before
         the next request.
         """
         return None

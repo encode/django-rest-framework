@@ -42,7 +42,7 @@ You can also set the renderers used for an individual view, using the `APIView` 
 
 Or, if you're using the `@api_view` decorator with function based views.
 
-    @api_view(('GET',)),
+    @api_view(['GET'])
     @renderer_classes((JSONRenderer, JSONPRenderer))
     def user_count_view(request, format=None):
         """
@@ -106,12 +106,12 @@ If you are considering using `XML` for your API, you may want to consider implem
 
 **.format**: `'.xml'`
 
-## HTMLRenderer
+## TemplateHTMLRenderer
 
 Renders data to HTML, using Django's standard template rendering.
 Unlike other renderers, the data passed to the `Response` does not need to be serialized.  Also, unlike other renderers, you may want to include a `template_name` argument when creating the `Response`.
 
-The HTMLRenderer will create a `RequestContext`, using the `response.data` as the context dict, and determine a template name to use to render the context.
+The TemplateHTMLRenderer will create a `RequestContext`, using the `response.data` as the context dict, and determine a template name to use to render the context.
 
 The template name is determined by (in order of preference):
 
@@ -119,26 +119,48 @@ The template name is determined by (in order of preference):
 2. An explicit `.template_name` attribute set on this class.
 3. The return result of calling `view.get_template_names()`.
 
-An example of a view that uses `HTMLRenderer`:
+An example of a view that uses `TemplateHTMLRenderer`:
 
     class UserInstance(generics.RetrieveUserAPIView):
         """
         A view that returns a templated HTML representations of a given user.
         """
         model = Users
-        renderer_classes = (HTMLRenderer,)
+        renderer_classes = (TemplateHTMLRenderer,)
 
         def get(self, request, *args, **kwargs)
             self.object = self.get_object()
-            return Response(self.object, template_name='user_detail.html')
+            return Response({'user': self.object}, template_name='user_detail.html')
  
-You can use `HTMLRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
+You can use `TemplateHTMLRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
 
-If you're building websites that use `HTMLRenderer` along with other renderer classes, you should consider listing `HTMLRenderer` as the first class in the `renderer_classes` list, so that it will be prioritised first even for browsers that send poorly formed `ACCEPT:` headers.
+If you're building websites that use `TemplateHTMLRenderer` along with other renderer classes, you should consider listing `TemplateHTMLRenderer` as the first class in the `renderer_classes` list, so that it will be prioritised first even for browsers that send poorly formed `ACCEPT:` headers.
 
 **.media_type**: `text/html`
 
 **.format**: `'.html'`
+
+See also: `StaticHTMLRenderer`
+
+## StaticHTMLRenderer
+
+A simple renderer that simply returns pre-rendered HTML.  Unlike other renderers, the data passed to the response object should be a string representing the content to be returned.
+
+An example of a view that uses `TemplateHTMLRenderer`:
+
+    @api_view(('GET',))
+    @renderer_classes((StaticHTMLRenderer,))
+    def simple_html_view(request): 
+        data = '<html><body><h1>Hello, world</h1></body></html>'
+        return Response(data)
+
+You can use `TemplateHTMLRenderer` either to return regular HTML pages using REST framework, or to return both HTML and API responses from a single endpoint.
+
+**.media_type**: `text/html`
+
+**.format**: `'.html'`
+
+See also: `TemplateHTMLRenderer`
 
 ## BrowsableAPIRenderer
 
@@ -207,7 +229,7 @@ In some cases you might want your view to use different serialization styles dep
 For example:
 
     @api_view(('GET',))
-    @renderer_classes((HTMLRenderer, JSONRenderer))
+    @renderer_classes((TemplateHTMLRenderer, JSONRenderer))
     def list_users(request):
         """
         A view that can return JSON or HTML representations
@@ -215,9 +237,9 @@ For example:
         """
         queryset = Users.objects.filter(active=True)
 
-        if request.accepted_media_type == 'text/html':
+        if request.accepted_renderer.format == 'html':
             # TemplateHTMLRenderer takes a context dict,
-            # and additionally requiresa 'template_name'.
+            # and additionally requires a 'template_name'.
             # It does not require serialization.
             data = {'users': queryset}
             return Response(data, template_name='list_users.html')
@@ -235,6 +257,34 @@ In [the words of Roy Fielding][quote], "A REST API should spend almost all of it
 
 For good examples of custom media types, see GitHub's use of a custom [application/vnd.github+json] media type, and Mike Amundsen's IANA approved [application/vnd.collection+json] JSON-based hypermedia.
 
+## HTML error views
+
+Typically a renderer will behave the same regardless of if it's dealing with a regular response, or with a response caused by an exception being raised, such as an `Http404` or `PermissionDenied` exception, or a subclass of `APIException`.
+
+If you're using either the `TemplateHTMLRenderer` or the `StaticHTMLRenderer` and an exception is raised, the behavior is slightly different, and mirrors [Django's default handling of error views][django-error-views].
+
+Exceptions raised and handled by an HTML renderer will attempt to render using one of the following methods, by order of precedence.
+
+* Load and render a template named `{status_code}.html`.
+* Load and render a template named `api_exception.html`.
+* Render the HTTP status code and text, for example "404 Not Found".
+
+Templates will render with a `RequestContext` which includes the `status_code` and `details` keys.
+
+---
+
+# Third party packages
+
+The following third party packages are also available.
+
+## MessagePack
+
+[MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
+
+## CSV
+
+Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications.  [Mjumbe Poe][mjumbewu] maintains the [djangorestframework-csv][djangorestframework-csv] package which provides CSV renderer support for REST framework.
+
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
@@ -243,3 +293,9 @@ For good examples of custom media types, see GitHub's use of a custom [applicati
 [quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [application/vnd.github+json]: http://developer.github.com/v3/media/
 [application/vnd.collection+json]: http://www.amundsen.com/media-types/collection/
+[django-error-views]: https://docs.djangoproject.com/en/dev/topics/http/views/#customizing-error-views
+[messagepack]: http://msgpack.org/
+[juanriaza]: https://github.com/juanriaza
+[mjumbewu]: https://github.com/mjumbewu
+[djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
+[djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv

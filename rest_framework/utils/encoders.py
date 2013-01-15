@@ -4,7 +4,7 @@ Helper classes for parsers.
 import datetime
 import decimal
 import types
-from django.utils import simplejson as json
+import json
 from django.utils.datastructures import SortedDict
 from rest_framework.compat import timezone
 from rest_framework.serializers import DictWithMetadata, SortedDictWithMetadata
@@ -12,7 +12,7 @@ from rest_framework.serializers import DictWithMetadata, SortedDictWithMetadata
 
 class JSONEncoder(json.JSONEncoder):
     """
-    JSONEncoder subclass that knows how to encode date/time,
+    JSONEncoder subclass that knows how to encode date/time/timedelta,
     decimal types, and generators.
     """
     def default(self, o):
@@ -34,6 +34,8 @@ class JSONEncoder(json.JSONEncoder):
             if o.microsecond:
                 r = r[:12]
             return r
+        elif isinstance(o, datetime.timedelta):
+            return str(o.total_seconds())
         elif isinstance(o, decimal.Decimal):
             return str(o)
         elif hasattr(o, '__iter__'):

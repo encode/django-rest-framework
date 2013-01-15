@@ -21,8 +21,8 @@ def is_form_media_type(media_type):
     Return True if the media type is a valid form media type.
     """
     base_media_type, params = parse_header(media_type)
-    return base_media_type == 'application/x-www-form-urlencoded' or \
-           base_media_type == 'multipart/form-data'
+    return (base_media_type == 'application/x-www-form-urlencoded' or
+            base_media_type == 'multipart/form-data')
 
 
 class Empty(object):
@@ -169,6 +169,15 @@ class Request(object):
             self._user, self._auth = self._authenticate()
         return self._user
 
+    @user.setter
+    def user(self, value):
+         """
+         Sets the user on the current request. This is necessary to maintain
+         compatilbility with django.contrib.auth where the user proprety is
+         set in the login and logout functions.
+         """
+         self._user = value
+
     @property
     def auth(self):
         """
@@ -178,6 +187,14 @@ class Request(object):
         if not hasattr(self, '_auth'):
             self._user, self._auth = self._authenticate()
         return self._auth
+
+    @auth.setter
+    def auth(self, value):
+        """
+        Sets any non-user authentication information associated with the
+        request, such as an authentication token.
+        """
+        self._auth = value
 
     def _load_data_and_files(self):
         """

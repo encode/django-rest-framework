@@ -285,7 +285,7 @@
 #             uiop = models.CharField(max_length=256, blank=True)
 
 #             @property
-#             def readonly(self):
+#             def read_only(self):
 #                 return 'read only'
 
 #         class MockResource(ModelResource):
@@ -298,7 +298,7 @@
 
 #     def test_property_fields_are_allowed_on_model_forms(self):
 #         """Validation on ModelForms may include property fields that exist on the Model to be included in the input."""
-#         content = {'qwerty': 'example', 'uiop': 'example', 'readonly': 'read only'}
+#         content = {'qwerty': 'example', 'uiop': 'example', 'read_only': 'read only'}
 #         self.assertEqual(self.validator.validate_request(content, None), content)
 
 #     def test_property_fields_are_not_required_on_model_forms(self):
@@ -310,19 +310,19 @@
 #         """If some (otherwise valid) content includes fields that are not in the form then validation should fail.
 #         It might be okay on normal form submission, but for Web APIs we oughta get strict, as it'll help show up
 #         broken clients more easily (eg submitting content with a misnamed field)"""
-#         content = {'qwerty': 'example', 'uiop': 'example', 'readonly': 'read only', 'extra': 'extra'}
+#         content = {'qwerty': 'example', 'uiop': 'example', 'read_only': 'read only', 'extra': 'extra'}
 #         self.assertRaises(ImmediateResponse, self.validator.validate_request, content, None)
 
 #     def test_validate_requires_fields_on_model_forms(self):
 #         """If some (otherwise valid) content includes fields that are not in the form then validation should fail.
 #         It might be okay on normal form submission, but for Web APIs we oughta get strict, as it'll help show up
 #         broken clients more easily (eg submitting content with a misnamed field)"""
-#         content = {'readonly': 'read only'}
+#         content = {'read_only': 'read only'}
 #         self.assertRaises(ImmediateResponse, self.validator.validate_request, content, None)
 
 #     def test_validate_does_not_require_blankable_fields_on_model_forms(self):
 #         """Test standard ModelForm validation behaviour - fields with blank=True are not required."""
-#         content = {'qwerty': 'example', 'readonly': 'read only'}
+#         content = {'qwerty': 'example', 'read_only': 'read only'}
 #         self.validator.validate_request(content, None)
 
 #     def test_model_form_validator_uses_model_forms(self):

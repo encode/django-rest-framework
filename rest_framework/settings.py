@@ -37,11 +37,14 @@ DEFAULTS = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication'
     ),
-    'DEFAULT_PERMISSION_CLASSES': (),
-    'DEFAULT_THROTTLE_CLASSES': (),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+    'DEFAULT_THROTTLE_CLASSES': (
+    ),
+
     'DEFAULT_CONTENT_NEGOTIATION_CLASS':
         'rest_framework.negotiation.DefaultContentNegotiation',
-
     'DEFAULT_MODEL_SERIALIZER_CLASS':
         'rest_framework.serializers.ModelSerializer',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS':
@@ -51,18 +54,26 @@ DEFAULTS = {
         'user': None,
         'anon': None,
     },
-    'PAGINATE_BY': None,
 
+    # Pagination
+    'PAGINATE_BY': None,
+    'PAGINATE_BY_PARAM': None,
+
+    # Filtering
+    'FILTER_BACKEND': None,
+
+    # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
 
+    # Browser enhancements
     'FORM_METHOD_OVERRIDE': '_method',
     'FORM_CONTENT_OVERRIDE': '_content',
     'FORM_CONTENTTYPE_OVERRIDE': '_content_type',
     'URL_ACCEPT_OVERRIDE': 'accept',
     'URL_FORMAT_OVERRIDE': 'format',
 
-    'FORMAT_SUFFIX_KWARG': 'format'
+    'FORMAT_SUFFIX_KWARG': 'format',
 }
 
 
@@ -76,6 +87,7 @@ IMPORT_STRINGS = (
     'DEFAULT_CONTENT_NEGOTIATION_CLASS',
     'DEFAULT_MODEL_SERIALIZER_CLASS',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS',
+    'FILTER_BACKEND',
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN',
 )
@@ -103,8 +115,8 @@ def import_from_string(val, setting_name):
         module_path, class_name = '.'.join(parts[:-1]), parts[-1]
         module = importlib.import_module(module_path)
         return getattr(module, class_name)
-    except:
-        msg = "Could not import '%s' for API setting '%s'" % (val, setting_name)
+    except ImportError as e:
+        msg = "Could not import '%s' for API setting '%s'. %s: %s." % (val, setting_name, e.__class__.__name__, e)
         raise ImportError(msg)
 
 
@@ -139,8 +151,15 @@ class APISettings(object):
         if val and attr in self.import_strings:
             val = perform_import(val, attr)
 
+        self.validate_setting(attr, val)
+
         # Cache the result
         setattr(self, attr, val)
         return val
+
+    def validate_setting(self, attr, val):
+        if attr == 'FILTER_BACKEND' and val is not None:
+            # Make sure we can initialize the class
+            val()
 
 api_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)

@@ -33,6 +33,12 @@ The default permission policy may be set globally, using the `DEFAULT_PERMISSION
         )
     }
 
+If not specified, this setting defaults to allowing unrestricted access:
+
+    'DEFAULT_PERMISSION_CLASSES': (
+       'rest_framework.permissions.AllowAny',
+    )
+
 You can also set the authentication policy on a per-view basis, using the `APIView` class based views.
 
     class ExampleView(APIView):
@@ -47,7 +53,7 @@ You can also set the authentication policy on a per-view basis, using the `APIVi
 Or, if you're using the `@api_view` decorator with function based views.
 
     @api_view('GET')
-    @permission_classes(IsAuthenticated)
+    @permission_classes((IsAuthenticated, ))
     def example_view(request, format=None):
         content = {
             'status': 'request was permitted'
@@ -58,6 +64,12 @@ Or, if you're using the `@api_view` decorator with function based views.
 
 # API Reference
 
+## AllowAny
+
+The `AllowAny` permission class will allow unrestricted access, **regardless of if the request was authenticated or unauthenticated**.
+
+This permission is not strictly required, since you can achieve the same result by using an empty list or tuple for the permissions setting, but you may find it useful to specify this class because it makes the intention explicit.
+
 ## IsAuthenticated
 
 The `IsAuthenticated` permission class will deny permission to any unauthenticated user, and allow permission otherwise.
@@ -66,7 +78,7 @@ This permission is suitable if you want your API to only be accessible to regist
 
 ## IsAdminUser
 
-The `IsAdminUser` permission class will deny permission to any user, unless `user.is_staff`is `True` in which case permission will be allowed.
+The `IsAdminUser` permission class will deny permission to any user, unless `user.is_staff` is `True` in which case permission will be allowed.
 
 This permission is suitable is you want your API to only be accessible to a subset of trusted administrators.
 

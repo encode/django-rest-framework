@@ -31,69 +31,68 @@ These wrappers provide a few bits of functionality such as making sure you recei
 
 The wrappers also provide behaviour such as returning `405 Method Not Allowed` responses when appropriate, and handling any `ParseError` exception that occurs when accessing `request.DATA` with malformed input.
 
-
 ## Pulling it all together
 
 Okay, let's go ahead and start using these new components to write a few views. 
 
 We don't need our `JSONResponse` class anymore, so go ahead and delete that.  Once that's done we can start refactoring our views slightly.
 
-    from blog.models import Comment
-    from blog.serializers import CommentSerializer
     from rest_framework import status
     from rest_framework.decorators import api_view
     from rest_framework.response import Response
+    from snippets.models import Snippet
+    from snippets.serializers import SnippetSerializer
+
 
     @api_view(['GET', 'POST'])
-    def comment_root(request):
+    def snippet_list(request):
         """
-        List all comments, or create a new comment.
+        List all snippets, or create a new snippet.
         """
         if request.method == 'GET':
-            comments = Comment.objects.all()
-            serializer = CommentSerializer(instance=comments)
+            snippets = Snippet.objects.all()
+            serializer = SnippetSerializer(snippets)
             return Response(serializer.data)
 
         elif request.method == 'POST':
-            serializer = CommentSerializer(request.DATA)
+            serializer = SnippetSerializer(data=request.DATA)
             if serializer.is_valid():
-                comment = serializer.object
-                comment.save()
+                serializer.save()
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 Our instance view is an improvement over the previous example.  It's a little more concise, and the code now feels very similar to if we were working with the Forms API.  We're also using named status codes, which makes the response meanings more obvious.
 
+Here is the view for an individual snippet.
+
     @api_view(['GET', 'PUT', 'DELETE'])
-    def comment_instance(request, pk):
+    def snippet_detail(request, pk):
         """
-        Retrieve, update or delete a comment instance.
+        Retrieve, update or delete a snippet instance.
         """              
         try:
-            comment = Comment.objects.get(pk=pk)
-        except Comment.DoesNotExist:
+            snippet = Snippet.objects.get(pk=pk)
+        except Snippet.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
  
         if request.method == 'GET':
-            serializer = CommentSerializer(instance=comment)
+            serializer = SnippetSerializer(snippet)
             return Response(serializer.data)
     
         elif request.method == 'PUT':
-            serializer = CommentSerializer(request.DATA, instance=comment)
+            serializer = SnippetSerializer(snippet, data=request.DATA)
             if serializer.is_valid():
-                comment = serializer.object
-                comment.save()
+                serializer.save()
                 return Response(serializer.data)
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         elif request.method == 'DELETE':
-            comment.delete()
+            snippet.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
 
-This should all feel very familiar - there's not a lot different to working with regular Django views.
+This should all feel very familiar - it is not a lot different from working with regular Django views.
 
 Notice that we're no longer explicitly tying our requests or responses to a given content type.  `request.DATA` can handle incoming `json` requests, but it can also handle `yaml` and other formats.  Similarly we're returning response objects with data, but allowing REST framework to render the response into the correct content type for us.
 
@@ -103,20 +102,20 @@ To take advantage of the fact that our responses are no longer hardwired to a si
 
 Start by adding a `format` keyword argument to both of the views, like so.
 
-    def comment_root(request, format=None):
+    def snippet_list(request, format=None):
 
 and
 
-    def comment_instance(request, pk, format=None):
+    def snippet_detail(request, pk, format=None):
 
 Now update the `urls.py` file slightly, to append a set of `format_suffix_patterns` in addition to the existing URLs.
 
     from django.conf.urls import patterns, url
     from rest_framework.urlpatterns import format_suffix_patterns
 
-    urlpatterns = patterns('blog.views',
-        url(r'^$', 'comment_root'),
-        url(r'^(?P<pk>[0-9]+)$', 'comment_instance')
+    urlpatterns = patterns('snippets.views',
+        url(r'^snippets/$', 'snippet_list'),
+        url(r'^snippets/(?P<pk>[0-9]+)$', 'snippet_detail'),
     )
     
     urlpatterns = format_suffix_patterns(urlpatterns)
@@ -129,9 +128,7 @@ Go ahead and test the API from the command line, as we did in [tutorial part 1][
 
 **TODO: Describe using accept headers, content-type headers, and format suffixed URLs**
 
-Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/][devserver]."
-
-**Note: Right now the Browseable API only works with the CBV's.  Need to fix that.**
+Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/snippets/][devserver].
 
 ### Browsability
 
@@ -139,13 +136,12 @@ Because the API chooses a return format based on what the client asks for, it wi
 
 See the [browsable api][browseable-api] topic for more information about the browsable API feature and how to customize it.
 
-
 ## What's next?
 
 In [tutorial part 3][tut-3], we'll start using class based views, and see how generic views reduce the amount of code we need to write.
 
 [json-url]: http://example.com/api/items/4.json
-[devserver]: http://127.0.0.1:8000/
+[devserver]: http://127.0.0.1:8000/snippets/
 [browseable-api]: ../topics/browsable-api.md
 [tut-1]: 1-serialization.md
 [tut-3]: 3-class-based-views.md

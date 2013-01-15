@@ -19,6 +19,10 @@ Using the `APIView` class is pretty much the same as using a regular `View` clas
 
 For example:
 
+    from rest_framework.views import APIView
+    from rest_framework.response import Response
+    from rest_framework import authentication, permissions
+
     class ListUsers(APIView):
         """
         View to list all users in the system.
@@ -118,9 +122,51 @@ You won't typically need to override this method.
 >
 > &mdash; [Nick Coghlan][cite2]
 
-REST framework also gives you to work with regular function based views...
+REST framework also allows you to work with regular function based views. It provides a set of simple decorators that wrap your function based views to ensure they receive an instance of `Request` (rather than the usual Django `HttpRequest`) and allows them to return a `Response` (instead of a Django `HttpResponse`), and allow you to configure how the request is processed.
 
-**[TODO]**
+## @api_view()
+
+**Signature:** `@api_view(http_method_names)`
+
+The core of this functionality is the `api_view` decorator, which takes a list of HTTP methods that your view should respond to. For example, this is how you would write a very simple view that just manually returns some data:
+
+    from rest_framework.decorators import api_view
+
+    @api_view(['GET'])
+    def hello_world(request):
+        return Response({"message": "Hello, world!"})
+
+
+This view will use the default renderers, parsers, authentication classes etc specified in the [settings](settings).
+
+## API policy decorators
+
+To override the default settings, REST framework provides a set of additional decorators which can be added to your views. These must come *after* (below) the `@api_view` decorator. For example, to create a view that uses a [throttle](throttling) to ensure it can only be called once per day by a particular user, use the `@throttle_classes` decorator, passing a list of throttle classes:
+
+    from rest_framework.decorators import api_view, throttle_classes
+    from rest_framework.throttling import UserRateThrottle
+
+    class OncePerDayUserThrottle(UserRateThrottle):
+            rate = '1/day'
+
+    @api_view(['GET'])
+    @throttle_classes([OncePerDayUserThrottle])
+    def view(request):
+        return Response({"message": "Hello for today! See you tomorrow!"})
+
+These decorators correspond to the attributes set on `APIView` subclasses, described above.
+
+The available decorators are:
+
+* `@renderer_classes(...)`
+* `@parser_classes(...)`
+* `@authentication_classes(...)`
+* `@throttle_classes(...)`
+* `@permission_classes(...)`
+
+Each of these decorators takes a single argument which must be a list or tuple of classes.
 
 [cite]: http://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
 [cite2]: http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html
+[settings]: api-guide/settings.md
+[throttling]: api-guide/throttling.md
