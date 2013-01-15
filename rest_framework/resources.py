@@ -1,31 +1,27 @@
 ##### RESOURCES AND ROUTERS ARE NOT YET IMPLEMENTED - PLACEHOLDER ONLY #####
 
 from functools import update_wrapper
-import inspect
 from django.utils.decorators import classonlymethod
-from rest_framework import views, generics
-
-
-def wrapped(source, dest):
-    """
-    Copy public, non-method attributes from source to dest, and return dest.
-    """
-    for attr in [attr for attr in dir(source)
-                 if not attr.startswith('_') and not inspect.ismethod(attr)]:
-        setattr(dest, attr, getattr(source, attr))
-    return dest
+from rest_framework import views, generics, mixins
 
 
 ##### RESOURCES AND ROUTERS ARE NOT YET IMPLEMENTED - PLACEHOLDER ONLY #####
 
 class ResourceMixin(object):
     """
-    Clone Django's `View.as_view()` behaviour *except* using REST framework's
-    'method -> action' binding for resources.
+    This is the magic.
+
+    Overrides `.as_view()` so that it takes an `actions` keyword that performs
+    the binding of HTTP methods to actions on the Resource.
+
+    For example, to create a concrete view binding the 'GET' and 'POST' methods
+    to the 'list' and 'create' actions...
+
+    my_resource = MyResource.as_view({'get': 'list', 'post': 'create'})
     """
 
     @classonlymethod
-    def as_view(cls, actions, **initkwargs):
+    def as_view(cls, actions=None, **initkwargs):
         """
         Main entry point for a request-response process.
         """
@@ -61,36 +57,19 @@ class ResourceMixin(object):
         return view
 
 
-##### RESOURCES AND ROUTERS ARE NOT YET IMPLEMENTED - PLACEHOLDER ONLY #####
-
 class Resource(ResourceMixin, views.APIView):
     pass
 
 
-##### RESOURCES AND ROUTERS ARE NOT YET IMPLEMENTED - PLACEHOLDER ONLY #####
-
-class ModelResource(ResourceMixin, views.APIView):
-    # TODO: Actually delegation won't work
-    root_class = generics.ListCreateAPIView
-    detail_class = generics.RetrieveUpdateDestroyAPIView
-
-    def root_view(self):
-        return wrapped(self, self.root_class())
-
-    def detail_view(self):
-        return wrapped(self, self.detail_class())
-
-    def list(self, request, *args, **kwargs):
-        return self.root_view().list(request, args, kwargs)
-
-    def create(self, request, *args, **kwargs):
-        return self.root_view().create(request, args, kwargs)
-
-    def retrieve(self, request, *args, **kwargs):
-        return self.detail_view().retrieve(request, args, kwargs)
-
-    def update(self, request, *args, **kwargs):
-        return self.detail_view().update(request, args, kwargs)
-
-    def destroy(self, request, *args, **kwargs):
-        return self.detail_view().destroy(request, args, kwargs)
+# Note the inheritence of both MultipleObjectAPIView *and* SingleObjectAPIView
+# is a bit weird given the diamond inheritence, but it will work for now.
+# There's some implementation clean up that can happen later.
+class ModelResource(mixins.CreateModelMixin,
+                    mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    mixins.ListModelMixin,
+                    ResourceMixin,
+                    generics.MultipleObjectAPIView,
+                    generics.SingleObjectAPIView):
+    pass

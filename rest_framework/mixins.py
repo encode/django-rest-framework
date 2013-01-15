@@ -25,9 +25,6 @@ class CreateModelMixin(object):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def pre_save(self, obj):
-        pass
-
 
 class ListModelMixin(object):
     """
