@@ -421,6 +421,9 @@ class ModelSerializer(Serializer):
             elif model_field.rel:
                 to_many = isinstance(model_field,
                                      models.fields.related.ManyToManyField)
+                # Reverse relational fields must be dealt as Many fields
+                if model_field.model is not self.opts.model:
+                    to_many = True
                 field = self.get_related_field(model_field, to_many=to_many)
             else:
                 field = self.get_field(model_field)
@@ -469,9 +472,6 @@ class ModelSerializer(Serializer):
         """
         Creates a default instance of a flat relational field.
         """
-        # Reverse relational fields must be dealt as Many fields
-        if model_field.model is not self.opts.model:
-            to_many = True
         # TODO: filter queryset using:
         # .using(db).complex_filter(self.rel.limit_choices_to)
         kwargs = {
