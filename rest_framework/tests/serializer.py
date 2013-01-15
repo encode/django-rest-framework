@@ -613,6 +613,7 @@ class CallableDefaultValueTests(TestCase):
         self.assertEquals(instance.pk, 1)
         self.assertEquals(instance.text, 'overridden')
 
+
 class ManyRelatedTests(TestCase):
     def test_reverse_relations(self):
         post = BlogPost.objects.create(title="Test blog post")
