@@ -945,4 +945,3 @@ class NestedSerializerContextTests(TestCase):
 
         # This will raise RuntimeError if context doesn't get passed correctly to the nested Serializers
         AlbumCollectionSerializer(album_collection, context={'context_item': 'album context'}).data
-

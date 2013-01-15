@@ -93,6 +93,7 @@ class SerializerOptions(object):
         self.fields = getattr(meta, 'fields', ())
         self.exclude = getattr(meta, 'exclude', ())
 
+
 class BaseSerializer(Field):
     class Meta(object):
         pass
