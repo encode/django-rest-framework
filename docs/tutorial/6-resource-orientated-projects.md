@@ -44,23 +44,25 @@ To see what's going on under the hood let's first explicitly create a set of vie
 
 In the `urls.py` file we first need to bind our resources to concrete views.
 
-    snippet_list = SnippetResource.as_view(actions={
+    from snippets import resources
+
+    snippet_list = resources.SnippetResource.as_view({
         'get': 'list',
         'post': 'create'
     })
-    snippet_detail = SnippetResource.as_view(actions={
+    snippet_detail = resources.SnippetResource.as_view({
         'get': 'retrieve',
         'put': 'update',
         'delete': 'destroy'
     })
-    snippet_highlight = SnippetResource.as_view(actions={
+    snippet_highlight = resources.SnippetResource.as_view({
         'get': 'highlight'
     })
-    user_list = UserResource.as_view(actions={
+    user_list = resources.UserResource.as_view({
         'get': 'list',
         'post': 'create'
     })
-    user_detail = UserResource.as_view(actions={
+    user_detail = resources.UserResource.as_view({
         'get': 'retrieve',
         'put': 'update',
         'delete': 'destroy'
@@ -93,12 +95,12 @@ Replace the remainder of the `urls.py` file with the following:
 
 Right now that hasn't really saved us a lot of code.  However, now that we're using Resources rather than Views, we actually don't need to design the urlconf ourselves.  The conventions for wiring up resources into views and urls can be handled automatically, using `Router` classes.  All we need to do is register the appropriate resources with a router, and let it do the rest.  Here's our re-wired `urls.py` file.
 
-    from blog import resources
+    from snippets import resources
     from rest_framework.routers import DefaultRouter
 
-    router = DefaultRouter(include_root=True, include_format_suffixes=True)
-    router.register(resources.SnippetResource)
-    router.register(resources.UserResource)
+    router = DefaultRouter()
+    router.register('snippets', resources.SnippetResource)
+    router.register('users', resources.UserResource)
     urlpatterns = router.urlpatterns
 
 ## Trade-offs between views vs resources.
