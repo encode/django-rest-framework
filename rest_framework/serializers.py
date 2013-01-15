@@ -362,7 +362,7 @@ class ModelSerializerOptions(SerializerOptions):
         super(ModelSerializerOptions, self).__init__(meta)
         self.model = getattr(meta, 'model', None)
         self.read_only_fields = getattr(meta, 'read_only_fields', ())
-        self.include_reverse_relations = getattr(meta, 'include_reverse_relations', api_settings.INCLUDE_REVERSE_RELATIONS)
+        self.include_reverse_relations = getattr(meta, 'include_reverse_relations', api_settings.DEFAULT_INCLUDE_REVERSE_RELATIONS)
 
 
 class ModelSerializer(Serializer):

@@ -56,7 +56,7 @@ DEFAULTS = {
     },
 
     # ModelSerializer
-    'INCLUDE_REVERSE_RELATIONS': False,
+    'DEFAULT_INCLUDE_REVERSE_RELATIONS': False,
 
     # Pagination
     'PAGINATE_BY': None,
