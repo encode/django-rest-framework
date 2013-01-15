@@ -245,7 +245,7 @@ All the relational fields may be used for any relationship or reverse relationsh
 
 ## Reverse relational fields
 
-By default reverse relational fields are not displayed when ModelSerializer is used. You can control this behavior by using `INCLUDE_REVERSE_RELATIONS` setting.
+By default reverse relational fields are not displayed when ModelSerializer is used. You can control this behavior by using `DEFAULT_INCLUDE_REVERSE_RELATIONS` setting.
 
 Besides global setting you can also use model specific setting:
 
