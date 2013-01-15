@@ -16,6 +16,10 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 
 ## 2.1.x series
 
+### Master
+
+* Support json encoding of timedelta objects.
+
 ### 2.1.16
 
 **Date**: 14th Jan 2013
