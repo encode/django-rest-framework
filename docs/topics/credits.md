@@ -89,6 +89,7 @@ The following people have helped make REST framework great.
 * Michael Mior - [michaelmior]
 * Marc Tamlyn - [mjtamlyn]
 * Richard Wackerbarth - [wackerbarth]
+* Johannes Spielmann - [shezi]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -213,3 +214,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [michaelmior]: https://github.com/michaelmior
 [mjtamlyn]: https://github.com/mjtamlyn
 [wackerbarth]: https://github.com/wackerbarth
+[shezi]: https://github.com/shezi
