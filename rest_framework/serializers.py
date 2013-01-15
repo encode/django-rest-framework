@@ -371,10 +371,22 @@ class ModelSerializer(Serializer):
     _options_class = ModelSerializerOptions
 
     def get_reverse_fields(self, opts, fields):
+        # Construct a list of all relations
         relations = []
         relations += [obj for obj in opts.get_all_related_objects() if obj.field.serialize]
         relations += [obj for obj in opts.get_all_related_many_to_many_objects() if obj.field.serialize]
-        return [rel.field for rel in relations]
+
+        # Construct a list of intermediate models
+        exclude = []
+        for field in fields:
+            if field.rel and  hasattr(field.rel, 'through'):
+                exclude.append(field.rel.through)
+        # Intermediate models from reverse relations
+        for rel in relations:
+            if rel.field.rel and hasattr(rel.field.rel, 'through'):
+                exclude.append(rel.field.rel.through)
+
+        return [rel.field for rel in relations if rel.model not in exclude]
 
     def get_default_fields(self):
         """
@@ -456,6 +468,9 @@ class ModelSerializer(Serializer):
         """
         Creates a default instance of a flat relational field.
         """
+        # Reverse relational fields must be dealt as Many fields
+        if model_field.model is not self.opts.model:
+            to_many = True
         # TODO: filter queryset using:
         # .using(db).complex_filter(self.rel.limit_choices_to)
         kwargs = {
