@@ -90,6 +90,7 @@ The following people have helped make REST framework great.
 * Marc Tamlyn - [mjtamlyn]
 * Richard Wackerbarth - [wackerbarth]
 * Johannes Spielmann - [shezi]
+* James Cleveland - [radiosilence]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -215,3 +216,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [mjtamlyn]: https://github.com/mjtamlyn
 [wackerbarth]: https://github.com/wackerbarth
 [shezi]: https://github.com/shezi
+[radiosilence]: https://github.com/radiosilence
