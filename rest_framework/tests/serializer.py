@@ -649,6 +649,26 @@ class ManyRelatedTests(TestCase):
             class Meta:
                 model = BlogPost
                 include_reverse_relations = True
+
+        serializer = BlogPostSerializer(instance=post)
+        expected = {
+            'id': 1, 'title': u'Test blog post', 'writer': None,
+            'blogpostcomment_set': [1, 2]
+        }
+        self.assertEqual(serializer.data, expected)
+
+    def test_depth_include_reverse_relations(self):
+        post = BlogPost.objects.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        class BlogPostCommentSerializer(serializers.Serializer):
+            text = serializers.CharField()
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogPost
+                include_reverse_relations = True
                 depth = 1
 
         serializer = BlogPostSerializer(instance=post)
