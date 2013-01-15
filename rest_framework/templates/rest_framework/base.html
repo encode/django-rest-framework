@@ -112,7 +112,7 @@
 
             <div class="request-info">
                 <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
-            <div>
+            </div>
             <div class="response-info">
                 <pre class="prettyprint"><div class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
 {% for key, val in response.items %}<b>{{ key }}:</b> <span class="lit">{{ val|urlize_quoted_links }}</span>
