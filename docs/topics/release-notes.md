@@ -19,6 +19,7 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 ### Master
 
 * Support json encoding of timedelta objects.
+* Bugfix: Support nullable FKs with `SlugRelatedField`.
 
 ### 2.1.16
 
