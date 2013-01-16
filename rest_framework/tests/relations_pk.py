@@ -206,7 +206,7 @@ class PKForeignKeyTests(TestCase):
         expected = [
             {'id': 1, 'name': u'target-1', 'sources': [1, 2, 3]},
             {'id': 2, 'name': u'target-2', 'sources': []},
-        ]        
+        ]
         self.assertEquals(new_serializer.data, expected)
 
         serializer.save()

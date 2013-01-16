@@ -105,6 +105,9 @@ class RelatedField(WritableField):
             value = getattr(obj, self.source or field_name)
         except ObjectDoesNotExist:
             return None
+
+        if value is None:
+            return None
         return self.to_native(value)
 
     def field_from_native(self, data, files, field_name, into):

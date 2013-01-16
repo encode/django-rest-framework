@@ -3,6 +3,7 @@ from rest_framework import serializers
 from rest_framework.compat import patterns, url
 from rest_framework.tests.models import ManyToManyTarget, ManyToManySource, ForeignKeyTarget, ForeignKeySource, NullableForeignKeySource, OneToOneTarget, NullableOneToOneSource
 
+
 def dummy_view(request, pk):
     pass
 
@@ -15,6 +16,7 @@ urlpatterns = patterns('',
     url(r'^onetoonetarget/(?P<pk>[0-9]+)/$', dummy_view, name='onetoonetarget-detail'),
     url(r'^nullableonetoonesource/(?P<pk>[0-9]+)/$', dummy_view, name='nullableonetoonesource-detail'),
 )
+
 
 class ManyToManyTargetSerializer(serializers.HyperlinkedModelSerializer):
     sources = serializers.ManyHyperlinkedRelatedField(view_name='manytomanysource-detail')
