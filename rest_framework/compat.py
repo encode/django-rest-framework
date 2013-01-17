@@ -290,24 +290,30 @@ else:
                     )
                     return self._reject(request, REASON_NO_CSRF_COOKIE)
 
-                # check non-cookie token for match
-                request_csrf_token = ""
-                if request.method == "POST":
-                    request_csrf_token = request.POST.get('csrfmiddlewaretoken', '')
+                if hasattr(settings, 'REST_FRAMEWORK_EXTRA_CSRF'):
+                    extra_csrf = settings.REST_FRAMEWORK_EXTRA_CSRF
+                else:
+                    extra_csrf = True
 
-                if request_csrf_token == "":
-                    # Fall back to X-CSRFToken, to make things easier for AJAX,
-                    # and possible for PUT/DELETE
-                    request_csrf_token = request.META.get('HTTP_X_CSRFTOKEN', '')
+                if extra_csrf:
+                    # check non-cookie token for match
+                    request_csrf_token = ""
+                    if request.method == "POST":
+                        request_csrf_token = request.POST.get('csrfmiddlewaretoken', '')
 
-                if not constant_time_compare(request_csrf_token, csrf_token):
-                    logger.warning('Forbidden (%s): %s' % (REASON_BAD_TOKEN, request.path),
-                        extra={
-                            'status_code': 403,
-                            'request': request,
-                        }
-                    )
-                    return self._reject(request, REASON_BAD_TOKEN)
+                    if request_csrf_token == "":
+                        # Fall back to X-CSRFToken, to make things easier for AJAX,
+                        # and possible for PUT/DELETE
+                        request_csrf_token = request.META.get('HTTP_X_CSRFTOKEN', '')
+
+                    if not constant_time_compare(request_csrf_token, csrf_token):
+                        logger.warning('Forbidden (%s): %s' % (REASON_BAD_TOKEN, request.path),
+                            extra={
+                                'status_code': 403,
+                                'request': request,
+                            }
+                        )
+                        return self._reject(request, REASON_BAD_TOKEN)
 
             return self._accept(request)
 
