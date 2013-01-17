@@ -88,6 +88,10 @@ The following people have helped make REST framework great.
 * Juan Riaza - [juanriaza]
 * Michael Mior - [michaelmior]
 * Marc Tamlyn - [mjtamlyn]
+* Richard Wackerbarth - [wackerbarth]
+* Johannes Spielmann - [shezi]
+* James Cleveland - [radiosilence]
+* Steve Gregory - [steve-gregory]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -211,3 +215,7 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [juanriaza]: https://github.com/juanriaza
 [michaelmior]: https://github.com/michaelmior
 [mjtamlyn]: https://github.com/mjtamlyn
+[wackerbarth]: https://github.com/wackerbarth
+[shezi]: https://github.com/shezi
+[radiosilence]: https://github.com/radiosilence
+[steve-gregory]: https://github.com/steve-gregory

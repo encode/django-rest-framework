@@ -101,7 +101,13 @@ class RelatedField(WritableField):
     ### Regular serializer stuff...
 
     def field_to_native(self, obj, field_name):
-        value = getattr(obj, self.source or field_name)
+        try:
+            value = getattr(obj, self.source or field_name)
+        except ObjectDoesNotExist:
+            return None
+
+        if value is None:
+            return None
         return self.to_native(value)
 
     def field_from_native(self, data, files, field_name, into):
@@ -211,7 +217,10 @@ class PrimaryKeyRelatedField(RelatedField):
             pk = obj.serializable_value(self.source or field_name)
         except AttributeError:
             # RelatedObject (reverse relationship)
-            obj = getattr(obj, self.source or field_name)
+            try:
+                obj = getattr(obj, self.source or field_name)
+            except ObjectDoesNotExist:
+                return None
             return self.to_native(obj.pk)
         # Forward relationship
         return self.to_native(pk)
@@ -367,13 +376,13 @@ class HyperlinkedRelatedField(RelatedField):
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
@@ -490,13 +499,13 @@ class HyperlinkedIdentityField(Field):
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
