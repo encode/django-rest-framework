@@ -106,7 +106,7 @@ class NestedOneToOneTests(TestCase):
         self.assertEquals(serializer.data, expected)
 
     def test_one_to_one_delete(self):
-        data = {'id': 3, 'name': u'target-3', 'target_source': {'_delete': True, 'id': 3, 'name': u'target-source-3', 'source': {'id': 3, 'name': u'source-3'}}}
+        data = {'id': 3, 'name': u'target-3', 'target_source': None}
         instance = OneToOneTarget.objects.get(pk=3)
         serializer = OneToOneTargetSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())

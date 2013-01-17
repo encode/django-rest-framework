@@ -107,7 +107,6 @@ class BaseSerializer(WritableField):
         self.parent = None
         self.root = None
         self.partial = partial
-        self.delete = False
 
         self.context = context or {}
 
@@ -119,6 +118,7 @@ class BaseSerializer(WritableField):
         self._data = None
         self._files = None
         self._errors = None
+        self._delete = False
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
@@ -378,7 +378,7 @@ class ModelSerializer(Serializer):
             return
 
         try:
-            native = data[field_name]
+            value = data[field_name]
         except KeyError:
             if self.required:
                 raise ValidationError(self.error_messages['required'])
@@ -387,19 +387,20 @@ class ModelSerializer(Serializer):
         if self.parent.object:
             # Set the serializer object if it exists
             pk_field_name = self.opts.model._meta.pk.name
-            pk_val = native.get(pk_field_name)
             obj = getattr(self.parent.object, field_name)
-            if obj and (getattr(obj, pk_field_name) == pk_val):
-                self.object = obj
-                self.delete = native.get('_delete')
-
-        obj = self.from_native(native, files)
-        if not self._errors:
             self.object = obj
-            into[self.source or field_name] = self
+
+        if value in (None, ''):
+            self._delete = True
+            into[(self.source or field_name)] = self
         else:
-            # Propagate errors up to our parent
-            raise ValidationError(self._errors)
+            obj = self.from_native(value, files)
+            if not self._errors:
+                self.object = obj
+                into[self.source or field_name] = self
+            else:
+                # Propagate errors up to our parent
+                raise ValidationError(self._errors)
 
     def get_default_fields(self):
         """
@@ -575,7 +576,7 @@ class ModelSerializer(Serializer):
         return instance
 
     def _save(self, parent=None, fk_field=None):
-        if self.delete:
+        if self._delete:
             self.object.delete()
             return
 
