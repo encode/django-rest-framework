@@ -1,12 +1,12 @@
 # Browser enhancements
 
-> "There are two noncontroversial uses for overloaded POST.  The first is to *simulate* HTTP's uniform interface for clients like web browsers that don't support PUT or DELETE"
+> "There are two noncontroversial uses for overloaded POST.  The first is to *simulate* HTTP's uniform interface for clients like web browsers that don't support PUT, PATCH or DELETE"
 >
 > &mdash; [RESTful Web Services][cite], Leonard Richardson & Sam Ruby.
 
-## Browser based PUT, DELETE, etc...
+## Browser based PUT, PATCH, DELETE, etc...
 
-REST framework supports browser-based `PUT`, `DELETE` and other methods, by
+REST framework supports browser-based `PUT`, `PATCH`, `DELETE` and other methods, by
 overloading `POST` requests using a hidden form field.
 
 Note that this is the same strategy as is used in [Ruby on Rails][rails].
@@ -51,7 +51,7 @@ the view.
 This is a more concise than using the `accept` override, but it also gives
 you less control.  (For example you can't specify any media type parameters)
 
-## Doesn't HTML5 support PUT and DELETE forms?
+## Doesn't HTML5 support PUT, PATCH and DELETE forms?
 
 Nope.  It was at one point intended to support `PUT` and `DELETE` forms, but
 was later [dropped from the spec][html5].  There remains

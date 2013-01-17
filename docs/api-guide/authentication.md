@@ -134,7 +134,7 @@ If successfully authenticated, `SessionAuthentication` provides the following cr
 * `request.user` will be a Django `User` instance.
 * `request.auth` will be `None`.
 
-If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
+If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `PATCH`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
 
 # Custom authentication
 
