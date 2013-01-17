@@ -42,65 +42,41 @@ Notice that we've used the `@link` decorator for the `highlight` endpoint.  This
 The handler methods only get bound to the actions when we define the URLConf.
 To see what's going on under the hood let's first explicitly create a set of views from our resources.
 
-In the `urls.py` file we first need to bind our resources to concrete views.
+In the `urls.py` file we first need to bind our resource classes into a set of concrete views.
 
-    from snippets import resources
+    from snippets.resources import SnippetResource, UserResource
 
-    snippet_list = resources.SnippetResource.as_view({
-        'get': 'list',
-        'post': 'create'
-    })
-    snippet_detail = resources.SnippetResource.as_view({
-        'get': 'retrieve',
-        'put': 'update',
-        'delete': 'destroy'
-    })
-    snippet_highlight = resources.SnippetResource.as_view({
-        'get': 'highlight'
-    })
-    user_list = resources.UserResource.as_view({
-        'get': 'list',
-        'post': 'create'
-    })
-    user_detail = resources.UserResource.as_view({
-        'get': 'retrieve',
-        'put': 'update',
-        'delete': 'destroy'
-    })
+    snippet_list = SnippetResource.as_view({'get': 'list', 'post': 'create'})
+    snippet_detail = SnippetResource.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})
+    snippet_highlight = SnippetResource.as_view({'get': 'highlight'})
+    user_list = UserResource.as_view({'get': 'list', 'post': 'create'})
+    user_detail = UserResource.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})
 
-We've now got a set of views exactly as we did before, that we can register with the URL conf.
+Notice how create multiple views onto a single resource class, by binding the http methods to the required action for each view.
 
-Replace the remainder of the `urls.py` file with the following:
+Now that we've bound our resources into concrete views, that we can register the views with the URL conf as usual.
 
     urlpatterns = format_suffix_patterns(patterns('snippets.views',
         url(r'^$', 'api_root'),
-        url(r'^snippets/$',
-            snippet_list,
-            name='snippet-list'),
-        url(r'^snippets/(?P<pk>[0-9]+)/$',
-            snippet_detail,
-            name='snippet-detail'),
-        url(r'^snippets/(?P<pk>[0-9]+)/highlight/$',
-            snippet_highlight,
-            name='snippet-highlight'),
-        url(r'^users/$',
-            user_list,
-            name='user-list'),
-        url(r'^users/(?P<pk>[0-9]+)/$',
-            user_detail,
-            name='user-detail')
+        url(r'^snippets/$', snippet_list, name='snippet-list'),
+        url(r'^snippets/(?P<pk>[0-9]+)/$', snippet_detail, name='snippet-detail'),
+        url(r'^snippets/(?P<pk>[0-9]+)/highlight/$', snippet_highlight, name='snippet-highlight'),
+        url(r'^users/$', user_list, name='user-list'),
+        url(r'^users/(?P<pk>[0-9]+)/$', user_detail, name='user-detail')
     ))
 
 ## Using Routers
 
-Right now that hasn't really saved us a lot of code.  However, now that we're using Resources rather than Views, we actually don't need to design the urlconf ourselves.  The conventions for wiring up resources into views and urls can be handled automatically, using `Router` classes.  All we need to do is register the appropriate resources with a router, and let it do the rest.  Here's our re-wired `urls.py` file.
+Now that we're using Resources rather than Views, we actually don't need to design the URL conf ourselves.  The conventions for wiring up resources into views and urls can be handled automatically, using `Router` classes.  All we need to do is register the appropriate resources with a router, and let it do the rest.
+
+Here's our re-wired `urls.py` file.
 
     from snippets import resources
     from rest_framework.routers import DefaultRouter
 
     router = DefaultRouter()
-    router.register('snippets', resources.SnippetResource)
-    router.register('users', resources.UserResource)
+    router.register(r'^snippets/', resources.SnippetResource, 'snippet')
+    router.register(r'^users/', resources.UserResource, 'user')
     urlpatterns = router.urlpatterns
 
 ## Trade-offs between views vs resources.
