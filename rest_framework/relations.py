@@ -21,15 +21,20 @@ class RelatedField(WritableField):
     representation of the target.
     """
     widget = widgets.Select
+    many_widget = widgets.SelectMultiple
     cache_choices = False
     empty_label = None
     default_read_only = True  # TODO: Remove this
+    many = False
 
     def __init__(self, *args, **kwargs):
         self.queryset = kwargs.pop('queryset', None)
         self.null = kwargs.pop('null', False)
+        self.many = kwargs.pop('many', self.many)
         super(RelatedField, self).__init__(*args, **kwargs)
         self.read_only = kwargs.pop('read_only', self.default_read_only)
+        if self.many:
+            self.widget = self.many_widget
 
     def initialize(self, parent, field_name):
         super(RelatedField, self).initialize(parent, field_name)
@@ -108,6 +113,9 @@ class RelatedField(WritableField):
 
         if value is None:
             return None
+
+        if self.many:
+            return [self.to_native(item) for item in value.all()]
         return self.to_native(value)
 
     def field_from_native(self, data, files, field_name, into):
@@ -115,7 +123,17 @@ class RelatedField(WritableField):
             return
 
         try:
-            value = data[field_name]
+            if self.many:
+                try:
+                    # Form data
+                    value = data.getlist(field_name)
+                    if value == ['']:
+                        value = []
+                except AttributeError:
+                    # Non-form data
+                    value = data[field_name]
+            else:
+                value = data[field_name]
         except KeyError:
             if self.required:
                 raise ValidationError(self.error_messages['required'])
@@ -125,45 +143,10 @@ class RelatedField(WritableField):
             raise ValidationError('Value may not be null')
         elif value in (None, '') and self.null:
             into[(self.source or field_name)] = None
+        elif self.many:
+            into[(self.source or field_name)] = [self.from_native(item) for item in value]
         else:
             into[(self.source or field_name)] = self.from_native(value)
-
-
-class ManyRelatedMixin(object):
-    """
-    Mixin to convert a related field to a many related field.
-    """
-    widget = widgets.SelectMultiple
-
-    def field_to_native(self, obj, field_name):
-        value = getattr(obj, self.source or field_name)
-        return [self.to_native(item) for item in value.all()]
-
-    def field_from_native(self, data, files, field_name, into):
-        if self.read_only:
-            return
-
-        try:
-            # Form data
-            value = data.getlist(self.source or field_name)
-        except:
-            # Non-form data
-            value = data.get(self.source or field_name)
-        else:
-            if value == ['']:
-                value = []
-
-        into[field_name] = [self.from_native(item) for item in value]
-
-
-class ManyRelatedField(ManyRelatedMixin, RelatedField):
-    """
-    Base class for related model managers.
-
-    If not overridden, this represents a to-many relationship, using the unicode
-    representations of the target, and is read-only.
-    """
-    pass
 
 
 ### PrimaryKey relationships
@@ -225,6 +208,12 @@ class PrimaryKeyRelatedField(RelatedField):
             return self.to_native(obj.pk)
         # Forward relationship
         return self.to_native(pk)
+
+
+class ManyRelatedField(RelatedField):
+    def __init__(self, *args, **kwargs):
+        kwargs['many'] = True
+        super(ManyRelatedField, self).__init__(*args, **kwargs)
 
 
 class ManyPrimaryKeyRelatedField(ManyRelatedField):
@@ -312,10 +301,6 @@ class SlugRelatedField(RelatedField):
         except (TypeError, ValueError):
             msg = self.error_messages['invalid']
             raise ValidationError(msg)
-
-
-class ManySlugRelatedField(ManyRelatedMixin, SlugRelatedField):
-    form_field_class = forms.MultipleChoiceField
 
 
 ### Hyperlinked relationships
@@ -442,13 +427,6 @@ class HyperlinkedRelatedField(RelatedField):
         return obj
 
 
-class ManyHyperlinkedRelatedField(ManyRelatedMixin, HyperlinkedRelatedField):
-    """
-    Represents a to-many relationship, using hyperlinking.
-    """
-    form_field_class = forms.MultipleChoiceField
-
-
 class HyperlinkedIdentityField(Field):
     """
     Represents the instance, or a property on the instance, using hyperlinking.
@@ -512,3 +490,20 @@ class HyperlinkedIdentityField(Field):
             pass
 
         raise Exception('Could not resolve URL for field using view name "%s"' % view_name)
+
+
+### Old-style many classes for backwards compat
+
+
+
+
+class ManySlugRelatedField(SlugRelatedField):
+    def __init__(self, *args, **kwargs):
+        kwargs['many'] = True
+        super(ManySlugRelatedField, self).__init__(*args, **kwargs)
+
+
+class ManyHyperlinkedRelatedField(HyperlinkedRelatedField):
+    def __init__(self, *args, **kwargs):
+        kwargs['many'] = True
+        super(ManyHyperlinkedRelatedField, self).__init__(*args, **kwargs)

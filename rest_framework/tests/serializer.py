@@ -1,5 +1,6 @@
 import datetime
 import pickle
+from django.utils.datastructures import MultiValueDict
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
@@ -479,7 +480,8 @@ class ManyToManyTests(TestCase):
         containing no items, using a representation that does not support
         lists (eg form data).
         """
-        data = {'rel': ''}
+        data = MultiValueDict()
+        data.setlist('rel', [''])
         serializer = self.serializer_class(data=data)
         self.assertEquals(serializer.is_valid(), True)
         instance = serializer.save()
