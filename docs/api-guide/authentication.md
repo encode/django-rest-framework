@@ -60,16 +60,14 @@ Or, if you're using the `@api_view` decorator with function based views.
         }
         return Response(content)
 
-## Apache mod_wsgi Specific Configuration
+## Apache mod_wsgi specific configuration
 
-Unlike other HTTP headers, the authorisation header is not passed through to a WSGI application by default. This is the case as doing so could leak information about passwords through to a WSGI application which should not be able to see them when Apache is performing authentication.
+Note that if deploying to [Apache using mod_wsgi][mod_wsgi_official], the authorization header is not passed through to a WSGI application by default, as it is assumed that authentication will be handled by Apache, rather than at an application level.
 
-If it is desired that the WSGI application be responsible for handling user authentication, then it is necessary to explicitly configure mod_wsgi to pass the required headers through to the application. This can be done by specifying the WSGIPassAuthorization directive in the appropriate context and setting it to 'On'.
+If you are deploying to Apache, and using any non-session based authentication, you will need to explicitly configure mod_wsgi to pass the required headers through to the application. This can be done by specifying the `WSGIPassAuthorization` directive in the appropriate context and setting it to `'On'`.
 
     # this can go in either server config, virtual host, directory or .htaccess 
     WSGIPassAuthorization On
-
-[Reference to official mod_wsgi documentation][mod_wsgi_official]
 
 # API Reference
 
