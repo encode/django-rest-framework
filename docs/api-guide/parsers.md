@@ -22,8 +22,6 @@ If you don't set the content type, most clients will default to using `'applicat
 
 As an example, if you are sending `json` encoded data using jQuery with the [.ajax() method][jquery-ajax], you should make sure to include the `contentType: 'application/json'` setting.
 
-If you're working with the API using the command line tool `curl`, you can use the `-H` flag to include a `ContentType` header.  For example, to set the content type to `json` use `-H 'content-type: application/json'`.
-
 ---
 
 ## Setting the parsers
