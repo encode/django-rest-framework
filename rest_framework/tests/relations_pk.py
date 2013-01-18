@@ -194,6 +194,13 @@ class PKForeignKeyTests(TestCase):
         ]
         self.assertEquals(serializer.data, expected)
 
+    def test_foreign_key_update_incorrect_type(self):
+        data = {'id': 1, 'name': u'source-1', 'target': 'foo'}
+        instance = ForeignKeySource.objects.get(pk=1)
+        serializer = ForeignKeySourceSerializer(instance, data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'target': [u'Incorrect type.  Expected pk value, received str.']})
+
     def test_reverse_foreign_key_update(self):
         data = {'id': 2, 'name': u'target-2', 'sources': [1, 3]}
         instance = ForeignKeyTarget.objects.get(pk=2)
