@@ -60,6 +60,17 @@ Or, if you're using the `@api_view` decorator with function based views.
         }
         return Response(content)
 
+## Apache mod_wsgi Specific Configuration
+
+Unlike other HTTP headers, the authorisation header is not passed through to a WSGI application by default. This is the case as doing so could leak information about passwords through to a WSGI application which should not be able to see them when Apache is performing authentication.
+
+If it is desired that the WSGI application be responsible for handling user authentication, then it is necessary to explicitly configure mod_wsgi to pass the required headers through to the application. This can be done by specifying the WSGIPassAuthorization directive in the appropriate context and setting it to 'On'.
+
+    # this can go in either server config, virtual host, directory or .htaccess 
+    WSGIPassAuthorization On
+
+[Reference to official mod_wsgi documentation][mod_wsgi_official]
+
 # API Reference
 
 ## BasicAuthentication
@@ -146,3 +157,4 @@ To implement a custom authentication policy, subclass `BaseAuthentication` and o
 [permission]: permissions.md
 [throttling]: throttling.md
 [csrf-ajax]: https://docs.djangoproject.com/en/dev/ref/contrib/csrf/#ajax
+[mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
