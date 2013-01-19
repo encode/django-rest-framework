@@ -28,14 +28,6 @@ class DecoratorTestCase(TestCase):
         response.request = request
         return APIView.finalize_response(self, request, response, *args, **kwargs)
 
-    def test_wrap_view(self):
-
-        @api_view(['GET'])
-        def view(request):
-            return Response({})
-
-        self.assertTrue(isinstance(view.cls_instance, APIView))
-
     def test_calling_method(self):
 
         @api_view(['GET'])
