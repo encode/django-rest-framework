@@ -23,10 +23,11 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required):
             regex = urlpattern.regex.pattern
             namespace = urlpattern.namespace
             app_name = urlpattern.app_name
+            kwargs = urlpattern.default_kwargs
             patterns = apply_suffix_patterns(urlpattern.url_patterns,
                                              suffix_pattern,
                                              suffix_required)
-            ret.append(url(regex, include(patterns, namespace, app_name)))
+            ret.append(url(regex, include(patterns, namespace, app_name), kwargs))
     return ret
 
 
