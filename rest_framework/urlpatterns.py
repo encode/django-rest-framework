@@ -20,7 +20,6 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required):
             ret.append(url(regex, view, kwargs, name))
         else:
             # Set of included URL patterns
-            print(type(urlpattern))
             regex = urlpattern.regex.pattern
             namespace = urlpattern.namespace
             app_name = urlpattern.app_name
