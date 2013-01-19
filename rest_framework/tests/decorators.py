@@ -28,6 +28,28 @@ class DecoratorTestCase(TestCase):
         response.request = request
         return APIView.finalize_response(self, request, response, *args, **kwargs)
 
+    def test_api_view_incorrect(self):
+        """
+        If @api_view is not applied correct, we should raise an assertion.
+        """
+
+        @api_view
+        def view(request):
+            return Response()
+
+        request = self.factory.get('/')
+        self.assertRaises(AssertionError, view, request)
+
+    def test_api_view_incorrect_arguments(self):
+        """
+        If @api_view is missing arguments, we should raise an assertion.
+        """
+
+        with self.assertRaises(AssertionError):
+            @api_view('GET')
+            def view(request):
+                return Response()
+
     def test_calling_method(self):
 
         @api_view(['GET'])
