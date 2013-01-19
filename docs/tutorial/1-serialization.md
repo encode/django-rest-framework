@@ -109,7 +109,7 @@ The first thing we need to get started on our Web API is provide a way of serial
 
     from django.forms import widgets
     from rest_framework import serializers
-    from snippets import models
+    from snippets.models import Snippet
 
 
     class SnippetSerializer(serializers.Serializer):
@@ -138,7 +138,7 @@ The first thing we need to get started on our Web API is provide a way of serial
                 return instance
 
             # Create new instance
-            return models.Snippet(**attrs)
+            return Snippet(**attrs)
 
 The first part of serializer class defines the fields that get serialized/deserialized.  The `restore_object` method defines how fully fledged instances get created when deserializing data.
 
