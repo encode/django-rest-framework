@@ -54,6 +54,8 @@ You might also want to create a few different users, to use for testing the API.
 
 Now that we've got some users to work with, we'd better add representations of those users to our API.  Creating a new serializer is easy:
 
+    from django.contrib.auth.models import User
+
     class UserSerializer(serializers.ModelSerializer):
         snippets = serializers.ManyPrimaryKeyRelatedField()
 
