@@ -102,7 +102,7 @@ For clients to authenticate, the token key should be included in the `Authorizat
 If successfully authenticated, `TokenAuthentication` provides the following credentials.
 
 * `request.user` will be a Django `User` instance.
-* `request.auth` will be a `rest_framework.tokenauth.models.BasicToken` instance.
+* `request.auth` will be a `rest_framework.authtoken.models.BasicToken` instance.
 
 **Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https` only.
 
