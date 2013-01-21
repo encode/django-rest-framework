@@ -6,10 +6,20 @@ from django.core.urlresolvers import RegexURLResolver
 def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required):
     ret = []
     for urlpattern in urlpatterns:
-        if not isinstance(urlpattern, RegexURLResolver):
-            # Regular URL pattern
+        if isinstance(urlpattern, RegexURLResolver):
+            # Set of included URL patterns
+            regex = urlpattern.regex.pattern
+            namespace = urlpattern.namespace
+            app_name = urlpattern.app_name
+            kwargs = urlpattern.default_kwargs
+            # Add in the included patterns, after applying the suffixes
+            patterns = apply_suffix_patterns(urlpattern.url_patterns,
+                                             suffix_pattern,
+                                             suffix_required)
+            ret.append(url(regex, include(patterns, namespace, app_name), kwargs))
 
-            # Form our complementing '.format' urlpattern
+        else:
+            # Regular URL pattern
             regex = urlpattern.regex.pattern.rstrip('$') + suffix_pattern
             view = urlpattern._callback or urlpattern._callback_str
             kwargs = urlpattern.default_args
@@ -18,16 +28,7 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required):
             if not suffix_required:
                 ret.append(urlpattern)
             ret.append(url(regex, view, kwargs, name))
-        else:
-            # Set of included URL patterns
-            regex = urlpattern.regex.pattern
-            namespace = urlpattern.namespace
-            app_name = urlpattern.app_name
-            kwargs = urlpattern.default_kwargs
-            patterns = apply_suffix_patterns(urlpattern.url_patterns,
-                                             suffix_pattern,
-                                             suffix_required)
-            ret.append(url(regex, include(patterns, namespace, app_name), kwargs))
+
     return ret
 
 
