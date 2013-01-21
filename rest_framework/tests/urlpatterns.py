@@ -13,12 +13,15 @@ from rest_framework.urlpatterns import format_suffix_patterns
 URLTestPath = namedtuple('URLTestPath', ['path', 'args', 'kwargs'])
 
 
-def test_view(request, *args, **kwargs):
+def dummy_view(request, *args, **kwargs):
     pass
 
 
 class FormatSuffixTests(TestCase):
-    def _test_urlpatterns(self, urlpatterns, test_paths):
+    """
+    Tests `format_suffix_patterns` against different URLPatterns to ensure the URLs still resolve properly, including any captured parameters.
+    """
+    def _resolve_urlpatterns(self, urlpatterns, test_paths):
         factory = RequestFactory()
         try:
             urlpatterns = format_suffix_patterns(urlpatterns)
@@ -37,31 +40,31 @@ class FormatSuffixTests(TestCase):
     def test_format_suffix(self):
         urlpatterns = patterns(
             '',
-            url(r'^test$', test_view),
+            url(r'^test$', dummy_view),
         )
         test_paths = [
             URLTestPath('/test', (), {}),
             URLTestPath('/test.api', (), {'format': 'api'}),
             URLTestPath('/test.asdf', (), {'format': 'asdf'}),
         ]
-        self._test_urlpatterns(urlpatterns, test_paths)
+        self._resolve_urlpatterns(urlpatterns, test_paths)
 
     def test_default_args(self):
         urlpatterns = patterns(
             '',
-            url(r'^test$', test_view, {'foo': 'bar'}),
+            url(r'^test$', dummy_view, {'foo': 'bar'}),
         )
         test_paths = [
             URLTestPath('/test', (), {'foo': 'bar', }),
             URLTestPath('/test.api', (), {'foo': 'bar', 'format': 'api'}),
             URLTestPath('/test.asdf', (), {'foo': 'bar', 'format': 'asdf'}),
         ]
-        self._test_urlpatterns(urlpatterns, test_paths)
+        self._resolve_urlpatterns(urlpatterns, test_paths)
 
     def test_included_urls(self):
         nested_patterns = patterns(
             '',
-            url(r'^path$', test_view)
+            url(r'^path$', dummy_view)
         )
         urlpatterns = patterns(
             '',
@@ -72,4 +75,4 @@ class FormatSuffixTests(TestCase):
             URLTestPath('/test/path.api', (), {'foo': 'bar', 'format': 'api'}),
             URLTestPath('/test/path.asdf', (), {'foo': 'bar', 'format': 'asdf'}),
         ]
-        self._test_urlpatterns(urlpatterns, test_paths)
+        self._resolve_urlpatterns(urlpatterns, test_paths)
