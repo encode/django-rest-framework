@@ -241,6 +241,14 @@ class ValidationTests(TestCase):
         self.assertFalse(serializer.is_valid())
         self.assertEquals(serializer.errors, {'content': [u'Test not in value']})
 
+        incomplete_data = {
+            'email': 'tom@example.com',
+            'created': datetime.datetime(2012, 1, 1)
+        }
+        serializer = CommentSerializerWithFieldValidator(data=incomplete_data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'content': [u'This field is required.']})
+
     def test_bad_type_data_is_false(self):
         """
         Data of the wrong type is not valid.
