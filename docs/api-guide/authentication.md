@@ -18,7 +18,9 @@ The `request.auth` property is used for any additional authentication informatio
 
 ---
 
-**Note:** Don't forget that **authentication by itself won't allow or disallow an incoming request**, it simply identifies the credentials that the request was made with.  For information on how to setup the permission polices for your API please see the [permissions documentation][permission].
+**Note:** Don't forget that **authentication by itself won't allow or disallow an incoming request**, it simply identifies the credentials that the request was made with.
+
+For information on how to setup the permission polices for your API please see the [permissions documentation][permission].
 
 ---
 
@@ -73,11 +75,11 @@ When an unauthenticated request is denied permission there are two different err
 * [HTTP 401 Unauthorized][http401]
 * [HTTP 403 Permission Denied][http403]
 
-The kind of response that will be used depends on the type of authentication scheme in use, and the ordering of the authentication classes.
+HTTP 401 responses must always include a `WWW-Authenticate` header, that instructs the client how to authenticate.  HTTP 403 responses do not include the `WWW-Authenticate` header.
 
-Although multiple authentication schemes may be in use, only one scheme may be used to determine the type of response.  **The first authentication class set on the view is given priority when determining the type of response**.
+The kind of response that will be used depends on the authentication scheme.  Although multiple authentication schemes may be in use, only one scheme may be used to determine the type of response.  **The first authentication class set on the view is used when determining the type of response**.
 
-Note that when a *successfully authenticated* request is denied permission, a `403 Permission Denied` response will always be used, regardless of the authentication scheme.
+Note that when a request may successfully authenticate, but still be denied permission to perform the request, in which case a `403 Permission Denied` response will always be used, regardless of the authentication scheme.
 
 ---
 
@@ -126,8 +128,6 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
 **Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https` only.
 
-<<<<<<< HEAD
-<!--## OAuth2Authentication
 =======
 If you want every user to have an automatically generated Token, you can simply catch the User's `post_save` signal.
 

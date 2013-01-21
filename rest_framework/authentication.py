@@ -71,7 +71,7 @@ class BasicAuthentication(BaseAuthentication):
             return (user, None)
         raise exceptions.AuthenticationFailed('Invalid username/password')
 
-    def authenticate_header(self):
+    def authenticate_header(self, request):
         return 'Basic realm="%s"' % self.www_authenticate_realm
 
 
@@ -148,7 +148,7 @@ class TokenAuthentication(BaseAuthentication):
             return (token.user, token)
         raise exceptions.AuthenticationFailed('User inactive or deleted')
 
-    def authenticate_header(self):
+    def authenticate_header(self, request):
         return 'Token'
 
 

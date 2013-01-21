@@ -148,7 +148,7 @@ class APIView(View):
         """
         If request is not permitted, determine what kind of exception to raise.
         """
-        if self.request.successful_authenticator:
+        if not self.request.successful_authenticator:
             raise exceptions.NotAuthenticated()
         raise exceptions.PermissionDenied()
 
@@ -157,6 +157,15 @@ class APIView(View):
         If request is throttled, determine what kind of exception to raise.
         """
         raise exceptions.Throttled(wait)
+
+    def get_authenticate_header(self, request):
+        """
+        If a request is unauthenticated, determine the WWW-Authenticate
+        header to use for 401 responses, if any.
+        """
+        authenticators = self.get_authenticators()
+        if authenticators:
+            return authenticators[0].authenticate_header(request)
 
     def get_parser_context(self, http_request):
         """
@@ -320,6 +329,16 @@ class APIView(View):
         if isinstance(exc, exceptions.Throttled):
             # Throttle wait header
             self.headers['X-Throttle-Wait-Seconds'] = '%d' % exc.wait
+
+        if isinstance(exc, (exceptions.NotAuthenticated,
+                            exceptions.AuthenticationFailed)):
+            # WWW-Authenticate header for 401 responses, else coerce to 403
+            auth_header = self.get_authenticate_header(self.request)
+
+            if auth_header:
+                self.headers['WWW-Authenticate'] = auth_header
+            else:
+                exc.status_code = status.HTTP_403_FORBIDDEN
 
         if isinstance(exc, exceptions.APIException):
             return Response({'detail': exc.detail},
