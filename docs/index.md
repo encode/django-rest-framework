@@ -132,9 +132,9 @@ Run the tests:
 
 ## Support
 
-For support please see the [REST framework discussion group][group], or try the  `#restframework` channel on `irc.freenode.net`.
+For support please see the [REST framework discussion group][group], try the  `#restframework` channel on `irc.freenode.net`, or raise a  question on [Stack Overflow][stack-overflow], making sure to include the ['django-rest-framework'][django-rest-framework-tag] tag.
 
-Paid support is also available from [DabApps], and can include work on REST framework core, or support with building your REST framework API.  Please contact [Tom Christie][email] if you'd like to discuss commercial support options.
+[Paid support is available][paid-support] from [DabApps][dabapps], and can include work on REST framework core, or support with building your REST framework API.  Please [contact DabApps][contact-dabapps] if you'd like to discuss commercial support options.
 
 ## License
 
@@ -166,7 +166,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [yaml]: http://pypi.python.org/pypi/PyYAML
-[django-filter]: https://github.com/alex/django-filter
+[django-filter]: http://pypi.python.org/pypi/django-filter
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [image]: img/quickstart.png
 [sandbox]: http://restframework.herokuapp.com/
@@ -209,5 +209,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [credits]: topics/credits.md
 
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
-[DabApps]: http://dabapps.com
-[email]: mailto:tom@tomchristie.com
+[stack-overflow]: http://stackoverflow.com/
+[django-rest-framework-tag]: http://stackoverflow.com/questions/tagged/django-rest-framework
+[django-tag]: http://stackoverflow.com/questions/tagged/django
+[paid-support]: http://dabapps.com/services/build/api-development/
+[dabapps]: http://dabapps.com
+[contact-dabapps]: http://dabapps.com/contact/

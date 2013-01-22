@@ -60,7 +60,7 @@ Or, if you're using the `@api_view` decorator with function based views.
 
     @api_view(['GET'])
     @authentication_classes((SessionAuthentication, BasicAuthentication))
-    @permissions_classes((IsAuthenticated,))
+    @permission_classes((IsAuthenticated,))
     def example_view(request, format=None):
         content = {
             'user': unicode(request.user),  # `django.contrib.auth.User` instance.
@@ -80,6 +80,15 @@ HTTP 401 responses must always include a `WWW-Authenticate` header, that instruc
 The kind of response that will be used depends on the authentication scheme.  Although multiple authentication schemes may be in use, only one scheme may be used to determine the type of response.  **The first authentication class set on the view is used when determining the type of response**.
 
 Note that when a request may successfully authenticate, but still be denied permission to perform the request, in which case a `403 Permission Denied` response will always be used, regardless of the authentication scheme.
+
+## Apache mod_wsgi specific configuration
+
+Note that if deploying to [Apache using mod_wsgi][mod_wsgi_official], the authorization header is not passed through to a WSGI application by default, as it is assumed that authentication will be handled by Apache, rather than at an application level.
+
+If you are deploying to Apache, and using any non-session based authentication, you will need to explicitly configure mod_wsgi to pass the required headers through to the application. This can be done by specifying the `WSGIPassAuthorization` directive in the appropriate context and setting it to `'On'`.
+
+    # this can go in either server config, virtual host, directory or .htaccess 
+    WSGIPassAuthorization On
 
 ---
 
@@ -120,7 +129,7 @@ For clients to authenticate, the token key should be included in the `Authorizat
 If successfully authenticated, `TokenAuthentication` provides the following credentials.
 
 * `request.user` will be a Django `User` instance.
-* `request.auth` will be a `rest_framework.tokenauth.models.BasicToken` instance.
+* `request.auth` will be a `rest_framework.authtoken.models.BasicToken` instance.
 
 Unauthenticated responses that are denied permission will result in an `HTTP 401 Unauthorized` response with an appropriate WWW-Authenticate header.  For example:
 
@@ -168,7 +177,7 @@ If successfully authenticated, `SessionAuthentication` provides the following cr
 
 Unauthenticated responses that are denied permission will result in an `HTTP 403 Forbidden` response.
 
----
+If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
 
 # Custom authentication
 
@@ -192,3 +201,5 @@ If the `.authentication_header()` method is not overridden, the authentication s
 [oauth]: http://oauth.net/2/
 [permission]: permissions.md
 [throttling]: throttling.md
+[csrf-ajax]: https://docs.djangoproject.com/en/dev/ref/contrib/csrf/#ajax
+[mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization

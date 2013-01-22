@@ -14,6 +14,16 @@ REST framework includes a number of built in Parser classes, that allow you to a
 
 The set of valid parsers for a view is always defined as a list of classes.  When either `request.DATA` or `request.FILES` is accessed, REST framework will examine the `Content-Type` header on the incoming request, and determine which parser to use to parse the request content.
 
+---
+
+**Note**: When developing client applications always remember to make sure you're setting the `Content-Type` header when sending data in an HTTP request.
+
+If you don't set the content type, most clients will default to using `'application/x-www-form-urlencoded'`, which may not be what you wanted.
+
+As an example, if you are sending `json` encoded data using jQuery with the [.ajax() method][jquery-ajax], you should make sure to include the `contentType: 'application/json'` setting.
+
+---
+
 ## Setting the parsers
 
 The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSES` setting.  For example, the following settings would allow requests with `YAML` content.
@@ -167,8 +177,9 @@ The following third party packages are also available.
 
 ## MessagePack
 
-[MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the `djangorestframework-msgpack` package which provides MessagePack renderer and parser support for REST framework.  Documentation is [available here][djangorestframework-msgpack].
+[MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
 
+[jquery-ajax]: http://api.jquery.com/jQuery.ajax/
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion
 [messagepack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [juanriaza]: https://github.com/juanriaza

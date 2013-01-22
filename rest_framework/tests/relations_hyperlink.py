@@ -1,8 +1,8 @@
-from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.compat import patterns, url
-from rest_framework.tests.models import ManyToManyTarget, ManyToManySource, ForeignKeyTarget, ForeignKeySource
+from rest_framework.tests.models import ManyToManyTarget, ManyToManySource, ForeignKeyTarget, ForeignKeySource, NullableForeignKeySource, OneToOneTarget, NullableOneToOneSource
+
 
 def dummy_view(request, pk):
     pass
@@ -13,7 +13,10 @@ urlpatterns = patterns('',
     url(r'^foreignkeysource/(?P<pk>[0-9]+)/$', dummy_view, name='foreignkeysource-detail'),
     url(r'^foreignkeytarget/(?P<pk>[0-9]+)/$', dummy_view, name='foreignkeytarget-detail'),
     url(r'^nullableforeignkeysource/(?P<pk>[0-9]+)/$', dummy_view, name='nullableforeignkeysource-detail'),
+    url(r'^onetoonetarget/(?P<pk>[0-9]+)/$', dummy_view, name='onetoonetarget-detail'),
+    url(r'^nullableonetoonesource/(?P<pk>[0-9]+)/$', dummy_view, name='nullableonetoonesource-detail'),
 )
+
 
 class ManyToManyTargetSerializer(serializers.HyperlinkedModelSerializer):
     sources = serializers.ManyHyperlinkedRelatedField(view_name='manytomanysource-detail')
@@ -40,16 +43,17 @@ class ForeignKeySourceSerializer(serializers.HyperlinkedModelSerializer):
 
 
 # Nullable ForeignKey
-
-class NullableForeignKeySource(models.Model):
-    name = models.CharField(max_length=100)
-    target = models.ForeignKey(ForeignKeyTarget, null=True, blank=True,
-                               related_name='nullable_sources')
-
-
 class NullableForeignKeySourceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = NullableForeignKeySource
+
+
+# OneToOne
+class NullableOneToOneTargetSerializer(serializers.HyperlinkedModelSerializer):
+    nullable_source = serializers.HyperlinkedRelatedField(view_name='nullableonetoonesource-detail')
+
+    class Meta:
+        model = OneToOneTarget
 
 
 # TODO: Add test that .data cannot be accessed prior to .is_valid
@@ -211,6 +215,13 @@ class HyperlinkedForeignKeyTests(TestCase):
         ]
         self.assertEquals(serializer.data, expected)
 
+    def test_foreign_key_update_incorrect_type(self):
+        data = {'url': '/foreignkeysource/1/', 'name': u'source-1', 'target': 2}
+        instance = ForeignKeySource.objects.get(pk=1)
+        serializer = ForeignKeySourceSerializer(instance, data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'target': [u'Incorrect type.  Expected url string, received int.']})
+
     def test_reverse_foreign_key_update(self):
         data = {'url': '/foreignkeytarget/2/', 'name': u'target-2', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']}
         instance = ForeignKeyTarget.objects.get(pk=2)
@@ -223,7 +234,7 @@ class HyperlinkedForeignKeyTests(TestCase):
         expected = [
             {'url': '/foreignkeytarget/1/', 'name': u'target-1', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/2/', '/foreignkeysource/3/']},
             {'url': '/foreignkeytarget/2/', 'name': u'target-2', 'sources': []},
-        ]        
+        ]
         self.assertEquals(new_serializer.data, expected)
 
         serializer.save()
@@ -409,3 +420,24 @@ class HyperlinkedNullableForeignKeyTests(TestCase):
     #         {'id': 2, 'name': u'target-2', 'sources': []},
     #     ]
     #     self.assertEquals(serializer.data, expected)
+
+
+class HyperlinkedNullableOneToOneTests(TestCase):
+    urls = 'rest_framework.tests.relations_hyperlink'
+
+    def setUp(self):
+        target = OneToOneTarget(name='target-1')
+        target.save()
+        new_target = OneToOneTarget(name='target-2')
+        new_target.save()
+        source = NullableOneToOneSource(name='source-1', target=target)
+        source.save()
+
+    def test_reverse_foreign_key_retrieve_with_null(self):
+        queryset = OneToOneTarget.objects.all()
+        serializer = NullableOneToOneTargetSerializer(queryset)
+        expected = [
+            {'url': '/onetoonetarget/1/', 'name': u'target-1', 'nullable_source': '/nullableonetoonesource/1/'},
+            {'url': '/onetoonetarget/2/', 'name': u'target-2', 'nullable_source': None},
+        ]
+        self.assertEquals(serializer.data, expected)

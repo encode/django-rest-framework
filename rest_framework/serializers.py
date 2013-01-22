@@ -298,15 +298,18 @@ class BaseSerializer(Field):
         Override default so that we can apply ModelSerializer as a nested
         field to relationships.
         """
-        if self.source:
-            for component in self.source.split('.'):
-                obj = getattr(obj, component)
+        try:
+            if self.source:
+                for component in self.source.split('.'):
+                    obj = getattr(obj, component)
+                    if is_simple_callable(obj):
+                        obj = obj()
+            else:
+                obj = getattr(obj, field_name)
                 if is_simple_callable(obj):
                     obj = obj()
-        else:
-            obj = getattr(obj, field_name)
-            if is_simple_callable(obj):
-                obj = value()
+        except ObjectDoesNotExist:
+            return None
 
         # If the object has an "all" method, assume it's a relationship
         if is_simple_callable(getattr(obj, 'all', None)):
@@ -412,7 +415,7 @@ class ModelSerializer(Serializer):
         """
         Returns a default instance of the pk field.
         """
-        return Field()
+        return self.get_field(model_field)
 
     def get_nested_field(self, model_field):
         """
@@ -430,7 +433,7 @@ class ModelSerializer(Serializer):
         # TODO: filter queryset using:
         # .using(db).complex_filter(self.rel.limit_choices_to)
         kwargs = {
-            'null': model_field.null,
+            'null': model_field.null or model_field.blank,
             'queryset': model_field.rel.to._default_manager
         }
 
@@ -449,6 +452,9 @@ class ModelSerializer(Serializer):
         if model_field.null or model_field.blank:
             kwargs['required'] = False
 
+        if isinstance(model_field, models.AutoField) or not model_field.editable:
+            kwargs['read_only'] = True
+
         if model_field.has_default():
             kwargs['required'] = False
             kwargs['default'] = model_field.get_default()
@@ -462,6 +468,7 @@ class ModelSerializer(Serializer):
             return ChoiceField(**kwargs)
 
         field_mapping = {
+            models.AutoField: IntegerField,
             models.FloatField: FloatField,
             models.IntegerField: IntegerField,
             models.PositiveIntegerField: IntegerField,

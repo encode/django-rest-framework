@@ -15,8 +15,8 @@ Right now we have endpoints for 'snippets' and 'users', but we don't have a sing
     @api_view(('GET',))
     def api_root(request, format=None):
         return Response({
-            'users': reverse('user-list', request=request),
-            'snippets': reverse('snippet-list', request=request)
+            'users': reverse('user-list', request=request, format=format),
+            'snippets': reverse('snippet-list', request=request, format=format)
         })
 
 Notice that we're using REST framework's `reverse` function in order to return fully-qualified URLs.
@@ -116,7 +116,7 @@ After adding all those names into our URLconf, our final `'urls.py'` file should
         url(r'^snippets/(?P<pk>[0-9]+)/$',
             views.SnippetDetail.as_view(),
             name='snippet-detail'),
-        url(r'^snippets/(?P<pk>[0-9]+)/highlight/$'
+        url(r'^snippets/(?P<pk>[0-9]+)/highlight/$',
             views.SnippetHighlight.as_view(),
             name='snippet-highlight'),
         url(r'^users/$',
@@ -130,7 +130,7 @@ After adding all those names into our URLconf, our final `'urls.py'` file should
     # Login and logout views for the browsable API
     urlpatterns += patterns('',    
         url(r'^api-auth/', include('rest_framework.urls',
-                                   namespace='rest_framework'))
+                                   namespace='rest_framework')),
     )
 
 ## Adding pagination

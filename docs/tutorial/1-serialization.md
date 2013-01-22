@@ -8,7 +8,7 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 ---
 
-**Note**: The final code for this tutorial is available in the [tomchristie/rest-framework-tutorial][repo] repository on GitHub.  There is also a sandbox version for testing, [available here][sandbox].
+**Note**: The code for this tutorial is available in the [tomchristie/rest-framework-tutorial][repo] repository on GitHub. As pieces of code are introduced, they are committed to this repository. The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
 
 ---
 
@@ -60,7 +60,7 @@ We'll also need to add our new `snippets` app and the `rest_framework` app to `I
     INSTALLED_APPS = (
         ...
         'rest_framework',
-        'snippets'
+        'snippets',
     )
 
 We also need to wire up the root urlconf, in the `tutorial/urls.py` file, to include our snippet app's URLs.
@@ -73,14 +73,15 @@ Okay, we're ready to roll.
 
 ## Creating a model to work with
 
-For the purposes of this tutorial we're going to start by creating a simple `Snippet` model that is used to store code snippets.  Go ahead and edit the  `snippets` app's `models.py` file.
+For the purposes of this tutorial we're going to start by creating a simple `Snippet` model that is used to store code snippets.  Go ahead and edit the  `snippets` app's `models.py` file. Note: Good programming practices include comments. Although you will find them in our repository version of this tutorial code, we have omitted them here to focus on the code itself.
 
     from django.db import models
     from pygments.lexers import get_all_lexers
     from pygments.styles import get_all_styles
-    
-    LANGUAGE_CHOICES = sorted([(item[1][0], item[0]) for item in get_all_lexers()])
-    STYLE_CHOICES = sorted((item, item) for item in list(get_all_styles()))
+
+    LEXERS = [item for item in get_all_lexers() if item[1]]
+    LANGUAGE_CHOICES = sorted([(item[1][0], item[0]) for item in LEXERS])
+    STYLE_CHOICES = sorted((item, item) for item in get_all_styles())
     
     
     class Snippet(models.Model):
@@ -108,7 +109,7 @@ The first thing we need to get started on our Web API is provide a way of serial
 
     from django.forms import widgets
     from rest_framework import serializers
-    from snippets import models
+    from snippets.models import Snippet
 
 
     class SnippetSerializer(serializers.Serializer):
@@ -137,7 +138,7 @@ The first thing we need to get started on our Web API is provide a way of serial
                 return instance
 
             # Create new instance
-            return models.Snippet(**attrs)
+            return Snippet(**attrs)
 
 The first part of serializer class defines the fields that get serialized/deserialized.  The `restore_object` method defines how fully fledged instances get created when deserializing data.
 
@@ -202,8 +203,6 @@ Open the file `snippets/serializers.py` again, and edit the `SnippetSerializer` 
             model = Snippet
             fields = ('id', 'title', 'code', 'linenos', 'language', 'style')
 
-
-
 ## Writing regular Django views using our Serializer
 
 Let's see how we can write some API views using our new Serializer class.
@@ -228,7 +227,6 @@ Edit the `snippet/views.py` file, and add the following.
             content = JSONRenderer().render(data)
             kwargs['content_type'] = 'application/json'
             super(JSONResponse, self).__init__(content, **kwargs)
-
 
 The root of our API is going to be a view that supports listing all the existing snippets, or creating a new snippet.
 
@@ -288,16 +286,45 @@ Finally we need to wire these views up. Create the `snippets/urls.py` file:
 
     urlpatterns = patterns('snippets.views',
         url(r'^snippets/$', 'snippet_list'),
-        url(r'^snippets/(?P<pk>[0-9]+)/$', 'snippet_detail')
+        url(r'^snippets/(?P<pk>[0-9]+)/$', 'snippet_detail'),
     )
 
 It's worth noting that there are a couple of edge cases we're not dealing with properly at the moment.  If we send malformed `json`, or if a request is made with a method that the view doesn't handle, then we'll end up with a 500 "server error" response.  Still, this'll do for now.
 
 ## Testing our first attempt at a Web API
 
-**TODO: Describe using runserver and making example requests from console**
+Now we can start up a sample server that serves our snippets.
 
-**TODO: Describe opening in a web browser and viewing json output**
+Quit out of the shell
+
+	quit()
+
+and start up Django's development server
+
+	python manage.py runserver
+
+	Validating models...
+
+	0 errors found
+	Django version 1.4.3, using settings 'tutorial.settings'
+	Development server is running at http://127.0.0.1:8000/
+	Quit the server with CONTROL-C.
+
+In another terminal window, we can test the server.
+
+We can get a list of all of the snippets (we only have one at the moment)
+
+	curl http://127.0.0.1:8000/snippets/
+
+	[{"id": 1, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}]
+
+or we can get a particular snippet by referencing its id
+
+	curl http://127.0.0.1:8000/snippets/1/
+
+	{"id": 1, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}
+
+Similarly, you can have the same json displayed by referencing these URLs from your favorite web browser.
 
 ## Where are we now
 

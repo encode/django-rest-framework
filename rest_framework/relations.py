@@ -101,7 +101,13 @@ class RelatedField(WritableField):
     ### Regular serializer stuff...
 
     def field_to_native(self, obj, field_name):
-        value = getattr(obj, self.source or field_name)
+        try:
+            value = getattr(obj, self.source or field_name)
+        except ObjectDoesNotExist:
+            return None
+
+        if value is None:
+            return None
         return self.to_native(value)
 
     def field_from_native(self, data, files, field_name, into):
@@ -171,7 +177,7 @@ class PrimaryKeyRelatedField(RelatedField):
 
     default_error_messages = {
         'does_not_exist': _("Invalid pk '%s' - object does not exist."),
-        'invalid': _('Invalid value.'),
+        'incorrect_type': _('Incorrect type.  Expected pk value, received %s.'),
     }
 
     # TODO: Remove these field hacks...
@@ -202,7 +208,8 @@ class PrimaryKeyRelatedField(RelatedField):
             msg = self.error_messages['does_not_exist'] % smart_unicode(data)
             raise ValidationError(msg)
         except (TypeError, ValueError):
-            msg = self.error_messages['invalid']
+            received = type(data).__name__
+            msg = self.error_messages['incorrect_type'] % received
             raise ValidationError(msg)
 
     def field_to_native(self, obj, field_name):
@@ -211,7 +218,10 @@ class PrimaryKeyRelatedField(RelatedField):
             pk = obj.serializable_value(self.source or field_name)
         except AttributeError:
             # RelatedObject (reverse relationship)
-            obj = getattr(obj, self.source or field_name)
+            try:
+                obj = getattr(obj, self.source or field_name)
+            except ObjectDoesNotExist:
+                return None
             return self.to_native(obj.pk)
         # Forward relationship
         return self.to_native(pk)
@@ -226,7 +236,7 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
 
     default_error_messages = {
         'does_not_exist': _("Invalid pk '%s' - object does not exist."),
-        'invalid': _('Invalid value.'),
+        'incorrect_type': _('Incorrect type.  Expected pk value, received %s.'),
     }
 
     def prepare_value(self, obj):
@@ -266,7 +276,8 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
             msg = self.error_messages['does_not_exist'] % smart_unicode(data)
             raise ValidationError(msg)
         except (TypeError, ValueError):
-            msg = self.error_messages['invalid']
+            received = type(data).__name__
+            msg = self.error_messages['incorrect_type'] % received
             raise ValidationError(msg)
 
 ### Slug relationships
@@ -324,7 +335,7 @@ class HyperlinkedRelatedField(RelatedField):
         'incorrect_match': _('Invalid hyperlink - Incorrect URL match'),
         'configuration_error': _('Invalid hyperlink due to configuration error'),
         'does_not_exist': _("Invalid hyperlink - object does not exist."),
-        'invalid': _('Invalid value.'),
+        'incorrect_type': _('Incorrect type.  Expected url string, received %s.'),
     }
 
     def __init__(self, *args, **kwargs):
@@ -367,13 +378,13 @@ class HyperlinkedRelatedField(RelatedField):
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
@@ -388,8 +399,8 @@ class HyperlinkedRelatedField(RelatedField):
         try:
             http_prefix = value.startswith('http:') or value.startswith('https:')
         except AttributeError:
-            msg = self.error_messages['invalid']
-            raise ValidationError(msg)
+            msg = self.error_messages['incorrect_type']
+            raise ValidationError(msg % type(value).__name__)
 
         if http_prefix:
             # If needed convert absolute URLs to relative path
@@ -425,8 +436,8 @@ class HyperlinkedRelatedField(RelatedField):
         except ObjectDoesNotExist:
             raise ValidationError(self.error_messages['does_not_exist'])
         except (TypeError, ValueError):
-            msg = self.error_messages['invalid']
-            raise ValidationError(msg)
+            msg = self.error_messages['incorrect_type']
+            raise ValidationError(msg % type(value).__name__)
 
         return obj
 
@@ -490,13 +501,13 @@ class HyperlinkedIdentityField(Field):
 
         kwargs = {self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
-            return reverse(self.view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except:
             pass
 

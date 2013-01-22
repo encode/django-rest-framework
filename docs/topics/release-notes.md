@@ -18,9 +18,23 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 
 ### Master
 
-* Deprecate django.utils.simplejson in favor of Python 2.6's built-in json module.
+* Support json encoding of timedelta objects.
+* `format_suffix_patterns()` now supports `include` style URL patterns. 
+* Bugfix: Return proper validation errors when incorrect types supplied for relational fields.
+* Bugfix: Support nullable FKs with `SlugRelatedField`.
+
+### 2.1.16
+
+**Date**: 14th Jan 2013
+
+* Deprecate `django.utils.simplejson` in favor of Python 2.6's built-in json module.
+* Bugfix: `auto_now`, `auto_now_add` and other `editable=False` fields now default to read-only.
+* Bugfix: PK fields now only default to read-only if they are an AutoField or if `editable=False`.
 * Bugfix: Validation errors instead of exceptions when serializers receive incorrect types.
 * Bugfix: Validation errors instead of exceptions when related fields receive incorrect types.
+* Bugfix: Handle ObjectDoesNotExist exception when serializing null reverse one-to-one
+
+**Note**: Prior to 2.1.16, The Decimals would render in JSON using floating point if `simplejson` was installed, but otherwise render using string notation. Now that use of `simplejson` has been deprecated, Decimals will consistently render using string notation.  See [#582] for more details. 
 
 ### 2.1.15
 
@@ -314,3 +328,4 @@ This change will not affect user code, so long as it's following the recommended
 [staticfiles13]: https://docs.djangoproject.com/en/1.3/howto/static-files/#with-a-template-tag
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
 [announcement]: rest-framework-2-announcement.md
+[#582]: https://github.com/tomchristie/django-rest-framework/issues/582

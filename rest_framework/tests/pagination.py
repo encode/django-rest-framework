@@ -181,10 +181,10 @@ class UnitTestPagination(TestCase):
         """
         Ensure context gets passed through to the object serializer.
         """
-        serializer = PassOnContextPaginationSerializer(self.first_page)
+        serializer = PassOnContextPaginationSerializer(self.first_page, context={'foo': 'bar'})
         serializer.data
         results = serializer.fields[serializer.results_field]
-        self.assertTrue(serializer.context is results.context)
+        self.assertEquals(serializer.context, results.context)
 
 
 class TestUnpaginated(TestCase):

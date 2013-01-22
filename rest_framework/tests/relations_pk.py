@@ -1,7 +1,6 @@
-from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
-from rest_framework.tests.models import ManyToManyTarget, ManyToManySource, ForeignKeyTarget, ForeignKeySource, NullableForeignKeySource
+from rest_framework.tests.models import ManyToManyTarget, ManyToManySource, ForeignKeyTarget, ForeignKeySource, NullableForeignKeySource, OneToOneTarget, NullableOneToOneSource
 
 
 class ManyToManyTargetSerializer(serializers.ModelSerializer):
@@ -31,6 +30,14 @@ class ForeignKeySourceSerializer(serializers.ModelSerializer):
 class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = NullableForeignKeySource
+
+
+# OneToOne
+class NullableOneToOneTargetSerializer(serializers.ModelSerializer):
+    nullable_source = serializers.PrimaryKeyRelatedField()
+
+    class Meta:
+        model = OneToOneTarget
 
 
 # TODO: Add test that .data cannot be accessed prior to .is_valid
@@ -187,6 +194,13 @@ class PKForeignKeyTests(TestCase):
         ]
         self.assertEquals(serializer.data, expected)
 
+    def test_foreign_key_update_incorrect_type(self):
+        data = {'id': 1, 'name': u'source-1', 'target': 'foo'}
+        instance = ForeignKeySource.objects.get(pk=1)
+        serializer = ForeignKeySourceSerializer(instance, data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'target': [u'Incorrect type.  Expected pk value, received str.']})
+
     def test_reverse_foreign_key_update(self):
         data = {'id': 2, 'name': u'target-2', 'sources': [1, 3]}
         instance = ForeignKeyTarget.objects.get(pk=2)
@@ -199,7 +213,7 @@ class PKForeignKeyTests(TestCase):
         expected = [
             {'id': 1, 'name': u'target-1', 'sources': [1, 2, 3]},
             {'id': 2, 'name': u'target-2', 'sources': []},
-        ]        
+        ]
         self.assertEquals(new_serializer.data, expected)
 
         serializer.save()
@@ -383,3 +397,22 @@ class PKNullableForeignKeyTests(TestCase):
     #         {'id': 2, 'name': u'target-2', 'sources': []},
     #     ]
     #     self.assertEquals(serializer.data, expected)
+
+
+class PKNullableOneToOneTests(TestCase):
+    def setUp(self):
+        target = OneToOneTarget(name='target-1')
+        target.save()
+        new_target = OneToOneTarget(name='target-2')
+        new_target.save()
+        source = NullableOneToOneSource(name='source-1', target=target)
+        source.save()
+
+    def test_reverse_foreign_key_retrieve_with_null(self):
+        queryset = OneToOneTarget.objects.all()
+        serializer = NullableOneToOneTargetSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': u'target-1', 'nullable_source': 1},
+            {'id': 2, 'name': u'target-2', 'nullable_source': None},
+        ]
+        self.assertEquals(serializer.data, expected)
