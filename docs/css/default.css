@@ -25,18 +25,29 @@ pre {
     margin-top: 9px;
 }
 
+body.index-page #main-content p.badges {
+  padding-bottom: 1px;
+}
+
 /* GitHub 'Star' badge */
-body.index-page #main-content iframe {
+body.index-page #main-content iframe.github-star-button {
     float: right;
     margin-top: -12px;
     margin-right: -15px;
 }
 
+/* Tweet button */
+body.index-page #main-content iframe.twitter-share-button {
+    float: right;
+    margin-top: -12px;
+    margin-right: 8px;
+}
+
 /* Travis CI badge */
-body.index-page #main-content p:first-of-type {
+body.index-page #main-content img.travis-build-image {
     float: right;
     margin-right: 8px;
-    margin-top: -14px;
+    margin-top: -9px;
     margin-bottom: 0px;
 }
 
