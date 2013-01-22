@@ -18,10 +18,13 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 
 ### Master
 
+* Support proper 401 Unauthorized responses where appropriate, instead of always using 403 Forbidden.
 * Support json encoding of timedelta objects.
 * `format_suffix_patterns()` now supports `include` style URL patterns. 
 * Bugfix: Return proper validation errors when incorrect types supplied for relational fields.
 * Bugfix: Support nullable FKs with `SlugRelatedField`.
+
+**Note**: If the primary authentication class is `TokenAuthentication` or `BasicAuthentication`, a view will now correctly return 401 responses to unauthenticated access, with an appropriate `WWW-Authenticate` header, instead of 403 responses.
 
 ### 2.1.16
 
