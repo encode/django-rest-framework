@@ -162,7 +162,6 @@ class BasicTests(TestCase):
         """
         Attempting to update fields set as read_only should have no effect.
         """
-
         serializer = PersonSerializer(self.person, data={'name': 'dwight', 'age': 99})
         self.assertEquals(serializer.is_valid(), True)
         instance = serializer.save()
@@ -183,8 +182,7 @@ class ValidationTests(TestCase):
             'content': 'x' * 1001,
             'created': datetime.datetime(2012, 1, 1)
         }
-        self.actionitem = ActionItem(title='Some to do item',
-        )
+        self.actionitem = ActionItem(title='Some to do item',)
 
     def test_create(self):
         serializer = CommentSerializer(data=self.data)
@@ -215,39 +213,6 @@ class ValidationTests(TestCase):
         serializer = ActionItemSerializer(self.actionitem, data=data)
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.errors, {})
-
-    def test_field_validation(self):
-
-        class CommentSerializerWithFieldValidator(CommentSerializer):
-
-            def validate_content(self, attrs, source):
-                value = attrs[source]
-                if "test" not in value:
-                    raise serializers.ValidationError("Test not in value")
-                return attrs
-
-        data = {
-            'email': 'tom@example.com',
-            'content': 'A test comment',
-            'created': datetime.datetime(2012, 1, 1)
-        }
-
-        serializer = CommentSerializerWithFieldValidator(data=data)
-        self.assertTrue(serializer.is_valid())
-
-        data['content'] = 'This should not validate'
-
-        serializer = CommentSerializerWithFieldValidator(data=data)
-        self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'content': [u'Test not in value']})
-
-        incomplete_data = {
-            'email': 'tom@example.com',
-            'created': datetime.datetime(2012, 1, 1)
-        }
-        serializer = CommentSerializerWithFieldValidator(data=incomplete_data)
-        self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'content': [u'This field is required.']})
 
     def test_bad_type_data_is_false(self):
         """
@@ -318,11 +283,68 @@ class ValidationTests(TestCase):
         self.assertEquals(serializer.errors, {'info': [u'Ensure this value has at most 12 characters (it has 13).']})
 
 
+class CustomValidationTests(TestCase):
+    class CommentSerializerWithFieldValidator(CommentSerializer):
+
+        def validate_email(self, attrs, source):
+            value = attrs[source]
+
+            return attrs
+
+        def validate_content(self, attrs, source):
+            value = attrs[source]
+            if "test" not in value:
+                raise serializers.ValidationError("Test not in value")
+            return attrs
+
+    def test_field_validation(self):
+        data = {
+            'email': 'tom@example.com',
+            'content': 'A test comment',
+            'created': datetime.datetime(2012, 1, 1)
+        }
+
+        serializer = self.CommentSerializerWithFieldValidator(data=data)
+        self.assertTrue(serializer.is_valid())
+
+        data['content'] = 'This should not validate'
+
+        serializer = self.CommentSerializerWithFieldValidator(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'content': [u'Test not in value']})
+
+    def test_missing_data(self):
+        """
+        Make sure that validate_content isn't called if the field is missing
+        """
+        incomplete_data = {
+            'email': 'tom@example.com',
+            'created': datetime.datetime(2012, 1, 1)
+        }
+        serializer = self.CommentSerializerWithFieldValidator(data=incomplete_data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'content': [u'This field is required.']})
+
+    def test_wrong_data(self):
+        """
+        Make sure that validate_content isn't called if the field input is wrong
+        """
+        wrong_data = {
+            'email': 'not an email',
+            'content': 'A test comment',
+            'created': datetime.datetime(2012, 1, 1)
+        }
+        serializer = self.CommentSerializerWithFieldValidator(data=wrong_data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'email': [u'Enter a valid e-mail address.']})
+
+
 class PositiveIntegerAsChoiceTests(TestCase):
     def test_positive_integer_in_json_is_correctly_parsed(self):
-        data = {'some_integer':1}
+        data = {'some_integer': 1}
         serializer = PositiveIntegerAsChoiceSerializer(data=data)
         self.assertEquals(serializer.is_valid(), True)
+
 
 class ModelValidationTests(TestCase):
     def test_validate_unique(self):
