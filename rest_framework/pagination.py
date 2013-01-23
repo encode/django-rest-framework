@@ -62,7 +62,13 @@ class BasePaginationSerializer(serializers.Serializer):
         super(BasePaginationSerializer, self).__init__(*args, **kwargs)
         results_field = self.results_field
         object_serializer = self.opts.object_serializer_class
-        self.fields[results_field] = object_serializer(source='object_list')
+
+        if 'context' in kwargs:
+            context_kwarg = {'context': kwargs['context']}
+        else:
+            context_kwarg = {}
+
+        self.fields[results_field] = object_serializer(source='object_list', **context_kwarg)
 
     def to_native(self, obj):
         """
