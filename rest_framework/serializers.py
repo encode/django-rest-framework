@@ -227,6 +227,8 @@ class BaseSerializer(Field):
         Run `validate_<fieldname>()` and `validate()` methods on the serializer
         """
         for field_name, field in self.fields.items():
+            if field_name in self._errors:
+                continue
             try:
                 validate_method = getattr(self, 'validate_%s' % field_name, None)
                 if validate_method:
