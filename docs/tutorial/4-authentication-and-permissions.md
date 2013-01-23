@@ -166,7 +166,8 @@ In the snippets app, create a new file, `permissions.py`
             if obj is None:
                 return True
     
-            # Read permissions are allowed to any request
+            # Read permissions are allowed to any request,
+            # so we'll always allow GET, HEAD or OPTIONS requests.
             if request.method in permissions.SAFE_METHODS:            
                 return True
     
