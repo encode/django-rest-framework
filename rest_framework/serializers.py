@@ -227,14 +227,15 @@ class BaseSerializer(Field):
         Run `validate_<fieldname>()` and `validate()` methods on the serializer
         """
         for field_name, field in self.fields.items():
-            if field_name not in self._errors:
-                try:
-                    validate_method = getattr(self, 'validate_%s' % field_name, None)
-                    if validate_method:
-                        source = field.source or field_name
-                        attrs = validate_method(attrs, source)
-                except ValidationError as err:
-                    self._errors[field_name] = self._errors.get(field_name, []) + list(err.messages)
+            if field_name in self._errors:
+                continue
+            try:
+                validate_method = getattr(self, 'validate_%s' % field_name, None)
+                if validate_method:
+                    source = field.source or field_name
+                    attrs = validate_method(attrs, source)
+            except ValidationError as err:
+                self._errors[field_name] = self._errors.get(field_name, []) + list(err.messages)
 
         # If there are already errors, we don't run .validate() because
         # field-validation failed and thus `attrs` may not be complete.
