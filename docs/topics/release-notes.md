@@ -22,6 +22,7 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 * `format_suffix_patterns()` now supports `include` style URL patterns. 
 * Bugfix: Return proper validation errors when incorrect types supplied for relational fields.
 * Bugfix: Support nullable FKs with `SlugRelatedField`.
+* Bugfix: Don't call custom validation methods if the field has an error.
 
 ### 2.1.16
 
