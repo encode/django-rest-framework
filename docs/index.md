@@ -142,6 +142,11 @@ For support please see the [REST framework discussion group][group], try the  `#
 
 [Paid support is available][paid-support] from [DabApps][dabapps], and can include work on REST framework core, or support with building your REST framework API.  Please [contact DabApps][contact-dabapps] if you'd like to discuss commercial support options.
 
+For updates on REST framework development, you may also want to follow [the author][twitter] on Twitter.
+
+<a style="padding-top: 10px" href="https://twitter.com/_tomchristie" class="twitter-follow-button" data-show-count="false">Follow @_tomchristie</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+ 
 ## License
 
 Copyright (c) 2011-2013, Tom Christie
@@ -221,3 +226,4 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [paid-support]: http://dabapps.com/services/build/api-development/
 [dabapps]: http://dabapps.com
 [contact-dabapps]: http://dabapps.com/contact/
+[twitter]: https://twitter.com/_tomchristie
