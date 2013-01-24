@@ -262,6 +262,11 @@ class CustomField(serializers.Field):
 class BasicModelSerializer(serializers.Serializer):
     text = CustomField()
 
+    def __init__(self, *args, **kwargs):
+        super(BasicModelSerializer, self).__init__(*args, **kwargs)
+        if not 'view' in self.context:
+            raise RuntimeError("context isn't getting passed into serializer init")
+
 
 class TestContextPassedToCustomField(TestCase):
     def setUp(self):
@@ -278,4 +283,3 @@ class TestContextPassedToCustomField(TestCase):
         response = self.view(request).render()
 
         self.assertEquals(response.status_code, status.HTTP_200_OK)
-
