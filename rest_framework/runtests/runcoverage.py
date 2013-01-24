@@ -11,10 +11,12 @@ import sys
 
 # fix sys path so we don't need to setup PYTHONPATH
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
-os.environ['DJANGO_SETTINGS_MODULE'] = 'rest_framework.runtests.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'rest_framework.tests.settings'
 
-from coverage import coverage
-
+try:
+    from coverage import coverage
+except ImportError:
+    print("Coverage is not installed. Aborting...")
 
 def main():
     """Run the tests for rest_framework and generate a coverage report."""
@@ -25,12 +27,14 @@ def main():
 
     from django.conf import settings
     from django.test.utils import get_runner
+
     TestRunner = get_runner(settings)
 
     if hasattr(TestRunner, 'func_name'):
         # Pre 1.2 test runners were just functions,
         # and did not support the 'failfast' option.
         import warnings
+
         warnings.warn(
             'Function-based test runners are deprecated. Test runners should be classes with a run_tests() method.',
             DeprecationWarning

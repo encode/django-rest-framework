@@ -56,9 +56,9 @@ class PKManyToManyTests(TestCase):
         queryset = ManyToManySource.objects.all()
         serializer = ManyToManySourceSerializer(queryset)
         expected = [
-                {'id': 1, 'name': u'source-1', 'targets': [1]},
-                {'id': 2, 'name': u'source-2', 'targets': [1, 2]},
-                {'id': 3, 'name': u'source-3', 'targets': [1, 2, 3]}
+            {'id': 1, 'name': u'source-1', 'targets': [1]},
+            {'id': 2, 'name': u'source-2', 'targets': [1, 2]},
+            {'id': 3, 'name': u'source-3', 'targets': [1, 2, 3]}
         ]
         self.assertEquals(serializer.data, expected)
 
@@ -84,9 +84,9 @@ class PKManyToManyTests(TestCase):
         queryset = ManyToManySource.objects.all()
         serializer = ManyToManySourceSerializer(queryset)
         expected = [
-                {'id': 1, 'name': u'source-1', 'targets': [1, 2, 3]},
-                {'id': 2, 'name': u'source-2', 'targets': [1, 2]},
-                {'id': 3, 'name': u'source-3', 'targets': [1, 2, 3]}
+            {'id': 1, 'name': u'source-1', 'targets': [1, 2, 3]},
+            {'id': 2, 'name': u'source-2', 'targets': [1, 2]},
+            {'id': 3, 'name': u'source-3', 'targets': [1, 2, 3]}
         ]
         self.assertEquals(serializer.data, expected)
 
@@ -377,26 +377,26 @@ class PKNullableForeignKeyTests(TestCase):
         ]
         self.assertEquals(serializer.data, expected)
 
-    # reverse foreign keys MUST be read_only
-    # In the general case they do not provide .remove() or .clear()
-    # and cannot be arbitrarily set.
+        # reverse foreign keys MUST be read_only
+        # In the general case they do not provide .remove() or .clear()
+        # and cannot be arbitrarily set.
 
-    # def test_reverse_foreign_key_update(self):
-    #     data = {'id': 1, 'name': u'target-1', 'sources': [1]}
-    #     instance = ForeignKeyTarget.objects.get(pk=1)
-    #     serializer = ForeignKeyTargetSerializer(instance, data=data)
-    #     self.assertTrue(serializer.is_valid())
-    #     self.assertEquals(serializer.data, data)
-    #     serializer.save()
+        # def test_reverse_foreign_key_update(self):
+        #     data = {'id': 1, 'name': u'target-1', 'sources': [1]}
+        #     instance = ForeignKeyTarget.objects.get(pk=1)
+        #     serializer = ForeignKeyTargetSerializer(instance, data=data)
+        #     self.assertTrue(serializer.is_valid())
+        #     self.assertEquals(serializer.data, data)
+        #     serializer.save()
 
-    #     # Ensure target 1 is updated, and everything else is as expected
-    #     queryset = ForeignKeyTarget.objects.all()
-    #     serializer = ForeignKeyTargetSerializer(queryset)
-    #     expected = [
-    #         {'id': 1, 'name': u'target-1', 'sources': [1]},
-    #         {'id': 2, 'name': u'target-2', 'sources': []},
-    #     ]
-    #     self.assertEquals(serializer.data, expected)
+        #     # Ensure target 1 is updated, and everything else is as expected
+        #     queryset = ForeignKeyTarget.objects.all()
+        #     serializer = ForeignKeyTargetSerializer(queryset)
+        #     expected = [
+        #         {'id': 1, 'name': u'target-1', 'sources': [1]},
+        #         {'id': 2, 'name': u'target-2', 'sources': []},
+        #     ]
+        #     self.assertEquals(serializer.data, expected)
 
 
 class PKNullableOneToOneTests(TestCase):

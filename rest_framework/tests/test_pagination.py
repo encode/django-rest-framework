@@ -62,8 +62,8 @@ class IntegrationTestPagination(TestCase):
             BasicModel(text=char * 3).save()
         self.objects = BasicModel.objects
         self.data = [
-            {'id': obj.id, 'text': obj.text}
-            for obj in self.objects.all()
+        {'id': obj.id, 'text': obj.text}
+        for obj in self.objects.all()
         ]
         self.view = RootView.as_view()
 
@@ -97,7 +97,6 @@ class IntegrationTestPagination(TestCase):
 
 
 class IntegrationTestPaginationAndFiltering(TestCase):
-
     def setUp(self):
         """
         Create 50 FilterableItem instances.

@@ -18,7 +18,7 @@ class ReverseTests(TestCase):
     """
     Tests for fully qualifed URLs when using `reverse`.
     """
-    urls = 'rest_framework.tests.reverse'
+    urls = 'rest_framework.tests.test_reverse'
 
     def test_reversed_urls_are_fully_qualified(self):
         request = factory.get('/view')

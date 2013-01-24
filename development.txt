@@ -1,0 +1,1 @@
+django-discover-runner>=0.2.2

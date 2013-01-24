@@ -9,7 +9,6 @@ from rest_framework.tests.models import FilterableItem, BasicModel
 
 factory = RequestFactory()
 
-
 if django_filters:
     # Basic filter on a list view.
     class FilterFieldsRootView(generics.ListCreateAPIView):
@@ -142,7 +141,7 @@ class IntegrationTestFiltering(TestCase):
         response = view(request).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         expected_data = [f for f in self.data if f['date'] > search_date and
-                                                  f['decimal'] < search_decimal]
+                                                 f['decimal'] < search_decimal]
         self.assertEquals(response.data, expected_data)
 
     @unittest.skipUnless(django_filters, 'django-filters not installed')

@@ -59,7 +59,7 @@ class NullableOneToOneTargetSerializer(serializers.HyperlinkedModelSerializer):
 # TODO: Add test that .data cannot be accessed prior to .is_valid
 
 class HyperlinkedManyToManyTests(TestCase):
-    urls = 'rest_framework.tests.relations_hyperlink'
+    urls = 'rest_framework.tests.test_relations_hyperlink'
 
     def setUp(self):
         for idx in range(1, 4):
@@ -74,9 +74,11 @@ class HyperlinkedManyToManyTests(TestCase):
         queryset = ManyToManySource.objects.all()
         serializer = ManyToManySourceSerializer(queryset)
         expected = [
-                {'url': '/manytomanysource/1/', 'name': u'source-1', 'targets': ['/manytomanytarget/1/']},
-                {'url': '/manytomanysource/2/', 'name': u'source-2', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/']},
-                {'url': '/manytomanysource/3/', 'name': u'source-3', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']}
+            {'url': '/manytomanysource/1/', 'name': u'source-1', 'targets': ['/manytomanytarget/1/']},
+            {'url': '/manytomanysource/2/', 'name': u'source-2',
+             'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/']},
+            {'url': '/manytomanysource/3/', 'name': u'source-3',
+             'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']}
         ]
         self.assertEquals(serializer.data, expected)
 
@@ -84,14 +86,17 @@ class HyperlinkedManyToManyTests(TestCase):
         queryset = ManyToManyTarget.objects.all()
         serializer = ManyToManyTargetSerializer(queryset)
         expected = [
-            {'url': '/manytomanytarget/1/', 'name': u'target-1', 'sources': ['/manytomanysource/1/', '/manytomanysource/2/', '/manytomanysource/3/']},
-            {'url': '/manytomanytarget/2/', 'name': u'target-2', 'sources': ['/manytomanysource/2/', '/manytomanysource/3/']},
+            {'url': '/manytomanytarget/1/', 'name': u'target-1',
+             'sources': ['/manytomanysource/1/', '/manytomanysource/2/', '/manytomanysource/3/']},
+            {'url': '/manytomanytarget/2/', 'name': u'target-2',
+             'sources': ['/manytomanysource/2/', '/manytomanysource/3/']},
             {'url': '/manytomanytarget/3/', 'name': u'target-3', 'sources': ['/manytomanysource/3/']}
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_many_to_many_update(self):
-        data = {'url': '/manytomanysource/1/', 'name': u'source-1', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']}
+        data = {'url': '/manytomanysource/1/', 'name': u'source-1',
+                'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']}
         instance = ManyToManySource.objects.get(pk=1)
         serializer = ManyToManySourceSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
@@ -102,9 +107,12 @@ class HyperlinkedManyToManyTests(TestCase):
         queryset = ManyToManySource.objects.all()
         serializer = ManyToManySourceSerializer(queryset)
         expected = [
-                {'url': '/manytomanysource/1/', 'name': u'source-1', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']},
-                {'url': '/manytomanysource/2/', 'name': u'source-2', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/']},
-                {'url': '/manytomanysource/3/', 'name': u'source-3', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']}
+            {'url': '/manytomanysource/1/', 'name': u'source-1',
+             'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']},
+            {'url': '/manytomanysource/2/', 'name': u'source-2',
+             'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/']},
+            {'url': '/manytomanysource/3/', 'name': u'source-3',
+             'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']}
         ]
         self.assertEquals(serializer.data, expected)
 
@@ -121,14 +129,16 @@ class HyperlinkedManyToManyTests(TestCase):
         serializer = ManyToManyTargetSerializer(queryset)
         expected = [
             {'url': '/manytomanytarget/1/', 'name': u'target-1', 'sources': ['/manytomanysource/1/']},
-            {'url': '/manytomanytarget/2/', 'name': u'target-2', 'sources': ['/manytomanysource/2/', '/manytomanysource/3/']},
+            {'url': '/manytomanytarget/2/', 'name': u'target-2',
+             'sources': ['/manytomanysource/2/', '/manytomanysource/3/']},
             {'url': '/manytomanytarget/3/', 'name': u'target-3', 'sources': ['/manytomanysource/3/']}
 
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_many_to_many_create(self):
-        data = {'url': '/manytomanysource/4/', 'name': u'source-4', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/3/']}
+        data = {'url': '/manytomanysource/4/', 'name': u'source-4',
+                'targets': ['/manytomanytarget/1/', '/manytomanytarget/3/']}
         serializer = ManyToManySourceSerializer(data=data)
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
@@ -140,14 +150,18 @@ class HyperlinkedManyToManyTests(TestCase):
         serializer = ManyToManySourceSerializer(queryset)
         expected = [
             {'url': '/manytomanysource/1/', 'name': u'source-1', 'targets': ['/manytomanytarget/1/']},
-            {'url': '/manytomanysource/2/', 'name': u'source-2', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/']},
-            {'url': '/manytomanysource/3/', 'name': u'source-3', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']},
-            {'url': '/manytomanysource/4/', 'name': u'source-4', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/3/']}
+            {'url': '/manytomanysource/2/', 'name': u'source-2',
+             'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/']},
+            {'url': '/manytomanysource/3/', 'name': u'source-3',
+             'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']},
+            {'url': '/manytomanysource/4/', 'name': u'source-4',
+             'targets': ['/manytomanytarget/1/', '/manytomanytarget/3/']}
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_reverse_many_to_many_create(self):
-        data = {'url': '/manytomanytarget/4/', 'name': u'target-4', 'sources': ['/manytomanysource/1/', '/manytomanysource/3/']}
+        data = {'url': '/manytomanytarget/4/', 'name': u'target-4',
+                'sources': ['/manytomanysource/1/', '/manytomanysource/3/']}
         serializer = ManyToManyTargetSerializer(data=data)
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
@@ -158,16 +172,19 @@ class HyperlinkedManyToManyTests(TestCase):
         queryset = ManyToManyTarget.objects.all()
         serializer = ManyToManyTargetSerializer(queryset)
         expected = [
-            {'url': '/manytomanytarget/1/', 'name': u'target-1', 'sources': ['/manytomanysource/1/', '/manytomanysource/2/', '/manytomanysource/3/']},
-            {'url': '/manytomanytarget/2/', 'name': u'target-2', 'sources': ['/manytomanysource/2/', '/manytomanysource/3/']},
+            {'url': '/manytomanytarget/1/', 'name': u'target-1',
+             'sources': ['/manytomanysource/1/', '/manytomanysource/2/', '/manytomanysource/3/']},
+            {'url': '/manytomanytarget/2/', 'name': u'target-2',
+             'sources': ['/manytomanysource/2/', '/manytomanysource/3/']},
             {'url': '/manytomanytarget/3/', 'name': u'target-3', 'sources': ['/manytomanysource/3/']},
-            {'url': '/manytomanytarget/4/', 'name': u'target-4', 'sources': ['/manytomanysource/1/', '/manytomanysource/3/']}
+            {'url': '/manytomanytarget/4/', 'name': u'target-4',
+             'sources': ['/manytomanysource/1/', '/manytomanysource/3/']}
         ]
         self.assertEquals(serializer.data, expected)
 
 
 class HyperlinkedForeignKeyTests(TestCase):
-    urls = 'rest_framework.tests.relations_hyperlink'
+    urls = 'rest_framework.tests.test_relations_hyperlink'
 
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
@@ -192,7 +209,8 @@ class HyperlinkedForeignKeyTests(TestCase):
         queryset = ForeignKeyTarget.objects.all()
         serializer = ForeignKeyTargetSerializer(queryset)
         expected = [
-            {'url': '/foreignkeytarget/1/', 'name': u'target-1', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/2/', '/foreignkeysource/3/']},
+            {'url': '/foreignkeytarget/1/', 'name': u'target-1',
+             'sources': ['/foreignkeysource/1/', '/foreignkeysource/2/', '/foreignkeysource/3/']},
             {'url': '/foreignkeytarget/2/', 'name': u'target-2', 'sources': []},
         ]
         self.assertEquals(serializer.data, expected)
@@ -223,7 +241,8 @@ class HyperlinkedForeignKeyTests(TestCase):
         self.assertEquals(serializer.errors, {'target': [u'Incorrect type.  Expected url string, received int.']})
 
     def test_reverse_foreign_key_update(self):
-        data = {'url': '/foreignkeytarget/2/', 'name': u'target-2', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']}
+        data = {'url': '/foreignkeytarget/2/', 'name': u'target-2',
+                'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']}
         instance = ForeignKeyTarget.objects.get(pk=2)
         serializer = ForeignKeyTargetSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
@@ -232,7 +251,8 @@ class HyperlinkedForeignKeyTests(TestCase):
         queryset = ForeignKeyTarget.objects.all()
         new_serializer = ForeignKeyTargetSerializer(queryset)
         expected = [
-            {'url': '/foreignkeytarget/1/', 'name': u'target-1', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/2/', '/foreignkeysource/3/']},
+            {'url': '/foreignkeytarget/1/', 'name': u'target-1',
+             'sources': ['/foreignkeysource/1/', '/foreignkeysource/2/', '/foreignkeysource/3/']},
             {'url': '/foreignkeytarget/2/', 'name': u'target-2', 'sources': []},
         ]
         self.assertEquals(new_serializer.data, expected)
@@ -245,7 +265,8 @@ class HyperlinkedForeignKeyTests(TestCase):
         serializer = ForeignKeyTargetSerializer(queryset)
         expected = [
             {'url': '/foreignkeytarget/1/', 'name': u'target-1', 'sources': ['/foreignkeysource/2/']},
-            {'url': '/foreignkeytarget/2/', 'name': u'target-2', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']},
+            {'url': '/foreignkeytarget/2/', 'name': u'target-2',
+             'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']},
         ]
         self.assertEquals(serializer.data, expected)
 
@@ -269,7 +290,8 @@ class HyperlinkedForeignKeyTests(TestCase):
         self.assertEquals(serializer.data, expected)
 
     def test_reverse_foreign_key_create(self):
-        data = {'url': '/foreignkeytarget/3/', 'name': u'target-3', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']}
+        data = {'url': '/foreignkeytarget/3/', 'name': u'target-3',
+                'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']}
         serializer = ForeignKeyTargetSerializer(data=data)
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
@@ -282,7 +304,8 @@ class HyperlinkedForeignKeyTests(TestCase):
         expected = [
             {'url': '/foreignkeytarget/1/', 'name': u'target-1', 'sources': ['/foreignkeysource/2/']},
             {'url': '/foreignkeytarget/2/', 'name': u'target-2', 'sources': []},
-            {'url': '/foreignkeytarget/3/', 'name': u'target-3', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']},
+            {'url': '/foreignkeytarget/3/', 'name': u'target-3',
+             'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']},
         ]
         self.assertEquals(serializer.data, expected)
 
@@ -295,7 +318,7 @@ class HyperlinkedForeignKeyTests(TestCase):
 
 
 class HyperlinkedNullableForeignKeyTests(TestCase):
-    urls = 'rest_framework.tests.relations_hyperlink'
+    urls = 'rest_framework.tests.test_relations_hyperlink'
 
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
@@ -400,30 +423,30 @@ class HyperlinkedNullableForeignKeyTests(TestCase):
         ]
         self.assertEquals(serializer.data, expected)
 
-    # reverse foreign keys MUST be read_only
-    # In the general case they do not provide .remove() or .clear()
-    # and cannot be arbitrarily set.
+        # reverse foreign keys MUST be read_only
+        # In the general case they do not provide .remove() or .clear()
+        # and cannot be arbitrarily set.
 
-    # def test_reverse_foreign_key_update(self):
-    #     data = {'id': 1, 'name': u'target-1', 'sources': [1]}
-    #     instance = ForeignKeyTarget.objects.get(pk=1)
-    #     serializer = ForeignKeyTargetSerializer(instance, data=data)
-    #     self.assertTrue(serializer.is_valid())
-    #     self.assertEquals(serializer.data, data)
-    #     serializer.save()
+        # def test_reverse_foreign_key_update(self):
+        #     data = {'id': 1, 'name': u'target-1', 'sources': [1]}
+        #     instance = ForeignKeyTarget.objects.get(pk=1)
+        #     serializer = ForeignKeyTargetSerializer(instance, data=data)
+        #     self.assertTrue(serializer.is_valid())
+        #     self.assertEquals(serializer.data, data)
+        #     serializer.save()
 
-    #     # Ensure target 1 is updated, and everything else is as expected
-    #     queryset = ForeignKeyTarget.objects.all()
-    #     serializer = ForeignKeyTargetSerializer(queryset)
-    #     expected = [
-    #         {'id': 1, 'name': u'target-1', 'sources': [1]},
-    #         {'id': 2, 'name': u'target-2', 'sources': []},
-    #     ]
-    #     self.assertEquals(serializer.data, expected)
+        #     # Ensure target 1 is updated, and everything else is as expected
+        #     queryset = ForeignKeyTarget.objects.all()
+        #     serializer = ForeignKeyTargetSerializer(queryset)
+        #     expected = [
+        #         {'id': 1, 'name': u'target-1', 'sources': [1]},
+        #         {'id': 2, 'name': u'target-2', 'sources': []},
+        #     ]
+        #     self.assertEquals(serializer.data, expected)
 
 
 class HyperlinkedNullableOneToOneTests(TestCase):
-    urls = 'rest_framework.tests.relations_hyperlink'
+    urls = 'rest_framework.tests.test_relations_hyperlink'
 
     def setUp(self):
         target = OneToOneTarget(name='target-1')
