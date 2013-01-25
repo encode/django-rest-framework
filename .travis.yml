@@ -17,5 +17,5 @@ install:
 before-script:
   - pep8 --exclude=migrations --ignore="E501,E255,E261,W191,E101" .
 script:
-  - python rest_framework/runtests/runtests.py
-  - python rest_framework/runtests/runcoverage.py
+  - python rest_framework/tools/tools.py
+  - python rest_framework/tools/runcoverage.py

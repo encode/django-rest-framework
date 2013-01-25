@@ -8,5 +8,5 @@ os.environ.setdefault(
 
 from django.core.management import execute_from_command_line
 
-sys.argv.append('test')
+sys.argv.append(1, 'test')
 execute_from_command_line(sys.argv)
