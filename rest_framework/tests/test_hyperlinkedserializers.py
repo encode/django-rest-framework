@@ -9,9 +9,11 @@ factory = RequestFactory()
 
 
 class BlogPostCommentSerializer(serializers.ModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='blogpostcomment-detail')
+    url = serializers.HyperlinkedIdentityField(
+        view_name='blogpostcomment-detail')
     text = serializers.CharField()
-    blog_post_url = serializers.HyperlinkedRelatedField(source='blog_post', view_name='blogpost-detail')
+    blog_post_url = serializers.HyperlinkedRelatedField(
+        source='blog_post', view_name='blogpost-detail')
 
     class Meta:
         model = BlogPostComment
@@ -20,7 +22,8 @@ class BlogPostCommentSerializer(serializers.ModelSerializer):
 
 class PhotoSerializer(serializers.Serializer):
     description = serializers.CharField()
-    album_url = serializers.HyperlinkedRelatedField(source='album', view_name='album-detail',
+    album_url = serializers.HyperlinkedRelatedField(
+        source='album', view_name='album-detail',
         queryset=Album.objects.all(), slug_field='title', slug_url_kwarg='title')
 
     def restore_object(self, attrs, instance=None):
@@ -81,18 +84,33 @@ class OptionalRelationDetail(generics.RetrieveUpdateDestroyAPIView):
 
 
 urlpatterns = patterns('',
-    url(r'^basic/$', BasicList.as_view(), name='basicmodel-list'),
-    url(r'^basic/(?P<pk>\d+)/$', BasicDetail.as_view(), name='basicmodel-detail'),
-    url(r'^anchor/(?P<pk>\d+)/$', AnchorDetail.as_view(), name='anchor-detail'),
-    url(r'^manytomany/$', ManyToManyList.as_view(), name='manytomanymodel-list'),
-    url(r'^manytomany/(?P<pk>\d+)/$', ManyToManyDetail.as_view(), name='manytomanymodel-detail'),
-    url(r'^posts/(?P<pk>\d+)/$', BlogPostDetail.as_view(), name='blogpost-detail'),
-    url(r'^comments/$', BlogPostCommentListCreate.as_view(), name='blogpostcomment-list'),
-    url(r'^comments/(?P<pk>\d+)/$', BlogPostCommentDetail.as_view(), name='blogpostcomment-detail'),
-    url(r'^albums/(?P<title>\w[\w-]*)/$', AlbumDetail.as_view(), name='album-detail'),
-    url(r'^photos/$', PhotoListCreate.as_view(), name='photo-list'),
-    url(r'^optionalrelation/(?P<pk>\d+)/$', OptionalRelationDetail.as_view(), name='optionalrelationmodel-detail'),
-)
+                       url(r'^basic/$',
+                           BasicList.as_view(), name='basicmodel-list'),
+                       url(r'^basic/(?P<pk>\d+)/$', BasicDetail.as_view(),
+                           name='basicmodel-detail'),
+                       url(r'^anchor/(?P<pk>\d+)/$', AnchorDetail.as_view(),
+                           name='anchor-detail'),
+                       url(r'^manytomany/$', ManyToManyList.as_view(),
+                           name='manytomanymodel-list'),
+                       url(
+                       r'^manytomany/(?P<pk>\d+)/$', ManyToManyDetail.as_view(
+                       ),
+                       name='manytomanymodel-detail'),
+                       url(r'^posts/(?P<pk>\d+)/$', BlogPostDetail.as_view(),
+                           name='blogpost-detail'),
+                       url(r'^comments/$', BlogPostCommentListCreate.as_view(),
+                           name='blogpostcomment-list'),
+                       url(
+                       r'^comments/(?P<pk>\d+)/$', BlogPostCommentDetail.as_view(),
+                       name='blogpostcomment-detail'),
+                       url(
+                       r'^albums/(?P<title>\w[\w-]*)/$', AlbumDetail.as_view(),
+                       name='album-detail'),
+                       url(r'^photos/$',
+                           PhotoListCreate.as_view(), name='photo-list'),
+                       url(r'^optionalrelation/(?P<pk>\d+)/$', OptionalRelationDetail.as_view(
+                       ), name='optionalrelationmodel-detail'),
+                       )
 
 
 class TestBasicHyperlinkedView(TestCase):
@@ -107,8 +125,8 @@ class TestBasicHyperlinkedView(TestCase):
             BasicModel(text=item).save()
         self.objects = BasicModel.objects
         self.data = [
-        {'url': 'http://testserver/basic/%d/' % obj.id, 'text': obj.text}
-        for obj in self.objects.all()
+            {'url': 'http://testserver/basic/%d/' % obj.id, 'text': obj.text}
+            for obj in self.objects.all()
         ]
         self.list_view = BasicList.as_view()
         self.detail_view = BasicDetail.as_view()
@@ -151,12 +169,12 @@ class TestManyToManyHyperlinkedView(TestCase):
         manytomany.rel.add(*anchors)
 
         self.data = [{
-                         'url': 'http://testserver/manytomany/1/',
-                         'rel': [
-                             'http://testserver/anchor/1/',
-                             'http://testserver/anchor/2/',
-                             'http://testserver/anchor/3/',
-                         ]
+                     'url': 'http://testserver/manytomany/1/',
+                     'rel': [
+                         'http://testserver/anchor/1/',
+                         'http://testserver/anchor/2/',
+                         'http://testserver/anchor/3/',
+                     ]
                      }]
         self.list_view = ManyToManyList.as_view()
         self.detail_view = ManyToManyDetail.as_view()
@@ -201,7 +219,8 @@ class TestCreateWithForeignKeys(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response['Location'], 'http://testserver/comments/1/')
         self.assertEqual(self.post.blogpostcomment_set.count(), 1)
-        self.assertEqual(self.post.blogpostcomment_set.all()[0].text, 'A test comment')
+        self.assertEqual(
+            self.post.blogpostcomment_set.all()[0].text, 'A test comment')
 
 
 class TestCreateWithForeignKeysAndCustomSlug(TestCase):
@@ -224,9 +243,10 @@ class TestCreateWithForeignKeysAndCustomSlug(TestCase):
         response = self.list_create_view(request)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertNotIn('Location', response,
-            msg='Location should only be included if there is a "url" field on the serializer')
+                         msg='Location should only be included if there is a "url" field on the serializer')
         self.assertEqual(self.post.photo_set.count(), 1)
-        self.assertEqual(self.post.photo_set.all()[0].description, 'A test photo')
+        self.assertEqual(
+            self.post.photo_set.all()[0].description, 'A test photo')
 
 
 class TestOptionalRelationHyperlinkedView(TestCase):
@@ -239,7 +259,8 @@ class TestOptionalRelationHyperlinkedView(TestCase):
         OptionalRelationModel().save()
         self.objects = OptionalRelationModel.objects
         self.detail_view = OptionalRelationDetail.as_view()
-        self.data = {"url": "http://testserver/optionalrelation/1/", "other": None}
+        self.data = {"url":
+                     "http://testserver/optionalrelation/1/", "other": None}
 
     def test_get_detail_view(self):
         """
@@ -257,6 +278,6 @@ class TestOptionalRelationHyperlinkedView(TestCase):
         should accept None for non existing relations.
         """
         response = self.client.put('/optionalrelation/1/',
-            data=json.dumps(self.data),
-            content_type='application/json')
+                                   data=json.dumps(self.data),
+                                   content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)

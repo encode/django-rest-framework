@@ -15,7 +15,7 @@ from rest_framework.parsers import (
     FormParser,
     MultiPartParser,
     JSONParser
-    )
+)
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -53,7 +53,8 @@ class TestMethodOverloading(TestCase):
         POST requests can be overloaded to another method by setting a
         reserved form field
         """
-        request = Request(factory.post('/', {api_settings.FORM_METHOD_OVERRIDE: 'DELETE'}))
+        request = Request(
+            factory.post('/', {api_settings.FORM_METHOD_OVERRIDE: 'DELETE'}))
         self.assertEqual(request.method, 'DELETE')
 
 
@@ -88,7 +89,8 @@ class TestContentParsing(TestCase):
         """
         content = 'qwerty'
         content_type = 'text/plain'
-        request = Request(factory.post('/', content, content_type=content_type))
+        request = Request(
+            factory.post('/', content, content_type=content_type))
         request.parsers = (PlainTextParser(),)
         self.assertEqual(request.DATA, content)
 
@@ -112,8 +114,9 @@ class TestContentParsing(TestCase):
         if VERSION >= (1, 5):
             from django.test.client import MULTIPART_CONTENT, BOUNDARY, encode_multipart
 
-            request = Request(factory.put('/', encode_multipart(BOUNDARY, data),
-                content_type=MULTIPART_CONTENT))
+            request = Request(
+                factory.put('/', encode_multipart(BOUNDARY, data),
+                            content_type=MULTIPART_CONTENT))
         else:
             request = Request(factory.put('/', data))
 
@@ -240,8 +243,8 @@ class MockView(APIView):
         return Response(status=status.INTERNAL_SERVER_ERROR)
 
 urlpatterns = patterns('',
-    (r'^$', MockView.as_view()),
-)
+                      (r'^$', MockView.as_view()),
+                       )
 
 
 class TestContentParsingWithAuthentication(TestCase):
@@ -252,7 +255,8 @@ class TestContentParsingWithAuthentication(TestCase):
         self.username = 'john'
         self.email = 'lennon@thebeatles.com'
         self.password = 'password'
-        self.user = User.objects.create_user(self.username, self.email, self.password)
+        self.user = User.objects.create_user(
+            self.username, self.email, self.password)
 
     def test_user_logged_in_authentication_has_POST_when_not_logged_in(self):
         """
@@ -274,10 +278,12 @@ class TestContentParsingWithAuthentication(TestCase):
         #     content = {'example': 'example'}
 
         #     response = self.client.post('/', content)
-        #     self.assertEqual(status.OK, response.status_code, "POST data is malformed")
+        # self.assertEqual(status.OK, response.status_code, "POST data is
+        # malformed")
 
         #     response = self.csrf_client.post('/', content)
-        #     self.assertEqual(status.OK, response.status_code, "POST data is malformed")
+        # self.assertEqual(status.OK, response.status_code, "POST data is
+        # malformed")
 
 
 class TestUserSetter(TestCase):

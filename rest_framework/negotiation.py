@@ -43,20 +43,22 @@ class DefaultContentNegotiation(BaseContentNegotiation):
         # Check the acceptable media types against each renderer,
         # attempting more specific media types first
         # NB. The inner loop here isn't as bad as it first looks :)
-        #     Worst case is we're looping over len(accept_list) * len(self.renderers)
+        # Worst case is we're looping over len(accept_list) *
+        # len(self.renderers)
         for media_type_set in order_by_precedence(accepts):
             for renderer in renderers:
                 for media_type in media_type_set:
                     if media_type_matches(renderer.media_type, media_type):
                         # Return the most specific media type as accepted.
                         if (_MediaType(renderer.media_type).precedence >
-                            _MediaType(media_type).precedence):
+                                _MediaType(media_type).precedence):
                             # Eg client requests '*/*'
                             # Accepted media type is 'application/json'
                             return renderer, renderer.media_type
                         else:
                             # Eg client requests 'application/json; indent=8'
-                            # Accepted media type is 'application/json; indent=8'
+                            # Accepted media type is 'application/json;
+                            # indent=8'
                             return renderer, media_type
 
         raise exceptions.NotAcceptable(available_renderers=renderers)

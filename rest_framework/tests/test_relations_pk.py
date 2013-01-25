@@ -270,7 +270,8 @@ class PKForeignKeyTests(TestCase):
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'target': [u'Value may not be null']})
+        self.assertEquals(
+            serializer.errors, {'target': [u'Value may not be null']})
 
 
 class PKNullableForeignKeyTests(TestCase):
@@ -280,7 +281,8 @@ class PKNullableForeignKeyTests(TestCase):
         for idx in range(1, 4):
             if idx == 3:
                 target = None
-            source = NullableForeignKeySource(name='source-%d' % idx, target=target)
+            source = NullableForeignKeySource(
+                name='source-%d' % idx, target=target)
             source.save()
 
     def test_foreign_key_retrieve_with_null(self):

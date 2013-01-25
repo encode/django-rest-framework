@@ -21,6 +21,7 @@ except ImportError:
     print("Coverage is not installed. Aborting...")
     exit(1)
 
+
 def report(cov, cov_files):
     pc = cov.report(cov_files)
 
@@ -31,6 +32,7 @@ def report(cov, cov_files):
         cov.xml_report(cov_files, outfile='../../coverage.xml')
 
     return pc
+
 
 def prepare_report(project_dir):
     cov_files = []
@@ -52,7 +54,8 @@ def prepare_report(project_dir):
         if 'rest_framework.py' in files:
             files.remove('rest_framework.py')
 
-        cov_files.extend([os.path.join(path, file) for file in files if file.endswith('.py')])
+        cov_files.extend([os.path.join(
+            path, file) for file in files if file.endswith('.py')])
 
     return cov_files
 
@@ -96,7 +99,7 @@ def main():
 
     report(cov, cov_files)
     pc = report(cov, cov_files)
-    if failures <> 0:
+    if failures != 0:
         sys.exit(failures)
 
     if pc < settings.CODE_COVERAGE_THRESHOLD:

@@ -28,7 +28,8 @@ class DictWithMetadata(dict):
         Overriden to remove metadata from the dict, since it shouldn't be pickled
         and may in some instances be unpickleable.
         """
-        # return an instance of the first dict in MRO that isn't a DictWithMetadata
+        # return an instance of the first dict in MRO that isn't a
+        # DictWithMetadata
         for base in self.__class__.__mro__:
             if not isinstance(base, DictWithMetadata) and isinstance(base, dict):
                 return base(self)
@@ -230,12 +231,14 @@ class BaseSerializer(Field):
             if field_name in self._errors:
                 continue
             try:
-                validate_method = getattr(self, 'validate_%s' % field_name, None)
+                validate_method = getattr(
+                    self, 'validate_%s' % field_name, None)
                 if validate_method:
                     source = field.source or field_name
                     attrs = validate_method(attrs, source)
             except ValidationError as err:
-                self._errors[field_name] = self._errors.get(field_name, []) + list(err.messages)
+                self._errors[field_name] = self._errors.get(
+                    field_name, []) + list(err.messages)
 
         # If there are already errors, we don't run .validate() because
         # field-validation failed and thus `attrs` may not be complete.
@@ -246,7 +249,8 @@ class BaseSerializer(Field):
             except ValidationError as err:
                 if hasattr(err, 'message_dict'):
                     for field_name, error_messages in err.message_dict.items():
-                        self._errors[field_name] = self._errors.get(field_name, []) + list(error_messages)
+                        self._errors[field_name] = self._errors.get(
+                            field_name, []) + list(error_messages)
                 elif hasattr(err, 'messages'):
                     self._errors['non_field_errors'] = err.messages
 

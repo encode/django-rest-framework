@@ -84,10 +84,10 @@ else:
             return node
 
     SafeDumper.add_representer(SortedDict,
-            yaml.representer.SafeRepresenter.represent_dict)
+                               yaml.representer.SafeRepresenter.represent_dict)
     SafeDumper.add_representer(DictWithMetadata,
-            yaml.representer.SafeRepresenter.represent_dict)
+                               yaml.representer.SafeRepresenter.represent_dict)
     SafeDumper.add_representer(SortedDictWithMetadata,
-            yaml.representer.SafeRepresenter.represent_dict)
+                               yaml.representer.SafeRepresenter.represent_dict)
     SafeDumper.add_representer(types.GeneratorType,
-            yaml.representer.SafeRepresenter.represent_list)
+                               yaml.representer.SafeRepresenter.represent_list)

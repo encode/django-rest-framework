@@ -18,6 +18,7 @@ from rest_framework.compat import patterns, url
 template_name = {'template_name': 'rest_framework/login.html'}
 
 urlpatterns = patterns('django.contrib.auth.views',
-    url(r'^login/$', 'login', template_name, name='login'),
-    url(r'^logout/$', 'logout', template_name, name='logout'),
-)
+                       url(r'^login/$', 'login', template_name, name='login'),
+                       url(r'^logout/$', 'logout',
+                           template_name, name='logout'),
+                       )

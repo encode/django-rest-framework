@@ -14,6 +14,8 @@ install:
   - pip install django-filter==0.5.4 --use-mirrors
   - pip install -r development.txt
   - export PYTHONPATH=.
+before-script:
+  - pep8 --exclude=migrations --ignore="E501,E255,E261,W191,E101" .
 script:
   - python rest_framework/runtests/runtests.py
   - python rest_framework/runtests/runcoverage.py

@@ -62,8 +62,8 @@ class IntegrationTestPagination(TestCase):
             BasicModel(text=char * 3).save()
         self.objects = BasicModel.objects
         self.data = [
-        {'id': obj.id, 'text': obj.text}
-        for obj in self.objects.all()
+            {'id': obj.id, 'text': obj.text}
+            for obj in self.objects.all()
         ]
         self.view = RootView.as_view()
 
@@ -103,15 +103,17 @@ class IntegrationTestPaginationAndFiltering(TestCase):
         """
         base_data = ('a', Decimal('0.25'), datetime.date(2012, 10, 8))
         for i in range(26):
-            text = chr(i + ord(base_data[0])) * 3  # Produces string 'aaa', 'bbb', etc.
+            text = chr(i + ord(
+                base_data[0])) * 3  # Produces string 'aaa', 'bbb', etc.
             decimal = base_data[1] + i
             date = base_data[2] - datetime.timedelta(days=i * 2)
             FilterableItem(text=text, decimal=decimal, date=date).save()
 
         self.objects = FilterableItem.objects
         self.data = [
-        {'id': obj.id, 'text': obj.text, 'decimal': obj.decimal, 'date': obj.date}
-        for obj in self.objects.all()
+            {'id': obj.id, 'text': obj.text, 'decimal': obj.decimal,
+             'date': obj.date}
+            for obj in self.objects.all()
         ]
         self.view = FilterFieldsRootView.as_view()
 
@@ -180,7 +182,8 @@ class UnitTestPagination(TestCase):
         """
         Ensure context gets passed through to the object serializer.
         """
-        serializer = PassOnContextPaginationSerializer(self.first_page, context={'foo': 'bar'})
+        serializer = PassOnContextPaginationSerializer(
+            self.first_page, context={'foo': 'bar'})
         serializer.data
         results = serializer.fields[serializer.results_field]
         self.assertEquals(serializer.context, results.context)
@@ -199,8 +202,8 @@ class TestUnpaginated(TestCase):
             BasicModel(text=i).save()
         self.objects = BasicModel.objects
         self.data = [
-        {'id': obj.id, 'text': obj.text}
-        for obj in self.objects.all()
+            {'id': obj.id, 'text': obj.text}
+            for obj in self.objects.all()
         ]
         self.view = DefaultPageSizeKwargView.as_view()
 
@@ -227,8 +230,8 @@ class TestCustomPaginateByParam(TestCase):
             BasicModel(text=i).save()
         self.objects = BasicModel.objects
         self.data = [
-        {'id': obj.id, 'text': obj.text}
-        for obj in self.objects.all()
+            {'id': obj.id, 'text': obj.text}
+            for obj in self.objects.all()
         ]
         self.view = PaginateByParamView.as_view()
 
@@ -254,7 +257,8 @@ class TestCustomPaginateByParam(TestCase):
 class CustomField(serializers.Field):
     def to_native(self, value):
         if not 'view' in self.context:
-            raise RuntimeError("context isn't getting passed into custom field")
+            raise RuntimeError(
+                "context isn't getting passed into custom field")
         return "value"
 
 
@@ -277,4 +281,3 @@ class TestContextPassedToCustomField(TestCase):
         response = self.view(request).render()
 
         self.assertEquals(response.status_code, status.HTTP_200_OK)
-

@@ -100,7 +100,8 @@ else:
 # https://github.com/markotibold/django-rest-framework/tree/patch
 http_method_names = set(View.http_method_names)
 http_method_names.add('patch')
-View.http_method_names = list(http_method_names)  # PATCH method is not implemented by Django
+View.http_method_names = list(
+    http_method_names)  # PATCH method is not implemented by Django
 
 # PUT, DELETE do not require CSRF until 1.4.  They should.  Make it better.
 if django.VERSION >= (1, 4):
@@ -184,7 +185,8 @@ else:
     def _sanitize_token(token):
         # Allow only alphanum, and ensure we return a 'str' for the sake of the post
         # processing middleware.
-        token = re.sub('[^a-zA-Z0-9]', '', str(token.decode('ascii', 'ignore')))
+        token = re.sub(
+            '[^a-zA-Z0-9]', '', str(token.decode('ascii', 'ignore')))
         if token == "":
             # In case the cookie has been truncated to nothing at some point.
             return _get_new_csrf_key()
@@ -218,12 +220,14 @@ else:
                 return None
 
             try:
-                csrf_token = _sanitize_token(request.COOKIES[settings.CSRF_COOKIE_NAME])
+                csrf_token = _sanitize_token(
+                    request.COOKIES[settings.CSRF_COOKIE_NAME])
                 # Use same token next time
                 request.META['CSRF_COOKIE'] = csrf_token
             except KeyError:
                 csrf_token = None
-                # Generate token and store it in the request, so it's available to the view.
+                # Generate token and store it in the request, so it's available
+                # to the view.
                 request.META["CSRF_COOKIE"] = _get_new_csrf_key()
 
             # Wait until request.META["CSRF_COOKIE"] has been manipulated before
@@ -231,7 +235,8 @@ else:
             if getattr(callback, 'csrf_exempt', False):
                 return None
 
-            # Assume that anything not defined as 'safe' by RC2616 needs protection.
+            # Assume that anything not defined as 'safe' by RC2616 needs
+            # protection.
             if request.method not in ('GET', 'HEAD', 'OPTIONS', 'TRACE'):
                 if getattr(request, '_dont_enforce_csrf_checks', False):
                     # Mechanism to turn off CSRF checks for test suite.  It comes after
@@ -258,7 +263,9 @@ else:
                     # we can use strict Referer checking.
                     referer = request.META.get('HTTP_REFERER')
                     if referer is None:
-                        logger.warning('Forbidden (%s): %s' % (REASON_NO_REFERER, request.path),
+                        logger.warning(
+                            'Forbidden (%s): %s' % (
+                                REASON_NO_REFERER, request.path),
                             extra={
                                 'status_code': 403,
                                 'request': request,
@@ -270,7 +277,8 @@ else:
                     good_referer = 'https://%s/' % request.get_host()
                     if not same_origin(referer, good_referer):
                         reason = REASON_BAD_REFERER % (referer, good_referer)
-                        logger.warning('Forbidden (%s): %s' % (reason, request.path),
+                        logger.warning(
+                            'Forbidden (%s): %s' % (reason, request.path),
                             extra={
                                 'status_code': 403,
                                 'request': request,
@@ -282,7 +290,9 @@ else:
                     # No CSRF cookie. For POST requests, we insist on a CSRF cookie,
                     # and in this way we can avoid all CSRF attacks, including login
                     # CSRF.
-                    logger.warning('Forbidden (%s): %s' % (REASON_NO_CSRF_COOKIE, request.path),
+                    logger.warning(
+                        'Forbidden (%s): %s' % (
+                            REASON_NO_CSRF_COOKIE, request.path),
                         extra={
                             'status_code': 403,
                             'request': request,
@@ -293,15 +303,19 @@ else:
                 # check non-cookie token for match
                 request_csrf_token = ""
                 if request.method == "POST":
-                    request_csrf_token = request.POST.get('csrfmiddlewaretoken', '')
+                    request_csrf_token = request.POST.get(
+                        'csrfmiddlewaretoken', '')
 
                 if request_csrf_token == "":
                     # Fall back to X-CSRFToken, to make things easier for AJAX,
                     # and possible for PUT/DELETE
-                    request_csrf_token = request.META.get('HTTP_X_CSRFTOKEN', '')
+                    request_csrf_token = request.META.get(
+                        'HTTP_X_CSRFTOKEN', '')
 
                 if not constant_time_compare(request_csrf_token, csrf_token):
-                    logger.warning('Forbidden (%s): %s' % (REASON_BAD_TOKEN, request.path),
+                    logger.warning(
+                        'Forbidden (%s): %s' % (
+                            REASON_BAD_TOKEN, request.path),
                         extra={
                             'status_code': 403,
                             'request': request,

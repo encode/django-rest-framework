@@ -2,9 +2,10 @@ import datetime
 import pickle
 from django.test import TestCase
 from rest_framework import serializers
-from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
-                                         BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
-                                         ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
+from rest_framework.tests.models import (
+    HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
+    BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
+    ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
 
 
 class SubComment(object):
@@ -117,7 +118,8 @@ class BasicTests(TestCase):
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.object, expected)
         self.assertFalse(serializer.object is expected)
-        self.assertEquals(serializer.data['sub_comment'], 'And Merry Christmas!')
+        self.assertEquals(
+            serializer.data['sub_comment'], 'And Merry Christmas!')
 
     def test_update(self):
         serializer = CommentSerializer(self.comment, data=self.data)
@@ -125,14 +127,16 @@ class BasicTests(TestCase):
         self.assertEquals(serializer.is_valid(), True)
         self.assertEquals(serializer.object, expected)
         self.assertTrue(serializer.object is expected)
-        self.assertEquals(serializer.data['sub_comment'], 'And Merry Christmas!')
+        self.assertEquals(
+            serializer.data['sub_comment'], 'And Merry Christmas!')
 
     def test_partial_update(self):
         msg = 'Merry New Year!'
         partial_data = {'content': msg}
         serializer = CommentSerializer(self.comment, data=partial_data)
         self.assertEquals(serializer.is_valid(), False)
-        serializer = CommentSerializer(self.comment, data=partial_data, partial=True)
+        serializer = CommentSerializer(
+            self.comment, data=partial_data, partial=True)
         expected = self.comment
         self.assertEqual(serializer.is_valid(), True)
         self.assertEquals(serializer.object, expected)
@@ -146,7 +150,7 @@ class BasicTests(TestCase):
         """
         serializer = PersonSerializer(self.person)
         self.assertEquals(set(serializer.data.keys()),
-            set(['name', 'age', 'info']))
+                          set(['name', 'age', 'info']))
 
     def test_field_with_dictionary(self):
         """
@@ -160,7 +164,8 @@ class BasicTests(TestCase):
         """
         Attempting to update fields set as read_only should have no effect.
         """
-        serializer = PersonSerializer(self.person, data={'name': 'dwight', 'age': 99})
+        serializer = PersonSerializer(
+            self.person, data={'name': 'dwight', 'age': 99})
         self.assertEquals(serializer.is_valid(), True)
         instance = serializer.save()
         self.assertEquals(serializer.errors, {})
@@ -186,13 +191,13 @@ class ValidationTests(TestCase):
         serializer = CommentSerializer(data=self.data)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors,
-            {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
+                          {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
 
     def test_update(self):
         serializer = CommentSerializer(self.comment, data=self.data)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors,
-            {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
+                          {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
 
     def test_update_missing_field(self):
         data = {
@@ -201,14 +206,15 @@ class ValidationTests(TestCase):
         }
         serializer = CommentSerializer(self.comment, data=data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'email': [u'This field is required.']})
+        self.assertEquals(
+            serializer.errors, {'email': [u'This field is required.']})
 
     def test_missing_bool_with_default(self):
         """Make sure that a boolean value with a 'False' value is not
         mistaken for not having a default."""
         data = {
             'title': 'Some action item',
-            #No 'done' value.
+            # No 'done' value.
         }
         serializer = ActionItemSerializer(self.actionitem, data=data)
         self.assertEquals(serializer.is_valid(), True)
@@ -221,23 +227,27 @@ class ValidationTests(TestCase):
         data = ['i am', 'a', 'list']
         serializer = CommentSerializer(self.comment, data=data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'non_field_errors': [u'Invalid data']})
+        self.assertEquals(
+            serializer.errors, {'non_field_errors': [u'Invalid data']})
 
         data = 'and i am a string'
         serializer = CommentSerializer(self.comment, data=data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'non_field_errors': [u'Invalid data']})
+        self.assertEquals(
+            serializer.errors, {'non_field_errors': [u'Invalid data']})
 
         data = 42
         serializer = CommentSerializer(self.comment, data=data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'non_field_errors': [u'Invalid data']})
+        self.assertEquals(
+            serializer.errors, {'non_field_errors': [u'Invalid data']})
 
     def test_cross_field_validation(self):
         class CommentSerializerWithCrossFieldValidator(CommentSerializer):
             def validate(self, attrs):
                 if attrs["email"] not in attrs["content"]:
-                    raise serializers.ValidationError("Email address not in content")
+                    raise serializers.ValidationError(
+                        "Email address not in content")
                 return attrs
 
         data = {
@@ -253,7 +263,8 @@ class ValidationTests(TestCase):
 
         serializer = CommentSerializerWithCrossFieldValidator(data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'non_field_errors': [u'Email address not in content']})
+        self.assertEquals(serializer.errors, {'non_field_errors': [
+                          u'Email address not in content']})
 
     def test_null_is_true_fields(self):
         """
@@ -308,7 +319,8 @@ class CustomValidationTests(TestCase):
 
         serializer = self.CommentSerializerWithFieldValidator(data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'content': [u'Test not in value']})
+        self.assertEquals(
+            serializer.errors, {'content': [u'Test not in value']})
 
     def test_missing_data(self):
         """
@@ -318,9 +330,11 @@ class CustomValidationTests(TestCase):
             'email': 'tom@example.com',
             'created': datetime.datetime(2012, 1, 1)
         }
-        serializer = self.CommentSerializerWithFieldValidator(data=incomplete_data)
+        serializer = self.CommentSerializerWithFieldValidator(
+            data=incomplete_data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'content': [u'This field is required.']})
+        self.assertEquals(
+            serializer.errors, {'content': [u'This field is required.']})
 
     def test_wrong_data(self):
         """
@@ -333,7 +347,8 @@ class CustomValidationTests(TestCase):
         }
         serializer = self.CommentSerializerWithFieldValidator(data=wrong_data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'email': [u'Enter a valid e-mail address.']})
+        self.assertEquals(
+            serializer.errors, {'email': [u'Enter a valid e-mail address.']})
 
 
 class PositiveIntegerAsChoiceTests(TestCase):
@@ -353,7 +368,8 @@ class ModelValidationTests(TestCase):
         serializer.save()
         second_serializer = AlbumsSerializer(data={'title': 'a'})
         self.assertFalse(second_serializer.is_valid())
-        self.assertEqual(second_serializer.errors, {'title': [u'Album with this Title already exists.']})
+        self.assertEqual(second_serializer.errors, {'title': [
+                         u'Album with this Title already exists.']})
 
     def test_foreign_key_with_partial(self):
         """
@@ -369,19 +385,21 @@ class ModelValidationTests(TestCase):
             class Meta:
                 model = Photo
 
-        photo_serializer = PhotoSerializer(data={'description': 'test', 'album': album.pk})
+        photo_serializer = PhotoSerializer(
+            data={'description': 'test', 'album': album.pk})
         self.assertTrue(photo_serializer.is_valid())
         photo = photo_serializer.save()
 
         # Updating only the album (foreign key)
-        photo_serializer = PhotoSerializer(instance=photo, data={'album': album.pk}, partial=True)
+        photo_serializer = PhotoSerializer(
+            instance=photo, data={'album': album.pk}, partial=True)
         self.assertTrue(photo_serializer.is_valid())
         self.assertTrue(photo_serializer.save())
 
         # Updating only the description
         photo_serializer = PhotoSerializer(instance=photo,
-            data={'description': 'new'},
-            partial=True)
+                                           data={'description': 'new'},
+                                           partial=True)
 
         self.assertTrue(photo_serializer.is_valid())
         self.assertTrue(photo_serializer.save())
@@ -391,15 +409,18 @@ class RegexValidationTest(TestCase):
     def test_create_failed(self):
         serializer = BookSerializer(data={'isbn': '1234567890'})
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'isbn': [u'isbn has to be exact 13 numbers']})
+        self.assertEquals(serializer.errors, {'isbn': [
+                          u'isbn has to be exact 13 numbers']})
 
         serializer = BookSerializer(data={'isbn': '12345678901234'})
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'isbn': [u'isbn has to be exact 13 numbers']})
+        self.assertEquals(serializer.errors, {'isbn': [
+                          u'isbn has to be exact 13 numbers']})
 
         serializer = BookSerializer(data={'isbn': 'abcdefghijklm'})
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'isbn': [u'isbn has to be exact 13 numbers']})
+        self.assertEquals(serializer.errors, {'isbn': [
+                          u'isbn has to be exact 13 numbers']})
 
     def test_create_success(self):
         serializer = BookSerializer(data={'isbn': '1234567890123'})
@@ -415,7 +436,8 @@ class MetadataTests(TestCase):
             'created': serializers.DateTimeField
         }
         for field_name, field in expected.items():
-            self.assertTrue(isinstance(serializer.data.fields[field_name], field))
+            self.assertTrue(
+                isinstance(serializer.data.fields[field_name], field))
 
 
 class ManyToManyTests(TestCase):
@@ -605,7 +627,8 @@ class DefaultValueTests(TestCase):
         instance = serializer.save()
 
         data = {'extra': 'extra_value'}
-        serializer = self.serializer_class(instance=instance, data=data, partial=True)
+        serializer = self.serializer_class(
+            instance=instance, data=data, partial=True)
         self.assertEquals(serializer.is_valid(), True)
         instance = serializer.save()
 
@@ -674,7 +697,8 @@ class ManyRelatedTests(TestCase):
 
         class BlogPostSerializer(serializers.Serializer):
             title = serializers.CharField()
-            first_comment = BlogPostCommentSerializer(source='get_first_comment')
+            first_comment = BlogPostCommentSerializer(
+                source='get_first_comment')
 
         serializer = BlogPostSerializer(post)
 
@@ -715,11 +739,11 @@ class RelatedTraversalTest(TestCase):
         expected = {
             'title': u'Test blog post',
             'comments': [{
-                             'text': u'I love this blog post',
-                             'post_owner': {
+                         'text': u'I love this blog post',
+                         'post_owner': {
                                  "name": u"django",
                                  "age": None
-                             }
+                         }
                          }]
         }
 
@@ -814,7 +838,7 @@ class BlankFieldTests(TestCase):
         self.assertEquals(serializer.is_valid(), True)
 
 
-#test for issue #460
+# test for issue #460
 class SerializerPickleTests(TestCase):
     """
     Test pickleability of the output of Serializers
@@ -926,5 +950,7 @@ class NestedSerializerContextTests(TestCase):
         album_collection = AlbumCollection()
         album_collection.albums = [album1, album2]
 
-        # This will raise RuntimeError if context doesn't get passed correctly to the nested Serializers
-        AlbumCollectionSerializer(album_collection, context={'context_item': 'album context'}).data
+        # This will raise RuntimeError if context doesn't get passed correctly
+        # to the nested Serializers
+        AlbumCollectionSerializer(
+            album_collection, context={'context_item': 'album context'}).data

@@ -14,7 +14,7 @@ from rest_framework.decorators import (
     authentication_classes,
     throttle_classes,
     permission_classes,
-    )
+)
 
 from rest_framework.tests.utils import RequestFactory
 
@@ -60,7 +60,8 @@ class DecoratorTestCase(TestCase):
 
         request = self.factory.post('/')
         response = view(request)
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_calling_put_method(self):
         @api_view(['GET', 'PUT'])
@@ -73,7 +74,8 @@ class DecoratorTestCase(TestCase):
 
         request = self.factory.post('/')
         response = view(request)
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_calling_patch_method(self):
         @api_view(['GET', 'PATCH'])
@@ -86,7 +88,8 @@ class DecoratorTestCase(TestCase):
 
         request = self.factory.post('/')
         response = view(request)
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_renderer_classes(self):
         @api_view(['GET'])
@@ -104,7 +107,7 @@ class DecoratorTestCase(TestCase):
         def view(request):
             self.assertEqual(len(request.parsers), 1)
             self.assertTrue(isinstance(request.parsers[0],
-                JSONParser))
+                                       JSONParser))
             return Response({})
 
         request = self.factory.get('/')
@@ -116,7 +119,7 @@ class DecoratorTestCase(TestCase):
         def view(request):
             self.assertEqual(len(request.authenticators), 1)
             self.assertTrue(isinstance(request.authenticators[0],
-                BasicAuthentication))
+                                       BasicAuthentication))
             return Response({})
 
         request = self.factory.get('/')
@@ -146,4 +149,5 @@ class DecoratorTestCase(TestCase):
         self.assertEquals(response.status_code, status.HTTP_200_OK)
 
         response = view(request)
-        self.assertEquals(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+        self.assertEquals(
+            response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)

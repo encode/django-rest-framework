@@ -55,7 +55,8 @@
 #         group.save()
 #         self.assertEqual(0, User.objects.count())
 
-#         response = self.client.post('/users/', {'username': 'bar', 'password': 'baz', 'groups': [group.id]})
+# response = self.client.post('/users/', {'username': 'bar', 'password':
+# 'baz', 'groups': [group.id]})
 
 #         self.assertEqual(response.status_code, 201)
 #         self.assertEqual(1, User.objects.count())
@@ -77,7 +78,8 @@
 #         group.save()
 #         self.assertEqual(0, User.objects.count())
 
-#         response = self.client.post('/customusers/', {'username': 'bar', 'groups': [group.id]})
+# response = self.client.post('/customusers/', {'username': 'bar',
+# 'groups': [group.id]})
 
 #         self.assertEqual(response.status_code, 201)
 #         self.assertEqual(1, CustomUser.objects.count())

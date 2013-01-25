@@ -33,7 +33,8 @@ class BaseRenderer(object):
     format = None
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
-        raise NotImplemented('Renderer class requires .render() to be implemented')
+        raise NotImplemented(
+            'Renderer class requires .render() to be implemented')
 
 
 class JSONRenderer(BaseRenderer):
@@ -206,7 +207,8 @@ class TemplateHTMLRenderer(BaseRenderer):
             return [self.template_name]
         elif hasattr(view, 'get_template_names'):
             return view.get_template_names()
-        raise ConfigurationError('Returned a template response with no template_name')
+        raise ConfigurationError(
+            'Returned a template response with no template_name')
 
     def get_exception_template(self, response):
         template_names = [name % {'status_code': response.status_code}
@@ -314,7 +316,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             kwargs = {}
             kwargs['required'] = v.required
 
-            #if getattr(v, 'queryset', None):
+            # if getattr(v, 'queryset', None):
             #    kwargs['queryset'] = v.queryset
 
             if getattr(v, 'choices', None) is not None:
@@ -356,7 +358,8 @@ class BrowsableAPIRenderer(BaseRenderer):
         fields = self.serializer_to_form_fields(serializer)
 
         # Creating an on the fly form see:
-        # http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
+        # http://stackoverflow.com/questions/3915024/dynamically-creating-
+        # classes-python
         OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
         data = (obj is not None) and serializer.data or None
         form_instance = OnTheFlyForm(data)
@@ -370,7 +373,8 @@ class BrowsableAPIRenderer(BaseRenderer):
         """
 
         # If we're not using content overloading there's no point in supplying a generic form,
-        # as the view won't treat the form's value as the content of the request.
+        # as the view won't treat the form's value as the content of the
+        # request.
         if not (api_settings.FORM_CONTENT_OVERRIDE
                 and api_settings.FORM_CONTENTTYPE_OVERRIDE):
             return None
@@ -424,7 +428,8 @@ class BrowsableAPIRenderer(BaseRenderer):
         response = renderer_context['response']
 
         renderer = self.get_default_renderer(view)
-        content = self.get_content(renderer, data, accepted_media_type, renderer_context)
+        content = self.get_content(
+            renderer, data, accepted_media_type, renderer_context)
 
         put_form = self.get_form(view, 'PUT', request)
         post_form = self.get_form(view, 'POST', request)

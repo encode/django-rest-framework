@@ -10,8 +10,8 @@ def null_view(request):
     pass
 
 urlpatterns = patterns('',
-    url(r'^view$', null_view, name='view'),
-)
+                       url(r'^view$', null_view, name='view'),
+                       )
 
 
 class ReverseTests(TestCase):

@@ -1,3 +1,4 @@
+autopep>=0.8.5
 pep>=1.4.1
 coverage>=3.6
 django-discover-runner>=0.2.2

@@ -36,7 +36,8 @@ def _remove_leading_indent(content):
     # unindent the content if needed
     if whitespace_counts:
         whitespace_pattern = '^' + (' ' * min(whitespace_counts))
-        content = re.sub(re.compile(whitespace_pattern, re.MULTILINE), '', content)
+        content = re.sub(
+            re.compile(whitespace_pattern, re.MULTILINE), '', content)
     content = content.strip('\n')
     return content
 
@@ -299,7 +300,8 @@ class APIView(View):
             self.permission_denied(request)
         self.check_throttles(request)
 
-        # Perform content negotiation and store the accepted info on the request
+        # Perform content negotiation and store the accepted info on the
+        # request
         neg = self.perform_content_negotiation(request)
         request.accepted_renderer, request.accepted_media_type = neg
 
@@ -383,7 +385,8 @@ class APIView(View):
         except Exception as exc:
             response = self.handle_exception(exc)
 
-        self.response = self.finalize_response(request, response, *args, **kwargs)
+        self.response = self.finalize_response(
+            request, response, *args, **kwargs)
         return self.response
 
     def options(self, request, *args, **kwargs):

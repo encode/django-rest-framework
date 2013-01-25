@@ -30,7 +30,8 @@ class FileSerializerTests(TestCase):
         file = StringIO.StringIO('stuff')
         file.name = 'stuff.txt'
         file.size = file.len
-        serializer = UploadedFileSerializer(data={'created': now}, files={'file': file})
+        serializer = UploadedFileSerializer(
+            data={'created': now}, files={'file': file})
         uploaded_file = UploadedFile(file=file, created=now)
         self.assertTrue(serializer.is_valid())
         self.assertEquals(serializer.object.created, uploaded_file.created)

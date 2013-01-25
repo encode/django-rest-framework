@@ -116,14 +116,17 @@ TRAILING_PUNCTUATION = ['.', ',', ')', '>', '\n', '&gt;', '"', "'"]
 DOTS = ['&middot;', '*', '\xe2\x80\xa2', '&#149;', '&bull;', '&#8226;']
 unencoded_ampersands_re = re.compile(r'&(?!(\w+|#\d+);)')
 word_split_re = re.compile(r'(\s+)')
-punctuation_re = re.compile('^(?P<lead>(?:%s)*)(?P<middle>.*?)(?P<trail>(?:%s)*)$' % \
-    ('|'.join([re.escape(x) for x in LEADING_PUNCTUATION]),
-    '|'.join([re.escape(x) for x in TRAILING_PUNCTUATION])))
+punctuation_re = re.compile('^(?P<lead>(?:%s)*)(?P<middle>.*?)(?P<trail>(?:%s)*)$' %
+                           (
+                               '|'.join([re.escape(
+                                   x) for x in LEADING_PUNCTUATION]),
+                            '|'.join([re.escape(x) for x in TRAILING_PUNCTUATION])))
 simple_email_re = re.compile(r'^\S+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9._-]+$')
 link_target_attribute_re = re.compile(r'(<a [^>]*?)target=[^\s>]+')
 html_gunk_re = re.compile(r'(?:<br clear="all">|<i><\/i>|<b><\/b>|<em><\/em>|<strong><\/strong>|<\/?smallcaps>|<\/?uppercase>)', re.IGNORECASE)
 hard_coded_bullets_re = re.compile(r'((?:<p>(?:%s).*?[a-zA-Z].*?</p>\s*)+)' % '|'.join([re.escape(x) for x in DOTS]), re.DOTALL)
-trailing_empty_content_re = re.compile(r'(?:<p>(?:&nbsp;|\s|<br \/>)*?</p>\s*)+\Z')
+trailing_empty_content_re = re.compile(
+    r'(?:<p>(?:&nbsp;|\s|<br \/>)*?</p>\s*)+\Z')
 
 
 # And the template tags themselves...
@@ -211,7 +214,8 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
 
     If autoescape is True, the link text and URLs will get autoescaped.
     """
-    trim_url = lambda x, limit=trim_url_limit: limit is not None and (len(x) > limit and ('%s...' % x[:max(0, limit - 3)])) or x
+    trim_url = lambda x, limit=trim_url_limit: limit is not None and (
+        len(x) > limit and ('%s...' % x[:max(0, limit - 3)])) or x
     safe_input = isinstance(text, SafeData)
     words = word_split_re.split(force_unicode(text))
     nofollow_attr = nofollow and ' rel="nofollow"' or ''
@@ -225,9 +229,9 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
             url = None
             if middle.startswith('http://') or middle.startswith('https://'):
                 url = middle
-            elif middle.startswith('www.') or ('@' not in middle and \
-                    middle and middle[0] in string.ascii_letters + string.digits and \
-                    (middle.endswith('.org') or middle.endswith('.net') or middle.endswith('.com'))):
+            elif middle.startswith('www.') or ('@' not in middle and
+                                               middle and middle[0] in string.ascii_letters + string.digits and
+                                  (middle.endswith('.org') or middle.endswith('.net') or middle.endswith('.com'))):
                 url = 'http://%s' % middle
             elif '@' in middle and not ':' in middle and simple_email_re.match(middle):
                 url = 'mailto:%s' % middle
@@ -238,7 +242,8 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
                 if autoescape and not safe_input:
                     lead, trail = escape(lead), escape(trail)
                     url, trimmed = escape(url), escape(trimmed)
-                middle = '<a href="%s"%s>%s</a>' % (url, nofollow_attr, trimmed)
+                middle = '<a href="%s"%s>%s</a>' % (
+                    url, nofollow_attr, trimmed)
                 words[i] = mark_safe('%s%s%s' % (lead, middle, trail))
             else:
                 if safe_input:

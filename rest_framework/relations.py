@@ -35,9 +35,11 @@ class RelatedField(WritableField):
         super(RelatedField, self).initialize(parent, field_name)
         if self.queryset is None and not self.read_only:
             try:
-                manager = getattr(self.parent.opts.model, self.source or field_name)
+                manager = getattr(
+                    self.parent.opts.model, self.source or field_name)
                 if hasattr(manager, 'related'):  # Forward
-                    self.queryset = manager.related.model._default_manager.all()
+                    self.queryset = manager.related.model._default_manager.all(
+                    )
                 else:  # Reverse
                     self.queryset = manager.field.rel.to._default_manager.all()
             except:
@@ -194,13 +196,15 @@ class PrimaryKeyRelatedField(RelatedField):
             return desc
         return "%s - %s" % (desc, ident)
 
-    # TODO: Possibly change this to just take `obj`, through prob less performant
+    # TODO: Possibly change this to just take `obj`, through prob less
+    # performant
     def to_native(self, pk):
         return pk
 
     def from_native(self, data):
         if self.queryset is None:
-            raise Exception('Writable related fields must include a `queryset` argument')
+            raise Exception(
+                'Writable related fields must include a `queryset` argument')
 
         try:
             return self.queryset.get(pk=data)
@@ -268,7 +272,8 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
 
     def from_native(self, data):
         if self.queryset is None:
-            raise Exception('Writable related fields must include a `queryset` argument')
+            raise Exception(
+                'Writable related fields must include a `queryset` argument')
 
         try:
             return self.queryset.get(pk=data)
@@ -302,7 +307,8 @@ class SlugRelatedField(RelatedField):
 
     def from_native(self, data):
         if self.queryset is None:
-            raise Exception('Writable related fields must include a `queryset` argument')
+            raise Exception(
+                'Writable related fields must include a `queryset` argument')
 
         try:
             return self.queryset.get(**{self.slug_field: data})
@@ -394,10 +400,12 @@ class HyperlinkedRelatedField(RelatedField):
         # Convert URL -> model instance pk
         # TODO: Use values_list
         if self.queryset is None:
-            raise Exception('Writable related fields must include a `queryset` argument')
+            raise Exception(
+                'Writable related fields must include a `queryset` argument')
 
         try:
-            http_prefix = value.startswith('http:') or value.startswith('https:')
+            http_prefix = value.startswith(
+                'http:') or value.startswith('https:')
         except AttributeError:
             msg = self.error_messages['incorrect_type']
             raise ValidationError(msg % type(value).__name__)

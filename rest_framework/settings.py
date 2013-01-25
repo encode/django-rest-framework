@@ -44,11 +44,11 @@ DEFAULTS = {
     ),
 
     'DEFAULT_CONTENT_NEGOTIATION_CLASS':
-        'rest_framework.negotiation.DefaultContentNegotiation',
+    'rest_framework.negotiation.DefaultContentNegotiation',
     'DEFAULT_MODEL_SERIALIZER_CLASS':
-        'rest_framework.serializers.ModelSerializer',
+    'rest_framework.serializers.ModelSerializer',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS':
-        'rest_framework.pagination.PaginationSerializer',
+    'rest_framework.pagination.PaginationSerializer',
 
     'DEFAULT_THROTTLE_RATES': {
         'user': None,
@@ -116,7 +116,8 @@ def import_from_string(val, setting_name):
         module = importlib.import_module(module_path)
         return getattr(module, class_name)
     except ImportError as e:
-        msg = "Could not import '%s' for API setting '%s'. %s: %s." % (val, setting_name, e.__class__.__name__, e)
+        msg = "Could not import '%s' for API setting '%s'. %s: %s." % (
+            val, setting_name, e.__class__.__name__, e)
         raise ImportError(msg)
 
 

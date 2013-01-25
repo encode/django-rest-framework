@@ -14,12 +14,14 @@ def get_breadcrumbs(url):
         except Exception:
             pass
         else:
-            # Check if this is a REST framework view, and if so add it to the breadcrumbs
+            # Check if this is a REST framework view, and if so add it to the
+            # breadcrumbs
             if isinstance(getattr(view, 'cls_instance', None), APIView):
                 # Don't list the same view twice in a row.
                 # Probably an optional trailing slash.
                 if not seen or seen[-1] != view:
-                    breadcrumbs_list.insert(0, (view.cls_instance.get_name(), prefix + url))
+                    breadcrumbs_list.insert(
+                        0, (view.cls_instance.get_name(), prefix + url))
                     seen.append(view)
 
         if url == '':
@@ -27,10 +29,12 @@ def get_breadcrumbs(url):
             return breadcrumbs_list
 
         elif url.endswith('/'):
-            # Drop trailing slash off the end and continue to try to resolve more breadcrumbs
+            # Drop trailing slash off the end and continue to try to resolve
+            # more breadcrumbs
             return breadcrumbs_recursive(url.rstrip('/'), breadcrumbs_list, prefix, seen)
 
-        # Drop trailing non-slash off the end and continue to try to resolve more breadcrumbs
+        # Drop trailing non-slash off the end and continue to try to resolve
+        # more breadcrumbs
         return breadcrumbs_recursive(url[:url.rfind('/') + 1], breadcrumbs_list, prefix, seen)
 
     prefix = get_script_prefix().rstrip('/')

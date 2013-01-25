@@ -116,7 +116,7 @@
 # def get_content_type(filename):
 #     return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
 #
-#class TestMultiPartParser(TestCase):
+# class TestMultiPartParser(TestCase):
 #    def setUp(self):
 #        self.req = RequestFactory()
 #        self.content_type, self.body = encode_multipart_formdata([('key1', 'val1'), ('key1', 'val2')],

@@ -49,8 +49,8 @@ class TestRootView(TestCase):
             BasicModel(text=item).save()
         self.objects = BasicModel.objects
         self.data = [
-        {'id': obj.id, 'text': obj.text}
-        for obj in self.objects.all()
+            {'id': obj.id, 'text': obj.text}
+            for obj in self.objects.all()
         ]
         self.view = RootView.as_view()
 
@@ -69,7 +69,7 @@ class TestRootView(TestCase):
         """
         content = {'text': 'foobar'}
         request = factory.post('/', json.dumps(content),
-            content_type='application/json')
+                               content_type='application/json')
         response = self.view(request).render()
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         self.assertEquals(response.data, {'id': 4, 'text': u'foobar'})
@@ -82,10 +82,12 @@ class TestRootView(TestCase):
         """
         content = {'text': 'foobar'}
         request = factory.put('/', json.dumps(content),
-            content_type='application/json')
+                              content_type='application/json')
         response = self.view(request).render()
-        self.assertEquals(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEquals(response.data, {"detail": "Method 'PUT' not allowed."})
+        self.assertEquals(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEquals(
+            response.data, {"detail": "Method 'PUT' not allowed."})
 
     def test_delete_root_view(self):
         """
@@ -93,8 +95,10 @@ class TestRootView(TestCase):
         """
         request = factory.delete('/')
         response = self.view(request).render()
-        self.assertEquals(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEquals(response.data, {"detail": "Method 'DELETE' not allowed."})
+        self.assertEquals(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEquals(
+            response.data, {"detail": "Method 'DELETE' not allowed."})
 
     def test_options_root_view(self):
         """
@@ -124,7 +128,7 @@ class TestRootView(TestCase):
         """
         content = {'id': 999, 'text': 'foobar'}
         request = factory.post('/', json.dumps(content),
-            content_type='application/json')
+                               content_type='application/json')
         response = self.view(request).render()
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         self.assertEquals(response.data, {'id': 4, 'text': u'foobar'})
@@ -142,8 +146,8 @@ class TestInstanceView(TestCase):
             BasicModel(text=item).save()
         self.objects = BasicModel.objects
         self.data = [
-        {'id': obj.id, 'text': obj.text}
-        for obj in self.objects.all()
+            {'id': obj.id, 'text': obj.text}
+            for obj in self.objects.all()
         ]
         self.view = InstanceView.as_view()
         self.slug_based_view = SlugBasedInstanceView.as_view()
@@ -163,10 +167,12 @@ class TestInstanceView(TestCase):
         """
         content = {'text': 'foobar'}
         request = factory.post('/', json.dumps(content),
-            content_type='application/json')
+                               content_type='application/json')
         response = self.view(request).render()
-        self.assertEquals(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEquals(response.data, {"detail": "Method 'POST' not allowed."})
+        self.assertEquals(
+            response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEquals(
+            response.data, {"detail": "Method 'POST' not allowed."})
 
     def test_put_instance_view(self):
         """
@@ -174,7 +180,7 @@ class TestInstanceView(TestCase):
         """
         content = {'text': 'foobar'}
         request = factory.put('/1', json.dumps(content),
-            content_type='application/json')
+                              content_type='application/json')
         response = self.view(request, pk='1').render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, {'id': 1, 'text': 'foobar'})
@@ -187,7 +193,7 @@ class TestInstanceView(TestCase):
         """
         content = {'text': 'foobar'}
         request = factory.patch('/1', json.dumps(content),
-            content_type='application/json')
+                                content_type='application/json')
 
         response = self.view(request, pk=1).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
@@ -234,7 +240,7 @@ class TestInstanceView(TestCase):
         """
         content = {'id': 999, 'text': 'foobar'}
         request = factory.put('/1', json.dumps(content),
-            content_type='application/json')
+                              content_type='application/json')
         response = self.view(request, pk=1).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data, {'id': 1, 'text': 'foobar'})
@@ -249,7 +255,7 @@ class TestInstanceView(TestCase):
         self.objects.get(id=1).delete()
         content = {'text': 'foobar'}
         request = factory.put('/1', json.dumps(content),
-            content_type='application/json')
+                              content_type='application/json')
         response = self.view(request, pk=1).render()
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         self.assertEquals(response.data, {'id': 1, 'text': 'foobar'})
@@ -262,9 +268,10 @@ class TestInstanceView(TestCase):
         at the requested url if it doesn't exist.
         """
         content = {'text': 'foobar'}
-        # pk fields can not be created on demand, only the database can set th pk for a new object
+        # pk fields can not be created on demand, only the database can set th
+        # pk for a new object
         request = factory.put('/5', json.dumps(content),
-            content_type='application/json')
+                              content_type='application/json')
         response = self.view(request, pk=5).render()
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         new_obj = self.objects.get(pk=5)
@@ -277,10 +284,11 @@ class TestInstanceView(TestCase):
         """
         content = {'text': 'foobar'}
         request = factory.put('/test_slug', json.dumps(content),
-            content_type='application/json')
+                              content_type='application/json')
         response = self.slug_based_view(request, slug='test_slug').render()
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
-        self.assertEquals(response.data, {'slug': 'test_slug', 'text': 'foobar'})
+        self.assertEquals(
+            response.data, {'slug': 'test_slug', 'text': 'foobar'})
         new_obj = SlugBasedModel.objects.get(slug='test_slug')
         self.assertEquals(new_obj.text, 'foobar')
 
@@ -311,7 +319,7 @@ class TestCreateModelWithAutoNowAddField(TestCase):
         """
         content = {'email': 'foobar@example.com', 'content': 'foobar'}
         request = factory.post('/', json.dumps(content),
-            content_type='application/json')
+                               content_type='application/json')
         response = self.view(request).render()
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
         created = self.objects.get(id=1)

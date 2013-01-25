@@ -23,7 +23,7 @@ class TestSettingsManager(object):
     def set(self, **kwargs):
         for k, v in kwargs.iteritems():
             self._original_settings.setdefault(k, getattr(settings, k,
-                NO_SETTING))
+                                                          NO_SETTING))
             setattr(settings, k, v)
         if 'INSTALLED_APPS' in kwargs:
             self.syncdb()
@@ -63,5 +63,6 @@ class SettingsTestCase(TestCase):
 
 class TestModelsTestCase(SettingsTestCase):
     def setUp(self, *args, **kwargs):
-        installed_apps = tuple(settings.INSTALLED_APPS) + ('rest_framework.tests',)
+        installed_apps = tuple(
+            settings.INSTALLED_APPS) + ('rest_framework.tests',)
         self.settings_manager.set(INSTALLED_APPS=installed_apps)

@@ -33,10 +33,10 @@ def not_found(request):
 
 
 urlpatterns = patterns('',
-    url(r'^$', example),
-    url(r'^permission_denied$', permission_denied),
-    url(r'^not_found$', not_found),
-)
+                       url(r'^$', example),
+                       url(r'^permission_denied$', permission_denied),
+                       url(r'^not_found$', not_found),
+                       )
 
 
 class TemplateHTMLRendererTests(TestCase):

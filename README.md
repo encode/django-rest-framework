@@ -80,6 +80,10 @@ To start hacking type.
 
     pip install -r development.txt
 
+Before pushing run.
+
+    autopep8 -r --in-place ./rest_framework/
+
 To run the tests.
 
     ./rest_framework/runtests/runtests.py

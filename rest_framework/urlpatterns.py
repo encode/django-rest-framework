@@ -16,7 +16,8 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required):
             patterns = apply_suffix_patterns(urlpattern.url_patterns,
                                              suffix_pattern,
                                              suffix_required)
-            ret.append(url(regex, include(patterns, namespace, app_name), kwargs))
+            ret.append(
+                url(regex, include(patterns, namespace, app_name), kwargs))
 
         else:
             # Regular URL pattern

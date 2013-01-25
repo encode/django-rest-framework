@@ -80,15 +80,20 @@ class HTMLView1(APIView):
         return Response('text')
 
 urlpatterns = patterns('',
-    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
-    url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
-    url(r'^cache$', MockGETView.as_view()),
-    url(r'^jsonp/jsonrenderer$', MockGETView.as_view(renderer_classes=[JSONRenderer, JSONPRenderer])),
-    url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(renderer_classes=[JSONPRenderer])),
-    url(r'^html$', HTMLView.as_view()),
-    url(r'^html1$', HTMLView1.as_view()),
-    url(r'^api', include('rest_framework.urls', namespace='rest_framework'))
-)
+                       url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[
+                                                                     RendererA, RendererB])),
+                       url(r'^$', MockView.as_view(
+                           renderer_classes=[RendererA, RendererB])),
+                       url(r'^cache$', MockGETView.as_view()),
+                       url(r'^jsonp/jsonrenderer$', MockGETView.as_view(renderer_classes=[
+                                                                        JSONRenderer, JSONPRenderer])),
+                       url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(
+                           renderer_classes=[JSONPRenderer])),
+                       url(r'^html$', HTMLView.as_view()),
+                       url(r'^html1$', HTMLView1.as_view()),
+                       url(r'^api', include(
+                           'rest_framework.urls', namespace='rest_framework'))
+                       )
 
 
 class POSTDeniedPermission(permissions.BasePermission):
@@ -168,7 +173,7 @@ class RendererEndToEndTests(TestCase):
         param = '?%s=%s' % (
             api_settings.URL_ACCEPT_OVERRIDE,
             RendererB.media_type
-            )
+        )
         resp = self.client.get('/' + param)
         self.assertEquals(resp['Content-Type'], RendererB.media_type)
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
@@ -185,7 +190,7 @@ class RendererEndToEndTests(TestCase):
         param = '?%s=%s' % (
             api_settings.URL_FORMAT_OVERRIDE,
             RendererB.format
-            )
+        )
         resp = self.client.get('/' + param)
         self.assertEquals(resp['Content-Type'], RendererB.media_type)
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
@@ -205,9 +210,9 @@ class RendererEndToEndTests(TestCase):
         param = '?%s=%s' % (
             api_settings.URL_FORMAT_OVERRIDE,
             RendererB.format
-            )
+        )
         resp = self.client.get('/' + param,
-            HTTP_ACCEPT=RendererB.media_type)
+                               HTTP_ACCEPT=RendererB.media_type)
         self.assertEquals(resp['Content-Type'], RendererB.media_type)
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEquals(resp.status_code, DUMMYSTATUS)
@@ -262,7 +267,7 @@ class JSONPRendererTests(TestCase):
         Test JSONP rendering with View JSON Renderer.
         """
         resp = self.client.get('/jsonp/jsonrenderer',
-            HTTP_ACCEPT='application/javascript')
+                               HTTP_ACCEPT='application/javascript')
         self.assertEquals(resp.status_code, status.HTTP_200_OK)
         self.assertEquals(resp['Content-Type'], 'application/javascript')
         self.assertEquals(resp.content, 'callback(%s);' % _flat_repr)
@@ -272,7 +277,7 @@ class JSONPRendererTests(TestCase):
         Test JSONP rendering without View JSON Renderer.
         """
         resp = self.client.get('/jsonp/nojsonrenderer',
-            HTTP_ACCEPT='application/javascript')
+                               HTTP_ACCEPT='application/javascript')
         self.assertEquals(resp.status_code, status.HTTP_200_OK)
         self.assertEquals(resp['Content-Type'], 'application/javascript')
         self.assertEquals(resp.content, 'callback(%s);' % _flat_repr)
@@ -282,11 +287,13 @@ class JSONPRendererTests(TestCase):
         Test JSONP rendering with callback function name.
         """
         callback_func = 'myjsonpcallback'
-        resp = self.client.get('/jsonp/nojsonrenderer?callback=' + callback_func,
+        resp = self.client.get(
+            '/jsonp/nojsonrenderer?callback=' + callback_func,
             HTTP_ACCEPT='application/javascript')
         self.assertEquals(resp.status_code, status.HTTP_200_OK)
         self.assertEquals(resp['Content-Type'], 'application/javascript')
-        self.assertEquals(resp.content, '%s(%s);' % (callback_func, _flat_repr))
+        self.assertEquals(
+            resp.content, '%s(%s);' % (callback_func, _flat_repr))
 
 
 if yaml:
@@ -380,7 +387,8 @@ class XMLRendererTestCase(TestCase):
         Test XML rendering.
         """
         renderer = XMLRenderer()
-        content = renderer.render({'field': Decimal('111.2')}, 'application/xml')
+        content = renderer.render(
+            {'field': Decimal('111.2')}, 'application/xml')
         self.assertXMLContains(content, '<field>111.2</field>')
 
     def test_render_none(self):
@@ -405,15 +413,18 @@ class XMLRendererTestCase(TestCase):
         Test XML rendering.
         """
         renderer = XMLRenderer()
-        content = StringIO(renderer.render(self._complex_data, 'application/xml'))
+        content = StringIO(
+            renderer.render(self._complex_data, 'application/xml'))
 
         parser = XMLParser()
         complex_data_out = parser.parse(content)
-        error_msg = "complex data differs!IN:\n %s \n\n OUT:\n %s" % (repr(self._complex_data), repr(complex_data_out))
+        error_msg = "complex data differs!IN:\n %s \n\n OUT:\n %s" % (
+            repr(self._complex_data), repr(complex_data_out))
         self.assertEqual(self._complex_data, complex_data_out, error_msg)
 
     def assertXMLContains(self, xml, string):
-        self.assertTrue(xml.startswith('<?xml version="1.0" encoding="utf-8"?>\n<root>'))
+        self.assertTrue(
+            xml.startswith('<?xml version="1.0" encoding="utf-8"?>\n<root>'))
         self.assertTrue(xml.endswith('</root>'))
         self.assertTrue(string in xml, '%r not in %r' % (string, xml))
 

@@ -7,7 +7,7 @@ from rest_framework.renderers import (
     BaseRenderer,
     JSONRenderer,
     BrowsableAPIRenderer
-    )
+)
 from rest_framework.settings import api_settings
 
 
@@ -64,15 +64,19 @@ class HTMLView1(APIView):
 
 
 urlpatterns = patterns('',
-    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
-    url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
-    url(r'^html$', HTMLView.as_view()),
-    url(r'^html1$', HTMLView1.as_view()),
-    url(r'^restframework', include('rest_framework.urls', namespace='rest_framework'))
-)
+                       url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[
+                                                                     RendererA, RendererB])),
+                       url(r'^$', MockView.as_view(
+                           renderer_classes=[RendererA, RendererB])),
+                       url(r'^html$', HTMLView.as_view()),
+                       url(r'^html1$', HTMLView1.as_view()),
+                       url(r'^restframework', include('rest_framework.urls',
+                                                      namespace='rest_framework'))
+                       )
 
 
-# TODO: Clean tests bellow - remove duplicates with above, better unit testing, ...
+# TODO: Clean tests bellow - remove duplicates with above, better unit
+# testing, ...
 class RendererIntegrationTests(TestCase):
     """
     End-to-end testing of renderers using an ResponseMixin on a generic view.
@@ -122,7 +126,7 @@ class RendererIntegrationTests(TestCase):
         param = '?%s=%s' % (
             api_settings.URL_ACCEPT_OVERRIDE,
             RendererB.media_type
-            )
+        )
         resp = self.client.get('/' + param)
         self.assertEquals(resp['Content-Type'], RendererB.media_type)
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
@@ -148,7 +152,7 @@ class RendererIntegrationTests(TestCase):
         """If both a 'format' query and a matching Accept header specified,
         the renderer with the matching format attribute should serialize the response."""
         resp = self.client.get('/?format=%s' % RendererB.format,
-            HTTP_ACCEPT=RendererB.media_type)
+                               HTTP_ACCEPT=RendererB.media_type)
         self.assertEquals(resp['Content-Type'], RendererB.media_type)
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEquals(resp.status_code, DUMMYSTATUS)

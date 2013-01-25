@@ -32,7 +32,8 @@ class FormatSuffixTests(TestCase):
         for test_path in test_paths:
             request = factory.get(test_path.path)
             try:
-                callback, callback_args, callback_kwargs = resolver.resolve(request.path_info)
+                callback, callback_args, callback_kwargs = resolver.resolve(
+                    request.path_info)
             except:
                 self.fail("Failed to resolve URL: %s" % request.path_info)
             self.assertEquals(callback_args, test_path.args)
@@ -74,6 +75,7 @@ class FormatSuffixTests(TestCase):
         test_paths = [
             URLTestPath('/test/path', (), {'foo': 'bar', }),
             URLTestPath('/test/path.api', (), {'foo': 'bar', 'format': 'api'}),
-            URLTestPath('/test/path.asdf', (), {'foo': 'bar', 'format': 'asdf'}),
+            URLTestPath(
+                '/test/path.asdf', (), {'foo': 'bar', 'format': 'asdf'}),
         ]
         self._resolve_urlpatterns(urlpatterns, test_paths)

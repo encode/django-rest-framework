@@ -19,7 +19,8 @@
 
 #         view = MockView()
 #         content = {'qwerty': 'uiop'}
-#         self.assertEqual(FormResource(view).validate_request(content, None), content)
+# self.assertEqual(FormResource(view).validate_request(content, None),
+# content)
 
 #     def test_disabled_form_validator_get_bound_form_returns_none(self):
 #         """If the view's form attribute is None on then
@@ -36,7 +37,8 @@
 
 #     def test_disabled_model_form_validator_returns_content_unchanged(self):
 #         """If the view's form is None and does not have a Resource with a model set then
-#         ModelFormValidator(view).validate_request(content, None) should just return the content unmodified."""
+# ModelFormValidator(view).validate_request(content, None) should just
+# return the content unmodified."""
 
 #         class DisabledModelFormView(View):
 #             resource = ModelResource
@@ -120,14 +122,16 @@
 #     def validation_failure_raises_response_exception(self, validator):
 #         """If form validation fails a ResourceException 400 (Bad Request) should be raised."""
 #         content = {}
-#         self.assertRaises(ImmediateResponse, validator.validate_request, content, None)
+# self.assertRaises(ImmediateResponse, validator.validate_request,
+# content, None)
 
 #     def validation_does_not_allow_extra_fields_by_default(self, validator):
 #         """If some (otherwise valid) content includes fields that are not in the form then validation should fail.
 #         It might be okay on normal form submission, but for Web APIs we oughta get strict, as it'll help show up
 #         broken clients more easily (eg submitting content with a misnamed field)"""
 #         content = {'qwerty': 'uiop', 'extra': 'extra'}
-#         self.assertRaises(ImmediateResponse, validator.validate_request, content, None)
+# self.assertRaises(ImmediateResponse, validator.validate_request,
+# content, None)
 
 #     def validation_allows_extra_fields_if_explicitly_set(self, validator):
 #         """If we include an allowed_extra_fields paramater on _validate, then allow fields with those names."""
@@ -147,7 +151,8 @@
 #     def validation_does_not_require_extra_fields_if_explicitly_set(self, validator):
 #         """If we include an allowed_extra_fields paramater on _validate, then do not fail if we do not have fields with those names."""
 #         content = {'qwerty': 'uiop'}
-#         self.assertEqual(validator._validate(content, None, allowed_extra_fields=('extra',)), content)
+# self.assertEqual(validator._validate(content, None,
+# allowed_extra_fields=('extra',)), content)
 
 #     def validation_failed_due_to_no_content_returns_appropriate_message(self, validator):
 #         """If validation fails due to no content, ensure the response contains a single non-field error"""
@@ -198,7 +203,7 @@
 
 #     def test_form_validation_returns_content_unchanged_if_already_valid_and_clean(self):
 #         validator = self.MockFormResource(self.MockFormView())
-#         self.validation_returns_content_unchanged_if_already_valid_and_clean(validator)
+# self.validation_returns_content_unchanged_if_already_valid_and_clean(validator)
 
 #     def test_form_validation_failure_raises_response_exception(self):
 #         validator = self.MockFormResource(self.MockFormView())
@@ -214,33 +219,33 @@
 
 #     def test_validation_allows_unknown_fields_if_explicitly_allowed(self):
 #         validator = self.MockFormResource(self.MockFormView())
-#         self.validation_allows_unknown_fields_if_explicitly_allowed(validator)
+# self.validation_allows_unknown_fields_if_explicitly_allowed(validator)
 
 #     def test_validation_does_not_require_extra_fields_if_explicitly_set(self):
 #         validator = self.MockFormResource(self.MockFormView())
-#         self.validation_does_not_require_extra_fields_if_explicitly_set(validator)
+# self.validation_does_not_require_extra_fields_if_explicitly_set(validator)
 
 #     def test_validation_failed_due_to_no_content_returns_appropriate_message(self):
 #         validator = self.MockFormResource(self.MockFormView())
-#         self.validation_failed_due_to_no_content_returns_appropriate_message(validator)
+# self.validation_failed_due_to_no_content_returns_appropriate_message(validator)
 
 #     def test_validation_failed_due_to_field_error_returns_appropriate_message(self):
 #         validator = self.MockFormResource(self.MockFormView())
-#         self.validation_failed_due_to_field_error_returns_appropriate_message(validator)
+# self.validation_failed_due_to_field_error_returns_appropriate_message(validator)
 
 #     def test_validation_failed_due_to_invalid_field_returns_appropriate_message(self):
 #         validator = self.MockFormResource(self.MockFormView())
-#         self.validation_failed_due_to_invalid_field_returns_appropriate_message(validator)
+# self.validation_failed_due_to_invalid_field_returns_appropriate_message(validator)
 
 #     def test_validation_failed_due_to_multiple_errors_returns_appropriate_message(self):
 #         validator = self.MockFormResource(self.MockFormView())
-#         self.validation_failed_due_to_multiple_errors_returns_appropriate_message(validator)
+# self.validation_failed_due_to_multiple_errors_returns_appropriate_message(validator)
 
 #     # Same tests on ModelResource
 
 #     def test_modelform_validation_returns_content_unchanged_if_already_valid_and_clean(self):
 #         validator = self.MockModelResource(self.MockModelFormView())
-#         self.validation_returns_content_unchanged_if_already_valid_and_clean(validator)
+# self.validation_returns_content_unchanged_if_already_valid_and_clean(validator)
 
 #     def test_modelform_validation_failure_raises_response_exception(self):
 #         validator = self.MockModelResource(self.MockModelFormView())
@@ -256,23 +261,23 @@
 
 #     def test_modelform_validation_does_not_require_extra_fields_if_explicitly_set(self):
 #         validator = self.MockModelResource(self.MockModelFormView())
-#         self.validation_does_not_require_extra_fields_if_explicitly_set(validator)
+# self.validation_does_not_require_extra_fields_if_explicitly_set(validator)
 
 #     def test_modelform_validation_failed_due_to_no_content_returns_appropriate_message(self):
 #         validator = self.MockModelResource(self.MockModelFormView())
-#         self.validation_failed_due_to_no_content_returns_appropriate_message(validator)
+# self.validation_failed_due_to_no_content_returns_appropriate_message(validator)
 
 #     def test_modelform_validation_failed_due_to_field_error_returns_appropriate_message(self):
 #         validator = self.MockModelResource(self.MockModelFormView())
-#         self.validation_failed_due_to_field_error_returns_appropriate_message(validator)
+# self.validation_failed_due_to_field_error_returns_appropriate_message(validator)
 
 #     def test_modelform_validation_failed_due_to_invalid_field_returns_appropriate_message(self):
 #         validator = self.MockModelResource(self.MockModelFormView())
-#         self.validation_failed_due_to_invalid_field_returns_appropriate_message(validator)
+# self.validation_failed_due_to_invalid_field_returns_appropriate_message(validator)
 
 #     def test_modelform_validation_failed_due_to_multiple_errors_returns_appropriate_message(self):
 #         validator = self.MockModelResource(self.MockModelFormView())
-#         self.validation_failed_due_to_multiple_errors_returns_appropriate_message(validator)
+# self.validation_failed_due_to_multiple_errors_returns_appropriate_message(validator)
 
 
 # class TestModelFormValidator(TestCase):
@@ -299,26 +304,30 @@
 #     def test_property_fields_are_allowed_on_model_forms(self):
 #         """Validation on ModelForms may include property fields that exist on the Model to be included in the input."""
 #         content = {'qwerty': 'example', 'uiop': 'example', 'read_only': 'read only'}
-#         self.assertEqual(self.validator.validate_request(content, None), content)
+# self.assertEqual(self.validator.validate_request(content, None),
+# content)
 
 #     def test_property_fields_are_not_required_on_model_forms(self):
 #         """Validation on ModelForms does not require property fields that exist on the Model to be included in the input."""
 #         content = {'qwerty': 'example', 'uiop': 'example'}
-#         self.assertEqual(self.validator.validate_request(content, None), content)
+# self.assertEqual(self.validator.validate_request(content, None),
+# content)
 
 #     def test_extra_fields_not_allowed_on_model_forms(self):
 #         """If some (otherwise valid) content includes fields that are not in the form then validation should fail.
 #         It might be okay on normal form submission, but for Web APIs we oughta get strict, as it'll help show up
 #         broken clients more easily (eg submitting content with a misnamed field)"""
 #         content = {'qwerty': 'example', 'uiop': 'example', 'read_only': 'read only', 'extra': 'extra'}
-#         self.assertRaises(ImmediateResponse, self.validator.validate_request, content, None)
+# self.assertRaises(ImmediateResponse, self.validator.validate_request,
+# content, None)
 
 #     def test_validate_requires_fields_on_model_forms(self):
 #         """If some (otherwise valid) content includes fields that are not in the form then validation should fail.
 #         It might be okay on normal form submission, but for Web APIs we oughta get strict, as it'll help show up
 #         broken clients more easily (eg submitting content with a misnamed field)"""
 #         content = {'read_only': 'read only'}
-#         self.assertRaises(ImmediateResponse, self.validator.validate_request, content, None)
+# self.assertRaises(ImmediateResponse, self.validator.validate_request,
+# content, None)
 
 #     def test_validate_does_not_require_blankable_fields_on_model_forms(self):
 #         """Test standard ModelForm validation behaviour - fields with blank=True are not required."""
@@ -326,4 +335,5 @@
 #         self.validator.validate_request(content, None)
 
 #     def test_model_form_validator_uses_model_forms(self):
-#         self.assertTrue(isinstance(self.validator.get_bound_form(), forms.ModelForm))
+# self.assertTrue(isinstance(self.validator.get_bound_form(),
+# forms.ModelForm))

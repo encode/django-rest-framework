@@ -7,7 +7,7 @@ from django.db import models
 
 try:
     from django.contrib.auth import get_user_model
-except ImportError: # django < 1.5
+except ImportError:  # django < 1.5
     from django.contrib.auth.models import User
 else:
     User = get_user_model()
@@ -18,17 +18,17 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding model 'Token'
         db.create_table('authtoken_token', (
-            ('key', self.gf('django.db.models.fields.CharField')(max_length=40, primary_key=True)),
+            ('key', self.gf('django.db.models.fields.CharField')
+             (max_length=40, primary_key=True)),
             ('user', self.gf('django.db.models.fields.related.OneToOneField')(related_name='auth_token', unique=True, to=orm['%s.%s' % (User._meta.app_label, User._meta.object_name)])),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('created', self.gf('django.db.models.fields.DateTimeField')
+             (auto_now_add=True, blank=True)),
         ))
         db.send_create_signal('authtoken', ['Token'])
-
 
     def backwards(self, orm):
         # Deleting model 'Token'
         db.delete_table('authtoken_token')
-
 
     models = {
         'auth.group': {

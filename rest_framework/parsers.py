@@ -151,7 +151,8 @@ class XMLParser(BaseParser):
         if len(children) == 0:
             return self._type_convert(element.text)
         else:
-            # if the fist child tag is list-item means all children are list-item
+            # if the fist child tag is list-item means all children are list-
+            # item
             if children[0].tag == "list-item":
                 data = []
                 for child in children:
