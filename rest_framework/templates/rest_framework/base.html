@@ -147,56 +147,63 @@
                 </div>
                 {% endif %}
 
-                {% if put_form %}
+                {% if put_form or patch_form %}
                 <div class="well">
-                    <form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
-                        <fieldset>
-                            <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" />
-                            {% csrf_token %}
-                            {{ put_form.non_field_errors }}
-                            {% for field in put_form %}
-                                <div class="control-group"> <!--{% if field.errors %}error{% endif %}-->
-                                    {{ field.label_tag|add_class:"control-label" }}
-                                    <div class="controls">
-                                        {{ field }}
-                                        <span class='help-inline'>{{ field.help_text }}</span>
-                                        <!--{{ field.errors|add_class:"help-block" }}-->
-                                    </div>
-                                </div>
-                            {% endfor %}
-                            <div class="form-actions">
-                                <button class="btn btn-primary js-tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>
-                            </div>
-
-                        </fieldset>
-                    </form>
-                </div>
-                {% endif %}
-
-                {% if patch_form %}
-                    <div class="well">
-                        <form action="{{ request.get_full_path }}" method="POST" {% if patch_form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
-                            <fieldset>
-                                <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PATCH" />
-                                {% csrf_token %}
-                                {{ patch_form.non_field_errors }}
-                                {% for field in patch_form %}
-                                    <div class="control-group"> <!--{% if field.errors %}error{% endif %}-->
-                                        {{ field.label_tag|add_class:"control-label" }}
-                                        <div class="controls">
-                                            {{ field }}
-                                            <span class='help-inline'>{{ field.help_text }}</span>
-                                            <!--{{ field.errors|add_class:"help-block" }}-->
+                    <ul class="nav nav-pills" id="form-method-switcher">
+                        {% if put_form %}<li><a href="#put-form" data-toggle="pill">PUT Form</a></li>{% endif %}
+                        {% if patch_form %}<li><a href="#patch-form" data-toggle="pill">PATCH Form</a></li>{% endif %}
+                    </ul>
+                    <div class="tab-content">
+                        {% if put_form %}
+                        <div class="tab-pane" id="put-form">
+                            <form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
+                                <fieldset>
+                                    <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" />
+                                    {% csrf_token %}
+                                    {{ put_form.non_field_errors }}
+                                    {% for field in put_form %}
+                                        <div class="control-group"> <!--{% if field.errors %}error{% endif %}-->
+                                            {{ field.label_tag|add_class:"control-label" }}
+                                            <div class="controls">
+                                                {{ field }}
+                                                <span class='help-inline'>{{ field.help_text }}</span>
+                                                <!--{{ field.errors|add_class:"help-block" }}-->
+                                            </div>
                                         </div>
+                                    {% endfor %}
+                                    <div class="form-actions">
+                                        <button class="btn btn-primary js-tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>
                                     </div>
-                                {% endfor %}
-                                <div class="form-actions">
-                                    <button class="btn btn-primary js-tooltip" title="Make a PATCH request on the {{ name }} resource">PATCH</button>
-                                </div>
-
-                            </fieldset>
-                        </form>
+                                </fieldset>
+                            </form>
+                        </div>
+                        {% endif %}
+                        {% if patch_form %}
+                        <div class="tab-pane" id="patch-form">
+                            <form action="{{ request.get_full_path }}" method="POST" {% if patch_form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
+                                <fieldset>
+                                    <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PATCH" />
+                                    {% csrf_token %}
+                                    {{ patch_form.non_field_errors }}
+                                    {% for field in patch_form %}
+                                        <div class="control-group"> <!--{% if field.errors %}error{% endif %}-->
+                                            {{ field.label_tag|add_class:"control-label" }}
+                                            <div class="controls">
+                                                {{ field }}&nbsp;<input checked="checked" type="checkbox" id="{{ field.html_name }}_field_sent" class="field-switcher" data-field-id="{{ field.auto_id }}">
+                                                <span class='help-inline'>{{ field.help_text }}</span>
+                                                <!--{{ field.errors|add_class:"help-block" }}-->
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    <div class="form-actions">
+                                        <button class="btn btn-primary js-tooltip" title="Make a PATCH request on the {{ name }} resource">PATCH</button>
+                                    </div>
+                                </fieldset>
+                            </form>
+                        </div>
+                        {% endif %}
                     </div>
+                </div>
                 {% endif %}
             {% endif %}
 
