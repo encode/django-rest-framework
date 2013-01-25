@@ -20,7 +20,8 @@ class BlogPostCommentSerializer(serializers.ModelSerializer):
 
 class PhotoSerializer(serializers.Serializer):
     description = serializers.CharField()
-    album_url = serializers.HyperlinkedRelatedField(source='album', view_name='album-detail', queryset=Album.objects.all(), slug_field='title', slug_url_kwarg='title')
+    album_url = serializers.HyperlinkedRelatedField(source='album', view_name='album-detail',
+        queryset=Album.objects.all(), slug_field='title', slug_url_kwarg='title')
 
     def restore_object(self, attrs, instance=None):
         return Photo(**attrs)
@@ -99,15 +100,15 @@ class TestBasicHyperlinkedView(TestCase):
 
     def setUp(self):
         """
-        Create 3 BasicModel intances.
+        Create 3 BasicModel instances.
         """
         items = ['foo', 'bar', 'baz']
         for item in items:
             BasicModel(text=item).save()
         self.objects = BasicModel.objects
         self.data = [
-            {'url': 'http://testserver/basic/%d/' % obj.id, 'text': obj.text}
-            for obj in self.objects.all()
+        {'url': 'http://testserver/basic/%d/' % obj.id, 'text': obj.text}
+        for obj in self.objects.all()
         ]
         self.list_view = BasicList.as_view()
         self.detail_view = BasicDetail.as_view()
@@ -136,7 +137,7 @@ class TestManyToManyHyperlinkedView(TestCase):
 
     def setUp(self):
         """
-        Create 3 BasicModel intances.
+        Create 3 BasicModel instances.
         """
         items = ['foo', 'bar', 'baz']
         anchors = []
@@ -150,13 +151,13 @@ class TestManyToManyHyperlinkedView(TestCase):
         manytomany.rel.add(*anchors)
 
         self.data = [{
-            'url': 'http://testserver/manytomany/1/',
-            'rel': [
-                'http://testserver/anchor/1/',
-                'http://testserver/anchor/2/',
-                'http://testserver/anchor/3/',
-            ]
-        }]
+                         'url': 'http://testserver/manytomany/1/',
+                         'rel': [
+                             'http://testserver/anchor/1/',
+                             'http://testserver/anchor/2/',
+                             'http://testserver/anchor/3/',
+                         ]
+                     }]
         self.list_view = ManyToManyList.as_view()
         self.detail_view = ManyToManyDetail.as_view()
 
@@ -190,7 +191,6 @@ class TestCreateWithForeignKeys(TestCase):
         self.create_view = BlogPostCommentListCreate.as_view()
 
     def test_create_comment(self):
-
         data = {
             'text': 'A test comment',
             'blog_post_url': 'http://testserver/posts/1/'
@@ -215,7 +215,6 @@ class TestCreateWithForeignKeysAndCustomSlug(TestCase):
         self.list_create_view = PhotoListCreate.as_view()
 
     def test_create_photo(self):
-
         data = {
             'description': 'A test photo',
             'album_url': 'http://testserver/albums/test-album/'
@@ -224,7 +223,8 @@ class TestCreateWithForeignKeysAndCustomSlug(TestCase):
         request = factory.post('/photos/', data=data)
         response = self.list_create_view(request)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertNotIn('Location', response, msg='Location should only be included if there is a "url" field on the serializer')
+        self.assertNotIn('Location', response,
+            msg='Location should only be included if there is a "url" field on the serializer')
         self.assertEqual(self.post.photo_set.count(), 1)
         self.assertEqual(self.post.photo_set.all()[0].description, 'A test photo')
 
@@ -234,7 +234,7 @@ class TestOptionalRelationHyperlinkedView(TestCase):
 
     def setUp(self):
         """
-        Create 1 OptionalRelationModel intances.
+        Create 1 OptionalRelationModel instances.
         """
         OptionalRelationModel().save()
         self.objects = OptionalRelationModel.objects
@@ -257,6 +257,6 @@ class TestOptionalRelationHyperlinkedView(TestCase):
         should accept None for non existing relations.
         """
         response = self.client.put('/optionalrelation/1/',
-                                   data=json.dumps(self.data),
-                                   content_type='application/json')
+            data=json.dumps(self.data),
+            content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
