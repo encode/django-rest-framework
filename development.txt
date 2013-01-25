@@ -1,5 +1,2 @@
-<<<<<<< HEAD
-django-discover-runner>=0.2.2
-=======
 coverage
->>>>>>> tests_refactoring
+django-discover-runner>=0.2.2
