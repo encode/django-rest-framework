@@ -14,13 +14,12 @@ from rest_framework.decorators import (
     authentication_classes,
     throttle_classes,
     permission_classes,
-)
+    )
 
 from rest_framework.tests.utils import RequestFactory
 
 
 class DecoratorTestCase(TestCase):
-
     def setUp(self):
         self.factory = RequestFactory()
 
@@ -51,49 +50,45 @@ class DecoratorTestCase(TestCase):
                 return Response()
 
     def test_calling_method(self):
-
         @api_view(['GET'])
         def view(request):
             return Response({})
 
         request = self.factory.get('/')
         response = view(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         request = self.factory.post('/')
         response = view(request)
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_calling_put_method(self):
-
         @api_view(['GET', 'PUT'])
         def view(request):
             return Response({})
 
         request = self.factory.put('/')
         response = view(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         request = self.factory.post('/')
         response = view(request)
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_calling_patch_method(self):
-
         @api_view(['GET', 'PATCH'])
         def view(request):
             return Response({})
 
         request = self.factory.patch('/')
         response = view(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         request = self.factory.post('/')
         response = view(request)
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_renderer_classes(self):
-
         @api_view(['GET'])
         @renderer_classes([JSONRenderer])
         def view(request):
@@ -104,33 +99,30 @@ class DecoratorTestCase(TestCase):
         self.assertTrue(isinstance(response.accepted_renderer, JSONRenderer))
 
     def test_parser_classes(self):
-
         @api_view(['GET'])
         @parser_classes([JSONParser])
         def view(request):
             self.assertEqual(len(request.parsers), 1)
             self.assertTrue(isinstance(request.parsers[0],
-                                       JSONParser))
+                JSONParser))
             return Response({})
 
         request = self.factory.get('/')
         view(request)
 
     def test_authentication_classes(self):
-
         @api_view(['GET'])
         @authentication_classes([BasicAuthentication])
         def view(request):
             self.assertEqual(len(request.authenticators), 1)
             self.assertTrue(isinstance(request.authenticators[0],
-                                       BasicAuthentication))
+                BasicAuthentication))
             return Response({})
 
         request = self.factory.get('/')
         view(request)
 
     def test_permission_classes(self):
-
         @api_view(['GET'])
         @permission_classes([IsAuthenticated])
         def view(request):

@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import Client, TestCase
 
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
 from rest_framework.compat import patterns
@@ -44,23 +44,24 @@ class BasicAuthTests(TestCase):
         """Ensure POSTing json over basic auth with correct credentials passes and does not require CSRF"""
         auth = 'Basic %s' % base64.encodestring('%s:%s' % (self.username, self.password)).strip()
         response = self.csrf_client.post('/basic/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_post_json_passing_basic_auth(self):
         """Ensure POSTing form over basic auth with correct credentials passes and does not require CSRF"""
         auth = 'Basic %s' % base64.encodestring('%s:%s' % (self.username, self.password)).strip()
-        response = self.csrf_client.post('/basic/', json.dumps({'example': 'example'}), 'application/json', HTTP_AUTHORIZATION=auth)
-        self.assertEqual(response.status_code, 200)
+        response = self.csrf_client.post('/basic/', json.dumps({'example': 'example'}), 'application/json',
+            HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_post_form_failing_basic_auth(self):
         """Ensure POSTing form over basic auth without correct credentials fails"""
         response = self.csrf_client.post('/basic/', {'example': 'example'})
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_post_json_failing_basic_auth(self):
         """Ensure POSTing json over basic auth without correct credentials fails"""
         response = self.csrf_client.post('/basic/', json.dumps({'example': 'example'}), 'application/json')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response['WWW-Authenticate'], 'Basic realm="api"')
 
 
@@ -85,7 +86,7 @@ class SessionAuthTests(TestCase):
         """
         self.csrf_client.login(username=self.username, password=self.password)
         response = self.csrf_client.post('/session/', {'example': 'example'})
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_post_form_session_auth_passing(self):
         """
@@ -93,7 +94,7 @@ class SessionAuthTests(TestCase):
         """
         self.non_csrf_client.login(username=self.username, password=self.password)
         response = self.non_csrf_client.post('/session/', {'example': 'example'})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_put_form_session_auth_passing(self):
         """
@@ -101,14 +102,14 @@ class SessionAuthTests(TestCase):
         """
         self.non_csrf_client.login(username=self.username, password=self.password)
         response = self.non_csrf_client.put('/session/', {'example': 'example'})
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_post_form_session_auth_failing(self):
         """
         Ensure POSTing form over session authentication without logged in user fails.
         """
         response = self.csrf_client.post('/session/', {'example': 'example'})
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
 class TokenAuthTests(TestCase):
@@ -129,23 +130,24 @@ class TokenAuthTests(TestCase):
         """Ensure POSTing json over token auth with correct credentials passes and does not require CSRF"""
         auth = "Token " + self.key
         response = self.csrf_client.post('/token/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_post_json_passing_token_auth(self):
         """Ensure POSTing form over token auth with correct credentials passes and does not require CSRF"""
         auth = "Token " + self.key
-        response = self.csrf_client.post('/token/', json.dumps({'example': 'example'}), 'application/json', HTTP_AUTHORIZATION=auth)
-        self.assertEqual(response.status_code, 200)
+        response = self.csrf_client.post('/token/', json.dumps({'example': 'example'}), 'application/json',
+            HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_post_form_failing_token_auth(self):
         """Ensure POSTing form over token auth without correct credentials fails"""
         response = self.csrf_client.post('/token/', {'example': 'example'})
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_post_json_failing_token_auth(self):
         """Ensure POSTing json over token auth without correct credentials fails"""
         response = self.csrf_client.post('/token/', json.dumps({'example': 'example'}), 'application/json')
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_token_has_auto_assigned_key_if_none_provided(self):
         """Ensure creating a token with no key will auto-assign a key"""
@@ -157,28 +159,28 @@ class TokenAuthTests(TestCase):
         """Ensure token login view using JSON POST works."""
         client = Client(enforce_csrf_checks=True)
         response = client.post('/auth-token/',
-                               json.dumps({'username': self.username, 'password': self.password}), 'application/json')
-        self.assertEqual(response.status_code, 200)
+            json.dumps({'username': self.username, 'password': self.password}), 'application/json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content)['token'], self.key)
 
     def test_token_login_json_bad_creds(self):
         """Ensure token login view using JSON POST fails if bad credentials are used."""
         client = Client(enforce_csrf_checks=True)
         response = client.post('/auth-token/',
-                               json.dumps({'username': self.username, 'password': "badpass"}), 'application/json')
-        self.assertEqual(response.status_code, 400)
+            json.dumps({'username': self.username, 'password': "badpass"}), 'application/json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_token_login_json_missing_fields(self):
         """Ensure token login view using JSON POST fails if missing fields."""
         client = Client(enforce_csrf_checks=True)
         response = client.post('/auth-token/',
-                               json.dumps({'username': self.username}), 'application/json')
-        self.assertEqual(response.status_code, 400)
+            json.dumps({'username': self.username}), 'application/json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_token_login_form(self):
         """Ensure token login view using form POST works."""
         client = Client(enforce_csrf_checks=True)
         response = client.post('/auth-token/',
-                               {'username': self.username, 'password': self.password})
-        self.assertEqual(response.status_code, 200)
+            {'username': self.username, 'password': self.password})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content)['token'], self.key)
