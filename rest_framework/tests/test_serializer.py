@@ -43,7 +43,8 @@ class CommentSerializer(serializers.Serializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
-    isbn = serializers.RegexField(regex=r'^[0-9]{13}$', error_messages={'invalid': 'isbn has to be exact 13 numbers'})
+    isbn = serializers.RegexField(
+        regex=r'^[0-9]{13}$', error_messages={'invalid': 'isbn has to be exact 13 numbers'})
 
     class Meta:
         model = Book
@@ -280,7 +281,8 @@ class ValidationTests(TestCase):
         }
         serializer = ActionItemSerializer(data=data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'title': [u'Ensure this value has at most 200 characters (it has 201).']})
+        self.assertEquals(serializer.errors, {'title': [
+                          u'Ensure this value has at most 200 characters (it has 201).']})
 
     def test_default_modelfield_max_length_exceeded(self):
         data = {
@@ -289,7 +291,8 @@ class ValidationTests(TestCase):
         }
         serializer = ActionItemSerializer(data=data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'info': [u'Ensure this value has at most 12 characters (it has 13).']})
+        self.assertEquals(serializer.errors, {'info': [
+                          u'Ensure this value has at most 12 characters (it has 13).']})
 
 
 class CustomValidationTests(TestCase):
@@ -919,7 +922,8 @@ class NestedSerializerContextTests(TestCase):
 
             def _callable(self, instance):
                 if not 'context_item' in self.context:
-                    raise RuntimeError("context isn't getting passed into 2nd level nested serializer")
+                    raise RuntimeError(
+                        "context isn't getting passed into 2nd level nested serializer")
                 return "success"
 
         class AlbumSerializer(serializers.ModelSerializer):
@@ -932,7 +936,8 @@ class NestedSerializerContextTests(TestCase):
 
             def _callable(self, instance):
                 if not 'context_item' in self.context:
-                    raise RuntimeError("context isn't getting passed into 1st level nested serializer")
+                    raise RuntimeError(
+                        "context isn't getting passed into 1st level nested serializer")
                 return "success"
 
         class AlbumCollection(object):

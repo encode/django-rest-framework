@@ -82,7 +82,7 @@ To start hacking type.
 
 Before pushing run.
 
-    autopep8 -r --in-place ./rest_framework/
+    ./rest_framework/runtests/runautopep8.py
 
 To run the tests.
 

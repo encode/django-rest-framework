@@ -266,7 +266,8 @@ class HyperlinkedForeignKeyTests(TestCase):
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'target': [u'Incorrect type.  Expected url string, received int.']})
+        self.assertEquals(serializer.errors, {'target': [
+                          u'Incorrect type.  Expected url string, received int.']})
 
     def test_reverse_foreign_key_update(self):
         data = {'url': '/foreignkeytarget/2/', 'name': u'target-2',
