@@ -444,13 +444,13 @@ class CacheRenderTest(TestCase):
         """ Return any errors that would be raised if `obj' is pickled
         Courtesy of koffie @ http://stackoverflow.com/a/7218986/109897
         """
-        if seen == None:
+        if seen is None:
             seen = []
         try:
             state = obj.__getstate__()
         except AttributeError:
             return
-        if state == None:
+        if state is None:
             return
         if isinstance(state, tuple):
             if not isinstance(state[0], dict):
