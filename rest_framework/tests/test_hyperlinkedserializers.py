@@ -96,7 +96,7 @@ urlpatterns = patterns('',
 
 
 class TestBasicHyperlinkedView(TestCase):
-    urls = 'rest_framework.tests.hyperlinkedserializers'
+    urls = 'rest_framework.tests.test_hyperlinkedserializers'
 
     def setUp(self):
         """
@@ -133,7 +133,7 @@ class TestBasicHyperlinkedView(TestCase):
 
 
 class TestManyToManyHyperlinkedView(TestCase):
-    urls = 'rest_framework.tests.hyperlinkedserializers'
+    urls = 'rest_framework.tests.test_hyperlinkedserializers'
 
     def setUp(self):
         """
@@ -181,7 +181,7 @@ class TestManyToManyHyperlinkedView(TestCase):
 
 
 class TestCreateWithForeignKeys(TestCase):
-    urls = 'rest_framework.tests.hyperlinkedserializers'
+    urls = 'rest_framework.tests.test_hyperlinkedserializers'
 
     def setUp(self):
         """
@@ -205,7 +205,7 @@ class TestCreateWithForeignKeys(TestCase):
 
 
 class TestCreateWithForeignKeysAndCustomSlug(TestCase):
-    urls = 'rest_framework.tests.hyperlinkedserializers'
+    urls = 'rest_framework.tests.test_hyperlinkedserializers'
 
     def setUp(self):
         """
@@ -230,7 +230,7 @@ class TestCreateWithForeignKeysAndCustomSlug(TestCase):
 
 
 class TestOptionalRelationHyperlinkedView(TestCase):
-    urls = 'rest_framework.tests.hyperlinkedserializers'
+    urls = 'rest_framework.tests.test_hyperlinkedserializers'
 
     def setUp(self):
         """

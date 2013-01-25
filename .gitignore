@@ -2,6 +2,7 @@
 *.db
 *~
 .*
+coverage.xml
 
 html/
 coverage/

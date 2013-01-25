@@ -3,8 +3,8 @@ import pickle
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
-    BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
-    ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
+                                         BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
+                                         ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
 
 
 class SubComment(object):
@@ -49,7 +49,6 @@ class BookSerializer(serializers.ModelSerializer):
 
 
 class ActionItemSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = ActionItem
 
@@ -64,7 +63,6 @@ class PersonSerializer(serializers.ModelSerializer):
 
 
 class AlbumsSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Album
         fields = ['title']  # lists are also valid options
@@ -148,7 +146,7 @@ class BasicTests(TestCase):
         """
         serializer = PersonSerializer(self.person)
         self.assertEquals(set(serializer.data.keys()),
-                          set(['name', 'age', 'info']))
+            set(['name', 'age', 'info']))
 
     def test_field_with_dictionary(self):
         """
@@ -182,17 +180,19 @@ class ValidationTests(TestCase):
             'content': 'x' * 1001,
             'created': datetime.datetime(2012, 1, 1)
         }
-        self.actionitem = ActionItem(title='Some to do item',)
+        self.actionitem = ActionItem(title='Some to do item', )
 
     def test_create(self):
         serializer = CommentSerializer(data=self.data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
+        self.assertEquals(serializer.errors,
+            {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
 
     def test_update(self):
         serializer = CommentSerializer(self.comment, data=self.data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
+        self.assertEquals(serializer.errors,
+            {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
 
     def test_update_missing_field(self):
         data = {
@@ -234,9 +234,7 @@ class ValidationTests(TestCase):
         self.assertEquals(serializer.errors, {'non_field_errors': [u'Invalid data']})
 
     def test_cross_field_validation(self):
-
         class CommentSerializerWithCrossFieldValidator(CommentSerializer):
-
             def validate(self, attrs):
                 if attrs["email"] not in attrs["content"]:
                     raise serializers.ValidationError("Email address not in content")
@@ -285,7 +283,6 @@ class ValidationTests(TestCase):
 
 class CustomValidationTests(TestCase):
     class CommentSerializerWithFieldValidator(CommentSerializer):
-
         def validate_email(self, attrs, source):
             value = attrs[source]
 
@@ -356,7 +353,7 @@ class ModelValidationTests(TestCase):
         serializer.save()
         second_serializer = AlbumsSerializer(data={'title': 'a'})
         self.assertFalse(second_serializer.is_valid())
-        self.assertEqual(second_serializer.errors,  {'title': [u'Album with this Title already exists.']})
+        self.assertEqual(second_serializer.errors, {'title': [u'Album with this Title already exists.']})
 
     def test_foreign_key_with_partial(self):
         """
@@ -383,8 +380,8 @@ class ModelValidationTests(TestCase):
 
         # Updating only the description
         photo_serializer = PhotoSerializer(instance=photo,
-                                           data={'description': 'new'},
-                                           partial=True)
+            data={'description': 'new'},
+            partial=True)
 
         self.assertTrue(photo_serializer.is_valid())
         self.assertTrue(photo_serializer.save())
@@ -718,12 +715,12 @@ class RelatedTraversalTest(TestCase):
         expected = {
             'title': u'Test blog post',
             'comments': [{
-                'text': u'I love this blog post',
-                'post_owner': {
-                    "name": u"django",
-                    "age": None
-                }
-            }]
+                             'text': u'I love this blog post',
+                             'post_owner': {
+                                 "name": u"django",
+                                 "age": None
+                             }
+                         }]
         }
 
         self.assertEqual(serializer.data, expected)
@@ -731,7 +728,6 @@ class RelatedTraversalTest(TestCase):
 
 class SerializerMethodFieldTests(TestCase):
     def setUp(self):
-
         class BoopSerializer(serializers.Serializer):
             beep = serializers.SerializerMethodField('get_beep')
             boop = serializers.Field()
@@ -746,7 +742,6 @@ class SerializerMethodFieldTests(TestCase):
         self.serializer_class = BoopSerializer
 
     def test_serializer_method_field(self):
-
         class MyModel(object):
             boop = ['a', 'b', 'c']
 
@@ -766,7 +761,6 @@ class SerializerMethodFieldTests(TestCase):
 # Test for issue #324
 class BlankFieldTests(TestCase):
     def setUp(self):
-
         class BlankFieldModelSerializer(serializers.ModelSerializer):
             class Meta:
                 model = BlankFieldModel
@@ -825,6 +819,7 @@ class SerializerPickleTests(TestCase):
     """
     Test pickleability of the output of Serializers
     """
+
     def test_pickle_simple_model_serializer_data(self):
         """
         Test simple serializer
@@ -837,10 +832,12 @@ class SerializerPickleTests(TestCase):
         have unpickleable meta data--in order to make sure metadata doesn't get pulled into the pickle.
         See DictWithMetadata.__getstate__
         """
+
         class InnerPersonSerializer(serializers.ModelSerializer):
             class Meta:
                 model = Person
                 fields = ('name', 'age')
+
         pickle.dumps(InnerPersonSerializer(Person(name="Noah", age=950)).data)
 
 
@@ -882,13 +879,13 @@ class DepthTest(TestCase):
 
 
 class NestedSerializerContextTests(TestCase):
-
     def test_nested_serializer_context(self):
         """
         Regression for #497
 
         https://github.com/tomchristie/django-rest-framework/issues/497
         """
+
         class PhotoSerializer(serializers.ModelSerializer):
             class Meta:
                 model = Photo

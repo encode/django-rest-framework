@@ -162,7 +162,7 @@ class TestStatus(TestCase):
         """Ensure that HTTP_500_INTERNAL_SERVER_ERROR equals 500."""
         self.assertEquals(status.HTTP_500_INTERNAL_SERVER_ERROR, 500)
 
-    def HTTP_501_NOT_IMPLEMENTED(self):
+    def test_status_HTTP_501_NOT_IMPLEMENTED(self):
         """Ensure that HTTP_501_NOT_IMPLEMENTED equals 501."""
         self.assertEquals(status.HTTP_501_NOT_IMPLEMENTED, 501)
 

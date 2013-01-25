@@ -21,6 +21,7 @@ class FormatSuffixTests(TestCase):
     """
     Tests `format_suffix_patterns` against different URLPatterns to ensure the URLs still resolve properly, including any captured parameters.
     """
+
     def _resolve_urlpatterns(self, urlpatterns, test_paths):
         factory = RequestFactory()
         try:

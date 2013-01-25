@@ -75,13 +75,17 @@ To build the docs.
 
     ./mkdocs.py
 
+Both the tests and the code coverage are depended on django-discover-runner.
+To start hacking type.
+
+    pip install -r development.txt
+
 To run the tests.
 
     ./rest_framework/runtests/runtests.py
 
 To run the tests with code coverage.
 
-    pip install -r development.txt
     ./rest_framework/runtests/runcoverage.py
 
 # Changelog

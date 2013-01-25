@@ -37,7 +37,7 @@ class MockView_MinuteThrottling(APIView):
 
 
 class ThrottlingTests(TestCase):
-    urls = 'rest_framework.tests.throttling'
+    urls = 'rest_framework.tests.test_throttling'
 
     def setUp(self):
         """
@@ -113,22 +113,22 @@ class ThrottlingTests(TestCase):
         Ensure for second based throttles.
         """
         self.ensure_response_header_contains_proper_throttle_field(MockView,
-         ((0, None),
-          (0, None),
-          (0, None),
-          (0, '1')
-         ))
+            ((0, None),
+             (0, None),
+             (0, None),
+             (0, '1')
+                ))
 
     def test_minutes_fields(self):
         """
         Ensure for minute based throttles.
         """
         self.ensure_response_header_contains_proper_throttle_field(MockView_MinuteThrottling,
-         ((0, None),
-          (0, None),
-          (0, None),
-          (0, '60')
-         ))
+            ((0, None),
+             (0, None),
+             (0, None),
+             (0, '60')
+                ))
 
     def test_next_rate_remains_constant_if_followed(self):
         """
@@ -136,9 +136,9 @@ class ThrottlingTests(TestCase):
         the throttling rate should stay constant.
         """
         self.ensure_response_header_contains_proper_throttle_field(MockView_MinuteThrottling,
-         ((0, None),
-          (20, None),
-          (40, None),
-          (60, None),
-          (80, None)
-         ))
+            ((0, None),
+             (20, None),
+             (40, None),
+             (60, None),
+             (80, None)
+                ))

@@ -7,7 +7,7 @@ from rest_framework.renderers import (
     BaseRenderer,
     JSONRenderer,
     BrowsableAPIRenderer
-)
+    )
 from rest_framework.settings import api_settings
 
 
@@ -78,7 +78,7 @@ class RendererIntegrationTests(TestCase):
     End-to-end testing of renderers using an ResponseMixin on a generic view.
     """
 
-    urls = 'rest_framework.tests.response'
+    urls = 'rest_framework.tests.test_response'
 
     def test_default_renderer_serializes_content(self):
         """If the Accept header is not set the default renderer should serialize the response."""
@@ -122,7 +122,7 @@ class RendererIntegrationTests(TestCase):
         param = '?%s=%s' % (
             api_settings.URL_ACCEPT_OVERRIDE,
             RendererB.media_type
-        )
+            )
         resp = self.client.get('/' + param)
         self.assertEquals(resp['Content-Type'], RendererB.media_type)
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
@@ -148,7 +148,7 @@ class RendererIntegrationTests(TestCase):
         """If both a 'format' query and a matching Accept header specified,
         the renderer with the matching format attribute should serialize the response."""
         resp = self.client.get('/?format=%s' % RendererB.format,
-                               HTTP_ACCEPT=RendererB.media_type)
+            HTTP_ACCEPT=RendererB.media_type)
         self.assertEquals(resp['Content-Type'], RendererB.media_type)
         self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEquals(resp.status_code, DUMMYSTATUS)
@@ -158,7 +158,7 @@ class Issue122Tests(TestCase):
     """
     Tests that covers #122.
     """
-    urls = 'rest_framework.tests.response'
+    urls = 'rest_framework.tests.test_response'
 
     def test_only_html_renderer(self):
         """

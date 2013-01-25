@@ -35,7 +35,7 @@ urlpatterns = patterns('',
 class BreadcrumbTests(TestCase):
     """Tests the breadcrumb functionality used by the HTML renderer."""
 
-    urls = 'rest_framework.tests.breadcrumbs'
+    urls = 'rest_framework.tests.test_breadcrumbs'
 
     def test_root_breadcrumbs(self):
         url = '/'
@@ -44,28 +44,28 @@ class BreadcrumbTests(TestCase):
     def test_resource_root_breadcrumbs(self):
         url = '/resource/'
         self.assertEqual(get_breadcrumbs(url), [('Root', '/'),
-                                            ('Resource Root', '/resource/')])
+                                                ('Resource Root', '/resource/')])
 
     def test_resource_instance_breadcrumbs(self):
         url = '/resource/123'
         self.assertEqual(get_breadcrumbs(url), [('Root', '/'),
-                                            ('Resource Root', '/resource/'),
-                                            ('Resource Instance', '/resource/123')])
+                                                ('Resource Root', '/resource/'),
+                                                ('Resource Instance', '/resource/123')])
 
     def test_nested_resource_breadcrumbs(self):
         url = '/resource/123/'
         self.assertEqual(get_breadcrumbs(url), [('Root', '/'),
-                                            ('Resource Root', '/resource/'),
-                                            ('Resource Instance', '/resource/123'),
-                                            ('Nested Resource Root', '/resource/123/')])
+                                                ('Resource Root', '/resource/'),
+                                                ('Resource Instance', '/resource/123'),
+                                                ('Nested Resource Root', '/resource/123/')])
 
     def test_nested_resource_instance_breadcrumbs(self):
         url = '/resource/123/abc'
         self.assertEqual(get_breadcrumbs(url), [('Root', '/'),
-                                            ('Resource Root', '/resource/'),
-                                            ('Resource Instance', '/resource/123'),
-                                            ('Nested Resource Root', '/resource/123/'),
-                                            ('Nested Resource Instance', '/resource/123/abc')])
+                                                ('Resource Root', '/resource/'),
+                                                ('Resource Instance', '/resource/123'),
+                                                ('Nested Resource Root', '/resource/123/'),
+                                                ('Nested Resource Instance', '/resource/123/abc')])
 
     def test_broken_url_breadcrumbs_handled_gracefully(self):
         url = '/foobar'

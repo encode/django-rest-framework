@@ -11,40 +11,25 @@ import sys
 
 # fix sys path so we don't need to setup PYTHONPATH
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
-os.environ['DJANGO_SETTINGS_MODULE'] = 'rest_framework.runtests.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'rest_framework.tests.settings'
 
-from coverage import coverage
+try:
+    from coverage import coverage
+except ImportError:
+    print("Coverage is not installed. Aborting...")
+    exit(1)
+
+def report(cov, cov_files):
+    cov.report(cov_files)
+
+    if '--html' in sys.argv:
+        cov.html_report(cov_files, directory='coverage')
+
+    if '--xml' in sys.argv:
+        cov.xml_report(cov_files, outfile='../../coverage.xml')
 
 
-def main():
-    """Run the tests for rest_framework and generate a coverage report."""
-
-    cov = coverage()
-    cov.erase()
-    cov.start()
-
-    from django.conf import settings
-    from django.test.utils import get_runner
-    TestRunner = get_runner(settings)
-
-    if hasattr(TestRunner, 'func_name'):
-        # Pre 1.2 test runners were just functions,
-        # and did not support the 'failfast' option.
-        import warnings
-        warnings.warn(
-            'Function-based test runners are deprecated. Test runners should be classes with a run_tests() method.',
-            DeprecationWarning
-        )
-        failures = TestRunner(['tests'])
-    else:
-        test_runner = TestRunner()
-        failures = test_runner.run_tests(['tests'])
-    cov.stop()
-
-    # Discover the list of all modules that we should test coverage for
-    import rest_framework
-
-    project_dir = os.path.dirname(rest_framework.__file__)
+def prepare_report(project_dir):
     cov_files = []
 
     for (path, dirs, files) in os.walk(project_dir):
@@ -66,9 +51,47 @@ def main():
 
         cov_files.extend([os.path.join(path, file) for file in files if file.endswith('.py')])
 
-    cov.report(cov_files)
-    if '--html' in sys.argv:
-        cov.html_report(cov_files, directory='coverage')
+    return cov_files
+
+
+def run_tests(app):
+    from django.conf import settings
+    from django.test.utils import get_runner
+
+    TestRunner = get_runner(settings)
+    if hasattr(TestRunner, 'func_name'):
+        # Pre 1.2 test runners were just functions,
+        # and did not support the 'failfast' option.
+        import warnings
+
+        warnings.warn(
+            'Function-based test runners are deprecated. Test runners should be classes with a run_tests() method.',
+            DeprecationWarning
+        )
+        failures = TestRunner([app])
+    else:
+        test_runner = TestRunner()
+        failures = test_runner.run_tests([app])
+    return failures
+
+
+def main():
+    """Run the tests for rest_framework and generate a coverage report."""
+
+    cov = coverage()
+    cov.erase()
+    cov.start()
+
+    failures = run_tests('rest_framework')
+    cov.stop()
+
+    # Discover the list of all modules that we should test coverage for
+    import rest_framework
+
+    project_dir = os.path.dirname(rest_framework.__file__)
+    cov_files = prepare_report(project_dir)
+
+    report(cov, cov_files)
     sys.exit(failures)
 
 if __name__ == '__main__':

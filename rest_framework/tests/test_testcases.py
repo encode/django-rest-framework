@@ -16,13 +16,14 @@ class TestSettingsManager(object):
     modified.
 
     """
+
     def __init__(self):
         self._original_settings = {}
 
     def set(self, **kwargs):
         for k, v in kwargs.iteritems():
             self._original_settings.setdefault(k, getattr(settings, k,
-                                                          NO_SETTING))
+                NO_SETTING))
             setattr(settings, k, v)
         if 'INSTALLED_APPS' in kwargs:
             self.syncdb()
@@ -51,6 +52,7 @@ class SettingsTestCase(TestCase):
     self.settings_manager.revert().
 
     """
+
     def __init__(self, *args, **kwargs):
         super(SettingsTestCase, self).__init__(*args, **kwargs)
         self.settings_manager = TestSettingsManager()
