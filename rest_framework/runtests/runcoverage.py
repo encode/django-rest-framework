@@ -13,6 +13,8 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'rest_framework.tests.settings'
 
+from django.conf import settings
+
 try:
     from coverage import coverage
 except ImportError:
@@ -20,7 +22,7 @@ except ImportError:
     exit(1)
 
 def report(cov, cov_files):
-    cov.report(cov_files)
+    pc = cov.report(cov_files)
 
     if '--html' in sys.argv:
         cov.html_report(cov_files, directory='coverage')
@@ -28,6 +30,7 @@ def report(cov, cov_files):
     if '--xml' in sys.argv:
         cov.xml_report(cov_files, outfile='../../coverage.xml')
 
+    return pc
 
 def prepare_report(project_dir):
     cov_files = []
@@ -78,7 +81,7 @@ def run_tests(app):
 def main():
     """Run the tests for rest_framework and generate a coverage report."""
 
-    cov = coverage()
+    cov = coverage(data_file=".coverage", branch=True)
     cov.erase()
     cov.start()
 
@@ -92,7 +95,14 @@ def main():
     cov_files = prepare_report(project_dir)
 
     report(cov, cov_files)
-    sys.exit(failures)
+    pc = report(cov, cov_files)
+    if failures <> 0:
+        sys.exit(failures)
+
+    if pc < settings.CODE_COVERAGE_THRESHOLD:
+        sys.exit(pc)
+
+    sys.exit(0)
 
 if __name__ == '__main__':
     main()

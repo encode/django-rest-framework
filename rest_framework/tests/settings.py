@@ -104,6 +104,8 @@ INSTALLED_APPS = (
 
 TEST_RUNNER = 'discover_runner.runner.DiscoverRunner'
 
+CODE_COVERAGE_THRESHOLD = 80
+
 STATIC_URL = '/static/'
 
 import django
