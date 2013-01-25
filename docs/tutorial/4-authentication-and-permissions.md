@@ -22,7 +22,7 @@ We'd also need to make sure that when the model is saved, that we populate the h
 We'll need some extra imports:
 
     from pygments.lexers import get_lexer_by_name
-    from pygments.formatters import HtmlFormatter
+    from pygments.formatters.html import HtmlFormatter
     from pygments import highlight
 
 And now we can add a `.save()` method to our model class:
