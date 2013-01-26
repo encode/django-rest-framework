@@ -114,8 +114,8 @@ You can also override the name used for the object list field, by setting the `r
 For example, to nest a pair of links labelled 'prev' and 'next', and set the name for the results field to 'objects', you might use something like this.
 
     class LinksSerializer(serializers.Serializer):
-        next = pagination.NextURLField(source='*')
-        prev = pagination.PreviousURLField(source='*')
+        next = pagination.NextPageField(source='*')
+        prev = pagination.PreviousPageField(source='*')
 
     class CustomPaginationSerializer(pagination.BasePaginationSerializer):
         links = LinksSerializer(source='*')  # Takes the page object as the source

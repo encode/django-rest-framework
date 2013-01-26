@@ -2,6 +2,7 @@ import copy
 import datetime
 import types
 from decimal import Decimal
+from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
@@ -227,6 +228,8 @@ class BaseSerializer(Field):
         Run `validate_<fieldname>()` and `validate()` methods on the serializer
         """
         for field_name, field in self.fields.items():
+            if field_name in self._errors:
+                continue
             try:
                 validate_method = getattr(self, 'validate_%s' % field_name, None)
                 if validate_method:
@@ -271,7 +274,11 @@ class BaseSerializer(Field):
         """
         Serialize objects -> primitives.
         """
-        if hasattr(obj, '__iter__'):
+        # Note: At the moment we have an ugly hack to determine if we should
+        # walk over iterables.  At some point, serializers will require an
+        # explicit `many=True` in order to iterate over a set, and this hack
+        # will disappear.
+        if hasattr(obj, '__iter__') and not isinstance(obj, Page):
             return [self.convert_object(item) for item in obj]
         return self.convert_object(obj)
 
@@ -298,6 +305,9 @@ class BaseSerializer(Field):
         Override default so that we can apply ModelSerializer as a nested
         field to relationships.
         """
+        if self.source == '*':
+            return self.to_native(obj)
+
         try:
             if self.source:
                 for component in self.source.split('.'):

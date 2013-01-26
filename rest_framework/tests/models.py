@@ -86,27 +86,6 @@ class ReadOnlyManyToManyModel(RESTFrameworkModel):
     text = models.CharField(max_length=100, default='anchor')
     rel = models.ManyToManyField(Anchor)
 
-# Models to test generic relations
-
-
-class Tag(RESTFrameworkModel):
-    tag_name = models.SlugField()
-
-
-class TaggedItem(RESTFrameworkModel):
-    tag = models.ForeignKey(Tag, related_name='items')
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
-
-    def __unicode__(self):
-        return self.tag.tag_name
-
-
-class Bookmark(RESTFrameworkModel):
-    url = models.URLField()
-    tags = GenericRelation(TaggedItem)
-
 
 # Model to test filtering.
 class FilterableItem(RESTFrameworkModel):

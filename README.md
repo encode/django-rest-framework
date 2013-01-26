@@ -81,6 +81,21 @@ To run the tests.
 
 # Changelog
 
+### 2.1.17
+
+**Date**: 26th Jan 2013
+
+* Support proper 401 Unauthorized responses where appropriate, instead of always using 403 Forbidden.
+* Support json encoding of timedelta objects.
+* `format_suffix_patterns()` now supports `include` style URL patterns.
+* Bugfix: Fix issues with custom pagination serializers.
+* Bugfix: Nested serializers now accept `source='*'` argument.
+* Bugfix: Return proper validation errors when incorrect types supplied for relational fields.
+* Bugfix: Support nullable FKs with `SlugRelatedField`.
+* Bugfix: Don't call custom validation methods if the field has an error.
+
+**Note**: If the primary authentication class is `TokenAuthentication` or `BasicAuthentication`, a view will now correctly return 401 responses to unauthenticated access, with an appropriate `WWW-Authenticate` header, instead of 403 responses.
+
 ### 2.1.16
 
 **Date**: 14th Jan 2013
@@ -131,20 +146,20 @@ This change will not affect user code, so long as it's following the recommended
 * Bugfix: Fix exception in browseable API on DELETE.
 * Bugfix: Fix issue where pk was was being set to a string if set by URL kwarg.
 
-## 2.1.11
+### 2.1.11
 
 **Date**: 17th Dec 2012
 
 * Bugfix: Fix issue with M2M fields in browseable API.
 
-## 2.1.10
+### 2.1.10
 
 **Date**: 17th Dec 2012
 
 * Bugfix: Ensure read-only fields don't have model validation applied.
 * Bugfix: Fix hyperlinked fields in paginated results.
 
-## 2.1.9
+### 2.1.9
 
 **Date**: 11th Dec 2012
 
@@ -152,14 +167,14 @@ This change will not affect user code, so long as it's following the recommended
 * Bugfix: Fix `Meta.fields` only working as tuple not as list.
 * Bugfix: Edge case if unnecessarily specifying `required=False` on read only field.
 
-## 2.1.8
+### 2.1.8
 
 **Date**: 8th Dec 2012
 
 * Fix for creating nullable Foreign Keys with `''` as well as `None`.
 * Added `null=<bool>` related field option.
 
-## 2.1.7
+### 2.1.7
 
 **Date**: 7th Dec 2012
 
@@ -171,19 +186,19 @@ This change will not affect user code, so long as it's following the recommended
 * Make `Request.user` settable.
 * Bugfix: Fix `RegexField` to work with `BrowsableAPIRenderer`
 
-## 2.1.6
+### 2.1.6
 
 **Date**: 23rd Nov 2012
 
 * Bugfix: Unfix DjangoModelPermissions.  (I am a doofus.)
 
-## 2.1.5
+### 2.1.5
 
 **Date**: 23rd Nov 2012
 
 * Bugfix: Fix DjangoModelPermissions.
 
-## 2.1.4
+### 2.1.4
 
 **Date**: 22nd Nov 2012
 
@@ -194,7 +209,7 @@ This change will not affect user code, so long as it's following the recommended
 * Added `obtain_token_view` to get tokens when using `TokenAuthentication`.
 * Bugfix: Django 1.5 configurable user support for `TokenAuthentication`.
 
-## 2.1.3
+### 2.1.3
 
 **Date**: 16th Nov 2012
 
@@ -205,14 +220,14 @@ This change will not affect user code, so long as it's following the recommended
 * 201 Responses now return a 'Location' header.
 * Bugfix: Serializer fields now respect `max_length`.
 
-## 2.1.2
+### 2.1.2
 
 **Date**: 9th Nov 2012
 
 * **Filtering support.**
 * Bugfix: Support creation of objects with reverse M2M relations.
 
-## 2.1.1
+### 2.1.1
 
 **Date**: 7th Nov 2012
 
@@ -222,7 +237,7 @@ This change will not affect user code, so long as it's following the recommended
 * Bugfix: Make textareas same width as other fields in browsable API.
 * Private API change: `.get_serializer` now uses same `instance` and `data` ordering as serializer initialization.
 
-## 2.1.0
+### 2.1.0
 
 **Date**: 5th Nov 2012
 
@@ -235,13 +250,13 @@ This change will not affect user code, so long as it's following the recommended
 * Minor field improvements. (Don't stringify dicts, more robust many-pk fields.)
 * Bugfixes (Support choice field in Browseable API)
 
-## 2.0.2
+### 2.0.2
 
 **Date**: 2nd Nov 2012
 
 * Fix issues with pk related fields in the browsable API.
 
-## 2.0.1
+### 2.0.1
 
 **Date**: 1st Nov 2012
 
@@ -249,12 +264,12 @@ This change will not affect user code, so long as it's following the recommended
 * Added SlugRelatedField and ManySlugRelatedField.
 * If PUT creates an instance return '201 Created', instead of '200 OK'.
 
-## 2.0.0
+### 2.0.0
 
 **Date**: 30th Oct 2012
 
 * Redesign of core components.
-* Fix **all of the things**.
+* **Fix all of the things**.
 
 # License
 
