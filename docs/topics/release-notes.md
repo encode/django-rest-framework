@@ -16,11 +16,15 @@ Major version numbers (x.0.0) are reserved for project milestones.  No major poi
 
 ## 2.1.x series
 
-### Master
+### 2.1.17
+
+**Date**: 26th Jan 2013
 
 * Support proper 401 Unauthorized responses where appropriate, instead of always using 403 Forbidden.
 * Support json encoding of timedelta objects.
-* `format_suffix_patterns()` now supports `include` style URL patterns. 
+* `format_suffix_patterns()` now supports `include` style URL patterns.
+* Bugfix: Fix issues with custom pagination serializers.
+* Bugfix: Nested serializers now accept `source='*'` argument.
 * Bugfix: Return proper validation errors when incorrect types supplied for relational fields.
 * Bugfix: Support nullable FKs with `SlugRelatedField`.
 * Bugfix: Don't call custom validation methods if the field has an error.
