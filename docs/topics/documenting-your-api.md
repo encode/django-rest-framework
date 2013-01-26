@@ -110,5 +110,10 @@ By default, Django REST Framework Docs scans all your URL patterns and extracts 
         docs = DocumentationGenerator(urls.urlpatterns).get_docs()
 
 
+#### View the docs on GitHub
+Below is the link to the Django REST Frameworks Docs repository on GitHub. An example is provided for download and includes screenshots.
+
+[https://github.com/marcgibbons/django-rest-framework-docs][source]
+
 [source]: https://github.com/marcgibbons/django-rest-framework-docs
 [template]: https://github.com/marcgibbons/django-rest-framework-docs/blob/master/rest_framework_docs/templates/rest_framework_docs/docs.html
