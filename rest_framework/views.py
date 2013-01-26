@@ -294,8 +294,8 @@ class APIView(View):
         """
         self.format_kwarg = self.get_format_suffix(**kwargs)
 
-        # Ensure that the incoming request is permitted
-        if not self.has_permission(request):
+        # Ensure that the incoming request is permitted. OPTIONS requests are always permitted.
+        if request.method != 'OPTIONS' and not self.has_permission(request):
             self.permission_denied(request)
         self.check_throttles(request)
 
