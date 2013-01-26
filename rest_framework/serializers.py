@@ -2,6 +2,7 @@ import copy
 import datetime
 import types
 from decimal import Decimal
+from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
@@ -273,7 +274,11 @@ class BaseSerializer(Field):
         """
         Serialize objects -> primitives.
         """
-        if hasattr(obj, '__iter__'):
+        # Note: At the moment we have an ugly hack to determine if we should
+        # walk over iterables.  At some point, serializers will require an
+        # explicit `many=True` in order to iterate over a set, and this hack
+        # will disappear.
+        if hasattr(obj, '__iter__') and not isinstance(obj, Page):
             return [self.convert_object(item) for item in obj]
         return self.convert_object(obj)
 
