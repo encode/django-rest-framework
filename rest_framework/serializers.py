@@ -300,6 +300,9 @@ class BaseSerializer(Field):
         Override default so that we can apply ModelSerializer as a nested
         field to relationships.
         """
+        if self.source == '*':
+            return self.to_native(obj)
+
         try:
             if self.source:
                 for component in self.source.split('.'):
