@@ -14,7 +14,7 @@ AJAX requests that are made on a different site from the API they are communicat
 
 ## CSRF protection
 
-[Cross Site Request Forgery][csrf] protection is a mechanism of guarding against a particular type of attack, which can occur when a user has not logged out of a web site, and continues to have a valid session.   In this circumstance a malicious site may be able to perform actions against the target site, within the cotext of the logged-in session.
+[Cross Site Request Forgery][csrf] protection is a mechanism of guarding against a particular type of attack, which can occur when a user has not logged out of a web site, and continues to have a valid session.   In this circumstance a malicious site may be able to perform actions against the target site, within the context of the logged-in session.
 
 To guard against these type of attacks, you need to do two things:
 
