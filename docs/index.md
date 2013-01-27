@@ -74,6 +74,12 @@ If you're intending to use the browseable API you'll probably also want to add R
 
 Note that the URL path can be whatever you want, but you must include `'rest_framework.urls'` with the `'rest_framework'` namespace.
 
+## Upgrade
+
+Upgrade to the latest release using `pip`,
+
+    pip install djangorestframework --upgrade
+
 ## Quickstart
 
 Can't wait to get started?  The [quickstart guide][quickstart] is the fastest way to get up and running with REST framework.
