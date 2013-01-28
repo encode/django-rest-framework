@@ -469,7 +469,7 @@ class ModelSerializer(Serializer):
             kwargs['required'] = False
             kwargs['default'] = model_field.get_default()
 
-        if model_field.__class__ == models.TextField:
+        if issubclass(model_field.__class__, models.TextField):
             kwargs['widget'] = widgets.Textarea
 
         # TODO: TypedChoiceField?
