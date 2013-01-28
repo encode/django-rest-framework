@@ -54,6 +54,19 @@ class ActionItemSerializer(serializers.ModelSerializer):
         model = ActionItem
 
 
+class ActionItemUpdateSerializer(serializers.ModelSerializer):
+
+    def restore_object(self, data, instance=None):
+        if instance is None:
+            return ActionItem(**data)
+        for key, val in data.items():
+            setattr(instance, key, val)
+        return instance
+
+    class Meta:
+        model = ActionItem
+
+
 class PersonSerializer(serializers.ModelSerializer):
     info = serializers.Field(source='info')
 
@@ -299,6 +312,15 @@ class ValidationTests(TestCase):
         serializer = ActionItemSerializer(data=data)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'title': [u'Ensure this value has at most 200 characters (it has 201).']})
+
+    def test_modelserializer_update_max_length_exceeded(self):
+        data = {
+            'title': 'x' * 201,
+        }
+        serializer = ActionItemUpdateSerializer(data=data)
+        self.assertEquals(serializer.is_valid(), False)
+        self.assertEquals(serializer.errors, {'title': [u'Ensure this value has at most 200 characters (it has 201).']})
+
 
     def test_default_modelfield_max_length_exceeded(self):
         data = {
