@@ -513,6 +513,22 @@ class ModelSerializer(Serializer):
                 exclusions.remove(field_name)
         return exclusions
 
+    def full_clean(self, instance):
+        """
+        Perform Django's full_clean, and populate the `errors` dictionary
+        if any validation errors occur.
+
+        Note that we don't perform this inside the `.restore_object()` method,
+        so that subclasses can override `.restore_object()`, and still get
+        the full_clean validation checking.
+        """
+        try:
+            instance.full_clean(exclude=self.get_validation_exclusions())
+        except ValidationError, err:
+            self._errors = err.message_dict
+            return None
+        return instance
+
     def restore_object(self, attrs, instance=None):
         """
         Restore the model instance.
@@ -544,13 +560,15 @@ class ModelSerializer(Serializer):
         else:
             instance = self.opts.model(**attrs)
 
-        try:
-            instance.full_clean(exclude=self.get_validation_exclusions())
-        except ValidationError, err:
-            self._errors = err.message_dict
-            return None
-
         return instance
+
+    def from_native(self, data, files):
+        """
+        Override the default method to also include model field validation.
+        """
+        instance = super(ModelSerializer, self).from_native(data, files)
+        if instance:
+            return self.full_clean(instance)
 
     def save(self):
         """
