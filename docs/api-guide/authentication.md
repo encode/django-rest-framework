@@ -190,9 +190,9 @@ Typically the approach you should take is:
 * If authentication is not attempted, return `None`.  Any other authentication schemes also in use will still be checked.
 * If authentication is attempted but fails, raise a `AuthenticationFailed` exception.  An error response will be returned immediately, without checking any other authentication schemes.
 
-You *may* also override the `.authentication_header(self, request)` method.  If implemented, it should return a string that will be used as the value of the `WWW-Authenticate` header in a `HTTP 401 Unauthorized` response.
+You *may* also override the `.authenticate_header(self, request)` method.  If implemented, it should return a string that will be used as the value of the `WWW-Authenticate` header in a `HTTP 401 Unauthorized` response.
 
-If the `.authentication_header()` method is not overridden, the authentication scheme will return `HTTP 403 Forbidden` responses when an unauthenticated request is denied access.
+If the `.authenticate_header()` method is not overridden, the authentication scheme will return `HTTP 403 Forbidden` responses when an unauthenticated request is denied access.
 
 ## Example
 
