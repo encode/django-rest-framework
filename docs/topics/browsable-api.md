@@ -5,7 +5,7 @@
 > &mdash; [Alfred North Whitehead][cite], An Introduction to Mathematics (1911)
 
 
-API may stand for Application *Programming* Interface, but humans have to be able to read the APIs, too; someone has to do the programming. Django REST Framework supports generating human-friendly HTML output for each resource when the `HTML` format is requested. These pages allow for easy browsing of resources, as well as forms for submitting data to the resources using `POST`, `PUT`, `PATCH` and `DELETE`.
+API may stand for Application *Programming* Interface, but humans have to be able to read the APIs, too; someone has to do the programming. Django REST Framework supports generating human-friendly HTML output for each resource when the `HTML` format is requested. These pages allow for easy browsing of resources, as well as forms for submitting data to the resources using `POST`, `PUT`, and `DELETE`.
 
 ## URLs
 
@@ -79,7 +79,6 @@ The context that's available to the template:
 * `name`                : The name of the resource
 * `post_form`           : A form instance for use by the POST form (if allowed)
 * `put_form`            : A form instance for use by the PUT form (if allowed)
-* `patch_form`          : A form instance for use by the PATCH form (if allowed)
 * `request`             : The request object
 * `response`            : The response object
 * `version`             : The version of Django REST Framework
