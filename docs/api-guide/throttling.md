@@ -156,7 +156,7 @@ Optionally you may also override the `.wait()` method.  If implemented, `.wait()
 
 ## Example
 
-The following example will randomly throttle 1 in every 10 requests.
+The following is an example of a rate throttle, that will randomly throttle 1 in every 10 requests.
 
     class RandomRateThrottle(throttles.BaseThrottle):
         def allow_request(self, request, view):
