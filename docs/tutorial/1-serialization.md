@@ -129,7 +129,7 @@ The first thing we need to get started on our Web API is provide a way of serial
             Create or update a new snippet instance.
             """
             if instance:
-                # Update existing instance or part of it
+                # Update existing instance
                 instance.title = attrs.get('title', instance.title)
                 instance.code = attrs.get('code', instance.code)
                 instance.linenos = attrs.get('linenos', instance.linenos)
