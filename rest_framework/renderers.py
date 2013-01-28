@@ -427,6 +427,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         content = self.get_content(renderer, data, accepted_media_type, renderer_context)
 
         put_form = self.get_form(view, 'PUT', request)
+        patch_form = self.get_form(view, 'PATCH', request)
         post_form = self.get_form(view, 'POST', request)
         delete_form = self.get_form(view, 'DELETE', request)
         options_form = self.get_form(view, 'OPTIONS', request)
@@ -448,6 +449,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             'allowed_methods': view.allowed_methods,
             'available_formats': [renderer.format for renderer in view.renderer_classes],
             'put_form': put_form,
+            'patch_form': patch_form,
             'post_form': post_form,
             'delete_form': delete_form,
             'options_form': options_form,

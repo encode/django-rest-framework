@@ -1,12 +1,13 @@
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.test import Client, TestCase
+from django.test import TestCase
 
 from rest_framework import permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
 from rest_framework.compat import patterns
 from rest_framework.views import APIView
+from rest_framework.tests.utils import Client
 
 import json
 import base64
@@ -16,6 +17,9 @@ class MockView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
+        return HttpResponse({'a': 1, 'b': 2, 'c': 3})
+
+    def patch(self, request):
         return HttpResponse({'a': 1, 'b': 2, 'c': 3})
 
     def put(self, request):
@@ -101,6 +105,14 @@ class SessionAuthTests(TestCase):
         """
         self.non_csrf_client.login(username=self.username, password=self.password)
         response = self.non_csrf_client.put('/session/', {'example': 'example'})
+        self.assertEqual(response.status_code, 200)
+
+    def test_patch_form_session_auth_passing(self):
+        """
+        Ensure PATCHting form over session authentication with logged in user and CSRF token passes.
+        """
+        self.non_csrf_client.login(username=self.username, password=self.password)
+        response = self.non_csrf_client.patch('/', {'example': 'example'})
         self.assertEqual(response.status_code, 200)
 
     def test_post_form_session_auth_failing(self):
