@@ -194,6 +194,24 @@ You *may* also override the `.authentication_header(self, request)` method.  If 
 
 If the `.authentication_header()` method is not overridden, the authentication scheme will return `HTTP 403 Forbidden` responses when an unauthenticated request is denied access.
 
+## Example
+
+The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X_USERNAME'.
+
+    class ExampleAuthentication(authentication.BaseAuthentication):
+        def has_permission(self, request, view, obj=None):
+            username = request.META.get('X_USERNAME')
+            if not username:
+                return None
+
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                raise authenticate.AuthenticationFailed('No such user')
+            
+            return (user, None)
+                
+
 [cite]: http://jacobian.org/writing/rest-worst-practices/
 [http401]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
 [http403]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
