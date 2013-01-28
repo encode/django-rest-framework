@@ -26,6 +26,10 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.1.x series
 
+### Master
+
+* Fix styling on browsable API login.
+
 ### 2.1.17
 
 **Date**: 26th Jan 2013
