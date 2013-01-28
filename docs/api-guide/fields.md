@@ -193,6 +193,16 @@ A date and time representation.
 
 Corresponds to `django.db.models.fields.DateTimeField`
 
+When using `ModelSerializer` or `HyperlinkedModelSerializer`, note that any model fields with `auto_now=True` or `auto_now_add=True` will use serializer fields that are `read_only=True` by default.
+
+If you want to override this behavior, you'll need to declare the `DateTimeField` explicitly on the serializer.  For example:
+
+    class CommentSerializer(serializers.ModelSerializer):
+        created = serializers.DateTimeField()
+        
+        class Meta:
+            model = Comment
+
 ## IntegerField
 
 An integer representation.
