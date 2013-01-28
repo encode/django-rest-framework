@@ -98,6 +98,7 @@ The following people have helped make REST framework great.
 * Guglielmo Celata - [guglielmo]
 * Mike Tums - [mktums]
 * Michael Elovskikh - [wronglink]
+* Michał Jaworski - [swistakm]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -231,3 +232,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [guglielmo]: https://github.com/guglielmo
 [mktums]: https://github.com/mktums
 [wronglink]: https://github.com/wronglink
+[swistakm]: https://github.com/swistakm
