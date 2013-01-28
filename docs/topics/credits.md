@@ -97,6 +97,7 @@ The following people have helped make REST framework great.
 * Kevin Stone - [kevinastone]
 * Guglielmo Celata - [guglielmo]
 * Mike Tums - [mktums]
+* Michael Elovskikh - [wronglink]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -229,3 +230,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [kevinastone]: https://github.com/kevinastone
 [guglielmo]: https://github.com/guglielmo
 [mktums]: https://github.com/mktums
+[wronglink]: https://github.com/wronglink
