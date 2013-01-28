@@ -28,7 +28,8 @@ You can determine your currently installed version using `pip freeze`:
 
 ### Master
 
-* Fix styling on browsable API login.
+* Bugfix: Fix styling on browsable API login.
+* Bugfix: Ensure model field validation is still applied for ModelSerializer subclasses with an custom `.restore_object()` method.
 
 ### 2.1.17
 
