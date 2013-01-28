@@ -96,6 +96,7 @@ The following people have helped make REST framework great.
 * Bruno Renié - [brutasse]
 * Kevin Stone - [kevinastone]
 * Guglielmo Celata - [guglielmo]
+* Mike Tums - [mktums]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -227,3 +228,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [brutasse]: https://github.com/brutasse
 [kevinastone]: https://github.com/kevinastone
 [guglielmo]: https://github.com/guglielmo
+[mktums]: https://github.com/mktums
