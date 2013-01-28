@@ -252,6 +252,8 @@ class TestCustomPaginateByParam(TestCase):
         self.assertEquals(response.data['results'], self.data[:5])
 
 
+### Tests for context in pagination serializers
+
 class CustomField(serializers.Field):
     def to_native(self, value):
         if not 'view' in self.context:
@@ -261,6 +263,11 @@ class CustomField(serializers.Field):
 
 class BasicModelSerializer(serializers.Serializer):
     text = CustomField()
+
+    def __init__(self, *args, **kwargs):
+        super(BasicModelSerializer, self).__init__(*args, **kwargs)
+        if not 'view' in self.context:
+            raise RuntimeError("context isn't getting passed into serializer init")
 
 
 class TestContextPassedToCustomField(TestCase):
@@ -279,3 +286,39 @@ class TestContextPassedToCustomField(TestCase):
 
         self.assertEquals(response.status_code, status.HTTP_200_OK)
 
+
+### Tests for custom pagination serializers
+
+class LinksSerializer(serializers.Serializer):
+    next = pagination.NextPageField(source='*')
+    prev = pagination.PreviousPageField(source='*')
+
+
+class CustomPaginationSerializer(pagination.BasePaginationSerializer):
+    links = LinksSerializer(source='*')  # Takes the page object as the source
+    total_results = serializers.Field(source='paginator.count')
+
+    results_field = 'objects'
+
+
+class TestCustomPaginationSerializer(TestCase):
+    def setUp(self):
+        objects = ['john', 'paul', 'george', 'ringo']
+        paginator = Paginator(objects, 2)
+        self.page = paginator.page(1)
+
+    def test_custom_pagination_serializer(self):
+        request = RequestFactory().get('/foobar')
+        serializer = CustomPaginationSerializer(
+            instance=self.page,
+            context={'request': request}
+        )
+        expected = {
+            'links': {
+                'next': 'http://testserver/foobar?page=2',
+                'prev': None
+            },
+            'total_results': 4,
+            'objects': ['john', 'paul']
+        }
+        self.assertEquals(serializer.data, expected)

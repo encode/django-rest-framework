@@ -92,6 +92,11 @@ The following people have helped make REST framework great.
 * Johannes Spielmann - [shezi]
 * James Cleveland - [radiosilence]
 * Steve Gregory - [steve-gregory]
+* Federico Capoano - [nemesisdesign]
+* Bruno Renié - [brutasse]
+* Kevin Stone - [kevinastone]
+* Guglielmo Celata - [guglielmo]
+* Mike Tums - [mktums]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -219,3 +224,8 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [shezi]: https://github.com/shezi
 [radiosilence]: https://github.com/radiosilence
 [steve-gregory]: https://github.com/steve-gregory
+[nemesisdesign]: https://github.com/nemesisdesign
+[brutasse]: https://github.com/brutasse
+[kevinastone]: https://github.com/kevinastone
+[guglielmo]: https://github.com/guglielmo
+[mktums]: https://github.com/mktums
