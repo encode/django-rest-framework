@@ -555,7 +555,7 @@ class DateTimeValidationTest(TestCase):
         serializer = DateTimeObjectSerializer(data={'date_time': '07/31/84 04:31:59.123456'})
         self.assertTrue(serializer.is_valid())
 
-
+    @unittest.skipUnless(django.VERSION >= (1, 4), "django < 1.4 don't have microseconds in default settings")
     def test_wrong_date_time_input_format(self):
         serializer = DateTimeObjectSerializer(data={'date_time': 'something wrong'})
         self.assertFalse(serializer.is_valid())
@@ -564,6 +564,15 @@ class DateTimeValidationTest(TestCase):
                                                             u'YYYY-MM-DD; MM/DD/YYYY HH:MM:SS; MM/DD/YYYY HH:MM:SS.uuuuuu; '
                                                             u'MM/DD/YYYY HH:MM; MM/DD/YYYY; MM/DD/YY HH:MM:SS; '
                                                             u'MM/DD/YY HH:MM:SS.uuuuuu; MM/DD/YY HH:MM; MM/DD/YY']})
+
+    @unittest.skipUnless(django.VERSION < (1, 4), "django >= 1.4 have microseconds in default settings")
+    def test_wrong_date_time_input_format_2(self):
+        serializer = DateTimeObjectSerializer(data={'date_time': 'something wrong'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'date_time': [u'Datetime has wrong format. Use one of these formats instead:'
+                                                            u' YYYY-MM-DD HH:MM:SS; YYYY-MM-DD HH:MM; YYYY-MM-DD; '
+                                                            u'MM/DD/YYYY HH:MM:SS; MM/DD/YYYY HH:MM; MM/DD/YYYY; '
+                                                            u'MM/DD/YY HH:MM:SS; MM/DD/YY HH:MM; MM/DD/YY']})
 
 
 class MetadataTests(TestCase):
