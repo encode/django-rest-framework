@@ -99,6 +99,7 @@ The following people have helped make REST framework great.
 * Mike Tums - [mktums]
 * Michael Elovskikh - [wronglink]
 * Michał Jaworski - [swistakm]
+* Andrea de Marco - [z4r]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -233,3 +234,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [mktums]: https://github.com/mktums
 [wronglink]: https://github.com/wronglink
 [swistakm]: https://github.com/swistakm
+[z4r]: https://github.com/z4r
