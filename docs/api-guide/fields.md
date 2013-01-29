@@ -187,11 +187,15 @@ A date representation.
 
 Corresponds to `django.db.models.fields.DateField`
 
+Uses `DATE_INPUT_FORMATS` to validate date.
+
 ## DateTimeField
 
 A date and time representation.
 
 Corresponds to `django.db.models.fields.DateTimeField`
+
+Uses `DATETIME_INPUT_FORMATS` to validate date_time.
 
 When using `ModelSerializer` or `HyperlinkedModelSerializer`, note that any model fields with `auto_now=True` or `auto_now_add=True` will use serializer fields that are `read_only=True` by default.
 

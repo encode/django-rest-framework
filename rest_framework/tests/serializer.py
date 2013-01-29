@@ -41,6 +41,36 @@ class CommentSerializer(serializers.Serializer):
         return instance
 
 
+class DateObject(object):
+    def __init__(self, date):
+        self.date = date
+
+
+class DateObjectSerializer(serializers.Serializer):
+    date = serializers.DateField()
+
+    def restore_object(self, attrs, instance=None):
+        if instance is not None:
+            instance.date = attrs['date']
+            return instance
+        return DateObject(**attrs)
+
+
+class DateTimeObject(object):
+    def __init__(self, date_time):
+        self.date_time = date_time
+
+
+class DateTimeObjectSerializer(serializers.Serializer):
+    date_time = serializers.DateTimeField()
+
+    def restore_object(self, attrs, instance=None):
+        if instance is not None:
+            instance.date_time = attrs['date_time']
+            return instance
+        return DateTimeObject(**attrs)
+
+
 class BookSerializer(serializers.ModelSerializer):
     isbn = serializers.RegexField(regex=r'^[0-9]{13}$', error_messages={'invalid': 'isbn has to be exact 13 numbers'})
 
@@ -434,6 +464,100 @@ class RegexValidationTest(TestCase):
     def test_create_success(self):
         serializer = BookSerializer(data={'isbn': '1234567890123'})
         self.assertTrue(serializer.is_valid())
+
+
+class DateValidationTest(TestCase):
+    def test_valid_date_input_formats(self):
+        serializer = DateObjectSerializer(data={'date': '1984-07-31'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateObjectSerializer(data={'date': '07/31/1984'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateObjectSerializer(data={'date': '07/31/84'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateObjectSerializer(data={'date': 'Jul 31 1984'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateObjectSerializer(data={'date': 'Jul 31, 1984'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateObjectSerializer(data={'date': '31 Jul 1984'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateObjectSerializer(data={'date': '31 Jul 1984'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateObjectSerializer(data={'date': 'July 31 1984'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateObjectSerializer(data={'date': 'July 31, 1984'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateObjectSerializer(data={'date': '31 July 1984'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateObjectSerializer(data={'date': '31 July, 1984'})
+        self.assertTrue(serializer.is_valid())
+
+    def test_wrong_date_input_format(self):
+        serializer = DateObjectSerializer(data={'date': 'something wrong'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'date': [u'Date has wrong format. Use one of these formats instead: '
+                                                       u'YYYY-MM-DD; MM/DD/YYYY; MM/DD/YY; [Jan through Dec] DD YYYY; '
+                                                       u'[Jan through Dec] DD, YYYY; DD [Jan through Dec] YYYY; '
+                                                       u'DD [Jan through Dec], YYYY; [January through December] DD YYYY; '
+                                                       u'[January through December] DD, YYYY; DD [January through December] YYYY; '
+                                                       u'DD [January through December], YYYY']})
+
+
+class DateTimeValidationTest(TestCase):
+    def test_valid_date_time_input_formats(self):
+        serializer = DateTimeObjectSerializer(data={'date_time': '1984-07-31 04:31:59.123456'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateTimeObjectSerializer(data={'date_time': '1984-07-31 04:31:59'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateTimeObjectSerializer(data={'date_time': '1984-07-31 04:31'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateTimeObjectSerializer(data={'date_time': '1984-07-31'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateTimeObjectSerializer(data={'date_time': '07/31/1984 04:31:59.123456'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateTimeObjectSerializer(data={'date_time': '07/31/1984 04:31:59'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateTimeObjectSerializer(data={'date_time': '07/31/1984 04:31'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateTimeObjectSerializer(data={'date_time': '07/31/1984'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateTimeObjectSerializer(data={'date_time': '07/31/84 04:31:59.123456'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateTimeObjectSerializer(data={'date_time': '07/31/84 04:31:59'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateTimeObjectSerializer(data={'date_time': '07/31/84 04:31'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateTimeObjectSerializer(data={'date_time': '07/31/84'})
+        self.assertTrue(serializer.is_valid())
+
+    def test_wrong_date_time_input_format(self):
+        serializer = DateTimeObjectSerializer(data={'date_time': 'something wrong'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'date_time': [u'Datetime has wrong format. Use one of these formats instead: '
+                                                            u'YYYY-MM-DD HH:MM:SS; YYYY-MM-DD HH:MM:SS.uuuuuu; YYYY-MM-DD HH:MM; '
+                                                            u'YYYY-MM-DD; MM/DD/YYYY HH:MM:SS; MM/DD/YYYY HH:MM:SS.uuuuuu; '
+                                                            u'MM/DD/YYYY HH:MM; MM/DD/YYYY; MM/DD/YY HH:MM:SS; '
+                                                            u'MM/DD/YY HH:MM:SS.uuuuuu; MM/DD/YY HH:MM; MM/DD/YY']})
 
 
 class MetadataTests(TestCase):

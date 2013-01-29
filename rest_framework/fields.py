@@ -425,10 +425,7 @@ class DateField(WritableField):
     form_field_class = forms.DateField
 
     default_error_messages = {
-        'invalid': _(u"'%s' value has an invalid date format. It must be "
-                     u"in YYYY-MM-DD format."),
-        'invalid_date': _(u"'%s' value has the correct format (YYYY-MM-DD) "
-                          u"but it is an invalid date."),
+        'invalid': _(u"Date has wrong format. Use one of these formats instead: %s"),
     }
     empty = None
 
@@ -446,15 +443,20 @@ class DateField(WritableField):
         if isinstance(value, datetime.date):
             return value
 
-        try:
-            parsed = parse_date(value)
-            if parsed is not None:
-                return parsed
-        except ValueError:
-            msg = self.error_messages['invalid_date'] % value
-            raise ValidationError(msg)
+        for format in settings.DATE_INPUT_FORMATS:
+            try:
+                parsed = datetime.datetime.strptime(value, format)
+            except ValueError:
+                pass
+            else:
+                return parsed.date()
 
-        msg = self.error_messages['invalid'] % value
+        formats = '; '.join(settings.DATE_INPUT_FORMATS)
+        mapping = [("%Y", "YYYY"), ("%y", "YY"), ("%m", "MM"), ("%b", "[Jan through Dec]"),
+                   ("%B", "[January through December]"), ("%d", "DD"), ("%H", "HH"), ("%M", "MM"), ("%S", "SS")]
+        for k, v in mapping:
+            formats = formats.replace(k, v)
+        msg = self.error_messages['invalid'] % formats
         raise ValidationError(msg)
 
 
@@ -464,13 +466,7 @@ class DateTimeField(WritableField):
     form_field_class = forms.DateTimeField
 
     default_error_messages = {
-        'invalid': _(u"'%s' value has an invalid format. It must be in "
-                     u"YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ] format."),
-        'invalid_date': _(u"'%s' value has the correct format "
-                          u"(YYYY-MM-DD) but it is an invalid date."),
-        'invalid_datetime': _(u"'%s' value has the correct format "
-                              u"(YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]) "
-                              u"but it is an invalid date/time."),
+        'invalid': _(u"Datetime has wrong format. Use one of these formats instead: %s"),
     }
     empty = None
 
@@ -494,23 +490,20 @@ class DateTimeField(WritableField):
                 value = timezone.make_aware(value, default_timezone)
             return value
 
-        try:
-            parsed = parse_datetime(value)
-            if parsed is not None:
+        for format in settings.DATETIME_INPUT_FORMATS:
+            try:
+                parsed = datetime.datetime.strptime(value, format)
+            except ValueError:
+                pass
+            else:
                 return parsed
-        except ValueError:
-            msg = self.error_messages['invalid_datetime'] % value
-            raise ValidationError(msg)
 
-        try:
-            parsed = parse_date(value)
-            if parsed is not None:
-                return datetime.datetime(parsed.year, parsed.month, parsed.day)
-        except ValueError:
-            msg = self.error_messages['invalid_date'] % value
-            raise ValidationError(msg)
-
-        msg = self.error_messages['invalid'] % value
+        formats = '; '.join(settings.DATETIME_INPUT_FORMATS)
+        mapping = [("%Y", "YYYY"), ("%y", "YY"), ("%m", "MM"), ("%d", "DD"),
+                   ("%H", "HH"), ("%M", "MM"), ("%S", "SS"), ("%f", "uuuuuu")]
+        for k, v in mapping:
+            formats = formats.replace(k, v)
+        msg = self.error_messages['invalid'] % formats
         raise ValidationError(msg)
 
 
