@@ -237,6 +237,16 @@ The `RelatedField` class may be subclassed to create a custom representation of 
 
 All the relational fields may be used for any relationship or reverse relationship on a model.
 
+## Reverse relational fields
+
+By default reverse relational fields are not displayed when ModelSerializer is used. You can control this behavior by using `DEFAULT_INCLUDE_REVERSE_RELATIONS` setting.
+
+Besides global setting you can also use model specific setting:
+
+    class BlogPostSerializer(serializer.ModelSerializer):
+        class Meta:
+            include_reverse_relations = True
+
 ## Specifying which fields should be included
 
 If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.

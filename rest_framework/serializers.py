@@ -7,6 +7,7 @@ from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
 from rest_framework.compat import get_concrete_model
+from rest_framework.settings import api_settings
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -371,6 +372,7 @@ class ModelSerializerOptions(SerializerOptions):
         super(ModelSerializerOptions, self).__init__(meta)
         self.model = getattr(meta, 'model', None)
         self.read_only_fields = getattr(meta, 'read_only_fields', ())
+        self.include_reverse_relations = getattr(meta, 'include_reverse_relations', api_settings.DEFAULT_INCLUDE_REVERSE_RELATIONS)
 
 
 class ModelSerializer(Serializer):
@@ -378,6 +380,24 @@ class ModelSerializer(Serializer):
     A serializer that deals with model instances and querysets.
     """
     _options_class = ModelSerializerOptions
+
+    def get_reverse_fields(self, opts, fields):
+        # Construct a list of all relations
+        relations = []
+        relations += [obj for obj in opts.get_all_related_objects() if obj.field.serialize]
+        relations += [obj for obj in opts.get_all_related_many_to_many_objects() if obj.field.serialize]
+
+        # Construct a list of intermediate models
+        exclude = []
+        for field in fields:
+            if field.rel and  hasattr(field.rel, 'through'):
+                exclude.append(field.rel.through)
+        # Intermediate models from reverse relations
+        for rel in relations:
+            if rel.field.rel and hasattr(rel.field.rel, 'through'):
+                exclude.append(rel.field.rel.through)
+
+        return [rel.field for rel in relations if rel.model not in exclude]
 
     def get_default_fields(self):
         """
@@ -393,6 +413,11 @@ class ModelSerializer(Serializer):
         fields += [field for field in opts.fields if field.serialize]
         fields += [field for field in opts.many_to_many if field.serialize]
 
+        reverse_fields = []
+        if self.opts.include_reverse_relations:
+            reverse_fields = self.get_reverse_fields(opts, fields)
+            fields += reverse_fields
+
         ret = SortedDict()
         nested = bool(self.opts.depth)
         is_pk = True  # First field in the list is the pk
@@ -406,12 +431,21 @@ class ModelSerializer(Serializer):
             elif model_field.rel:
                 to_many = isinstance(model_field,
                                      models.fields.related.ManyToManyField)
+                # Reverse relational fields must be dealt as Many fields
+                if model_field.model is not self.opts.model:
+                    to_many = True
                 field = self.get_related_field(model_field, to_many=to_many)
             else:
                 field = self.get_field(model_field)
 
             if field:
-                ret[model_field.name] = field
+                if model_field in reverse_fields:
+                    # Get user set 'related_name' or automatically set field
+                    # name e.g. 'comment_set'
+                    name = model_field.related.get_accessor_name()
+                    ret[name] = field
+                else:
+                    ret[model_field.name] = field
 
         for field_name in self.opts.read_only_fields:
             assert field_name in ret, \
@@ -431,9 +465,17 @@ class ModelSerializer(Serializer):
         """
         Creates a default instance of a nested relational field.
         """
+        # Field has reverse relation if it's  referring to different model
+        if self.opts.model is not model_field.rel.to:
+            # Get correct model from the relation
+            model_class = model_field.rel.to
+        else:
+            # Forward relation, no need for magic
+            model_class = model_field.model
+
         class NestedModelSerializer(ModelSerializer):
             class Meta:
-                model = model_field.rel.to
+                model = model_class
         return NestedModelSerializer()
 
     def get_related_field(self, model_field, to_many=False):

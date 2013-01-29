@@ -96,6 +96,12 @@ Default: `rest_framework.serializers.ModelSerializer`
 
 Default: `rest_framework.pagination.PaginationSerializer`
 
+## DEFAULT_INCLUDE_REVERSE_RELATIONS
+
+If set to `True`, ModelSerializer will display reverse relational fields from other models.
+
+Default: `False`
+
 ## FILTER_BACKEND
 
 The filter backend class that should be used for generic filtering.  If set to `None` then generic filtering is disabled.
