@@ -1,6 +1,8 @@
 import datetime
 import pickle
+import django
 from django.test import TestCase
+from django.utils import unittest
 from rest_framework import serializers
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
@@ -514,8 +516,6 @@ class DateValidationTest(TestCase):
 
 class DateTimeValidationTest(TestCase):
     def test_valid_date_time_input_formats(self):
-        serializer = DateTimeObjectSerializer(data={'date_time': '1984-07-31 04:31:59.123456'})
-        self.assertTrue(serializer.is_valid())
 
         serializer = DateTimeObjectSerializer(data={'date_time': '1984-07-31 04:31:59'})
         self.assertTrue(serializer.is_valid())
@@ -524,9 +524,6 @@ class DateTimeValidationTest(TestCase):
         self.assertTrue(serializer.is_valid())
 
         serializer = DateTimeObjectSerializer(data={'date_time': '1984-07-31'})
-        self.assertTrue(serializer.is_valid())
-
-        serializer = DateTimeObjectSerializer(data={'date_time': '07/31/1984 04:31:59.123456'})
         self.assertTrue(serializer.is_valid())
 
         serializer = DateTimeObjectSerializer(data={'date_time': '07/31/1984 04:31:59'})
@@ -538,9 +535,6 @@ class DateTimeValidationTest(TestCase):
         serializer = DateTimeObjectSerializer(data={'date_time': '07/31/1984'})
         self.assertTrue(serializer.is_valid())
 
-        serializer = DateTimeObjectSerializer(data={'date_time': '07/31/84 04:31:59.123456'})
-        self.assertTrue(serializer.is_valid())
-
         serializer = DateTimeObjectSerializer(data={'date_time': '07/31/84 04:31:59'})
         self.assertTrue(serializer.is_valid())
 
@@ -549,6 +543,18 @@ class DateTimeValidationTest(TestCase):
 
         serializer = DateTimeObjectSerializer(data={'date_time': '07/31/84'})
         self.assertTrue(serializer.is_valid())
+
+    @unittest.skipUnless(django.VERSION >= (1, 4), "django < 1.4 don't have microseconds in default settings")
+    def test_valid_date_time_input_formats_2(self):
+        serializer = DateTimeObjectSerializer(data={'date_time': '1984-07-31 04:31:59.123456'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateTimeObjectSerializer(data={'date_time': '07/31/1984 04:31:59.123456'})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = DateTimeObjectSerializer(data={'date_time': '07/31/84 04:31:59.123456'})
+        self.assertTrue(serializer.is_valid())
+
 
     def test_wrong_date_time_input_format(self):
         serializer = DateTimeObjectSerializer(data={'date_time': 'something wrong'})
