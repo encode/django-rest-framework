@@ -240,7 +240,9 @@ Signature and validation is the same as with `FileField`.
 ---
 
 **Note:** `FileFields` and `ImageFields` are only suitable for use with MultiPartParser, since e.g. json doesn't support file uploads.
-Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files. 
+Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
+
+---
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS

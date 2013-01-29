@@ -190,18 +190,12 @@ By default field values are treated as mapping to an attribute on the object.  I
 
 As an example, let's create a field that can be used represent the class name of the object being serialized:
 
-    class ClassNameField(serializers.WritableField):
+    class ClassNameField(serializers.Field):
         def field_to_native(self, obj, field_name):
             """
-            Serialize the object's class name, not an attribute of the object.
+            Serialize the object's class name.
             """
-            return obj.__class__.__name__
-
-        def field_from_native(self, data, field_name, into):
-            """
-            We don't want to set anything when we revert this field.
-            """
-            pass
+            return obj.__class__
 
 ---
 
