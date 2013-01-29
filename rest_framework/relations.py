@@ -148,7 +148,7 @@ class ManyRelatedMixin(object):
             value = data.getlist(self.source or field_name)
         except:
             # Non-form data
-            value = data.get(self.source or field_name)
+            value = data.get(self.source or field_name, [])
         else:
             if value == ['']:
                 value = []
