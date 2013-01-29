@@ -1,7 +1,7 @@
 import datetime
 import pickle
 from django.test import TestCase
-from rest_framework import serializers
+from rest_framework import serializers, fields
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
@@ -958,3 +958,31 @@ class NestedSerializerContextTests(TestCase):
 
         # This will raise RuntimeError if context doesn't get passed correctly to the nested Serializers
         AlbumCollectionSerializer(album_collection, context={'context_item': 'album context'}).data
+
+
+# Test for issue #467
+class FieldLabelTest(TestCase):
+    def setUp(self):
+        class LabelModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BasicModel
+
+        self.serializer_class = LabelModelSerializer
+
+    def test_label_from_model(self):
+        """
+        Validates that label and help_text are correctly copied from the model class.
+        """
+        serializer = self.serializer_class()
+        text_field = serializer.fields['text']
+
+        self.assertEquals(u'Text', text_field.label)
+        self.assertEquals(u'Text description.', text_field.help_text)
+
+    def test_field_ctor(self):
+        """
+        This is check that ctor supports both label and help_text.
+        """
+        self.assertEquals(u'Label', fields.Field(label='Label', help_text='Help').label)
+        self.assertEquals(u'Help', fields.CharField(label='Label', help_text='Help').help_text)
+        self.assertEquals(u'Label', fields.ManyHyperlinkedRelatedField(view_name='fake', label='Label', help_text='Help').label)
