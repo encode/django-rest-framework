@@ -129,8 +129,8 @@ class RelatedField(WritableField):
                 try:
                     # Form data
                     value = data.getlist(field_name)
-                    if value == ['']:
-                        value = []
+                    if value == [''] or value == []:
+                        raise KeyError
                 except AttributeError:
                     # Non-form data
                     value = data[field_name]
