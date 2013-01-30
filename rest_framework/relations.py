@@ -22,6 +22,9 @@ class RelatedField(WritableField):
     """
     widget = widgets.Select
     many_widget = widgets.SelectMultiple
+    form_field_class = forms.ChoiceField
+    many_form_field_class = forms.MultipleChoiceField
+
     cache_choices = False
     empty_label = None
     default_read_only = True  # TODO: Remove this
@@ -156,7 +159,6 @@ class PrimaryKeyRelatedField(RelatedField):
     Represents a to-one relationship as a pk value.
     """
     default_read_only = False
-    form_field_class = forms.ChoiceField
 
     default_error_messages = {
         'does_not_exist': _("Invalid pk '%s' - object does not exist."),
@@ -196,85 +198,38 @@ class PrimaryKeyRelatedField(RelatedField):
             raise ValidationError(msg)
 
     def field_to_native(self, obj, field_name):
+        if self.many:
+            # To-many relationship
+            try:
+                # Prefer obj.serializable_value for performance reasons
+                queryset = obj.serializable_value(self.source or field_name)
+            except AttributeError:
+                # RelatedManager (reverse relationship)
+                queryset = getattr(obj, self.source or field_name)
+
+            # Forward relationship
+            return [self.to_native(item.pk) for item in queryset.all()]
+
+        # To-one relationship
         try:
             # Prefer obj.serializable_value for performance reasons
             pk = obj.serializable_value(self.source or field_name)
         except AttributeError:
             # RelatedObject (reverse relationship)
             try:
-                obj = getattr(obj, self.source or field_name)
+                pk = getattr(obj, self.source or field_name).pk
             except ObjectDoesNotExist:
                 return None
-            return self.to_native(obj.pk)
+
         # Forward relationship
         return self.to_native(pk)
 
-
-class ManyRelatedField(RelatedField):
-    def __init__(self, *args, **kwargs):
-        kwargs['many'] = True
-        super(ManyRelatedField, self).__init__(*args, **kwargs)
-
-
-class ManyPrimaryKeyRelatedField(ManyRelatedField):
-    """
-    Represents a to-many relationship as a pk value.
-    """
-    default_read_only = False
-    form_field_class = forms.MultipleChoiceField
-
-    default_error_messages = {
-        'does_not_exist': _("Invalid pk '%s' - object does not exist."),
-        'incorrect_type': _('Incorrect type.  Expected pk value, received %s.'),
-    }
-
-    def prepare_value(self, obj):
-        return self.to_native(obj.pk)
-
-    def label_from_instance(self, obj):
-        """
-        Return a readable representation for use with eg. select widgets.
-        """
-        desc = smart_unicode(obj)
-        ident = smart_unicode(self.to_native(obj.pk))
-        if desc == ident:
-            return desc
-        return "%s - %s" % (desc, ident)
-
-    def to_native(self, pk):
-        return pk
-
-    def field_to_native(self, obj, field_name):
-        try:
-            # Prefer obj.serializable_value for performance reasons
-            queryset = obj.serializable_value(self.source or field_name)
-        except AttributeError:
-            # RelatedManager (reverse relationship)
-            queryset = getattr(obj, self.source or field_name)
-            return [self.to_native(item.pk) for item in queryset.all()]
-        # Forward relationship
-        return [self.to_native(item.pk) for item in queryset.all()]
-
-    def from_native(self, data):
-        if self.queryset is None:
-            raise Exception('Writable related fields must include a `queryset` argument')
-
-        try:
-            return self.queryset.get(pk=data)
-        except ObjectDoesNotExist:
-            msg = self.error_messages['does_not_exist'] % smart_unicode(data)
-            raise ValidationError(msg)
-        except (TypeError, ValueError):
-            received = type(data).__name__
-            msg = self.error_messages['incorrect_type'] % received
-            raise ValidationError(msg)
 
 ### Slug relationships
 
 
 class SlugRelatedField(RelatedField):
     default_read_only = False
-    form_field_class = forms.ChoiceField
 
     default_error_messages = {
         'does_not_exist': _("Object with %s=%s does not exist."),
@@ -313,7 +268,6 @@ class HyperlinkedRelatedField(RelatedField):
     slug_field = 'slug'
     slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
     default_read_only = False
-    form_field_class = forms.ChoiceField
 
     default_error_messages = {
         'no_match': _('Invalid hyperlink - No URL match'),
@@ -494,7 +448,16 @@ class HyperlinkedIdentityField(Field):
 
 ### Old-style many classes for backwards compat
 
+class ManyRelatedField(RelatedField):
+    def __init__(self, *args, **kwargs):
+        kwargs['many'] = True
+        super(ManyRelatedField, self).__init__(*args, **kwargs)
 
+
+class ManyPrimaryKeyRelatedField(PrimaryKeyRelatedField):
+    def __init__(self, *args, **kwargs):
+        kwargs['many'] = True
+        super(ManyPrimaryKeyRelatedField, self).__init__(*args, **kwargs)
 
 
 class ManySlugRelatedField(SlugRelatedField):

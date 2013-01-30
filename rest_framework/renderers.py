@@ -332,7 +332,11 @@ class BrowsableAPIRenderer(BaseRenderer):
 
             kwargs['label'] = k
 
-            fields[k] = v.form_field_class(**kwargs)
+            if getattr(v, 'many', None):
+                fields[k] = v.many_form_field_class(**kwargs)
+            else:
+                fields[k] = v.form_field_class(**kwargs)
+
         return fields
 
     def get_form(self, view, method, request):
