@@ -29,6 +29,7 @@ You can determine your currently installed version using `pip freeze`:
 ### Master
 
 * Bugfix: Fix styling on browsable API login.
+* Bugfix: Fix issue with deserializing empty to-many relations.
 * Bugfix: Ensure model field validation is still applied for ModelSerializer subclasses with an custom `.restore_object()` method.
 
 ### 2.1.17
