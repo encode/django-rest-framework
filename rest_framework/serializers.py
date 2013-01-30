@@ -95,15 +95,19 @@ class SerializerOptions(object):
 
 
 class BaseSerializer(Field):
+    """
+    This is the Serializer implementation.
+    We need to implement it as `BaseSerializer` due to metaclass magicks.
+    """
     class Meta(object):
         pass
 
     _options_class = SerializerOptions
-    _dict_class = SortedDictWithMetadata  # Set to unsorted dict for backwards compatibility with unsorted implementations.
+    _dict_class = SortedDictWithMetadata
 
     def __init__(self, instance=None, data=None, files=None,
-                 context=None, partial=False, **kwargs):
-        super(BaseSerializer, self).__init__(**kwargs)
+                 context=None, partial=False, source=None):
+        super(BaseSerializer, self).__init__(source=source)
         self.opts = self._options_class(self.Meta)
         self.parent = None
         self.root = None
@@ -347,6 +351,9 @@ class BaseSerializer(Field):
 
     @property
     def data(self):
+        """
+        Returns the serialized data on the serializer.
+        """
         if self._data is None:
             self._data = self.to_native(self.object)
         return self._data
