@@ -177,7 +177,7 @@ If successfully authenticated, `SessionAuthentication` provides the following cr
 
 Unauthenticated responses that are denied permission will result in an `HTTP 403 Forbidden` response.
 
-If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
+If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `PATCH`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
 
 # Custom authentication
 
@@ -190,9 +190,27 @@ Typically the approach you should take is:
 * If authentication is not attempted, return `None`.  Any other authentication schemes also in use will still be checked.
 * If authentication is attempted but fails, raise a `AuthenticationFailed` exception.  An error response will be returned immediately, without checking any other authentication schemes.
 
-You *may* also override the `.authentication_header(self, request)` method.  If implemented, it should return a string that will be used as the value of the `WWW-Authenticate` header in a `HTTP 401 Unauthorized` response.
+You *may* also override the `.authenticate_header(self, request)` method.  If implemented, it should return a string that will be used as the value of the `WWW-Authenticate` header in a `HTTP 401 Unauthorized` response.
 
-If the `.authentication_header()` method is not overridden, the authentication scheme will return `HTTP 403 Forbidden` responses when an unauthenticated request is denied access.
+If the `.authenticate_header()` method is not overridden, the authentication scheme will return `HTTP 403 Forbidden` responses when an unauthenticated request is denied access.
+
+## Example
+
+The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X_USERNAME'.
+
+    class ExampleAuthentication(authentication.BaseAuthentication):
+        def has_permission(self, request, view, obj=None):
+            username = request.META.get('X_USERNAME')
+            if not username:
+                return None
+
+            try:
+                user = User.objects.get(username=username)
+            except User.DoesNotExist:
+                raise authenticate.AuthenticationFailed('No such user')
+            
+            return (user, None)
+                
 
 [cite]: http://jacobian.org/writing/rest-worst-practices/
 [http401]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2

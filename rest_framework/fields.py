@@ -32,6 +32,7 @@ class Field(object):
     creation_counter = 0
     empty = ''
     type_name = None
+    partial = False
     _use_files = None
     form_field_class = forms.CharField
 
@@ -53,7 +54,8 @@ class Field(object):
         self.parent = parent
         self.root = parent.root or parent
         self.context = self.root.context
-        if self.root.partial:
+        self.partial = self.root.partial
+        if self.partial:
             self.required = False
 
     def field_from_native(self, data, files, field_name, into):
@@ -186,7 +188,7 @@ class WritableField(Field):
             else:
                 native = data[field_name]
         except KeyError:
-            if self.default is not None and not self.root.partial:
+            if self.default is not None and not self.partial:
                 # Note: partial updates shouldn't set defaults
                 native = self.default
             else:

@@ -4,7 +4,7 @@
 
 This tutorial will cover creating a simple pastebin code highlighting Web API. Along the way it will introduce the various components that make up REST framework, and give you a comprehensive understanding of how everything fits together.
 
-The tutorial is fairly in-depth, so you should probably get a cookie and a cup of your favorite brew before getting started.<!--  If you just want a quick overview, you should head over to the [quickstart] documentation instead. -->
+The tutorial is fairly in-depth, so you should probably get a cookie and a cup of your favorite brew before getting started.  If you just want a quick overview, you should head over to the [quickstart] documentation instead.
 
 ---
 
@@ -130,11 +130,11 @@ The first thing we need to get started on our Web API is provide a way of serial
             """
             if instance:
                 # Update existing instance
-                instance.title = attrs['title']
-                instance.code = attrs['code']
-                instance.linenos = attrs['linenos']
-                instance.language = attrs['language']
-                instance.style = attrs['style']
+                instance.title = attrs.get('title', instance.title)
+                instance.code = attrs.get('code', instance.code)
+                instance.linenos = attrs.get('linenos', instance.linenos)
+                instance.language = attrs.get('language', instance.language)
+                instance.style = attrs.get('style', instance.style)
                 return instance
 
             # Create new instance

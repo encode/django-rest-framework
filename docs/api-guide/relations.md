@@ -67,7 +67,7 @@ For example, given the following models:
 And a model serializer defined like this:
 
     class BookmarkSerializer(serializers.ModelSerializer):
-        tags = serializers.ManyRelatedField(source='tags')
+        tags = serializers.ManyRelatedField()
 
         class Meta:
             model = Bookmark

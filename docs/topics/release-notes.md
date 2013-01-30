@@ -12,9 +12,25 @@ Medium version numbers (0.x.0) may include minor API changes.  You should read t
 
 Major version numbers (x.0.0) are reserved for project milestones.  No major point releases are currently planned.
 
+## Upgrading
+
+To upgrade Django REST framework to the latest version, use pip:
+
+    pip install -U djangorestframework
+
+You can determine your currently installed version using `pip freeze`:
+
+    pip freeze | grep djangorestframework
+
 ---
 
 ## 2.1.x series
+
+### Master
+
+* Bugfix: Fix styling on browsable API login.
+* Bugfix: Fix issue with deserializing empty to-many relations.
+* Bugfix: Ensure model field validation is still applied for ModelSerializer subclasses with an custom `.restore_object()` method.
 
 ### 2.1.17
 

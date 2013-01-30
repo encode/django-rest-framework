@@ -17,8 +17,7 @@ class RelatedField(WritableField):
     """
     Base class for related model fields.
 
-    If not overridden, this represents a to-one relationship, using the unicode
-    representation of the target.
+    This represents a relationship using the unicode representation of the target.
     """
     widget = widgets.Select
     many_widget = widgets.SelectMultiple
@@ -31,13 +30,18 @@ class RelatedField(WritableField):
     many = False
 
     def __init__(self, *args, **kwargs):
+
+        # 'null' will be deprecated in favor of 'required'
+        if 'null' in kwargs:
+            kwargs['required'] = not kwargs.pop('null')
+
         self.queryset = kwargs.pop('queryset', None)
-        self.null = kwargs.pop('null', False)
         self.many = kwargs.pop('many', self.many)
         super(RelatedField, self).__init__(*args, **kwargs)
         self.read_only = kwargs.pop('read_only', self.default_read_only)
         if self.many:
             self.widget = self.many_widget
+            self.form_field_class = self.many_form_field_class
 
     def initialize(self, parent, field_name):
         super(RelatedField, self).initialize(parent, field_name)
@@ -55,11 +59,6 @@ class RelatedField(WritableField):
                 raise Exception(msg)
 
     ### We need this stuff to make form choices work...
-
-    # def __deepcopy__(self, memo):
-    #     result = super(RelatedField, self).__deepcopy__(memo)
-    #     result.queryset = result.queryset
-    #     return result
 
     def prepare_value(self, obj):
         return self.to_native(obj)
@@ -138,13 +137,13 @@ class RelatedField(WritableField):
             else:
                 value = data[field_name]
         except KeyError:
-            if self.required:
-                raise ValidationError(self.error_messages['required'])
-            return
+            if self.partial:
+                return
+            value = [] if self.many else None
 
-        if value in (None, '') and not self.null:
-            raise ValidationError('Value may not be null')
-        elif value in (None, '') and self.null:
+        if value in (None, '') and self.required:
+            raise ValidationError(self.error_messages['required'])
+        elif value in (None, ''):
             into[(self.source or field_name)] = None
         elif self.many:
             into[(self.source or field_name)] = [self.from_native(item) for item in value]
@@ -156,7 +155,7 @@ class RelatedField(WritableField):
 
 class PrimaryKeyRelatedField(RelatedField):
     """
-    Represents a to-one relationship as a pk value.
+    Represents a relationship as a pk value.
     """
     default_read_only = False
 
@@ -229,6 +228,9 @@ class PrimaryKeyRelatedField(RelatedField):
 
 
 class SlugRelatedField(RelatedField):
+    """
+    Represents a relationship using a unique field on the target.
+    """
     default_read_only = False
 
     default_error_messages = {
@@ -262,7 +264,7 @@ class SlugRelatedField(RelatedField):
 
 class HyperlinkedRelatedField(RelatedField):
     """
-    Represents a to-one relationship, using hyperlinking.
+    Represents a relationship using hyperlinking.
     """
     pk_url_kwarg = 'pk'
     slug_field = 'slug'

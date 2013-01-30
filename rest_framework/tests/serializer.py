@@ -55,6 +55,19 @@ class ActionItemSerializer(serializers.ModelSerializer):
         model = ActionItem
 
 
+class ActionItemSerializerCustomRestore(serializers.ModelSerializer):
+
+    class Meta:
+        model = ActionItem
+
+    def restore_object(self, data, instance=None):
+        if instance is None:
+            return ActionItem(**data)
+        for key, val in data.items():
+            setattr(instance, key, val)
+        return instance
+
+
 class PersonSerializer(serializers.ModelSerializer):
     info = serializers.Field(source='info')
 
@@ -271,6 +284,20 @@ class ValidationTests(TestCase):
             'title': 'x' * 201,
         }
         serializer = ActionItemSerializer(data=data)
+        self.assertEquals(serializer.is_valid(), False)
+        self.assertEquals(serializer.errors, {'title': [u'Ensure this value has at most 200 characters (it has 201).']})
+
+    def test_modelserializer_max_length_exceeded_with_custom_restore(self):
+        """
+        When overriding ModelSerializer.restore_object, validation tests should still apply.
+        Regression test for #623.
+
+        https://github.com/tomchristie/django-rest-framework/pull/623
+        """
+        data = {
+            'title': 'x' * 201,
+        }
+        serializer = ActionItemSerializerCustomRestore(data=data)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'title': [u'Ensure this value has at most 200 characters (it has 201).']})
 

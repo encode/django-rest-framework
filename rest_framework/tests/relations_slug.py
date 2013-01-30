@@ -149,7 +149,7 @@ class PKForeignKeyTests(TestCase):
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'target': [u'Value may not be null']})
+        self.assertEquals(serializer.errors, {'target': [u'This field is required.']})
 
 
 class SlugNullableForeignKeyTests(TestCase):

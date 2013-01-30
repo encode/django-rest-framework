@@ -80,7 +80,7 @@ Renders the request data into `JSONP`.  The `JSONP` media type provides a mechan
 
 The javascript callback function must be set by the client including a `callback` URL query parameter.  For example `http://example.com/api/users?callback=jsonpCallback`.  If the callback function is not explicitly set by the client it will default to `'callback'`.
 
-**Note**: If you require cross-domain AJAX requests, you may also want to consider using [CORS] as an alternative to `JSONP`.
+**Note**: If you require cross-domain AJAX requests, you may want to consider using the more modern approach of [CORS][cors] as an alternative to `JSONP`.  See the [CORS documentation][cors-docs] for more details.
 
 **.media_type**: `application/javascript`
 
@@ -288,7 +288,8 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
-[CORS]: http://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+[cors]: http://www.w3.org/TR/cors/
+[cors-docs]: ../topics/ajax-csrf-cors.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas
 [quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [application/vnd.github+json]: http://developer.github.com/v3/media/
