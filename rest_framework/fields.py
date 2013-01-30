@@ -325,7 +325,8 @@ class ChoiceField(WritableField):
     form_field_class = forms.ChoiceField
     widget = widgets.Select
     default_error_messages = {
-        'invalid_choice': _('Select a valid choice. %(value)s is not one of the available choices.'),
+        'invalid_choice': _('Select a valid choice. %(value)s is not one of '
+                            'the available choices.'),
     }
 
     def __init__(self, choices=(), *args, **kwargs):
@@ -612,7 +613,8 @@ class ImageField(FileField):
     form_field_class = forms.ImageField
 
     default_error_messages = {
-        'invalid_image': _("Upload a valid image. The file you uploaded was either not an image or a corrupted image."),
+        'invalid_image': _("Upload a valid image. The file you uploaded was "
+                           "either not an image or a corrupted image."),
     }
 
     def from_native(self, data):
