@@ -13,8 +13,8 @@ from django import forms
 from django.forms import widgets
 from django.utils.encoding import is_protected_type, smart_unicode
 from django.utils.translation import ugettext_lazy as _
-from rest_framework.compat import parse_date, parse_datetime
 from rest_framework.compat import timezone
+from rest_framework.utils.dates import get_readable_date_format
 
 
 def is_simple_callable(obj):
@@ -429,6 +429,10 @@ class DateField(WritableField):
     }
     empty = None
 
+    def __init__(self, *args, **kwargs):
+        self.format = kwargs.pop('format', settings.DATE_INPUT_FORMATS)
+        super(DateField, self).__init__(*args, **kwargs)
+
     def from_native(self, value):
         if value in validators.EMPTY_VALUES:
             return None
@@ -443,7 +447,7 @@ class DateField(WritableField):
         if isinstance(value, datetime.date):
             return value
 
-        for format in settings.DATE_INPUT_FORMATS:
+        for format in self.format:
             try:
                 parsed = datetime.datetime.strptime(value, format)
             except ValueError:
@@ -451,12 +455,8 @@ class DateField(WritableField):
             else:
                 return parsed.date()
 
-        formats = '; '.join(settings.DATE_INPUT_FORMATS)
-        mapping = [("%Y", "YYYY"), ("%y", "YY"), ("%m", "MM"), ("%b", "[Jan through Dec]"),
-                   ("%B", "[January through December]"), ("%d", "DD"), ("%H", "HH"), ("%M", "MM"), ("%S", "SS")]
-        for k, v in mapping:
-            formats = formats.replace(k, v)
-        msg = self.error_messages['invalid'] % formats
+        date_input_formats = '; '.join(self.format)
+        msg = self.error_messages['invalid'] % get_readable_date_format(date_input_formats)
         raise ValidationError(msg)
 
 
@@ -469,6 +469,10 @@ class DateTimeField(WritableField):
         'invalid': _(u"Datetime has wrong format. Use one of these formats instead: %s"),
     }
     empty = None
+
+    def __init__(self, *args, **kwargs):
+        self.format = kwargs.pop('format', settings.DATETIME_INPUT_FORMATS)
+        super(DateTimeField, self).__init__(*args, **kwargs)
 
     def from_native(self, value):
         if value in validators.EMPTY_VALUES:
@@ -490,7 +494,7 @@ class DateTimeField(WritableField):
                 value = timezone.make_aware(value, default_timezone)
             return value
 
-        for format in settings.DATETIME_INPUT_FORMATS:
+        for format in self.format:
             try:
                 parsed = datetime.datetime.strptime(value, format)
             except ValueError:
@@ -498,12 +502,8 @@ class DateTimeField(WritableField):
             else:
                 return parsed
 
-        formats = '; '.join(settings.DATETIME_INPUT_FORMATS)
-        mapping = [("%Y", "YYYY"), ("%y", "YY"), ("%m", "MM"), ("%d", "DD"),
-                   ("%H", "HH"), ("%M", "MM"), ("%S", "SS"), ("%f", "uuuuuu")]
-        for k, v in mapping:
-            formats = formats.replace(k, v)
-        msg = self.error_messages['invalid'] % formats
+        datetime_input_formats = '; '.join(self.format)
+        msg = self.error_messages['invalid'] % get_readable_date_format(datetime_input_formats)
         raise ValidationError(msg)
 
 
