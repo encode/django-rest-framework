@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework.fields import Field, WritableField
 from rest_framework.reverse import reverse
 from urlparse import urlparse
+import warnings
 
 ##### Relational fields #####
 
@@ -26,22 +27,26 @@ class RelatedField(WritableField):
 
     cache_choices = False
     empty_label = None
-    default_read_only = True  # TODO: Remove this
+    read_only = True
     many = False
 
     def __init__(self, *args, **kwargs):
 
-        # 'null' will be deprecated in favor of 'required'
+        # 'null' is to be deprecated in favor of 'required'
         if 'null' in kwargs:
+            warnings.warn('The `null` keyword argument is due to be deprecated. '
+                          'Use the `required` keyword argument instead.',
+                          PendingDeprecationWarning, stacklevel=2)
             kwargs['required'] = not kwargs.pop('null')
 
         self.queryset = kwargs.pop('queryset', None)
         self.many = kwargs.pop('many', self.many)
-        super(RelatedField, self).__init__(*args, **kwargs)
-        self.read_only = kwargs.pop('read_only', self.default_read_only)
         if self.many:
             self.widget = self.many_widget
             self.form_field_class = self.many_form_field_class
+
+        kwargs['read_only'] = kwargs.pop('read_only', self.read_only)
+        super(RelatedField, self).__init__(*args, **kwargs)
 
     def initialize(self, parent, field_name):
         super(RelatedField, self).initialize(parent, field_name)
@@ -157,7 +162,7 @@ class PrimaryKeyRelatedField(RelatedField):
     """
     Represents a relationship as a pk value.
     """
-    default_read_only = False
+    read_only = False
 
     default_error_messages = {
         'does_not_exist': _("Invalid pk '%s' - object does not exist."),
@@ -231,7 +236,7 @@ class SlugRelatedField(RelatedField):
     """
     Represents a relationship using a unique field on the target.
     """
-    default_read_only = False
+    read_only = False
 
     default_error_messages = {
         'does_not_exist': _("Object with %s=%s does not exist."),
@@ -269,7 +274,7 @@ class HyperlinkedRelatedField(RelatedField):
     pk_url_kwarg = 'pk'
     slug_field = 'slug'
     slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
-    default_read_only = False
+    read_only = False
 
     default_error_messages = {
         'no_match': _('Invalid hyperlink - No URL match'),
@@ -390,6 +395,7 @@ class HyperlinkedIdentityField(Field):
     pk_url_kwarg = 'pk'
     slug_field = 'slug'
     slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
+    read_only = True
 
     def __init__(self, *args, **kwargs):
         # TODO: Make view_name mandatory, and have the
@@ -452,23 +458,35 @@ class HyperlinkedIdentityField(Field):
 
 class ManyRelatedField(RelatedField):
     def __init__(self, *args, **kwargs):
+        warnings.warn('`ManyRelatedField()` is due to be deprecated. '
+                      'Use `RelatedField(many=True)` instead.',
+                       PendingDeprecationWarning, stacklevel=2)
         kwargs['many'] = True
         super(ManyRelatedField, self).__init__(*args, **kwargs)
 
 
 class ManyPrimaryKeyRelatedField(PrimaryKeyRelatedField):
     def __init__(self, *args, **kwargs):
+        warnings.warn('`ManyPrimaryKeyRelatedField()` is due to be deprecated. '
+                      'Use `PrimaryKeyRelatedField(many=True)` instead.',
+                       PendingDeprecationWarning, stacklevel=2)
         kwargs['many'] = True
         super(ManyPrimaryKeyRelatedField, self).__init__(*args, **kwargs)
 
 
 class ManySlugRelatedField(SlugRelatedField):
     def __init__(self, *args, **kwargs):
+        warnings.warn('`ManySlugRelatedField()` is due to be deprecated. '
+                      'Use `SlugRelatedField(many=True)` instead.',
+                       PendingDeprecationWarning, stacklevel=2)
         kwargs['many'] = True
         super(ManySlugRelatedField, self).__init__(*args, **kwargs)
 
 
 class ManyHyperlinkedRelatedField(HyperlinkedRelatedField):
     def __init__(self, *args, **kwargs):
+        warnings.warn('`ManyHyperlinkedRelatedField()` is due to be deprecated. '
+                      'Use `HyperlinkedRelatedField(many=True)` instead.',
+                       PendingDeprecationWarning, stacklevel=2)
         kwargs['many'] = True
         super(ManyHyperlinkedRelatedField, self).__init__(*args, **kwargs)

@@ -33,7 +33,7 @@ class Field(object):
     empty = ''
     type_name = None
     partial = False
-    _use_files = None
+    use_files = False
     form_field_class = forms.CharField
 
     def __init__(self, source=None):
@@ -126,6 +126,13 @@ class WritableField(Field):
                  validators=[], error_messages=None, widget=None,
                  default=None, blank=None):
 
+        # 'blank' is to be deprecated in favor of 'required'
+        if blank is not None:
+            warnings.warn('The `blank` keyword argument is due to deprecated. '
+                          'Use the `required` keyword argument instead.',
+                          PendingDeprecationWarning, stacklevel=2)
+            required = not(blank)
+
         super(WritableField, self).__init__(source=source)
 
         self.read_only = read_only
@@ -143,7 +150,6 @@ class WritableField(Field):
 
         self.validators = self.default_validators + validators
         self.default = default if default is not None else self.default
-        self.blank = blank
 
         # Widgets are ony used for HTML forms.
         widget = widget or self.widget
@@ -182,7 +188,7 @@ class WritableField(Field):
             return
 
         try:
-            if self._use_files:
+            if self.use_files:
                 files = files or {}
                 native = files[field_name]
             else:
@@ -288,16 +294,6 @@ class CharField(WritableField):
             self.validators.append(validators.MinLengthValidator(min_length))
         if max_length is not None:
             self.validators.append(validators.MaxLengthValidator(max_length))
-
-    def validate(self, value):
-        """
-        Validates that the value is supplied (if required).
-        """
-        # if empty string and allow blank
-        if self.blank and not value:
-            return
-        else:
-            super(CharField, self).validate(value)
 
     def from_native(self, value):
         if isinstance(value, basestring) or value is None:
@@ -567,7 +563,7 @@ class FloatField(WritableField):
 
 
 class FileField(WritableField):
-    _use_files = True
+    use_files = True
     type_name = 'FileField'
     form_field_class = forms.FileField
     widget = widgets.FileInput
@@ -611,7 +607,7 @@ class FileField(WritableField):
 
 
 class ImageField(FileField):
-    _use_files = True
+    use_files = True
     form_field_class = forms.ImageField
 
     default_error_messages = {
