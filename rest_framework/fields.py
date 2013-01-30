@@ -13,8 +13,8 @@ from django import forms
 from django.forms import widgets
 from django.utils.encoding import is_protected_type, smart_unicode
 from django.utils.translation import ugettext_lazy as _
-from rest_framework.compat import parse_date, parse_datetime
 from rest_framework.compat import timezone
+from rest_framework.utils.dates import get_readable_date_format
 
 
 def is_simple_callable(obj):
@@ -425,12 +425,13 @@ class DateField(WritableField):
     form_field_class = forms.DateField
 
     default_error_messages = {
-        'invalid': _(u"'%s' value has an invalid date format. It must be "
-                     u"in YYYY-MM-DD format."),
-        'invalid_date': _(u"'%s' value has the correct format (YYYY-MM-DD) "
-                          u"but it is an invalid date."),
+        'invalid': _(u"Date has wrong format. Use one of these formats instead: %s"),
     }
     empty = None
+
+    def __init__(self, *args, **kwargs):
+        self.format = kwargs.pop('format', settings.DATE_INPUT_FORMATS)
+        super(DateField, self).__init__(*args, **kwargs)
 
     def from_native(self, value):
         if value in validators.EMPTY_VALUES:
@@ -446,15 +447,16 @@ class DateField(WritableField):
         if isinstance(value, datetime.date):
             return value
 
-        try:
-            parsed = parse_date(value)
-            if parsed is not None:
-                return parsed
-        except ValueError:
-            msg = self.error_messages['invalid_date'] % value
-            raise ValidationError(msg)
+        for format in self.format:
+            try:
+                parsed = datetime.datetime.strptime(value, format)
+            except ValueError:
+                pass
+            else:
+                return parsed.date()
 
-        msg = self.error_messages['invalid'] % value
+        date_input_formats = '; '.join(self.format)
+        msg = self.error_messages['invalid'] % get_readable_date_format(date_input_formats)
         raise ValidationError(msg)
 
 
@@ -464,15 +466,13 @@ class DateTimeField(WritableField):
     form_field_class = forms.DateTimeField
 
     default_error_messages = {
-        'invalid': _(u"'%s' value has an invalid format. It must be in "
-                     u"YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ] format."),
-        'invalid_date': _(u"'%s' value has the correct format "
-                          u"(YYYY-MM-DD) but it is an invalid date."),
-        'invalid_datetime': _(u"'%s' value has the correct format "
-                              u"(YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]) "
-                              u"but it is an invalid date/time."),
+        'invalid': _(u"Datetime has wrong format. Use one of these formats instead: %s"),
     }
     empty = None
+
+    def __init__(self, *args, **kwargs):
+        self.format = kwargs.pop('format', settings.DATETIME_INPUT_FORMATS)
+        super(DateTimeField, self).__init__(*args, **kwargs)
 
     def from_native(self, value):
         if value in validators.EMPTY_VALUES:
@@ -494,23 +494,16 @@ class DateTimeField(WritableField):
                 value = timezone.make_aware(value, default_timezone)
             return value
 
-        try:
-            parsed = parse_datetime(value)
-            if parsed is not None:
+        for format in self.format:
+            try:
+                parsed = datetime.datetime.strptime(value, format)
+            except ValueError:
+                pass
+            else:
                 return parsed
-        except ValueError:
-            msg = self.error_messages['invalid_datetime'] % value
-            raise ValidationError(msg)
 
-        try:
-            parsed = parse_date(value)
-            if parsed is not None:
-                return datetime.datetime(parsed.year, parsed.month, parsed.day)
-        except ValueError:
-            msg = self.error_messages['invalid_date'] % value
-            raise ValidationError(msg)
-
-        msg = self.error_messages['invalid'] % value
+        datetime_input_formats = '; '.join(self.format)
+        msg = self.error_messages['invalid'] % get_readable_date_format(datetime_input_formats)
         raise ValidationError(msg)
 
 

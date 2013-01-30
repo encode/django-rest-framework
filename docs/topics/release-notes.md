@@ -28,6 +28,8 @@ You can determine your currently installed version using `pip freeze`:
 
 ### Master
 
+* Support `DATE_INPUT_FORMATS` for `DateField` validation
+* Support `DATETIME_INPUT_FORMATS` for `DateTimeField` validation
 * Bugfix: Fix styling on browsable API login.
 * Bugfix: Fix issue with deserializing empty to-many relations.
 * Bugfix: Ensure model field validation is still applied for ModelSerializer subclasses with an custom `.restore_object()` method.
