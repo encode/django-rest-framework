@@ -106,12 +106,13 @@ class BaseSerializer(Field):
     _dict_class = SortedDictWithMetadata
 
     def __init__(self, instance=None, data=None, files=None,
-                 context=None, partial=False, source=None):
+                 context=None, partial=False, many=None, source=None):
         super(BaseSerializer, self).__init__(source=source)
         self.opts = self._options_class(self.Meta)
         self.parent = None
         self.root = None
         self.partial = partial
+        self.many = many
 
         self.context = context or {}
 
@@ -191,22 +192,6 @@ class BaseSerializer(Field):
         """
         return field_name
 
-    def convert_object(self, obj):
-        """
-        Core of serialization.
-        Convert an object into a dictionary of serialized field values.
-        """
-        ret = self._dict_class()
-        ret.fields = {}
-
-        for field_name, field in self.fields.items():
-            field.initialize(parent=self, field_name=field_name)
-            key = self.get_field_key(field_name)
-            value = field.field_to_native(obj, field_name)
-            ret[key] = value
-            ret.fields[key] = field
-        return ret
-
     def restore_fields(self, data, files):
         """
         Core of deserialization, together with `restore_object`.
@@ -278,22 +263,21 @@ class BaseSerializer(Field):
         """
         Serialize objects -> primitives.
         """
-        # Note: At the moment we have an ugly hack to determine if we should
-        # walk over iterables.  At some point, serializers will require an
-        # explicit `many=True` in order to iterate over a set, and this hack
-        # will disappear.
-        if hasattr(obj, '__iter__') and not isinstance(obj, Page):
-            return [self.convert_object(item) for item in obj]
-        return self.convert_object(obj)
+        ret = self._dict_class()
+        ret.fields = {}
+
+        for field_name, field in self.fields.items():
+            field.initialize(parent=self, field_name=field_name)
+            key = self.get_field_key(field_name)
+            value = field.field_to_native(obj, field_name)
+            ret[key] = value
+            ret.fields[key] = field
+        return ret
 
     def from_native(self, data, files):
         """
         Deserialize primitives -> objects.
         """
-        if hasattr(data, '__iter__') and not isinstance(data, dict):
-            # TODO: error data when deserializing lists
-            return [self.from_native(item, None) for item in data]
-
         self._errors = {}
         if data is not None or files is not None:
             attrs = self.restore_fields(data, files)
@@ -332,6 +316,13 @@ class BaseSerializer(Field):
         if obj is None:
             return None
 
+        if self.many is not None:
+            many = self.many
+        else:
+            many = hasattr(obj, '__iter__') and not isinstance(obj, Page)
+
+        if many:
+            return [self.to_native(item) for item in obj]
         return self.to_native(obj)
 
     @property
@@ -341,9 +332,20 @@ class BaseSerializer(Field):
         setting self.object if no errors occurred.
         """
         if self._errors is None:
-            obj = self.from_native(self.init_data, self.init_files)
+            data, files = self.init_data, self.init_files
+
+            if self.many is not None:
+                many = self.many
+            else:
+                many = hasattr(data, '__iter__') and not isinstance(data, dict)
+
+            # TODO: error data when deserializing lists
+            if many:
+                ret = [self.from_native(item, None) for item in data]
+            ret = self.from_native(data, files)
+
             if not self._errors:
-                self.object = obj
+                self.object = ret
         return self._errors
 
     def is_valid(self):
@@ -355,7 +357,18 @@ class BaseSerializer(Field):
         Returns the serialized data on the serializer.
         """
         if self._data is None:
-            self._data = self.to_native(self.object)
+            obj = self.object
+
+            if self.many is not None:
+                many = self.many
+            else:
+                many = hasattr(obj, '__iter__') and not isinstance(obj, Page)
+
+            if many:
+                self._data = [self.to_native(item) for item in obj]
+            else:
+                self._data = self.to_native(obj)
+
         return self._data
 
     def save(self):
@@ -607,6 +620,8 @@ class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
 
 class HyperlinkedModelSerializer(ModelSerializer):
     """
+    A subclass of ModelSerializer that uses hyperlinked relationships,
+    instead of primary key relationships.
     """
     _options_class = HyperlinkedModelSerializerOptions
     _default_view_name = '%(model_name)s-detail'
