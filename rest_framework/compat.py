@@ -7,11 +7,11 @@ from __future__ import unicode_literals
 
 import django
 
-# Try to import six from Django, fallback to six itself (1.3.x)
+# Try to import six from Django, fallback to included `six`.
 try:
     from django.utils import six
 except:
-    import six
+    from rest_framework import six
 
 # location of patterns, url, include changes in 1.4 onwards
 try:
