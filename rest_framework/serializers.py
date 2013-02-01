@@ -212,7 +212,7 @@ class BaseSerializer(Field):
         reverted_data = {}
 
         if data is not None and not isinstance(data, dict):
-            self._errors['non_field_errors'] = [u'Invalid data']
+            self._errors['non_field_errors'] = ['Invalid data']
             return None
 
         for field_name, field in self.fields.items():
@@ -287,7 +287,7 @@ class BaseSerializer(Field):
         """
         Deserialize primitives -> objects.
         """
-        if hasattr(data, '__iter__') and not isinstance(data, dict):
+        if hasattr(data, '__iter__') and not isinstance(data, (dict, six.text_type)):
             # TODO: error data when deserializing lists
             return [self.from_native(item, None) for item in data]
 
@@ -525,7 +525,7 @@ class ModelSerializer(Serializer):
         """
         try:
             instance.full_clean(exclude=self.get_validation_exclusions())
-        except ValidationError, err:
+        except ValidationError as err:
             self._errors = err.message_dict
             return None
         return instance

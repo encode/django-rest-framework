@@ -218,11 +218,11 @@ class HyperlinkedForeignKeyTests(TestCase):
         self.assertEquals(serializer.data, expected)
 
     def test_foreign_key_update_incorrect_type(self):
-        data = {'url': '/foreignkeysource/1/', 'name': u'source-1', 'target': 2}
+        data = {'url': '/foreignkeysource/1/', 'name': 'source-1', 'target': 2}
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'target': [u'Incorrect type.  Expected url string, received int.']})
+        self.assertEquals(serializer.errors, {'target': ['Incorrect type.  Expected url string, received int.']})
 
     def test_reverse_foreign_key_update(self):
         data = {'url': '/foreignkeytarget/2/', 'name': 'target-2', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']}
@@ -439,7 +439,7 @@ class HyperlinkedNullableOneToOneTests(TestCase):
         queryset = OneToOneTarget.objects.all()
         serializer = NullableOneToOneTargetSerializer(queryset)
         expected = [
-            {'url': '/onetoonetarget/1/', 'name': u'target-1', 'nullable_source': '/nullableonetoonesource/1/'},
-            {'url': '/onetoonetarget/2/', 'name': u'target-2', 'nullable_source': None},
+            {'url': '/onetoonetarget/1/', 'name': 'target-1', 'nullable_source': '/nullableonetoonesource/1/'},
+            {'url': '/onetoonetarget/2/', 'name': 'target-2', 'nullable_source': None},
         ]
         self.assertEquals(serializer.data, expected)

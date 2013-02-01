@@ -198,11 +198,11 @@ class PKForeignKeyTests(TestCase):
         self.assertEquals(serializer.data, expected)
 
     def test_foreign_key_update_incorrect_type(self):
-        data = {'id': 1, 'name': u'source-1', 'target': 'foo'}
+        data = {'id': 1, 'name': 'source-1', 'target': 'foo'}
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'target': [u'Incorrect type.  Expected pk value, received str.']})
+        self.assertEquals(serializer.errors, {'target': ['Incorrect type.  Expected pk value, received str.']})
 
     def test_reverse_foreign_key_update(self):
         data = {'id': 2, 'name': 'target-2', 'sources': [1, 3]}
@@ -415,7 +415,7 @@ class PKNullableOneToOneTests(TestCase):
         queryset = OneToOneTarget.objects.all()
         serializer = NullableOneToOneTargetSerializer(queryset)
         expected = [
-            {'id': 1, 'name': u'target-1', 'nullable_source': 1},
-            {'id': 2, 'name': u'target-2', 'nullable_source': None},
+            {'id': 1, 'name': 'target-1', 'nullable_source': 1},
+            {'id': 2, 'name': 'target-2', 'nullable_source': None},
         ]
         self.assertEquals(serializer.data, expected)

@@ -109,7 +109,7 @@ class NestedNullableOneToOneTests(TestCase):
         queryset = OneToOneTarget.objects.all()
         serializer = NullableOneToOneTargetSerializer(queryset)
         expected = [
-            {'id': 1, 'name': u'target-1', 'nullable_source': {'id': 1, 'name': u'source-1', 'target': 1}},
-            {'id': 2, 'name': u'target-2', 'nullable_source': None},
+            {'id': 1, 'name': 'target-1', 'nullable_source': {'id': 1, 'name': 'source-1', 'target': 1}},
+            {'id': 2, 'name': 'target-2', 'nullable_source': None},
         ]
         self.assertEquals(serializer.data, expected)

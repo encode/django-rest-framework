@@ -1,6 +1,9 @@
+from __future__ import unicode_literals
+
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import Client, TestCase
+from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
@@ -41,13 +44,17 @@ class BasicAuthTests(TestCase):
 
     def test_post_form_passing_basic_auth(self):
         """Ensure POSTing json over basic auth with correct credentials passes and does not require CSRF"""
-        auth = 'Basic %s' % base64.encodestring('%s:%s' % (self.username, self.password)).encode('iso-8859-1').strip().decode('iso-8859-1')
+        credentials = ('%s:%s' % (self.username, self.password))
+        base64_credentials = base64.b64encode(credentials.encode(HTTP_HEADER_ENCODING)).decode(HTTP_HEADER_ENCODING)
+        auth = 'Basic %s' % base64_credentials
         response = self.csrf_client.post('/basic/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
     def test_post_json_passing_basic_auth(self):
         """Ensure POSTing form over basic auth with correct credentials passes and does not require CSRF"""
-        auth = 'Basic %s' % base64.encodestring('%s:%s' % (self.username, self.password)).encode('iso-8859-1').strip().decode('iso-8859-1')
+        credentials = ('%s:%s' % (self.username, self.password))
+        base64_credentials = base64.b64encode(credentials.encode(HTTP_HEADER_ENCODING)).decode(HTTP_HEADER_ENCODING)
+        auth = 'Basic %s' % base64_credentials
         response = self.csrf_client.post('/basic/', json.dumps({'example': 'example'}), 'application/json', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 

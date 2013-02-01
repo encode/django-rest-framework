@@ -311,7 +311,7 @@ class SlugRelatedField(RelatedField):
             return self.queryset.get(**{self.slug_field: data})
         except ObjectDoesNotExist:
             raise ValidationError(self.error_messages['does_not_exist'] %
-                                  (self.slug_field, unicode(data)))
+                                  (self.slug_field, smart_text(data)))
         except (TypeError, ValueError):
             msg = self.error_messages['invalid']
             raise ValidationError(msg)

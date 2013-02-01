@@ -236,17 +236,17 @@ class ValidationTests(TestCase):
         data = ['i am', 'a', 'list']
         serializer = CommentSerializer(self.comment, data=data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'non_field_errors': [u'Invalid data']})
+        self.assertEquals(serializer.errors, {'non_field_errors': ['Invalid data']})
 
         data = 'and i am a string'
         serializer = CommentSerializer(self.comment, data=data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'non_field_errors': [u'Invalid data']})
+        self.assertEquals(serializer.errors, {'non_field_errors': ['Invalid data']})
 
         data = 42
         serializer = CommentSerializer(self.comment, data=data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'non_field_errors': [u'Invalid data']})
+        self.assertEquals(serializer.errors, {'non_field_errors': ['Invalid data']})
 
     def test_cross_field_validation(self):
 
@@ -300,7 +300,7 @@ class ValidationTests(TestCase):
         }
         serializer = ActionItemSerializerCustomRestore(data=data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'title': [u'Ensure this value has at most 200 characters (it has 201).']})
+        self.assertEquals(serializer.errors, {'title': ['Ensure this value has at most 200 characters (it has 201).']})
 
     def test_default_modelfield_max_length_exceeded(self):
         data = {
@@ -340,7 +340,7 @@ class CustomValidationTests(TestCase):
 
         serializer = self.CommentSerializerWithFieldValidator(data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'content': [u'Test not in value']})
+        self.assertEquals(serializer.errors, {'content': ['Test not in value']})
 
     def test_missing_data(self):
         """
@@ -352,7 +352,7 @@ class CustomValidationTests(TestCase):
         }
         serializer = self.CommentSerializerWithFieldValidator(data=incomplete_data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'content': [u'This field is required.']})
+        self.assertEquals(serializer.errors, {'content': ['This field is required.']})
 
     def test_wrong_data(self):
         """
@@ -365,7 +365,7 @@ class CustomValidationTests(TestCase):
         }
         serializer = self.CommentSerializerWithFieldValidator(data=wrong_data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'email': [u'Enter a valid e-mail address.']})
+        self.assertEquals(serializer.errors, {'email': ['Enter a valid e-mail address.']})
 
 
 class PositiveIntegerAsChoiceTests(TestCase):
