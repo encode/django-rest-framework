@@ -131,7 +131,7 @@
 #        self.assertEqual(data['key1'], 'val1')
 #        self.assertEqual(files['file1'].read(), 'blablabla')
 
-from StringIO import StringIO
+from rest_framework.compat import StringIO
 from django import forms
 from django.test import TestCase
 from rest_framework.parsers import FormParser

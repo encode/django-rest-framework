@@ -9,7 +9,7 @@ The wrapped request then offers a richer API, in particular :
     - full support of PUT method, including support for file uploads
     - form overloading of HTTP method, content type and content
 """
-from StringIO import StringIO
+from rest_framework.compat import BytesIO
 
 from django.http.multipartparser import parse_header
 from rest_framework import exceptions
@@ -20,7 +20,7 @@ def is_form_media_type(media_type):
     """
     Return True if the media type is a valid form media type.
     """
-    base_media_type, params = parse_header(media_type)
+    base_media_type, params = parse_header(media_type.encode('iso-8859-1'))
     return (base_media_type == 'application/x-www-form-urlencoded' or
             base_media_type == 'multipart/form-data')
 
@@ -242,7 +242,7 @@ class Request(object):
         elif hasattr(self._request, 'read'):
             self._stream = self._request
         else:
-            self._stream = StringIO(self.raw_post_data)
+            self._stream = BytesIO(self.raw_post_data)
 
     def _perform_form_overloading(self):
         """
@@ -277,7 +277,7 @@ class Request(object):
             self._CONTENT_PARAM in self._data and
             self._CONTENTTYPE_PARAM in self._data):
             self._content_type = self._data[self._CONTENTTYPE_PARAM]
-            self._stream = StringIO(self._data[self._CONTENT_PARAM])
+            self._stream = BytesIO(self._data[self._CONTENT_PARAM].encode('iso-8859-1'))
             self._data, self._files = (Empty, Empty)
 
     def _parse(self):

@@ -6,6 +6,8 @@ on the response, such as JSON encoded data or HTML output.
 
 REST framework also provides an HTML renderer the renders the browsable API.
 """
+from __future__ import unicode_literals
+
 import copy
 import string
 import json
@@ -60,7 +62,7 @@ class JSONRenderer(BaseRenderer):
         if accepted_media_type:
             # If the media type looks like 'application/json; indent=4',
             # then pretty print the result.
-            base_media_type, params = parse_header(accepted_media_type)
+            base_media_type, params = parse_header(accepted_media_type.encode('ascii'))
             indent = params.get('indent', indent)
             try:
                 indent = max(min(int(indent), 8), 0)
@@ -100,7 +102,7 @@ class JSONPRenderer(JSONRenderer):
         callback = self.get_callback(renderer_context)
         json = super(JSONPRenderer, self).render(data, accepted_media_type,
                                                  renderer_context)
-        return u"%s(%s);" % (callback, json)
+        return "%s(%s);" % (callback, json)
 
 
 class XMLRenderer(BaseRenderer):
@@ -357,7 +359,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         # Creating an on the fly form see:
         # http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
-        OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
+        OnTheFlyForm = type(str("OnTheFlyForm"), (forms.Form,), fields)
         data = (obj is not None) and serializer.data or None
         form_instance = OnTheFlyForm(data)
         return form_instance

@@ -1,10 +1,11 @@
-import json
+from __future__ import unicode_literals
 from django.db import models
 from django.test import TestCase
 from rest_framework import generics, serializers, status
 from rest_framework.tests.utils import RequestFactory
 from rest_framework.tests.models import BasicModel, Comment, SlugBasedModel
-
+from rest_framework.compat import six
+import json
 
 factory = RequestFactory()
 
@@ -72,7 +73,7 @@ class TestRootView(TestCase):
                                content_type='application/json')
         response = self.view(request).render()
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
-        self.assertEquals(response.data, {'id': 4, 'text': u'foobar'})
+        self.assertEquals(response.data, {'id': 4, 'text': 'foobar'})
         created = self.objects.get(id=4)
         self.assertEquals(created.text, 'foobar')
 
@@ -127,7 +128,7 @@ class TestRootView(TestCase):
                                content_type='application/json')
         response = self.view(request).render()
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)
-        self.assertEquals(response.data, {'id': 4, 'text': u'foobar'})
+        self.assertEquals(response.data, {'id': 4, 'text': 'foobar'})
         created = self.objects.get(id=4)
         self.assertEquals(created.text, 'foobar')
 
@@ -202,7 +203,7 @@ class TestInstanceView(TestCase):
         request = factory.delete('/1')
         response = self.view(request, pk=1).render()
         self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEquals(response.content, '')
+        self.assertEquals(response.content, six.b(''))
         ids = [obj.id for obj in self.objects.all()]
         self.assertEquals(ids, [2, 3])
 

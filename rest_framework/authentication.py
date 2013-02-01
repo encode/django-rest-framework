@@ -3,10 +3,12 @@ Provides a set of pluggable authentication policies.
 """
 
 from django.contrib.auth import authenticate
-from django.utils.encoding import smart_unicode, DjangoUnicodeDecodeError
+from django.utils.encoding import DjangoUnicodeDecodeError
 from rest_framework import exceptions
 from rest_framework.compat import CsrfViewMiddleware
+from rest_framework.compat import smart_text
 from rest_framework.authtoken.models import Token
+from rest_framework.settings import api_settings
 import base64
 
 
@@ -49,14 +51,15 @@ class BasicAuthentication(BaseAuthentication):
         if len(auth) != 2:
             raise exceptions.AuthenticationFailed('Invalid basic header')
 
+        encoding = api_settings.HTTP_HEADER_ENCODING
         try:
-            auth_parts = base64.b64decode(auth[1]).partition(':')
+            auth_parts = base64.b64decode(auth[1].encode(encoding)).partition(':')
         except TypeError:
             raise exceptions.AuthenticationFailed('Invalid basic header')
 
         try:
-            userid = smart_unicode(auth_parts[0])
-            password = smart_unicode(auth_parts[2])
+            userid = smart_text(auth_parts[0])
+            password = smart_text(auth_parts[2])
         except DjangoUnicodeDecodeError:
             raise exceptions.AuthenticationFailed('Invalid basic header')
 

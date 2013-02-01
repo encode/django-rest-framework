@@ -1,13 +1,16 @@
+
+from __future__ import unicode_literals
+
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import resolve, get_script_prefix
 from django import forms
 from django.forms import widgets
 from django.forms.models import ModelChoiceIterator
-from django.utils.encoding import smart_unicode
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.fields import Field, WritableField
 from rest_framework.reverse import reverse
-from urlparse import urlparse
+from rest_framework.compat import urlparse
+from rest_framework.compat import smart_text
 
 ##### Relational fields #####
 
@@ -60,8 +63,8 @@ class RelatedField(WritableField):
         """
         Return a readable representation for use with eg. select widgets.
         """
-        desc = smart_unicode(obj)
-        ident = smart_unicode(self.to_native(obj))
+        desc = smart_text(obj)
+        ident = smart_text(self.to_native(obj))
         if desc == ident:
             return desc
         return "%s - %s" % (desc, ident)
@@ -188,8 +191,8 @@ class PrimaryKeyRelatedField(RelatedField):
         """
         Return a readable representation for use with eg. select widgets.
         """
-        desc = smart_unicode(obj)
-        ident = smart_unicode(self.to_native(obj.pk))
+        desc = smart_text(obj)
+        ident = smart_text(self.to_native(obj.pk))
         if desc == ident:
             return desc
         return "%s - %s" % (desc, ident)
@@ -205,7 +208,7 @@ class PrimaryKeyRelatedField(RelatedField):
         try:
             return self.queryset.get(pk=data)
         except ObjectDoesNotExist:
-            msg = self.error_messages['does_not_exist'] % smart_unicode(data)
+            msg = self.error_messages['does_not_exist'] % smart_text(data)
             raise ValidationError(msg)
         except (TypeError, ValueError):
             received = type(data).__name__
@@ -246,8 +249,8 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
         """
         Return a readable representation for use with eg. select widgets.
         """
-        desc = smart_unicode(obj)
-        ident = smart_unicode(self.to_native(obj.pk))
+        desc = smart_text(obj)
+        ident = smart_text(self.to_native(obj.pk))
         if desc == ident:
             return desc
         return "%s - %s" % (desc, ident)
@@ -273,7 +276,7 @@ class ManyPrimaryKeyRelatedField(ManyRelatedField):
         try:
             return self.queryset.get(pk=data)
         except ObjectDoesNotExist:
-            msg = self.error_messages['does_not_exist'] % smart_unicode(data)
+            msg = self.error_messages['does_not_exist'] % smart_text(data)
             raise ValidationError(msg)
         except (TypeError, ValueError):
             received = type(data).__name__
@@ -404,7 +407,7 @@ class HyperlinkedRelatedField(RelatedField):
 
         if http_prefix:
             # If needed convert absolute URLs to relative path
-            value = urlparse(value).path
+            value = urlparse.urlparse(value).path
             prefix = get_script_prefix()
             if value.startswith(prefix):
                 value = '/' + value[len(prefix):]

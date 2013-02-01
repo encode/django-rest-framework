@@ -19,6 +19,7 @@ back to the defaults.
 """
 from django.conf import settings
 from django.utils import importlib
+from rest_framework.compat import six
 
 
 USER_SETTINGS = getattr(settings, 'REST_FRAMEWORK', None)
@@ -74,6 +75,9 @@ DEFAULTS = {
     'URL_FORMAT_OVERRIDE': 'format',
 
     'FORMAT_SUFFIX_KWARG': 'format',
+
+    # Header encoding (see RFC5987)
+    'HTTP_HEADER_ENCODING': 'iso-8859-1',
 }
 
 
@@ -98,7 +102,7 @@ def perform_import(val, setting_name):
     If the given setting is a string import notation,
     then perform the necessary import or imports.
     """
-    if isinstance(val, basestring):
+    if isinstance(val, six.string_types):
         return import_from_string(val, setting_name)
     elif isinstance(val, (list, tuple)):
         return [import_from_string(item, setting_name) for item in val]

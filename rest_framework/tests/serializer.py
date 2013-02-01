@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import datetime
 import pickle
 from django.test import TestCase
@@ -200,12 +202,12 @@ class ValidationTests(TestCase):
     def test_create(self):
         serializer = CommentSerializer(data=self.data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
+        self.assertEquals(serializer.errors, {'content': ['Ensure this value has at most 1000 characters (it has 1001).']})
 
     def test_update(self):
         serializer = CommentSerializer(self.comment, data=self.data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'content': [u'Ensure this value has at most 1000 characters (it has 1001).']})
+        self.assertEquals(serializer.errors, {'content': ['Ensure this value has at most 1000 characters (it has 1001).']})
 
     def test_update_missing_field(self):
         data = {
@@ -214,7 +216,7 @@ class ValidationTests(TestCase):
         }
         serializer = CommentSerializer(self.comment, data=data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'email': [u'This field is required.']})
+        self.assertEquals(serializer.errors, {'email': ['This field is required.']})
 
     def test_missing_bool_with_default(self):
         """Make sure that a boolean value with a 'False' value is not
@@ -268,7 +270,7 @@ class ValidationTests(TestCase):
 
         serializer = CommentSerializerWithCrossFieldValidator(data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'non_field_errors': [u'Email address not in content']})
+        self.assertEquals(serializer.errors, {'non_field_errors': ['Email address not in content']})
 
     def test_null_is_true_fields(self):
         """
@@ -284,7 +286,7 @@ class ValidationTests(TestCase):
         }
         serializer = ActionItemSerializer(data=data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'title': [u'Ensure this value has at most 200 characters (it has 201).']})
+        self.assertEquals(serializer.errors, {'title': ['Ensure this value has at most 200 characters (it has 201).']})
 
     def test_modelserializer_max_length_exceeded_with_custom_restore(self):
         """
@@ -307,7 +309,7 @@ class ValidationTests(TestCase):
         }
         serializer = ActionItemSerializer(data=data)
         self.assertEquals(serializer.is_valid(), False)
-        self.assertEquals(serializer.errors, {'info': [u'Ensure this value has at most 12 characters (it has 13).']})
+        self.assertEquals(serializer.errors, {'info': ['Ensure this value has at most 12 characters (it has 13).']})
 
 
 class CustomValidationTests(TestCase):
@@ -383,7 +385,7 @@ class ModelValidationTests(TestCase):
         serializer.save()
         second_serializer = AlbumsSerializer(data={'title': 'a'})
         self.assertFalse(second_serializer.is_valid())
-        self.assertEqual(second_serializer.errors,  {'title': [u'Album with this Title already exists.']})
+        self.assertEqual(second_serializer.errors,  {'title': ['Album with this Title already exists.']})
 
     def test_foreign_key_with_partial(self):
         """
@@ -421,15 +423,15 @@ class RegexValidationTest(TestCase):
     def test_create_failed(self):
         serializer = BookSerializer(data={'isbn': '1234567890'})
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'isbn': [u'isbn has to be exact 13 numbers']})
+        self.assertEquals(serializer.errors, {'isbn': ['isbn has to be exact 13 numbers']})
 
         serializer = BookSerializer(data={'isbn': '12345678901234'})
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'isbn': [u'isbn has to be exact 13 numbers']})
+        self.assertEquals(serializer.errors, {'isbn': ['isbn has to be exact 13 numbers']})
 
         serializer = BookSerializer(data={'isbn': 'abcdefghijklm'})
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'isbn': [u'isbn has to be exact 13 numbers']})
+        self.assertEquals(serializer.errors, {'isbn': ['isbn has to be exact 13 numbers']})
 
     def test_create_success(self):
         serializer = BookSerializer(data={'isbn': '1234567890123'})
@@ -743,11 +745,11 @@ class RelatedTraversalTest(TestCase):
         serializer = BlogPostSerializer(instance=post)
 
         expected = {
-            'title': u'Test blog post',
+            'title': 'Test blog post',
             'comments': [{
-                'text': u'I love this blog post',
+                'text': 'I love this blog post',
                 'post_owner': {
-                    "name": u"django",
+                    "name": "django",
                     "age": None
                 }
             }]
@@ -782,8 +784,8 @@ class SerializerMethodFieldTests(TestCase):
         serializer = self.serializer_class(source_data)
 
         expected = {
-            'beep': u'hello!',
-            'boop': [u'a', u'b', u'c'],
+            'beep': 'hello!',
+            'boop': ['a', 'b', 'c'],
             'boop_count': 3,
         }
 
@@ -882,8 +884,8 @@ class DepthTest(TestCase):
                 depth = 1
 
         serializer = BlogPostSerializer(instance=post)
-        expected = {'id': 1, 'title': u'Test blog post',
-                    'writer': {'id': 1, 'name': u'django', 'age': 1}}
+        expected = {'id': 1, 'title': 'Test blog post',
+                    'writer': {'id': 1, 'name': 'django', 'age': 1}}
 
         self.assertEqual(serializer.data, expected)
 
@@ -902,8 +904,8 @@ class DepthTest(TestCase):
                 model = BlogPost
 
         serializer = BlogPostSerializer(instance=post)
-        expected = {'id': 1, 'title': u'Test blog post',
-                    'writer': {'id': 1, 'name': u'django', 'age': 1}}
+        expected = {'id': 1, 'title': 'Test blog post',
+                    'writer': {'id': 1, 'name': 'django', 'age': 1}}
 
         self.assertEqual(serializer.data, expected)
 
