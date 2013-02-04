@@ -1,6 +1,4 @@
-
 from __future__ import unicode_literals
-
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import resolve, get_script_prefix
 from django import forms

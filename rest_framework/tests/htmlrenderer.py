@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.test import TestCase

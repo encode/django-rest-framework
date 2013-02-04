@@ -1,5 +1,4 @@
 from __future__ import unicode_literals
-
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import Client, TestCase
@@ -9,7 +8,6 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
 from rest_framework.compat import patterns
 from rest_framework.views import APIView
-
 import json
 import base64
 

@@ -1,5 +1,4 @@
 from __future__ import unicode_literals
-
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.compat import patterns, url

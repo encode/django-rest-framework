@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.utils.xmlutils import SimplerXMLGenerator
 from rest_framework.compat import StringIO
 from rest_framework.compat import six

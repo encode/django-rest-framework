@@ -1,8 +1,7 @@
 """
 Provides an APIView class that is used as the base of all class-based views.
 """
-
-import re
+from __future__ import unicode_literals
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.html import escape
@@ -13,6 +12,7 @@ from rest_framework.compat import View, apply_markdown
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
+import re
 
 
 def _remove_trailing_string(content, trailing):

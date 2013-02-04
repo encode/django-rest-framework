@@ -1,5 +1,4 @@
 from __future__ import unicode_literals
-
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericRelation, GenericForeignKey
 from django.db import models

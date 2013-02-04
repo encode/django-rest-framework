@@ -1,7 +1,7 @@
 """
 Tests for content parsing, and form-overloaded content parsing.
 """
-import json
+from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.sessions.middleware import SessionMiddleware
@@ -21,6 +21,7 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 from rest_framework.compat import six
+import json
 
 
 factory = RequestFactory()

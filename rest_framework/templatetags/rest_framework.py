@@ -1,5 +1,4 @@
 from __future__ import unicode_literals, absolute_import
-
 from django import template
 from django.core.urlresolvers import reverse
 from django.http import QueryDict
@@ -8,7 +7,6 @@ from django.utils.safestring import SafeData, mark_safe
 from rest_framework.compat import urlparse
 from rest_framework.compat import force_text
 from rest_framework.compat import six
-
 import re
 import string
 

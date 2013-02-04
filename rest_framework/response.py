@@ -1,6 +1,6 @@
+from __future__ import unicode_literals
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
 from django.template.response import SimpleTemplateResponse
-
 from rest_framework.compat import six
 
 

@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from rest_framework.compat import django_filters
 
 FilterSet = django_filters and django_filters.FilterSet or None

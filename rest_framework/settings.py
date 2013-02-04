@@ -17,6 +17,7 @@ This module provides the `api_setting` object, that is used to access
 REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
+from __future__ import unicode_literals
 from django.conf import settings
 from django.utils import importlib
 from rest_framework.compat import six

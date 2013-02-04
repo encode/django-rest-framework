@@ -1,13 +1,12 @@
 from __future__ import unicode_literals
-
-import datetime
-import pickle
 from django.utils.datastructures import MultiValueDict
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
+import datetime
+import pickle
 
 
 class SubComment(object):

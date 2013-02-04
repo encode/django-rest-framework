@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.test.client import RequestFactory, FakePayload
 from django.test.client import MULTIPART_CONTENT
 from rest_framework.compat import urlparse

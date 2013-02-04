@@ -1,7 +1,7 @@
 """
 Generic views that provide commonly needed behaviour.
 """
-
+from __future__ import unicode_literals
 from rest_framework import views, mixins
 from rest_framework.settings import api_settings
 from django.views.generic.detail import SingleObjectMixin

@@ -2,14 +2,11 @@
 Provides a set of pluggable authentication policies.
 """
 from __future__ import unicode_literals
-
 from django.contrib.auth import authenticate
 from django.utils.encoding import DjangoUnicodeDecodeError
 from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.compat import CsrfViewMiddleware
-from rest_framework.compat import smart_text
 from rest_framework.authtoken.models import Token
-from rest_framework.settings import api_settings
 import base64
 
 

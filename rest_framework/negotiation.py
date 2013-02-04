@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.http import Http404
 from rest_framework import exceptions
 from rest_framework.settings import api_settings
