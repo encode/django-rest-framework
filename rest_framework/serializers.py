@@ -165,6 +165,11 @@ class BaseSerializer(Field):
 
         # Remove anything in 'exclude'
         if self.opts.exclude:
+            # Note: To be deprecated in line with Django's ModelForm change.
+            # https://code.djangoproject.com/ticket/19733
+            warnings.warn('`exclude` option on serializers is due to be deprecated. '
+                          'Use the `fields` option instead.',
+                           PendingDeprecationWarning, stacklevel=2)
             for key in self.opts.exclude:
                 ret.pop(key, None)
 

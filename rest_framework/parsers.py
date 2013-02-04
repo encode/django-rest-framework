@@ -9,7 +9,7 @@ from django.conf import settings
 from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError
-from rest_framework.compat import yaml, ETParseError
+from rest_framework.compat import yaml, ETParseError, ET_XMLParser
 from rest_framework.exceptions import ParseError
 from rest_framework.compat import six
 from xml.etree import ElementTree as ET
@@ -148,7 +148,7 @@ class XMLParser(BaseParser):
     def parse(self, stream, media_type=None, parser_context=None):
         parser_context = parser_context or {}
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
-        parser = ET.XMLParser(encoding=encoding)
+        parser = ET_XMLParser(encoding=encoding)
         try:
             tree = ET.parse(stream, parser=parser)
         except (ExpatError, ETParseError, ValueError) as exc:
