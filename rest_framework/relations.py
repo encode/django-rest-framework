@@ -9,7 +9,6 @@ from django.forms.models import ModelChoiceIterator
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.fields import Field, WritableField
 from rest_framework.reverse import reverse
-from urlparse import urlparse
 from rest_framework.compat import urlparse
 from rest_framework.compat import smart_text
 import warnings
