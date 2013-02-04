@@ -1,10 +1,14 @@
+from __future__ import unicode_literals, absolute_import
+
 from django import template
 from django.core.urlresolvers import reverse
 from django.http import QueryDict
-from django.utils.encoding import force_unicode
 from django.utils.html import escape
 from django.utils.safestring import SafeData, mark_safe
-from urlparse import urlsplit, urlunsplit
+from rest_framework.compat import urlparse
+from rest_framework.compat import force_text
+from rest_framework.compat import six
+
 import re
 import string
 
@@ -99,11 +103,11 @@ def replace_query_param(url, key, val):
     Given a URL and a key/val pair, set or replace an item in the query
     parameters of the URL, and return the new URL.
     """
-    (scheme, netloc, path, query, fragment) = urlsplit(url)
+    (scheme, netloc, path, query, fragment) = urlparse.urlsplit(url)
     query_dict = QueryDict(query).copy()
     query_dict[key] = val
     query = query_dict.urlencode()
-    return urlunsplit((scheme, netloc, path, query, fragment))
+    return urlparse.urlunsplit((scheme, netloc, path, query, fragment))
 
 
 # Regex for adding classes to html snippets
@@ -179,7 +183,7 @@ def add_class(value, css_class):
     In the case of REST Framework, the filter is used to add Bootstrap-specific
     classes to the forms.
     """
-    html = unicode(value)
+    html = six.text_type(value)
     match = class_re.search(html)
     if match:
         m = re.search(r'^%s$|^%s\s|\s%s\s|\s%s$' % (css_class, css_class,
@@ -213,7 +217,7 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
     """
     trim_url = lambda x, limit=trim_url_limit: limit is not None and (len(x) > limit and ('%s...' % x[:max(0, limit - 3)])) or x
     safe_input = isinstance(text, SafeData)
-    words = word_split_re.split(force_unicode(text))
+    words = word_split_re.split(force_text(text))
     nofollow_attr = nofollow and ' rel="nofollow"' or ''
     for i, word in enumerate(words):
         match = None
@@ -249,4 +253,4 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
             words[i] = mark_safe(word)
         elif autoescape:
             words[i] = escape(word)
-    return mark_safe(u''.join(words))
+    return mark_safe(''.join(words))

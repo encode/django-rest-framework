@@ -1,12 +1,15 @@
 """
 Provides a set of pluggable authentication policies.
 """
+from __future__ import unicode_literals
 
 from django.contrib.auth import authenticate
-from django.utils.encoding import smart_unicode, DjangoUnicodeDecodeError
-from rest_framework import exceptions
+from django.utils.encoding import DjangoUnicodeDecodeError
+from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.compat import CsrfViewMiddleware
+from rest_framework.compat import smart_text
 from rest_framework.authtoken.models import Token
+from rest_framework.settings import api_settings
 import base64
 
 
@@ -41,22 +44,25 @@ class BasicAuthentication(BaseAuthentication):
         Returns a `User` if a correct username and password have been supplied
         using HTTP Basic authentication.  Otherwise returns `None`.
         """
-        auth = request.META.get('HTTP_AUTHORIZATION', '').split()
+        auth = request.META.get('HTTP_AUTHORIZATION', b'')
+        if type(auth) == type(''):
+            # Work around django test client oddness
+            auth = auth.encode(HTTP_HEADER_ENCODING)
+        auth = auth.split()
 
-        if not auth or auth[0].lower() != "basic":
+        if not auth or auth[0].lower() != b'basic':
             return None
 
         if len(auth) != 2:
             raise exceptions.AuthenticationFailed('Invalid basic header')
 
         try:
-            auth_parts = base64.b64decode(auth[1]).partition(':')
-        except TypeError:
+            auth_parts = base64.b64decode(auth[1]).decode(HTTP_HEADER_ENCODING).partition(':')
+        except (TypeError, UnicodeDecodeError):
             raise exceptions.AuthenticationFailed('Invalid basic header')
 
         try:
-            userid = smart_unicode(auth_parts[0])
-            password = smart_unicode(auth_parts[2])
+            userid, password = auth_parts[0], auth_parts[2]
         except DjangoUnicodeDecodeError:
             raise exceptions.AuthenticationFailed('Invalid basic header')
 

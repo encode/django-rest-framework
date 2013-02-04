@@ -10,6 +10,7 @@ from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError
 from rest_framework.compat import yaml, ETParseError
 from rest_framework.exceptions import ParseError
+from rest_framework.compat import six
 from xml.etree import ElementTree as ET
 from xml.parsers.expat import ExpatError
 import json
@@ -55,9 +56,10 @@ class JSONParser(BaseParser):
         `files` will always be `None`.
         """
         try:
-            return json.load(stream)
-        except ValueError, exc:
-            raise ParseError('JSON parse error - %s' % unicode(exc))
+            data = stream.read().decode('iso-8859-1')
+            return json.loads(data)
+        except ValueError as exc:
+            raise ParseError('JSON parse error - %s' % six.text_type(exc))
 
 
 class YAMLParser(BaseParser):
@@ -75,9 +77,10 @@ class YAMLParser(BaseParser):
         `files` will always be `None`.
         """
         try:
-            return yaml.safe_load(stream)
-        except (ValueError, yaml.parser.ParserError), exc:
-            raise ParseError('YAML parse error - %s' % unicode(exc))
+            data = stream.read().decode('iso-8859-1')
+            return yaml.safe_load(data)
+        except (ValueError, yaml.parser.ParserError) as exc:
+            raise ParseError('YAML parse error - %s' % six.u(exc))
 
 
 class FormParser(BaseParser):
@@ -121,8 +124,8 @@ class MultiPartParser(BaseParser):
             parser = DjangoMultiPartParser(meta, stream, upload_handlers)
             data, files = parser.parse()
             return DataAndFiles(data, files)
-        except MultiPartParserError, exc:
-            raise ParseError('Multipart form parse error - %s' % unicode(exc))
+        except MultiPartParserError as exc:
+            raise ParseError('Multipart form parse error - %s' % six.u(exc))
 
 
 class XMLParser(BaseParser):
@@ -135,8 +138,8 @@ class XMLParser(BaseParser):
     def parse(self, stream, media_type=None, parser_context=None):
         try:
             tree = ET.parse(stream)
-        except (ExpatError, ETParseError, ValueError), exc:
-            raise ParseError('XML parse error - %s' % unicode(exc))
+        except (ExpatError, ETParseError, ValueError) as exc:
+            raise ParseError('XML parse error - %s' % six.u(exc))
         data = self._xml_convert(tree.getroot())
 
         return data
@@ -146,7 +149,7 @@ class XMLParser(BaseParser):
         convert the xml `element` into the corresponding python object
         """
 
-        children = element.getchildren()
+        children = list(element)
 
         if len(children) == 0:
             return self._type_convert(element.text)

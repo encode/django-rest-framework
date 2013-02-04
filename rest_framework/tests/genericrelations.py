@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.generic import GenericRelation, GenericForeignKey
 from django.db import models
@@ -63,8 +65,8 @@ class TestGenericRelations(TestCase):
 
         serializer = BookmarkSerializer(self.bookmark)
         expected = {
-            'tags': [u'django', u'python'],
-            'url': u'https://www.djangoproject.com/'
+            'tags': ['django', 'python'],
+            'url': 'https://www.djangoproject.com/'
         }
         self.assertEquals(serializer.data, expected)
 
@@ -84,16 +86,16 @@ class TestGenericRelations(TestCase):
         serializer = TagSerializer(Tag.objects.all())
         expected = [
         {
-            'tag': u'django',
-            'tagged_item': u'Bookmark: https://www.djangoproject.com/'
+            'tag': 'django',
+            'tagged_item': 'Bookmark: https://www.djangoproject.com/'
         },
         {
-            'tag': u'python',
-            'tagged_item': u'Bookmark: https://www.djangoproject.com/'
+            'tag': 'python',
+            'tagged_item': 'Bookmark: https://www.djangoproject.com/'
         },
         {
-            'tag': u'reminder',
-            'tagged_item': u'Note: Remember the milk'
+            'tag': 'reminder',
+            'tagged_item': 'Note: Remember the milk'
         }
         ]
         self.assertEquals(serializer.data, expected)

@@ -9,6 +9,7 @@ from rest_framework.renderers import (
     BrowsableAPIRenderer
 )
 from rest_framework.settings import api_settings
+from rest_framework.compat import six
 
 
 class MockPickleRenderer(BaseRenderer):
@@ -22,8 +23,8 @@ class MockJsonRenderer(BaseRenderer):
 DUMMYSTATUS = status.HTTP_200_OK
 DUMMYCONTENT = 'dummycontent'
 
-RENDERER_A_SERIALIZER = lambda x: 'Renderer A: %s' % x
-RENDERER_B_SERIALIZER = lambda x: 'Renderer B: %s' % x
+RENDERER_A_SERIALIZER = lambda x: ('Renderer A: %s' % x).encode('ascii')
+RENDERER_B_SERIALIZER = lambda x: ('Renderer B: %s' % x).encode('ascii')
 
 
 class RendererA(BaseRenderer):
@@ -92,7 +93,7 @@ class RendererIntegrationTests(TestCase):
         resp = self.client.head('/')
         self.assertEquals(resp.status_code, DUMMYSTATUS)
         self.assertEquals(resp['Content-Type'], RendererA.media_type)
-        self.assertEquals(resp.content, '')
+        self.assertEquals(resp.content, six.b(''))
 
     def test_default_renderer_serializes_content_on_accept_any(self):
         """If the Accept header is set to */* the default renderer should serialize the response."""

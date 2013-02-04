@@ -3,13 +3,34 @@ The `compat` module provides support for backwards compatibility with older
 versions of django/python, and compatibility wrappers around optional packages.
 """
 # flake8: noqa
+from __future__ import unicode_literals
+
 import django
+
+# Try to import six from Django, fallback to included `six`.
+try:
+    from django.utils import six
+except:
+    from rest_framework import six
 
 # location of patterns, url, include changes in 1.4 onwards
 try:
     from django.conf.urls import patterns, url, include
 except:
     from django.conf.urls.defaults import patterns, url, include
+
+# Handle django.utils.encoding rename:
+# smart_unicode -> smart_text
+# force_unicode -> force_text
+try:
+    from django.utils.encoding import smart_text
+except ImportError:
+    from django.utils.encoding import smart_unicode as smart_text
+try:
+    from django.utils.encoding import force_text
+except ImportError:
+    from django.utils.encoding import force_unicode as force_text
+
 
 # django-filter is optional
 try:
@@ -20,9 +41,18 @@ except:
 
 # cStringIO only if it's available, otherwise StringIO
 try:
-    import cStringIO as StringIO
+    import cStringIO.StringIO as StringIO
 except ImportError:
-    import StringIO
+    StringIO = six.StringIO
+
+BytesIO = six.BytesIO
+
+
+# urlparse compat import (Required because it changed in python 3.x)
+try:
+    from urllib import parse as urlparse
+except ImportError:
+    import urlparse
 
 
 # Try to import PIL in either of the two ways it can end up installed.
@@ -54,7 +84,7 @@ else:
     try:
         from django.contrib.auth.models import User
     except ImportError:
-        raise ImportError(u"User model is not to be found.")
+        raise ImportError("User model is not to be found.")
 
 
 # First implementation of Django class-based views did not include head method
@@ -75,11 +105,11 @@ else:
             # sanitize keyword arguments
             for key in initkwargs:
                 if key in cls.http_method_names:
-                    raise TypeError(u"You tried to pass in the %s method name as a "
-                                    u"keyword argument to %s(). Don't do that."
+                    raise TypeError("You tried to pass in the %s method name as a "
+                                    "keyword argument to %s(). Don't do that."
                                     % (key, cls.__name__))
                 if not hasattr(cls, key):
-                    raise TypeError(u"%s() received an invalid keyword %r" % (
+                    raise TypeError("%s() received an invalid keyword %r" % (
                         cls.__name__, key))
 
             def view(request, *args, **kwargs):
@@ -110,7 +140,6 @@ else:
     import re
     import random
     import logging
-    import urlparse
 
     from django.conf import settings
     from django.core.urlresolvers import get_callable
@@ -152,7 +181,8 @@ else:
         randrange = random.SystemRandom().randrange
     else:
         randrange = random.randrange
-    _MAX_CSRF_KEY = 18446744073709551616L     # 2 << 63
+
+    _MAX_CSRF_KEY = 18446744073709551616      # 2 << 63
 
     REASON_NO_REFERER = "Referer checking failed - no Referer."
     REASON_BAD_REFERER = "Referer checking failed - %s does not match %s."

@@ -54,6 +54,6 @@ class DjangoFilterBackend(BaseFilterBackend):
         filter_class = self.get_filter_class(view)
 
         if filter_class:
-            return filter_class(request.GET, queryset=queryset)
+            return filter_class(request.QUERY_PARAMS, queryset=queryset)
 
         return queryset

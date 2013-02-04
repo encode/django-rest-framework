@@ -1,20 +1,23 @@
+from __future__ import unicode_literals
+
 import copy
 import datetime
 import inspect
 import re
 import warnings
 
-from io import BytesIO
-
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django import forms
 from django.forms import widgets
-from django.utils.encoding import is_protected_type, smart_unicode
+from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.compat import parse_date, parse_datetime
 from rest_framework.compat import timezone
+from rest_framework.compat import BytesIO
+from rest_framework.compat import six
+from rest_framework.compat import smart_text
 
 
 def is_simple_callable(obj):
@@ -95,11 +98,11 @@ class Field(object):
 
         if is_protected_type(value):
             return value
-        elif hasattr(value, '__iter__') and not isinstance(value, (dict, basestring)):
+        elif hasattr(value, '__iter__') and not isinstance(value, (dict, six.string_types)):
             return [self.to_native(item) for item in value]
         elif isinstance(value, dict):
             return dict(map(self.to_native, (k, v)) for k, v in value.items())
-        return smart_unicode(value)
+        return smart_text(value)
 
     def attributes(self):
         """
@@ -266,7 +269,7 @@ class BooleanField(WritableField):
     form_field_class = forms.BooleanField
     widget = widgets.CheckboxInput
     default_error_messages = {
-        'invalid': _(u"'%s' value must be either True or False."),
+        'invalid': _("'%s' value must be either True or False."),
     }
     empty = False
 
@@ -296,9 +299,9 @@ class CharField(WritableField):
             self.validators.append(validators.MaxLengthValidator(max_length))
 
     def from_native(self, value):
-        if isinstance(value, basestring) or value is None:
+        if isinstance(value, six.string_types) or value is None:
             return value
-        return smart_unicode(value)
+        return smart_text(value)
 
 
 class URLField(CharField):
@@ -358,10 +361,10 @@ class ChoiceField(WritableField):
             if isinstance(v, (list, tuple)):
                 # This is an optgroup, so look inside the group for options
                 for k2, v2 in v:
-                    if value == smart_unicode(k2):
+                    if value == smart_text(k2):
                         return True
             else:
-                if value == smart_unicode(k) or value == k:
+                if value == smart_text(k) or value == k:
                     return True
         return False
 
@@ -401,7 +404,7 @@ class RegexField(CharField):
         return self._regex
 
     def _set_regex(self, regex):
-        if isinstance(regex, basestring):
+        if isinstance(regex, six.string_types):
             regex = re.compile(regex)
         self._regex = regex
         if hasattr(self, '_regex_validator') and self._regex_validator in self.validators:
@@ -424,10 +427,10 @@ class DateField(WritableField):
     form_field_class = forms.DateField
 
     default_error_messages = {
-        'invalid': _(u"'%s' value has an invalid date format. It must be "
-                     u"in YYYY-MM-DD format."),
-        'invalid_date': _(u"'%s' value has the correct format (YYYY-MM-DD) "
-                          u"but it is an invalid date."),
+        'invalid': _("'%s' value has an invalid date format. It must be "
+                     "in YYYY-MM-DD format."),
+        'invalid_date': _("'%s' value has the correct format (YYYY-MM-DD) "
+                          "but it is an invalid date."),
     }
     empty = None
 
@@ -463,13 +466,13 @@ class DateTimeField(WritableField):
     form_field_class = forms.DateTimeField
 
     default_error_messages = {
-        'invalid': _(u"'%s' value has an invalid format. It must be in "
-                     u"YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ] format."),
-        'invalid_date': _(u"'%s' value has the correct format "
-                          u"(YYYY-MM-DD) but it is an invalid date."),
-        'invalid_datetime': _(u"'%s' value has the correct format "
-                              u"(YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]) "
-                              u"but it is an invalid date/time."),
+        'invalid': _("'%s' value has an invalid format. It must be in "
+                     "YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ] format."),
+        'invalid_date': _("'%s' value has the correct format "
+                          "(YYYY-MM-DD) but it is an invalid date."),
+        'invalid_datetime': _("'%s' value has the correct format "
+                              "(YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]) "
+                              "but it is an invalid date/time."),
     }
     empty = None
 
@@ -486,8 +489,8 @@ class DateTimeField(WritableField):
                 # local time. This won't work during DST change, but we can't
                 # do much about it, so we let the exceptions percolate up the
                 # call stack.
-                warnings.warn(u"DateTimeField received a naive datetime (%s)"
-                              u" while time zone support is active." % value,
+                warnings.warn("DateTimeField received a naive datetime (%s)"
+                              " while time zone support is active." % value,
                               RuntimeWarning)
                 default_timezone = timezone.get_default_timezone()
                 value = timezone.make_aware(value, default_timezone)

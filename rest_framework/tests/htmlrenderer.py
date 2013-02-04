@@ -7,6 +7,7 @@ from rest_framework.compat import patterns, url
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
+from rest_framework.compat import six
 
 
 @api_view(('GET',))
@@ -68,13 +69,13 @@ class TemplateHTMLRendererTests(TestCase):
     def test_not_found_html_view(self):
         response = self.client.get('/not_found')
         self.assertEquals(response.status_code, 404)
-        self.assertEquals(response.content, "404 Not Found")
+        self.assertEquals(response.content, six.b("404 Not Found"))
         self.assertEquals(response['Content-Type'], 'text/html')
 
     def test_permission_denied_html_view(self):
         response = self.client.get('/permission_denied')
         self.assertEquals(response.status_code, 403)
-        self.assertEquals(response.content, "403 Forbidden")
+        self.assertEquals(response.content, six.b("403 Forbidden"))
         self.assertEquals(response['Content-Type'], 'text/html')
 
 
@@ -105,11 +106,11 @@ class TemplateHTMLRendererExceptionTests(TestCase):
     def test_not_found_html_view_with_template(self):
         response = self.client.get('/not_found')
         self.assertEquals(response.status_code, 404)
-        self.assertEquals(response.content, "404: Not found")
+        self.assertEquals(response.content, six.b("404: Not found"))
         self.assertEquals(response['Content-Type'], 'text/html')
 
     def test_permission_denied_html_view_with_template(self):
         response = self.client.get('/permission_denied')
         self.assertEquals(response.status_code, 403)
-        self.assertEquals(response.content, "403: Permission denied")
+        self.assertEquals(response.content, six.b("403: Permission denied"))
         self.assertEquals(response['Content-Type'], 'text/html')
