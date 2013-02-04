@@ -88,7 +88,7 @@ class JSONPRenderer(JSONRenderer):
         Determine the name of the callback to wrap around the json output.
         """
         request = renderer_context.get('request', None)
-        params = request and request.GET or {}
+        params = request and request.QUERY_PARAMS or {}
         return params.get(self.callback_parameter, self.default_callback)
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
