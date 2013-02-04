@@ -150,8 +150,16 @@ User requests to either `ContactListView` or `ContactDetailView` would be restri
 
 # Custom throttles
 
-To create a custom throttle, override `BaseThrottle` and implement `.allow_request(request, view)`.  The method should return `True` if the request should be allowed, and `False` otherwise.
+To create a custom throttle, override `BaseThrottle` and implement `.allow_request(self, request, view)`.  The method should return `True` if the request should be allowed, and `False` otherwise.
 
 Optionally you may also override the `.wait()` method.  If implemented, `.wait()` should return a recommended number of seconds to wait before attempting the next request, or `None`.  The `.wait()` method will only be called if `.allow_request()` has previously returned `False`.
+
+## Example
+
+The following is an example of a rate throttle, that will randomly throttle 1 in every 10 requests.
+
+    class RandomRateThrottle(throttles.BaseThrottle):
+        def allow_request(self, request, view):
+            return random.randint(1, 10) == 1
 
 [permissions]: permissions.md

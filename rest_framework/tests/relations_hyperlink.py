@@ -215,6 +215,13 @@ class HyperlinkedForeignKeyTests(TestCase):
         ]
         self.assertEquals(serializer.data, expected)
 
+    def test_foreign_key_update_incorrect_type(self):
+        data = {'url': '/foreignkeysource/1/', 'name': u'source-1', 'target': 2}
+        instance = ForeignKeySource.objects.get(pk=1)
+        serializer = ForeignKeySourceSerializer(instance, data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEquals(serializer.errors, {'target': [u'Incorrect type.  Expected url string, received int.']})
+
     def test_reverse_foreign_key_update(self):
         data = {'url': '/foreignkeytarget/2/', 'name': u'target-2', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']}
         instance = ForeignKeyTarget.objects.get(pk=2)
@@ -227,7 +234,7 @@ class HyperlinkedForeignKeyTests(TestCase):
         expected = [
             {'url': '/foreignkeytarget/1/', 'name': u'target-1', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/2/', '/foreignkeysource/3/']},
             {'url': '/foreignkeytarget/2/', 'name': u'target-2', 'sources': []},
-        ]        
+        ]
         self.assertEquals(new_serializer.data, expected)
 
         serializer.save()

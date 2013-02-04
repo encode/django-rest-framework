@@ -165,7 +165,7 @@ We've reached the end of our tutorial.  If you want to get more involved in the 
 
 * Contribute on [GitHub][github] by reviewing and submitting issues, and making pull requests.
 * Join the [REST framework discussion group][group], and help build the community.
-* [Follow the author on Twitter][twitter] and say hi.
+* Follow [the author][twitter] on Twitter and say hi.
 
 **Now go build awesome things.**
 
