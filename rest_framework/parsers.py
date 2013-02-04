@@ -149,7 +149,7 @@ class XMLParser(BaseParser):
         convert the xml `element` into the corresponding python object
         """
 
-        children = element.getchildren()
+        children = list(element)
 
         if len(children) == 0:
             return self._type_convert(element.text)
