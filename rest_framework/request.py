@@ -10,6 +10,7 @@ The wrapped request then offers a richer API, in particular :
     - form overloading of HTTP method, content type and content
 """
 from __future__ import unicode_literals
+from django.conf import settings
 from django.http.multipartparser import parse_header
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
@@ -92,6 +93,7 @@ class Request(object):
         if self.parser_context is None:
             self.parser_context = {}
         self.parser_context['request'] = self
+        self.parser_context['encoding'] = request.encoding or settings.DEFAULT_CHARSET
 
     def _default_negotiator(self):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()
