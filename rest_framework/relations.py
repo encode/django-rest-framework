@@ -137,6 +137,8 @@ class ManyRelatedMixin(object):
 
     def field_to_native(self, obj, field_name):
         value = getattr(obj, self.source or field_name)
+        if type(value) == 'instancemethod':
+            return [self.to_native(item) for item in value().all()]
         return [self.to_native(item) for item in value.all()]
 
     def field_from_native(self, data, files, field_name, into):
