@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.test import TestCase
 from rest_framework.compat import patterns, url
 from rest_framework.utils.breadcrumbs import get_breadcrumbs

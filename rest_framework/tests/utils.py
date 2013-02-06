@@ -1,6 +1,7 @@
+from __future__ import unicode_literals
 from django.test.client import RequestFactory, FakePayload
 from django.test.client import MULTIPART_CONTENT
-from urlparse import urlparse
+from rest_framework.compat import urlparse
 
 
 class RequestFactory(RequestFactory):
@@ -14,7 +15,7 @@ class RequestFactory(RequestFactory):
 
         patch_data = self._encode_data(data, content_type)
 
-        parsed = urlparse(path)
+        parsed = urlparse.urlparse(path)
         r = {
             'CONTENT_LENGTH': len(patch_data),
             'CONTENT_TYPE':   content_type,

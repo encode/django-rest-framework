@@ -1,4 +1,4 @@
-import copy
+from __future__ import unicode_literals
 from django.test import TestCase
 from django.test.client import RequestFactory
 from rest_framework import status
@@ -6,6 +6,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
+import copy
 
 factory = RequestFactory()
 
@@ -49,7 +50,7 @@ class ClassBasedViewIntegrationTests(TestCase):
         request = factory.post('/', 'f00bar', content_type='application/json')
         response = self.view(request)
         expected = {
-            'detail': u'JSON parse error - No JSON object could be decoded'
+            'detail': 'JSON parse error - No JSON object could be decoded'
         }
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEquals(sanitise_json_error(response.data), expected)
@@ -64,7 +65,7 @@ class ClassBasedViewIntegrationTests(TestCase):
         request = factory.post('/', form_data)
         response = self.view(request)
         expected = {
-            'detail': u'JSON parse error - No JSON object could be decoded'
+            'detail': 'JSON parse error - No JSON object could be decoded'
         }
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEquals(sanitise_json_error(response.data), expected)
@@ -78,7 +79,7 @@ class FunctionBasedViewIntegrationTests(TestCase):
         request = factory.post('/', 'f00bar', content_type='application/json')
         response = self.view(request)
         expected = {
-            'detail': u'JSON parse error - No JSON object could be decoded'
+            'detail': 'JSON parse error - No JSON object could be decoded'
         }
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEquals(sanitise_json_error(response.data), expected)
@@ -93,7 +94,7 @@ class FunctionBasedViewIntegrationTests(TestCase):
         request = factory.post('/', form_data)
         response = self.view(request)
         expected = {
-            'detail': u'JSON parse error - No JSON object could be decoded'
+            'detail': 'JSON parse error - No JSON object could be decoded'
         }
         self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEquals(sanitise_json_error(response.data), expected)

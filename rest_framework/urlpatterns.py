@@ -1,6 +1,7 @@
+from __future__ import unicode_literals
+from django.core.urlresolvers import RegexURLResolver
 from rest_framework.compat import url, include
 from rest_framework.settings import api_settings
-from django.core.urlresolvers import RegexURLResolver
 
 
 def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required):

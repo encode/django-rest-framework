@@ -12,8 +12,6 @@
 
 **Full documentation for REST framework is available on [http://django-rest-framework.org][docs].**
 
-Note that this is the 2.0 version of REST framework.  If you are looking for earlier versions please see the [0.4.x branch][0.4] on GitHub.
-
 ---
 
 # Overview
@@ -28,7 +26,7 @@ There is also a sandbox API you can use for testing purposes, [available here][s
 
 # Requirements
 
-* Python (2.6, 2.7)
+* Python (2.6, 2.7, 3.2, 3.3)
 * Django (1.3, 1.4, 1.5)
 
 **Optional:**

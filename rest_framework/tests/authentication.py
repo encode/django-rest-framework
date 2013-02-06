@@ -1,13 +1,13 @@
+from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import Client, TestCase
-
+from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import permissions
 from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
 from rest_framework.compat import patterns
 from rest_framework.views import APIView
-
 import json
 import base64
 
@@ -42,13 +42,17 @@ class BasicAuthTests(TestCase):
 
     def test_post_form_passing_basic_auth(self):
         """Ensure POSTing json over basic auth with correct credentials passes and does not require CSRF"""
-        auth = 'Basic %s' % base64.encodestring('%s:%s' % (self.username, self.password)).strip()
+        credentials = ('%s:%s' % (self.username, self.password))
+        base64_credentials = base64.b64encode(credentials.encode(HTTP_HEADER_ENCODING)).decode(HTTP_HEADER_ENCODING)
+        auth = 'Basic %s' % base64_credentials
         response = self.csrf_client.post('/basic/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
     def test_post_json_passing_basic_auth(self):
         """Ensure POSTing form over basic auth with correct credentials passes and does not require CSRF"""
-        auth = 'Basic %s' % base64.encodestring('%s:%s' % (self.username, self.password)).strip()
+        credentials = ('%s:%s' % (self.username, self.password))
+        base64_credentials = base64.b64encode(credentials.encode(HTTP_HEADER_ENCODING)).decode(HTTP_HEADER_ENCODING)
+        auth = 'Basic %s' % base64_credentials
         response = self.csrf_client.post('/basic/', json.dumps({'example': 'example'}), 'application/json', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
@@ -159,7 +163,7 @@ class TokenAuthTests(TestCase):
         response = client.post('/auth-token/',
                                json.dumps({'username': self.username, 'password': self.password}), 'application/json')
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(json.loads(response.content)['token'], self.key)
+        self.assertEqual(json.loads(response.content.decode('ascii'))['token'], self.key)
 
     def test_token_login_json_bad_creds(self):
         """Ensure token login view using JSON POST fails if bad credentials are used."""
@@ -181,4 +185,4 @@ class TokenAuthTests(TestCase):
         response = client.post('/auth-token/',
                                {'username': self.username, 'password': self.password})
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(json.loads(response.content)['token'], self.key)
+        self.assertEqual(json.loads(response.content.decode('ascii'))['token'], self.key)
