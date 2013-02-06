@@ -1,6 +1,6 @@
 from __future__ import unicode_literals, absolute_import
 from django import template
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, NoReverseMatch
 from django.http import QueryDict
 from django.utils.html import escape
 from django.utils.safestring import SafeData, mark_safe
@@ -31,7 +31,7 @@ try:  # Django 1.5+
     def do_static(parser, token):
         return StaticFilesNode.handle_token(parser, token)
 
-except:
+except ImportError:
     try:  # Django 1.4
         from django.contrib.staticfiles.storage import staticfiles_storage
 
@@ -43,7 +43,7 @@ except:
             """
             return staticfiles_storage.url(path)
 
-    except:  # Django 1.3
+    except ImportError:  # Django 1.3
         from urlparse import urljoin
         from django import template
         from django.templatetags.static import PrefixNode
@@ -137,7 +137,7 @@ def optional_login(request):
     """
     try:
         login_url = reverse('rest_framework:login')
-    except:
+    except NoReverseMatch:
         return ''
 
     snippet = "<a href='%s?next=%s'>Log in</a>" % (login_url, request.path)
@@ -151,7 +151,7 @@ def optional_logout(request):
     """
     try:
         logout_url = reverse('rest_framework:logout')
-    except:
+    except NoReverseMatch:
         return ''
 
     snippet = "<a href='%s?next=%s'>Log out</a>" % (logout_url, request.path)

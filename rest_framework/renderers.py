@@ -217,7 +217,7 @@ class TemplateHTMLRenderer(BaseRenderer):
         try:
             # Try to find an appropriate error template
             return self.resolve_template(template_names)
-        except:
+        except Exception:
             # Fall back to using eg '404 Not Found'
             return Template('%d %s' % (response.status_code,
                                        response.status_text.title()))
@@ -303,7 +303,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         try:
             if not view.has_permission(request, obj):
                 return  # Don't have permission
-        except:
+        except Exception:
             return  # Don't have permission and exception explicitly raise
         return True
 
