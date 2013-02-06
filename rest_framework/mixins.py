@@ -65,7 +65,7 @@ class ListModelMixin(object):
             paginator, page, queryset, is_paginated = packed
             serializer = self.get_pagination_serializer(page)
         else:
-            serializer = self.get_serializer(self.object_list)
+            serializer = self.get_serializer(self.object_list, many=True)
 
         return Response(serializer.data)
 
