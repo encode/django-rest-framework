@@ -35,23 +35,20 @@ A suitable replacement theme can be generated using Bootstrap's [Customize Tool]
 
 You can also change the navbar variant, which by default is `navbar-inverse`, using the `bootstrap_navbar_variant` block. The empty `{% block bootstrap_navbar_variant %}{% endblock %}` will use the original Bootstrap navbar style.
 
-For more specific CSS tweaks, use the `extra_style` block instead.
+For more specific CSS tweaks, use the `style` block instead.
 
 
 ### Blocks
 
 All of the blocks available in the browsable API base template that can be used in your `api.html`.
 
-* `blockbots`                  - `<meta>` tag that blocks crawlers
 * `bodyclass`                  - (empty) class attribute for the `<body>`
 * `bootstrap_theme`            - CSS for the Bootstrap theme
 * `bootstrap_navbar_variant`   - CSS class for the navbar
 * `branding`                   - section of the navbar, see [Bootstrap components][bcomponentsnav]
 * `breadcrumbs`                - Links showing resource nesting, allowing the user to go back up the resources. It's recommended to preserve these, but they can be overridden using the breadcrumbs block.
-* `extrastyle`                 - (empty) extra CSS for the page
-* `extrahead`                  - (empty) extra markup for the page `<head>`
 * `footer`                     - Any copyright notices or similar footer materials can go here (by default right-aligned)
-* `global_heading`             - (empty) Use to insert content below the header but before the breadcrumbs.
+* `style`                      - CSS stylesheets for the page
 * `title`                      - title of the page
 * `userlinks`                  - This is a list of links on the right of the header, by default containing login/logout links. To add links instead of replace, use {{ block.super }} to preserve the authentication links.
 
