@@ -22,6 +22,7 @@ class CreateModelMixin(object):
         if serializer.is_valid():
             self.pre_save(serializer.object)
             self.object = serializer.save()
+            self.post_save(self.object, created=True)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED,
                             headers=headers)
@@ -33,9 +34,6 @@ class CreateModelMixin(object):
             return {'Location': data['url']}
         except (TypeError, KeyError):
             return {}
-
-    def pre_save(self, obj):
-        pass
 
 
 class ListModelMixin(object):
@@ -88,12 +86,15 @@ class UpdateModelMixin(object):
     """
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
+        self.object = None
         try:
             self.object = self.get_object()
-            success_status_code = status.HTTP_200_OK
         except Http404:
-            self.object = None
+            created = True
             success_status_code = status.HTTP_201_CREATED
+        else:
+            created = False
+            success_status_code = status.HTTP_200_OK
 
         serializer = self.get_serializer(self.object, data=request.DATA,
                                          files=request.FILES, partial=partial)
@@ -101,6 +102,7 @@ class UpdateModelMixin(object):
         if serializer.is_valid():
             self.pre_save(serializer.object)
             self.object = serializer.save()
+            self.post_save(self.object, created=created)
             return Response(serializer.data, status=success_status_code)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
