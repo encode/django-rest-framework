@@ -12,8 +12,6 @@
 
 **Full documentation for REST framework is available on [http://django-rest-framework.org][docs].**
 
-Note that this is the 2.0 version of REST framework.  If you are looking for earlier versions please see the [0.4.x branch][0.4] on GitHub.
-
 ---
 
 # Overview
