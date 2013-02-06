@@ -12,6 +12,7 @@ your authentication settings include `SessionAuthentication`.
         url(r'^auth', include('rest_framework.urls', namespace='rest_framework'))
     )
 """
+from __future__ import unicode_literals
 from rest_framework.compat import patterns, url
 
 

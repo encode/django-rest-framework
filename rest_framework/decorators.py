@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+from rest_framework.compat import six
 from rest_framework.views import APIView
 import types
 
@@ -12,7 +14,7 @@ def api_view(http_method_names):
     def decorator(func):
 
         WrappedAPIView = type(
-            'WrappedAPIView',
+            six.PY3 and 'WrappedAPIView' or b'WrappedAPIView',
             (APIView,),
             {'__doc__': func.__doc__}
         )

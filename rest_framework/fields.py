@@ -1,20 +1,23 @@
+from __future__ import unicode_literals
+
 import copy
 import datetime
 import inspect
 import re
 import warnings
 
-from io import BytesIO
-
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django import forms
 from django.forms import widgets
-from django.utils.encoding import is_protected_type, smart_unicode
+from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
 from rest_framework.compat import parse_date, parse_datetime
 from rest_framework.compat import timezone
+from rest_framework.compat import BytesIO
+from rest_framework.compat import six
+from rest_framework.compat import smart_text
 
 
 def is_simple_callable(obj):
@@ -32,7 +35,8 @@ class Field(object):
     creation_counter = 0
     empty = ''
     type_name = None
-    _use_files = None
+    partial = False
+    use_files = False
     form_field_class = forms.CharField
 
     def __init__(self, source=None):
@@ -53,7 +57,8 @@ class Field(object):
         self.parent = parent
         self.root = parent.root or parent
         self.context = self.root.context
-        if self.root.partial:
+        self.partial = self.root.partial
+        if self.partial:
             self.required = False
 
     def field_from_native(self, data, files, field_name, into):
@@ -93,11 +98,11 @@ class Field(object):
 
         if is_protected_type(value):
             return value
-        elif hasattr(value, '__iter__') and not isinstance(value, (dict, basestring)):
+        elif hasattr(value, '__iter__') and not isinstance(value, (dict, six.string_types)):
             return [self.to_native(item) for item in value]
         elif isinstance(value, dict):
             return dict(map(self.to_native, (k, v)) for k, v in value.items())
-        return smart_unicode(value)
+        return smart_text(value)
 
     def attributes(self):
         """
@@ -124,6 +129,13 @@ class WritableField(Field):
                  validators=[], error_messages=None, widget=None,
                  default=None, blank=None):
 
+        # 'blank' is to be deprecated in favor of 'required'
+        if blank is not None:
+            warnings.warn('The `blank` keyword argument is due to deprecated. '
+                          'Use the `required` keyword argument instead.',
+                          PendingDeprecationWarning, stacklevel=2)
+            required = not(blank)
+
         super(WritableField, self).__init__(source=source)
 
         self.read_only = read_only
@@ -141,7 +153,6 @@ class WritableField(Field):
 
         self.validators = self.default_validators + validators
         self.default = default if default is not None else self.default
-        self.blank = blank
 
         # Widgets are ony used for HTML forms.
         widget = widget or self.widget
@@ -180,13 +191,13 @@ class WritableField(Field):
             return
 
         try:
-            if self._use_files:
+            if self.use_files:
                 files = files or {}
                 native = files[field_name]
             else:
                 native = data[field_name]
         except KeyError:
-            if self.default is not None and not self.root.partial:
+            if self.default is not None and not self.partial:
                 # Note: partial updates shouldn't set defaults
                 native = self.default
             else:
@@ -258,7 +269,7 @@ class BooleanField(WritableField):
     form_field_class = forms.BooleanField
     widget = widgets.CheckboxInput
     default_error_messages = {
-        'invalid': _(u"'%s' value must be either True or False."),
+        'invalid': _("'%s' value must be either True or False."),
     }
     empty = False
 
@@ -287,20 +298,10 @@ class CharField(WritableField):
         if max_length is not None:
             self.validators.append(validators.MaxLengthValidator(max_length))
 
-    def validate(self, value):
-        """
-        Validates that the value is supplied (if required).
-        """
-        # if empty string and allow blank
-        if self.blank and not value:
-            return
-        else:
-            super(CharField, self).validate(value)
-
     def from_native(self, value):
-        if isinstance(value, basestring) or value is None:
+        if isinstance(value, six.string_types) or value is None:
             return value
-        return smart_unicode(value)
+        return smart_text(value)
 
 
 class URLField(CharField):
@@ -325,7 +326,8 @@ class ChoiceField(WritableField):
     form_field_class = forms.ChoiceField
     widget = widgets.Select
     default_error_messages = {
-        'invalid_choice': _('Select a valid choice. %(value)s is not one of the available choices.'),
+        'invalid_choice': _('Select a valid choice. %(value)s is not one of '
+                            'the available choices.'),
     }
 
     def __init__(self, choices=(), *args, **kwargs):
@@ -359,10 +361,10 @@ class ChoiceField(WritableField):
             if isinstance(v, (list, tuple)):
                 # This is an optgroup, so look inside the group for options
                 for k2, v2 in v:
-                    if value == smart_unicode(k2):
+                    if value == smart_text(k2):
                         return True
             else:
-                if value == smart_unicode(k) or value == k:
+                if value == smart_text(k) or value == k:
                     return True
         return False
 
@@ -402,7 +404,7 @@ class RegexField(CharField):
         return self._regex
 
     def _set_regex(self, regex):
-        if isinstance(regex, basestring):
+        if isinstance(regex, six.string_types):
             regex = re.compile(regex)
         self._regex = regex
         if hasattr(self, '_regex_validator') and self._regex_validator in self.validators:
@@ -425,10 +427,10 @@ class DateField(WritableField):
     form_field_class = forms.DateField
 
     default_error_messages = {
-        'invalid': _(u"'%s' value has an invalid date format. It must be "
-                     u"in YYYY-MM-DD format."),
-        'invalid_date': _(u"'%s' value has the correct format (YYYY-MM-DD) "
-                          u"but it is an invalid date."),
+        'invalid': _("'%s' value has an invalid date format. It must be "
+                     "in YYYY-MM-DD format."),
+        'invalid_date': _("'%s' value has the correct format (YYYY-MM-DD) "
+                          "but it is an invalid date."),
     }
     empty = None
 
@@ -464,13 +466,13 @@ class DateTimeField(WritableField):
     form_field_class = forms.DateTimeField
 
     default_error_messages = {
-        'invalid': _(u"'%s' value has an invalid format. It must be in "
-                     u"YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ] format."),
-        'invalid_date': _(u"'%s' value has the correct format "
-                          u"(YYYY-MM-DD) but it is an invalid date."),
-        'invalid_datetime': _(u"'%s' value has the correct format "
-                              u"(YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]) "
-                              u"but it is an invalid date/time."),
+        'invalid': _("'%s' value has an invalid format. It must be in "
+                     "YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ] format."),
+        'invalid_date': _("'%s' value has the correct format "
+                          "(YYYY-MM-DD) but it is an invalid date."),
+        'invalid_datetime': _("'%s' value has the correct format "
+                              "(YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]) "
+                              "but it is an invalid date/time."),
     }
     empty = None
 
@@ -487,8 +489,8 @@ class DateTimeField(WritableField):
                 # local time. This won't work during DST change, but we can't
                 # do much about it, so we let the exceptions percolate up the
                 # call stack.
-                warnings.warn(u"DateTimeField received a naive datetime (%s)"
-                              u" while time zone support is active." % value,
+                warnings.warn("DateTimeField received a naive datetime (%s)"
+                              " while time zone support is active." % value,
                               RuntimeWarning)
                 default_timezone = timezone.get_default_timezone()
                 value = timezone.make_aware(value, default_timezone)
@@ -564,7 +566,7 @@ class FloatField(WritableField):
 
 
 class FileField(WritableField):
-    _use_files = True
+    use_files = True
     type_name = 'FileField'
     form_field_class = forms.FileField
     widget = widgets.FileInput
@@ -608,11 +610,12 @@ class FileField(WritableField):
 
 
 class ImageField(FileField):
-    _use_files = True
+    use_files = True
     form_field_class = forms.ImageField
 
     default_error_messages = {
-        'invalid_image': _("Upload a valid image. The file you uploaded was either not an image or a corrupted image."),
+        'invalid_image': _("Upload a valid image. The file you uploaded was "
+                           "either not an image or a corrupted image."),
     }
 
     def from_native(self, data):

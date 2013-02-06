@@ -19,8 +19,8 @@ class Token(models.Model):
         return super(Token, self).save(*args, **kwargs)
 
     def generate_key(self):
-        unique = str(uuid.uuid4())
-        return hmac.new(unique, digestmod=sha1).hexdigest()
+        unique = uuid.uuid4()
+        return hmac.new(unique.bytes, digestmod=sha1).hexdigest()
 
     def __unicode__(self):
         return self.key
