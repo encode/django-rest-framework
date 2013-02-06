@@ -228,7 +228,7 @@ class ModelField(WritableField):
     def __init__(self, *args, **kwargs):
         try:
             self.model_field = kwargs.pop('model_field')
-        except:
+        except KeyError:
             raise ValueError("ModelField requires 'model_field' kwarg")
 
         self.min_length = kwargs.pop('min_length',

@@ -252,7 +252,7 @@ class APIView(View):
 
         try:
             return conneg.select_renderer(request, renderers, self.format_kwarg)
-        except:
+        except Exception:
             if force:
                 return (renderers[0], renderers[0].media_type)
             raise

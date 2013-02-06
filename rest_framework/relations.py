@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError, NoReverseMatch
 from django.core.urlresolvers import resolve, get_script_prefix
 from django import forms
 from django.forms import widgets
@@ -59,7 +59,7 @@ class RelatedField(WritableField):
                     self.queryset = manager.related.model._default_manager.all()
                 else:  # Reverse
                     self.queryset = manager.field.rel.to._default_manager.all()
-            except:
+            except Exception:
                 raise
                 msg = ('Serializer related fields must include a `queryset`' +
                        ' argument or set `read_only=True')
@@ -290,7 +290,7 @@ class HyperlinkedRelatedField(RelatedField):
     def __init__(self, *args, **kwargs):
         try:
             self.view_name = kwargs.pop('view_name')
-        except:
+        except KeyError:
             raise ValueError("Hyperlinked field requires 'view_name' kwarg")
 
         self.slug_field = kwargs.pop('slug_field', self.slug_field)
@@ -317,7 +317,7 @@ class HyperlinkedRelatedField(RelatedField):
         kwargs = {self.pk_url_kwarg: pk}
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except:
+        except NoReverseMatch:
             pass
 
         slug = getattr(obj, self.slug_field, None)
@@ -328,13 +328,13 @@ class HyperlinkedRelatedField(RelatedField):
         kwargs = {self.slug_url_kwarg: slug}
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except:
+        except NoReverseMatch:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except:
+        except NoReverseMatch:
             pass
 
         raise Exception('Could not resolve URL for field using view name "%s"' % view_name)
@@ -360,7 +360,7 @@ class HyperlinkedRelatedField(RelatedField):
 
         try:
             match = resolve(value)
-        except:
+        except Exception:
             raise ValidationError(self.error_messages['no_match'])
 
         if match.view_name != self.view_name:
@@ -434,7 +434,7 @@ class HyperlinkedIdentityField(Field):
 
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except:
+        except NoReverseMatch:
             pass
 
         slug = getattr(obj, self.slug_field, None)
@@ -445,13 +445,13 @@ class HyperlinkedIdentityField(Field):
         kwargs = {self.slug_url_kwarg: slug}
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except:
+        except NoReverseMatch:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except:
+        except NoReverseMatch:
             pass
 
         raise Exception('Could not resolve URL for field using view name "%s"' % view_name)
