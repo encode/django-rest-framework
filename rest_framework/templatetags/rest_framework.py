@@ -1,7 +1,6 @@
 from __future__ import unicode_literals, absolute_import
 from django import template
-from django.core.exceptions import NoReverseMatch
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, NoReverseMatch
 from django.http import QueryDict
 from django.utils.html import escape
 from django.utils.safestring import SafeData, mark_safe
