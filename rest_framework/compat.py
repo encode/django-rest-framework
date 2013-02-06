@@ -10,13 +10,13 @@ import django
 # Try to import six from Django, fallback to included `six`.
 try:
     from django.utils import six
-except:
+except ImportError:
     from rest_framework import six
 
 # location of patterns, url, include changes in 1.4 onwards
 try:
     from django.conf.urls import patterns, url, include
-except:
+except ImportError:
     from django.conf.urls.defaults import patterns, url, include
 
 # Handle django.utils.encoding rename:
@@ -35,7 +35,7 @@ except ImportError:
 # django-filter is optional
 try:
     import django_filters
-except:
+except ImportError:
     django_filters = None
 
 

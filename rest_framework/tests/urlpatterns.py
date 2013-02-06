@@ -23,14 +23,14 @@ class FormatSuffixTests(TestCase):
         factory = RequestFactory()
         try:
             urlpatterns = format_suffix_patterns(urlpatterns)
-        except:
+        except Exception:
             self.fail("Failed to apply `format_suffix_patterns` on  the supplied urlpatterns")
         resolver = urlresolvers.RegexURLResolver(r'^/', urlpatterns)
         for test_path in test_paths:
             request = factory.get(test_path.path)
             try:
                 callback, callback_args, callback_kwargs = resolver.resolve(request.path_info)
-            except:
+            except Exception:
                 self.fail("Failed to resolve URL: %s" % request.path_info)
             self.assertEquals(callback_args, test_path.args)
             self.assertEquals(callback_kwargs, test_path.kwargs)
