@@ -185,6 +185,33 @@ class BasicTests(TestCase):
         self.assertEquals(instance.age, self.person_data['age'])
 
 
+class DictStyleSerializer(serializers.Serializer):
+    """
+    Note that we don't have any `restore_object` method, so the default
+    case of simply returning a dict will apply.
+    """
+    email = serializers.EmailField()
+
+
+class DictStyleSerializerTests(TestCase):
+    def test_dict_style_deserialize(self):
+        """
+        Ensure serializers can deserialize into a dict.
+        """
+        data = {'email': 'foo@example.com'}
+        serializer = DictStyleSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        self.assertEquals(serializer.data, data)
+
+    def test_dict_style_serialize(self):
+        """
+        Ensure serializers can serialize dict objects.
+        """
+        data = {'email': 'foo@example.com'}
+        serializer = DictStyleSerializer(data)
+        self.assertEquals(serializer.data, data)
+
+
 class ValidationTests(TestCase):
     def setUp(self):
         self.comment = Comment(

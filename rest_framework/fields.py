@@ -30,6 +30,21 @@ def is_simple_callable(obj):
     )
 
 
+def get_component(obj, attr_name):
+    """
+    Given an object, and an attribute name,
+    return that attribute on the object.
+    """
+    if isinstance(obj, dict):
+        val = obj[attr_name]
+    else:
+        val = getattr(obj, attr_name)
+
+    if is_simple_callable(val):
+        return val()
+    return val
+
+
 class Field(object):
     read_only = True
     creation_counter = 0
@@ -82,11 +97,9 @@ class Field(object):
         if self.source:
             value = obj
             for component in self.source.split('.'):
-                value = getattr(value, component)
-                if is_simple_callable(value):
-                    value = value()
+                value = get_component(value, component)
         else:
-            value = getattr(obj, field_name)
+            value = get_component(obj, field_name)
         return self.to_native(value)
 
     def to_native(self, value):

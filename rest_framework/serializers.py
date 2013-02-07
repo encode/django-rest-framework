@@ -325,7 +325,7 @@ class BaseSerializer(Field):
         if self.many is not None:
             many = self.many
         else:
-            many = hasattr(obj, '__iter__') and not isinstance(obj, Page)
+            many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict))
 
         if many:
             return [self.to_native(item) for item in obj]
@@ -343,7 +343,7 @@ class BaseSerializer(Field):
             if self.many is not None:
                 many = self.many
             else:
-                many = hasattr(data, '__iter__') and not isinstance(data, dict)
+                many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict))
 
             # TODO: error data when deserializing lists
             if many:
@@ -368,7 +368,7 @@ class BaseSerializer(Field):
             if self.many is not None:
                 many = self.many
             else:
-                many = hasattr(obj, '__iter__') and not isinstance(obj, Page)
+                many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict))
 
             if many:
                 self._data = [self.to_native(item) for item in obj]
