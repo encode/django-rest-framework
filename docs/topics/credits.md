@@ -125,7 +125,6 @@ For usage questions please see the [REST framework discussion group][group].
 
 You can also contact [@_tomchristie][twitter] directly on twitter.
 
-[email]: mailto:tom@tomchristie.com
 [twitter]: http://twitter.com/_tomchristie
 [bootstrap]: http://twitter.github.com/bootstrap/
 [markdown]: http://daringfireball.net/projects/markdown/
