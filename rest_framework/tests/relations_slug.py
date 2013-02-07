@@ -18,7 +18,7 @@ class ForeignKeySourceSerializer(serializers.ModelSerializer):
 
 
 class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
-    target = serializers.SlugRelatedField(slug_field='name', null=True)
+    target = serializers.SlugRelatedField(slug_field='name', required=False)
 
     class Meta:
         model = NullableForeignKeySource

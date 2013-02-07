@@ -802,7 +802,7 @@ class BlankFieldTests(TestCase):
                 model = BlankFieldModel
 
         class BlankFieldSerializer(serializers.Serializer):
-            title = serializers.CharField(blank=True)
+            title = serializers.CharField(required=False)
 
         class NotBlankFieldModelSerializer(serializers.ModelSerializer):
             class Meta:
