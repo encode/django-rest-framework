@@ -61,7 +61,7 @@ setup(
     license='BSD',
     description='A lightweight REST framework for Django.',
     author='Tom Christie',
-    author_email='tom@tomchristie.com',
+    author_email='tom@tomchristie.com',  # SEE NOTE BELOW (*)
     packages=get_packages('rest_framework'),
     package_data=get_package_data('rest_framework'),
     test_suite='rest_framework.runtests.runtests.main',
@@ -78,3 +78,9 @@ setup(
         'Topic :: Internet :: WWW/HTTP',
     ]
 )
+
+# (*) Please direct queries to the discussion group, rather than to me directly
+#     Doing so helps ensure your question is helpful to other users.
+#     Queries directly to my email are likely to receive a canned response.
+#
+#     Many thanks for your understanding.
