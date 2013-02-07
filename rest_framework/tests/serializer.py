@@ -551,7 +551,7 @@ class ManyToManyTests(TestCase):
 class ReadOnlyManyToManyTests(TestCase):
     def setUp(self):
         class ReadOnlyManyToManySerializer(serializers.ModelSerializer):
-            rel = serializers.ManyRelatedField(read_only=True)
+            rel = serializers.RelatedField(many=True, read_only=True)
 
             class Meta:
                 model = ReadOnlyManyToManyModel

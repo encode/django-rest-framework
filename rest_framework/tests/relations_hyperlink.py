@@ -20,7 +20,7 @@ urlpatterns = patterns('',
 
 
 class ManyToManyTargetSerializer(serializers.HyperlinkedModelSerializer):
-    sources = serializers.ManyHyperlinkedRelatedField(view_name='manytomanysource-detail')
+    sources = serializers.HyperlinkedRelatedField(many=True, view_name='manytomanysource-detail')
 
     class Meta:
         model = ManyToManyTarget
@@ -32,7 +32,7 @@ class ManyToManySourceSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ForeignKeyTargetSerializer(serializers.HyperlinkedModelSerializer):
-    sources = serializers.ManyHyperlinkedRelatedField(view_name='foreignkeysource-detail')
+    sources = serializers.HyperlinkedRelatedField(many=True, view_name='foreignkeysource-detail')
 
     class Meta:
         model = ForeignKeyTarget

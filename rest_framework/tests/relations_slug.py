@@ -4,7 +4,7 @@ from rest_framework.tests.models import NullableForeignKeySource, ForeignKeySour
 
 
 class ForeignKeyTargetSerializer(serializers.ModelSerializer):
-    sources = serializers.ManySlugRelatedField(slug_field='name')
+    sources = serializers.SlugRelatedField(many=True, slug_field='name')
 
     class Meta:
         model = ForeignKeyTarget

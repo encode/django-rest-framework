@@ -330,7 +330,7 @@ class ClassA(models.Model):
 
 
 class ClassASerializer(serializers.ModelSerializer):
-    childs = serializers.ManyPrimaryKeyRelatedField(source='childs')
+    childs = serializers.PrimaryKeyRelatedField(many=True, source='childs')
 
     class Meta:
         model = ClassA

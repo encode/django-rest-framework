@@ -470,11 +470,10 @@ class ModelSerializer(Serializer):
         # .using(db).complex_filter(self.rel.limit_choices_to)
         kwargs = {
             'required': not(model_field.null or model_field.blank),
-            'queryset': model_field.rel.to._default_manager
+            'queryset': model_field.rel.to._default_manager,
+            'many': to_many
         }
 
-        if to_many:
-            return ManyPrimaryKeyRelatedField(**kwargs)
         return PrimaryKeyRelatedField(**kwargs)
 
     def get_field(self, model_field):
@@ -669,8 +668,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
         kwargs = {
             'required': not(model_field.null or model_field.blank),
             'queryset': rel._default_manager,
-            'view_name': self._get_default_view_name(rel)
+            'view_name': self._get_default_view_name(rel),
+            'many': to_many
         }
-        if to_many:
-            return ManyHyperlinkedRelatedField(**kwargs)
         return HyperlinkedRelatedField(**kwargs)

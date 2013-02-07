@@ -5,7 +5,7 @@ from rest_framework.tests.models import ManyToManyTarget, ManyToManySource, Fore
 
 
 class ManyToManyTargetSerializer(serializers.ModelSerializer):
-    sources = serializers.ManyPrimaryKeyRelatedField()
+    sources = serializers.PrimaryKeyRelatedField(many=True)
 
     class Meta:
         model = ManyToManyTarget
@@ -17,7 +17,7 @@ class ManyToManySourceSerializer(serializers.ModelSerializer):
 
 
 class ForeignKeyTargetSerializer(serializers.ModelSerializer):
-    sources = serializers.ManyPrimaryKeyRelatedField()
+    sources = serializers.PrimaryKeyRelatedField(many=True)
 
     class Meta:
         model = ForeignKeyTarget

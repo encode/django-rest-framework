@@ -56,7 +56,7 @@ class TestGenericRelations(TestCase):
         """
 
         class BookmarkSerializer(serializers.ModelSerializer):
-            tags = serializers.ManyRelatedField()
+            tags = serializers.RelatedField(many=True)
 
             class Meta:
                 model = Bookmark

@@ -16,7 +16,7 @@ class FlatForeignKeySourceSerializer(serializers.ModelSerializer):
 
 
 class ForeignKeyTargetSerializer(serializers.ModelSerializer):
-    sources = FlatForeignKeySourceSerializer()
+    sources = FlatForeignKeySourceSerializer(many=True)
 
     class Meta:
         model = ForeignKeyTarget

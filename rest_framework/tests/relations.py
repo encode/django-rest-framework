@@ -40,7 +40,7 @@ class TestManyRelateMixin(TestCase):
 
         https://github.com/tomchristie/django-rest-framework/pull/632
         '''
-        field = serializers.ManyRelatedField(read_only=False)
+        field = serializers.RelatedField(many=True, read_only=False)
 
         into = {}
         field.field_from_native({}, None, 'field_name', into)
