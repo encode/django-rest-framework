@@ -46,6 +46,7 @@ For example, the following serializer.
         tracks = RelatedField(many=True)
         
         class Meta:
+            model = Album
             fields = ('album_name', 'artist', 'tracks')
 
 Would serialize to the following representation.
@@ -73,6 +74,7 @@ For example, the following serializer:
         tracks = PrimaryKeyRelatedField(many=True, read_only=True)
         
         class Meta:
+            model = Album
             fields = ('album_name', 'artist', 'tracks')
 
 Would serialize to a representation like this:
@@ -106,6 +108,7 @@ For example, the following serializer:
                                          view_name='track-detail')
         
         class Meta:
+            model = Album
             fields = ('album_name', 'artist', 'tracks')
 
 Would serialize to a representation like this:
@@ -143,6 +146,7 @@ For example, the following serializer:
         tracks = SlugRelatedField(many=True, read_only=True, slug_field='title')
         
         class Meta:
+            model = Album
             fields = ('album_name', 'artist', 'tracks')
 
 Would serialize to a representation like this:
@@ -176,6 +180,7 @@ This field can be applied as an identity relationship, such as the `'url'` field
         track_listing = HyperLinkedIdentityField(view_name='track-list')
 
         class Meta:
+            model = Album
             fields = ('album_name', 'artist', 'track_listing')
 
 Would serialize to a representation like this:
@@ -208,6 +213,7 @@ Nested relationships can be expressed by using serializers as fields.  For examp
         tracks = TrackSerializer(many=True)
         
         class Meta:
+            model = Album
             fields = ('album_name', 'artist', 'tracks')
 
 Note that nested relationships are currently read-only.  For read-write relationships, you should use a flat relational style.
