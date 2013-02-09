@@ -1,8 +1,7 @@
 """
 Provides an APIView class that is used as the base of all class-based views.
 """
-
-import re
+from __future__ import unicode_literals
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.html import escape
@@ -13,6 +12,7 @@ from rest_framework.compat import View, apply_markdown
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
+import re
 
 
 def _remove_trailing_string(content, trailing):
@@ -148,6 +148,8 @@ class APIView(View):
         """
         If request is not permitted, determine what kind of exception to raise.
         """
+        if not self.request.successful_authenticator:
+            raise exceptions.NotAuthenticated()
         raise exceptions.PermissionDenied()
 
     def throttled(self, request, wait):
@@ -155,6 +157,15 @@ class APIView(View):
         If request is throttled, determine what kind of exception to raise.
         """
         raise exceptions.Throttled(wait)
+
+    def get_authenticate_header(self, request):
+        """
+        If a request is unauthenticated, determine the WWW-Authenticate
+        header to use for 401 responses, if any.
+        """
+        authenticators = self.get_authenticators()
+        if authenticators:
+            return authenticators[0].authenticate_header(request)
 
     def get_parser_context(self, http_request):
         """
@@ -241,7 +252,7 @@ class APIView(View):
 
         try:
             return conneg.select_renderer(request, renderers, self.format_kwarg)
-        except:
+        except Exception:
             if force:
                 return (renderers[0], renderers[0].media_type)
             raise
@@ -318,6 +329,16 @@ class APIView(View):
         if isinstance(exc, exceptions.Throttled):
             # Throttle wait header
             self.headers['X-Throttle-Wait-Seconds'] = '%d' % exc.wait
+
+        if isinstance(exc, (exceptions.NotAuthenticated,
+                            exceptions.AuthenticationFailed)):
+            # WWW-Authenticate header for 401 responses, else coerce to 403
+            auth_header = self.get_authenticate_header(self.request)
+
+            if auth_header:
+                self.headers['WWW-Authenticate'] = auth_header
+            else:
+                exc.status_code = status.HTTP_403_FORBIDDEN
 
         if isinstance(exc, exceptions.APIException):
             return Response({'detail': exc.detail},

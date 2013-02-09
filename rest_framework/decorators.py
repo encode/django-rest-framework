@@ -1,4 +1,7 @@
+from __future__ import unicode_literals
+from rest_framework.compat import six
 from rest_framework.views import APIView
+import types
 
 
 def api_view(http_method_names):
@@ -11,7 +14,7 @@ def api_view(http_method_names):
     def decorator(func):
 
         WrappedAPIView = type(
-            'WrappedAPIView',
+            six.PY3 and 'WrappedAPIView' or b'WrappedAPIView',
             (APIView,),
             {'__doc__': func.__doc__}
         )
@@ -22,6 +25,14 @@ def api_view(http_method_names):
         #     class WrappedAPIView(APIView):
         #         pass
         #     WrappedAPIView.__doc__ = func.doc    <--- Not possible to do this
+
+        # api_view applied without (method_names)
+        assert not(isinstance(http_method_names, types.FunctionType)), \
+            '@api_view missing list of allowed HTTP methods'
+
+        # api_view applied with eg. string instead of list of strings
+        assert isinstance(http_method_names, (list, tuple)), \
+            '@api_view expected a list of strings, recieved %s' % type(http_method_names).__name__
 
         allowed_methods = set(http_method_names) | set(('options',))
         WrappedAPIView.http_method_names = [method.lower() for method in allowed_methods]

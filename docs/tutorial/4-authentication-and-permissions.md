@@ -22,7 +22,7 @@ We'd also need to make sure that when the model is saved, that we populate the h
 We'll need some extra imports:
 
     from pygments.lexers import get_lexer_by_name
-    from pygments.formatters import HtmlFormatter
+    from pygments.formatters.html import HtmlFormatter
     from pygments import highlight
 
 And now we can add a `.save()` method to our model class:
@@ -53,6 +53,8 @@ You might also want to create a few different users, to use for testing the API.
 ## Adding endpoints for our User models
 
 Now that we've got some users to work with, we'd better add representations of those users to our API.  Creating a new serializer is easy:
+
+    from django.contrib.auth.models import User
 
     class UserSerializer(serializers.ModelSerializer):
         snippets = serializers.ManyPrimaryKeyRelatedField()
@@ -164,7 +166,8 @@ In the snippets app, create a new file, `permissions.py`
             if obj is None:
                 return True
     
-            # Read permissions are allowed to any request
+            # Read permissions are allowed to any request,
+            # so we'll always allow GET, HEAD or OPTIONS requests.
             if request.method in permissions.SAFE_METHODS:            
                 return True
     

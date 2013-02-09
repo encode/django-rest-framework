@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.test import TestCase
 from rest_framework.views import APIView
 from rest_framework.compat import apply_markdown

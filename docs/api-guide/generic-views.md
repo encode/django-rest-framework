@@ -131,6 +131,15 @@ Each of the generic views provided is built by combining one of the base views b
 
 Extends REST framework's `APIView` class, adding support for serialization of model instances and model querysets.
 
+**Methods**:
+
+* `get_serializer_context(self)` - Returns a dictionary containing any extra context that should be supplied to the serializer.  Defaults to including `'request'`, `'view'` and `'format'` keys.
+* `get_serializer_class(self)` - Returns the class that should be used for the serializer.
+* `get_serializer(self, instance=None, data=None, files=None, many=False, partial=False)` - Returns a serializer instance.
+* `pre_save(self, obj)` - A hook that is called before saving an object.
+* `post_save(self, obj, created=False)` - A hook that is called after saving an object.
+
+
 **Attributes**:
 
 * `model` - The model that should be used for this view.  Used as a fallback for determining the serializer if `serializer_class` is not set, and as a fallback for determining the queryset if `queryset` is not set.  Otherwise not required.

@@ -1,7 +1,7 @@
 """
 Provides a set of pluggable permission policies.
 """
-
+from __future__ import unicode_literals
 
 SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 

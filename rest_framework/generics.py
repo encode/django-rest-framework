@@ -1,7 +1,7 @@
 """
 Generic views that provide commonly needed behaviour.
 """
-
+from __future__ import unicode_literals
 from rest_framework import views, mixins
 from rest_framework.settings import api_settings
 from django.views.generic.detail import SingleObjectMixin
@@ -48,7 +48,7 @@ class GenericAPIView(views.APIView):
         return serializer_class
 
     def get_serializer(self, instance=None, data=None,
-                       files=None, partial=False):
+                       files=None, many=False, partial=False):
         """
         Return the serializer instance that should be used for validating and
         deserializing input, and for serializing output.
@@ -56,7 +56,21 @@ class GenericAPIView(views.APIView):
         serializer_class = self.get_serializer_class()
         context = self.get_serializer_context()
         return serializer_class(instance, data=data, files=files,
-                                partial=partial, context=context)
+                                many=many, partial=partial, context=context)
+
+    def pre_save(self, obj):
+        """
+        Placeholder method for calling before saving an object.
+        May be used eg. to set attributes on the object that are implicit
+        in either the request, or the url.
+        """
+        pass
+
+    def post_save(self, obj, created=False):
+        """
+        Placeholder method for calling after saving an object.
+        """
+        pass
 
 
 class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
