@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import json
 from django.test import TestCase
 from django.test.client import RequestFactory

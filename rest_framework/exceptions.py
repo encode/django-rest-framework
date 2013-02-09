@@ -4,6 +4,7 @@ Handled exceptions raised by REST framework.
 In addition Django's built in 403 and 404 exceptions are handled.
 (`django.http.Http404` and `django.core.exceptions.PermissionDenied`)
 """
+from __future__ import unicode_literals
 from rest_framework import status
 
 
@@ -18,6 +19,22 @@ class APIException(Exception):
 class ParseError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = 'Malformed request.'
+
+    def __init__(self, detail=None):
+        self.detail = detail or self.default_detail
+
+
+class AuthenticationFailed(APIException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    default_detail = 'Incorrect authentication credentials.'
+
+    def __init__(self, detail=None):
+        self.detail = detail or self.default_detail
+
+
+class NotAuthenticated(APIException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    default_detail = 'Authentication credentials were not provided.'
 
     def __init__(self, detail=None):
         self.detail = detail or self.default_detail

@@ -9,10 +9,12 @@ The wrapped request then offers a richer API, in particular :
     - full support of PUT method, including support for file uploads
     - form overloading of HTTP method, content type and content
 """
-from StringIO import StringIO
-
+from __future__ import unicode_literals
+from django.conf import settings
 from django.http.multipartparser import parse_header
+from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
+from rest_framework.compat import BytesIO
 from rest_framework.settings import api_settings
 
 
@@ -20,7 +22,7 @@ def is_form_media_type(media_type):
     """
     Return True if the media type is a valid form media type.
     """
-    base_media_type, params = parse_header(media_type)
+    base_media_type, params = parse_header(media_type.encode(HTTP_HEADER_ENCODING))
     return (base_media_type == 'application/x-www-form-urlencoded' or
             base_media_type == 'multipart/form-data')
 
@@ -86,10 +88,12 @@ class Request(object):
         self._method = Empty
         self._content_type = Empty
         self._stream = Empty
+        self._authenticator = None
 
         if self.parser_context is None:
             self.parser_context = {}
         self.parser_context['request'] = self
+        self.parser_context['encoding'] = request.encoding or settings.DEFAULT_CHARSET
 
     def _default_negotiator(self):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()
@@ -166,7 +170,7 @@ class Request(object):
         by the authentication classes provided to the request.
         """
         if not hasattr(self, '_user'):
-            self._user, self._auth = self._authenticate()
+            self._authenticator, self._user, self._auth = self._authenticate()
         return self._user
 
     @user.setter
@@ -185,7 +189,7 @@ class Request(object):
         request, such as an authentication token.
         """
         if not hasattr(self, '_auth'):
-            self._user, self._auth = self._authenticate()
+            self._authenticator, self._user, self._auth = self._authenticate()
         return self._auth
 
     @auth.setter
@@ -195,6 +199,14 @@ class Request(object):
         request, such as an authentication token.
         """
         self._auth = value
+
+    @property
+    def successful_authenticator(self):
+        """
+        Return the instance of the authentication instance class that was used
+        to authenticate the request, or `None`.
+        """
+        return self._authenticator
 
     def _load_data_and_files(self):
         """
@@ -233,7 +245,7 @@ class Request(object):
         elif hasattr(self._request, 'read'):
             self._stream = self._request
         else:
-            self._stream = StringIO(self.raw_post_data)
+            self._stream = BytesIO(self.raw_post_data)
 
     def _perform_form_overloading(self):
         """
@@ -268,7 +280,7 @@ class Request(object):
             self._CONTENT_PARAM in self._data and
             self._CONTENTTYPE_PARAM in self._data):
             self._content_type = self._data[self._CONTENTTYPE_PARAM]
-            self._stream = StringIO(self._data[self._CONTENT_PARAM])
+            self._stream = BytesIO(self._data[self._CONTENT_PARAM].encode(HTTP_HEADER_ENCODING))
             self._data, self._files = (Empty, Empty)
 
     def _parse(self):
@@ -299,21 +311,23 @@ class Request(object):
 
     def _authenticate(self):
         """
-        Attempt to authenticate the request using each authentication instance in turn.
-        Returns a two-tuple of (user, authtoken).
+        Attempt to authenticate the request using each authentication instance
+        in turn.
+        Returns a three-tuple of (authenticator, user, authtoken).
         """
         for authenticator in self.authenticators:
             user_auth_tuple = authenticator.authenticate(self)
             if not user_auth_tuple is None:
-                return user_auth_tuple
+                user, auth = user_auth_tuple
+                return (authenticator, user, auth)
         return self._not_authenticated()
 
     def _not_authenticated(self):
         """
-        Return a two-tuple of (user, authtoken), representing an
-        unauthenticated request.
+        Return a three-tuple of (authenticator, user, authtoken), representing
+        an unauthenticated request.
 
-        By default this will be (AnonymousUser, None).
+        By default this will be (None, AnonymousUser, None).
         """
         if api_settings.UNAUTHENTICATED_USER:
             user = api_settings.UNAUTHENTICATED_USER()
@@ -325,7 +339,7 @@ class Request(object):
         else:
             auth = None
 
-        return (user, auth)
+        return (None, user, auth)
 
     def __getattr__(self, attr):
         """

@@ -110,6 +110,15 @@ To implement a custom permission, override `BasePermission` and implement the `.
 
 The method should return `True` if the request should be granted access, and `False` otherwise.
 
+## Example
+
+The following is an example of a permission class that checks the incoming request's IP address against a blacklist, and denies the request if the IP has been blacklisted.
+
+    class BlacklistPermission(permissions.BasePermission):
+        def has_permission(self, request, view, obj=None):
+            ip_addr = request.META['REMOTE_ADDR']
+            blacklisted = Blacklist.objects.filter(ip_addr=ip_addr).exists()
+            return not blacklisted
 
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
