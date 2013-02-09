@@ -4,6 +4,8 @@ Basic building blocks for generic class based views.
 We don't bind behaviour to http method handlers yet,
 which allows mixin classes to be composed in interesting ways.
 """
+from __future__ import unicode_literals
+
 from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
@@ -20,6 +22,7 @@ class CreateModelMixin(object):
         if serializer.is_valid():
             self.pre_save(serializer.object)
             self.object = serializer.save()
+            self.post_save(self.object, created=True)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED,
                             headers=headers)
@@ -32,16 +35,13 @@ class CreateModelMixin(object):
         except (TypeError, KeyError):
             return {}
 
-    def pre_save(self, obj):
-        pass
-
 
 class ListModelMixin(object):
     """
     List a queryset.
     Should be mixed in with `MultipleObjectAPIView`.
     """
-    empty_error = u"Empty list and '%(class_name)s.allow_empty' is False."
+    empty_error = "Empty list and '%(class_name)s.allow_empty' is False."
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
@@ -63,7 +63,7 @@ class ListModelMixin(object):
             paginator, page, queryset, is_paginated = packed
             serializer = self.get_pagination_serializer(page)
         else:
-            serializer = self.get_serializer(self.object_list)
+            serializer = self.get_serializer(self.object_list, many=True)
 
         return Response(serializer.data)
 
@@ -86,12 +86,15 @@ class UpdateModelMixin(object):
     """
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
+        self.object = None
         try:
             self.object = self.get_object()
-            success_status_code = status.HTTP_200_OK
         except Http404:
-            self.object = None
+            created = True
             success_status_code = status.HTTP_201_CREATED
+        else:
+            created = False
+            success_status_code = status.HTTP_200_OK
 
         serializer = self.get_serializer(self.object, data=request.DATA,
                                          files=request.FILES, partial=partial)
@@ -99,6 +102,7 @@ class UpdateModelMixin(object):
         if serializer.is_valid():
             self.pre_save(serializer.object)
             self.object = serializer.save()
+            self.post_save(self.object, created=created)
             return Response(serializer.data, status=success_status_code)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

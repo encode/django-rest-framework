@@ -101,6 +101,7 @@ The following people have helped make REST framework great.
 * Michał Jaworski - [swistakm]
 * Andrea de Marco - [z4r]
 * Fernando Rocha - [fernandogrd]
+* Xavier Ordoquy - [xordoquy]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -124,7 +125,6 @@ For usage questions please see the [REST framework discussion group][group].
 
 You can also contact [@_tomchristie][twitter] directly on twitter.
 
-[email]: mailto:tom@tomchristie.com
 [twitter]: http://twitter.com/_tomchristie
 [bootstrap]: http://twitter.github.com/bootstrap/
 [markdown]: http://daringfireball.net/projects/markdown/
@@ -237,3 +237,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [swistakm]: https://github.com/swistakm
 [z4r]: https://github.com/z4r
 [fernandogrd]: https://github.com/fernandogrd
+[xordoquy]: https://github.com/xordoquy

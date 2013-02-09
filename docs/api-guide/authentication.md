@@ -137,7 +137,8 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
 **Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https` only.
 
-=======
+---
+
 If you want every user to have an automatically generated Token, you can simply catch the User's `post_save` signal.
 
     @receiver(post_save, sender=User)
@@ -210,7 +211,16 @@ The following example will authenticate any incoming request as the user given b
                 raise authenticate.AuthenticationFailed('No such user')
             
             return (user, None)
-                
+
+---
+
+# Third party packages
+
+The following third party packages are also available.
+
+## Digest Authentication
+
+HTTP digest authentication is a widely implemented scheme that was intended to replace HTTP basic authentication, and which provides a simple encrypted authentication mechanism. [Juan Riaza][juanriaza] maintains the [djangorestframework-digestauth][djangorestframework-digestauth] package which provides HTTP digest authentication support for REST framework.
 
 [cite]: http://jacobian.org/writing/rest-worst-practices/
 [http401]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
@@ -221,3 +231,5 @@ The following example will authenticate any incoming request as the user given b
 [throttling]: throttling.md
 [csrf-ajax]: https://docs.djangoproject.com/en/dev/ref/contrib/csrf/#ajax
 [mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
+[juanriaza]: https://github.com/juanriaza
+[djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth

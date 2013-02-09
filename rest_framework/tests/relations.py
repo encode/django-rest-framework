@@ -1,7 +1,7 @@
 """
 General tests for relational fields.
 """
-
+from __future__ import unicode_literals
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
@@ -40,7 +40,7 @@ class TestManyRelateMixin(TestCase):
 
         https://github.com/tomchristie/django-rest-framework/pull/632
         '''
-        field = serializers.ManyRelatedField(read_only=False)
+        field = serializers.RelatedField(many=True, read_only=False)
 
         into = {}
         field.field_from_native({}, None, 'field_name', into)

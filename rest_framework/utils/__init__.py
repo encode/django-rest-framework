@@ -1,6 +1,8 @@
-from django.utils.encoding import smart_unicode
+from __future__ import unicode_literals
 from django.utils.xmlutils import SimplerXMLGenerator
 from rest_framework.compat import StringIO
+from rest_framework.compat import six
+from rest_framework.compat import smart_text
 import re
 import xml.etree.ElementTree as ET
 
@@ -70,7 +72,7 @@ class XMLRenderer():
                 xml.endElement("list-item")
 
         elif isinstance(data, dict):
-            for key, value in data.iteritems():
+            for key, value in six.iteritems(data):
                 xml.startElement(key, {})
                 self._to_xml(xml, value)
                 xml.endElement(key)
@@ -80,10 +82,10 @@ class XMLRenderer():
             pass
 
         else:
-            xml.characters(smart_unicode(data))
+            xml.characters(smart_text(data))
 
     def dict2xml(self, data):
-        stream = StringIO.StringIO()
+        stream = StringIO()
 
         xml = SimplerXMLGenerator(stream, "utf-8")
         xml.startDocument()

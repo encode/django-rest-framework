@@ -139,7 +139,7 @@
 #         raise errors on unexpected request data"""
 #         content = {'qwerty': 'uiop', 'extra': 'extra'}
 #         validator.allow_unknown_form_fields = True
-#         self.assertEqual({'qwerty': u'uiop'},
+#         self.assertEqual({'qwerty': 'uiop'},
 #                          validator.validate_request(content, None),
 #                          "Resource didn't accept unknown fields.")
 #         validator.allow_unknown_form_fields = False
