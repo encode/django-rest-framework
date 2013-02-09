@@ -422,7 +422,6 @@ class ModelSerializer(Serializer):
 
         if self.parent.object:
             # Set the serializer object if it exists
-            pk_field_name = self.opts.model._meta.pk.name
             obj = getattr(self.parent.object, field_name)
             self.object = obj
 
