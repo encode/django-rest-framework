@@ -109,6 +109,6 @@ class DjangoModelPermissions(BasePermission):
 
         if (request.user and
             request.user.is_authenticated() and
-            request.user.has_perms(perms, obj)):
+            request.user.has_perms(perms)):
             return True
         return False
