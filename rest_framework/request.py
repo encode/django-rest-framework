@@ -88,7 +88,6 @@ class Request(object):
         self._method = Empty
         self._content_type = Empty
         self._stream = Empty
-        self._authenticator = None
 
         if self.parser_context is None:
             self.parser_context = {}
@@ -175,12 +174,12 @@ class Request(object):
 
     @user.setter
     def user(self, value):
-         """
-         Sets the user on the current request. This is necessary to maintain
-         compatilbility with django.contrib.auth where the user proprety is
-         set in the login and logout functions.
-         """
-         self._user = value
+        """
+        Sets the user on the current request. This is necessary to maintain
+        compatilbility with django.contrib.auth where the user proprety is
+        set in the login and logout functions.
+        """
+        self._user = value
 
     @property
     def auth(self):
@@ -206,6 +205,8 @@ class Request(object):
         Return the instance of the authentication instance class that was used
         to authenticate the request, or `None`.
         """
+        if not hasattr(self, '_authenticator'):
+            self._authenticator, self._user, self._auth = self._authenticate()
         return self._authenticator
 
     def _load_data_and_files(self):
