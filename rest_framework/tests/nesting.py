@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
@@ -52,61 +53,61 @@ class NestedOneToOneTests(TestCase):
         queryset = OneToOneTarget.objects.all()
         serializer = OneToOneTargetSerializer(queryset)
         expected = [
-            {'id': 1, 'name': u'target-1', 'target_source': {'id': 1, 'name': u'target-source-1', 'source': {'id': 1, 'name': u'source-1'}}},
-            {'id': 2, 'name': u'target-2', 'target_source': {'id': 2, 'name': u'target-source-2', 'source': {'id': 2, 'name': u'source-2'}}},
-            {'id': 3, 'name': u'target-3', 'target_source': {'id': 3, 'name': u'target-source-3', 'source': {'id': 3, 'name': u'source-3'}}}            
+            {'id': 1, 'name': 'target-1', 'target_source': {'id': 1, 'name': 'target-source-1', 'source': {'id': 1, 'name': 'source-1'}}},
+            {'id': 2, 'name': 'target-2', 'target_source': {'id': 2, 'name': 'target-source-2', 'source': {'id': 2, 'name': 'source-2'}}},
+            {'id': 3, 'name': 'target-3', 'target_source': {'id': 3, 'name': 'target-source-3', 'source': {'id': 3, 'name': 'source-3'}}}            
         ]
         self.assertEquals(serializer.data, expected)
         
 
     def test_one_to_one_create(self):
-        data = {'id': 4, 'name': u'target-4', 'target_source': {'id': 4, 'name': u'target-source-4', 'source': {'id': 4, 'name': u'source-4'}}}
+        data = {'id': 4, 'name': 'target-4', 'target_source': {'id': 4, 'name': 'target-source-4', 'source': {'id': 4, 'name': 'source-4'}}}
         serializer = OneToOneTargetSerializer(data=data)
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
         self.assertEquals(serializer.data, data)
-        self.assertEqual(obj.name, u'target-4')
+        self.assertEqual(obj.name, 'target-4')
 
         # Ensure (target 4, target_source 4, source 4) are added, and
         # everything else is as expected.
         queryset = OneToOneTarget.objects.all()
         serializer = OneToOneTargetSerializer(queryset)
         expected = [
-            {'id': 1, 'name': u'target-1', 'target_source': {'id': 1, 'name': u'target-source-1', 'source': {'id': 1, 'name': u'source-1'}}},
-            {'id': 2, 'name': u'target-2', 'target_source': {'id': 2, 'name': u'target-source-2', 'source': {'id': 2, 'name': u'source-2'}}},
-            {'id': 3, 'name': u'target-3', 'target_source': {'id': 3, 'name': u'target-source-3', 'source': {'id': 3, 'name': u'source-3'}}},
-            {'id': 4, 'name': u'target-4', 'target_source': {'id': 4, 'name': u'target-source-4', 'source': {'id': 4, 'name': u'source-4'}}}
+            {'id': 1, 'name': 'target-1', 'target_source': {'id': 1, 'name': 'target-source-1', 'source': {'id': 1, 'name': 'source-1'}}},
+            {'id': 2, 'name': 'target-2', 'target_source': {'id': 2, 'name': 'target-source-2', 'source': {'id': 2, 'name': 'source-2'}}},
+            {'id': 3, 'name': 'target-3', 'target_source': {'id': 3, 'name': 'target-source-3', 'source': {'id': 3, 'name': 'source-3'}}},
+            {'id': 4, 'name': 'target-4', 'target_source': {'id': 4, 'name': 'target-source-4', 'source': {'id': 4, 'name': 'source-4'}}}
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_one_to_one_create_with_invalid_data(self):
-        data = {'id': 4, 'name': u'target-4', 'target_source': {'id': 4, 'name': u'target-source-4', 'source': {'id': 4}}}
+        data = {'id': 4, 'name': 'target-4', 'target_source': {'id': 4, 'name': 'target-source-4', 'source': {'id': 4}}}
         serializer = OneToOneTargetSerializer(data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'target_source': [{'source': [{'name': [u'This field is required.']}]}]})
+        self.assertEquals(serializer.errors, {'target_source': [{'source': [{'name': ['This field is required.']}]}]})
 
     def test_one_to_one_update(self):
-        data = {'id': 3, 'name': u'target-3-updated', 'target_source': {'id': 3, 'name': u'target-source-3-updated', 'source': {'id': 3, 'name': u'source-3-updated'}}}
+        data = {'id': 3, 'name': 'target-3-updated', 'target_source': {'id': 3, 'name': 'target-source-3-updated', 'source': {'id': 3, 'name': 'source-3-updated'}}}
         instance = OneToOneTarget.objects.get(pk=3)
         serializer = OneToOneTargetSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
         self.assertEquals(serializer.data, data)
-        self.assertEqual(obj.name, u'target-3-updated')
+        self.assertEqual(obj.name, 'target-3-updated')
 
         # Ensure (target 3, target_source 3, source 3) are updated,
         # and everything else is as expected.
         queryset = OneToOneTarget.objects.all()
         serializer = OneToOneTargetSerializer(queryset)
         expected = [
-            {'id': 1, 'name': u'target-1', 'target_source': {'id': 1, 'name': u'target-source-1', 'source': {'id': 1, 'name': u'source-1'}}},
-            {'id': 2, 'name': u'target-2', 'target_source': {'id': 2, 'name': u'target-source-2', 'source': {'id': 2, 'name': u'source-2'}}},
-            {'id': 3, 'name': u'target-3-updated', 'target_source': {'id': 3, 'name': u'target-source-3-updated', 'source': {'id': 3, 'name': u'source-3-updated'}}}
+            {'id': 1, 'name': 'target-1', 'target_source': {'id': 1, 'name': 'target-source-1', 'source': {'id': 1, 'name': 'source-1'}}},
+            {'id': 2, 'name': 'target-2', 'target_source': {'id': 2, 'name': 'target-source-2', 'source': {'id': 2, 'name': 'source-2'}}},
+            {'id': 3, 'name': 'target-3-updated', 'target_source': {'id': 3, 'name': 'target-source-3-updated', 'source': {'id': 3, 'name': 'source-3-updated'}}}
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_one_to_one_delete(self):
-        data = {'id': 3, 'name': u'target-3', 'target_source': None}
+        data = {'id': 3, 'name': 'target-3', 'target_source': None}
         instance = OneToOneTarget.objects.get(pk=3)
         serializer = OneToOneTargetSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
@@ -117,8 +118,8 @@ class NestedOneToOneTests(TestCase):
         queryset = OneToOneTarget.objects.all()
         serializer = OneToOneTargetSerializer(queryset)
         expected = [
-            {'id': 1, 'name': u'target-1', 'target_source': {'id': 1, 'name': u'target-source-1', 'source': {'id': 1, 'name': u'source-1'}}},
-            {'id': 2, 'name': u'target-2', 'target_source': {'id': 2, 'name': u'target-source-2', 'source': {'id': 2, 'name': u'source-2'}}},
-            {'id': 3, 'name': u'target-3', 'target_source': None}
+            {'id': 1, 'name': 'target-1', 'target_source': {'id': 1, 'name': 'target-source-1', 'source': {'id': 1, 'name': 'source-1'}}},
+            {'id': 2, 'name': 'target-2', 'target_source': {'id': 2, 'name': 'target-source-2', 'source': {'id': 2, 'name': 'source-2'}}},
+            {'id': 3, 'name': 'target-3', 'target_source': None}
         ]
         self.assertEquals(serializer.data, expected)
