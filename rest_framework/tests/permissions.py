@@ -107,3 +107,49 @@ class ModelPermissionsIntegrationTests(TestCase):
                               HTTP_AUTHORIZATION=self.updateonly_credentials)
         response = instance_view(request, pk='2')
         self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+
+
+class OwnerModel(models.Model):
+    text = models.CharField(max_length=100)
+    owner = models.ForeignKey(User)
+
+
+class IsOwnerPermission(permissions.BasePermission):
+    def has_permission(self, request, view, obj=None):
+        if not obj:
+            return True
+        return request.user == obj.owner
+
+
+class OwnerInstanceView(generics.RetrieveUpdateDestroyAPIView):
+    model = OwnerModel
+    authentication_classes = [authentication.BasicAuthentication]
+    permission_classes = [IsOwnerPermission]
+
+
+owner_instance_view = OwnerInstanceView.as_view()
+
+
+class ObjectPermissionsIntegrationTests(TestCase):
+    """
+    Integration tests for the object level permissions API.
+    """
+
+    def setUp(self):
+        User.objects.create_user('not_owner', 'not_owner@example.com', 'password')
+        user = User.objects.create_user('owner', 'owner@example.com', 'password')
+
+        self.not_owner_credentials = basic_auth_header('not_owner', 'password')
+        self.owner_credentials = basic_auth_header('owner', 'password')
+
+        OwnerModel(text='foo', owner=user).save()
+
+    def test_owner_has_delete_permissions(self):
+        request = factory.delete('/1', HTTP_AUTHORIZATION=self.owner_credentials)
+        response = owner_instance_view(request, pk='1')
+        self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_non_owner_does_not_have_delete_permissions(self):
+        request = factory.delete('/1', HTTP_AUTHORIZATION=self.not_owner_credentials)
+        response = owner_instance_view(request, pk='1')
+        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
