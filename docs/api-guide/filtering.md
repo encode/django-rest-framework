@@ -102,7 +102,7 @@ If all you need is simple equality-based filtering, you can set a `filter_fields
     class ProductList(generics.ListAPIView):
         model = Product
         serializer_class = ProductSerializer
-        filter_fields = ('category', 'in_stock')
+        filter_fields = ['category', 'in_stock']
 
 This will automatically create a `FilterSet` class for the given fields, and will allow you to make requests such as:
 
