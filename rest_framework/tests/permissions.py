@@ -44,9 +44,14 @@ class ModelPermissionsIntegrationTests(TestCase):
             Permission.objects.get(codename='change_basicmodel'),
             Permission.objects.get(codename='delete_basicmodel')
         ]
+        user = User.objects.create_user('updateonly', 'updateonly@example.com', 'password')
+        user.user_permissions = [
+            Permission.objects.get(codename='change_basicmodel'),
+        ]
 
         self.permitted_credentials = basic_auth_header('permitted', 'password')
         self.disallowed_credentials = basic_auth_header('disallowed', 'password')
+        self.updateonly_credentials = basic_auth_header('updateonly', 'password')
 
         BasicModel(text='foo').save()
 
@@ -86,4 +91,19 @@ class ModelPermissionsIntegrationTests(TestCase):
     def test_does_not_have_delete_permissions(self):
         request = factory.delete('/1', HTTP_AUTHORIZATION=self.disallowed_credentials)
         response = instance_view(request, pk=1)
+        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_has_put_as_create_permissions(self):
+        # User only has update permissions - should be able to update an entity.
+        request = factory.put('/1', json.dumps({'text': 'foobar'}),
+                              content_type='application/json',
+                              HTTP_AUTHORIZATION=self.updateonly_credentials)
+        response = instance_view(request, pk='1')
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+
+        # But if PUTing to a new entity, permission should be denied.
+        request = factory.put('/2', json.dumps({'text': 'foobar'}),
+                              content_type='application/json',
+                              HTTP_AUTHORIZATION=self.updateonly_credentials)
+        response = instance_view(request, pk='2')
         self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)

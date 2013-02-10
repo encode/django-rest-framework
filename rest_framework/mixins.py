@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.request import clone_request
 
 
 class CreateModelMixin(object):
@@ -90,6 +91,10 @@ class UpdateModelMixin(object):
         try:
             self.object = self.get_object()
         except Http404:
+            # If this is a PUT-as-create operation, we need to ensure that
+            # we have relevant permissions, as if this was a POST request.
+            if not self.has_permission(clone_request(request, 'POST')):
+                self.permission_denied(self.request)
             created = True
             success_status_code = status.HTTP_201_CREATED
         else:
