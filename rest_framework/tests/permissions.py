@@ -115,9 +115,7 @@ class OwnerModel(models.Model):
 
 
 class IsOwnerPermission(permissions.BasePermission):
-    def has_permission(self, request, view, obj=None):
-        if not obj:
-            return True
+    def has_object_permission(self, request, view, obj):
         return request.user == obj.owner
 
 

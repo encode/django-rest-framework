@@ -13,6 +13,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
 import re
+import warnings
 
 
 def _remove_trailing_string(content, trailing):
@@ -261,8 +262,23 @@ class APIView(View):
         """
         Return `True` if the request should be permitted.
         """
+        if obj is not None:
+            warnings.warn('The `obj` argument in `has_permission` is due to be deprecated. '
+                      'Use `has_object_permission()` instead for object permissions.',
+                       PendingDeprecationWarning, stacklevel=2)
+            return self.has_object_permission(request, obj)
+
         for permission in self.get_permissions():
-            if not permission.has_permission(request, self, obj):
+            if not permission.has_permission(request, self):
+                return False
+        return True
+
+    def has_object_permission(self, request, obj):
+        """
+        Return `True` if the request should be permitted for a given object.
+        """
+        for permission in self.get_permissions():
+            if not permission.has_object_permission(request, self, obj):
                 return False
         return True
 

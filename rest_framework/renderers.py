@@ -301,7 +301,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         request = clone_request(request, method)
         try:
-            if not view.has_permission(request, obj):
+            if not view.has_permission(request):
                 return  # Don't have permission
         except Exception:
             return  # Don't have permission and exception explicitly raise

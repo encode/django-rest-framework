@@ -2,6 +2,8 @@
 Provides a set of pluggable permission policies.
 """
 from __future__ import unicode_literals
+import inspect
+import warnings
 
 SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
@@ -11,11 +13,22 @@ class BasePermission(object):
     A base class from which all permission classes should inherit.
     """
 
-    def has_permission(self, request, view, obj=None):
+    def has_permission(self, request, view):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
-        raise NotImplementedError(".has_permission() must be overridden.")
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        """
+        Return `True` if permission is granted, `False` otherwise.
+        """
+        if len(inspect.getargspec(self.has_permission)[0]) == 4:
+            warnings.warn('The `obj` argument in `has_permission` is due to be deprecated. '
+                      'Use `has_object_permission()` instead for object permissions.',
+                       PendingDeprecationWarning, stacklevel=2)
+            return self.has_permission(request, view, obj)
+        return True
 
 
 class AllowAny(BasePermission):
@@ -25,7 +38,7 @@ class AllowAny(BasePermission):
     permission_classes list, but it's useful because it makes the intention
     more explicit.
     """
-    def has_permission(self, request, view, obj=None):
+    def has_permission(self, request, view):
         return True
 
 
@@ -34,7 +47,7 @@ class IsAuthenticated(BasePermission):
     Allows access only to authenticated users.
     """
 
-    def has_permission(self, request, view, obj=None):
+    def has_permission(self, request, view):
         if request.user and request.user.is_authenticated():
             return True
         return False
@@ -45,7 +58,7 @@ class IsAdminUser(BasePermission):
     Allows access only to admin users.
     """
 
-    def has_permission(self, request, view, obj=None):
+    def has_permission(self, request, view):
         if request.user and request.user.is_staff:
             return True
         return False
@@ -56,7 +69,7 @@ class IsAuthenticatedOrReadOnly(BasePermission):
     The request is authenticated as a user, or is a read-only request.
     """
 
-    def has_permission(self, request, view, obj=None):
+    def has_permission(self, request, view):
         if (request.method in SAFE_METHODS or
             request.user and
             request.user.is_authenticated()):
@@ -100,7 +113,7 @@ class DjangoModelPermissions(BasePermission):
         }
         return [perm % kwargs for perm in self.perms_map[method]]
 
-    def has_permission(self, request, view, obj=None):
+    def has_permission(self, request, view):
         model_cls = getattr(view, 'model', None)
         if not model_cls:
             return True
