@@ -93,8 +93,7 @@ class UpdateModelMixin(object):
         except Http404:
             # If this is a PUT-as-create operation, we need to ensure that
             # we have relevant permissions, as if this was a POST request.
-            if not self.has_permission(clone_request(request, 'POST')):
-                self.permission_denied(self.request)
+            self.check_permissions(clone_request(request, 'POST'))
             created = True
             success_status_code = status.HTTP_201_CREATED
         else:
