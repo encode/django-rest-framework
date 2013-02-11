@@ -900,6 +900,13 @@ class SerializerPickleTests(TestCase):
                 fields = ('name', 'age')
         pickle.dumps(InnerPersonSerializer(Person(name="Noah", age=950)).data)
 
+    def test_getstate_method_should_not_return_none(self):
+        '''Regression test for 
+        https://github.com/tomchristie/django-rest-framework/issues/645
+        '''
+        d = serializers.DictWithMetadata({1:1})
+        self.assertEqual(d.__getstate__(), serializers.SortedDict({1:1}))
+
 
 class DepthTest(TestCase):
     def test_implicit_nesting(self):

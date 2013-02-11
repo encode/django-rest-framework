@@ -33,7 +33,7 @@ class DictWithMetadata(dict):
         """
         # return an instance of the first dict in MRO that isn't a DictWithMetadata
         for base in self.__class__.__mro__:
-            if not isinstance(base, DictWithMetadata) and isinstance(base, dict):
+            if not issubclass(base, DictWithMetadata) and issubclass(base, dict):
                 return base(self)
 
 
