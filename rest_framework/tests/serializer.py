@@ -747,6 +747,9 @@ class ManyRelatedTests(TestCase):
 
 class RelatedTraversalTest(TestCase):
     def test_nested_traversal(self):
+        """
+        Source argument should support dotted.source notation.
+        """
         user = Person.objects.create(name="django")
         post = BlogPost.objects.create(title="Test blog post", writer=user)
         post.blogpostcomment_set.create(text="I love this blog post")
@@ -785,6 +788,24 @@ class RelatedTraversalTest(TestCase):
 
         self.assertEqual(serializer.data, expected)
 
+    def test_nested_traversal_with_none(self):
+        """
+        If a component of the dotted.source is None, return None for the field.
+        """
+        from rest_framework.tests.models import NullableForeignKeySource
+        instance = NullableForeignKeySource.objects.create(name='Source with null FK')
+
+        class NullableSourceSerializer(serializers.Serializer):
+            target_name = serializers.Field(source='target.name')
+
+        serializer = NullableSourceSerializer(instance=instance)
+
+        expected = {
+            'target_name': None,
+        }
+
+        self.assertEqual(serializer.data, expected)
+
     def test_queryset_nested_traversal(self):
         """
         Relational fields should be able to use methods as their source.
@@ -800,7 +821,6 @@ class RelatedTraversalTest(TestCase):
 
         obj = ClassWithQuerysetMethod()
         serializer = QuerysetMethodSerializer(obj)
-        self.assertEquals(serializer.data, {'blogposts': [u'BlogPost object']})
         self.assertEquals(serializer.data, {'blogposts': ['BlogPost object']})
 
 
