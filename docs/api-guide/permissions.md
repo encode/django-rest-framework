@@ -106,15 +106,25 @@ The `DjangoModelPermissions` class also supports object-level permissions.  Thir
 
 # Custom permissions
 
-To implement a custom permission, override `BasePermission` and implement either, or both, of the `.has_permission(self, request, view)` and `.has_object_permission(self, request, view, obj)` methods.
+To implement a custom permission, override `BasePermission` and implement either, or both, of the following methods:
+
+* `.has_permission(self, request, view)`
+* `.has_object_permission(self, request, view, obj)`
 
 The methods should return `True` if the request should be granted access, and `False` otherwise.
+
+If you need to test if a request is a read operation or a write operation, you should check the request method against the constant `SAFE_METHODS`, which is a tuple containing `'GET'`, `'OPTIONS'` and `'HEAD'`.  For example:
+
+    if request.method in permissions.SAFE_METHODS:
+        # Check permissions for read-only request
+    else:
+        # Check permissions for write request
 
 ---
 
 **Note**: In versions 2.0 and 2.1, the signature for the permission checks always included an optional `obj` parameter, like so: `.has_permission(self, request, view, obj=None)`.  The method would be called twice, first for the global permission checks, with no object supplied, and second for the object-level check when required.
 
-As of version 2.2 this signature has now been replaced with two seperate method calls, which is more explict, and obvious.  The old style signature continues to work, but it's use will result in a `PendingDeprecationWarning`, which is silent by default.  In 2.3 this will be escalated to a `DeprecationWarning`, and in 2.4 the old-style signature will be removed.
+As of version 2.2 this signature has now been replaced with two seperate method calls, which is more explict and obvious.  The old style signature continues to work, but it's use will result in a `PendingDeprecationWarning`, which is silent by default.  In 2.3 this will be escalated to a `DeprecationWarning`, and in 2.4 the old-style signature will be removed.
 
 For more details see the [2.2 release announcement][2.2-announcement].
 
@@ -129,7 +139,7 @@ The following is an example of a permission class that checks the incoming reque
         Global permission check for blacklisted IPs.
         """
 
-        def has_permission(self, request, view, obj=None):
+        def has_permission(self, request, view):
             ip_addr = request.META['REMOTE_ADDR']
             blacklisted = Blacklist.objects.filter(ip_addr=ip_addr).exists()
             return not blacklisted
@@ -139,6 +149,7 @@ As well as global permissions, that are run against all incoming requests, you c
     class IsOwnerOrReadOnly(permissions.BasePermission):
         """
         Object-level permission to only allow owners of an object to edit it.
+        Assumes the model instance has an `owner` attribute.
         """
 
         def has_object_permission(self, request, view, obj):
@@ -152,9 +163,12 @@ As well as global permissions, that are run against all incoming requests, you c
 
 Note that the generic views will check the appropriate object level permissions, but if you're writing your own custom views, you'll need to make sure you check the object level permission checks yourself.  You can do so by calling `self.check_object_permissions(request, obj)` from the view once you have the object instance.  This call will raise an appropriate `APIException` if any object-level permission checks fail, and will otherwise simply return.
 
+Also note that the generic views will only check the object-level permissions for views that retrieve a single model instance.  If you require object-level filtering of list views, you'll need to filter the queryset separately.  See the [filtering documentation][filtering] for more details.
+
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
 [throttling]: throttling.md
 [contribauth]: https://docs.djangoproject.com/en/1.0/topics/auth/#permissions
 [guardian]: https://github.com/lukaszb/django-guardian
 [2.2-announcement]: ../topics/2.2-announcement.md
+[filtering]: filtering.md
