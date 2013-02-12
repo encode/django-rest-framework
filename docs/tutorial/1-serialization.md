@@ -8,7 +8,7 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 
 ---
 
-**Note**: The code for this tutorial is available in the [tomchristie/rest-framework-tutorial][repo] repository on GitHub. As pieces of code are introduced, they are committed to this repository. The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
+**Note**: The code for this tutorial is available in the [tomchristie/rest-framework-tutorial][repo] repository on GitHub. The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
 
 ---
 
@@ -150,12 +150,15 @@ Before we go any further we'll familiarize ourselves with using our new Serializ
 
     python manage.py shell
 
-Okay, once we've got a few imports out of the way, let's create a code snippet to work with.
+Okay, once we've got a few imports out of the way, let's create a couple of code snippets to work with.
 
     from snippets.models import Snippet
     from snippets.serializers import SnippetSerializer
     from rest_framework.renderers import JSONRenderer
     from rest_framework.parsers import JSONParser
+
+    snippet = Snippet(code='foo = "bar"\n')
+    snippet.save()
 
     snippet = Snippet(code='print "hello, world"\n')
     snippet.save()
@@ -164,13 +167,13 @@ We've now got a few snippet instances to play with.  Let's take a look at serial
 
     serializer = SnippetSerializer(snippet)
     serializer.data
-    # {'pk': 1, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}
+    # {'pk': 2, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}
 
 At this point we've translated the model instance into python native datatypes.  To finalize the serialization process we render the data into `json`.
 
     content = JSONRenderer().render(serializer.data)
     content
-    # '{"pk": 1, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
+    # '{"pk": 2, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
 
 Deserialization is similar.  First we parse a stream into python native datatypes... 
 
@@ -188,6 +191,12 @@ Deserialization is similar.  First we parse a stream into python native datatype
     # <Snippet: Snippet object>
     
 Notice how similar the API is to working with forms.  The similarity should become even more apparent when we start writing views that use our serializer.
+
+We can also serialize querysets instead of model instances.  To do so we simply add a `many=True` flag to the serializer arguments.
+
+    serializer = SnippetSerializer(Snippet.objects.all(), many=True)
+    serializer.data
+    # [{'pk': 1, 'title': u'', 'code': u'foo = "bar"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}, {'pk': 2, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}]
 
 ## Using ModelSerializers
 
@@ -237,7 +246,7 @@ The root of our API is going to be a view that supports listing all the existing
         """
         if request.method == 'GET':
             snippets = Snippet.objects.all()
-            serializer = SnippetSerializer(snippets)
+            serializer = SnippetSerializer(snippets, many=True)
             return JSONResponse(serializer.data)
 
         elif request.method == 'POST':
@@ -312,19 +321,19 @@ and start up Django's development server
 
 In another terminal window, we can test the server.
 
-We can get a list of all of the snippets (we only have one at the moment)
+We can get a list of all of the snippets.
 
 	curl http://127.0.0.1:8000/snippets/
 
-	[{"id": 1, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}]
+	[{"id": 1, "title": "", "code": "foo = \"bar\"\n", "linenos": false, "language": "python", "style": "friendly"}, {"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}]
 
 or we can get a particular snippet by referencing its id
 
-	curl http://127.0.0.1:8000/snippets/1/
+	curl http://127.0.0.1:8000/snippets/2/
 
-	{"id": 1, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}
+	{"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}
 
-Similarly, you can have the same json displayed by referencing these URLs from your favorite web browser.
+Similarly, you can have the same json displayed by visiting these URLs in a web browser.
 
 ## Where are we now
 

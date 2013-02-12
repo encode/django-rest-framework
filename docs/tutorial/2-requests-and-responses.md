@@ -51,7 +51,7 @@ We don't need our `JSONResponse` class anymore, so go ahead and delete that.  On
         """
         if request.method == 'GET':
             snippets = Snippet.objects.all()
-            serializer = SnippetSerializer(snippets)
+            serializer = SnippetSerializer(snippets, many=True)
             return Response(serializer.data)
 
         elif request.method == 'POST':

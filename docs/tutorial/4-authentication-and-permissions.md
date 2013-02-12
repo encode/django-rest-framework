@@ -57,7 +57,7 @@ Now that we've got some users to work with, we'd better add representations of t
     from django.contrib.auth.models import User
 
     class UserSerializer(serializers.ModelSerializer):
-        snippets = serializers.ManyPrimaryKeyRelatedField()
+        snippets = serializers.PrimaryKeyRelatedField(many=True)
 
         class Meta:
             model = User

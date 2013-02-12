@@ -70,8 +70,8 @@ The `HyperlinkedModelSerializer` has the following differences from `ModelSerial
 
 * It does not include the `pk` field by default.
 * It includes a `url` field, using `HyperlinkedIdentityField`.
-* Relationships use `HyperlinkedRelatedField` and `ManyHyperlinkedRelatedField`,
-  instead of `PrimaryKeyRelatedField` and `ManyPrimaryKeyRelatedField`.
+* Relationships use `HyperlinkedRelatedField`,
+  instead of `PrimaryKeyRelatedField`.
 
 We can easily re-write our existing serializers to use hyperlinking.
 
@@ -86,7 +86,7 @@ We can easily re-write our existing serializers to use hyperlinking.
     
     
     class UserSerializer(serializers.HyperlinkedModelSerializer):
-        snippets = serializers.ManyHyperlinkedRelatedField(view_name='snippet-detail')
+        snippets = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail')
     
         class Meta:
             model = User
