@@ -344,6 +344,10 @@ class BaseSerializer(Field):
                 many = self.many
             else:
                 many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict))
+                if many:
+                    warnings.warn('Implict list/queryset serialization is due to be deprecated. '
+                                  'Use the `many=True` flag when instantiating the serializer.',
+                                  PendingDeprecationWarning, stacklevel=2)
 
             # TODO: error data when deserializing lists
             if many:
@@ -369,6 +373,10 @@ class BaseSerializer(Field):
                 many = self.many
             else:
                 many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict))
+                if many:
+                    warnings.warn('Implict list/queryset serialization is due to be deprecated. '
+                                  'Use the `many=True` flag when instantiating the serializer.',
+                                  PendingDeprecationWarning, stacklevel=2)
 
             if many:
                 self._data = [self.to_native(item) for item in obj]
