@@ -52,6 +52,7 @@ You can determine your currently installed version using `pip freeze`:
 * Deprecate `blank=True` on CharFields, just use `required=False`.
 * Deprecate optional `obj` argument in permissions checks in favor of `has_object_permission`.
 * Deprecate implicit hyperlinked relations behavior.
+* Bugfix: Fix broken DjangoModelPermissions.
 * Bugfix: Allow serializer output to be cached.
 * Bugfix: Fix styling on browsable API login.
 * Bugfix: Fix issue with deserializing empty to-many relations.
