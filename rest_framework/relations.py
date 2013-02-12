@@ -5,7 +5,7 @@ from django import forms
 from django.forms import widgets
 from django.forms.models import ModelChoiceIterator
 from django.utils.translation import ugettext_lazy as _
-from rest_framework.fields import Field, WritableField
+from rest_framework.fields import Field, WritableField, get_component
 from rest_framework.reverse import reverse
 from rest_framework.compat import urlparse
 from rest_framework.compat import smart_text
@@ -116,7 +116,16 @@ class RelatedField(WritableField):
 
     def field_to_native(self, obj, field_name):
         try:
-            value = getattr(obj, self.source or field_name)
+            if self.source == '*':
+                return self.to_native(obj)
+
+            source = self.source or field_name
+            value = obj
+
+            for component in source.split('.'):
+                value = get_component(value, component)
+                if value is None:
+                    break
         except ObjectDoesNotExist:
             return None
 
