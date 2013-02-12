@@ -94,12 +94,14 @@ class Field(object):
         if self.source == '*':
             return self.to_native(obj)
 
-        if self.source:
-            value = obj
-            for component in self.source.split('.'):
-                value = get_component(value, component)
-        else:
-            value = get_component(obj, field_name)
+        source = self.source or field_name
+        value = obj
+
+        for component in source.split('.'):
+            value = get_component(value, component)
+            if value is None:
+                break
+
         return self.to_native(value)
 
     def to_native(self, value):
