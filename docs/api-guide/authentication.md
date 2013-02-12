@@ -167,6 +167,17 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
 
     { 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
 
+**Note:** View `obtain_auth_token` overrides default parser and renderer settings. It support outputting response in JSON format only.
+
+You can easily make your own version of `obtain_auth_token` by overriding `ObtainAuthToken`. Following example shows how to make `ObtainAuthToken` aware of API settings.
+
+    from rest_framework.settings import api_settings
+    from rest_framework.authtoken.views import ObtainAuthToken
+
+    class MyObtainAuthToken(ObtainAuthToken):
+        renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+        parser_classes = api_settings.DEFAULT_PARSER_CLASSES
+
 ## SessionAuthentication
 
 This authentication scheme uses Django's default session backend for authentication.  Session authentication is appropriate for AJAX clients that are running in the same session context as your website.
