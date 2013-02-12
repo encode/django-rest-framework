@@ -123,7 +123,7 @@ To do any other validation that requires access to multiple fields, add a method
     from rest_framework import serializers
 
     class EventSerializer(serializers.Serializer):
-        description = serializers.CahrField(max_length=100)
+        description = serializers.CharField(max_length=100)
         start = serializers.DateTimeField()
         finish = serializers.DateTimeField()
 
@@ -164,6 +164,17 @@ The `Serializer` class is itself a type of `Field`, and can be used to represent
 
 ---
 
+## Including extra context
+
+There are some cases where you need to provide extra context to the serializer in addition to the object being serialized.  One common case is if you're using a serializer that includes hyperlinked relations, which requires the serializer to have access to the current request so that it can properly generate fully qualified URLs.
+
+You can provide arbitrary additional context by passing a `context` argument when instantiating the serializer. For example:
+
+    serializer = AccountSerializer(account, context={'request': request})
+    serializer.data
+    # {'id': 6, 'owner': u'denvercoder9', 'created': datetime.datetime(2013, 2, 12, 09, 44, 56, 678870), 'details': 'http://example.com/accounts/6/details'}
+
+The context dictionary can be used within any serializer field logic, such as a custom `.to_native()` method, by accessing the `self.context` attribute.
 
 ## Creating custom fields
 
