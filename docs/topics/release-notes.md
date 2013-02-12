@@ -28,8 +28,14 @@ You can determine your currently installed version using `pip freeze`:
 
 ### Master
 
+* Python 3 support.
 * Added a `post_save()` hook to the generic views.
 * Allow serializers to handle dicts as well as objects.
+* Deprecate `ManyRelatedField()` syntax in favor of `RelatedField(many=True)`
+* Deprecate `null=True` on relations in favor of `required=False`.
+* Deprecate `blank=True` on CharFields, just use `required=False`.
+* Deprecate optional `obj` argument in permissions checks in favor of `has_object_permission`.
+* Bugfix: Allow serializer output to be cached.
 * Bugfix: Fix styling on browsable API login.
 * Bugfix: Fix issue with deserializing empty to-many relations.
 * Bugfix: Ensure model field validation is still applied for ModelSerializer subclasses with an custom `.restore_object()` method.
