@@ -52,11 +52,14 @@ def main():
         if os.path.basename(path) in ['tests', 'runtests', 'migrations']:
             continue
 
-        # Drop the compat module from coverage, since we're not interested in the coverage
-        # of a module which is specifically for resolving environment dependant imports.
+        # Drop the compat and six modules from coverage, since we're not interested in the coverage
+        # of modules which are specifically for resolving environment dependant imports.
         # (Because we'll end up getting different coverage reports for it for each environment)
         if 'compat.py' in files:
             files.remove('compat.py')
+
+        if 'six.py' in files:
+            files.remove('six.py')
 
         # Same applies to template tags module.
         # This module has to include branching on Django versions,
