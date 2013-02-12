@@ -785,6 +785,23 @@ class RelatedTraversalTest(TestCase):
 
         self.assertEqual(serializer.data, expected)
 
+    def test_nested_traversal_with_none(self):
+
+        from rest_framework.tests.models import NullableForeignKeySource
+        instance = NullableForeignKeySource.objects.create(name='Source with null FK')
+
+        class NullableSourceSerializer(serializers.Serializer):
+            target_name = serializers.Field(source='target.name')
+
+        serializer = NullableSourceSerializer(instance=instance)
+
+        expected = {
+            'name': 'Source with null FK',
+            'target_name': None,
+        }
+
+        self.assertEqual(serializer.data, expected)
+
 
 class SerializerMethodFieldTests(TestCase):
     def setUp(self):
