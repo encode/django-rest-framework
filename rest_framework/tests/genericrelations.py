@@ -82,7 +82,7 @@ class TestGenericRelations(TestCase):
                 model = Tag
                 exclude = ('id', 'content_type', 'object_id')
 
-        serializer = TagSerializer(Tag.objects.all())
+        serializer = TagSerializer(Tag.objects.all(), many=True)
         expected = [
         {
             'tag': 'django',

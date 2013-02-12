@@ -37,7 +37,7 @@ class PKForeignKeyTests(TestCase):
 
     def test_foreign_key_retrieve(self):
         queryset = ForeignKeySource.objects.all()
-        serializer = ForeignKeySourceSerializer(queryset)
+        serializer = ForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': 'target-1'},
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
@@ -47,7 +47,7 @@ class PKForeignKeyTests(TestCase):
 
     def test_reverse_foreign_key_retrieve(self):
         queryset = ForeignKeyTarget.objects.all()
-        serializer = ForeignKeyTargetSerializer(queryset)
+        serializer = ForeignKeyTargetSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'sources': ['source-1', 'source-2', 'source-3']},
             {'id': 2, 'name': 'target-2', 'sources': []},
@@ -64,7 +64,7 @@ class PKForeignKeyTests(TestCase):
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = ForeignKeySource.objects.all()
-        serializer = ForeignKeySourceSerializer(queryset)
+        serializer = ForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': 'target-2'},
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
@@ -87,7 +87,7 @@ class PKForeignKeyTests(TestCase):
         # We shouldn't have saved anything to the db yet since save
         # hasn't been called.
         queryset = ForeignKeyTarget.objects.all()
-        new_serializer = ForeignKeyTargetSerializer(queryset)
+        new_serializer = ForeignKeyTargetSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'sources': ['source-1', 'source-2', 'source-3']},
             {'id': 2, 'name': 'target-2', 'sources': []},
@@ -99,7 +99,7 @@ class PKForeignKeyTests(TestCase):
 
         # Ensure target 2 is update, and everything else is as expected
         queryset = ForeignKeyTarget.objects.all()
-        serializer = ForeignKeyTargetSerializer(queryset)
+        serializer = ForeignKeyTargetSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'sources': ['source-2']},
             {'id': 2, 'name': 'target-2', 'sources': ['source-1', 'source-3']},
@@ -117,7 +117,7 @@ class PKForeignKeyTests(TestCase):
 
         # Ensure source 4 is added, and everything else is as expected
         queryset = ForeignKeySource.objects.all()
-        serializer = ForeignKeySourceSerializer(queryset)
+        serializer = ForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': 'target-1'},
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
@@ -136,7 +136,7 @@ class PKForeignKeyTests(TestCase):
 
         # Ensure target 3 is added, and everything else is as expected
         queryset = ForeignKeyTarget.objects.all()
-        serializer = ForeignKeyTargetSerializer(queryset)
+        serializer = ForeignKeyTargetSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'sources': ['source-2']},
             {'id': 2, 'name': 'target-2', 'sources': []},
@@ -164,7 +164,7 @@ class SlugNullableForeignKeyTests(TestCase):
 
     def test_foreign_key_retrieve_with_null(self):
         queryset = NullableForeignKeySource.objects.all()
-        serializer = NullableForeignKeySourceSerializer(queryset)
+        serializer = NullableForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': 'target-1'},
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
@@ -182,7 +182,7 @@ class SlugNullableForeignKeyTests(TestCase):
 
         # Ensure source 4 is created, and everything else is as expected
         queryset = NullableForeignKeySource.objects.all()
-        serializer = NullableForeignKeySourceSerializer(queryset)
+        serializer = NullableForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': 'target-1'},
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
@@ -206,7 +206,7 @@ class SlugNullableForeignKeyTests(TestCase):
 
         # Ensure source 4 is created, and everything else is as expected
         queryset = NullableForeignKeySource.objects.all()
-        serializer = NullableForeignKeySourceSerializer(queryset)
+        serializer = NullableForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': 'target-1'},
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
@@ -225,7 +225,7 @@ class SlugNullableForeignKeyTests(TestCase):
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = NullableForeignKeySource.objects.all()
-        serializer = NullableForeignKeySourceSerializer(queryset)
+        serializer = NullableForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': None},
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
@@ -248,7 +248,7 @@ class SlugNullableForeignKeyTests(TestCase):
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = NullableForeignKeySource.objects.all()
-        serializer = NullableForeignKeySourceSerializer(queryset)
+        serializer = NullableForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': None},
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},

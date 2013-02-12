@@ -347,7 +347,7 @@ class BaseSerializer(Field):
                 if many:
                     warnings.warn('Implict list/queryset serialization is due to be deprecated. '
                                   'Use the `many=True` flag when instantiating the serializer.',
-                                  PendingDeprecationWarning, stacklevel=2)
+                                  PendingDeprecationWarning, stacklevel=3)
 
             # TODO: error data when deserializing lists
             if many:

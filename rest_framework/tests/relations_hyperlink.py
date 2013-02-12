@@ -1,8 +1,15 @@
 from __future__ import unicode_literals
 from django.test import TestCase
+from django.test.client import RequestFactory
 from rest_framework import serializers
 from rest_framework.compat import patterns, url
-from rest_framework.tests.models import ManyToManyTarget, ManyToManySource, ForeignKeyTarget, ForeignKeySource, NullableForeignKeySource, OneToOneTarget, NullableOneToOneSource
+from rest_framework.tests.models import (
+    ManyToManyTarget, ManyToManySource, ForeignKeyTarget, ForeignKeySource,
+    NullableForeignKeySource, OneToOneTarget, NullableOneToOneSource
+)
+
+factory = RequestFactory()
+request = factory.get('/')  # Just to ensure we have a request in the serializer context
 
 
 def dummy_view(request, pk):
@@ -73,64 +80,64 @@ class HyperlinkedManyToManyTests(TestCase):
 
     def test_many_to_many_retrieve(self):
         queryset = ManyToManySource.objects.all()
-        serializer = ManyToManySourceSerializer(queryset)
+        serializer = ManyToManySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
-                {'url': '/manytomanysource/1/', 'name': 'source-1', 'targets': ['/manytomanytarget/1/']},
-                {'url': '/manytomanysource/2/', 'name': 'source-2', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/']},
-                {'url': '/manytomanysource/3/', 'name': 'source-3', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']}
+                {'url': 'http://testserver/manytomanysource/1/', 'name': 'source-1', 'targets': ['http://testserver/manytomanytarget/1/']},
+                {'url': 'http://testserver/manytomanysource/2/', 'name': 'source-2', 'targets': ['http://testserver/manytomanytarget/1/', 'http://testserver/manytomanytarget/2/']},
+                {'url': 'http://testserver/manytomanysource/3/', 'name': 'source-3', 'targets': ['http://testserver/manytomanytarget/1/', 'http://testserver/manytomanytarget/2/', 'http://testserver/manytomanytarget/3/']}
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_reverse_many_to_many_retrieve(self):
         queryset = ManyToManyTarget.objects.all()
-        serializer = ManyToManyTargetSerializer(queryset)
+        serializer = ManyToManyTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/manytomanytarget/1/', 'name': 'target-1', 'sources': ['/manytomanysource/1/', '/manytomanysource/2/', '/manytomanysource/3/']},
-            {'url': '/manytomanytarget/2/', 'name': 'target-2', 'sources': ['/manytomanysource/2/', '/manytomanysource/3/']},
-            {'url': '/manytomanytarget/3/', 'name': 'target-3', 'sources': ['/manytomanysource/3/']}
+            {'url': 'http://testserver/manytomanytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/manytomanysource/1/', 'http://testserver/manytomanysource/2/', 'http://testserver/manytomanysource/3/']},
+            {'url': 'http://testserver/manytomanytarget/2/', 'name': 'target-2', 'sources': ['http://testserver/manytomanysource/2/', 'http://testserver/manytomanysource/3/']},
+            {'url': 'http://testserver/manytomanytarget/3/', 'name': 'target-3', 'sources': ['http://testserver/manytomanysource/3/']}
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_many_to_many_update(self):
-        data = {'url': '/manytomanysource/1/', 'name': 'source-1', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']}
+        data = {'url': 'http://testserver/manytomanysource/1/', 'name': 'source-1', 'targets': ['http://testserver/manytomanytarget/1/', 'http://testserver/manytomanytarget/2/', 'http://testserver/manytomanytarget/3/']}
         instance = ManyToManySource.objects.get(pk=1)
-        serializer = ManyToManySourceSerializer(instance, data=data)
+        serializer = ManyToManySourceSerializer(instance, data=data, context={'request': request})
         self.assertTrue(serializer.is_valid())
         serializer.save()
         self.assertEquals(serializer.data, data)
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = ManyToManySource.objects.all()
-        serializer = ManyToManySourceSerializer(queryset)
+        serializer = ManyToManySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
-                {'url': '/manytomanysource/1/', 'name': 'source-1', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']},
-                {'url': '/manytomanysource/2/', 'name': 'source-2', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/']},
-                {'url': '/manytomanysource/3/', 'name': 'source-3', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']}
+                {'url': 'http://testserver/manytomanysource/1/', 'name': 'source-1', 'targets': ['http://testserver/manytomanytarget/1/', 'http://testserver/manytomanytarget/2/', 'http://testserver/manytomanytarget/3/']},
+                {'url': 'http://testserver/manytomanysource/2/', 'name': 'source-2', 'targets': ['http://testserver/manytomanytarget/1/', 'http://testserver/manytomanytarget/2/']},
+                {'url': 'http://testserver/manytomanysource/3/', 'name': 'source-3', 'targets': ['http://testserver/manytomanytarget/1/', 'http://testserver/manytomanytarget/2/', 'http://testserver/manytomanytarget/3/']}
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_reverse_many_to_many_update(self):
-        data = {'url': '/manytomanytarget/1/', 'name': 'target-1', 'sources': ['/manytomanysource/1/']}
+        data = {'url': 'http://testserver/manytomanytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/manytomanysource/1/']}
         instance = ManyToManyTarget.objects.get(pk=1)
-        serializer = ManyToManyTargetSerializer(instance, data=data)
+        serializer = ManyToManyTargetSerializer(instance, data=data, context={'request': request})
         self.assertTrue(serializer.is_valid())
         serializer.save()
         self.assertEquals(serializer.data, data)
 
         # Ensure target 1 is updated, and everything else is as expected
         queryset = ManyToManyTarget.objects.all()
-        serializer = ManyToManyTargetSerializer(queryset)
+        serializer = ManyToManyTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/manytomanytarget/1/', 'name': 'target-1', 'sources': ['/manytomanysource/1/']},
-            {'url': '/manytomanytarget/2/', 'name': 'target-2', 'sources': ['/manytomanysource/2/', '/manytomanysource/3/']},
-            {'url': '/manytomanytarget/3/', 'name': 'target-3', 'sources': ['/manytomanysource/3/']}
+            {'url': 'http://testserver/manytomanytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/manytomanysource/1/']},
+            {'url': 'http://testserver/manytomanytarget/2/', 'name': 'target-2', 'sources': ['http://testserver/manytomanysource/2/', 'http://testserver/manytomanysource/3/']},
+            {'url': 'http://testserver/manytomanytarget/3/', 'name': 'target-3', 'sources': ['http://testserver/manytomanysource/3/']}
 
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_many_to_many_create(self):
-        data = {'url': '/manytomanysource/4/', 'name': 'source-4', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/3/']}
-        serializer = ManyToManySourceSerializer(data=data)
+        data = {'url': 'http://testserver/manytomanysource/4/', 'name': 'source-4', 'targets': ['http://testserver/manytomanytarget/1/', 'http://testserver/manytomanytarget/3/']}
+        serializer = ManyToManySourceSerializer(data=data, context={'request': request})
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
         self.assertEquals(serializer.data, data)
@@ -138,18 +145,18 @@ class HyperlinkedManyToManyTests(TestCase):
 
         # Ensure source 4 is added, and everything else is as expected
         queryset = ManyToManySource.objects.all()
-        serializer = ManyToManySourceSerializer(queryset)
+        serializer = ManyToManySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/manytomanysource/1/', 'name': 'source-1', 'targets': ['/manytomanytarget/1/']},
-            {'url': '/manytomanysource/2/', 'name': 'source-2', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/']},
-            {'url': '/manytomanysource/3/', 'name': 'source-3', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/2/', '/manytomanytarget/3/']},
-            {'url': '/manytomanysource/4/', 'name': 'source-4', 'targets': ['/manytomanytarget/1/', '/manytomanytarget/3/']}
+            {'url': 'http://testserver/manytomanysource/1/', 'name': 'source-1', 'targets': ['http://testserver/manytomanytarget/1/']},
+            {'url': 'http://testserver/manytomanysource/2/', 'name': 'source-2', 'targets': ['http://testserver/manytomanytarget/1/', 'http://testserver/manytomanytarget/2/']},
+            {'url': 'http://testserver/manytomanysource/3/', 'name': 'source-3', 'targets': ['http://testserver/manytomanytarget/1/', 'http://testserver/manytomanytarget/2/', 'http://testserver/manytomanytarget/3/']},
+            {'url': 'http://testserver/manytomanysource/4/', 'name': 'source-4', 'targets': ['http://testserver/manytomanytarget/1/', 'http://testserver/manytomanytarget/3/']}
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_reverse_many_to_many_create(self):
-        data = {'url': '/manytomanytarget/4/', 'name': 'target-4', 'sources': ['/manytomanysource/1/', '/manytomanysource/3/']}
-        serializer = ManyToManyTargetSerializer(data=data)
+        data = {'url': 'http://testserver/manytomanytarget/4/', 'name': 'target-4', 'sources': ['http://testserver/manytomanysource/1/', 'http://testserver/manytomanysource/3/']}
+        serializer = ManyToManyTargetSerializer(data=data, context={'request': request})
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
         self.assertEquals(serializer.data, data)
@@ -157,12 +164,12 @@ class HyperlinkedManyToManyTests(TestCase):
 
         # Ensure target 4 is added, and everything else is as expected
         queryset = ManyToManyTarget.objects.all()
-        serializer = ManyToManyTargetSerializer(queryset)
+        serializer = ManyToManyTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/manytomanytarget/1/', 'name': 'target-1', 'sources': ['/manytomanysource/1/', '/manytomanysource/2/', '/manytomanysource/3/']},
-            {'url': '/manytomanytarget/2/', 'name': 'target-2', 'sources': ['/manytomanysource/2/', '/manytomanysource/3/']},
-            {'url': '/manytomanytarget/3/', 'name': 'target-3', 'sources': ['/manytomanysource/3/']},
-            {'url': '/manytomanytarget/4/', 'name': 'target-4', 'sources': ['/manytomanysource/1/', '/manytomanysource/3/']}
+            {'url': 'http://testserver/manytomanytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/manytomanysource/1/', 'http://testserver/manytomanysource/2/', 'http://testserver/manytomanysource/3/']},
+            {'url': 'http://testserver/manytomanytarget/2/', 'name': 'target-2', 'sources': ['http://testserver/manytomanysource/2/', 'http://testserver/manytomanysource/3/']},
+            {'url': 'http://testserver/manytomanytarget/3/', 'name': 'target-3', 'sources': ['http://testserver/manytomanysource/3/']},
+            {'url': 'http://testserver/manytomanytarget/4/', 'name': 'target-4', 'sources': ['http://testserver/manytomanysource/1/', 'http://testserver/manytomanysource/3/']}
         ]
         self.assertEquals(serializer.data, expected)
 
@@ -181,60 +188,60 @@ class HyperlinkedForeignKeyTests(TestCase):
 
     def test_foreign_key_retrieve(self):
         queryset = ForeignKeySource.objects.all()
-        serializer = ForeignKeySourceSerializer(queryset)
+        serializer = ForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/foreignkeysource/1/', 'name': 'source-1', 'target': '/foreignkeytarget/1/'},
-            {'url': '/foreignkeysource/2/', 'name': 'source-2', 'target': '/foreignkeytarget/1/'},
-            {'url': '/foreignkeysource/3/', 'name': 'source-3', 'target': '/foreignkeytarget/1/'}
+            {'url': 'http://testserver/foreignkeysource/1/', 'name': 'source-1', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/foreignkeysource/2/', 'name': 'source-2', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/foreignkeysource/3/', 'name': 'source-3', 'target': 'http://testserver/foreignkeytarget/1/'}
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_reverse_foreign_key_retrieve(self):
         queryset = ForeignKeyTarget.objects.all()
-        serializer = ForeignKeyTargetSerializer(queryset)
+        serializer = ForeignKeyTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/foreignkeytarget/1/', 'name': 'target-1', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/2/', '/foreignkeysource/3/']},
-            {'url': '/foreignkeytarget/2/', 'name': 'target-2', 'sources': []},
+            {'url': 'http://testserver/foreignkeytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/foreignkeysource/1/', 'http://testserver/foreignkeysource/2/', 'http://testserver/foreignkeysource/3/']},
+            {'url': 'http://testserver/foreignkeytarget/2/', 'name': 'target-2', 'sources': []},
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_foreign_key_update(self):
-        data = {'url': '/foreignkeysource/1/', 'name': 'source-1', 'target': '/foreignkeytarget/2/'}
+        data = {'url': 'http://testserver/foreignkeysource/1/', 'name': 'source-1', 'target': 'http://testserver/foreignkeytarget/2/'}
         instance = ForeignKeySource.objects.get(pk=1)
-        serializer = ForeignKeySourceSerializer(instance, data=data)
+        serializer = ForeignKeySourceSerializer(instance, data=data, context={'request': request})
         self.assertTrue(serializer.is_valid())
         self.assertEquals(serializer.data, data)
         serializer.save()
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = ForeignKeySource.objects.all()
-        serializer = ForeignKeySourceSerializer(queryset)
+        serializer = ForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/foreignkeysource/1/', 'name': 'source-1', 'target': '/foreignkeytarget/2/'},
-            {'url': '/foreignkeysource/2/', 'name': 'source-2', 'target': '/foreignkeytarget/1/'},
-            {'url': '/foreignkeysource/3/', 'name': 'source-3', 'target': '/foreignkeytarget/1/'}
+            {'url': 'http://testserver/foreignkeysource/1/', 'name': 'source-1', 'target': 'http://testserver/foreignkeytarget/2/'},
+            {'url': 'http://testserver/foreignkeysource/2/', 'name': 'source-2', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/foreignkeysource/3/', 'name': 'source-3', 'target': 'http://testserver/foreignkeytarget/1/'}
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_foreign_key_update_incorrect_type(self):
-        data = {'url': '/foreignkeysource/1/', 'name': 'source-1', 'target': 2}
+        data = {'url': 'http://testserver/foreignkeysource/1/', 'name': 'source-1', 'target': 2}
         instance = ForeignKeySource.objects.get(pk=1)
-        serializer = ForeignKeySourceSerializer(instance, data=data)
+        serializer = ForeignKeySourceSerializer(instance, data=data, context={'request': request})
         self.assertFalse(serializer.is_valid())
         self.assertEquals(serializer.errors, {'target': ['Incorrect type.  Expected url string, received int.']})
 
     def test_reverse_foreign_key_update(self):
-        data = {'url': '/foreignkeytarget/2/', 'name': 'target-2', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']}
+        data = {'url': 'http://testserver/foreignkeytarget/2/', 'name': 'target-2', 'sources': ['http://testserver/foreignkeysource/1/', 'http://testserver/foreignkeysource/3/']}
         instance = ForeignKeyTarget.objects.get(pk=2)
-        serializer = ForeignKeyTargetSerializer(instance, data=data)
+        serializer = ForeignKeyTargetSerializer(instance, data=data, context={'request': request})
         self.assertTrue(serializer.is_valid())
         # We shouldn't have saved anything to the db yet since save
         # hasn't been called.
         queryset = ForeignKeyTarget.objects.all()
-        new_serializer = ForeignKeyTargetSerializer(queryset)
+        new_serializer = ForeignKeyTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/foreignkeytarget/1/', 'name': 'target-1', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/2/', '/foreignkeysource/3/']},
-            {'url': '/foreignkeytarget/2/', 'name': 'target-2', 'sources': []},
+            {'url': 'http://testserver/foreignkeytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/foreignkeysource/1/', 'http://testserver/foreignkeysource/2/', 'http://testserver/foreignkeysource/3/']},
+            {'url': 'http://testserver/foreignkeytarget/2/', 'name': 'target-2', 'sources': []},
         ]
         self.assertEquals(new_serializer.data, expected)
 
@@ -243,16 +250,16 @@ class HyperlinkedForeignKeyTests(TestCase):
 
         # Ensure target 2 is update, and everything else is as expected
         queryset = ForeignKeyTarget.objects.all()
-        serializer = ForeignKeyTargetSerializer(queryset)
+        serializer = ForeignKeyTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/foreignkeytarget/1/', 'name': 'target-1', 'sources': ['/foreignkeysource/2/']},
-            {'url': '/foreignkeytarget/2/', 'name': 'target-2', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']},
+            {'url': 'http://testserver/foreignkeytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/foreignkeysource/2/']},
+            {'url': 'http://testserver/foreignkeytarget/2/', 'name': 'target-2', 'sources': ['http://testserver/foreignkeysource/1/', 'http://testserver/foreignkeysource/3/']},
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_foreign_key_create(self):
-        data = {'url': '/foreignkeysource/4/', 'name': 'source-4', 'target': '/foreignkeytarget/2/'}
-        serializer = ForeignKeySourceSerializer(data=data)
+        data = {'url': 'http://testserver/foreignkeysource/4/', 'name': 'source-4', 'target': 'http://testserver/foreignkeytarget/2/'}
+        serializer = ForeignKeySourceSerializer(data=data, context={'request': request})
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
         self.assertEquals(serializer.data, data)
@@ -260,18 +267,18 @@ class HyperlinkedForeignKeyTests(TestCase):
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = ForeignKeySource.objects.all()
-        serializer = ForeignKeySourceSerializer(queryset)
+        serializer = ForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/foreignkeysource/1/', 'name': 'source-1', 'target': '/foreignkeytarget/1/'},
-            {'url': '/foreignkeysource/2/', 'name': 'source-2', 'target': '/foreignkeytarget/1/'},
-            {'url': '/foreignkeysource/3/', 'name': 'source-3', 'target': '/foreignkeytarget/1/'},
-            {'url': '/foreignkeysource/4/', 'name': 'source-4', 'target': '/foreignkeytarget/2/'},
+            {'url': 'http://testserver/foreignkeysource/1/', 'name': 'source-1', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/foreignkeysource/2/', 'name': 'source-2', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/foreignkeysource/3/', 'name': 'source-3', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/foreignkeysource/4/', 'name': 'source-4', 'target': 'http://testserver/foreignkeytarget/2/'},
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_reverse_foreign_key_create(self):
-        data = {'url': '/foreignkeytarget/3/', 'name': 'target-3', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']}
-        serializer = ForeignKeyTargetSerializer(data=data)
+        data = {'url': 'http://testserver/foreignkeytarget/3/', 'name': 'target-3', 'sources': ['http://testserver/foreignkeysource/1/', 'http://testserver/foreignkeysource/3/']}
+        serializer = ForeignKeyTargetSerializer(data=data, context={'request': request})
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
         self.assertEquals(serializer.data, data)
@@ -279,18 +286,18 @@ class HyperlinkedForeignKeyTests(TestCase):
 
         # Ensure target 4 is added, and everything else is as expected
         queryset = ForeignKeyTarget.objects.all()
-        serializer = ForeignKeyTargetSerializer(queryset)
+        serializer = ForeignKeyTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/foreignkeytarget/1/', 'name': 'target-1', 'sources': ['/foreignkeysource/2/']},
-            {'url': '/foreignkeytarget/2/', 'name': 'target-2', 'sources': []},
-            {'url': '/foreignkeytarget/3/', 'name': 'target-3', 'sources': ['/foreignkeysource/1/', '/foreignkeysource/3/']},
+            {'url': 'http://testserver/foreignkeytarget/1/', 'name': 'target-1', 'sources': ['http://testserver/foreignkeysource/2/']},
+            {'url': 'http://testserver/foreignkeytarget/2/', 'name': 'target-2', 'sources': []},
+            {'url': 'http://testserver/foreignkeytarget/3/', 'name': 'target-3', 'sources': ['http://testserver/foreignkeysource/1/', 'http://testserver/foreignkeysource/3/']},
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_foreign_key_update_with_invalid_null(self):
-        data = {'url': '/foreignkeysource/1/', 'name': 'source-1', 'target': None}
+        data = {'url': 'http://testserver/foreignkeysource/1/', 'name': 'source-1', 'target': None}
         instance = ForeignKeySource.objects.get(pk=1)
-        serializer = ForeignKeySourceSerializer(instance, data=data)
+        serializer = ForeignKeySourceSerializer(instance, data=data, context={'request': request})
         self.assertFalse(serializer.is_valid())
         self.assertEquals(serializer.errors, {'target': ['This field is required.']})
 
@@ -309,17 +316,17 @@ class HyperlinkedNullableForeignKeyTests(TestCase):
 
     def test_foreign_key_retrieve_with_null(self):
         queryset = NullableForeignKeySource.objects.all()
-        serializer = NullableForeignKeySourceSerializer(queryset)
+        serializer = NullableForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/nullableforeignkeysource/1/', 'name': 'source-1', 'target': '/foreignkeytarget/1/'},
-            {'url': '/nullableforeignkeysource/2/', 'name': 'source-2', 'target': '/foreignkeytarget/1/'},
-            {'url': '/nullableforeignkeysource/3/', 'name': 'source-3', 'target': None},
+            {'url': 'http://testserver/nullableforeignkeysource/1/', 'name': 'source-1', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/nullableforeignkeysource/2/', 'name': 'source-2', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/nullableforeignkeysource/3/', 'name': 'source-3', 'target': None},
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_foreign_key_create_with_valid_null(self):
-        data = {'url': '/nullableforeignkeysource/4/', 'name': 'source-4', 'target': None}
-        serializer = NullableForeignKeySourceSerializer(data=data)
+        data = {'url': 'http://testserver/nullableforeignkeysource/4/', 'name': 'source-4', 'target': None}
+        serializer = NullableForeignKeySourceSerializer(data=data, context={'request': request})
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
         self.assertEquals(serializer.data, data)
@@ -327,12 +334,12 @@ class HyperlinkedNullableForeignKeyTests(TestCase):
 
         # Ensure source 4 is created, and everything else is as expected
         queryset = NullableForeignKeySource.objects.all()
-        serializer = NullableForeignKeySourceSerializer(queryset)
+        serializer = NullableForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/nullableforeignkeysource/1/', 'name': 'source-1', 'target': '/foreignkeytarget/1/'},
-            {'url': '/nullableforeignkeysource/2/', 'name': 'source-2', 'target': '/foreignkeytarget/1/'},
-            {'url': '/nullableforeignkeysource/3/', 'name': 'source-3', 'target': None},
-            {'url': '/nullableforeignkeysource/4/', 'name': 'source-4', 'target': None}
+            {'url': 'http://testserver/nullableforeignkeysource/1/', 'name': 'source-1', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/nullableforeignkeysource/2/', 'name': 'source-2', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/nullableforeignkeysource/3/', 'name': 'source-3', 'target': None},
+            {'url': 'http://testserver/nullableforeignkeysource/4/', 'name': 'source-4', 'target': None}
         ]
         self.assertEquals(serializer.data, expected)
 
@@ -341,9 +348,9 @@ class HyperlinkedNullableForeignKeyTests(TestCase):
         The emptystring should be interpreted as null in the context
         of relationships.
         """
-        data = {'url': '/nullableforeignkeysource/4/', 'name': 'source-4', 'target': ''}
-        expected_data = {'url': '/nullableforeignkeysource/4/', 'name': 'source-4', 'target': None}
-        serializer = NullableForeignKeySourceSerializer(data=data)
+        data = {'url': 'http://testserver/nullableforeignkeysource/4/', 'name': 'source-4', 'target': ''}
+        expected_data = {'url': 'http://testserver/nullableforeignkeysource/4/', 'name': 'source-4', 'target': None}
+        serializer = NullableForeignKeySourceSerializer(data=data, context={'request': request})
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
         self.assertEquals(serializer.data, expected_data)
@@ -351,30 +358,30 @@ class HyperlinkedNullableForeignKeyTests(TestCase):
 
         # Ensure source 4 is created, and everything else is as expected
         queryset = NullableForeignKeySource.objects.all()
-        serializer = NullableForeignKeySourceSerializer(queryset)
+        serializer = NullableForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/nullableforeignkeysource/1/', 'name': 'source-1', 'target': '/foreignkeytarget/1/'},
-            {'url': '/nullableforeignkeysource/2/', 'name': 'source-2', 'target': '/foreignkeytarget/1/'},
-            {'url': '/nullableforeignkeysource/3/', 'name': 'source-3', 'target': None},
-            {'url': '/nullableforeignkeysource/4/', 'name': 'source-4', 'target': None}
+            {'url': 'http://testserver/nullableforeignkeysource/1/', 'name': 'source-1', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/nullableforeignkeysource/2/', 'name': 'source-2', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/nullableforeignkeysource/3/', 'name': 'source-3', 'target': None},
+            {'url': 'http://testserver/nullableforeignkeysource/4/', 'name': 'source-4', 'target': None}
         ]
         self.assertEquals(serializer.data, expected)
 
     def test_foreign_key_update_with_valid_null(self):
-        data = {'url': '/nullableforeignkeysource/1/', 'name': 'source-1', 'target': None}
+        data = {'url': 'http://testserver/nullableforeignkeysource/1/', 'name': 'source-1', 'target': None}
         instance = NullableForeignKeySource.objects.get(pk=1)
-        serializer = NullableForeignKeySourceSerializer(instance, data=data)
+        serializer = NullableForeignKeySourceSerializer(instance, data=data, context={'request': request})
         self.assertTrue(serializer.is_valid())
         self.assertEquals(serializer.data, data)
         serializer.save()
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = NullableForeignKeySource.objects.all()
-        serializer = NullableForeignKeySourceSerializer(queryset)
+        serializer = NullableForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/nullableforeignkeysource/1/', 'name': 'source-1', 'target': None},
-            {'url': '/nullableforeignkeysource/2/', 'name': 'source-2', 'target': '/foreignkeytarget/1/'},
-            {'url': '/nullableforeignkeysource/3/', 'name': 'source-3', 'target': None},
+            {'url': 'http://testserver/nullableforeignkeysource/1/', 'name': 'source-1', 'target': None},
+            {'url': 'http://testserver/nullableforeignkeysource/2/', 'name': 'source-2', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/nullableforeignkeysource/3/', 'name': 'source-3', 'target': None},
         ]
         self.assertEquals(serializer.data, expected)
 
@@ -383,21 +390,21 @@ class HyperlinkedNullableForeignKeyTests(TestCase):
         The emptystring should be interpreted as null in the context
         of relationships.
         """
-        data = {'url': '/nullableforeignkeysource/1/', 'name': 'source-1', 'target': ''}
-        expected_data = {'url': '/nullableforeignkeysource/1/', 'name': 'source-1', 'target': None}
+        data = {'url': 'http://testserver/nullableforeignkeysource/1/', 'name': 'source-1', 'target': ''}
+        expected_data = {'url': 'http://testserver/nullableforeignkeysource/1/', 'name': 'source-1', 'target': None}
         instance = NullableForeignKeySource.objects.get(pk=1)
-        serializer = NullableForeignKeySourceSerializer(instance, data=data)
+        serializer = NullableForeignKeySourceSerializer(instance, data=data, context={'request': request})
         self.assertTrue(serializer.is_valid())
         self.assertEquals(serializer.data, expected_data)
         serializer.save()
 
         # Ensure source 1 is updated, and everything else is as expected
         queryset = NullableForeignKeySource.objects.all()
-        serializer = NullableForeignKeySourceSerializer(queryset)
+        serializer = NullableForeignKeySourceSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/nullableforeignkeysource/1/', 'name': 'source-1', 'target': None},
-            {'url': '/nullableforeignkeysource/2/', 'name': 'source-2', 'target': '/foreignkeytarget/1/'},
-            {'url': '/nullableforeignkeysource/3/', 'name': 'source-3', 'target': None},
+            {'url': 'http://testserver/nullableforeignkeysource/1/', 'name': 'source-1', 'target': None},
+            {'url': 'http://testserver/nullableforeignkeysource/2/', 'name': 'source-2', 'target': 'http://testserver/foreignkeytarget/1/'},
+            {'url': 'http://testserver/nullableforeignkeysource/3/', 'name': 'source-3', 'target': None},
         ]
         self.assertEquals(serializer.data, expected)
 
@@ -415,7 +422,7 @@ class HyperlinkedNullableForeignKeyTests(TestCase):
 
     #     # Ensure target 1 is updated, and everything else is as expected
     #     queryset = ForeignKeyTarget.objects.all()
-    #     serializer = ForeignKeyTargetSerializer(queryset)
+    #     serializer = ForeignKeyTargetSerializer(queryset, many=True)
     #     expected = [
     #         {'id': 1, 'name': 'target-1', 'sources': [1]},
     #         {'id': 2, 'name': 'target-2', 'sources': []},
@@ -436,9 +443,9 @@ class HyperlinkedNullableOneToOneTests(TestCase):
 
     def test_reverse_foreign_key_retrieve_with_null(self):
         queryset = OneToOneTarget.objects.all()
-        serializer = NullableOneToOneTargetSerializer(queryset)
+        serializer = NullableOneToOneTargetSerializer(queryset, many=True, context={'request': request})
         expected = [
-            {'url': '/onetoonetarget/1/', 'name': 'target-1', 'nullable_source': '/nullableonetoonesource/1/'},
-            {'url': '/onetoonetarget/2/', 'name': 'target-2', 'nullable_source': None},
+            {'url': 'http://testserver/onetoonetarget/1/', 'name': 'target-1', 'nullable_source': 'http://testserver/nullableonetoonesource/1/'},
+            {'url': 'http://testserver/onetoonetarget/2/', 'name': 'target-2', 'nullable_source': None},
         ]
         self.assertEquals(serializer.data, expected)

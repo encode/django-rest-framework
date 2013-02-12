@@ -261,7 +261,7 @@ class ValidationTests(TestCase):
         Data of the wrong type is not valid.
         """
         data = ['i am', 'a', 'list']
-        serializer = CommentSerializer(self.comment, data=data)
+        serializer = CommentSerializer(self.comment, data=data, many=True)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'non_field_errors': ['Invalid data']})
 
