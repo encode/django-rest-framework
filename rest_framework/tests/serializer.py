@@ -801,6 +801,7 @@ class RelatedTraversalTest(TestCase):
         obj = ClassWithQuerysetMethod()
         serializer = QuerysetMethodSerializer(obj)
         self.assertEquals(serializer.data, {'blogposts': [u'BlogPost object']})
+        self.assertEquals(serializer.data, {'blogposts': ['BlogPost object']})
 
 
 class SerializerMethodFieldTests(TestCase):
