@@ -8,9 +8,23 @@
 
 Minor version numbers (0.0.x) are used for changes that are API compatible.  You should be able to upgrade between minor point releases without any other code changes.
 
-Medium version numbers (0.x.0) may include minor API changes.  You should read the release notes carefully before upgrading between medium point releases.
+Medium version numbers (0.x.0) may include API changes, in line with the [deprecation policy][deprecation-policy].  You should read the release notes carefully before upgrading between medium point releases.
 
-Major version numbers (x.0.0) are reserved for project milestones.  No major point releases are currently planned.
+Major version numbers (x.0.0) are reserved for substantial project milestones.  No major point releases are currently planned.
+
+## Deprecation policy
+
+REST framework releases follow a formal deprecation policy, which is in line with [Django's deprecation policy][django-deprecation-policy].
+
+The timeline for deprecation of a feature present in version 1.0 would work as follows:
+
+* Version 1.1 would remain **fully backwards compatible** with 1.0, but would raise `PendingDeprecationWarning` warnings if you use the feature that are due to be deprecated.  These warnings are **silent by default**, but can be explicitly enabled when you're ready to start migrating any required changes.  For example if you start running your tests using `python -Wd manage.py test`, you'll be warned of any API changes you need to make.
+
+* Version 1.2 would escalate these warnings to `DeprecationWarning`, which is loud by default.
+
+* Version 1.3 would remove the deprecated bits of API entirely.
+
+Note that in line with Django's policy, any parts of the framework not mentioned in the documentation should generally be considered private API, and may be subject to change.
 
 ## Upgrading
 
@@ -24,9 +38,11 @@ You can determine your currently installed version using `pip freeze`:
 
 ---
 
-## 2.1.x series
+## 2.2.x series
 
-### Master
+### 2.2.0
+
+**Date**: 13th Feb 2013
 
 * Python 3 support.
 * Added a `post_save()` hook to the generic views.
@@ -35,10 +51,17 @@ You can determine your currently installed version using `pip freeze`:
 * Deprecate `null=True` on relations in favor of `required=False`.
 * Deprecate `blank=True` on CharFields, just use `required=False`.
 * Deprecate optional `obj` argument in permissions checks in favor of `has_object_permission`.
+* Deprecate implicit hyperlinked relations behavior.
 * Bugfix: Allow serializer output to be cached.
 * Bugfix: Fix styling on browsable API login.
 * Bugfix: Fix issue with deserializing empty to-many relations.
 * Bugfix: Ensure model field validation is still applied for ModelSerializer subclasses with an custom `.restore_object()` method.
+
+**Note**: See the [2.2 announcement][2.2-announcement] for full details.
+
+---
+
+## 2.1.x series
 
 ### 2.1.17
 
@@ -356,6 +379,9 @@ This change will not affect user code, so long as it's following the recommended
 * Initial release.
 
 [cite]: http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html
+[deprecation-policy]: #deprecation-policy
+[django-deprecation-policy]: https://docs.djangoproject.com/en/dev/internals/release-process/#internal-release-deprecation-policy
+[2.2-announcement]: 2.2-announcement.md
 [staticfiles14]: https://docs.djangoproject.com/en/1.4/howto/static-files/#with-a-template-tag
 [staticfiles13]: https://docs.djangoproject.com/en/1.3/howto/static-files/#with-a-template-tag
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
