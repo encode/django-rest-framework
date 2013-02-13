@@ -116,6 +116,7 @@ General guides to using REST framework.
 * [The Browsable API][browsableapi]
 * [REST, Hypermedia & HATEOAS][rest-hypermedia-hateoas]
 * [2.0 Announcement][rest-framework-2-announcement]
+* [2.2 Announcement][2.2-announcement]
 * [Release Notes][release-notes]
 * [Credits][credits]
 
@@ -211,6 +212,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [rest-hypermedia-hateoas]: topics/rest-hypermedia-hateoas.md
 [contributing]: topics/contributing.md
 [rest-framework-2-announcement]: topics/rest-framework-2-announcement.md
+[2.2-announcement]: topics/2.2-announcement.md
 [release-notes]: topics/release-notes.md
 [credits]: topics/credits.md
 
