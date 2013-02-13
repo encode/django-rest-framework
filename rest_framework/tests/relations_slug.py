@@ -25,7 +25,7 @@ class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
 
 
 # TODO: M2M Tests, FKTests (Non-nulable), One2One
-class PKForeignKeyTests(TestCase):
+class SlugForeignKeyTests(TestCase):
     def setUp(self):
         target = ForeignKeyTarget(name='target-1')
         target.save()
