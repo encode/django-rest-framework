@@ -19,7 +19,7 @@ The following people have helped make REST framework great.
 * Craig Blaszczyk - [jakul]
 * Garcia Solero - [garciasolero]
 * Tom Drummond - [devioustree]
-* Danilo Bargen - [gwrtheyrn]
+* Danilo Bargen - [dbrgn]
 * Andrew McCloud - [amccloud]
 * Thomas Steinacher - [thomasst]
 * Meurig Freeman - [meurig]
@@ -155,7 +155,7 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [jakul]: https://github.com/jakul
 [garciasolero]: https://github.com/garciasolero
 [devioustree]: https://github.com/devioustree
-[gwrtheyrn]: https://github.com/gwrtheyrn
+[dbrgn]: https://github.com/dbrgn
 [amccloud]: https://github.com/amccloud
 [thomasst]: https://github.com/thomasst
 [meurig]: https://github.com/meurig
