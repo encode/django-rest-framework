@@ -591,12 +591,6 @@ class ModelSerializer(Serializer):
         else:
             instance = self.opts.model(**attrs)
 
-        try:
-            instance.full_clean(exclude=self.get_validation_exclusions())
-        except ValidationError as err:
-            self._errors = err.message_dict
-            return None
-
         return instance
 
     def from_native(self, data, files):
