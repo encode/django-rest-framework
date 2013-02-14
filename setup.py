@@ -59,7 +59,7 @@ setup(
     url='http://django-rest-framework.org',
     download_url='http://pypi.python.org/pypi/rest_framework/',
     license='BSD',
-    description='A lightweight REST framework for Django.',
+    description='Web APIs for Django, made easy.',
     author='Tom Christie',
     author_email='tom@tomchristie.com',  # SEE NOTE BELOW (*)
     packages=get_packages('rest_framework'),
@@ -67,7 +67,7 @@ setup(
     test_suite='rest_framework.runtests.runtests.main',
     install_requires=[],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: Developers',
