@@ -109,7 +109,7 @@ The first thing we need to get started on our Web API is provide a way of serial
 
     from django.forms import widgets
     from rest_framework import serializers
-    from snippets.models import Snippet
+    from snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES
 
 
     class SnippetSerializer(serializers.Serializer):
@@ -119,9 +119,9 @@ The first thing we need to get started on our Web API is provide a way of serial
         code = serializers.CharField(widget=widgets.Textarea,
                                      max_length=100000)
         linenos = serializers.BooleanField(required=False)
-        language = serializers.ChoiceField(choices=models.LANGUAGE_CHOICES,
+        language = serializers.ChoiceField(choices=LANGUAGE_CHOICES,
                                            default='python')
-        style = serializers.ChoiceField(choices=models.STYLE_CHOICES,
+        style = serializers.ChoiceField(choices=STYLE_CHOICES,
                                         default='friendly')
     
         def restore_object(self, attrs, instance=None):
