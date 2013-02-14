@@ -43,7 +43,7 @@ You can determine your currently installed version using `pip freeze`:
 ### Master
 
 * Bugfix: request.DATA should return an empty `QueryDict` with no data, not `None`.
-* Bugfix: Remove unneeded field validation, which caused extra querys.
+* Bugfix: Remove unneeded field validation, which caused extra queries.
 
 ### 2.2.0
 
