@@ -199,9 +199,15 @@ If you want to override this behavior, you'll need to declare the `DateTimeField
 
     class CommentSerializer(serializers.ModelSerializer):
         created = serializers.DateTimeField()
-        
+
         class Meta:
             model = Comment
+
+## TimeField
+
+A time representation.
+
+Corresponds to `django.db.models.fields.TimeField`
 
 ## IntegerField
 
