@@ -11,7 +11,9 @@ The wrapped request then offers a richer API, in particular :
 """
 from __future__ import unicode_literals
 from django.conf import settings
+from django.http import QueryDict
 from django.http.multipartparser import parse_header
+from django.utils.datastructures import MultiValueDict
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
 from rest_framework.compat import BytesIO
@@ -297,7 +299,9 @@ class Request(object):
         media_type = self.content_type
 
         if stream is None or media_type is None:
-            return (None, None)
+            empty_data = QueryDict('', self._request._encoding)
+            empty_files = MultiValueDict()
+            return (empty_data, empty_files)
 
         parser = self.negotiator.select_parser(self, self.parsers)
 
@@ -311,7 +315,8 @@ class Request(object):
         try:
             return (parsed.data, parsed.files)
         except AttributeError:
-            return (parsed, None)
+            empty_files = MultiValueDict()
+            return (parsed, empty_files)
 
     def _authenticate(self):
         """
