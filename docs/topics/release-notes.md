@@ -42,6 +42,8 @@ You can determine your currently installed version using `pip freeze`:
 
 ### Master
 
+* Added TimeField.
+* Serializer fields can be mapped to any method that takes no args, or only takes kwargs which have defaults. 
 * Bugfix: request.DATA should return an empty `QueryDict` with no data, not `None`.
 * Bugfix: Remove unneeded field validation, which caused extra queries.
 
