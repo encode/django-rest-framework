@@ -147,32 +147,49 @@
                 </div>
                 {% endif %}
 
-                {% if put_form %}
+                {% if 'PUT' in allowed_methods or 'PATCH' in allowed_methods %}
                 <div class="well">
-                    <form action="{{ request.get_full_path }}" method="POST" {% if put_form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
-                        <fieldset>
-                            <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" />
-                            {% csrf_token %}
-                            {{ put_form.non_field_errors }}
-                            {% for field in put_form %}
-                                <div class="control-group"> <!--{% if field.errors %}error{% endif %}-->
-                                    {{ field.label_tag|add_class:"control-label" }}
-                                    <div class="controls">
-                                        {{ field }}
-                                        <span class='help-inline'>{{ field.help_text }}</span>
-                                        <!--{{ field.errors|add_class:"help-block" }}-->
-                                    </div>
-                                </div>
-                            {% endfor %}
-                            <div class="form-actions">
-                                <button class="btn btn-primary js-tooltip" title="Make a PUT request on the {{ name }} resource">PUT</button>
-                            </div>
-
-                        </fieldset>
-                    </form>
+                    <ul class="nav nav-pills" id="form-switcher">
+                        {% if put_form %}
+                        <li><a href="#object-form" data-toggle="pill">Object form</a></li>
+                        {% endif %}
+                        <li><a href="#generic-content-form" data-toggle="pill">Generic content form</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        {% if put_form %}
+                        <div class="tab-pane" id="object-form">
+                            {% with form=put_form %}
+                                <form action="{{ request.get_full_path }}" method="POST" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
+                                    <fieldset>
+                                        {% include "rest_framework/form.html" %}
+                                        <div class="form-actions">
+                                            <button class="btn btn-primary js-tooltip" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" title="Make a PUT request on the {{ name }} resource">PUT</button>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            {% endwith %}
+                        </div>
+                        {% endif %}
+                        <div class="tab-pane" id="generic-content-form">
+                            {% with form=generic_content_form %}
+                                <form action="{{ request.get_full_path }}" method="POST" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
+                                    <fieldset>
+                                        {% include "rest_framework/form.html" %}
+                                        <div class="form-actions">
+                                            {% if 'PUT' in allowed_methods %}
+                                            <button class="btn btn-primary js-tooltip" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" title="Make a PUT request on the {{ name }} resource">PUT</button>
+                                            {% endif %}
+                                            {% if 'PATCH' in allowed_methods %}
+                                            <button class="btn btn-primary js-tooltip" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PATCH" title="Make a PUT request on the {{ name }} resource">PATCH</button>
+                                            {% endif %}
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            {% endwith %}
+                        </div>
+                    </div>
                 </div>
                 {% endif %}
-
             {% endif %}
 
         </div>
