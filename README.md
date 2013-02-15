@@ -26,7 +26,7 @@ There is also a sandbox API you can use for testing purposes, [available here][s
 
 # Requirements
 
-* Python (2.6, 2.7, 3.2, 3.3)
+* Python (2.6.5+, 2.7, 3.2, 3.3)
 * Django (1.3, 1.4, 1.5)
 
 **Optional:**
