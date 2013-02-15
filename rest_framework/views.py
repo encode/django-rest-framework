@@ -13,7 +13,6 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
 import re
-import warnings
 
 
 def _remove_trailing_string(content, trailing):
