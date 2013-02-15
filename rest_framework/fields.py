@@ -18,6 +18,7 @@ from rest_framework.compat import timezone
 from rest_framework.compat import BytesIO
 from rest_framework.compat import six
 from rest_framework.compat import smart_text
+from rest_framework.compat import parse_time
 
 
 def is_simple_callable(obj):
@@ -529,6 +530,33 @@ class DateTimeField(WritableField):
 
         msg = self.error_messages['invalid'] % value
         raise ValidationError(msg)
+
+
+class TimeField(WritableField):
+    type_name = 'TimeField'
+    widget = widgets.TimeInput
+    form_field_class = forms.TimeField
+
+    default_error_messages = {
+        'invalid': _("'%s' value has an invalid format. It must be a valid "
+                     "time in the HH:MM[:ss[.uuuuuu]] format."),
+    }
+    empty = None
+
+    def from_native(self, value):
+        if value in validators.EMPTY_VALUES:
+            return None
+
+        if isinstance(value, datetime.time):
+            return value
+
+        try:
+            parsed = parse_time(value)
+            assert parsed is not None
+            return parsed
+        except ValueError:
+            msg = self.error_messages['invalid'] % value
+            raise ValidationError(msg)
 
 
 class IntegerField(WritableField):
