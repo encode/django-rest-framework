@@ -125,25 +125,16 @@
 
                 {% if post_form %}
                 <div class="well">
-                    <form action="{{ request.get_full_path }}" method="POST" {% if post_form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
-                        <fieldset>
-                            {% csrf_token %}
-                            {{ post_form.non_field_errors }}
-                            {% for field in post_form %}
-                                <div class="control-group"> <!--{% if field.errors %}error{% endif %}-->
-                                    {{ field.label_tag|add_class:"control-label" }}
-                                    <div class="controls">
-                                        {{ field }}
-                                        <span class="help-inline">{{ field.help_text }}</span>
-                                        <!--{{ field.errors|add_class:"help-block" }}-->
-                                    </div>
+                    {% with form=post_form %}
+                        <form action="{{ request.get_full_path }}" method="POST" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
+                            <fieldset>
+                                {% include "rest_framework/form.html" %}
+                                <div class="form-actions">
+                                    <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
                                 </div>
-                            {% endfor %}
-                            <div class="form-actions">
-                                <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
-                            </div>
-                        </fieldset>
-                    </form>
+                            </fieldset>
+                        </form>
+                    {% endwith %}
                 </div>
                 {% endif %}
 
