@@ -517,6 +517,7 @@ class ModelSerializer(Serializer):
             models.PositiveSmallIntegerField: IntegerField,
             models.DateTimeField: DateTimeField,
             models.DateField: DateField,
+            models.TimeField: TimeField,
             models.EmailField: EmailField,
             models.CharField: CharField,
             models.URLField: URLField,

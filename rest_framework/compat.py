@@ -349,7 +349,7 @@ except ImportError:
 
 # dateparse is ALSO new in Django 1.4
 try:
-    from django.utils.dateparse import parse_date, parse_datetime
+    from django.utils.dateparse import parse_date, parse_datetime, parse_time
 except ImportError:
     import datetime
     import re
