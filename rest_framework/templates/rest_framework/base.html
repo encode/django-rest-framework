@@ -125,16 +125,40 @@
 
                 {% if post_form %}
                 <div class="well">
-                    {% with form=post_form %}
-                        <form action="{{ request.get_full_path }}" method="POST" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
-                            <fieldset>
-                                {% include "rest_framework/form.html" %}
-                                <div class="form-actions">
-                                    <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
-                                </div>
-                            </fieldset>
-                        </form>
-                    {% endwith %}
+                    <ul class="nav nav-pills" id="form-switcher">
+                        {% if post_form %}
+                        <li><a href="#object-form" data-toggle="pill">Object form</a></li>
+                        {% endif %}
+                        <li><a href="#generic-content-form" data-toggle="pill">Generic content form</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        {% if post_form %}
+                        <div class="tab-pane" id="object-form">
+                            {% with form=post_form %}
+                                <form action="{{ request.get_full_path }}" method="POST" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
+                                    <fieldset>
+                                        {% include "rest_framework/form.html" %}
+                                        <div class="form-actions">
+                                            <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            {% endwith %}
+                        </div>
+                        {% endif %}
+                        <div class="tab-pane" id="generic-content-form">
+                            {% with form=generic_content_form %}
+                                <form action="{{ request.get_full_path }}" method="POST" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
+                                    <fieldset>
+                                        {% include "rest_framework/form.html" %}
+                                        <div class="form-actions">
+                                            <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
+                                        </div>
+                                    </fieldset>
+                                </form>
+                            {% endwith %}
+                        </div>
+                    </div>
                 </div>
                 {% endif %}
 
