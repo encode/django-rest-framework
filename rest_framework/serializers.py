@@ -33,7 +33,7 @@ class DictWithMetadata(dict):
         """
         # return an instance of the first dict in MRO that isn't a DictWithMetadata
         for base in self.__class__.__mro__:
-            if not isinstance(base, DictWithMetadata) and isinstance(base, dict):
+            if not issubclass(base, DictWithMetadata) and issubclass(base, dict):
                 return base(self)
 
 
@@ -348,6 +348,10 @@ class BaseSerializer(WritableField):
                 many = self.many
             else:
                 many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict))
+                if many:
+                    warnings.warn('Implict list/queryset serialization is due to be deprecated. '
+                                  'Use the `many=True` flag when instantiating the serializer.',
+                                  PendingDeprecationWarning, stacklevel=3)
 
             # TODO: error data when deserializing lists
             if many:
@@ -373,6 +377,10 @@ class BaseSerializer(WritableField):
                 many = self.many
             else:
                 many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict))
+                if many:
+                    warnings.warn('Implict list/queryset serialization is due to be deprecated. '
+                                  'Use the `many=True` flag when instantiating the serializer.',
+                                  PendingDeprecationWarning, stacklevel=2)
 
             if many:
                 self._data = [self.to_native(item) for item in obj]
@@ -541,6 +549,7 @@ class ModelSerializer(Serializer):
             models.PositiveSmallIntegerField: IntegerField,
             models.DateTimeField: DateTimeField,
             models.DateField: DateField,
+            models.TimeField: TimeField,
             models.EmailField: EmailField,
             models.CharField: CharField,
             models.URLField: URLField,
@@ -614,12 +623,6 @@ class ModelSerializer(Serializer):
 
         else:
             instance = self.opts.model(**attrs)
-
-        try:
-            instance.full_clean(exclude=self.get_validation_exclusions())
-        except ValidationError as err:
-            self._errors = err.message_dict
-            return None
 
         return instance
 

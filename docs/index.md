@@ -1,7 +1,7 @@
 <p class="badges">
 <iframe src="http://ghbtns.com/github-btn.html?user=tomchristie&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" class="github-star-button" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
 
-<a href="https://twitter.com/share" class="twitter-share-button" data-url="django-rest-framework.org" data-text="Current status: Checking out the totally awesome Django REST framework! http://django-rest-framework.org" data-count="none">Tweet</a>
+<a href="https://twitter.com/share" class="twitter-share-button" data-url="django-rest-framework.org" data-text="Checking out the totally awesome Django REST framework! http://django-rest-framework.org" data-count="none">Tweet</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="http://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
 <img alt="Travis build image" src="https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master" class="travis-build-image">
@@ -27,7 +27,7 @@ There is also a sandbox API you can use for testing purposes, [available here][s
 
 REST framework requires the following:
 
-* Python (2.6, 2.7, 3.2, 3.3)
+* Python (2.6.5+, 2.7, 3.2, 3.3)
 * Django (1.3, 1.4, 1.5)
 
 The following packages are optional:
@@ -116,6 +116,7 @@ General guides to using REST framework.
 * [The Browsable API][browsableapi]
 * [REST, Hypermedia & HATEOAS][rest-hypermedia-hateoas]
 * [2.0 Announcement][rest-framework-2-announcement]
+* [2.2 Announcement][2.2-announcement]
 * [Release Notes][release-notes]
 * [Credits][credits]
 
@@ -211,6 +212,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [rest-hypermedia-hateoas]: topics/rest-hypermedia-hateoas.md
 [contributing]: topics/contributing.md
 [rest-framework-2-announcement]: topics/rest-framework-2-announcement.md
+[2.2-announcement]: topics/2.2-announcement.md
 [release-notes]: topics/release-notes.md
 [credits]: topics/credits.md
 

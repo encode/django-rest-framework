@@ -261,7 +261,7 @@ class ValidationTests(TestCase):
         Data of the wrong type is not valid.
         """
         data = ['i am', 'a', 'list']
-        serializer = CommentSerializer(self.comment, data=data)
+        serializer = CommentSerializer(self.comment, data=data, many=True)
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'non_field_errors': ['Invalid data']})
 
@@ -747,6 +747,9 @@ class ManyRelatedTests(TestCase):
 
 class RelatedTraversalTest(TestCase):
     def test_nested_traversal(self):
+        """
+        Source argument should support dotted.source notation.
+        """
         user = Person.objects.create(name="django")
         post = BlogPost.objects.create(title="Test blog post", writer=user)
         post.blogpostcomment_set.create(text="I love this blog post")
@@ -784,6 +787,41 @@ class RelatedTraversalTest(TestCase):
         }
 
         self.assertEqual(serializer.data, expected)
+
+    def test_nested_traversal_with_none(self):
+        """
+        If a component of the dotted.source is None, return None for the field.
+        """
+        from rest_framework.tests.models import NullableForeignKeySource
+        instance = NullableForeignKeySource.objects.create(name='Source with null FK')
+
+        class NullableSourceSerializer(serializers.Serializer):
+            target_name = serializers.Field(source='target.name')
+
+        serializer = NullableSourceSerializer(instance=instance)
+
+        expected = {
+            'target_name': None,
+        }
+
+        self.assertEqual(serializer.data, expected)
+
+    def test_queryset_nested_traversal(self):
+        """
+        Relational fields should be able to use methods as their source.
+        """
+        BlogPost.objects.create(title='blah')
+
+        class QuerysetMethodSerializer(serializers.Serializer):
+            blogposts = serializers.RelatedField(many=True, source='get_all_blogposts')
+
+        class ClassWithQuerysetMethod(object):
+            def get_all_blogposts(self):
+                return BlogPost.objects
+
+        obj = ClassWithQuerysetMethod()
+        serializer = QuerysetMethodSerializer(obj)
+        self.assertEquals(serializer.data, {'blogposts': ['BlogPost object']})
 
 
 class SerializerMethodFieldTests(TestCase):
@@ -899,6 +937,13 @@ class SerializerPickleTests(TestCase):
                 model = Person
                 fields = ('name', 'age')
         pickle.dumps(InnerPersonSerializer(Person(name="Noah", age=950)).data)
+
+    def test_getstate_method_should_not_return_none(self):
+        '''Regression test for 
+        https://github.com/tomchristie/django-rest-framework/issues/645
+        '''
+        d = serializers.DictWithMetadata({1:1})
+        self.assertEqual(d.__getstate__(), serializers.SortedDict({1:1}))
 
 
 class DepthTest(TestCase):

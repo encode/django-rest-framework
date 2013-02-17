@@ -52,7 +52,7 @@ class ReverseForeignKeyTests(TestCase):
 
     def test_foreign_key_retrieve(self):
         queryset = ForeignKeySource.objects.all()
-        serializer = ForeignKeySourceSerializer(queryset)
+        serializer = ForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': {'id': 1, 'name': 'target-1'}},
             {'id': 2, 'name': 'source-2', 'target': {'id': 1, 'name': 'target-1'}},
@@ -62,7 +62,7 @@ class ReverseForeignKeyTests(TestCase):
 
     def test_reverse_foreign_key_retrieve(self):
         queryset = ForeignKeyTarget.objects.all()
-        serializer = ForeignKeyTargetSerializer(queryset)
+        serializer = ForeignKeyTargetSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'sources': [
                 {'id': 1, 'name': 'source-1', 'target': 1},
@@ -87,7 +87,7 @@ class NestedNullableForeignKeyTests(TestCase):
 
     def test_foreign_key_retrieve_with_null(self):
         queryset = NullableForeignKeySource.objects.all()
-        serializer = NullableForeignKeySourceSerializer(queryset)
+        serializer = NullableForeignKeySourceSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': {'id': 1, 'name': 'target-1'}},
             {'id': 2, 'name': 'source-2', 'target': {'id': 1, 'name': 'target-1'}},
@@ -107,7 +107,7 @@ class NestedNullableOneToOneTests(TestCase):
 
     def test_reverse_foreign_key_retrieve_with_null(self):
         queryset = OneToOneTarget.objects.all()
-        serializer = NullableOneToOneTargetSerializer(queryset)
+        serializer = NullableOneToOneTargetSerializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'nullable_source': {'id': 1, 'name': 'source-1', 'target': 1}},
             {'id': 2, 'name': 'target-2', 'nullable_source': None},

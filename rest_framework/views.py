@@ -257,18 +257,28 @@ class APIView(View):
                 return (renderers[0], renderers[0].media_type)
             raise
 
-    def has_permission(self, request, obj=None):
+    def check_permissions(self, request):
         """
-        Return `True` if the request should be permitted.
+        Check if the request should be permitted.
+        Raises an appropriate exception if the request is not permitted.
         """
         for permission in self.get_permissions():
-            if not permission.has_permission(request, self, obj):
-                return False
-        return True
+            if not permission.has_permission(request, self):
+                self.permission_denied(request)
+
+    def check_object_permissions(self, request, obj):
+        """
+        Check if the request should be permitted for a given object.
+        Raises an appropriate exception if the request is not permitted.
+        """
+        for permission in self.get_permissions():
+            if not permission.has_object_permission(request, self, obj):
+                self.permission_denied(request)
 
     def check_throttles(self, request):
         """
         Check if request should be throttled.
+        Raises an appropriate exception if the request is throttled.
         """
         for throttle in self.get_throttles():
             if not throttle.allow_request(request, self):
@@ -295,8 +305,7 @@ class APIView(View):
         self.format_kwarg = self.get_format_suffix(**kwargs)
 
         # Ensure that the incoming request is permitted
-        if not self.has_permission(request):
-            self.permission_denied(request)
+        self.check_permissions(request)
         self.check_throttles(request)
 
         # Perform content negotiation and store the accepted info on the request

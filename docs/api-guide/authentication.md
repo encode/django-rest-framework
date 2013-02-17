@@ -167,6 +167,8 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
 
     { 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
 
+Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.  If you need a customized version of the `obtain_auth_token` view, you can do so by overriding the `ObtainAuthToken` view class, and using that in your url conf instead.
+
 ## SessionAuthentication
 
 This authentication scheme uses Django's default session backend for authentication.  Session authentication is appropriate for AJAX clients that are running in the same session context as your website.

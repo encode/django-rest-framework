@@ -18,16 +18,21 @@ from rest_framework.compat import timezone
 from rest_framework.compat import BytesIO
 from rest_framework.compat import six
 from rest_framework.compat import smart_text
+from rest_framework.compat import parse_time
 
 
 def is_simple_callable(obj):
     """
     True if the object is a callable that takes no arguments.
     """
-    return (
-        (inspect.isfunction(obj) and not inspect.getargspec(obj)[0]) or
-        (inspect.ismethod(obj) and len(inspect.getargspec(obj)[0]) <= 1)
-    )
+    try:
+        args, _, _, defaults = inspect.getargspec(obj)
+    except TypeError:
+        return False
+    else:
+        len_args = len(args) if inspect.isfunction(obj) else len(args) - 1
+        len_defaults = len(defaults) if defaults else 0
+        return len_args <= len_defaults
 
 
 def get_component(obj, attr_name):
@@ -94,12 +99,14 @@ class Field(object):
         if self.source == '*':
             return self.to_native(obj)
 
-        if self.source:
-            value = obj
-            for component in self.source.split('.'):
-                value = get_component(value, component)
-        else:
-            value = get_component(obj, field_name)
+        source = self.source or field_name
+        value = obj
+
+        for component in source.split('.'):
+            value = get_component(value, component)
+            if value is None:
+                break
+
         return self.to_native(value)
 
     def to_native(self, value):
@@ -527,6 +534,33 @@ class DateTimeField(WritableField):
 
         msg = self.error_messages['invalid'] % value
         raise ValidationError(msg)
+
+
+class TimeField(WritableField):
+    type_name = 'TimeField'
+    widget = widgets.TimeInput
+    form_field_class = forms.TimeField
+
+    default_error_messages = {
+        'invalid': _("'%s' value has an invalid format. It must be a valid "
+                     "time in the HH:MM[:ss[.uuuuuu]] format."),
+    }
+    empty = None
+
+    def from_native(self, value):
+        if value in validators.EMPTY_VALUES:
+            return None
+
+        if isinstance(value, datetime.time):
+            return value
+
+        try:
+            parsed = parse_time(value)
+            assert parsed is not None
+            return parsed
+        except ValueError:
+            msg = self.error_messages['invalid'] % value
+            raise ValidationError(msg)
 
 
 class IntegerField(WritableField):

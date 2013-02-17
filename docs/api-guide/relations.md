@@ -32,6 +32,7 @@ In order to explain the various types of relational fields, we'll use a couple o
 
         class Meta:
             unique_together = ('album', 'order')
+            order_by = 'order'
         
         def __unicode__(self):
             return '%d: %s' % (self.order, self.title)
@@ -64,6 +65,10 @@ Would serialize to the following representation.
 
 This field is read only.
 
+**Arguments**:
+
+* `many` - If applied to a to-many relationship, you should set this argument to `True`.
+
 ## PrimaryKeyRelatedField
 
 `PrimaryKeyRelatedField` may be used to represent the target of the relationship using it's primary key.
@@ -94,8 +99,9 @@ By default this field is read-write, although you can change this behavior using
 
 **Arguments**:
 
-* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
+* `many` - If applied to a to-many relationship, you should set this argument to `True`.
 * `required` - If set to `False`, the field will accept values of `None` or the empty-string for nullable relationships.
+* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
 
 ## HyperlinkedRelatedField
 
@@ -129,6 +135,7 @@ By default this field is read-write, although you can change this behavior using
 **Arguments**:
 
 * `view_name` - The view name that should be used as the target of the relationship.  **required**.
+* `many` - If applied to a to-many relationship, you should set this argument to `True`.
 * `required` - If set to `False`, the field will accept values of `None` or the empty-string for nullable relationships.
 * `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
 * `slug_field` - The field on the target that should be used for the lookup. Default is `'slug'`.
@@ -168,16 +175,17 @@ When using `SlugRelatedField` as a read-write field, you will normally want to e
 
 **Arguments**:
 
-* `slug_field` - The field on the target that should be used to represent it.  This should be a field that uniquely identifies any given instance.  For example, `username`.
+* `slug_field` - The field on the target that should be used to represent it.  This should be a field that uniquely identifies any given instance.  For example, `username`.  **required**
+* `many` - If applied to a to-many relationship, you should set this argument to `True`.
+* `required` - If set to `False`, the field will accept values of `None` or the empty-string for nullable relationships.
 * `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
-* `null` - If set to `True`, the field will accept values of `None` or the empty-string for nullable relationships.
 
-## HyperLinkedIdentityField
+## HyperlinkedIdentityField
 
 This field can be applied as an identity relationship, such as the `'url'` field on  a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:
 
     class AlbumSerializer(serializers.HyperlinkedModelSerializer):
-        track_listing = HyperLinkedIdentityField(view_name='track-list')
+        track_listing = HyperlinkedIdentityField(view_name='track-list')
 
         class Meta:
             model = Album
@@ -201,12 +209,23 @@ This field is always read-only.
 * `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
 * `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
 
-## Nested relationships
+---
 
-Nested relationships can be expressed by using serializers as fields.  For example:
+# Nested relationships
+
+Nested relationships can be expressed by using serializers as fields.
+
+If the field is used to represent a to-many relationship, you should add the `many=True` flag to the serializer field.
+
+Note that nested relationships are currently read-only.  For read-write relationships, you should use a flat relational style.
+
+## Example
+
+For example, the following serializer:
 
     class TrackSerializer(serializer.ModelSerializer):
         class Meta:
+            model = Track
             fields = ('order', 'title')
     
     class AlbumSerializer(serializer.ModelSerializer):
@@ -216,17 +235,57 @@ Nested relationships can be expressed by using serializers as fields.  For examp
             model = Album
             fields = ('album_name', 'artist', 'tracks')
 
-Note that nested relationships are currently read-only.  For read-write relationships, you should use a flat relational style.
+Would serialize to a nested representation like this:
 
-## Custom relational fields
+    {
+        'album_name': 'The Grey Album',
+        'artist': 'Danger Mouse'
+        'tracks': [
+            {'order': 1, 'title': 'Public Service Annoucement'},
+            {'order': 2, 'title': 'What More Can I Say'},
+            {'order': 3, 'title': 'Encore'},
+            ...
+        ],
+    }
+
+# Custom relational fields
 
 To implement a custom relational field, you should override `RelatedField`, and implement the `.to_native(self, value)` method.  This method takes the target of the field as the `value` argument, and should return the representation that should be used to serialize the target.
 
+If you want to implement a read-write relational field, you must also implement the `.from_native(self, data)` method, and add `read_only = False` to the class definition.
+
+## Example
+
+For, example, we could define a relational field, to serialize a track to a custom string representation, using it's ordering, title, and duration.
+
+    import time
+
     class TrackListingField(serializers.RelatedField):
         def to_native(self, value):
-            return 'Track %d: %s' % (value.ordering, value.name)
+            duration = time.strftime('%M:%S', time.gmtime(value.duration))
+            return 'Track %d: %s (%s)' % (value.order, value.name, duration)
 
-If you want to implement a read-write relational field, you must also implement the `.from_native(self, data)` method, and add `read_only = False` to the class definition.
+    class AlbumSerializer(serializer.ModelSerializer):
+        tracks = TrackListingField(many=True)
+        
+        class Meta:
+            model = Album
+            fields = ('album_name', 'artist', 'tracks')
+
+This custom field would then serialize to the following representation.
+
+    {
+        'album_name': 'Sometimes I Wish We Were an Eagle',
+        'artist': 'Bill Callahan'
+        'tracks': [
+            'Track 1: Jim Cain (04:39)',
+            'Track 2: Eid Ma Clack Shaw (04:19)',
+            'Track 3: The Wind and the Dove (04:34)',
+            ...
+        ]
+    }
+
+---
 
 # Further notes
 
@@ -337,18 +396,24 @@ For more information see [the Django documentation on generic relations][generic
 
 ---
 
-## Deprecated relational fields
+## Deprecated APIs
 
 The following classes have been deprecated, in favor of the `many=<bool>` syntax.
 They continue to function, but their usage will raise a `PendingDeprecationWarning`, which is silent by default.
-In the 2.3 release, this warning will be escalated to a `DeprecationWarning`.
-In the 2.4 release, they will be removed entirely.
 
 * `ManyRelatedField`
 * `ManyPrimaryKeyRelatedField`
 * `ManyHyperlinkedRelatedField`
 * `ManySlugRelatedField`
 
+The `null=<bool>` flag has been deprecated in favor of the `required=<bool>` flag.  It will continue to function, but will raise a `PendingDeprecationWarning`.
+
+In the 2.3 release, these warnings will be escalated to a `DeprecationWarning`, which is loud by default.
+In the 2.4 release, these parts of the API will be removed entirely.
+
+For more details see the [2.2 release announcement][2.2-announcement].
+
 [cite]: http://lwn.net/Articles/193245/
 [reverse-relationships]: https://docs.djangoproject.com/en/dev/topics/db/queries/#following-relationships-backward
 [generic-relations]: https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#id1
+[2.2-announcement]: ../topics/2.2-announcement.md

@@ -6,8 +6,6 @@
 >
 > [Twitter API rate limiting response][cite]
 
-[cite]: https://dev.twitter.com/docs/error-codes-responses
-
 Throttling is similar to [permissions], in that it determines if a request should be authorized.  Throttles indicate a temporary state, and are used to control the rate of requests that clients can make to an API.
 
 As with permissions, multiple throttles may be used.  Your API might have a restrictive throttle for unauthenticated requests, and a less restrictive throttle for authenticated requests.
@@ -62,6 +60,10 @@ Or, if you're using the `@api_view` decorator with function based views.
             'status': 'request was permitted'
         }
         return Response(content)
+
+## Setting up the cache
+
+The throttle classes provided by REST framework use Django's cache backend.  You should make sure that you've set appropriate [cache settings][cache-setting].  The default value of `LocMemCache` backend should be okay for simple setups.  See Django's [cache documentation][cache-docs] for more details.
 
 ---
 
@@ -162,4 +164,7 @@ The following is an example of a rate throttle, that will randomly throttle 1 in
         def allow_request(self, request, view):
             return random.randint(1, 10) == 1
 
+[cite]: https://dev.twitter.com/docs/error-codes-responses
 [permissions]: permissions.md
+[cache-setting]: https://docs.djangoproject.com/en/dev/ref/settings/#caches
+[cache-docs]: https://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache
