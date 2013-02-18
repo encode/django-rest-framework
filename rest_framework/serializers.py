@@ -108,19 +108,21 @@ class BaseSerializer(WritableField):
     _dict_class = SortedDictWithMetadata
 
     def __init__(self, instance=None, data=None, files=None,
-                 context=None, partial=False, many=None, source=None):
+                 context=None, partial=False, many=None, source=None, required=True):
         super(BaseSerializer, self).__init__(source=source)
         self.opts = self._options_class(self.Meta)
         self.parent = None
         self.root = None
         self.partial = partial
         self.many = many
+        self.required = required
 
         self.context = context or {}
 
         self.init_data = data
         self.init_files = files
         self.object = instance
+        self.unused_objects = instance
         self.fields = self.get_fields()
 
         self._data = None
@@ -280,13 +282,50 @@ class BaseSerializer(WritableField):
             ret.fields[key] = field
         return ret
 
-    def from_native(self, data, files):
+    def _get_object_from_data(self, data):
+        """
+        Get the corresponding object to deserialize the data into.
+        """
+        if self.unused_objects is None: return None
+
+        # Just get the first object in the list.
+        if self.unused_objects:
+            obj = self.unused_objects[0]
+            obj = obj[0]
+            self.unused_objects.remove(obj)
+        else:
+            obj = None
+
+        return obj
+
+    def from_native(self, data, files, many=False):
         """
         Deserialize primitives -> objects.
         """
-        if hasattr(data, '__iter__') and not isinstance(data, (dict, six.text_type)):
-            # TODO: error data when deserializing lists
-            return [self.from_native(item, None) for item in data]
+        if many:
+            # Both our object and data must be in list form
+            if ((data is not None and not (hasattr(data, '__iter__') and not isinstance(data, (Page, dict)))) or
+                (self.object is not None and not (hasattr(self.object, '__iter__') and not isinstance(self.object, (Page, dict))))):
+                self._errors = {'non_field_errors': ['Invalid data']}
+                return None
+
+            self._siblings = []
+            self._errors = []
+            for item in data:
+                obj = self._get_object_from_data(item)
+                # Deserializng a list of objects requires a separate
+                # serializer for each object (otherwise nested objects
+                # would share the nested serializers)
+                sibling = self.__class__(obj, data=item, many=False)
+                self._siblings.append(sibling)
+                sibling.object = sibling.from_native(item, None)
+                self._errors.append(sibling._errors)
+            for obj in self.unused_objects or []:
+                # Unused objects will be deleted.
+                sibling = self.__class__(obj)
+                sibling._delete = True
+                self._siblings.append(sibling)
+            return [sibling.object for sibling in self._siblings]
 
         self._errors = {}
         if data is not None or files is not None:
@@ -353,10 +392,7 @@ class BaseSerializer(WritableField):
                                   'Use the `many=True` flag when instantiating the serializer.',
                                   PendingDeprecationWarning, stacklevel=3)
 
-            # TODO: error data when deserializing lists
-            if many:
-                ret = [self.from_native(item, None) for item in data]
-            ret = self.from_native(data, files)
+            ret = self.from_native(data, files, many)
 
             if not self._errors:
                 self.object = ret
@@ -417,6 +453,27 @@ class ModelSerializer(Serializer):
     """
     _options_class = ModelSerializerOptions
 
+    def _get_object_from_data(self, data):
+        """
+        Get the corresponding object to deserialize the data into.
+        """
+        if self.unused_objects is None: return None
+
+        # Get the object based on pk
+        pk_field_name = self.opts.model._meta.pk.name
+        pk = data.get(pk_field_name, None)
+        if pk:
+            # Loop through objects and find one with pk or return None
+            obj = [o for o in self.unused_objects if o.pk == pk]
+            if obj:
+                obj = obj[0]
+                self.unused_objects.remove(obj)
+            else:
+                obj = None
+            return obj
+        else:
+            return None
+
     def field_from_native(self, data, files, field_name, into):
         if self.read_only:
             return
@@ -431,14 +488,18 @@ class ModelSerializer(Serializer):
         if self.parent.object:
             # Set the serializer object if it exists
             obj = getattr(self.parent.object, field_name)
+            if is_simple_callable(getattr(obj, 'all', None)):
+                # If this is a relational manager we just want the objects
+                obj = list(obj.all())
             self.object = obj
+            self.unused_objects = obj
 
         if value in (None, ''):
             self._delete = True
             into[(self.source or field_name)] = self
         else:
-            obj = self.from_native(value, files)
-            if not self._errors:
+            obj = self.from_native(value, files, self.many)
+            if not any(self._errors):
                 self.object = obj
                 into[self.source or field_name] = self
             else:
@@ -626,15 +687,25 @@ class ModelSerializer(Serializer):
 
         return instance
 
-    def from_native(self, data, files):
+    def from_native(self, data, files, many=False):
         """
         Override the default method to also include model field validation.
         """
-        instance = super(ModelSerializer, self).from_native(data, files)
-        if instance:
-            return self.full_clean(instance)
+        instance = super(ModelSerializer, self).from_native(data, files, many)
+        if self.many and hasattr(self, '_siblings'):
+            objects = [s.full_clean(s.object) if s.object else None for s in self._siblings]
+            self._errors = [s._errors for s in self._siblings]
+            return objects
+        else:
+            if instance:
+                return self.full_clean(instance)
 
     def _save(self, parent=None, fk_field=None):
+        if self.many:
+            for s in self._siblings:
+                s._save(parent, fk_field)
+            return
+
         if self._delete:
             self.object.delete()
             return
