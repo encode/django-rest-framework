@@ -4,7 +4,7 @@ The following people have helped make REST framework great.
 
 * Tom Christie - [tomchristie]
 * Marko Tibold - [markotibold]
-* Paul Bagwell - [pbgwl]
+* Paul Miller - [paulmillr]
 * Sébastien Piquemal - [sebpiq]
 * Carmen Wick - [cwick]
 * Alex Ehlke - [aehlke]
