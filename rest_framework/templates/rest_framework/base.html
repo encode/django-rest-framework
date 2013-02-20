@@ -125,11 +125,11 @@
 
                 {% if post_form %}
                 <div class="well">
-                    <ul class="nav nav-pills" id="form-switcher">
+                    <ul class="nav nav-tabs form-switcher">
                         {% if post_form %}
-                        <li><a href="#object-form" data-toggle="pill">Object form</a></li>
+                        <li><a href="#object-form" data-toggle="tab">HTML</a></li>
                         {% endif %}
-                        <li><a href="#generic-content-form" data-toggle="pill">Generic content form</a></li>
+                        <li><a href="#generic-content-form" data-toggle="tab">Generic content</a></li>
                     </ul>
                     <div class="tab-content">
                         {% if post_form %}
@@ -164,11 +164,11 @@
 
                 {% if 'PUT' in allowed_methods or 'PATCH' in allowed_methods %}
                 <div class="well">
-                    <ul class="nav nav-pills" id="form-switcher">
+                    <ul class="nav nav-tabs form-switcher">
                         {% if put_form %}
-                        <li><a href="#object-form" data-toggle="pill">Object form</a></li>
+                        <li><a href="#object-form" data-toggle="tab">HTML</a></li>
                         {% endif %}
-                        <li><a href="#generic-content-form" data-toggle="pill">Generic content form</a></li>
+                        <li><a href="#generic-content-form" data-toggle="tab">Generic content</a></li>
                     </ul>
                     <div class="tab-content">
                         {% if put_form %}

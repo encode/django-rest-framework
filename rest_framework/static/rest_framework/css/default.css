@@ -150,6 +150,17 @@ html, body {
   margin: 0 auto -60px;
 }
 
+.form-switcher {
+    margin-bottom: 0;
+}
+
+.tab-content {
+    padding-top: 25px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+}
 
 #footer, #push {
   height: 60px; /* .push must be the same height as .footer */
