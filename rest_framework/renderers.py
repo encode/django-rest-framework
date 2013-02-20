@@ -345,12 +345,11 @@ class BrowsableAPIRenderer(BaseRenderer):
         if not self.show_form_for_method(view, method, request, obj):
             return
 
-        if method == 'DELETE' or method == 'OPTIONS':
+        if method in ('DELETE', 'OPTIONS'):
             return True  # Don't actually need to return a form
 
         if not getattr(view, 'get_serializer', None) or not parsers.FormParser in view.parser_classes:
-            media_types = [parser.media_type for parser in view.parser_classes]
-            return self.get_generic_content_form(media_types)
+            return
 
         serializer = view.get_serializer(instance=obj)
         fields = self.serializer_to_form_fields(serializer)
@@ -422,14 +421,17 @@ class BrowsableAPIRenderer(BaseRenderer):
         view = renderer_context['view']
         request = renderer_context['request']
         response = renderer_context['response']
+        media_types = [parser.media_type for parser in view.parser_classes]
 
         renderer = self.get_default_renderer(view)
         content = self.get_content(renderer, data, accepted_media_type, renderer_context)
 
         put_form = self.get_form(view, 'PUT', request)
         post_form = self.get_form(view, 'POST', request)
+        patch_form = self.get_form(view, 'PATCH', request)
         delete_form = self.get_form(view, 'DELETE', request)
         options_form = self.get_form(view, 'OPTIONS', request)
+        generic_content_form = self.get_generic_content_form(media_types)
 
         name = self.get_name(view)
         description = self.get_description(view)
@@ -449,8 +451,10 @@ class BrowsableAPIRenderer(BaseRenderer):
             'available_formats': [renderer.format for renderer in view.renderer_classes],
             'put_form': put_form,
             'post_form': post_form,
+            'patch_form': patch_form,
             'delete_form': delete_form,
             'options_form': options_form,
+            'generic_content_form': generic_content_form,
             'api_settings': api_settings
         })
 

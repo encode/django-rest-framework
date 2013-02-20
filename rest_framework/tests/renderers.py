@@ -112,6 +112,9 @@ class POSTDeniedView(APIView):
     def put(self, request):
         return Response()
 
+    def patch(self, request):
+        return Response()
+
 
 class DocumentingRendererTests(TestCase):
     def test_only_permitted_forms_are_displayed(self):
@@ -120,6 +123,7 @@ class DocumentingRendererTests(TestCase):
         response = view(request).render()
         self.assertNotContains(response, '>POST<')
         self.assertContains(response, '>PUT<')
+        self.assertContains(response, '>PATCH<')
 
 
 class RendererEndToEndTests(TestCase):
