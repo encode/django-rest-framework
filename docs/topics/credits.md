@@ -142,7 +142,7 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 
 [tomchristie]: https://github.com/tomchristie
 [markotibold]: https://github.com/markotibold
-[pbgwl]: https://github.com/pbgwl
+[paulmillr]: https://github.com/paulmillr
 [sebpiq]: https://github.com/sebpiq
 [cwick]: https://github.com/cwick
 [aehlke]: https://github.com/aehlke
