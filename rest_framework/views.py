@@ -211,13 +211,13 @@ class APIView(View):
 
     def get_parsers(self):
         """
-        Instantiates and returns the list of renderers that this view can use.
+        Instantiates and returns the list of parsers that this view can use.
         """
         return [parser() for parser in self.parser_classes]
 
     def get_authenticators(self):
         """
-        Instantiates and returns the list of renderers that this view can use.
+        Instantiates and returns the list of authenticators that this view can use.
         """
         return [auth() for auth in self.authentication_classes]
 
