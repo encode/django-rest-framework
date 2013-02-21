@@ -338,6 +338,21 @@ class ValidationTests(TestCase):
         self.assertEquals(serializer.is_valid(), False)
         self.assertEquals(serializer.errors, {'info': ['Ensure this value has at most 12 characters (it has 13).']})
 
+    def test_datetime_validation_failure(self):
+        """
+        Test DateTimeField validation errors on non-str values.
+        Regression test for #669.
+
+        https://github.com/tomchristie/django-rest-framework/issues/669
+        """
+        data = self.data
+        data['created'] = 0
+
+        serializer = CommentSerializer(data=data)
+        self.assertEquals(serializer.is_valid(), False)
+
+        # TODO: check validation error value
+
 
 class CustomValidationTests(TestCase):
     class CommentSerializerWithFieldValidator(CommentSerializer):
