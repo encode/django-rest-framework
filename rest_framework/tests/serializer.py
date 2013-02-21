@@ -351,7 +351,7 @@ class ValidationTests(TestCase):
         serializer = CommentSerializer(data=data)
         self.assertEquals(serializer.is_valid(), False)
 
-        # TODO: check validation error value
+        self.assertIn('created', serializer.errors)
 
 
 class CustomValidationTests(TestCase):
