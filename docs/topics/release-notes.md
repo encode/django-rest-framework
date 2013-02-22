@@ -40,6 +40,10 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.2.x series
 
+### Master
+
+* Bugfixes for model field validation edge-cases.
+
 ### 2.2.1
 
 **Date**: 22nd Feb 2013
