@@ -1,3 +1,5 @@
+# -- coding: utf-8 --
+
 from __future__ import unicode_literals
 from django.test import TestCase
 from rest_framework.views import APIView
@@ -90,6 +92,15 @@ class TestViewNamesAndDescriptions(TestCase):
             def get_description(self):
                 return example
         self.assertEquals(MockView().get_description(), example)
+
+    def test_resource_description_supports_unicode(self):
+
+        class MockView(APIView):
+            """Проверка"""
+            pass
+
+        self.assertEquals(MockView().get_description(), "Проверка")
+
 
     def test_resource_description_does_not_require_docstring(self):
         """Ensure that empty docstrings do not affect the Resource's description if it has been set using the 'get_description' method."""
