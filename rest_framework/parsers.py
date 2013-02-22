@@ -9,11 +9,9 @@ from django.conf import settings
 from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError
-from rest_framework.compat import yaml, ETParseError, ET_XMLParser
+from rest_framework.compat import yaml, etree
 from rest_framework.exceptions import ParseError
 from rest_framework.compat import six
-from xml.etree import ElementTree as ET
-from xml.parsers.expat import ExpatError
 import json
 import datetime
 import decimal
@@ -80,6 +78,8 @@ class YAMLParser(BaseParser):
         `data` will be an object which is the parsed content of the response.
         `files` will always be `None`.
         """
+        assert yaml, 'YAMLParser requires pyyaml to be installed'
+
         parser_context = parser_context or {}
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
 
@@ -146,12 +146,14 @@ class XMLParser(BaseParser):
     media_type = 'application/xml'
 
     def parse(self, stream, media_type=None, parser_context=None):
+        assert etree, 'XMLParser requires defusedxml to be installed'
+
         parser_context = parser_context or {}
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
-        parser = ET_XMLParser(encoding=encoding)
+        parser = etree.DefusedXMLParser(encoding=encoding)
         try:
-            tree = ET.parse(stream, parser=parser)
-        except (ExpatError, ETParseError, ValueError) as exc:
+            tree = etree.parse(stream, parser=parser, forbid_dtd=True)
+        except (etree.ParseError, ValueError) as exc:
             raise ParseError('XML parse error - %s' % six.u(exc))
         data = self._xml_convert(tree.getroot())
 
