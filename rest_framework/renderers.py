@@ -14,6 +14,7 @@ import json
 from django import forms
 from django.http.multipartparser import parse_header
 from django.template import RequestContext, loader, Template
+from django.utils.encoding import force_unicode
 from django.utils.xmlutils import SimplerXMLGenerator
 from rest_framework.compat import yaml
 from rest_framework.exceptions import ConfigurationError
@@ -439,13 +440,13 @@ class BrowsableAPIRenderer(BaseRenderer):
         try:
             return view.get_name()
         except AttributeError:
-            return view.__doc__
+            return force_unicode(view.__class__.__name__)
 
     def get_description(self, view):
         try:
             return view.get_description(html=True)
         except AttributeError:
-            return view.__doc__
+            return force_unicode(view.__doc__)
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
