@@ -40,12 +40,21 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.2.x series
 
-### Master
+### 2.2.1
 
+**Date**: 22nd Feb 2013
+
+* Security fix: Use `defusedxml` package to address XML parsing vulnerabilities.
+* Raw data tab added to browseable API.  (Eg. Allow for JSON input.)
 * Added TimeField.
-* Serializer fields can be mapped to any method that takes no args, or only takes kwargs which have defaults. 
+* Serializer fields can be mapped to any method that takes no args, or only takes kwargs which have defaults.
+* Unicode support for view names/descriptions in browseable API.
 * Bugfix: request.DATA should return an empty `QueryDict` with no data, not `None`.
 * Bugfix: Remove unneeded field validation, which caused extra queries.
+
+**Security note**: Following the [disclosure of security vulnerabilities][defusedxml-announce] in Python's XML parsing libraries, use of the `XMLParser` class now requires the `defusedxml` package to be installed.
+
+The security vulnerabilities only affect APIs which use the `XMLParser` class, by enabling it in any views, or by having it set in the `DEFAULT_PARSER_CLASSES` setting.  Note that the `XMLParser` class is not enabled by default, so this change should affect a minority of users.
 
 ### 2.2.0
 
@@ -389,6 +398,7 @@ This change will not affect user code, so long as it's following the recommended
 [cite]: http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html
 [deprecation-policy]: #deprecation-policy
 [django-deprecation-policy]: https://docs.djangoproject.com/en/dev/internals/release-process/#internal-release-deprecation-policy
+[defusedxml-announce]: http://blog.python.org/2013/02/announcing-defusedxml-fixes-for-xml.html
 [2.2-announcement]: 2.2-announcement.md
 [staticfiles14]: https://docs.djangoproject.com/en/1.4/howto/static-files/#with-a-template-tag
 [staticfiles13]: https://docs.djangoproject.com/en/1.3/howto/static-files/#with-a-template-tag
