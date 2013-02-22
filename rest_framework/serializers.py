@@ -543,6 +543,7 @@ class ModelSerializer(Serializer):
         opts = get_concrete_model(cls)._meta
         exclusions = [field.name for field in opts.fields + opts.many_to_many]
         for field_name, field in self.fields.items():
+            field_name = field.source or field_name
             if field_name in exclusions and not field.read_only:
                 exclusions.remove(field_name)
         return exclusions

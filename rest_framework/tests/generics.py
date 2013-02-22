@@ -350,35 +350,3 @@ class TestM2MBrowseableAPI(TestCase):
         view = ExampleView().as_view()
         response = view(request).render()
         self.assertEquals(response.status_code, status.HTTP_200_OK)
-
-
-# Regression for #666
-
-class ValidationModel(models.Model):
-    blank_validated_field = models.CharField(max_length=255)
-
-
-class ValidationModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ValidationModel
-        fields = ('blank_validated_field',)
-        read_only_fields = ('blank_validated_field',)
-
-
-class UpdateValidationModel(generics.RetrieveUpdateDestroyAPIView):
-    model = ValidationModel
-    serializer_class = ValidationModelSerializer
-
-
-class TestPreSaveValidationExclusions(TestCase):
-    def test_pre_save_validation_exclusions(self):
-        """
-        Somewhat weird test case to ensure that we don't perform model
-        validation on read only fields.
-        """
-        obj = ValidationModel.objects.create(blank_validated_field='')
-        request = factory.put('/', json.dumps({}),
-                              content_type='application/json')
-        view = UpdateValidationModel().as_view()
-        response = view(request, pk=obj.pk).render()
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
