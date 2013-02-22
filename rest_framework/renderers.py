@@ -168,6 +168,8 @@ class YAMLRenderer(BaseRenderer):
         """
         Renders *obj* into serialized YAML.
         """
+        assert yaml, 'YAMLRenderer requires pyyaml to be installed'
+
         if data is None:
             return ''
 
