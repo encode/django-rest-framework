@@ -345,12 +345,11 @@ class BrowsableAPIRenderer(BaseRenderer):
         if not self.show_form_for_method(view, method, request, obj):
             return
 
-        if method == 'DELETE' or method == 'OPTIONS':
+        if method in ('DELETE', 'OPTIONS'):
             return True  # Don't actually need to return a form
 
         if not getattr(view, 'get_serializer', None) or not parsers.FormParser in view.parser_classes:
-            media_types = [parser.media_type for parser in view.parser_classes]
-            return self.get_generic_content_form(media_types)
+            return
 
         serializer = view.get_serializer(instance=obj)
         fields = self.serializer_to_form_fields(serializer)
@@ -362,7 +361,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         form_instance = OnTheFlyForm(data)
         return form_instance
 
-    def get_generic_content_form(self, media_types):
+    def get_raw_data_form(self, view, method, request, media_types):
         """
         Returns a form that allows for arbitrary content types to be tunneled
         via standard HTML forms.
@@ -375,6 +374,11 @@ class BrowsableAPIRenderer(BaseRenderer):
                 and api_settings.FORM_CONTENTTYPE_OVERRIDE):
             return None
 
+        # Check permissions
+        obj = getattr(view, 'object', None)
+        if not self.show_form_for_method(view, method, request, obj):
+            return
+
         content_type_field = api_settings.FORM_CONTENTTYPE_OVERRIDE
         content_field = api_settings.FORM_CONTENT_OVERRIDE
         choices = [(media_type, media_type) for media_type in media_types]
@@ -386,7 +390,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                 super(GenericContentForm, self).__init__()
 
                 self.fields[content_type_field] = forms.ChoiceField(
-                    label='Content Type',
+                    label='Media type',
                     choices=choices,
                     initial=initial
                 )
@@ -422,14 +426,21 @@ class BrowsableAPIRenderer(BaseRenderer):
         view = renderer_context['view']
         request = renderer_context['request']
         response = renderer_context['response']
+        media_types = [parser.media_type for parser in view.parser_classes]
 
         renderer = self.get_default_renderer(view)
         content = self.get_content(renderer, data, accepted_media_type, renderer_context)
 
         put_form = self.get_form(view, 'PUT', request)
         post_form = self.get_form(view, 'POST', request)
+        patch_form = self.get_form(view, 'PATCH', request)
         delete_form = self.get_form(view, 'DELETE', request)
         options_form = self.get_form(view, 'OPTIONS', request)
+
+        raw_data_put_form = self.get_raw_data_form(view, 'PUT', request, media_types)
+        raw_data_post_form = self.get_raw_data_form(view, 'POST', request, media_types)
+        raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request, media_types)
+        raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
         name = self.get_name(view)
         description = self.get_description(view)
@@ -447,10 +458,18 @@ class BrowsableAPIRenderer(BaseRenderer):
             'breadcrumblist': breadcrumb_list,
             'allowed_methods': view.allowed_methods,
             'available_formats': [renderer.format for renderer in view.renderer_classes],
+
             'put_form': put_form,
             'post_form': post_form,
+            'patch_form': patch_form,
             'delete_form': delete_form,
             'options_form': options_form,
+
+            'raw_data_put_form': raw_data_put_form,
+            'raw_data_post_form': raw_data_post_form,
+            'raw_data_patch_form': raw_data_patch_form,
+            'raw_data_put_or_patch_form': raw_data_put_or_patch_form,
+
             'api_settings': api_settings
         })
 
