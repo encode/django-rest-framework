@@ -361,7 +361,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         form_instance = OnTheFlyForm(data)
         return form_instance
 
-    def get_generic_content_form(self, media_types):
+    def get_raw_data_form(self, view, method, request, media_types):
         """
         Returns a form that allows for arbitrary content types to be tunneled
         via standard HTML forms.
@@ -374,6 +374,11 @@ class BrowsableAPIRenderer(BaseRenderer):
                 and api_settings.FORM_CONTENTTYPE_OVERRIDE):
             return None
 
+        # Check permissions
+        obj = getattr(view, 'object', None)
+        if not self.show_form_for_method(view, method, request, obj):
+            return
+
         content_type_field = api_settings.FORM_CONTENTTYPE_OVERRIDE
         content_field = api_settings.FORM_CONTENT_OVERRIDE
         choices = [(media_type, media_type) for media_type in media_types]
@@ -385,7 +390,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                 super(GenericContentForm, self).__init__()
 
                 self.fields[content_type_field] = forms.ChoiceField(
-                    label='Content Type',
+                    label='Media type',
                     choices=choices,
                     initial=initial
                 )
@@ -431,7 +436,11 @@ class BrowsableAPIRenderer(BaseRenderer):
         patch_form = self.get_form(view, 'PATCH', request)
         delete_form = self.get_form(view, 'DELETE', request)
         options_form = self.get_form(view, 'OPTIONS', request)
-        generic_content_form = self.get_generic_content_form(media_types)
+
+        raw_data_put_form = self.get_raw_data_form(view, 'PUT', request, media_types)
+        raw_data_post_form = self.get_raw_data_form(view, 'POST', request, media_types)
+        raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request, media_types)
+        raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
         name = self.get_name(view)
         description = self.get_description(view)
@@ -449,12 +458,18 @@ class BrowsableAPIRenderer(BaseRenderer):
             'breadcrumblist': breadcrumb_list,
             'allowed_methods': view.allowed_methods,
             'available_formats': [renderer.format for renderer in view.renderer_classes],
+
             'put_form': put_form,
             'post_form': post_form,
             'patch_form': patch_form,
             'delete_form': delete_form,
             'options_form': options_form,
-            'generic_content_form': generic_content_form,
+
+            'raw_data_put_form': raw_data_put_form,
+            'raw_data_post_form': raw_data_post_form,
+            'raw_data_patch_form': raw_data_patch_form,
+            'raw_data_put_or_patch_form': raw_data_put_or_patch_form,
+
             'api_settings': api_settings
         })
 
