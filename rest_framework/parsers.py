@@ -152,7 +152,7 @@ class XMLParser(BaseParser):
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
         parser = etree.DefusedXMLParser(encoding=encoding)
         try:
-            tree = etree.parse(stream, parser=parser)
+            tree = etree.parse(stream, parser=parser, forbid_dtd=True)
         except (etree.ParseError, ValueError) as exc:
             raise ParseError('XML parse error - %s' % six.u(exc))
         data = self._xml_convert(tree.getroot())
