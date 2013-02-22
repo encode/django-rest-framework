@@ -4,6 +4,7 @@ Provides an APIView class that is used as the base of all class-based views.
 from __future__ import unicode_literals
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
+from django.utils.encoding import force_unicode
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
@@ -96,7 +97,7 @@ class APIView(View):
         Override to customize.
         """
         # TODO: deprecate?
-        name = self.__class__.__name__
+        name = force_unicode(self.__class__.__name__)
         name = _remove_trailing_string(name, 'View')
         return _camelcase_to_spaces(name)
 
@@ -106,7 +107,7 @@ class APIView(View):
         Override to customize.
         """
         # TODO: deprecate?
-        description = self.__doc__ or ''
+        description = force_unicode(self.__doc__) or u''
         description = _remove_leading_indent(description)
         if html:
             return self.markup_description(description)
