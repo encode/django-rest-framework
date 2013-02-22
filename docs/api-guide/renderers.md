@@ -90,6 +90,8 @@ The javascript callback function must be set by the client including a `callback
 
 Renders the request data into `YAML`. 
 
+Requires the `pyyaml` package to be installed.
+
 **.media_type**: `application/yaml`
 
 **.format**: `'.yaml'`
