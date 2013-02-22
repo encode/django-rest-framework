@@ -951,15 +951,21 @@ class SerializerPickleTests(TestCase):
             class Meta:
                 model = Person
                 fields = ('name', 'age')
-        pickle.dumps(InnerPersonSerializer(Person(name="Noah", age=950)).data)
+        pickle.dumps(InnerPersonSerializer(Person(name="Noah", age=950)).data, 0)
 
     def test_getstate_method_should_not_return_none(self):
         """
-        Regression test for
-        https://github.com/tomchristie/django-rest-framework/issues/645
+        Regression test for #645.
         """
-        d = serializers.DictWithMetadata({1: 1})
-        self.assertEqual(d.__getstate__(), serializers.SortedDict({1: 1}))
+        data = serializers.DictWithMetadata({1: 1})
+        self.assertEqual(data.__getstate__(), serializers.SortedDict({1: 1}))
+
+    def test_serializer_data_is_pickleable(self):
+        """
+        Another regression test for #645.
+        """
+        data = serializers.SortedDictWithMetadata({1: 1})
+        repr(pickle.loads(pickle.dumps(data, 0)))
 
 
 class DepthTest(TestCase):
