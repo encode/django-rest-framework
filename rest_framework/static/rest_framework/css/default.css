@@ -150,6 +150,48 @@ html, body {
   margin: 0 auto -60px;
 }
 
+.form-switcher {
+    margin-bottom: 0;
+}
+
+.well .form-actions {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.well form {
+    margin-bottom: 0;
+}
+
+.nav-tabs {
+    border: 0;
+}
+
+.nav-tabs > li {
+    margin-bottom: -3px;
+    float: right;
+}
+
+.nav-tabs li a {
+    margin-right: 0;
+}
+
+.nav-tabs > .active > a {
+    background: #f5f5f5;
+}
+
+.nav-tabs > .active > a:hover {
+    background: #f5f5f5;
+}
+
+.tabs-below > .nav-tabs {
+    border-bottom: none !important;
+}
+
+.tabs-below > .nav-tabs > li {
+    margin-bottom: -2px !important;
+    margin-right: 0 !important;
+}
 
 #footer, #push {
   height: 60px; /* .push must be the same height as .footer */
