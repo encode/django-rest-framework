@@ -115,7 +115,7 @@ The TemplateHTMLRenderer will create a `RequestContext`, using the `response.dat
 
 The template name is determined by (in order of preference):
 
-1. An explicit `.template_name` attribute set on the response.
+1. An explicit `template_name` argument passed to the response.
 2. An explicit `.template_name` attribute set on this class.
 3. The return result of calling `view.get_template_names()`.
 
