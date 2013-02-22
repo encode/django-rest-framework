@@ -34,6 +34,7 @@ The following packages are optional:
 
 * [Markdown][markdown] (2.1.0+) - Markdown support for the browseable API.
 * [PyYAML][yaml] (3.10+) - YAML content-type support.
+* [defusedxml][defusedxml] (0.3+) - XML content-type support.
 * [django-filter][django-filter] (0.5.4+) - Filtering support.
 
 ## Installation
@@ -173,6 +174,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [yaml]: http://pypi.python.org/pypi/PyYAML
+[defusedxml]: https://pypi.python.org/pypi/defusedxml
 [django-filter]: http://pypi.python.org/pypi/django-filter
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [image]: img/quickstart.png

@@ -31,9 +31,10 @@ There is also a sandbox API you can use for testing purposes, [available here][s
 
 **Optional:**
 
-* [Markdown] - Markdown support for the self describing API.
-* [PyYAML] - YAML content type support.
-* [django-filter] - Filtering support.
+* [Markdown][markdown] - Markdown support for the self describing API.
+* [PyYAML][pyyaml] - YAML content type support.
+* [defusedxml][defusedxml] - XML content-type support.
+* [django-filter][django-filter] - Filtering support.
 
 # Installation
 
@@ -115,4 +116,5 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [pyyaml]: http://pypi.python.org/pypi/PyYAML
+[defusedxml]: https://pypi.python.org/pypi/defusedxml
 [django-filter]: http://pypi.python.org/pypi/django-filter

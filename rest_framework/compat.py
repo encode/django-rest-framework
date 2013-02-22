@@ -421,17 +421,8 @@ except ImportError:
     yaml = None
 
 
-# xml.etree.parse only throws ParseError for python >= 2.7
+# XML is optional
 try:
-    from xml.etree import ParseError as ETParseError
-except ImportError:  # python < 2.7
-    ETParseError = None
-
-
-# XMLParser only takes an encoding arg from >= 2.7
-def ET_XMLParser(encoding=None):
-    from xml.etree import ElementTree as ET
-    try:
-        return ET.XMLParser(encoding=encoding)
-    except TypeError:
-        return ET.XMLParser()
+    import defusedxml.ElementTree as etree
+except ImportError:
+    etree = None
