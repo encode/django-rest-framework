@@ -1,23 +1,21 @@
-import pickle
-import re
-
+from decimal import Decimal
 from django.core.cache import cache
 from django.test import TestCase
 from django.test.client import RequestFactory
-
+from django.utils import unittest
 from rest_framework import status, permissions
-from rest_framework.compat import yaml, patterns, url, include
+from rest_framework.compat import yaml, etree, patterns, url, include
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
     XMLRenderer, JSONPRenderer, BrowsableAPIRenderer
 from rest_framework.parsers import YAMLParser, XMLParser
 from rest_framework.settings import api_settings
-
 from rest_framework.compat import StringIO
 from rest_framework.compat import six
 import datetime
-from decimal import Decimal
+import pickle
+import re
 
 
 DUMMYSTATUS = status.HTTP_200_OK
@@ -410,6 +408,7 @@ class XMLRendererTestCase(TestCase):
         self.assertXMLContains(content, '<sub_name>first</sub_name>')
         self.assertXMLContains(content, '<sub_name>second</sub_name>')
 
+    @unittest.skipUnless(etree, 'defusedxml not installed')
     def test_render_and_parse_complex_data(self):
         """
         Test XML rendering.
