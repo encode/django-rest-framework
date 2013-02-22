@@ -406,7 +406,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         try:
             return view.get_name()
         except AttributeError:
-            return force_unicode(view.__doc__)
+            return force_unicode(view.__class__.__name__)
 
     def get_description(self, view):
         try:
