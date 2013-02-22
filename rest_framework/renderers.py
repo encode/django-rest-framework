@@ -14,14 +14,17 @@ import json
 from django import forms
 from django.http.multipartparser import parse_header
 from django.template import RequestContext, loader, Template
+from django.utils.xmlutils import SimplerXMLGenerator
 from rest_framework.compat import yaml
 from rest_framework.exceptions import ConfigurationError
 from rest_framework.settings import api_settings
 from rest_framework.request import clone_request
-from rest_framework.utils import dict2xml
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework import exceptions, parsers, status, VERSION
+from rest_framework.compat import StringIO
+from rest_framework.compat import six
+from rest_framework.compat import smart_text
 
 
 class BaseRenderer(object):
@@ -118,7 +121,38 @@ class XMLRenderer(BaseRenderer):
         """
         if data is None:
             return ''
-        return dict2xml(data)
+
+        stream = StringIO()
+
+        xml = SimplerXMLGenerator(stream, "utf-8")
+        xml.startDocument()
+        xml.startElement("root", {})
+
+        self._to_xml(xml, data)
+
+        xml.endElement("root")
+        xml.endDocument()
+        return stream.getvalue()
+
+    def _to_xml(self, xml, data):
+        if isinstance(data, (list, tuple)):
+            for item in data:
+                xml.startElement("list-item", {})
+                self._to_xml(xml, item)
+                xml.endElement("list-item")
+
+        elif isinstance(data, dict):
+            for key, value in six.iteritems(data):
+                xml.startElement(key, {})
+                self._to_xml(xml, value)
+                xml.endElement(key)
+
+        elif data is None:
+            # Don't output any value
+            pass
+
+        else:
+            xml.characters(smart_text(data))
 
 
 class YAMLRenderer(BaseRenderer):
