@@ -158,6 +158,7 @@ class BaseSerializer(Field):
 
         # If 'fields' is specified, use those fields, in that order.
         if self.opts.fields:
+            assert isinstance(self.opts.fields, (list, tuple)), '`include` must be a list or tuple'
             new = SortedDict()
             for key in self.opts.fields:
                 new[key] = ret[key]
@@ -165,6 +166,7 @@ class BaseSerializer(Field):
 
         # Remove anything in 'exclude'
         if self.opts.exclude:
+            assert isinstance(self.opts.fields, (list, tuple)), '`exclude` must be a list or tuple'
             for key in self.opts.exclude:
                 ret.pop(key, None)
 
@@ -421,8 +423,8 @@ class ModelSerializer(Serializer):
         cls = self.opts.model
         opts = get_concrete_model(cls)._meta
         pk_field = opts.pk
-        while pk_field.rel:
-            pk_field = pk_field.rel.to._meta.pk
+        # while pk_field.rel:
+        #     pk_field = pk_field.rel.to._meta.pk
         fields = [pk_field]
         fields += [field for field in opts.fields if field.serialize]
         fields += [field for field in opts.many_to_many if field.serialize]

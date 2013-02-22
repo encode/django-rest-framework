@@ -12,6 +12,28 @@ from rest_framework.response import Response
 from rest_framework.request import clone_request
 
 
+def _get_validation_exclusions(obj, pk=None, slug_field=None):
+    """
+    Given a model instance, and an optional pk and slug field,
+    return the full list of all other field names on that model.
+
+    For use when performing full_clean on a model instance,
+    so we only clean the required fields.
+    """
+    include = []
+
+    if pk:
+        pk_field = obj._meta.pk
+        while pk_field.rel:
+            pk_field = pk_field.rel.to._meta.pk
+        include.append(pk_field.name)
+
+    if slug_field:
+        include.append(slug_field)
+
+    return [field.name for field in obj._meta.fields if field.name not in include]
+
+
 class CreateModelMixin(object):
     """
     Create a model instance.
@@ -117,18 +139,20 @@ class UpdateModelMixin(object):
         """
         # pk and/or slug attributes are implicit in the URL.
         pk = self.kwargs.get(self.pk_url_kwarg, None)
+        slug = self.kwargs.get(self.slug_url_kwarg, None)
+        slug_field = slug and self.get_slug_field() or None
+
         if pk:
             setattr(obj, 'pk', pk)
 
-        slug = self.kwargs.get(self.slug_url_kwarg, None)
         if slug:
-            slug_field = self.get_slug_field()
             setattr(obj, slug_field, slug)
 
         # Ensure we clean the attributes so that we don't eg return integer
         # pk using a string representation, as provided by the url conf kwarg.
         if hasattr(obj, 'full_clean'):
-            obj.full_clean()
+            exclude = _get_validation_exclusions(obj, pk, slug_field)
+            obj.full_clean(exclude)
 
 
 class DestroyModelMixin(object):
