@@ -228,15 +228,17 @@ The `ModelSerializer` class lets you automatically create a Serializer class wit
         class Meta:
             model = Account
 
-**[TODO: Explain model field to serializer field mapping in more detail]**
+By default, all the model fields on the class will be mapped to corresponding serializer fields.
+
+Any foreign keys on the model will be mapped to `PrimaryKeyRelatedField` if you're using a `ModelSerializer`, or `HyperlinkedRelatedField` if you're using a `HyperlinkedModelSerializer`.
 
 ## Specifying fields explicitly 
 
 You can add extra fields to a `ModelSerializer` or override the default fields by declaring fields on the class, just as you would for a `Serializer` class.
 
     class AccountSerializer(serializers.ModelSerializer):
-        url = CharField(source='get_absolute_url', read_only=True)
-        group = NaturalKeyField()
+        url = serializers.CharField(source='get_absolute_url', read_only=True)
+        groups = serializers.PrimaryKeyRelatedField(many=True)
 
         class Meta:
             model = Account
@@ -245,17 +247,11 @@ Extra fields can correspond to any property or callable on the model.
 
 ## Relational fields
 
-When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation is to use the primary keys of the related instances.
+When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation for `ModelSerializer` is to use the primary keys of the related instances.
 
-Alternative representations include serializing using natural keys, serializing complete nested representations, or serializing using a custom representation, such as a URL that uniquely identifies the model instances.
+Alternative representations include serializing using hyperlinks, serializing complete nested representations, or serializing with a custom representation.
 
-The `PrimaryKeyRelatedField` and `HyperlinkedRelatedField` fields provide alternative flat representations.
-
-The `ModelSerializer` class can itself be used as a field, in order to serialize relationships using nested representations.
-
-The `RelatedField` class may be subclassed to create a custom representation of a relationship.  The subclass should override `.to_native()`, and optionally `.from_native()` if deserialization is supported.
-
-All the relational fields may be used for any relationship or reverse relationship on a model.
+For full details see the [serializer relations][relations] documentation.
 
 ## Specifying which fields should be included
 
@@ -330,3 +326,4 @@ The following custom model serializer could be used as a base class for model se
 
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
+[relations]: relations.md
