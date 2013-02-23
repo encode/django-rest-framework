@@ -195,7 +195,7 @@ We can make a successful request by including the username and password of one o
 
     curl -X POST http://127.0.0.1:8000/snippets/ -d "code=print 789" -u tom:password
     
-    {"url": "http://127.0.0.1:8000/snippets/5/", "highlight": "http://127.0.0.1:8000/snippets/5/highlight/", "owner": "tom", "title": "foo", "code": "print 789", "linenos": false, "language": "python", "style": "friendly"}
+    {"id": 5, "owner": "tom", "title": "foo", "code": "print 789", "linenos": false, "language": "python", "style": "friendly"}
 
 ## Summary
 
