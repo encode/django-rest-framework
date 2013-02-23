@@ -304,11 +304,11 @@ It's worth noting that there are a couple of edge cases we're not dealing with p
 
 Now we can start up a sample server that serves our snippets.
 
-Quit out of the shell
+Quit out of the shell...
 
 	quit()
 
-and start up Django's development server
+...and start up Django's development server.
 
 	python manage.py runserver
 
@@ -327,7 +327,7 @@ We can get a list of all of the snippets.
 
 	[{"id": 1, "title": "", "code": "foo = \"bar\"\n", "linenos": false, "language": "python", "style": "friendly"}, {"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}]
 
-or we can get a particular snippet by referencing its id
+Or we can get a particular snippet by referencing its id.
 
 	curl http://127.0.0.1:8000/snippets/2/
 
