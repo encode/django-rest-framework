@@ -43,6 +43,7 @@ Install using `pip`, including any optional packages you want...
     pip install djangorestframework
     pip install markdown  # Markdown support for the browseable API.
     pip install pyyaml    # YAML content-type support.
+    pip install defusedxml  # XML content-type support.
     pip install django-filter  # Filtering support
 
 ...or clone the project from github.
