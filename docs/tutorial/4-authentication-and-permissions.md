@@ -201,7 +201,7 @@ We can make a successful request by including the username and password of one o
 
 We've now got a fairly fine-grained set of permissions on our Web API, and end points for users of the system and for the code snippets that they have created.
 
-In [part 5][tut-5] of the tutorial we'll look at how we can tie everything together by creating an HTML endpoint for our hightlighted snippets, and improve the cohesion of our API by using hyperlinking for the relationships within the system.
+In [part 5][tut-5] of the tutorial we'll look at how we can tie everything together by creating an HTML endpoint for our highlighted snippets, and improve the cohesion of our API by using hyperlinking for the relationships within the system.
 
 [authentication]: ../api-guide/authentication.md
 [tut-5]: 5-relationships-and-hyperlinked-apis.md
