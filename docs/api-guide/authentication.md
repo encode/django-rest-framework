@@ -202,7 +202,7 @@ If the `.authenticate_header()` method is not overridden, the authentication sch
 The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X_USERNAME'.
 
     class ExampleAuthentication(authentication.BaseAuthentication):
-        def has_permission(self, request, view, obj=None):
+        def authenticate(self, request):
             username = request.META.get('X_USERNAME')
             if not username:
                 return None
