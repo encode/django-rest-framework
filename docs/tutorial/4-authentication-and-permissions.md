@@ -104,8 +104,6 @@ This field is doing something quite interesting.  The `source` argument controls
 
 The field we've added is the untyped `Field` class, in contrast to the other typed fields, such as `CharField`, `BooleanField` etc...  The untyped `Field` is always read-only, and will be used for serialized representations, but will not be used for updating model instances when they are deserialized.
 
-**TODO: Explain the SessionAuthentication and BasicAuthentication classes, and demonstrate using HTTP basic authentication with curl requests**
-
 ## Adding required permissions to views
 
 Now that code snippets are associated with users, we want to make sure that only authenticated users are able to create, update and delete code snippets.
@@ -119,8 +117,6 @@ First add the following import in the views module
 Then, add the following property to **both** the `SnippetList` and `SnippetDetail` view classes.
 
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-**TODO: Now that the permissions are restricted, demonstrate using HTTP basic authentication with curl requests**
 
 ## Adding login to the Browseable API
 
@@ -181,10 +177,31 @@ Make sure to also import the `IsOwnerOrReadOnly` class.
 
 Now, if you open a browser again, you find that the 'DELETE' and 'PUT' actions only appear on a snippet instance endpoint if you're logged in as the same user that created the code snippet.
 
+## Authenticating with the API
+
+Because we now have a set of permissions on the API, we need to authenticate our requests to it if we want to edit any snippets.  We havn't set up any [authentication classes][authentication], so the defaults are currently applied, which are `SessionAuthentication` and `BasicAuthentication`.
+
+When we interact with the API through the web browser, we can login, and the browser session will then provide the required authentication for the requests.
+
+If we're interacting with the API programmatically we need to explicitly provide the authentication credentials on each request.
+
+If we try to create a snippet without authenticating, we'll get an error:
+
+    curl -i -X POST http://127.0.0.1:8000/snippets/ -d "code=print 123"
+
+    {"detail": "Authentication credentials were not provided."}
+
+We can make a successful request by including the username and password of one of the users we created earlier.
+
+    curl -X POST http://127.0.0.1:8000/snippets/ -d "code=print 789" -u tom:password
+    
+    {"url": "http://127.0.0.1:8000/snippets/5/", "highlight": "http://127.0.0.1:8000/snippets/5/highlight/", "owner": "tom", "title": "foo", "code": "print 789", "linenos": false, "language": "python", "style": "friendly"}
+
 ## Summary
 
 We've now got a fairly fine-grained set of permissions on our Web API, and end points for users of the system and for the code snippets that they have created.
 
 In [part 5][tut-5] of the tutorial we'll look at how we can tie everything together by creating an HTML endpoint for our hightlighted snippets, and improve the cohesion of our API by using hyperlinking for the relationships within the system.
 
+[authentication]: ../api-guide/authentication.md
 [tut-5]: 5-relationships-and-hyperlinked-apis.md
