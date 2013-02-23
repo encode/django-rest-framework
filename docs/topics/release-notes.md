@@ -42,6 +42,7 @@ You can determine your currently installed version using `pip freeze`:
 
 ### Master
 
+* Bugfix for serializer data being uncacheable with pickle protocol 0.
 * Bugfixes for model field validation edge-cases.
 
 ### 2.2.1
