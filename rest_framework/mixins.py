@@ -140,3 +140,52 @@ class DestroyModelMixin(object):
         obj = self.get_object()
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class CreateBulkMixin(object):
+    """
+    Create model instances in bulk.
+    Should be mixed in with any `BaseView`. and not with CreateModelMixin
+    """
+    def create(self, request, *args, **kwargs):
+        data = request.DATA['list']
+        valid_inputs = []
+        valid_objects = []
+        invalid_inputs = []
+        errors = []
+        for element in data:
+            serializer = self.get_serializer(data=element, files=request.FILES)  # not sure about files
+            if serializer.is_valid():
+                self.pre_save(serializer.object)
+                valid_objects.append(serializer.object)
+                valid_inputs.append(element)
+            else:
+                invalid_inputs.append(element)
+                errors.append(serializer.errors)
+        # remove duplicates
+        self.model.objects.bulk_create(list(set(valid_objects)))
+        return Response({
+                         'Succeeded': valid_inputs,
+                         'failed': invalid_inputs,
+                         'errors': errors
+                         })
+
+    def pre_save(self, obj):
+        # a stub method to be overriden to do any pre processing 
+        pass
+
+
+class UpdateBulkMixin(object):
+    """
+    Update model instances in bulk.
+    Should be mixed in with `MultibleObjectBaseView`. and not with UpdateModelMixin
+    """
+    def update(self, request, *args, **kwargs):
+        raise NotImplementedError
+
+class DestroyBulkMixin(object):
+    """
+    Destroy model instances in bulk.
+    Should be mixed in with `MultibleObjectBaseView`. and not with DestroyModelMixin
+    """
+    def destroy(self, request, *args, **kwargs):
+        raise NotImplementedError
