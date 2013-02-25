@@ -268,7 +268,7 @@ class JSONPRendererTests(TestCase):
         """
         resp = self.client.get('/jsonp/jsonrenderer',
                                HTTP_ACCEPT='application/javascript')
-        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(resp.status_code, status.HTTP_200_OK)
         self.assertEquals(resp['Content-Type'], 'application/javascript')
         self.assertEquals(resp.content,
             ('callback(%s);' % _flat_repr).encode('ascii'))
@@ -279,7 +279,7 @@ class JSONPRendererTests(TestCase):
         """
         resp = self.client.get('/jsonp/nojsonrenderer',
                                HTTP_ACCEPT='application/javascript')
-        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(resp.status_code, status.HTTP_200_OK)
         self.assertEquals(resp['Content-Type'], 'application/javascript')
         self.assertEquals(resp.content,
             ('callback(%s);' % _flat_repr).encode('ascii'))
@@ -291,7 +291,7 @@ class JSONPRendererTests(TestCase):
         callback_func = 'myjsonpcallback'
         resp = self.client.get('/jsonp/nojsonrenderer?callback=' + callback_func,
                                HTTP_ACCEPT='application/javascript')
-        self.assertEquals(resp.status_code, 200)
+        self.assertEquals(resp.status_code, status.HTTP_200_OK)
         self.assertEquals(resp['Content-Type'], 'application/javascript')
         self.assertEquals(resp.content,
             ('%s(%s);' % (callback_func, _flat_repr)).encode('ascii'))
