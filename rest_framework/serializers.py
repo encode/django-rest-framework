@@ -425,7 +425,8 @@ class ModelSerializer(Serializer):
 
         cls = self.opts.model
         if cls is None:
-            raise AttributeError("Serializer class is missing 'model' Meta option")
+            raise AttributeError("Serializer class '%s' is missing 'model' Meta option" %
+                                 self.__class__.__name__)
         opts = get_concrete_model(cls)._meta
         pk_field = opts.pk
         # while pk_field.rel:
