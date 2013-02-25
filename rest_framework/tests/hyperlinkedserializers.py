@@ -100,7 +100,7 @@ class TestBasicHyperlinkedView(TestCase):
 
     def setUp(self):
         """
-        Create 3 BasicModel intances.
+        Create 3 BasicModel instances.
         """
         items = ['foo', 'bar', 'baz']
         for item in items:
@@ -137,7 +137,7 @@ class TestManyToManyHyperlinkedView(TestCase):
 
     def setUp(self):
         """
-        Create 3 BasicModel intances.
+        Create 3 BasicModel instances.
         """
         items = ['foo', 'bar', 'baz']
         anchors = []
@@ -235,7 +235,7 @@ class TestOptionalRelationHyperlinkedView(TestCase):
 
     def setUp(self):
         """
-        Create 1 OptionalRelationModel intances.
+        Create 1 OptionalRelationModel instances.
         """
         OptionalRelationModel().save()
         self.objects = OptionalRelationModel.objects

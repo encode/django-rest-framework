@@ -59,11 +59,11 @@ class DecoratorTestCase(TestCase):
 
         request = self.factory.get('/')
         response = view(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         request = self.factory.post('/')
         response = view(request)
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_calling_put_method(self):
 
@@ -73,11 +73,11 @@ class DecoratorTestCase(TestCase):
 
         request = self.factory.put('/')
         response = view(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         request = self.factory.post('/')
         response = view(request)
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_calling_patch_method(self):
 
@@ -87,11 +87,11 @@ class DecoratorTestCase(TestCase):
 
         request = self.factory.patch('/')
         response = view(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         request = self.factory.post('/')
         response = view(request)
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_renderer_classes(self):
 

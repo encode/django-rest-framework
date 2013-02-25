@@ -43,7 +43,7 @@ class SlugBasedInstanceView(InstanceView):
 class TestRootView(TestCase):
     def setUp(self):
         """
-        Create 3 BasicModel intances.
+        Create 3 BasicModel instances.
         """
         items = ['foo', 'bar', 'baz']
         for item in items:
@@ -344,7 +344,7 @@ class ExampleView(generics.ListCreateAPIView):
 class TestM2MBrowseableAPI(TestCase):
     def test_m2m_in_browseable_api(self):
         """
-        Test for particularly ugly reression with m2m in browseable API
+        Test for particularly ugly regression with m2m in browseable API
         """
         request = factory.get('/', HTTP_ACCEPT='text/html')
         view = ExampleView().as_view()
