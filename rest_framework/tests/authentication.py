@@ -2,15 +2,19 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import Client, TestCase
-from rest_framework import HTTP_HEADER_ENCODING
+import time
+from rest_framework import HTTP_HEADER_ENCODING, status
 from rest_framework import permissions
 from rest_framework.authtoken.models import Token
-from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
+from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication, OAuthAuthentication
 from rest_framework.compat import patterns
 from rest_framework.views import APIView
 import json
 import base64
-
+from oauth_provider.models import Consumer, Resource
+from oauth_provider.models import Token as OAuthToken
+from oauth_provider import consts as oauth_consts
+import oauth2 as oauth
 
 class MockView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -21,11 +25,15 @@ class MockView(APIView):
     def put(self, request):
         return HttpResponse({'a': 1, 'b': 2, 'c': 3})
 
+    def get(self, request):
+        return HttpResponse({'a': 1, 'b': 2, 'c': 3})
+
 urlpatterns = patterns('',
     (r'^session/$', MockView.as_view(authentication_classes=[SessionAuthentication])),
     (r'^basic/$', MockView.as_view(authentication_classes=[BasicAuthentication])),
     (r'^token/$', MockView.as_view(authentication_classes=[TokenAuthentication])),
     (r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
+    (r'^oauth/$', MockView.as_view(authentication_classes=[OAuthAuthentication]))
 )
 
 
@@ -186,3 +194,134 @@ class TokenAuthTests(TestCase):
                                {'username': self.username, 'password': self.password})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(json.loads(response.content.decode('ascii'))['token'], self.key)
+
+class OAuthTests(TestCase):
+    """OAuth 1.0a authentication"""
+    urls = 'rest_framework.tests.authentication'
+
+    def setUp(self):
+        self.csrf_client = Client(enforce_csrf_checks=True)
+        self.username = 'john'
+        self.email = 'lennon@thebeatles.com'
+        self.password = 'password'
+        self.user = User.objects.create_user(self.username, self.email, self.password)
+
+        self.CONSUMER_KEY = 'consumer_key'
+        self.CONSUMER_SECRET = 'consumer_secret'
+        self.TOKEN_KEY = "token_key"
+        self.TOKEN_SECRET = "token_secret"
+
+        self.consumer = Consumer.objects.create(key=self.CONSUMER_KEY, secret=self.CONSUMER_SECRET,
+            name='example', user=self.user, status=oauth_consts.ACCEPTED)
+
+
+        self.resource = Resource.objects.create(name="resource name", url="api/")
+        self.token = OAuthToken.objects.create(user=self.user, consumer=self.consumer, resource=self.resource,
+            token_type=OAuthToken.ACCESS, key=self.TOKEN_KEY, secret=self.TOKEN_SECRET, is_approved=True
+        )
+
+
+    def _create_authorization_header(self):
+        params = {
+            'oauth_version': "1.0",
+            'oauth_nonce': oauth.generate_nonce(),
+            'oauth_timestamp': int(time.time()),
+            'oauth_token': self.token.key,
+            'oauth_consumer_key': self.consumer.key
+        }
+
+        req = oauth.Request(method="GET", url="http://example.com", parameters=params)
+
+        signature_method = oauth.SignatureMethod_PLAINTEXT()
+        req.sign_request(signature_method, self.consumer, self.token)
+
+        return req.to_header()["Authorization"]
+
+    def _create_authorization_url_parameters(self):
+        params = {
+            'oauth_version': "1.0",
+            'oauth_nonce': oauth.generate_nonce(),
+            'oauth_timestamp': int(time.time()),
+            'oauth_token': self.token.key,
+            'oauth_consumer_key': self.consumer.key
+        }
+
+        req = oauth.Request(method="GET", url="http://example.com", parameters=params)
+
+        signature_method = oauth.SignatureMethod_PLAINTEXT()
+        req.sign_request(signature_method, self.consumer, self.token)
+        return dict(req)
+
+    def test_post_form_passing_oauth(self):
+        """Ensure POSTing form over OAuth with correct credentials passes and does not require CSRF"""
+        auth = self._create_authorization_header()
+        response = self.csrf_client.post('/oauth/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_form_repeated_nonce_failing_oauth(self):
+        """Ensure POSTing form over OAuth with repeated auth (same nonces and timestamp) credentials fails"""
+        auth = self._create_authorization_header()
+        response = self.csrf_client.post('/oauth/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 200)
+
+        # simulate reply attack auth header containes already used (nonce, timestamp) pair
+        response = self.csrf_client.post('/oauth/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
+        self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
+
+    def test_post_form_token_removed_failing_oauth(self):
+        """Ensure POSTing when there is no OAuth access token in db fails"""
+        self.token.delete()
+        auth = self._create_authorization_header()
+        response = self.csrf_client.post('/oauth/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
+        self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
+
+    def test_post_form_consumer_status_not_accepted_failing_oauth(self):
+        """Ensure POSTing when consumer status is anything other than ACCEPTED fails"""
+        for consumer_status in (oauth_consts.CANCELED, oauth_consts.PENDING, oauth_consts.REJECTED):
+            self.consumer.status = consumer_status
+            self.consumer.save()
+
+            auth = self._create_authorization_header()
+            response = self.csrf_client.post('/oauth/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
+            self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
+
+    def test_post_form_with_request_token_failing_oauth(self):
+        """Ensure POSTing with unauthorized request token instead of access token fails"""
+        self.token.token_type = OAuthToken.REQUEST
+        self.token.save()
+
+        auth = self._create_authorization_header()
+        response = self.csrf_client.post('/oauth/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
+        self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
+
+    def test_post_form_with_urlencoded_parameters(self):
+        """Ensure POSTing with x-www-form-urlencoded auth parameters passes"""
+        params = self._create_authorization_url_parameters()
+        response = self.csrf_client.post('/oauth/', params)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_form_with_url_parameters(self):
+        """Ensure GETing with auth in url parameters passes"""
+        params = self._create_authorization_url_parameters()
+        response = self.csrf_client.get('/oauth/', params)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_hmac_sha1_signature_passes(self):
+        """Ensure POSTing using HMAC_SHA1 signature method passes"""
+        params = {
+            'oauth_version': "1.0",
+            'oauth_nonce': oauth.generate_nonce(),
+            'oauth_timestamp': int(time.time()),
+            'oauth_token': self.token.key,
+            'oauth_consumer_key': self.consumer.key
+        }
+
+        req = oauth.Request(method="POST", url="http://testserver/oauth/", parameters=params)
+
+        signature_method = oauth.SignatureMethod_HMAC_SHA1()
+        req.sign_request(signature_method, self.consumer, self.token)
+        auth = req.to_header()["Authorization"]
+
+        response = self.csrf_client.post('/oauth/', HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 200)
+
