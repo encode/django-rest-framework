@@ -123,7 +123,7 @@ After adding all those names into our URLconf, our final `'urls.py'` file should
             views.UserList.as_view(),
             name='user-list'),
         url(r'^users/(?P<pk>[0-9]+)/$',
-            views.UserInstance.as_view(),
+            views.UserDetail.as_view(),
             name='user-detail')
     ))
     
