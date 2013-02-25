@@ -123,7 +123,7 @@ The template name is determined by (in order of preference):
 
 An example of a view that uses `TemplateHTMLRenderer`:
 
-    class UserInstance(generics.RetrieveUserAPIView):
+    class UserDetail(generics.RetrieveUserAPIView):
         """
         A view that returns a templated HTML representations of a given user.
         """
