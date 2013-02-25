@@ -182,6 +182,20 @@ Unauthenticated responses that are denied permission will result in an `HTTP 403
 
 If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `PATCH`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
 
+## OAuthAuthentication
+
+This authentication uses [OAuth 1.0](http://tools.ietf.org/html/rfc5849) authentication scheme. It depends on optional `django-oauth-plus` and `oauth2` packages. In order to make it work you must istall these packages and add `oauth_provider` (from `django-oauth-plus`) to your `INSTALLED_APPS`:
+
+    INSTALLED_APPS = (
+        #(...)
+        `oauth_provider`,
+    )
+
+OAuthAuthentication class provides only token verification and signature validation for requests. It doesn't provide authorization flow for your clients. You still need to implement your own views for accessing and authorizing Reqest/Access Tokens. This is because there are many different OAuth flows in use. Almost always they require end-user interaction, and most likely this is what you want to design yourself.
+
+Luckily `django-oauth-plus` provides simple foundation for classic 'three-legged' oauth flow, so if it is what you need please refer to [its documentation](http://code.larlet.fr/django-oauth-plus/wiki/Home). This documentation will provide you also information about how to work with supplied models and change basic settings.
+
+
 # Custom authentication
 
 To implement a custom authentication scheme, subclass `BaseAuthentication` and override the `.authenticate(self, request)` method.  The method should return a two-tuple of `(user, auth)` if authentication succeeds, or `None` otherwise.
