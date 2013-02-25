@@ -9,6 +9,18 @@ from rest_framework.compat import CsrfViewMiddleware
 from rest_framework.authtoken.models import Token
 import base64
 
+from django.core.exceptions import ImproperlyConfigured
+try:
+    import oauth2
+except ImportError:
+    oauth2 = None
+
+try:
+    import oauth_provider
+    from oauth_provider.store import store
+except ImportError:
+    oauth_provider = None
+
 
 class BaseAuthentication(object):
     """
@@ -155,4 +167,109 @@ class TokenAuthentication(BaseAuthentication):
         return 'Token'
 
 
-# TODO: OAuthAuthentication
+class OAuthAuthentication(BaseAuthentication):
+    """rest_framework OAuth authentication backend using
+    django-oath-plus"""
+    www_authenticate_realm = 'api'
+    require_active = True
+
+    def __init__(self, **kwargs):
+        super(OAuthAuthentication, self).__init__(**kwargs)
+
+        if oauth2 is None:
+            raise ImproperlyConfigured("The 'python-oauth2' package could not be imported. It is required for use with the 'OAuthAuthentication' class.")
+
+        if oauth_provider is None:
+            raise ImproperlyConfigured("The 'django-oauth-plus' package could not be imported. It is required for use with the 'OAuthAuthentication' class.")
+
+
+    def authenticate(self, request):
+        """
+        :returns: two-tuple of (user, auth) if authentication succeeds, or None otherwise.
+        """
+        from oauth_provider.store import store
+        if self.is_valid_request(request):
+            oauth_request = oauth_provider.utils.get_oauth_request(request)
+
+            if not self.check_nonce(request, oauth_request):
+                raise exceptions.AuthenticationFailed("Nonce check failed")
+
+            try:
+                consumer = store.get_consumer(request, oauth_request,
+                    oauth_request.get_parameter('oauth_consumer_key'))
+            except oauth_provider.store.InvalidConsumerError, e:
+                raise exceptions.AuthenticationFailed(e)
+
+            if consumer.status != oauth_provider.consts.ACCEPTED:
+                raise exceptions.AuthenticationFailed('Invalid consumer key status: %s' % consumer.get_status_display())
+
+            try:
+                token = store.get_access_token(request, oauth_request,
+                    consumer, oauth_request.get_parameter('oauth_token'))
+
+            except oauth_provider.store.InvalidTokenError:
+                raise exceptions.AuthenticationFailed(
+                    'Invalid access token: %s' % oauth_request.get_parameter('oauth_token'))
+
+            try:
+                self.validate_token(request, consumer, token)
+            except oauth2.Error, e:
+                print "got e"
+                raise exceptions.AuthenticationFailed(e.message)
+
+            if not self.check_active(token.user):
+                raise exceptions.AuthenticationFailed('User not active: %s' % token.user.username)
+
+            if consumer and token:
+                request.user = token.user
+                return (request.user, None)
+
+            raise exceptions.AuthenticationFailed(
+                'You are not allowed to access this resource.')
+
+        return None
+
+    def authenticate_header(self, request):
+        return 'OAuth realm="%s"' % self.www_authenticate_realm
+
+    def is_in(self, params):
+        """
+        Checks to ensure that all the OAuth parameter names are in the
+        provided ``params``.
+        """
+        from oauth_provider.consts import OAUTH_PARAMETERS_NAMES
+
+        for param_name in OAUTH_PARAMETERS_NAMES:
+            if param_name not in params:
+                return False
+
+        return True
+
+    def is_valid_request(self, request):
+        """
+        Checks whether the required parameters are either in the HTTP
+        ``Authorization`` header sent by some clients (the preferred method
+        according to OAuth spec) or fall back to ``GET/POST``.
+        """
+        auth_params = request.META.get("HTTP_AUTHORIZATION", [])
+        return self.is_in(auth_params) or self.is_in(request.REQUEST)
+
+    def validate_token(self, request, consumer, token):
+        oauth_server, oauth_request = oauth_provider.utils.initialize_server_request(request)
+        return oauth_server.verify_request(oauth_request, consumer, token)
+
+    def check_active(self, user):
+        """
+        Ensures the user has an active account.
+
+        Optimized for the ``django.contrib.auth.models.User`` case.
+        """
+        if not self.require_active:
+            # Ignore & move on.
+            return True
+
+        return user.is_active
+
+    def check_nonce(self, request, oauth_request):
+        """Checks nonce of request"""
+        return store.check_nonce(request, oauth_request, oauth_request['oauth_nonce'])
