@@ -43,7 +43,7 @@ class SlugBasedInstanceView(InstanceView):
 class TestRootView(TestCase):
     def setUp(self):
         """
-        Create 3 BasicModel intances.
+        Create 3 BasicModel instances.
         """
         items = ['foo', 'bar', 'baz']
         for item in items:
