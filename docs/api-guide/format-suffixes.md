@@ -35,11 +35,21 @@ Example:
     
     urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])
 
-When using `format_suffix_patterns`, you must make sure to add the `'format'` keyword argument to the corresponding views.  For example.
+When using `format_suffix_patterns`, you must make sure to add the `'format'` keyword argument to the corresponding view.  For example:
 
     @api_view(('GET',))
     def api_root(request, format=None):
         # do stuff...
+
+Or with class based views:
+
+    class CommentList(APIView):
+
+        def get(self, request, format=None):
+            # do stuff...
+
+        def post(self, request, format=None):
+            # do stuff...
 
 The name of the kwarg used may be modified by using the `FORMAT_SUFFIX_KWARG` setting.
 
