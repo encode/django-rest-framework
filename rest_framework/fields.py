@@ -448,7 +448,7 @@ class DateField(WritableField):
     form_field_class = forms.DateField
 
     default_error_messages = {
-        'invalid': _(u"Date has wrong format. Use one of these formats instead: %s"),
+        'invalid': _("Date has wrong format. Use one of these formats instead: %s"),
     }
     empty = None
 
@@ -489,7 +489,7 @@ class DateTimeField(WritableField):
     form_field_class = forms.DateTimeField
 
     default_error_messages = {
-        'invalid': _(u"Datetime has wrong format. Use one of these formats instead: %s"),
+        'invalid': _("Datetime has wrong format. Use one of these formats instead: %s"),
     }
     empty = None
 
@@ -536,7 +536,7 @@ class TimeField(WritableField):
     form_field_class = forms.TimeField
 
     default_error_messages = {
-        'invalid': _(u"Time has wrong format. Use one of these formats instead: %s"),
+        'invalid': _("Time has wrong format. Use one of these formats instead: %s"),
     }
     empty = None
 
