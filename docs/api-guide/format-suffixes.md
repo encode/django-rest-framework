@@ -29,8 +29,8 @@ Example:
     
     urlpatterns = patterns('blog.views',
         url(r'^/$', 'api_root'),
-        url(r'^comment/$', 'comment_root'),
-        url(r'^comment/(?P<pk>[0-9]+)/$', 'comment_instance')
+        url(r'^comment/$', 'comment_list'),
+        url(r'^comment/(?P<pk>[0-9]+)/$', 'comment_detail')
     )
     
     urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])
@@ -38,13 +38,12 @@ Example:
 When using `format_suffix_patterns`, you must make sure to add the `'format'` keyword argument to the corresponding views.  For example:
 
     @api_view(('GET', 'POST'))
-    def api_root(request, format=None):
+    def comment_list(request, format=None):
         # do stuff...
 
 Or with class based views:
 
     class CommentList(APIView):
-
         def get(self, request, format=None):
             # do stuff...
 
