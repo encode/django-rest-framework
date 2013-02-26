@@ -72,14 +72,14 @@ We'll also add a couple of views.  We'd like to just use read-only views for the
         serializer_class = UserSerializer
     
     
-    class UserInstance(generics.RetrieveAPIView):
+    class UserDetail(generics.RetrieveAPIView):
         model = User
         serializer_class = UserSerializer
 
 Finally we need to add those views into the API, by referencing them from the URL conf.
 
     url(r'^users/$', views.UserList.as_view()),
-    url(r'^users/(?P<pk>[0-9]+)/$', views.UserInstance.as_view()),
+    url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
 
 ## Associating Snippets with Users
 
