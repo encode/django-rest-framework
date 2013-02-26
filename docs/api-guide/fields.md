@@ -102,7 +102,7 @@ You can customize this  behavior by overriding the `.to_native(self, value)` met
 
 ## WritableField
 
-A field that supports both read and write operations.  By itself `WriteableField` does not perform any translation of input values into a given type.  You won't typically use this field directly, but you may want to override it and implement the `.to_native(self, value)` and `.from_native(self, value)` methods.
+A field that supports both read and write operations.  By itself `WritableField` does not perform any translation of input values into a given type.  You won't typically use this field directly, but you may want to override it and implement the `.to_native(self, value)` and `.from_native(self, value)` methods.
 
 ## ModelField
 
