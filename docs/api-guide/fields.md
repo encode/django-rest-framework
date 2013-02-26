@@ -185,11 +185,19 @@ Corresponds to `django.forms.fields.RegexField`
 
 A date representation.
 
+Uses `DATE_INPUT_FORMATS` to validate date.
+
+Optionally takes `format` as parameter to replace the matching pattern.
+
 Corresponds to `django.db.models.fields.DateField`
 
 ## DateTimeField
 
 A date and time representation.
+
+Uses `DATETIME_INPUT_FORMATS` to validate date_time.
+
+Optionally takes `format` as parameter to replace the matching pattern.
 
 Corresponds to `django.db.models.fields.DateTimeField`
 
@@ -206,6 +214,10 @@ If you want to override this behavior, you'll need to declare the `DateTimeField
 ## TimeField
 
 A time representation.
+
+Uses `TIME_INPUT_FORMATS` to validate time.
+
+Optionally takes `format` as parameter to replace the matching pattern.
 
 Corresponds to `django.db.models.fields.TimeField`
 

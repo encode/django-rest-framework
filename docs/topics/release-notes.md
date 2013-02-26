@@ -44,6 +44,9 @@ You can determine your currently installed version using `pip freeze`:
 
 * Bugfix for serializer data being uncacheable with pickle protocol 0.
 * Bugfixes for model field validation edge-cases.
+* Support `DATE_INPUT_FORMATS` for `DateField` validation
+* Support `DATETIME_INPUT_FORMATS` for `DateTimeField` validation
+* Support `TIME_INPUT_FORMATS` for `TimeField` validation
 
 ### 2.2.1
 
