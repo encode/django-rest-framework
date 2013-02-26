@@ -35,9 +35,9 @@ Example:
     
     urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])
 
-When using `format_suffix_patterns`, you must make sure to add the `'format'` keyword argument to the corresponding view.  For example:
+When using `format_suffix_patterns`, you must make sure to add the `'format'` keyword argument to the corresponding views.  For example:
 
-    @api_view(('GET',))
+    @api_view(('GET', 'POST'))
     def api_root(request, format=None):
         # do stuff...
 
