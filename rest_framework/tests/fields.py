@@ -184,17 +184,17 @@ class DateFieldTest(TestCase):
     def test_wrong_default_date_input_format(self):
         serializer = DateObjectSerializer(data={'date': 'something wrong'})
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'date': [u'Date has wrong format. Use one of these formats instead: '
-                                                       u'YYYY-MM-DD; MM/DD/YYYY; MM/DD/YY; [Jan through Dec] DD YYYY; '
-                                                       u'[Jan through Dec] DD, YYYY; DD [Jan through Dec] YYYY; '
-                                                       u'DD [Jan through Dec], YYYY; [January through December] DD YYYY; '
-                                                       u'[January through December] DD, YYYY; DD [January through December] YYYY; '
-                                                       u'DD [January through December], YYYY']})
+        self.assertEquals(serializer.errors, {'date': ['Date has wrong format. Use one of these formats instead: '
+                                                       'YYYY-MM-DD; MM/DD/YYYY; MM/DD/YY; [Jan through Dec] DD YYYY; '
+                                                       '[Jan through Dec] DD, YYYY; DD [Jan through Dec] YYYY; '
+                                                       'DD [Jan through Dec], YYYY; [January through December] DD YYYY; '
+                                                       '[January through December] DD, YYYY; DD [January through December] YYYY; '
+                                                       'DD [January through December], YYYY']})
 
     def test_wrong_custom_date_input_format(self):
         serializer = DateObjectCustomFormatSerializer(data={'date': '07/31/1984'})
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'date': [u'Date has wrong format. Use one of these formats instead: YYYY; YYYY -- MM']})
+        self.assertEquals(serializer.errors, {'date': ['Date has wrong format. Use one of these formats instead: YYYY; YYYY -- MM']})
 
     def test_from_native(self):
         f = serializers.DateField()
@@ -223,12 +223,12 @@ class DateFieldTest(TestCase):
         try:
             f.from_native('1984-42-31')
         except validators.ValidationError as e:
-            self.assertEqual(e.messages, [u'Date has wrong format. Use one of these formats instead: '
-                                          u'YYYY-MM-DD; MM/DD/YYYY; MM/DD/YY; [Jan through Dec] DD YYYY; '
-                                          u'[Jan through Dec] DD, YYYY; DD [Jan through Dec] YYYY; '
-                                          u'DD [Jan through Dec], YYYY; [January through December] DD YYYY; '
-                                          u'[January through December] DD, YYYY; DD [January through December] YYYY; '
-                                          u'DD [January through December], YYYY'])
+            self.assertEqual(e.messages, ['Date has wrong format. Use one of these formats instead: '
+                                          'YYYY-MM-DD; MM/DD/YYYY; MM/DD/YY; [Jan through Dec] DD YYYY; '
+                                          '[Jan through Dec] DD, YYYY; DD [Jan through Dec] YYYY; '
+                                          'DD [Jan through Dec], YYYY; [January through December] DD YYYY; '
+                                          '[January through December] DD, YYYY; DD [January through December] YYYY; '
+                                          'DD [January through December], YYYY'])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -284,25 +284,25 @@ class DateTimeFieldTest(TestCase):
     def test_wrong_default_date_time_input_format_for_django_gte_1_4(self):
         serializer = DateTimeObjectSerializer(data={'date_time': 'something wrong'})
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'date_time': [u'Datetime has wrong format. Use one of these formats instead: '
-                                                            u'YYYY-MM-DD HH:MM:SS; YYYY-MM-DD HH:MM:SS.uuuuuu; YYYY-MM-DD HH:MM; '
-                                                            u'YYYY-MM-DD; MM/DD/YYYY HH:MM:SS; MM/DD/YYYY HH:MM:SS.uuuuuu; '
-                                                            u'MM/DD/YYYY HH:MM; MM/DD/YYYY; MM/DD/YY HH:MM:SS; '
-                                                            u'MM/DD/YY HH:MM:SS.uuuuuu; MM/DD/YY HH:MM; MM/DD/YY']})
+        self.assertEquals(serializer.errors, {'date_time': ['Datetime has wrong format. Use one of these formats instead: '
+                                                            'YYYY-MM-DD HH:MM:SS; YYYY-MM-DD HH:MM:SS.uuuuuu; YYYY-MM-DD HH:MM; '
+                                                            'YYYY-MM-DD; MM/DD/YYYY HH:MM:SS; MM/DD/YYYY HH:MM:SS.uuuuuu; '
+                                                            'MM/DD/YYYY HH:MM; MM/DD/YYYY; MM/DD/YY HH:MM:SS; '
+                                                            'MM/DD/YY HH:MM:SS.uuuuuu; MM/DD/YY HH:MM; MM/DD/YY']})
 
     @unittest.skipUnless(django.VERSION < (1, 4), "django >= 1.4 have microseconds in default settings")
     def test_wrong_default_date_time_input_format_for_django_lt_1_4(self):
         serializer = DateTimeObjectSerializer(data={'date_time': 'something wrong'})
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'date_time': [u'Datetime has wrong format. Use one of these formats instead:'
-                                                            u' YYYY-MM-DD HH:MM:SS; YYYY-MM-DD HH:MM; YYYY-MM-DD; '
-                                                            u'MM/DD/YYYY HH:MM:SS; MM/DD/YYYY HH:MM; MM/DD/YYYY; '
-                                                            u'MM/DD/YY HH:MM:SS; MM/DD/YY HH:MM; MM/DD/YY']})
+        self.assertEquals(serializer.errors, {'date_time': ['Datetime has wrong format. Use one of these formats instead: '
+                                                            'YYYY-MM-DD HH:MM:SS; YYYY-MM-DD HH:MM; YYYY-MM-DD; '
+                                                            'MM/DD/YYYY HH:MM:SS; MM/DD/YYYY HH:MM; MM/DD/YYYY; '
+                                                            'MM/DD/YY HH:MM:SS; MM/DD/YY HH:MM; MM/DD/YY']})
 
     def test_wrong_custom_date_time_input_format(self):
         serializer = DateTimeObjectCustomFormatSerializer(data={'date_time': '07/31/84 04:31'})
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'date_time': [u'Datetime has wrong format. Use one of these formats instead: YYYY; YYYY HH:MM']})
+        self.assertEquals(serializer.errors, {'date_time': ['Datetime has wrong format. Use one of these formats instead: YYYY; YYYY HH:MM']})
 
     def test_from_native(self):
         f = serializers.DateTimeField()
@@ -326,31 +326,31 @@ class DateTimeFieldTest(TestCase):
         self.assertEqual(result, None)
 
     @unittest.skipUnless(django.VERSION >= (1, 4), "django < 1.4 don't have microseconds in default settings")
-    def test_from_native_invalid_datetime(self):
+    def test_from_native_invalid_datetime_for_django_gte_1_4(self):
         f = serializers.DateTimeField()
 
         try:
             f.from_native('1984-42-31 04:31')
         except validators.ValidationError as e:
-            self.assertEqual(e.messages, [u'Datetime has wrong format. Use one of these formats instead: '
-                                          u'YYYY-MM-DD HH:MM:SS; YYYY-MM-DD HH:MM:SS.uuuuuu; YYYY-MM-DD HH:MM; '
-                                          u'YYYY-MM-DD; MM/DD/YYYY HH:MM:SS; MM/DD/YYYY HH:MM:SS.uuuuuu; '
-                                          u'MM/DD/YYYY HH:MM; MM/DD/YYYY; MM/DD/YY HH:MM:SS; '
-                                          u'MM/DD/YY HH:MM:SS.uuuuuu; MM/DD/YY HH:MM; MM/DD/YY'])
+            self.assertEqual(e.messages, ['Datetime has wrong format. Use one of these formats instead: '
+                                          'YYYY-MM-DD HH:MM:SS; YYYY-MM-DD HH:MM:SS.uuuuuu; YYYY-MM-DD HH:MM; '
+                                          'YYYY-MM-DD; MM/DD/YYYY HH:MM:SS; MM/DD/YYYY HH:MM:SS.uuuuuu; '
+                                          'MM/DD/YYYY HH:MM; MM/DD/YYYY; MM/DD/YY HH:MM:SS; '
+                                          'MM/DD/YY HH:MM:SS.uuuuuu; MM/DD/YY HH:MM; MM/DD/YY'])
         else:
             self.fail("ValidationError was not properly raised")
 
     @unittest.skipUnless(django.VERSION < (1, 4), "django >= 1.4 have microseconds in default settings")
-    def test_from_native_invalid_datetime(self):
+    def test_from_native_invalid_datetime_for_django_lt_1_4(self):
         f = serializers.DateTimeField()
 
         try:
             f.from_native('1984-42-31 04:31')
         except validators.ValidationError as e:
-            self.assertEqual(e.messages, [u'Datetime has wrong format. Use one of these formats instead:'
-                                          u' YYYY-MM-DD HH:MM:SS; YYYY-MM-DD HH:MM; YYYY-MM-DD; '
-                                          u'MM/DD/YYYY HH:MM:SS; MM/DD/YYYY HH:MM; MM/DD/YYYY; '
-                                          u'MM/DD/YY HH:MM:SS; MM/DD/YY HH:MM; MM/DD/YY'])
+            self.assertEqual(e.messages, ['Datetime has wrong format. Use one of these formats instead: '
+                                          'YYYY-MM-DD HH:MM:SS; YYYY-MM-DD HH:MM; YYYY-MM-DD; '
+                                          'MM/DD/YYYY HH:MM:SS; MM/DD/YYYY HH:MM; MM/DD/YYYY; '
+                                          'MM/DD/YY HH:MM:SS; MM/DD/YY HH:MM; MM/DD/YY'])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -373,12 +373,12 @@ class TimeFieldTest(TestCase):
     def test_wrong_default_time_input_format(self):
         serializer = TimeObjectSerializer(data={'time': 'something wrong'})
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'time': [u'Time has wrong format. Use one of these formats instead: HH:MM:SS; HH:MM']})
+        self.assertEquals(serializer.errors, {'time': ['Time has wrong format. Use one of these formats instead: HH:MM:SS; HH:MM']})
 
     def test_wrong_custom_time_input_format(self):
         serializer = TimeObjectCustomFormatSerializer(data={'time': '04:31'})
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'time': [u'Time has wrong format. Use one of these formats instead: HH -- MM; HHMMSS']})
+        self.assertEquals(serializer.errors, {'time': ['Time has wrong format. Use one of these formats instead: HH -- MM; HHMMSS']})
 
     def test_from_native(self):
         f = serializers.TimeField()
