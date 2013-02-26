@@ -426,3 +426,15 @@ try:
     import defusedxml.ElementTree as etree
 except ImportError:
     etree = None
+
+# OAuth is optional
+try:
+    import oauth2 as oauth
+except ImportError:
+    oauth = None
+
+# OAuth is optional
+try:
+    import oauth_provider
+except ImportError:
+    oauth_provider = None

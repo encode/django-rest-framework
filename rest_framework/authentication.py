@@ -4,22 +4,13 @@ Provides a set of pluggable authentication policies.
 from __future__ import unicode_literals
 from django.contrib.auth import authenticate
 from django.utils.encoding import DjangoUnicodeDecodeError
+from django.core.exceptions import ImproperlyConfigured
 from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.compat import CsrfViewMiddleware
+from rest_framework.compat import oauth
+from rest_framework.compat import oauth_provider
 from rest_framework.authtoken.models import Token
 import base64
-
-from django.core.exceptions import ImproperlyConfigured
-try:
-    import oauth2
-except ImportError:
-    oauth2 = None
-
-try:
-    import oauth_provider
-    from oauth_provider.store import store
-except ImportError:
-    oauth_provider = None
 
 
 class BaseAuthentication(object):
@@ -169,15 +160,15 @@ class TokenAuthentication(BaseAuthentication):
 
 class OAuthAuthentication(BaseAuthentication):
     """rest_framework OAuth authentication backend using
-    django-oath-plus"""
+    django-oath-plus and oauth2"""
     www_authenticate_realm = 'api'
     require_active = True
 
     def __init__(self, **kwargs):
         super(OAuthAuthentication, self).__init__(**kwargs)
 
-        if oauth2 is None:
-            raise ImproperlyConfigured("The 'python-oauth2' package could not be imported. It is required for use with the 'OAuthAuthentication' class.")
+        if oauth is None:
+            raise ImproperlyConfigured("The 'oauth2' package could not be imported. It is required for use with the 'OAuthAuthentication' class.")
 
         if oauth_provider is None:
             raise ImproperlyConfigured("The 'django-oauth-plus' package could not be imported. It is required for use with the 'OAuthAuthentication' class.")
@@ -185,7 +176,7 @@ class OAuthAuthentication(BaseAuthentication):
 
     def authenticate(self, request):
         """
-        :returns: two-tuple of (user, auth) if authentication succeeds, or None otherwise.
+        Returns two-tuple of (user, auth token) if authentication succeeds, or None otherwise.
         """
         from oauth_provider.store import store
         if self.is_valid_request(request):
@@ -213,16 +204,14 @@ class OAuthAuthentication(BaseAuthentication):
 
             try:
                 self.validate_token(request, consumer, token)
-            except oauth2.Error, e:
-                print "got e"
+            except oauth.Error, e:
                 raise exceptions.AuthenticationFailed(e.message)
 
             if not self.check_active(token.user):
                 raise exceptions.AuthenticationFailed('User not active: %s' % token.user.username)
 
             if consumer and token:
-                request.user = token.user
-                return (request.user, None)
+                return (token.user, token)
 
             raise exceptions.AuthenticationFailed(
                 'You are not allowed to access this resource.')
@@ -272,4 +261,4 @@ class OAuthAuthentication(BaseAuthentication):
 
     def check_nonce(self, request, oauth_request):
         """Checks nonce of request"""
-        return store.check_nonce(request, oauth_request, oauth_request['oauth_nonce'])
+        return oauth_provider.store.store.check_nonce(request, oauth_request, oauth_request['oauth_nonce'])
