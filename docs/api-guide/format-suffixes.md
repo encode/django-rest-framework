@@ -28,9 +28,9 @@ Example:
     from rest_framework.urlpatterns import format_suffix_patterns
     
     urlpatterns = patterns('blog.views',
-        url(r'^/$', 'api_root'),
-        url(r'^comment/$', 'comment_root'),
-        url(r'^comment/(?P<pk>[0-9]+)/$', 'comment_instance')
+        url(r'^$', 'api_root'),
+        url(r'^comments$', 'comment_root'),
+        url(r'^comments/(?P<pk>[0-9]+)$', 'comment_instance')
     )
     
     urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])
