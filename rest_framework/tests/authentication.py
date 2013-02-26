@@ -9,12 +9,11 @@ from rest_framework.authtoken.models import Token
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication, OAuthAuthentication
 from rest_framework.compat import patterns
 from rest_framework.views import APIView
+from rest_framework.compat import oauth
+from rest_framework.compat import oauth_provider
 import json
 import base64
-from oauth_provider.models import Consumer, Resource
-from oauth_provider.models import Token as OAuthToken
-from oauth_provider import consts as oauth_consts
-import oauth2 as oauth
+import unittest
 
 class MockView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
@@ -200,6 +199,14 @@ class OAuthTests(TestCase):
     urls = 'rest_framework.tests.authentication'
 
     def setUp(self):
+        # these imports are here because oauth is optional and hiding them in try..except block or compat
+        # could obscure problems if something breaks
+        from oauth_provider.models import Consumer, Resource
+        from oauth_provider.models import Token as OAuthToken
+        from oauth_provider import consts
+
+        self.consts = consts
+
         self.csrf_client = Client(enforce_csrf_checks=True)
         self.username = 'john'
         self.email = 'lennon@thebeatles.com'
@@ -212,7 +219,7 @@ class OAuthTests(TestCase):
         self.TOKEN_SECRET = "token_secret"
 
         self.consumer = Consumer.objects.create(key=self.CONSUMER_KEY, secret=self.CONSUMER_SECRET,
-            name='example', user=self.user, status=oauth_consts.ACCEPTED)
+            name='example', user=self.user, status=self.consts.ACCEPTED)
 
 
         self.resource = Resource.objects.create(name="resource name", url="api/")
@@ -252,12 +259,16 @@ class OAuthTests(TestCase):
         req.sign_request(signature_method, self.consumer, self.token)
         return dict(req)
 
+    @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
+    @unittest.skipUnless(oauth, 'oauth2 not installed')
     def test_post_form_passing_oauth(self):
         """Ensure POSTing form over OAuth with correct credentials passes and does not require CSRF"""
         auth = self._create_authorization_header()
         response = self.csrf_client.post('/oauth/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
+    @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
+    @unittest.skipUnless(oauth, 'oauth2 not installed')
     def test_post_form_repeated_nonce_failing_oauth(self):
         """Ensure POSTing form over OAuth with repeated auth (same nonces and timestamp) credentials fails"""
         auth = self._create_authorization_header()
@@ -268,6 +279,8 @@ class OAuthTests(TestCase):
         response = self.csrf_client.post('/oauth/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
 
+    @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
+    @unittest.skipUnless(oauth, 'oauth2 not installed')
     def test_post_form_token_removed_failing_oauth(self):
         """Ensure POSTing when there is no OAuth access token in db fails"""
         self.token.delete()
@@ -275,9 +288,11 @@ class OAuthTests(TestCase):
         response = self.csrf_client.post('/oauth/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
 
+    @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
+    @unittest.skipUnless(oauth, 'oauth2 not installed')
     def test_post_form_consumer_status_not_accepted_failing_oauth(self):
         """Ensure POSTing when consumer status is anything other than ACCEPTED fails"""
-        for consumer_status in (oauth_consts.CANCELED, oauth_consts.PENDING, oauth_consts.REJECTED):
+        for consumer_status in (self.consts.CANCELED, self.consts.PENDING, self.consts.REJECTED):
             self.consumer.status = consumer_status
             self.consumer.save()
 
@@ -285,27 +300,35 @@ class OAuthTests(TestCase):
             response = self.csrf_client.post('/oauth/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
             self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
 
+    @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
+    @unittest.skipUnless(oauth, 'oauth2 not installed')
     def test_post_form_with_request_token_failing_oauth(self):
         """Ensure POSTing with unauthorized request token instead of access token fails"""
-        self.token.token_type = OAuthToken.REQUEST
+        self.token.token_type = self.token.REQUEST
         self.token.save()
 
         auth = self._create_authorization_header()
         response = self.csrf_client.post('/oauth/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
 
+    @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
+    @unittest.skipUnless(oauth, 'oauth2 not installed')
     def test_post_form_with_urlencoded_parameters(self):
         """Ensure POSTing with x-www-form-urlencoded auth parameters passes"""
         params = self._create_authorization_url_parameters()
         response = self.csrf_client.post('/oauth/', params)
         self.assertEqual(response.status_code, 200)
 
+    @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
+    @unittest.skipUnless(oauth, 'oauth2 not installed')
     def test_get_form_with_url_parameters(self):
         """Ensure GETing with auth in url parameters passes"""
         params = self._create_authorization_url_parameters()
         response = self.csrf_client.get('/oauth/', params)
         self.assertEqual(response.status_code, 200)
 
+    @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
+    @unittest.skipUnless(oauth, 'oauth2 not installed')
     def test_post_hmac_sha1_signature_passes(self):
         """Ensure POSTing using HMAC_SHA1 signature method passes"""
         params = {
