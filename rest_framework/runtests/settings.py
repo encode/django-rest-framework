@@ -98,9 +98,17 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'rest_framework.tests',
-    'oauth_provider',
-
 )
+
+# OAuth is optional and won't work if there is no oauth_provider & oauth2
+try:
+    import oauth_provider
+    import oauth2
+except ImportError:
+    pass
+else:
+    INSTALLED_APPS += ('oauth_provider',)
+
 
 STATIC_URL = '/static/'
 
