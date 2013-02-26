@@ -106,6 +106,7 @@ The following people have helped make REST framework great.
 * Andreas Pelme - [pelme]
 * Ryan Detzel - [ryanrdetzel]
 * Omer Katz - [thedrow]
+* Wiliam Souza - [waa]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -246,3 +247,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [pelme]: https://github.com/pelme
 [ryanrdetzel]: https://github.com/ryanrdetzel
 [thedrow]: https://github.com/thedrow
+[waa]: https://github.com/wiliamsouza
