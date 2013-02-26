@@ -365,7 +365,7 @@ class ValidationTests(TestCase):
         """
         try:
             serializer = BrokenModelSerializer()
-        except AttributeError as e:
+        except AssertionError as e:
             self.assertEquals(e.args[0], "Serializer class 'BrokenModelSerializer' is missing 'model' Meta option")
         except:
             self.fail('Wrong exception type thrown.')
