@@ -184,7 +184,7 @@ If you're using an AJAX style API with SessionAuthentication, you'll need to mak
 
 ## OAuthAuthentication
 
-This authentication uses [OAuth 1.0](http://tools.ietf.org/html/rfc5849) authentication scheme. It depends on optional `django-oauth-plus` and `oauth2` packages. In order to make it work you must istall these packages and add `oauth_provider` (from `django-oauth-plus`) to your `INSTALLED_APPS`:
+This authentication uses [OAuth 1.0][rfc5849] authentication scheme. It depends on optional `django-oauth-plus` and `oauth2` packages. In order to make it work you must istall these packages and add `oauth_provider` (from `django-oauth-plus`) to your `INSTALLED_APPS`:
 
     INSTALLED_APPS = (
         #(...)
@@ -249,3 +249,4 @@ HTTP digest authentication is a widely implemented scheme that was intended to r
 [mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
 [juanriaza]: https://github.com/juanriaza
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
+[rfc5849] : http://tools.ietf.org/html/rfc5849
