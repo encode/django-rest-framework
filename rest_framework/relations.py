@@ -436,6 +436,11 @@ class HyperlinkedIdentityField(Field):
         view_name = self.view_name or self.parent.opts.view_name
         kwargs = {self.pk_url_kwarg: obj.pk}
 
+        #get any extra kwargs from the view url and make sure we pass them through to reverse
+        visit = self.context.get('view', None)
+        if visit:
+            kwargs.update(visit.kwargs)
+
         if request is None:
             warnings.warn("Using `HyperlinkedIdentityField` without including the "
                           "request in the serializer context is due to be deprecated. "

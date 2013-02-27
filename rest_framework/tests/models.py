@@ -123,6 +123,9 @@ class BlankFieldModel(RESTFrameworkModel):
 class OptionalRelationModel(RESTFrameworkModel):
     other = models.ForeignKey('OptionalRelationModel', blank=True, null=True)
 
+# Model to test multiple kwargs in url
+class ExtraKwargModel(RESTFrameworkModel):
+    pass
 
 # Model for RegexField
 class Book(RESTFrameworkModel):
