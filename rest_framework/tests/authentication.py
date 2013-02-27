@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import Client, TestCase
+from django.utils import unittest
 import time
 from rest_framework import HTTP_HEADER_ENCODING, status
 from rest_framework import permissions
@@ -13,7 +14,7 @@ from rest_framework.compat import oauth
 from rest_framework.compat import oauth_provider
 import json
 import base64
-import unittest
+
 
 class MockView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
