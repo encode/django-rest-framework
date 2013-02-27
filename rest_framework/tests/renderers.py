@@ -34,7 +34,7 @@ class BasicRendererTests(TestCase):
     def test_expected_results(self):
         for value, renderer_cls, expected in expected_results:
             output = renderer_cls().render(value)
-            self.assertEquals(output, expected)
+            self.assertEqual(output, expected)
 
 
 class RendererA(BaseRenderer):
@@ -134,39 +134,39 @@ class RendererEndToEndTests(TestCase):
     def test_default_renderer_serializes_content(self):
         """If the Accept header is not set the default renderer should serialize the response."""
         resp = self.client.get('/')
-        self.assertEquals(resp['Content-Type'], RendererA.media_type)
-        self.assertEquals(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_head_method_serializes_no_content(self):
         """No response must be included in HEAD requests."""
         resp = self.client.head('/')
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
-        self.assertEquals(resp['Content-Type'], RendererA.media_type)
-        self.assertEquals(resp.content, six.b(''))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp.content, six.b(''))
 
     def test_default_renderer_serializes_content_on_accept_any(self):
         """If the Accept header is set to */* the default renderer should serialize the response."""
         resp = self.client.get('/', HTTP_ACCEPT='*/*')
-        self.assertEquals(resp['Content-Type'], RendererA.media_type)
-        self.assertEquals(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_specified_renderer_serializes_content_default_case(self):
         """If the Accept header is set the specified renderer should serialize the response.
         (In this case we check that works for the default renderer)"""
         resp = self.client.get('/', HTTP_ACCEPT=RendererA.media_type)
-        self.assertEquals(resp['Content-Type'], RendererA.media_type)
-        self.assertEquals(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_specified_renderer_serializes_content_non_default_case(self):
         """If the Accept header is set the specified renderer should serialize the response.
         (In this case we check that works for a non-default renderer)"""
         resp = self.client.get('/', HTTP_ACCEPT=RendererB.media_type)
-        self.assertEquals(resp['Content-Type'], RendererB.media_type)
-        self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_specified_renderer_serializes_content_on_accept_query(self):
         """The '_accept' query string should behave in the same way as the Accept header."""
@@ -175,14 +175,14 @@ class RendererEndToEndTests(TestCase):
             RendererB.media_type
         )
         resp = self.client.get('/' + param)
-        self.assertEquals(resp['Content-Type'], RendererB.media_type)
-        self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_unsatisfiable_accept_header_on_request_returns_406_status(self):
         """If the Accept header is unsatisfiable we should return a 406 Not Acceptable response."""
         resp = self.client.get('/', HTTP_ACCEPT='foo/bar')
-        self.assertEquals(resp.status_code, status.HTTP_406_NOT_ACCEPTABLE)
+        self.assertEqual(resp.status_code, status.HTTP_406_NOT_ACCEPTABLE)
 
     def test_specified_renderer_serializes_content_on_format_query(self):
         """If a 'format' query is specified, the renderer with the matching
@@ -192,17 +192,17 @@ class RendererEndToEndTests(TestCase):
             RendererB.format
         )
         resp = self.client.get('/' + param)
-        self.assertEquals(resp['Content-Type'], RendererB.media_type)
-        self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_specified_renderer_serializes_content_on_format_kwargs(self):
         """If a 'format' keyword arg is specified, the renderer with the matching
         format attribute should serialize the response."""
         resp = self.client.get('/something.formatb')
-        self.assertEquals(resp['Content-Type'], RendererB.media_type)
-        self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_specified_renderer_is_used_on_format_query_with_matching_accept(self):
         """If both a 'format' query and a matching Accept header specified,
@@ -213,9 +213,9 @@ class RendererEndToEndTests(TestCase):
         )
         resp = self.client.get('/' + param,
                                HTTP_ACCEPT=RendererB.media_type)
-        self.assertEquals(resp['Content-Type'], RendererB.media_type)
-        self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
@@ -243,7 +243,7 @@ class JSONRendererTests(TestCase):
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
         # Fix failing test case which depends on version of JSON library.
-        self.assertEquals(content, _flat_repr)
+        self.assertEqual(content, _flat_repr)
 
     def test_with_content_type_args(self):
         """
@@ -252,7 +252,7 @@ class JSONRendererTests(TestCase):
         obj = {'foo': ['bar', 'baz']}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json; indent=2')
-        self.assertEquals(strip_trailing_whitespace(content), _indented_repr)
+        self.assertEqual(strip_trailing_whitespace(content), _indented_repr)
 
 
 class JSONPRendererTests(TestCase):
@@ -268,9 +268,9 @@ class JSONPRendererTests(TestCase):
         """
         resp = self.client.get('/jsonp/jsonrenderer',
                                HTTP_ACCEPT='application/javascript')
-        self.assertEquals(resp.status_code, status.HTTP_200_OK)
-        self.assertEquals(resp['Content-Type'], 'application/javascript')
-        self.assertEquals(resp.content,
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp['Content-Type'], 'application/javascript')
+        self.assertEqual(resp.content,
             ('callback(%s);' % _flat_repr).encode('ascii'))
 
     def test_without_callback_without_json_renderer(self):
@@ -279,9 +279,9 @@ class JSONPRendererTests(TestCase):
         """
         resp = self.client.get('/jsonp/nojsonrenderer',
                                HTTP_ACCEPT='application/javascript')
-        self.assertEquals(resp.status_code, status.HTTP_200_OK)
-        self.assertEquals(resp['Content-Type'], 'application/javascript')
-        self.assertEquals(resp.content,
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp['Content-Type'], 'application/javascript')
+        self.assertEqual(resp.content,
             ('callback(%s);' % _flat_repr).encode('ascii'))
 
     def test_with_callback(self):
@@ -291,9 +291,9 @@ class JSONPRendererTests(TestCase):
         callback_func = 'myjsonpcallback'
         resp = self.client.get('/jsonp/nojsonrenderer?callback=' + callback_func,
                                HTTP_ACCEPT='application/javascript')
-        self.assertEquals(resp.status_code, status.HTTP_200_OK)
-        self.assertEquals(resp['Content-Type'], 'application/javascript')
-        self.assertEquals(resp.content,
+        self.assertEqual(resp.status_code, status.HTTP_200_OK)
+        self.assertEqual(resp['Content-Type'], 'application/javascript')
+        self.assertEqual(resp.content,
             ('%s(%s);' % (callback_func, _flat_repr)).encode('ascii'))
 
 
@@ -312,7 +312,7 @@ if yaml:
             obj = {'foo': ['bar', 'baz']}
             renderer = YAMLRenderer()
             content = renderer.render(obj, 'application/yaml')
-            self.assertEquals(content, _yaml_repr)
+            self.assertEqual(content, _yaml_repr)
 
         def test_render_and_parse(self):
             """
@@ -326,7 +326,7 @@ if yaml:
 
             content = renderer.render(obj, 'application/yaml')
             data = parser.parse(StringIO(content))
-            self.assertEquals(obj, data)
+            self.assertEqual(obj, data)
 
 
 class XMLRendererTestCase(TestCase):

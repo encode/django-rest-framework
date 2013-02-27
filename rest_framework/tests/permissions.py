@@ -60,38 +60,38 @@ class ModelPermissionsIntegrationTests(TestCase):
                                content_type='application/json',
                                HTTP_AUTHORIZATION=self.permitted_credentials)
         response = root_view(request, pk=1)
-        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_has_put_permissions(self):
         request = factory.put('/1', json.dumps({'text': 'foobar'}),
                               content_type='application/json',
                               HTTP_AUTHORIZATION=self.permitted_credentials)
         response = instance_view(request, pk='1')
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_has_delete_permissions(self):
         request = factory.delete('/1', HTTP_AUTHORIZATION=self.permitted_credentials)
         response = instance_view(request, pk=1)
-        self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_does_not_have_create_permissions(self):
         request = factory.post('/', json.dumps({'text': 'foobar'}),
                                content_type='application/json',
                                HTTP_AUTHORIZATION=self.disallowed_credentials)
         response = root_view(request, pk=1)
-        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_does_not_have_put_permissions(self):
         request = factory.put('/1', json.dumps({'text': 'foobar'}),
                               content_type='application/json',
                               HTTP_AUTHORIZATION=self.disallowed_credentials)
         response = instance_view(request, pk='1')
-        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_does_not_have_delete_permissions(self):
         request = factory.delete('/1', HTTP_AUTHORIZATION=self.disallowed_credentials)
         response = instance_view(request, pk=1)
-        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_has_put_as_create_permissions(self):
         # User only has update permissions - should be able to update an entity.
@@ -99,14 +99,14 @@ class ModelPermissionsIntegrationTests(TestCase):
                               content_type='application/json',
                               HTTP_AUTHORIZATION=self.updateonly_credentials)
         response = instance_view(request, pk='1')
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # But if PUTing to a new entity, permission should be denied.
         request = factory.put('/2', json.dumps({'text': 'foobar'}),
                               content_type='application/json',
                               HTTP_AUTHORIZATION=self.updateonly_credentials)
         response = instance_view(request, pk='2')
-        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
 class OwnerModel(models.Model):
@@ -145,9 +145,9 @@ class ObjectPermissionsIntegrationTests(TestCase):
     def test_owner_has_delete_permissions(self):
         request = factory.delete('/1', HTTP_AUTHORIZATION=self.owner_credentials)
         response = owner_instance_view(request, pk='1')
-        self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_non_owner_does_not_have_delete_permissions(self):
         request = factory.delete('/1', HTTP_AUTHORIZATION=self.not_owner_credentials)
         response = owner_instance_view(request, pk='1')
-        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)

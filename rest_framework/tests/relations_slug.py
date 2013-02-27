@@ -43,7 +43,7 @@ class SlugForeignKeyTests(TestCase):
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
             {'id': 3, 'name': 'source-3', 'target': 'target-1'}
         ]
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)
 
     def test_reverse_foreign_key_retrieve(self):
         queryset = ForeignKeyTarget.objects.all()
@@ -52,14 +52,14 @@ class SlugForeignKeyTests(TestCase):
             {'id': 1, 'name': 'target-1', 'sources': ['source-1', 'source-2', 'source-3']},
             {'id': 2, 'name': 'target-2', 'sources': []},
         ]
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)
 
     def test_foreign_key_update(self):
         data = {'id': 1, 'name': 'source-1', 'target': 'target-2'}
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEquals(serializer.data, data)
+        self.assertEqual(serializer.data, data)
         serializer.save()
 
         # Ensure source 1 is updated, and everything else is as expected
@@ -70,14 +70,14 @@ class SlugForeignKeyTests(TestCase):
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
             {'id': 3, 'name': 'source-3', 'target': 'target-1'}
         ]
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)
 
     def test_foreign_key_update_incorrect_type(self):
         data = {'id': 1, 'name': 'source-1', 'target': 123}
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'target': ['Object with name=123 does not exist.']})
+        self.assertEqual(serializer.errors, {'target': ['Object with name=123 does not exist.']})
 
     def test_reverse_foreign_key_update(self):
         data = {'id': 2, 'name': 'target-2', 'sources': ['source-1', 'source-3']}
@@ -92,10 +92,10 @@ class SlugForeignKeyTests(TestCase):
             {'id': 1, 'name': 'target-1', 'sources': ['source-1', 'source-2', 'source-3']},
             {'id': 2, 'name': 'target-2', 'sources': []},
         ]
-        self.assertEquals(new_serializer.data, expected)
+        self.assertEqual(new_serializer.data, expected)
 
         serializer.save()
-        self.assertEquals(serializer.data, data)
+        self.assertEqual(serializer.data, data)
 
         # Ensure target 2 is update, and everything else is as expected
         queryset = ForeignKeyTarget.objects.all()
@@ -104,7 +104,7 @@ class SlugForeignKeyTests(TestCase):
             {'id': 1, 'name': 'target-1', 'sources': ['source-2']},
             {'id': 2, 'name': 'target-2', 'sources': ['source-1', 'source-3']},
         ]
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)
 
     def test_foreign_key_create(self):
         data = {'id': 4, 'name': 'source-4', 'target': 'target-2'}
@@ -112,7 +112,7 @@ class SlugForeignKeyTests(TestCase):
         serializer.is_valid()
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
-        self.assertEquals(serializer.data, data)
+        self.assertEqual(serializer.data, data)
         self.assertEqual(obj.name, 'source-4')
 
         # Ensure source 4 is added, and everything else is as expected
@@ -124,14 +124,14 @@ class SlugForeignKeyTests(TestCase):
             {'id': 3, 'name': 'source-3', 'target': 'target-1'},
             {'id': 4, 'name': 'source-4', 'target': 'target-2'},
         ]
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)
 
     def test_reverse_foreign_key_create(self):
         data = {'id': 3, 'name': 'target-3', 'sources': ['source-1', 'source-3']}
         serializer = ForeignKeyTargetSerializer(data=data)
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
-        self.assertEquals(serializer.data, data)
+        self.assertEqual(serializer.data, data)
         self.assertEqual(obj.name, 'target-3')
 
         # Ensure target 3 is added, and everything else is as expected
@@ -142,14 +142,14 @@ class SlugForeignKeyTests(TestCase):
             {'id': 2, 'name': 'target-2', 'sources': []},
             {'id': 3, 'name': 'target-3', 'sources': ['source-1', 'source-3']},
         ]
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)
 
     def test_foreign_key_update_with_invalid_null(self):
         data = {'id': 1, 'name': 'source-1', 'target': None}
         instance = ForeignKeySource.objects.get(pk=1)
         serializer = ForeignKeySourceSerializer(instance, data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEquals(serializer.errors, {'target': ['This field is required.']})
+        self.assertEqual(serializer.errors, {'target': ['This field is required.']})
 
 
 class SlugNullableForeignKeyTests(TestCase):
@@ -170,14 +170,14 @@ class SlugNullableForeignKeyTests(TestCase):
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
             {'id': 3, 'name': 'source-3', 'target': None},
         ]
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)
 
     def test_foreign_key_create_with_valid_null(self):
         data = {'id': 4, 'name': 'source-4', 'target': None}
         serializer = NullableForeignKeySourceSerializer(data=data)
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
-        self.assertEquals(serializer.data, data)
+        self.assertEqual(serializer.data, data)
         self.assertEqual(obj.name, 'source-4')
 
         # Ensure source 4 is created, and everything else is as expected
@@ -189,7 +189,7 @@ class SlugNullableForeignKeyTests(TestCase):
             {'id': 3, 'name': 'source-3', 'target': None},
             {'id': 4, 'name': 'source-4', 'target': None}
         ]
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)
 
     def test_foreign_key_create_with_valid_emptystring(self):
         """
@@ -201,7 +201,7 @@ class SlugNullableForeignKeyTests(TestCase):
         serializer = NullableForeignKeySourceSerializer(data=data)
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
-        self.assertEquals(serializer.data, expected_data)
+        self.assertEqual(serializer.data, expected_data)
         self.assertEqual(obj.name, 'source-4')
 
         # Ensure source 4 is created, and everything else is as expected
@@ -213,14 +213,14 @@ class SlugNullableForeignKeyTests(TestCase):
             {'id': 3, 'name': 'source-3', 'target': None},
             {'id': 4, 'name': 'source-4', 'target': None}
         ]
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)
 
     def test_foreign_key_update_with_valid_null(self):
         data = {'id': 1, 'name': 'source-1', 'target': None}
         instance = NullableForeignKeySource.objects.get(pk=1)
         serializer = NullableForeignKeySourceSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEquals(serializer.data, data)
+        self.assertEqual(serializer.data, data)
         serializer.save()
 
         # Ensure source 1 is updated, and everything else is as expected
@@ -231,7 +231,7 @@ class SlugNullableForeignKeyTests(TestCase):
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
             {'id': 3, 'name': 'source-3', 'target': None}
         ]
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)
 
     def test_foreign_key_update_with_valid_emptystring(self):
         """
@@ -243,7 +243,7 @@ class SlugNullableForeignKeyTests(TestCase):
         instance = NullableForeignKeySource.objects.get(pk=1)
         serializer = NullableForeignKeySourceSerializer(instance, data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertEquals(serializer.data, expected_data)
+        self.assertEqual(serializer.data, expected_data)
         serializer.save()
 
         # Ensure source 1 is updated, and everything else is as expected
@@ -254,4 +254,4 @@ class SlugNullableForeignKeyTests(TestCase):
             {'id': 2, 'name': 'source-2', 'target': 'target-1'},
             {'id': 3, 'name': 'source-3', 'target': None}
         ]
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)

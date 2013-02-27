@@ -43,21 +43,21 @@ class BasicFieldTests(TestCase):
         auto_now and auto_now_add fields should be read_only by default.
         """
         serializer = TimestampedModelSerializer()
-        self.assertEquals(serializer.fields['added'].read_only, True)
+        self.assertEqual(serializer.fields['added'].read_only, True)
 
     def test_auto_pk_fields_read_only(self):
         """
         AutoField fields should be read_only by default.
         """
         serializer = TimestampedModelSerializer()
-        self.assertEquals(serializer.fields['id'].read_only, True)
+        self.assertEqual(serializer.fields['id'].read_only, True)
 
     def test_non_auto_pk_fields_not_read_only(self):
         """
         PK fields other than AutoField fields should not be read_only by default.
         """
         serializer = CharPrimaryKeyModelSerializer()
-        self.assertEquals(serializer.fields['id'].read_only, False)
+        self.assertEqual(serializer.fields['id'].read_only, False)
 
     def test_TimeField_from_native(self):
         f = serializers.TimeField()

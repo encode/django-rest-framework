@@ -37,7 +37,7 @@ class TestPreSaveValidationExclusions(TestCase):
                               content_type='application/json')
         view = UpdateValidationModel().as_view()
         response = view(request, pk=obj.pk).render()
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 # Regression for #653
@@ -62,4 +62,4 @@ class TestPreSaveValidationExclusions(TestCase):
         # We've set `required=False` on the serializer, but the model
         # does not have `blank=True`, so this serializer should not validate.
         serializer = ShouldValidateModelSerializer(data={'renamed': ''})
-        self.assertEquals(serializer.is_valid(), False)
+        self.assertEqual(serializer.is_valid(), False)

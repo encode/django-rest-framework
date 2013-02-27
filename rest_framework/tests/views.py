@@ -52,8 +52,8 @@ class ClassBasedViewIntegrationTests(TestCase):
         expected = {
             'detail': 'JSON parse error - No JSON object could be decoded'
         }
-        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEquals(sanitise_json_error(response.data), expected)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(sanitise_json_error(response.data), expected)
 
     def test_400_parse_error_tunneled_content(self):
         content = 'f00bar'
@@ -67,8 +67,8 @@ class ClassBasedViewIntegrationTests(TestCase):
         expected = {
             'detail': 'JSON parse error - No JSON object could be decoded'
         }
-        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEquals(sanitise_json_error(response.data), expected)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(sanitise_json_error(response.data), expected)
 
 
 class FunctionBasedViewIntegrationTests(TestCase):
@@ -81,8 +81,8 @@ class FunctionBasedViewIntegrationTests(TestCase):
         expected = {
             'detail': 'JSON parse error - No JSON object could be decoded'
         }
-        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEquals(sanitise_json_error(response.data), expected)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(sanitise_json_error(response.data), expected)
 
     def test_400_parse_error_tunneled_content(self):
         content = 'f00bar'
@@ -96,5 +96,5 @@ class FunctionBasedViewIntegrationTests(TestCase):
         expected = {
             'detail': 'JSON parse error - No JSON object could be decoded'
         }
-        self.assertEquals(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEquals(sanitise_json_error(response.data), expected)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(sanitise_json_error(response.data), expected)
