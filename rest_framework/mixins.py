@@ -37,7 +37,7 @@ def _get_validation_exclusions(obj, pk=None, slug_field=None):
 class CreateModelMixin(object):
     """
     Create a model instance.
-    Should be mixed in with any `BaseView`.
+    Should be mixed in with any `GenericAPIView`.
     """
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -94,7 +94,7 @@ class ListModelMixin(object):
 class RetrieveModelMixin(object):
     """
     Retrieve a model instance.
-    Should be mixed in with `SingleObjectBaseView`.
+    Should be mixed in with `SingleObjectAPIView`.
     """
     def retrieve(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -105,7 +105,7 @@ class RetrieveModelMixin(object):
 class UpdateModelMixin(object):
     """
     Update a model instance.
-    Should be mixed in with `SingleObjectBaseView`.
+    Should be mixed in with `SingleObjectAPIView`.
     """
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
@@ -158,7 +158,7 @@ class UpdateModelMixin(object):
 class DestroyModelMixin(object):
     """
     Destroy a model instance.
-    Should be mixed in with `SingleObjectBaseView`.
+    Should be mixed in with `SingleObjectAPIView`.
     """
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
