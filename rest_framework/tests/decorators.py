@@ -139,7 +139,7 @@ class DecoratorTestCase(TestCase):
 
         request = self.factory.get('/')
         response = view(request)
-        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_throttle_classes(self):
         class OncePerDayUserThrottle(UserRateThrottle):
@@ -152,7 +152,7 @@ class DecoratorTestCase(TestCase):
 
         request = self.factory.get('/')
         response = view(request)
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         response = view(request)
-        self.assertEquals(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)

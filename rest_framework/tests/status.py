@@ -9,5 +9,5 @@ class TestStatus(TestCase):
 
     def test_status(self):
         """Ensure the status module is present and correct."""
-        self.assertEquals(200, status.HTTP_200_OK)
-        self.assertEquals(404, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(200, status.HTTP_200_OK)
+        self.assertEqual(404, status.HTTP_404_NOT_FOUND)

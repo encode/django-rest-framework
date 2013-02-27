@@ -103,7 +103,7 @@ class ThrottlingTests(TestCase):
             self.set_throttle_timer(view, timer)
             response = view.as_view()(request)
             if expect is not None:
-                self.assertEquals(response['X-Throttle-Wait-Seconds'], expect)
+                self.assertEqual(response['X-Throttle-Wait-Seconds'], expect)
             else:
                 self.assertFalse('X-Throttle-Wait-Seconds' in response)
 
