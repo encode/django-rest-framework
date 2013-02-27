@@ -29,8 +29,8 @@ Example:
     
     urlpatterns = patterns('blog.views',
         url(r'^/$', 'api_root'),
-        url(r'^comment/$', 'comment_list'),
-        url(r'^comment/(?P<pk>[0-9]+)/$', 'comment_detail')
+        url(r'^comments/$', 'comment_list'),
+        url(r'^comments/(?P<pk>[0-9]+)/$', 'comment_detail')
     )
     
     urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'html'])
