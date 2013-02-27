@@ -58,7 +58,7 @@ class ReverseForeignKeyTests(TestCase):
             {'id': 2, 'name': 'source-2', 'target': {'id': 1, 'name': 'target-1'}},
             {'id': 3, 'name': 'source-3', 'target': {'id': 1, 'name': 'target-1'}},
         ]
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)
 
     def test_reverse_foreign_key_retrieve(self):
         queryset = ForeignKeyTarget.objects.all()
@@ -72,7 +72,7 @@ class ReverseForeignKeyTests(TestCase):
             {'id': 2, 'name': 'target-2', 'sources': [
             ]}
         ]
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)
 
 
 class NestedNullableForeignKeyTests(TestCase):
@@ -93,7 +93,7 @@ class NestedNullableForeignKeyTests(TestCase):
             {'id': 2, 'name': 'source-2', 'target': {'id': 1, 'name': 'target-1'}},
             {'id': 3, 'name': 'source-3', 'target': None},
         ]
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)
 
 
 class NestedNullableOneToOneTests(TestCase):
@@ -112,4 +112,4 @@ class NestedNullableOneToOneTests(TestCase):
             {'id': 1, 'name': 'target-1', 'nullable_source': {'id': 1, 'name': 'source-1', 'target': 1}},
             {'id': 2, 'name': 'target-2', 'nullable_source': None},
         ]
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)

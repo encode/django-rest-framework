@@ -119,8 +119,8 @@ class TestBasicHyperlinkedView(TestCase):
         """
         request = factory.get('/basic/')
         response = self.list_view(request).render()
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
-        self.assertEquals(response.data, self.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, self.data)
 
     def test_get_detail_view(self):
         """
@@ -128,8 +128,8 @@ class TestBasicHyperlinkedView(TestCase):
         """
         request = factory.get('/basic/1')
         response = self.detail_view(request, pk=1).render()
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
-        self.assertEquals(response.data, self.data[0])
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, self.data[0])
 
 
 class TestManyToManyHyperlinkedView(TestCase):
@@ -167,8 +167,8 @@ class TestManyToManyHyperlinkedView(TestCase):
         """
         request = factory.get('/manytomany/')
         response = self.list_view(request)
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
-        self.assertEquals(response.data, self.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, self.data)
 
     def test_get_detail_view(self):
         """
@@ -176,8 +176,8 @@ class TestManyToManyHyperlinkedView(TestCase):
         """
         request = factory.get('/manytomany/1/')
         response = self.detail_view(request, pk=1)
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
-        self.assertEquals(response.data, self.data[0])
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, self.data[0])
 
 
 class TestCreateWithForeignKeys(TestCase):
@@ -249,8 +249,8 @@ class TestOptionalRelationHyperlinkedView(TestCase):
         """
         request = factory.get('/optionalrelationmodel-detail/1')
         response = self.detail_view(request, pk=1)
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
-        self.assertEquals(response.data, self.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, self.data)
 
     def test_put_detail_view(self):
         """
