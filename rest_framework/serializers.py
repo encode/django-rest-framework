@@ -333,7 +333,7 @@ class BaseSerializer(Field):
             many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict))
 
         if many:
-            return [self.to_native(item) for item in obj]
+            return [self.to_native(item) for item in many]
         return self.to_native(obj)
 
     @property
