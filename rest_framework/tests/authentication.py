@@ -3,24 +3,38 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import Client, TestCase
 from rest_framework import HTTP_HEADER_ENCODING
+from rest_framework import exceptions
 from rest_framework import permissions
 from rest_framework import status
 from rest_framework.authtoken.models import Token
-from rest_framework.authentication import TokenAuthentication, BasicAuthentication, SessionAuthentication
+from rest_framework.authentication import (
+    BaseAuthentication,
+    TokenAuthentication,
+    BasicAuthentication,
+    SessionAuthentication
+)
 from rest_framework.compat import patterns
+from rest_framework.tests.utils import RequestFactory
 from rest_framework.views import APIView
 import json
 import base64
 
 
+factory = RequestFactory()
+
+
 class MockView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request):
+        return HttpResponse({'a': 1, 'b': 2, 'c': 3})
 
     def post(self, request):
         return HttpResponse({'a': 1, 'b': 2, 'c': 3})
 
     def put(self, request):
         return HttpResponse({'a': 1, 'b': 2, 'c': 3})
+
 
 urlpatterns = patterns('',
     (r'^session/$', MockView.as_view(authentication_classes=[SessionAuthentication])),
@@ -187,3 +201,24 @@ class TokenAuthTests(TestCase):
                                {'username': self.username, 'password': self.password})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(json.loads(response.content.decode('ascii'))['token'], self.key)
+
+
+class IncorrectCredentialsTests(TestCase):
+    def test_incorrect_credentials(self):
+        """
+        If a request contains bad authentication credentials, then
+        authentication should run and error, even if no permissions
+        are set on the view.
+        """
+        class IncorrectCredentialsAuth(BaseAuthentication):
+            def authenticate(self, request):
+                raise exceptions.AuthenticationFailed('Bad credentials')
+
+        request = factory.get('/')
+        view = MockView.as_view(
+            authentication_classes=(IncorrectCredentialsAuth,),
+            permission_classes=()
+        )
+        response = view(request)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data, {'detail': 'Bad credentials'})
