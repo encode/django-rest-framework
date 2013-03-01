@@ -107,7 +107,7 @@ class BasicTests(TestCase):
         self.expected = {
             'email': 'tom@example.com',
             'content': 'Happy new year!',
-            'created': datetime.datetime(2012, 1, 1),
+            'created': '2012-01-01T00:00:00',
             'sub_comment': 'And Merry Christmas!'
         }
         self.person_data = {'name': 'dwight', 'age': 35}
