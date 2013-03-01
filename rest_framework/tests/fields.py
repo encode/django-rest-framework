@@ -116,6 +116,15 @@ class DateFieldTest(TestCase):
 
         self.assertEqual(result, None)
 
+    def test_from_native_none(self):
+        """
+        Make sure from_native() returns None on None param.
+        """
+        f = serializers.DateField()
+        result = f.from_native(None)
+
+        self.assertEqual(result, None)
+
     def test_from_native_invalid_date(self):
         """
         Make sure from_native() raises a ValidationError on passing an invalid date.
@@ -222,6 +231,15 @@ class DateTimeFieldTest(TestCase):
         """
         f = serializers.DateTimeField()
         result = f.from_native('')
+
+        self.assertEqual(result, None)
+
+    def test_from_native_none(self):
+        """
+        Make sure from_native() returns None on None param.
+        """
+        f = serializers.DateTimeField()
+        result = f.from_native(None)
 
         self.assertEqual(result, None)
 
@@ -345,6 +363,15 @@ class TimeFieldTest(TestCase):
         """
         f = serializers.TimeField()
         result = f.from_native('')
+
+        self.assertEqual(result, None)
+
+    def test_from_native_none(self):
+        """
+        Make sure from_native() returns None on None param.
+        """
+        f = serializers.TimeField()
+        result = f.from_native(None)
 
         self.assertEqual(result, None)
 
