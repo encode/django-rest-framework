@@ -453,10 +453,12 @@ class DateField(WritableField):
         'invalid': _("Date has wrong format. Use one of these formats instead: %s"),
     }
     empty = None
+    input_formats = api_settings.DATE_INPUT_FORMATS
+    output_format = api_settings.DATE_OUTPUT_FORMAT
 
     def __init__(self, input_formats=None, output_format=None, *args, **kwargs):
-        self.input_formats = input_formats or api_settings.DATE_INPUT_FORMATS
-        self.output_format = output_format or api_settings.DATE_OUTPUT_FORMAT
+        self.input_formats = input_formats if input_formats is not None else self.input_formats
+        self.output_format = output_format if output_format is not None else self.output_format
         super(DateField, self).__init__(*args, **kwargs)
 
     def from_native(self, value):
@@ -509,10 +511,12 @@ class DateTimeField(WritableField):
         'invalid': _("Datetime has wrong format. Use one of these formats instead: %s"),
     }
     empty = None
+    input_formats = api_settings.DATETIME_INPUT_FORMATS
+    output_format = api_settings.DATETIME_OUTPUT_FORMAT
 
     def __init__(self, input_formats=None, output_format=None, *args, **kwargs):
-        self.input_formats = input_formats or api_settings.DATETIME_INPUT_FORMATS
-        self.output_format = output_format or api_settings.DATETIME_OUTPUT_FORMAT
+        self.input_formats = input_formats if input_formats is not None else self.input_formats
+        self.output_format = output_format if output_format is not None else self.output_format
         super(DateTimeField, self).__init__(*args, **kwargs)
 
     def from_native(self, value):
@@ -571,10 +575,12 @@ class TimeField(WritableField):
         'invalid': _("Time has wrong format. Use one of these formats instead: %s"),
     }
     empty = None
+    input_formats = api_settings.TIME_INPUT_FORMATS
+    output_format = api_settings.TIME_OUTPUT_FORMAT
 
     def __init__(self, input_formats=None, output_format=None, *args, **kwargs):
-        self.input_formats = input_formats or api_settings.TIME_INPUT_FORMATS
-        self.output_format = output_format or api_settings.TIME_OUTPUT_FORMAT
+        self.input_formats = input_formats if input_formats is not None else self.input_formats
+        self.output_format = output_format if output_format is not None else self.output_format
         super(TimeField, self).__init__(*args, **kwargs)
 
     def from_native(self, value):
