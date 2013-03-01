@@ -76,6 +76,27 @@ DEFAULTS = {
     'URL_FORMAT_OVERRIDE': 'format',
 
     'FORMAT_SUFFIX_KWARG': 'format',
+
+    # Input and output formats
+    'DATE_INPUT_FORMATS': (
+        '%Y-%m-%d',     # '1984-07-31'
+    ),
+    'DATE_OUTPUT_FORMAT': None,
+
+    'DATETIME_INPUT_FORMATS': (
+        '%Y-%m-%d',              # '1984-07-31'
+        '%Y-%m-%d %H:%M',        # '1984-07-31 04:31'
+        '%Y-%m-%d %H:%M:%S',     # '1984-07-31 04:31:59'
+        '%Y-%m-%d %H:%M:%S.%f',  # '1984-07-31 04:31:59.000200'
+    ),
+    'DATETIME_OUTPUT_FORMAT': None,
+
+    'TIME_INPUT_FORMATS': (
+        '%H:%M',        # '04:31'
+        '%H:%M:%S',     # '04:31:59'
+        '%H:%M:%S.%f',  # '04:31:59.000200'
+    ),
+    'TIME_OUTPUT_FORMAT': None,
 }
 
 
