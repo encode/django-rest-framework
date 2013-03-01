@@ -173,30 +173,26 @@ class DateTimeFieldTest(TestCase):
         Make sure from_native() accepts default iso input formats.
         """
         f = serializers.DateTimeField()
-        result_1 = f.from_native('1984-07-31')
-        result_2 = f.from_native('1984-07-31 04:31')
-        result_3 = f.from_native('1984-07-31 04:31:59')
-        result_4 = f.from_native('1984-07-31 04:31:59.000200')
+        result_1 = f.from_native('1984-07-31 04:31')
+        result_2 = f.from_native('1984-07-31 04:31:59')
+        result_3 = f.from_native('1984-07-31 04:31:59.000200')
 
-        self.assertEqual(datetime.datetime(1984, 7, 31), result_1)
-        self.assertEqual(datetime.datetime(1984, 7, 31, 4, 31), result_2)
-        self.assertEqual(datetime.datetime(1984, 7, 31, 4, 31, 59), result_3)
-        self.assertEqual(datetime.datetime(1984, 7, 31, 4, 31, 59, 200), result_4)
+        self.assertEqual(datetime.datetime(1984, 7, 31, 4, 31), result_1)
+        self.assertEqual(datetime.datetime(1984, 7, 31, 4, 31, 59), result_2)
+        self.assertEqual(datetime.datetime(1984, 7, 31, 4, 31, 59, 200), result_3)
 
     def test_from_native_datetime_datetime(self):
         """
         Make sure from_native() accepts a datetime.datetime instance.
         """
         f = serializers.DateTimeField()
-        result_1 = f.from_native(datetime.datetime(1984, 7, 31))
-        result_2 = f.from_native(datetime.datetime(1984, 7, 31, 4, 31))
-        result_3 = f.from_native(datetime.datetime(1984, 7, 31, 4, 31, 59))
-        result_4 = f.from_native(datetime.datetime(1984, 7, 31, 4, 31, 59, 200))
+        result_1 = f.from_native(datetime.datetime(1984, 7, 31, 4, 31))
+        result_2 = f.from_native(datetime.datetime(1984, 7, 31, 4, 31, 59))
+        result_3 = f.from_native(datetime.datetime(1984, 7, 31, 4, 31, 59, 200))
 
-        self.assertEqual(result_1, datetime.datetime(1984, 7, 31))
-        self.assertEqual(result_2, datetime.datetime(1984, 7, 31, 4, 31))
-        self.assertEqual(result_3, datetime.datetime(1984, 7, 31, 4, 31, 59))
-        self.assertEqual(result_4, datetime.datetime(1984, 7, 31, 4, 31, 59, 200))
+        self.assertEqual(result_1, datetime.datetime(1984, 7, 31, 4, 31))
+        self.assertEqual(result_2, datetime.datetime(1984, 7, 31, 4, 31, 59))
+        self.assertEqual(result_3, datetime.datetime(1984, 7, 31, 4, 31, 59, 200))
 
     def test_from_native_custom_format(self):
         """
@@ -239,8 +235,7 @@ class DateTimeFieldTest(TestCase):
             f.from_native('04:61:59')
         except validators.ValidationError as e:
             self.assertEqual(e.messages, ["Datetime has wrong format. Use one of these formats instead: "
-                                          "YYYY-MM-DD; YYYY-MM-DD HH:MM; YYYY-MM-DD HH:MM:SS; "
-                                          "YYYY-MM-DD HH:MM:SS.uuuuuu"])
+                                          "YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]"])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -254,8 +249,7 @@ class DateTimeFieldTest(TestCase):
             f.from_native('04 -- 31')
         except validators.ValidationError as e:
             self.assertEqual(e.messages, ["Datetime has wrong format. Use one of these formats instead: "
-                                          "YYYY-MM-DD; YYYY-MM-DD HH:MM; YYYY-MM-DD HH:MM:SS; "
-                                          "YYYY-MM-DD HH:MM:SS.uuuuuu"])
+                                          "YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]"])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -364,7 +358,7 @@ class TimeFieldTest(TestCase):
             f.from_native('04:61:59')
         except validators.ValidationError as e:
             self.assertEqual(e.messages, ["Time has wrong format. Use one of these formats instead: "
-                                          "HH:MM; HH:MM:SS; HH:MM:SS.uuuuuu"])
+                                          "HH:MM[:ss[.uuuuuu]]"])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -378,7 +372,7 @@ class TimeFieldTest(TestCase):
             f.from_native('04 -- 31')
         except validators.ValidationError as e:
             self.assertEqual(e.messages, ["Time has wrong format. Use one of these formats instead: "
-                                          "HH:MM; HH:MM:SS; HH:MM:SS.uuuuuu"])
+                                          "HH:MM[:ss[.uuuuuu]]"])
         else:
             self.fail("ValidationError was not properly raised")
 
