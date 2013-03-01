@@ -184,7 +184,7 @@ If you're using an AJAX style API with SessionAuthentication, you'll need to mak
 
 ## OAuth2Authentication
 
-This authentication uses [OAuth 2.0][rfc6749] authentication scheme. It depends on optional [`django-oauth2-provider`](https://github.com/caffeinehit/django-oauth2-provider). In order to make it work you must install this package and add `provider` and `provider.oauth2` to your `INSTALLED_APPS` :
+This authentication uses [OAuth 2.0][rfc6749] authentication scheme. It depends on optional [`django-oauth2-provider`][django-oauth2-provider]. In order to make it work you must install this package and add `provider` and `provider.oauth2` to your `INSTALLED_APPS` :
 
     INSTALLED_APPS = (
         #(...)
@@ -207,7 +207,7 @@ Finally, sync your database with those two new django apps.
     $ python manage.py syncdb
     $ python manage.py migrate 
 
-`OAuth2Authentication` class provides only token verification for requests. The *oauth 2 dance* is taken care by the [`django-oaut2-provider`](https://github.com/caffeinehit/django-oauth2-provider) dependency. Unfortunately, there isn't a lot of [documentation](https://django-oauth2-provider.readthedocs.org/en/latest/) currently on how to *dance* with this package on the client side. 
+`OAuth2Authentication` class provides only token verification for requests. The *oauth 2 dance* is taken care by the [`django-oaut2-provider`][django-oauth2-provider] dependency. Unfortunately, there isn't a lot of [documentation][django-oauth2-provider--doc] currently on how to *dance* with this package on the client side. 
 
 The Good news is, here is a minimal "How to start" because **OAuth 2** is dramatically simpler than **OAuth 1**, so no more headache with signature, cryptography on client side, and other complex things.
 
@@ -303,4 +303,6 @@ HTTP digest authentication is a widely implemented scheme that was intended to r
 [mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
 [juanriaza]: https://github.com/juanriaza
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
+[django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
+[django-oauth2-provider--doc]: https://django-oauth2-provider.readthedocs.org/en/latest/
 [rfc6749]: http://tools.ietf.org/html/rfc6749
