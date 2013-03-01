@@ -80,9 +80,13 @@ class OptionalRelationDetail(generics.RetrieveUpdateDestroyAPIView):
     model_serializer_class = serializers.HyperlinkedModelSerializer
 
 
+class ExtraKwargDetailSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ExtraKwargModel
+
 class ExtraKwargDetail(generics.RetrieveUpdateDestroyAPIView):
     model = ExtraKwargModel
-    model_serializer_class = serializers.HyperlinkedModelSerializer
+    serializer_class = ExtraKwargDetailSerializer
 
 urlpatterns = patterns('',
     url(r'^basic/$', BasicList.as_view(), name='basicmodel-list'),
@@ -275,7 +279,8 @@ class TestNestedRelationHyperlinkedView(TestCase):
         """
         Create 1 ExtraKwargModel instance.
         """
-        ExtraKwargModel().save()
+        self.basic = BasicModel.objects.create()
+        self.model = ExtraKwargModel.objects.create(basic=self.basic)
         self.objects = ExtraKwargModel.objects
         self.detail_view = ExtraKwargDetail.as_view()
 

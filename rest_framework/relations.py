@@ -320,6 +320,16 @@ class HyperlinkedRelatedField(RelatedField):
         view_name = self.view_name
         request = self.context.get('request', None)
         format = self.format or self.context.get('format', None)
+        pk = getattr(obj, 'pk', None)
+        if pk is None:
+            return
+        kwargs = {self.pk_url_kwarg: pk}
+        new_kwargs = None
+
+        visit = self.context.get('view', None)
+        if visit:
+            new_kwargs = kwargs.copy()
+            new_kwargs.update(visit.kwargs)
 
         if request is None:
             warnings.warn("Using `HyperlinkedRelatedField` without including the "
@@ -327,12 +337,13 @@ class HyperlinkedRelatedField(RelatedField):
                           "Add `context={'request': request}` when instantiating the serializer.",
                           PendingDeprecationWarning, stacklevel=4)
 
-        pk = getattr(obj, 'pk', None)
-        if pk is None:
-            return
-        kwargs = {self.pk_url_kwarg: pk}
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
+        except NoReverseMatch:
+            pass
+
+        try:
+            return reverse(view_name, kwargs=new_kwargs, request=request, format=format)
         except NoReverseMatch:
             pass
 
@@ -435,11 +446,12 @@ class HyperlinkedIdentityField(Field):
         format = self.context.get('format', None)
         view_name = self.view_name or self.parent.opts.view_name
         kwargs = {self.pk_url_kwarg: obj.pk}
+        new_kwargs = None
 
-        #get any extra kwargs from the view url and make sure we pass them through to reverse
         visit = self.context.get('view', None)
         if visit:
-            kwargs.update(visit.kwargs)
+            new_kwargs = kwargs.copy()
+            new_kwargs.update(visit.kwargs)
 
         if request is None:
             warnings.warn("Using `HyperlinkedIdentityField` without including the "
@@ -461,6 +473,11 @@ class HyperlinkedIdentityField(Field):
 
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
+        except NoReverseMatch:
+            pass
+
+        try:
+            return reverse(view_name, kwargs=new_kwargs, request=request, format=format)
         except NoReverseMatch:
             pass
 

@@ -125,7 +125,7 @@ class OptionalRelationModel(RESTFrameworkModel):
 
 # Model to test multiple kwargs in url
 class ExtraKwargModel(RESTFrameworkModel):
-    pass
+    basic = models.ForeignKey(BasicModel)
 
 # Model for RegexField
 class Book(RESTFrameworkModel):
