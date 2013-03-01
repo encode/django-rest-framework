@@ -176,37 +176,26 @@ Default: `'format'`
 
 ## DATE_INPUT_FORMATS
 
-Default:
-
-    (
-        '%Y-%m-%d',     # '1984-07-31'
-    )
+Default: `ISO8601`
 
 ## DATE_OUTPUT_FORMAT
 
+Default: `ISO8601`
+
 ## DATETIME_INPUT_FORMATS
 
-Default:
-
-    (
-        '%Y-%m-%d',              # '1984-07-31'
-        '%Y-%m-%d %H:%M',        # '1984-07-31 04:31'
-        '%Y-%m-%d %H:%M:%S',     # '1984-07-31 04:31:59'
-        '%Y-%m-%d %H:%M:%S.%f',  # '1984-07-31 04:31:59.000200'
-    )
+Default: `ISO8601`
 
 ## DATETIME_OUTPUT_FORMAT
 
+Default: `ISO8601`
+
 ## TIME_INPUT_FORMATS
 
-Default:
-
-    (
-        '%H:%M',        # '04:31'
-        '%H:%M:%S',     # '04:31:59'
-        '%H:%M:%S.%f',  # '04:31:59.000200'
-    )
+Default: `ISO8601`
 
 ## TIME_OUTPUT_FORMAT
+
+Default: `ISO8601`
 
 [cite]: http://www.python.org/dev/peps/pep-0020/
