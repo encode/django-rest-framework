@@ -182,6 +182,74 @@ Unauthenticated responses that are denied permission will result in an `HTTP 403
 
 If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `PATCH`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
 
+## OAuth2Authentication
+
+This authentication uses [OAuth 2.0][rfc6749] authentication scheme. It depends on optional [`django-oauth2-provider`](https://github.com/caffeinehit/django-oauth2-provider). In order to make it work you must install this package and add `provider` and `provider.oauth2` to your `INSTALLED_APPS` :
+
+    INSTALLED_APPS = (
+        #(...)
+        'provider',
+        'provider.oauth2',
+    )
+
+And include the urls needed in your root `urls.py` file to be able to begin the *oauth 2 dance* :
+
+    url(r'^oauth2/', include('provider.oauth2.urls', namespace = 'oauth2')),
+
+---
+
+** Note:** The *namespace* argument is required !
+
+---
+
+Finally, sync your database with those two new django apps.
+
+    $ python manage.py syncdb
+    $ python manage.py migrate 
+
+`OAuth2Authentication` class provides only token verification for requests. The *oauth 2 dance* is taken care by the [`django-oaut2-provider`](https://github.com/caffeinehit/django-oauth2-provider) dependency. Unfortunately, there isn't a lot of [documentation](https://django-oauth2-provider.readthedocs.org/en/latest/) currently on how to *dance* with this package on the client side. 
+
+The Good news is, here is a minimal "How to start" because **OAuth 2** is dramatically simpler than **OAuth 1**, so no more headache with signature, cryptography on client side, and other complex things.
+
+### How to start with *django-oauth2-provider* ?
+
+#### Create a client in the django-admin panel
+
+Go to the admin panel and create a new `Provider.Client` entry. It will create the `client_id` and `client_secret` properties for you.
+
+#### Request an access token
+
+Your client interface &ndash; I mean by that your iOS code, HTML code, or whatever else language &ndash; just have to submit a `POST` request at the url `/oauth2/access_token` with the following fields :
+
+* `client_id` the client id you've just configured at the previous step.
+* `client_secret` again configured at the previous step.
+* `username` the username with which you want to log in.
+* `password` well, that speaks for itself.
+
+---
+
+**Note:** Remember that you are **highly encourage** to use HTTPS for all your OAuth 2 requests. And by *highly encourage* I mean you SHOULD always use HTTPS otherwise you will expose user passwords for any person who can intercept the request (like a man in the middle attack).
+
+---
+
+You can use the command line to test that your local configuration is working :
+
+    $ curl -X POST -d "client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&grant_type=password&username=YOUR_USERNAME&password=YOU_PASSWORD" http://localhost:8000/oauth2/access_token/
+
+Here is the response you should get :
+
+    {"access_token": "<your-access-token>", "scope": "read", "expires_in": 86399, "refresh_token": "<your-refresh-token>"}
+
+#### Access the api
+
+The only thing needed to make the `OAuth2Authentication` class work is to insert the `access_token` you've received in the `Authorization` api request header.
+
+The command line to test the authentication looks like :
+
+    $ curl -H "Authorization: Bearer <your-access-token>" http://localhost:8000/api/?client_id=YOUR_CLIENT_ID\&client_secret=YOUR_CLIENT_SECRET
+
+And hopefully, it will work like a charm.
+
 # Custom authentication
 
 To implement a custom authentication scheme, subclass `BaseAuthentication` and override the `.authenticate(self, request)` method.  The method should return a two-tuple of `(user, auth)` if authentication succeeds, or `None` otherwise.
@@ -235,3 +303,4 @@ HTTP digest authentication is a widely implemented scheme that was intended to r
 [mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
 [juanriaza]: https://github.com/juanriaza
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
+[rfc6749]: http://tools.ietf.org/html/rfc6749
