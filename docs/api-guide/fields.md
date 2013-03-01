@@ -185,11 +185,21 @@ Corresponds to `django.forms.fields.RegexField`
 
 A date representation.
 
+Optionally takes `format` as parameter to replace the matching pattern.
+
 Corresponds to `django.db.models.fields.DateField`
+
+**Signature:** `DateField(input_formats=None, output_format=False)`
+
+ - `input_formats` designates which input formats are supported. This will override the `DATE_INPUT_FORMATS`
+
+ - `output_format` designates which output format will be used. This will override the `DATE_OUTPUT_FORMAT`
 
 ## DateTimeField
 
 A date and time representation.
+
+Optionally takes `format` as parameter to replace the matching pattern.
 
 Corresponds to `django.db.models.fields.DateTimeField`
 
@@ -203,11 +213,25 @@ If you want to override this behavior, you'll need to declare the `DateTimeField
         class Meta:
             model = Comment
 
+**Signature:** `DateTimeField(input_formats=None, output_format=False)`
+
+ - `input_formats` designates which input formats are supported. This will override the `DATETIME_INPUT_FORMATS`
+
+ - `output_format` designates which output format will be used. This will override the `DATETIME_OUTPUT_FORMAT`
+
 ## TimeField
 
 A time representation.
 
+Optionally takes `format` as parameter to replace the matching pattern.
+
 Corresponds to `django.db.models.fields.TimeField`
+
+**Signature:** `TimeField(input_formats=None, output_format=False)`
+
+ - `input_formats` designates which input formats are supported. This will override the `TIME_INPUT_FORMATS`
+
+ - `output_format` designates which output format will be used. This will override the `TIME_OUTPUT_FORMAT`
 
 ## IntegerField
 
