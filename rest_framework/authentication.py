@@ -175,7 +175,6 @@ class OAuth2Authentication(BaseAuthentication):
         http://tools.ietf.org/html/rfc6749#section-7.1
         """
         auth = request.META.get('HTTP_AUTHORIZATION', '').split()
-        print auth
         if not auth or auth[0].lower() != "bearer":
             return None
 
@@ -202,11 +201,6 @@ class OAuth2Authentication(BaseAuthentication):
             raise exceptions.AuthenticationFailed("Invalid token")  # does not exist or is expired
 
         # TODO check scope
-        # try:
-        #     self.validate_token(request, consumer, token)
-        # except oauth2_provider.Error, e:
-        #     print "got e"
-        #     raise exceptions.AuthenticationFailed(e.message)
 
         if not self.check_active(token.user):
             raise exceptions.AuthenticationFailed('User not active: %s' % token.user.username)
