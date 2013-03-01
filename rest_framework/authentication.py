@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate
 from django.utils.encoding import DjangoUnicodeDecodeError
 from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.compat import CsrfViewMiddleware
+from rest_framework.compat import oauth2_provider, oauth2
 from rest_framework.authtoken.models import Token
 import base64
 
@@ -155,4 +156,86 @@ class TokenAuthentication(BaseAuthentication):
         return 'Token'
 
 
-# TODO: OAuthAuthentication
+class OAuth2Authentication(BaseAuthentication):
+    """
+    OAuth 2 authentication backend using `django-oauth2-provider`
+    """
+    require_active = True
+
+    def __init__(self, **kwargs):
+        super(OAuth2Authentication, self).__init__(**kwargs)
+        if oauth2_provider is None:
+            raise ImproperlyConfigured("The 'django-oauth2-provider' package could not be imported. It is required for use with the 'OAuth2Authentication' class.")
+
+    def authenticate(self, request):
+        """
+        The Bearer type is the only finalized type
+
+        Read the spec for more details
+        http://tools.ietf.org/html/rfc6749#section-7.1
+        """
+        auth = request.META.get('HTTP_AUTHORIZATION', '').split()
+        print auth
+        if not auth or auth[0].lower() != "bearer":
+            return None
+
+        if len(auth) != 2:
+            raise exceptions.AuthenticationFailed('Invalid token header')
+
+        return self.authenticate_credentials(request, auth[1])
+
+    def authenticate_credentials(self, request, access_token):
+        """
+        :returns: two-tuple of (user, auth) if authentication succeeds, or None otherwise.
+        """
+
+        # authenticate the client
+        oauth2_client_form = oauth2.forms.ClientAuthForm(request.REQUEST)
+        if not oauth2_client_form.is_valid():
+            raise exceptions.AuthenticationFailed("Client could not be validated")
+        client = oauth2_client_form.cleaned_data.get('client')
+
+        # retrieve the `oauth2.models.OAuth2AccessToken` instance from the access_token
+        auth_backend = oauth2.backends.AccessTokenBackend()
+        token = auth_backend.authenticate(access_token, client)
+        if token is None:
+            raise exceptions.AuthenticationFailed("Invalid token")  # does not exist or is expired
+
+        # TODO check scope
+        # try:
+        #     self.validate_token(request, consumer, token)
+        # except oauth2.Error, e:
+        #     print "got e"
+        #     raise exceptions.AuthenticationFailed(e.message)
+
+        if not self.check_active(token.user):
+            raise exceptions.AuthenticationFailed('User not active: %s' % token.user.username)
+
+        if client and token:
+            request.user = token.user
+            return (request.user, None)
+
+        raise exceptions.AuthenticationFailed(
+            'You are not allowed to access this resource.')
+
+        return None
+
+    def authenticate_header(self, request):
+        """
+        Bearer is the only finalized type currently 
+
+        Check details on the `OAuth2Authentication.authenticate` method
+        """
+        return 'Bearer'
+
+    def check_active(self, user):
+        """
+        Ensures the user has an active account.
+
+        Optimized for the ``django.contrib.auth.models.User`` case.
+        """
+        if not self.require_active:
+            # Ignore & move on.
+            return True
+
+        return user.is_active
