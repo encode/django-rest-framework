@@ -11,12 +11,11 @@ from django.core.exceptions import ValidationError
 from django.conf import settings
 from django import forms
 from django.forms import widgets
-from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
 
 from rest_framework import ISO8601
-from rest_framework.compat import timezone
+from rest_framework.compat import timezone, parse_date, parse_datetime, parse_time
 from rest_framework.compat import BytesIO
 from rest_framework.compat import six
 from rest_framework.compat import smart_text
