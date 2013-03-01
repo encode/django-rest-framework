@@ -215,12 +215,20 @@ class PrimaryKeyRelatedField(RelatedField):
     def field_to_native(self, obj, field_name):
         if self.many:
             # To-many relationship
-            try:
+
+            queryset = None
+            if not self.source:
                 # Prefer obj.serializable_value for performance reasons
-                queryset = obj.serializable_value(self.source or field_name)
-            except AttributeError:
+                try:
+                    queryset = obj.serializable_value(field_name)
+                except AttributeError:
+                    pass
+            if queryset is None:
                 # RelatedManager (reverse relationship)
-                queryset = getattr(obj, self.source or field_name)
+                source = self.source or field_name
+                queryset = obj
+                for component in source.split('.'):
+                    queryset = get_component(queryset, component)
 
             # Forward relationship
             return [self.to_native(item.pk) for item in queryset.all()]
