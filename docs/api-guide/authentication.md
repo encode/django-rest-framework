@@ -10,7 +10,7 @@ Authentication is the mechanism of associating an incoming request with a set of
 
 REST framework provides a number of authentication schemes out of the box, and also allows you to implement custom schemes.
 
-Authentication will run the first time either the `request.user` or `request.auth` properties are accessed, and determines how those properties are initialized.
+Authentication is always run at the very start of the view, before the permission and throttling checks occur, and before any other code is allowed to proceed.
 
 The `request.user` property will typically be set to an instance of the `contrib.auth` package's `User` class.
 
@@ -259,7 +259,7 @@ In some circumstances instead of returning `None`, you may want to raise an `Aut
 Typically the approach you should take is:
 
 * If authentication is not attempted, return `None`.  Any other authentication schemes also in use will still be checked.
-* If authentication is attempted but fails, raise a `AuthenticationFailed` exception.  An error response will be returned immediately, without checking any other authentication schemes.
+* If authentication is attempted but fails, raise a `AuthenticationFailed` exception.  An error response will be returned immediately, regardless of any permissions checks, and without checking any other authentication schemes.
 
 You *may* also override the `.authenticate_header(self, request)` method.  If implemented, it should return a string that will be used as the value of the `WWW-Authenticate` header in a `HTTP 401 Unauthorized` response.
 

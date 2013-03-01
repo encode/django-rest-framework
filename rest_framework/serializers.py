@@ -418,6 +418,27 @@ class ModelSerializer(Serializer):
     """
     _options_class = ModelSerializerOptions
 
+    field_mapping = {
+        models.AutoField: IntegerField,
+        models.FloatField: FloatField,
+        models.IntegerField: IntegerField,
+        models.PositiveIntegerField: IntegerField,
+        models.SmallIntegerField: IntegerField,
+        models.PositiveSmallIntegerField: IntegerField,
+        models.DateTimeField: DateTimeField,
+        models.DateField: DateField,
+        models.TimeField: TimeField,
+        models.EmailField: EmailField,
+        models.CharField: CharField,
+        models.URLField: URLField,
+        models.SlugField: SlugField,
+        models.TextField: CharField,
+        models.CommaSeparatedIntegerField: CharField,
+        models.BooleanField: BooleanField,
+        models.FileField: FileField,
+        models.ImageField: ImageField,
+    }
+
     def get_default_fields(self):
         """
         Return all the fields that should be serialized for the model.
@@ -515,28 +536,8 @@ class ModelSerializer(Serializer):
             kwargs['choices'] = model_field.flatchoices
             return ChoiceField(**kwargs)
 
-        field_mapping = {
-            models.AutoField: IntegerField,
-            models.FloatField: FloatField,
-            models.IntegerField: IntegerField,
-            models.PositiveIntegerField: IntegerField,
-            models.SmallIntegerField: IntegerField,
-            models.PositiveSmallIntegerField: IntegerField,
-            models.DateTimeField: DateTimeField,
-            models.DateField: DateField,
-            models.TimeField: TimeField,
-            models.EmailField: EmailField,
-            models.CharField: CharField,
-            models.URLField: URLField,
-            models.SlugField: SlugField,
-            models.TextField: CharField,
-            models.CommaSeparatedIntegerField: CharField,
-            models.BooleanField: BooleanField,
-            models.FileField: FileField,
-            models.ImageField: ImageField,
-        }
         try:
-            return field_mapping[model_field.__class__](**kwargs)
+            return self.field_mapping[model_field.__class__](**kwargs)
         except KeyError:
             return ModelField(model_field=model_field, **kwargs)
 

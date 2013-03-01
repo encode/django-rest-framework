@@ -8,7 +8,7 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
-from rest_framework.compat import View, apply_markdown, smart_text
+from rest_framework.compat import View, apply_markdown
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
@@ -257,6 +257,16 @@ class APIView(View):
                 return (renderers[0], renderers[0].media_type)
             raise
 
+    def perform_authentication(self, request):
+        """
+        Perform authentication on the incoming request.
+
+        Note that if you override this and simply 'pass', then authentication
+        will instead be performed lazily, the first time either
+        `request.user` or `request.auth` is accessed.
+        """
+        request.user
+
     def check_permissions(self, request):
         """
         Check if the request should be permitted.
@@ -305,6 +315,7 @@ class APIView(View):
         self.format_kwarg = self.get_format_suffix(**kwargs)
 
         # Ensure that the incoming request is permitted
+        self.perform_authentication(request)
         self.check_permissions(request)
         self.check_throttles(request)
 
