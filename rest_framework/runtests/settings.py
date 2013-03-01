@@ -97,7 +97,9 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework.tests'
+    'rest_framework.tests',
+    'provider',
+    'provider.oauth2',
 )
 
 STATIC_URL = '/static/'
