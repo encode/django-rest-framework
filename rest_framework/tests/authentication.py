@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import Client, TestCase
+from django.utils import unittest
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
 from rest_framework import permissions
@@ -22,7 +23,6 @@ from rest_framework.views import APIView
 import json
 import base64
 import datetime
-import unittest
 
 
 factory = RequestFactory()
