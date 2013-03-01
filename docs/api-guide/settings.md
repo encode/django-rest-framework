@@ -174,4 +174,39 @@ The name of a parameter in the URL conf that may be used to provide a format suf
 
 Default: `'format'`
 
+## DATE_INPUT_FORMATS
+
+Default:
+
+    (
+        '%Y-%m-%d',     # '1984-07-31'
+    )
+
+## DATE_OUTPUT_FORMAT
+
+## DATETIME_INPUT_FORMATS
+
+Default:
+
+    (
+        '%Y-%m-%d',              # '1984-07-31'
+        '%Y-%m-%d %H:%M',        # '1984-07-31 04:31'
+        '%Y-%m-%d %H:%M:%S',     # '1984-07-31 04:31:59'
+        '%Y-%m-%d %H:%M:%S.%f',  # '1984-07-31 04:31:59.000200'
+    )
+
+## DATETIME_OUTPUT_FORMAT
+
+## TIME_INPUT_FORMATS
+
+Default:
+
+    (
+        '%H:%M',        # '04:31'
+        '%H:%M:%S',     # '04:31:59'
+        '%H:%M:%S.%f',  # '04:31:59.000200'
+    )
+
+## TIME_OUTPUT_FORMAT
+
 [cite]: http://www.python.org/dev/peps/pep-0020/
