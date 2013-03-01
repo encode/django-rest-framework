@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate
 from django.utils.encoding import DjangoUnicodeDecodeError
 from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.compat import CsrfViewMiddleware
-from rest_framework.compat import oauth2_provider, oauth2
+from rest_framework.compat import oauth2_provider
 from rest_framework.authtoken.models import Token
 import base64
 
@@ -190,13 +190,13 @@ class OAuth2Authentication(BaseAuthentication):
         """
 
         # authenticate the client
-        oauth2_client_form = oauth2.forms.ClientAuthForm(request.REQUEST)
+        oauth2_client_form = oauth2_provider.forms.ClientAuthForm(request.REQUEST)
         if not oauth2_client_form.is_valid():
             raise exceptions.AuthenticationFailed("Client could not be validated")
         client = oauth2_client_form.cleaned_data.get('client')
 
-        # retrieve the `oauth2.models.OAuth2AccessToken` instance from the access_token
-        auth_backend = oauth2.backends.AccessTokenBackend()
+        # retrieve the `oauth2_provider.models.OAuth2AccessToken` instance from the access_token
+        auth_backend = oauth2_provider.backends.AccessTokenBackend()
         token = auth_backend.authenticate(access_token, client)
         if token is None:
             raise exceptions.AuthenticationFailed("Invalid token")  # does not exist or is expired
@@ -204,7 +204,7 @@ class OAuth2Authentication(BaseAuthentication):
         # TODO check scope
         # try:
         #     self.validate_token(request, consumer, token)
-        # except oauth2.Error, e:
+        # except oauth2_provider.Error, e:
         #     print "got e"
         #     raise exceptions.AuthenticationFailed(e.message)
 

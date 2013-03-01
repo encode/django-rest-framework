@@ -430,10 +430,6 @@ except ImportError:
 
 # OAuth 2 support is optional
 try:
-    import provider as oauth2_provider
+    import provider.oauth2 as oauth2_provider
 except ImportError:
     oauth2_provider = None
-try:
-    import provider.oauth2 as oauth2
-except ImportError:
-    oauth2 = None
