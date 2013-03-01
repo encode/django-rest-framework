@@ -18,8 +18,11 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from __future__ import unicode_literals
+
 from django.conf import settings
 from django.utils import importlib
+
+from rest_framework import ISO8601
 from rest_framework.compat import six
 
 
@@ -79,24 +82,19 @@ DEFAULTS = {
 
     # Input and output formats
     'DATE_INPUT_FORMATS': (
-        '%Y-%m-%d',     # '1984-07-31'
+        ISO8601,
     ),
-    'DATE_OUTPUT_FORMAT': None,
+    'DATE_OUTPUT_FORMAT': ISO8601,
 
     'DATETIME_INPUT_FORMATS': (
-        '%Y-%m-%d',              # '1984-07-31'
-        '%Y-%m-%d %H:%M',        # '1984-07-31 04:31'
-        '%Y-%m-%d %H:%M:%S',     # '1984-07-31 04:31:59'
-        '%Y-%m-%d %H:%M:%S.%f',  # '1984-07-31 04:31:59.000200'
+        ISO8601,
     ),
-    'DATETIME_OUTPUT_FORMAT': None,
+    'DATETIME_OUTPUT_FORMAT': ISO8601,
 
     'TIME_INPUT_FORMATS': (
-        '%H:%M',        # '04:31'
-        '%H:%M:%S',     # '04:31:59'
-        '%H:%M:%S.%f',  # '04:31:59.000200'
+        ISO8601,
     ),
-    'TIME_OUTPUT_FORMAT': None,
+    'TIME_OUTPUT_FORMAT': ISO8601,
 }
 
 
