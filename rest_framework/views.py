@@ -211,13 +211,13 @@ class APIView(View):
 
     def get_parsers(self):
         """
-        Instantiates and returns the list of renderers that this view can use.
+        Instantiates and returns the list of parsers that this view can use.
         """
         return [parser() for parser in self.parser_classes]
 
     def get_authenticators(self):
         """
-        Instantiates and returns the list of renderers that this view can use.
+        Instantiates and returns the list of authenticators that this view can use.
         """
         return [auth() for auth in self.authentication_classes]
 
@@ -256,6 +256,16 @@ class APIView(View):
             if force:
                 return (renderers[0], renderers[0].media_type)
             raise
+
+    def perform_authentication(self, request):
+        """
+        Perform authentication on the incoming request.
+
+        Note that if you override this and simply 'pass', then authentication
+        will instead be performed lazily, the first time either
+        `request.user` or `request.auth` is accessed.
+        """
+        request.user
 
     def check_permissions(self, request):
         """
@@ -305,6 +315,7 @@ class APIView(View):
         self.format_kwarg = self.get_format_suffix(**kwargs)
 
         # Ensure that the incoming request is permitted
+        self.perform_authentication(request)
         self.check_permissions(request)
         self.check_throttles(request)
 

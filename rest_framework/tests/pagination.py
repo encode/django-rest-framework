@@ -74,27 +74,27 @@ class IntegrationTestPagination(TestCase):
         """
         request = factory.get('/')
         response = self.view(request).render()
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
-        self.assertEquals(response.data['count'], 26)
-        self.assertEquals(response.data['results'], self.data[:10])
-        self.assertNotEquals(response.data['next'], None)
-        self.assertEquals(response.data['previous'], None)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 26)
+        self.assertEqual(response.data['results'], self.data[:10])
+        self.assertNotEqual(response.data['next'], None)
+        self.assertEqual(response.data['previous'], None)
 
         request = factory.get(response.data['next'])
         response = self.view(request).render()
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
-        self.assertEquals(response.data['count'], 26)
-        self.assertEquals(response.data['results'], self.data[10:20])
-        self.assertNotEquals(response.data['next'], None)
-        self.assertNotEquals(response.data['previous'], None)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 26)
+        self.assertEqual(response.data['results'], self.data[10:20])
+        self.assertNotEqual(response.data['next'], None)
+        self.assertNotEqual(response.data['previous'], None)
 
         request = factory.get(response.data['next'])
         response = self.view(request).render()
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
-        self.assertEquals(response.data['count'], 26)
-        self.assertEquals(response.data['results'], self.data[20:])
-        self.assertEquals(response.data['next'], None)
-        self.assertNotEquals(response.data['previous'], None)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 26)
+        self.assertEqual(response.data['results'], self.data[20:])
+        self.assertEqual(response.data['next'], None)
+        self.assertNotEqual(response.data['previous'], None)
 
 
 class IntegrationTestPaginationAndFiltering(TestCase):
@@ -126,27 +126,27 @@ class IntegrationTestPaginationAndFiltering(TestCase):
         """
         request = factory.get('/?decimal=15.20')
         response = self.view(request).render()
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
-        self.assertEquals(response.data['count'], 15)
-        self.assertEquals(response.data['results'], self.data[:10])
-        self.assertNotEquals(response.data['next'], None)
-        self.assertEquals(response.data['previous'], None)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 15)
+        self.assertEqual(response.data['results'], self.data[:10])
+        self.assertNotEqual(response.data['next'], None)
+        self.assertEqual(response.data['previous'], None)
 
         request = factory.get(response.data['next'])
         response = self.view(request).render()
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
-        self.assertEquals(response.data['count'], 15)
-        self.assertEquals(response.data['results'], self.data[10:15])
-        self.assertEquals(response.data['next'], None)
-        self.assertNotEquals(response.data['previous'], None)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 15)
+        self.assertEqual(response.data['results'], self.data[10:15])
+        self.assertEqual(response.data['next'], None)
+        self.assertNotEqual(response.data['previous'], None)
 
         request = factory.get(response.data['previous'])
         response = self.view(request).render()
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
-        self.assertEquals(response.data['count'], 15)
-        self.assertEquals(response.data['results'], self.data[:10])
-        self.assertNotEquals(response.data['next'], None)
-        self.assertEquals(response.data['previous'], None)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 15)
+        self.assertEqual(response.data['results'], self.data[:10])
+        self.assertNotEqual(response.data['next'], None)
+        self.assertEqual(response.data['previous'], None)
 
 
 class PassOnContextPaginationSerializer(pagination.PaginationSerializer):
@@ -167,16 +167,16 @@ class UnitTestPagination(TestCase):
 
     def test_native_pagination(self):
         serializer = pagination.PaginationSerializer(self.first_page)
-        self.assertEquals(serializer.data['count'], 26)
-        self.assertEquals(serializer.data['next'], '?page=2')
-        self.assertEquals(serializer.data['previous'], None)
-        self.assertEquals(serializer.data['results'], self.objects[:10])
+        self.assertEqual(serializer.data['count'], 26)
+        self.assertEqual(serializer.data['next'], '?page=2')
+        self.assertEqual(serializer.data['previous'], None)
+        self.assertEqual(serializer.data['results'], self.objects[:10])
 
         serializer = pagination.PaginationSerializer(self.last_page)
-        self.assertEquals(serializer.data['count'], 26)
-        self.assertEquals(serializer.data['next'], None)
-        self.assertEquals(serializer.data['previous'], '?page=2')
-        self.assertEquals(serializer.data['results'], self.objects[20:])
+        self.assertEqual(serializer.data['count'], 26)
+        self.assertEqual(serializer.data['next'], None)
+        self.assertEqual(serializer.data['previous'], '?page=2')
+        self.assertEqual(serializer.data['results'], self.objects[20:])
 
     def test_context_available_in_result(self):
         """
@@ -185,7 +185,7 @@ class UnitTestPagination(TestCase):
         serializer = PassOnContextPaginationSerializer(self.first_page, context={'foo': 'bar'})
         serializer.data
         results = serializer.fields[serializer.results_field]
-        self.assertEquals(serializer.context, results.context)
+        self.assertEqual(serializer.context, results.context)
 
 
 class TestUnpaginated(TestCase):
@@ -213,7 +213,7 @@ class TestUnpaginated(TestCase):
         """
         request = factory.get('/')
         response = self.view(request)
-        self.assertEquals(response.data, self.data)
+        self.assertEqual(response.data, self.data)
 
 
 class TestCustomPaginateByParam(TestCase):
@@ -241,7 +241,7 @@ class TestCustomPaginateByParam(TestCase):
         """
         request = factory.get('/')
         response = self.view(request).render()
-        self.assertEquals(response.data, self.data)
+        self.assertEqual(response.data, self.data)
 
     def test_paginate_by_param(self):
         """
@@ -249,8 +249,8 @@ class TestCustomPaginateByParam(TestCase):
         """
         request = factory.get('/?page_size=5')
         response = self.view(request).render()
-        self.assertEquals(response.data['count'], 13)
-        self.assertEquals(response.data['results'], self.data[:5])
+        self.assertEqual(response.data['count'], 13)
+        self.assertEqual(response.data['results'], self.data[:5])
 
 
 ### Tests for context in pagination serializers
@@ -285,7 +285,7 @@ class TestContextPassedToCustomField(TestCase):
         request = factory.get('/')
         response = self.view(request).render()
 
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 ### Tests for custom pagination serializers
@@ -322,4 +322,4 @@ class TestCustomPaginationSerializer(TestCase):
             'total_results': 4,
             'objects': ['john', 'paul']
         }
-        self.assertEquals(serializer.data, expected)
+        self.assertEqual(serializer.data, expected)

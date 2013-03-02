@@ -472,7 +472,7 @@ class DateField(WritableField):
             parsed = parse_date(value)
             if parsed is not None:
                 return parsed
-        except ValueError:
+        except (ValueError, TypeError):
             msg = self.error_messages['invalid_date'] % value
             raise ValidationError(msg)
 
@@ -520,7 +520,7 @@ class DateTimeField(WritableField):
             parsed = parse_datetime(value)
             if parsed is not None:
                 return parsed
-        except ValueError:
+        except (ValueError, TypeError):
             msg = self.error_messages['invalid_datetime'] % value
             raise ValidationError(msg)
 
@@ -528,7 +528,7 @@ class DateTimeField(WritableField):
             parsed = parse_date(value)
             if parsed is not None:
                 return datetime.datetime(parsed.year, parsed.month, parsed.day)
-        except ValueError:
+        except (ValueError, TypeError):
             msg = self.error_messages['invalid_date'] % value
             raise ValidationError(msg)
 
@@ -558,7 +558,7 @@ class TimeField(WritableField):
             parsed = parse_time(value)
             assert parsed is not None
             return parsed
-        except ValueError:
+        except (ValueError, TypeError):
             msg = self.error_messages['invalid'] % value
             raise ValidationError(msg)
 

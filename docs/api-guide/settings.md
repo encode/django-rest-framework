@@ -43,7 +43,6 @@ Default:
     (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
-        'rest_framework.renderers.TemplateHTMLRenderer'
     )
 
 ## DEFAULT_PARSER_CLASSES
@@ -54,7 +53,8 @@ Default:
 
     (
         'rest_framework.parsers.JSONParser',
-        'rest_framework.parsers.FormParser'
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser'
     )
 
 ## DEFAULT_AUTHENTICATION_CLASSES
@@ -84,15 +84,21 @@ A list or tuple of throttle classes, that determines the default set of throttle
 
 Default: `()`
 
+## DEFAULT_CONTENT_NEGOTIATION_CLASS
+
+A content negotiation class, that determines how a renderer is selected for the response, given an incoming request.
+
+Default: `'rest_framework.negotiation.DefaultContentNegotiation'`
+
 ## DEFAULT_MODEL_SERIALIZER_CLASS
 
-**TODO**
+A class that determines the default type of model serializer that should be used by a generic view if `model` is specified, but `serializer_class` is not provided.
 
-Default: `rest_framework.serializers.ModelSerializer`
+Default: `'rest_framework.serializers.ModelSerializer'`
 
 ## DEFAULT_PAGINATION_SERIALIZER_CLASS
 
-**TODO**
+A class the determines the default serialization style for paginated responses.
 
 Default: `rest_framework.pagination.PaginationSerializer`
 
@@ -158,11 +164,13 @@ Default: `'accept'`
 
 ## URL_FORMAT_OVERRIDE
 
+The name of a URL parameter that may be used to override the default `Accept` header based content negotiation.
+
 Default: `'format'`
 
 ## FORMAT_SUFFIX_KWARG
 
-**TODO**
+The name of a parameter in the URL conf that may be used to provide a format suffix.
 
 Default: `'format'`
 

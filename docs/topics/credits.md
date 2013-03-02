@@ -4,7 +4,7 @@ The following people have helped make REST framework great.
 
 * Tom Christie - [tomchristie]
 * Marko Tibold - [markotibold]
-* Paul Bagwell - [pbgwl]
+* Paul Miller - [paulmillr]
 * Sébastien Piquemal - [sebpiq]
 * Carmen Wick - [cwick]
 * Alex Ehlke - [aehlke]
@@ -104,6 +104,9 @@ The following people have helped make REST framework great.
 * Xavier Ordoquy - [xordoquy]
 * Adam Wentz - [floppya]
 * Andreas Pelme - [pelme]
+* Ryan Detzel - [ryanrdetzel]
+* Omer Katz - [thedrow]
+* Wiliam Souza - [waa]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -142,7 +145,7 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 
 [tomchristie]: https://github.com/tomchristie
 [markotibold]: https://github.com/markotibold
-[pbgwl]: https://github.com/pbgwl
+[paulmillr]: https://github.com/paulmillr
 [sebpiq]: https://github.com/sebpiq
 [cwick]: https://github.com/cwick
 [aehlke]: https://github.com/aehlke
@@ -242,3 +245,6 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [xordoquy]: https://github.com/xordoquy
 [floppya]: https://github.com/floppya
 [pelme]: https://github.com/pelme
+[ryanrdetzel]: https://github.com/ryanrdetzel
+[thedrow]: https://github.com/thedrow
+[waa]: https://github.com/wiliamsouza

@@ -90,6 +90,8 @@ The javascript callback function must be set by the client including a `callback
 
 Renders the request data into `YAML`. 
 
+Requires the `pyyaml` package to be installed.
+
 **.media_type**: `application/yaml`
 
 **.format**: `'.yaml'`
@@ -115,13 +117,13 @@ The TemplateHTMLRenderer will create a `RequestContext`, using the `response.dat
 
 The template name is determined by (in order of preference):
 
-1. An explicit `.template_name` attribute set on the response.
+1. An explicit `template_name` argument passed to the response.
 2. An explicit `.template_name` attribute set on this class.
 3. The return result of calling `view.get_template_names()`.
 
 An example of a view that uses `TemplateHTMLRenderer`:
 
-    class UserInstance(generics.RetrieveUserAPIView):
+    class UserDetail(generics.RetrieveUserAPIView):
         """
         A view that returns a templated HTML representations of a given user.
         """

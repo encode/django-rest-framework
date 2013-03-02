@@ -27,14 +27,14 @@ class TestAcceptedMediaType(TestCase):
     def test_client_without_accept_use_renderer(self):
         request = Request(factory.get('/'))
         accepted_renderer, accepted_media_type = self.select_renderer(request)
-        self.assertEquals(accepted_media_type, 'application/json')
+        self.assertEqual(accepted_media_type, 'application/json')
 
     def test_client_underspecifies_accept_use_renderer(self):
         request = Request(factory.get('/', HTTP_ACCEPT='*/*'))
         accepted_renderer, accepted_media_type = self.select_renderer(request)
-        self.assertEquals(accepted_media_type, 'application/json')
+        self.assertEqual(accepted_media_type, 'application/json')
 
     def test_client_overspecifies_accept_use_client(self):
         request = Request(factory.get('/', HTTP_ACCEPT='application/json; indent=8'))
         accepted_renderer, accepted_media_type = self.select_renderer(request)
-        self.assertEquals(accepted_media_type, 'application/json; indent=8')
+        self.assertEqual(accepted_media_type, 'application/json; indent=8')
