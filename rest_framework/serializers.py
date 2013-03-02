@@ -291,8 +291,6 @@ class BaseSerializer(WritableField):
         """
         Get the corresponding object to deserialize the data into.
         """
-        if self.unused_objects is None: return None
-
         # Just get the first object in the list.
         if self.unused_objects:
             obj = self.unused_objects[0]
