@@ -2,6 +2,8 @@ from __future__ import unicode_literals
 from rest_framework.compat import StringIO
 from django import forms
 from django.test import TestCase
+from django.utils import unittest
+from rest_framework.compat import etree
 from rest_framework.parsers import FormParser
 from rest_framework.parsers import XMLParser
 import datetime
@@ -69,11 +71,13 @@ class TestXMLParser(TestCase):
             ]
         }
 
+    @unittest.skipUnless(etree, 'defusedxml not installed')
     def test_parse(self):
         parser = XMLParser()
         data = parser.parse(self._input)
         self.assertEqual(data, self._data)
 
+    @unittest.skipUnless(etree, 'defusedxml not installed')
     def test_complex_data_parse(self):
         parser = XMLParser()
         data = parser.parse(self._complex_data_input)

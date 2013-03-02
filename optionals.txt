@@ -1,3 +1,4 @@
 markdown>=2.1.0
 PyYAML>=3.10
+defusedxml>=0.3
 django-filter>=0.5.4

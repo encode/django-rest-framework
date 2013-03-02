@@ -62,17 +62,17 @@ class TestMethodOverloading(TestCase):
 class TestContentParsing(TestCase):
     def test_standard_behaviour_determines_no_content_GET(self):
         """
-        Ensure request.DATA returns None for GET request with no content.
+        Ensure request.DATA returns empty QueryDict for GET request.
         """
         request = Request(factory.get('/'))
-        self.assertEqual(request.DATA, None)
+        self.assertEqual(request.DATA, {})
 
     def test_standard_behaviour_determines_no_content_HEAD(self):
         """
-        Ensure request.DATA returns None for HEAD request.
+        Ensure request.DATA returns empty QueryDict for HEAD request.
         """
         request = Request(factory.head('/'))
-        self.assertEqual(request.DATA, None)
+        self.assertEqual(request.DATA, {})
 
     def test_request_DATA_with_form_content(self):
         """

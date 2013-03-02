@@ -37,7 +37,7 @@ We could now return that data in a `Response` object, and it would be rendered i
 
 ## Paginating QuerySets
 
-Our first example worked because we were using primative objects.  If we wanted to paginate a queryset or other complex data, we'd need to specify a serializer to use to serialize the result set itself with.
+Our first example worked because we were using primitive objects.  If we wanted to paginate a queryset or other complex data, we'd need to specify a serializer to use to serialize the result set itself.
 
 We can do this using the `object_serializer_class` attribute on the inner `Meta` class of the pagination serializer.  For example.
 

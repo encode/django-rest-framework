@@ -17,7 +17,7 @@ urlpatterns = patterns('',
 
 class ReverseTests(TestCase):
     """
-    Tests for fully qualifed URLs when using `reverse`.
+    Tests for fully qualified URLs when using `reverse`.
     """
     urls = 'rest_framework.tests.reverse'
 

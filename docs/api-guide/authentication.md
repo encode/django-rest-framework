@@ -10,7 +10,7 @@ Authentication is the mechanism of associating an incoming request with a set of
 
 REST framework provides a number of authentication schemes out of the box, and also allows you to implement custom schemes.
 
-Authentication will run the first time either the `request.user` or `request.auth` properties are accessed, and determines how those properties are initialized.
+Authentication is always run at the very start of the view, before the permission and throttling checks occur, and before any other code is allowed to proceed.
 
 The `request.user` property will typically be set to an instance of the `contrib.auth` package's `User` class.
 
@@ -167,6 +167,8 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
 
     { 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
 
+Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.  If you need a customized version of the `obtain_auth_token` view, you can do so by overriding the `ObtainAuthToken` view class, and using that in your url conf instead.
+
 ## SessionAuthentication
 
 This authentication scheme uses Django's default session backend for authentication.  Session authentication is appropriate for AJAX clients that are running in the same session context as your website.
@@ -189,7 +191,7 @@ In some circumstances instead of returning `None`, you may want to raise an `Aut
 Typically the approach you should take is:
 
 * If authentication is not attempted, return `None`.  Any other authentication schemes also in use will still be checked.
-* If authentication is attempted but fails, raise a `AuthenticationFailed` exception.  An error response will be returned immediately, without checking any other authentication schemes.
+* If authentication is attempted but fails, raise a `AuthenticationFailed` exception.  An error response will be returned immediately, regardless of any permissions checks, and without checking any other authentication schemes.
 
 You *may* also override the `.authenticate_header(self, request)` method.  If implemented, it should return a string that will be used as the value of the `WWW-Authenticate` header in a `HTTP 401 Unauthorized` response.
 
@@ -200,7 +202,7 @@ If the `.authenticate_header()` method is not overridden, the authentication sch
 The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X_USERNAME'.
 
     class ExampleAuthentication(authentication.BaseAuthentication):
-        def has_permission(self, request, view, obj=None):
+        def authenticate(self, request):
             username = request.META.get('X_USERNAME')
             if not username:
                 return None

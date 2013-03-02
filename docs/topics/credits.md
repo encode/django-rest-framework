@@ -4,7 +4,7 @@ The following people have helped make REST framework great.
 
 * Tom Christie - [tomchristie]
 * Marko Tibold - [markotibold]
-* Paul Bagwell - [pbgwl]
+* Paul Miller - [paulmillr]
 * Sébastien Piquemal - [sebpiq]
 * Carmen Wick - [cwick]
 * Alex Ehlke - [aehlke]
@@ -19,7 +19,7 @@ The following people have helped make REST framework great.
 * Craig Blaszczyk - [jakul]
 * Garcia Solero - [garciasolero]
 * Tom Drummond - [devioustree]
-* Danilo Bargen - [gwrtheyrn]
+* Danilo Bargen - [dbrgn]
 * Andrew McCloud - [amccloud]
 * Thomas Steinacher - [thomasst]
 * Meurig Freeman - [meurig]
@@ -102,6 +102,11 @@ The following people have helped make REST framework great.
 * Andrea de Marco - [z4r]
 * Fernando Rocha - [fernandogrd]
 * Xavier Ordoquy - [xordoquy]
+* Adam Wentz - [floppya]
+* Andreas Pelme - [pelme]
+* Ryan Detzel - [ryanrdetzel]
+* Omer Katz - [thedrow]
+* Wiliam Souza - [waa]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -140,7 +145,7 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 
 [tomchristie]: https://github.com/tomchristie
 [markotibold]: https://github.com/markotibold
-[pbgwl]: https://github.com/pbgwl
+[paulmillr]: https://github.com/paulmillr
 [sebpiq]: https://github.com/sebpiq
 [cwick]: https://github.com/cwick
 [aehlke]: https://github.com/aehlke
@@ -155,7 +160,7 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [jakul]: https://github.com/jakul
 [garciasolero]: https://github.com/garciasolero
 [devioustree]: https://github.com/devioustree
-[gwrtheyrn]: https://github.com/gwrtheyrn
+[dbrgn]: https://github.com/dbrgn
 [amccloud]: https://github.com/amccloud
 [thomasst]: https://github.com/thomasst
 [meurig]: https://github.com/meurig
@@ -238,3 +243,8 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [z4r]: https://github.com/z4r
 [fernandogrd]: https://github.com/fernandogrd
 [xordoquy]: https://github.com/xordoquy
+[floppya]: https://github.com/floppya
+[pelme]: https://github.com/pelme
+[ryanrdetzel]: https://github.com/ryanrdetzel
+[thedrow]: https://github.com/thedrow
+[waa]: https://github.com/wiliamsouza
