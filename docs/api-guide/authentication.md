@@ -184,7 +184,13 @@ If you're using an AJAX style API with SessionAuthentication, you'll need to mak
 
 ## OAuth2Authentication
 
-This authentication uses [OAuth 2.0][rfc6749] authentication scheme. It depends on optional [`django-oauth2-provider`][django-oauth2-provider]. In order to make it work you must install this package and add `provider` and `provider.oauth2` to your `INSTALLED_APPS` :
+---
+
+** Note:** This isn't available for Python 3, because the module [`django-oauth2-provider`][django-oauth2-provider] is not Python 3 ready.
+
+---
+
+This authentication uses [OAuth 2.0][rfc6749] authentication scheme. It depends on the optional [`django-oauth2-provider`][django-oauth2-provider] project. In order to make it work you must install this package and add `provider` and `provider.oauth2` to your `INSTALLED_APPS` :
 
     INSTALLED_APPS = (
         #(...)
@@ -207,7 +213,7 @@ Finally, sync your database with those two new django apps.
     $ python manage.py syncdb
     $ python manage.py migrate 
 
-`OAuth2Authentication` class provides only token verification for requests. The *oauth 2 dance* is taken care by the [`django-oaut2-provider`][django-oauth2-provider] dependency. Unfortunately, there isn't a lot of [documentation][django-oauth2-provider--doc] currently on how to *dance* with this package on the client side. 
+`OAuth2Authentication` class provides only token verification for requests. The *oauth 2 dance* is taken care by the [`django-oaut2-provider`][django-oauth2-provider] dependency. The official [documentation][django-oauth2-provider--doc] is being [rewritten][django-oauth2-provider--rewritten-doc]. 
 
 The Good news is, here is a minimal "How to start" because **OAuth 2** is dramatically simpler than **OAuth 1**, so no more headache with signature, cryptography on client side, and other complex things.
 
@@ -228,13 +234,13 @@ Your client interface &ndash; I mean by that your iOS code, HTML code, or whatev
 
 ---
 
-**Note:** Remember that you are **highly encourage** to use HTTPS for all your OAuth 2 requests. And by *highly encourage* I mean you SHOULD always use HTTPS otherwise you will expose user passwords for any person who can intercept the request (like a man in the middle attack).
+**Note:** Remember that you should use HTTPS in production.
 
 ---
 
 You can use the command line to test that your local configuration is working :
 
-    $ curl -X POST -d "client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&grant_type=password&username=YOUR_USERNAME&password=YOU_PASSWORD" http://localhost:8000/oauth2/access_token/
+    $ curl -X POST -d "client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&grant_type=password&username=YOUR_USERNAME&password=YOUR_PASSWORD" http://localhost:8000/oauth2/access_token/
 
 Here is the response you should get :
 
@@ -248,7 +254,7 @@ The command line to test the authentication looks like :
 
     $ curl -H "Authorization: Bearer <your-access-token>" http://localhost:8000/api/?client_id=YOUR_CLIENT_ID\&client_secret=YOUR_CLIENT_SECRET
 
-And hopefully, it will work like a charm.
+And it will work like a charm.
 
 # Custom authentication
 
@@ -305,4 +311,5 @@ HTTP digest authentication is a widely implemented scheme that was intended to r
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
 [django-oauth2-provider--doc]: https://django-oauth2-provider.readthedocs.org/en/latest/
+[django-oauth2-provider--rewritten-doc]: http://django-oauth2-provider-dulaccc.readthedocs.org/en/latest/
 [rfc6749]: http://tools.ietf.org/html/rfc6749
