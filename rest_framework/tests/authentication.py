@@ -274,6 +274,36 @@ class OAuth2Tests(TestCase):
         return {'client_id': self.CLIENT_ID, 'client_secret': self.CLIENT_SECRET}
 
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
+    def test_get_form_with_wrong_authorization_header_token_type_failing(self):
+        """Ensure that a wrong token type lead to the correct HTTP error status code"""
+        auth = "Wrong token-type-obsviously"
+        response = self.csrf_client.get('/oauth2-test/', {}, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 401)
+        params = self._client_credentials_params()
+        response = self.csrf_client.get('/oauth2-test/', params, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 401)
+
+    @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
+    def test_get_form_with_wrong_authorization_header_token_format_failing(self):
+        """Ensure that a wrong token format lead to the correct HTTP error status code"""
+        auth = "Bearer wrong token format"
+        response = self.csrf_client.get('/oauth2-test/', {}, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 401)
+        params = self._client_credentials_params()
+        response = self.csrf_client.get('/oauth2-test/', params, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 401)
+
+    @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
+    def test_get_form_with_wrong_authorization_header_token_failing(self):
+        """Ensure that a wrong token lead to the correct HTTP error status code"""
+        auth = "Bearer wrong-token"
+        response = self.csrf_client.get('/oauth2-test/', {}, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 401)
+        params = self._client_credentials_params()
+        response = self.csrf_client.get('/oauth2-test/', params, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 401)
+
+    @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
     def test_get_form_with_wrong_client_data_failing_auth(self):
         """Ensure GETing form over OAuth with incorrect client credentials fails"""
         auth = self._create_authorization_header()
