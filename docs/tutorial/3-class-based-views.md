@@ -20,7 +20,7 @@ We'll start by rewriting the root view as a class based view.  All this involves
         """
         def get(self, request, format=None):
             snippets = Snippet.objects.all()
-            serializer = SnippetSerializer(snippets)
+            serializer = SnippetSerializer(snippets, many=True)
             return Response(serializer.data)
 
         def post(self, request, format=None):

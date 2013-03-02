@@ -51,7 +51,7 @@ We don't need our `JSONResponse` class anymore, so go ahead and delete that.  On
         """
         if request.method == 'GET':
             snippets = Snippet.objects.all()
-            serializer = SnippetSerializer(snippets)
+            serializer = SnippetSerializer(snippets, many=True)
             return Response(serializer.data)
 
         elif request.method == 'POST':
@@ -75,11 +75,11 @@ Here is the view for an individual snippet.
             snippet = Snippet.objects.get(pk=pk)
         except Snippet.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
- 
+
         if request.method == 'GET':
             serializer = SnippetSerializer(snippet)
             return Response(serializer.data)
-    
+
         elif request.method == 'PUT':
             serializer = SnippetSerializer(snippet, data=request.DATA)
             if serializer.is_valid():
@@ -126,13 +126,41 @@ We don't necessarily need to add these extra url patterns in, but it gives us a 
 
 Go ahead and test the API from the command line, as we did in [tutorial part 1][tut-1].  Everything is working pretty similarly, although we've got some nicer error handling if we send invalid requests.
 
-**TODO: Describe using accept headers, content-type headers, and format suffixed URLs**
+We can get a list of all of the snippets, as before.
+
+	curl http://127.0.0.1:8000/snippets/
+
+	[{"id": 1, "title": "", "code": "foo = \"bar\"\n", "linenos": false, "language": "python", "style": "friendly"}, {"id": 2, "title": "", "code": "print \"hello, world\"\n", "linenos": false, "language": "python", "style": "friendly"}]
+
+We can control the format of the response that we get back, either by using the `Accept` header:
+
+    curl http://127.0.0.1:8000/snippets/ -H 'Accept: application/json'  # Request JSON
+    curl http://127.0.0.1:8000/snippets/ -H 'Accept: text/html'         # Request HTML
+
+Or by appending a format suffix:
+
+    curl http://127.0.0.1:8000/snippets/.json  # JSON suffix
+    curl http://127.0.0.1:8000/snippets/.api   # Browseable API suffix
+
+Similarly, we can control the format of the request that we send, using the `Content-Type` header.
+
+    # POST using form data
+    curl -X POST http://127.0.0.1:8000/snippets/ -d "code=print 123"
+
+    {"id": 3, "title": "", "code": "123", "linenos": false, "language": "python", "style": "friendly"}
+    
+    # POST using JSON
+    curl -X POST http://127.0.0.1:8000/snippets/ -d '{"code": "print 456"}' -H "Content-Type: application/json"
+
+    {"id": 4, "title": "", "code": "print 456", "linenos": true, "language": "python", "style": "friendly"}
 
 Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/snippets/][devserver].
 
 ### Browsability
 
-Because the API chooses a return format based on what the client asks for, it will, by default, return an HTML-formatted representation of the resource when that resource is requested by a browser. This allows for the API to be easily browsable and usable by humans.
+Because the API chooses the content type of the response based on the client request, it will, by default, return an HTML-formatted representation of the resource when that resource is requested by a web browser. This allows for the API to return a fully web-browsable HTML representation.
+
+Having a web-browseable API is a huge usability win, and makes developing and using your API much easier.  It also dramatically lowers the barrier-to-entry for other developers wanting to inspect and work with your API.
 
 See the [browsable api][browseable-api] topic for more information about the browsable API feature and how to customize it.
 

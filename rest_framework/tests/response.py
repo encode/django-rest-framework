@@ -85,39 +85,39 @@ class RendererIntegrationTests(TestCase):
     def test_default_renderer_serializes_content(self):
         """If the Accept header is not set the default renderer should serialize the response."""
         resp = self.client.get('/')
-        self.assertEquals(resp['Content-Type'], RendererA.media_type)
-        self.assertEquals(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_head_method_serializes_no_content(self):
         """No response must be included in HEAD requests."""
         resp = self.client.head('/')
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
-        self.assertEquals(resp['Content-Type'], RendererA.media_type)
-        self.assertEquals(resp.content, six.b(''))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp.content, six.b(''))
 
     def test_default_renderer_serializes_content_on_accept_any(self):
         """If the Accept header is set to */* the default renderer should serialize the response."""
         resp = self.client.get('/', HTTP_ACCEPT='*/*')
-        self.assertEquals(resp['Content-Type'], RendererA.media_type)
-        self.assertEquals(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_specified_renderer_serializes_content_default_case(self):
         """If the Accept header is set the specified renderer should serialize the response.
         (In this case we check that works for the default renderer)"""
         resp = self.client.get('/', HTTP_ACCEPT=RendererA.media_type)
-        self.assertEquals(resp['Content-Type'], RendererA.media_type)
-        self.assertEquals(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_specified_renderer_serializes_content_non_default_case(self):
         """If the Accept header is set the specified renderer should serialize the response.
         (In this case we check that works for a non-default renderer)"""
         resp = self.client.get('/', HTTP_ACCEPT=RendererB.media_type)
-        self.assertEquals(resp['Content-Type'], RendererB.media_type)
-        self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_specified_renderer_serializes_content_on_accept_query(self):
         """The '_accept' query string should behave in the same way as the Accept header."""
@@ -126,34 +126,34 @@ class RendererIntegrationTests(TestCase):
             RendererB.media_type
         )
         resp = self.client.get('/' + param)
-        self.assertEquals(resp['Content-Type'], RendererB.media_type)
-        self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_specified_renderer_serializes_content_on_format_query(self):
         """If a 'format' query is specified, the renderer with the matching
         format attribute should serialize the response."""
         resp = self.client.get('/?format=%s' % RendererB.format)
-        self.assertEquals(resp['Content-Type'], RendererB.media_type)
-        self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_specified_renderer_serializes_content_on_format_kwargs(self):
         """If a 'format' keyword arg is specified, the renderer with the matching
         format attribute should serialize the response."""
         resp = self.client.get('/something.formatb')
-        self.assertEquals(resp['Content-Type'], RendererB.media_type)
-        self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
     def test_specified_renderer_is_used_on_format_query_with_matching_accept(self):
         """If both a 'format' query and a matching Accept header specified,
         the renderer with the matching format attribute should serialize the response."""
         resp = self.client.get('/?format=%s' % RendererB.format,
                                HTTP_ACCEPT=RendererB.media_type)
-        self.assertEquals(resp['Content-Type'], RendererB.media_type)
-        self.assertEquals(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
-        self.assertEquals(resp.status_code, DUMMYSTATUS)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
+        self.assertEqual(resp.status_code, DUMMYSTATUS)
 
 
 class Issue122Tests(TestCase):

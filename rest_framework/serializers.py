@@ -28,20 +28,23 @@ class DictWithMetadata(dict):
     def __getstate__(self):
         """
         Used by pickle (e.g., caching).
-        Overriden to remove metadata from the dict, since it shouldn't be pickled
-        and may in some instances be unpickleable.
+        Overriden to remove the metadata from the dict, since it shouldn't be
+        pickled and may in some instances be unpickleable.
         """
-        # return an instance of the first dict in MRO that isn't a DictWithMetadata
-        for base in self.__class__.__mro__:
-            if not isinstance(base, DictWithMetadata) and isinstance(base, dict):
-                return base(self)
+        return dict(self)
 
 
-class SortedDictWithMetadata(SortedDict, DictWithMetadata):
+class SortedDictWithMetadata(SortedDict):
     """
     A sorted dict-like object, that can have additional properties attached.
     """
-    pass
+    def __getstate__(self):
+        """
+        Used by pickle (e.g., caching).
+        Overriden to remove the metadata from the dict, since it shouldn't be
+        pickle and may in some instances be unpickleable.
+        """
+        return SortedDict(self).__dict__
 
 
 def _is_protected_type(obj):
@@ -161,6 +164,7 @@ class BaseSerializer(WritableField):
 
         # If 'fields' is specified, use those fields, in that order.
         if self.opts.fields:
+            assert isinstance(self.opts.fields, (list, tuple)), '`include` must be a list or tuple'
             new = SortedDict()
             for key in self.opts.fields:
                 new[key] = ret[key]
@@ -168,6 +172,7 @@ class BaseSerializer(WritableField):
 
         # Remove anything in 'exclude'
         if self.opts.exclude:
+            assert isinstance(self.opts.fields, (list, tuple)), '`exclude` must be a list or tuple'
             for key in self.opts.exclude:
                 ret.pop(key, None)
 
@@ -387,6 +392,10 @@ class BaseSerializer(WritableField):
                 many = self.many
             else:
                 many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict))
+                if many:
+                    warnings.warn('Implict list/queryset serialization is due to be deprecated. '
+                                  'Use the `many=True` flag when instantiating the serializer.',
+                                  PendingDeprecationWarning, stacklevel=3)
 
             ret = self.from_native(data, files, many)
 
@@ -409,6 +418,10 @@ class BaseSerializer(WritableField):
                 many = self.many
             else:
                 many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict))
+                if many:
+                    warnings.warn('Implict list/queryset serialization is due to be deprecated. '
+                                  'Use the `many=True` flag when instantiating the serializer.',
+                                  PendingDeprecationWarning, stacklevel=2)
 
             if many:
                 self._data = [self.to_native(item) for item in obj]
@@ -498,16 +511,39 @@ class ModelSerializer(Serializer):
                 # Propagate errors up to our parent
                 raise ValidationError(self._errors)
 
+    field_mapping = {
+        models.AutoField: IntegerField,
+        models.FloatField: FloatField,
+        models.IntegerField: IntegerField,
+        models.PositiveIntegerField: IntegerField,
+        models.SmallIntegerField: IntegerField,
+        models.PositiveSmallIntegerField: IntegerField,
+        models.DateTimeField: DateTimeField,
+        models.DateField: DateField,
+        models.TimeField: TimeField,
+        models.EmailField: EmailField,
+        models.CharField: CharField,
+        models.URLField: URLField,
+        models.SlugField: SlugField,
+        models.TextField: CharField,
+        models.CommaSeparatedIntegerField: CharField,
+        models.BooleanField: BooleanField,
+        models.FileField: FileField,
+        models.ImageField: ImageField,
+    }
+
     def get_default_fields(self):
         """
         Return all the fields that should be serialized for the model.
         """
 
         cls = self.opts.model
+        assert cls is not None, \
+                "Serializer class '%s' is missing 'model' Meta option" % self.__class__.__name__
         opts = get_concrete_model(cls)._meta
         pk_field = opts.pk
-        while pk_field.rel:
-            pk_field = pk_field.rel.to._meta.pk
+        # while pk_field.rel:
+        #     pk_field = pk_field.rel.to._meta.pk
         fields = [pk_field]
         fields += [field for field in opts.fields if field.serialize]
         fields += [field for field in opts.many_to_many if field.serialize]
@@ -593,27 +629,8 @@ class ModelSerializer(Serializer):
             kwargs['choices'] = model_field.flatchoices
             return ChoiceField(**kwargs)
 
-        field_mapping = {
-            models.AutoField: IntegerField,
-            models.FloatField: FloatField,
-            models.IntegerField: IntegerField,
-            models.PositiveIntegerField: IntegerField,
-            models.SmallIntegerField: IntegerField,
-            models.PositiveSmallIntegerField: IntegerField,
-            models.DateTimeField: DateTimeField,
-            models.DateField: DateField,
-            models.EmailField: EmailField,
-            models.CharField: CharField,
-            models.URLField: URLField,
-            models.SlugField: SlugField,
-            models.TextField: CharField,
-            models.CommaSeparatedIntegerField: CharField,
-            models.BooleanField: BooleanField,
-            models.FileField: FileField,
-            models.ImageField: ImageField,
-        }
         try:
-            return field_mapping[model_field.__class__](**kwargs)
+            return self.field_mapping[model_field.__class__](**kwargs)
         except KeyError:
             return ModelField(model_field=model_field, **kwargs)
 
@@ -625,6 +642,7 @@ class ModelSerializer(Serializer):
         opts = get_concrete_model(cls)._meta
         exclusions = [field.name for field in opts.fields + opts.many_to_many]
         for field_name, field in self.fields.items():
+            field_name = field.source or field_name
             if field_name in exclusions and not field.read_only:
                 exclusions.remove(field_name)
         return exclusions
@@ -675,12 +693,6 @@ class ModelSerializer(Serializer):
 
         else:
             instance = self.opts.model(**attrs)
-
-        try:
-            instance.full_clean(exclude=self.get_validation_exclusions())
-        except ValidationError as err:
-            self._errors = err.message_dict
-            return None
 
         return instance
 

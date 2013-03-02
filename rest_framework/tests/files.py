@@ -33,8 +33,8 @@ class FileSerializerTests(TestCase):
         serializer = UploadedFileSerializer(data={'created': now}, files={'file': file})
         uploaded_file = UploadedFile(file=file, created=now)
         self.assertTrue(serializer.is_valid())
-        self.assertEquals(serializer.object.created, uploaded_file.created)
-        self.assertEquals(serializer.object.file, uploaded_file.file)
+        self.assertEqual(serializer.object.created, uploaded_file.created)
+        self.assertEqual(serializer.object.file, uploaded_file.file)
         self.assertFalse(serializer.object is uploaded_file)
 
     def test_creation_failure(self):

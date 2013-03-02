@@ -211,13 +211,13 @@ class APIView(View):
 
     def get_parsers(self):
         """
-        Instantiates and returns the list of renderers that this view can use.
+        Instantiates and returns the list of parsers that this view can use.
         """
         return [parser() for parser in self.parser_classes]
 
     def get_authenticators(self):
         """
-        Instantiates and returns the list of renderers that this view can use.
+        Instantiates and returns the list of authenticators that this view can use.
         """
         return [auth() for auth in self.authentication_classes]
 
@@ -257,18 +257,38 @@ class APIView(View):
                 return (renderers[0], renderers[0].media_type)
             raise
 
-    def has_permission(self, request, obj=None):
+    def perform_authentication(self, request):
         """
-        Return `True` if the request should be permitted.
+        Perform authentication on the incoming request.
+
+        Note that if you override this and simply 'pass', then authentication
+        will instead be performed lazily, the first time either
+        `request.user` or `request.auth` is accessed.
+        """
+        request.user
+
+    def check_permissions(self, request):
+        """
+        Check if the request should be permitted.
+        Raises an appropriate exception if the request is not permitted.
         """
         for permission in self.get_permissions():
-            if not permission.has_permission(request, self, obj):
-                return False
-        return True
+            if not permission.has_permission(request, self):
+                self.permission_denied(request)
+
+    def check_object_permissions(self, request, obj):
+        """
+        Check if the request should be permitted for a given object.
+        Raises an appropriate exception if the request is not permitted.
+        """
+        for permission in self.get_permissions():
+            if not permission.has_object_permission(request, self, obj):
+                self.permission_denied(request)
 
     def check_throttles(self, request):
         """
         Check if request should be throttled.
+        Raises an appropriate exception if the request is throttled.
         """
         for throttle in self.get_throttles():
             if not throttle.allow_request(request, self):
@@ -295,8 +315,8 @@ class APIView(View):
         self.format_kwarg = self.get_format_suffix(**kwargs)
 
         # Ensure that the incoming request is permitted
-        if not self.has_permission(request):
-            self.permission_denied(request)
+        self.perform_authentication(request)
+        self.check_permissions(request)
         self.check_throttles(request)
 
         # Perform content negotiation and store the accepted info on the request
