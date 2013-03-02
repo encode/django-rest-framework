@@ -99,7 +99,7 @@ class SerializerOptions(object):
         self.exclude = getattr(meta, 'exclude', ())
 
 
-class BaseSerializer(Field):
+class BaseSerializer(WritableField):
     """
     This is the Serializer implementation.
     We need to implement it as `BaseSerializer` due to metaclass magicks.
@@ -129,6 +129,7 @@ class BaseSerializer(Field):
         self._data = None
         self._files = None
         self._errors = None
+        self._delete = False
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
@@ -215,7 +216,10 @@ class BaseSerializer(Field):
             try:
                 field.field_from_native(data, files, field_name, reverted_data)
             except ValidationError as err:
-                self._errors[field_name] = list(err.messages)
+                if hasattr(err, 'message_dict'):
+                    self._errors[field_name] = [err.message_dict]
+                else:
+                    self._errors[field_name] = list(err.messages)
 
         return reverted_data
 
@@ -439,6 +443,34 @@ class ModelSerializer(Serializer):
         models.ImageField: ImageField,
     }
 
+    def field_from_native(self, data, files, field_name, into):
+        if self.read_only:
+            return
+
+        try:
+            value = data[field_name]
+        except KeyError:
+            if self.required:
+                raise ValidationError(self.error_messages['required'])
+            return
+
+        if self.parent.object:
+            # Set the serializer object if it exists
+            obj = getattr(self.parent.object, field_name)
+            self.object = obj
+
+        if value in (None, ''):
+            self._delete = True
+            into[(self.source or field_name)] = self
+        else:
+            obj = self.from_native(value, files)
+            if not self._errors:
+                self.object = obj
+                into[self.source or field_name] = self
+            else:
+                # Propagate errors up to our parent
+                raise ValidationError(self._errors)
+
     def get_default_fields(self):
         """
         Return all the fields that should be serialized for the model.
@@ -611,10 +643,14 @@ class ModelSerializer(Serializer):
         if instance:
             return self.full_clean(instance)
 
-    def save(self):
-        """
-        Save the deserialized object and return it.
-        """
+    def _save(self, parent=None, fk_field=None):
+        if self._delete:
+            self.object.delete()
+            return
+
+        if parent and fk_field:
+            setattr(self.object, fk_field, parent)
+
         self.object.save()
 
         if getattr(self, 'm2m_data', None):
@@ -624,9 +660,18 @@ class ModelSerializer(Serializer):
 
         if getattr(self, 'related_data', None):
             for accessor_name, object_list in self.related_data.items():
-                setattr(self.object, accessor_name, object_list)
+                if isinstance(object_list, ModelSerializer):
+                    fk_field = self.object._meta.get_field_by_name(accessor_name)[0].field.name
+                    object_list._save(parent=self.object, fk_field=fk_field)
+                else:
+                    setattr(self.object, accessor_name, object_list)
             self.related_data = {}
-
+            
+    def save(self):
+        """
+        Save the deserialized object and return it.
+        """
+        self._save()
         return self.object
 
 
