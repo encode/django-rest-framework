@@ -69,6 +69,8 @@ Parses `JSON` request content.
 
 Parses `YAML` request content.
 
+Requires the `pyyaml` package to be installed.
+
 **.media_type**: `application/yaml`
 
 ## XMLParser
@@ -78,6 +80,8 @@ Parses REST framework's default style of `XML` request content.
 Note that the `XML` markup language is typically used as the base language for more strictly defined domain-specific languages, such as `RSS`, `Atom`, and `XHTML`.
 
 If you are considering using `XML` for your API, you may want to consider implementing a custom renderer and parser for your specific requirements, and using an existing domain-specific media-type, or creating your own custom XML-based media-type.
+
+Requires the `defusedxml` package to be installed.
 
 **.media_type**: `application/xml`
 

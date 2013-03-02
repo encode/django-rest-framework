@@ -28,20 +28,23 @@ class DictWithMetadata(dict):
     def __getstate__(self):
         """
         Used by pickle (e.g., caching).
-        Overriden to remove metadata from the dict, since it shouldn't be pickled
-        and may in some instances be unpickleable.
+        Overriden to remove the metadata from the dict, since it shouldn't be
+        pickled and may in some instances be unpickleable.
         """
-        # return an instance of the first dict in MRO that isn't a DictWithMetadata
-        for base in self.__class__.__mro__:
-            if not isinstance(base, DictWithMetadata) and isinstance(base, dict):
-                return base(self)
+        return dict(self)
 
 
-class SortedDictWithMetadata(SortedDict, DictWithMetadata):
+class SortedDictWithMetadata(SortedDict):
     """
     A sorted dict-like object, that can have additional properties attached.
     """
-    pass
+    def __getstate__(self):
+        """
+        Used by pickle (e.g., caching).
+        Overriden to remove the metadata from the dict, since it shouldn't be
+        pickle and may in some instances be unpickleable.
+        """
+        return SortedDict(self).__dict__
 
 
 def _is_protected_type(obj):
@@ -108,19 +111,21 @@ class BaseSerializer(WritableField):
     _dict_class = SortedDictWithMetadata
 
     def __init__(self, instance=None, data=None, files=None,
-                 context=None, partial=False, many=None, source=None):
+                 context=None, partial=False, many=None, source=None, required=True):
         super(BaseSerializer, self).__init__(source=source)
         self.opts = self._options_class(self.Meta)
         self.parent = None
         self.root = None
         self.partial = partial
         self.many = many
+        self.required = required
 
         self.context = context or {}
 
         self.init_data = data
         self.init_files = files
         self.object = instance
+        self.unused_objects = instance
         self.fields = self.get_fields()
 
         self._data = None
@@ -159,6 +164,7 @@ class BaseSerializer(WritableField):
 
         # If 'fields' is specified, use those fields, in that order.
         if self.opts.fields:
+            assert isinstance(self.opts.fields, (list, tuple)), '`include` must be a list or tuple'
             new = SortedDict()
             for key in self.opts.fields:
                 new[key] = ret[key]
@@ -166,6 +172,7 @@ class BaseSerializer(WritableField):
 
         # Remove anything in 'exclude'
         if self.opts.exclude:
+            assert isinstance(self.opts.fields, (list, tuple)), '`exclude` must be a list or tuple'
             for key in self.opts.exclude:
                 ret.pop(key, None)
 
@@ -280,13 +287,50 @@ class BaseSerializer(WritableField):
             ret.fields[key] = field
         return ret
 
-    def from_native(self, data, files):
+    def _get_object_from_data(self, data):
+        """
+        Get the corresponding object to deserialize the data into.
+        """
+        if self.unused_objects is None: return None
+
+        # Just get the first object in the list.
+        if self.unused_objects:
+            obj = self.unused_objects[0]
+            obj = obj[0]
+            self.unused_objects.remove(obj)
+        else:
+            obj = None
+
+        return obj
+
+    def from_native(self, data, files, many=False):
         """
         Deserialize primitives -> objects.
         """
-        if hasattr(data, '__iter__') and not isinstance(data, (dict, six.text_type)):
-            # TODO: error data when deserializing lists
-            return [self.from_native(item, None) for item in data]
+        if many:
+            # Both our object and data must be in list form
+            if ((data is not None and not (hasattr(data, '__iter__') and not isinstance(data, (Page, dict)))) or
+                (self.object is not None and not (hasattr(self.object, '__iter__') and not isinstance(self.object, (Page, dict))))):
+                self._errors = {'non_field_errors': ['Invalid data']}
+                return None
+
+            self._siblings = []
+            self._errors = []
+            for item in data:
+                obj = self._get_object_from_data(item)
+                # Deserializng a list of objects requires a separate
+                # serializer for each object (otherwise nested objects
+                # would share the nested serializers)
+                sibling = self.__class__(obj, data=item, many=False)
+                self._siblings.append(sibling)
+                sibling.object = sibling.from_native(item, None)
+                self._errors.append(sibling._errors)
+            for obj in self.unused_objects or []:
+                # Unused objects will be deleted.
+                sibling = self.__class__(obj)
+                sibling._delete = True
+                self._siblings.append(sibling)
+            return [sibling.object for sibling in self._siblings]
 
         self._errors = {}
         if data is not None or files is not None:
@@ -348,11 +392,12 @@ class BaseSerializer(WritableField):
                 many = self.many
             else:
                 many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict))
+                if many:
+                    warnings.warn('Implict list/queryset serialization is due to be deprecated. '
+                                  'Use the `many=True` flag when instantiating the serializer.',
+                                  PendingDeprecationWarning, stacklevel=3)
 
-            # TODO: error data when deserializing lists
-            if many:
-                ret = [self.from_native(item, None) for item in data]
-            ret = self.from_native(data, files)
+            ret = self.from_native(data, files, many)
 
             if not self._errors:
                 self.object = ret
@@ -373,6 +418,10 @@ class BaseSerializer(WritableField):
                 many = self.many
             else:
                 many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict))
+                if many:
+                    warnings.warn('Implict list/queryset serialization is due to be deprecated. '
+                                  'Use the `many=True` flag when instantiating the serializer.',
+                                  PendingDeprecationWarning, stacklevel=2)
 
             if many:
                 self._data = [self.to_native(item) for item in obj]
@@ -409,6 +458,27 @@ class ModelSerializer(Serializer):
     """
     _options_class = ModelSerializerOptions
 
+    def _get_object_from_data(self, data):
+        """
+        Get the corresponding object to deserialize the data into.
+        """
+        if self.unused_objects is None: return None
+
+        # Get the object based on pk
+        pk_field_name = self.opts.model._meta.pk.name
+        pk = data.get(pk_field_name, None)
+        if pk:
+            # Loop through objects and find one with pk or return None
+            obj = [o for o in self.unused_objects if o.pk == pk]
+            if obj:
+                obj = obj[0]
+                self.unused_objects.remove(obj)
+            else:
+                obj = None
+            return obj
+        else:
+            return None
+
     def field_from_native(self, data, files, field_name, into):
         if self.read_only:
             return
@@ -423,19 +493,44 @@ class ModelSerializer(Serializer):
         if self.parent.object:
             # Set the serializer object if it exists
             obj = getattr(self.parent.object, field_name)
+            if is_simple_callable(getattr(obj, 'all', None)):
+                # If this is a relational manager we just want the objects
+                obj = list(obj.all())
             self.object = obj
+            self.unused_objects = obj
 
         if value in (None, ''):
             self._delete = True
             into[(self.source or field_name)] = self
         else:
-            obj = self.from_native(value, files)
-            if not self._errors:
+            obj = self.from_native(value, files, self.many)
+            if not any(self._errors):
                 self.object = obj
                 into[self.source or field_name] = self
             else:
                 # Propagate errors up to our parent
                 raise ValidationError(self._errors)
+
+    field_mapping = {
+        models.AutoField: IntegerField,
+        models.FloatField: FloatField,
+        models.IntegerField: IntegerField,
+        models.PositiveIntegerField: IntegerField,
+        models.SmallIntegerField: IntegerField,
+        models.PositiveSmallIntegerField: IntegerField,
+        models.DateTimeField: DateTimeField,
+        models.DateField: DateField,
+        models.TimeField: TimeField,
+        models.EmailField: EmailField,
+        models.CharField: CharField,
+        models.URLField: URLField,
+        models.SlugField: SlugField,
+        models.TextField: CharField,
+        models.CommaSeparatedIntegerField: CharField,
+        models.BooleanField: BooleanField,
+        models.FileField: FileField,
+        models.ImageField: ImageField,
+    }
 
     def get_default_fields(self):
         """
@@ -443,10 +538,12 @@ class ModelSerializer(Serializer):
         """
 
         cls = self.opts.model
+        assert cls is not None, \
+                "Serializer class '%s' is missing 'model' Meta option" % self.__class__.__name__
         opts = get_concrete_model(cls)._meta
         pk_field = opts.pk
-        while pk_field.rel:
-            pk_field = pk_field.rel.to._meta.pk
+        # while pk_field.rel:
+        #     pk_field = pk_field.rel.to._meta.pk
         fields = [pk_field]
         fields += [field for field in opts.fields if field.serialize]
         fields += [field for field in opts.many_to_many if field.serialize]
@@ -532,27 +629,8 @@ class ModelSerializer(Serializer):
             kwargs['choices'] = model_field.flatchoices
             return ChoiceField(**kwargs)
 
-        field_mapping = {
-            models.AutoField: IntegerField,
-            models.FloatField: FloatField,
-            models.IntegerField: IntegerField,
-            models.PositiveIntegerField: IntegerField,
-            models.SmallIntegerField: IntegerField,
-            models.PositiveSmallIntegerField: IntegerField,
-            models.DateTimeField: DateTimeField,
-            models.DateField: DateField,
-            models.EmailField: EmailField,
-            models.CharField: CharField,
-            models.URLField: URLField,
-            models.SlugField: SlugField,
-            models.TextField: CharField,
-            models.CommaSeparatedIntegerField: CharField,
-            models.BooleanField: BooleanField,
-            models.FileField: FileField,
-            models.ImageField: ImageField,
-        }
         try:
-            return field_mapping[model_field.__class__](**kwargs)
+            return self.field_mapping[model_field.__class__](**kwargs)
         except KeyError:
             return ModelField(model_field=model_field, **kwargs)
 
@@ -564,6 +642,7 @@ class ModelSerializer(Serializer):
         opts = get_concrete_model(cls)._meta
         exclusions = [field.name for field in opts.fields + opts.many_to_many]
         for field_name, field in self.fields.items():
+            field_name = field.source or field_name
             if field_name in exclusions and not field.read_only:
                 exclusions.remove(field_name)
         return exclusions
@@ -615,23 +694,27 @@ class ModelSerializer(Serializer):
         else:
             instance = self.opts.model(**attrs)
 
-        try:
-            instance.full_clean(exclude=self.get_validation_exclusions())
-        except ValidationError as err:
-            self._errors = err.message_dict
-            return None
-
         return instance
 
-    def from_native(self, data, files):
+    def from_native(self, data, files, many=False):
         """
         Override the default method to also include model field validation.
         """
-        instance = super(ModelSerializer, self).from_native(data, files)
-        if instance:
-            return self.full_clean(instance)
+        instance = super(ModelSerializer, self).from_native(data, files, many)
+        if self.many and hasattr(self, '_siblings'):
+            objects = [s.full_clean(s.object) if s.object else None for s in self._siblings]
+            self._errors = [s._errors for s in self._siblings]
+            return objects
+        else:
+            if instance:
+                return self.full_clean(instance)
 
     def _save(self, parent=None, fk_field=None):
+        if self.many:
+            for s in self._siblings:
+                s._save(parent, fk_field)
+            return
+
         if self._delete:
             self.object.delete()
             return

@@ -9,12 +9,35 @@ from __future__ import unicode_literals
 from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.request import clone_request
+
+
+def _get_validation_exclusions(obj, pk=None, slug_field=None):
+    """
+    Given a model instance, and an optional pk and slug field,
+    return the full list of all other field names on that model.
+
+    For use when performing full_clean on a model instance,
+    so we only clean the required fields.
+    """
+    include = []
+
+    if pk:
+        pk_field = obj._meta.pk
+        while pk_field.rel:
+            pk_field = pk_field.rel.to._meta.pk
+        include.append(pk_field.name)
+
+    if slug_field:
+        include.append(slug_field)
+
+    return [field.name for field in obj._meta.fields if field.name not in include]
 
 
 class CreateModelMixin(object):
     """
     Create a model instance.
-    Should be mixed in with any `BaseView`.
+    Should be mixed in with any `GenericAPIView`.
     """
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -71,7 +94,7 @@ class ListModelMixin(object):
 class RetrieveModelMixin(object):
     """
     Retrieve a model instance.
-    Should be mixed in with `SingleObjectBaseView`.
+    Should be mixed in with `SingleObjectAPIView`.
     """
     def retrieve(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -82,7 +105,7 @@ class RetrieveModelMixin(object):
 class UpdateModelMixin(object):
     """
     Update a model instance.
-    Should be mixed in with `SingleObjectBaseView`.
+    Should be mixed in with `SingleObjectAPIView`.
     """
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
@@ -90,6 +113,9 @@ class UpdateModelMixin(object):
         try:
             self.object = self.get_object()
         except Http404:
+            # If this is a PUT-as-create operation, we need to ensure that
+            # we have relevant permissions, as if this was a POST request.
+            self.check_permissions(clone_request(request, 'POST'))
             created = True
             success_status_code = status.HTTP_201_CREATED
         else:
@@ -113,24 +139,26 @@ class UpdateModelMixin(object):
         """
         # pk and/or slug attributes are implicit in the URL.
         pk = self.kwargs.get(self.pk_url_kwarg, None)
+        slug = self.kwargs.get(self.slug_url_kwarg, None)
+        slug_field = slug and self.get_slug_field() or None
+
         if pk:
             setattr(obj, 'pk', pk)
 
-        slug = self.kwargs.get(self.slug_url_kwarg, None)
         if slug:
-            slug_field = self.get_slug_field()
             setattr(obj, slug_field, slug)
 
         # Ensure we clean the attributes so that we don't eg return integer
         # pk using a string representation, as provided by the url conf kwarg.
         if hasattr(obj, 'full_clean'):
-            obj.full_clean()
+            exclude = _get_validation_exclusions(obj, pk, slug_field)
+            obj.full_clean(exclude)
 
 
 class DestroyModelMixin(object):
     """
     Destroy a model instance.
-    Should be mixed in with `SingleObjectBaseView`.
+    Should be mixed in with `SingleObjectAPIView`.
     """
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()

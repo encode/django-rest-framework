@@ -76,11 +76,11 @@ The following methods are used by REST framework to instantiate the various plug
 
 The following methods are called before dispatching to the handler method.
 
-### .check_permissions(...)
+### .check_permissions(self, request)
 
-### .check_throttles(...)
+### .check_throttles(self, request)
 
-### .perform_content_negotiation(...)
+### .perform_content_negotiation(self, request, force=False)
 
 ## Dispatch methods
 
