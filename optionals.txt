@@ -2,4 +2,4 @@ markdown>=2.1.0
 PyYAML>=3.10
 defusedxml>=0.3
 django-filter>=0.5.4
--e git+git://github.com/caffeinehit/django-oauth2-provider.git@3198060acfe14730ce2d81310cbf2b13f6403438#egg=django_oauth2_provider-dev
+django-oauth2-provider>=0.2.3
