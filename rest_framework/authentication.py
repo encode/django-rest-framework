@@ -176,7 +176,7 @@ class OAuth2Authentication(BaseAuthentication):
         """
         auth = request.META.get('HTTP_AUTHORIZATION', '').split()
         if not auth or auth[0].lower() != "bearer":
-            return None
+            raise exceptions.AuthenticationFailed('Invalid Authorization token type')
 
         if len(auth) != 2:
             raise exceptions.AuthenticationFailed('Invalid token header')
@@ -211,8 +211,6 @@ class OAuth2Authentication(BaseAuthentication):
 
         raise exceptions.AuthenticationFailed(
             'You are not allowed to access this resource.')
-
-        return None
 
     def authenticate_header(self, request):
         """
