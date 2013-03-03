@@ -106,7 +106,7 @@ try:
         'provider',
         'provider.oauth2',
     )
-except ImportError, inst:
+except ImportError:
     import logging
     logging.warning("django-oauth2-provider is not install, some tests will be skipped")
 

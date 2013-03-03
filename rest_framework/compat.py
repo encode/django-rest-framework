@@ -431,5 +431,12 @@ except ImportError:
 # OAuth 2 support is optional
 try:
     import provider.oauth2 as oauth2_provider
+
+    # Hack to fix submodule import issues
+    submodules = ['backends', 'forms','managers','models','urls','views']
+    for s in submodules:
+        mod = __import__('provider.oauth2.%s.*' % s)
+        setattr(oauth2_provider, s, mod)
+
 except ImportError:
     oauth2_provider = None
