@@ -48,7 +48,6 @@ class Migration(SchemaMigration):
         },
         "%s.%s" % (User._meta.app_label, User._meta.module_name): {
             'Meta': {'object_name': User._meta.module_name},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
         },
         'authtoken.token': {
             'Meta': {'object_name': 'Token'},
