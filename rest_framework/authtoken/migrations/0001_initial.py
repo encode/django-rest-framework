@@ -4,6 +4,8 @@ from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
 
+from rest_framework.settings import api_settings
+
 
 try:
     from django.contrib.auth import get_user_model
@@ -14,6 +16,8 @@ else:
 
 
 class Migration(SchemaMigration):
+
+    depends_on = api_settings.REQUIRED_MIGRATIONS
 
     def forwards(self, orm):
         # Adding model 'Token'
@@ -45,7 +49,7 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
         "%s.%s" % (User._meta.app_label, User._meta.module_name): {
-            'Meta': {'object_name': 'User'},
+            'Meta': {'object_name': User._meta.module_name},
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),

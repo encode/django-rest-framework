@@ -76,6 +76,9 @@ DEFAULTS = {
     'URL_FORMAT_OVERRIDE': 'format',
 
     'FORMAT_SUFFIX_KWARG': 'format',
+
+    # Authtoken
+    'REQUIRED_MIGRATIONS': (),
 }
 
 
