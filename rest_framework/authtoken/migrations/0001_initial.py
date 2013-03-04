@@ -17,8 +17,6 @@ else:
 
 class Migration(SchemaMigration):
 
-    depends_on = api_settings.REQUIRED_MIGRATIONS
-
     def forwards(self, orm):
         # Adding model 'Token'
         db.create_table('authtoken_token', (

@@ -174,16 +174,4 @@ The name of a parameter in the URL conf that may be used to provide a format suf
 
 Default: `'format'`
 
-## REQUIRED_MIGRATIONS
-
-This is a list of required migrations which are needed by the authtoken migration.
-
-E.g.
-
-    (
-        ('users', '0001_initial'),
-    )
-
-Default: `'()'`
-
 [cite]: http://www.python.org/dev/peps/pep-0020/
