@@ -42,7 +42,8 @@ You can determine your currently installed version using `pip freeze`:
 
 ### Master
 
-* Request authentication is no longer lazily evaluated, instead authentication is always run, which results in more consistent, obvious behavior.  Eg. Supplying bad auth credentials will now always return an error response, even if no permissions are set on the view.
+* Support for custom input and output formats for `DateField`, `DateTimeField` and `TimeField`
+* Cleanup: Request authentication is no longer lazily evaluated, instead authentication is always run, which results in more consistent, obvious behavior.  Eg. Supplying bad auth credentials will now always return an error response, even if no permissions are set on the view.
 * Bugfix for serializer data being uncacheable with pickle protocol 0.
 * Bugfixes for model field validation edge-cases.
 * Bugfix for authtoken migration while using a custom user model and south.

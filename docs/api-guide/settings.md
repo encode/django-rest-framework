@@ -174,4 +174,28 @@ The name of a parameter in the URL conf that may be used to provide a format suf
 
 Default: `'format'`
 
+## DATE_INPUT_FORMATS
+
+Default: `ISO8601`
+
+## DATE_OUTPUT_FORMAT
+
+Default: `ISO8601`
+
+## DATETIME_INPUT_FORMATS
+
+Default: `ISO8601`
+
+## DATETIME_OUTPUT_FORMAT
+
+Default: `ISO8601`
+
+## TIME_INPUT_FORMATS
+
+Default: `ISO8601`
+
+## TIME_OUTPUT_FORMAT
+
+Default: `ISO8601`
+
 [cite]: http://www.python.org/dev/peps/pep-0020/
