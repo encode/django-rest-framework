@@ -113,7 +113,12 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
 This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.
 
-To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in your `INSTALLED_APPS` setting.
+To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in your `INSTALLED_APPS` setting:
+
+    INSTALLED_APPS = (
+        ...
+        'rest_framework.authtoken'
+    )
 
 You'll also need to create tokens for your users.
 
