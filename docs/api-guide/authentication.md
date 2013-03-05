@@ -192,7 +192,7 @@ You can do so by inserting a `needed_by` attribute in your user migration:
         def forwards(self):
             ...
 
-For more details, see the [south documentation on dependancies][south-dependancies].
+For more details, see the [south documentation on dependencies][south-dependencies].
 
 ## SessionAuthentication
 
@@ -259,6 +259,6 @@ HTTP digest authentication is a widely implemented scheme that was intended to r
 [csrf-ajax]: https://docs.djangoproject.com/en/dev/ref/contrib/csrf/#ajax
 [mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
 [custom-user-model]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#specifying-a-custom-user-model
-[south-dependancies]: http://south.readthedocs.org/en/latest/dependencies.html
+[south-dependencies]: http://south.readthedocs.org/en/latest/dependencies.html
 [juanriaza]: https://github.com/juanriaza
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
