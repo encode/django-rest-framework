@@ -174,28 +174,40 @@ The name of a parameter in the URL conf that may be used to provide a format suf
 
 Default: `'format'`
 
-## DATE_INPUT_FORMATS
+## DATETIME_FORMAT
 
-Default: `ISO8601`
+A format string that should be used by default for `DateTimeField` serializer fields.
 
-## DATE_OUTPUT_FORMAT
-
-Default: `ISO8601`
+Default: `'iso8601'`
 
 ## DATETIME_INPUT_FORMATS
 
-Default: `ISO8601`
+A list of format strings that should be used by default for parsing inputs to `DateTimeField` serializer fields.
 
-## DATETIME_OUTPUT_FORMAT
+Default: `['iso8601']`
 
-Default: `ISO8601`
+## DATE_FORMAT
+
+A format string that should be used by default for `DateField` serializer fields.
+
+Default: `'iso8601'`
+
+## DATE_INPUT_FORMATS
+
+A list of format strings that should be used by default for parsing inputs to `DateField` serializer fields.
+
+Default: `['iso8601']`
+
+## TIME_FORMAT
+
+A format string that should be used by default for `TimeField` serializer fields.
+
+Default: `'iso8601'`
 
 ## TIME_INPUT_FORMATS
 
-Default: `ISO8601`
+A list of format strings that should be used by default for parsing inputs to `TimeField` serializer fields.
 
-## TIME_OUTPUT_FORMAT
-
-Default: `ISO8601`
+Default: `['iso8601']`
 
 [cite]: http://www.python.org/dev/peps/pep-0020/

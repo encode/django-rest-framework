@@ -181,25 +181,9 @@ Corresponds to `django.forms.fields.RegexField`
 
 **Signature:** `RegexField(regex, max_length=None, min_length=None)`
 
-## DateField
-
-A date representation.
-
-Optionally takes `format` as parameter to replace the matching pattern.
-
-Corresponds to `django.db.models.fields.DateField`
-
-**Signature:** `DateField(input_formats=None, output_format=False)`
-
- - `input_formats` designates which input formats are supported. This will override the `DATE_INPUT_FORMATS`
-
- - `output_format` designates which output format will be used. This will override the `DATE_OUTPUT_FORMAT`
-
 ## DateTimeField
 
 A date and time representation.
-
-Optionally takes `format` as parameter to replace the matching pattern.
 
 Corresponds to `django.db.models.fields.DateTimeField`
 
@@ -213,11 +197,25 @@ If you want to override this behavior, you'll need to declare the `DateTimeField
         class Meta:
             model = Comment
 
-**Signature:** `DateTimeField(input_formats=None, output_format=False)`
+**Signature:** `DateTimeField(format=None, input_formats=None)`
 
- - `input_formats` designates which input formats are supported. This will override the `DATETIME_INPUT_FORMATS`
+* `format` - A string representing the output format.  If not specified, the `DATETIME_FORMAT` setting will be used, which defaults to `'iso8601'`.
+* `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso8601']`.
 
- - `output_format` designates which output format will be used. This will override the `DATETIME_OUTPUT_FORMAT`
+DateTime format strings may either be [python strftime formats][strftime] which explicitly specifiy the format, or the special string `'is8601'`, which indicates that [ISO 8601][iso8601] style datetimes should be used. (eg `'2013-01-29T12:34:56.000000'`)
+
+## DateField
+
+A date representation.
+
+Corresponds to `django.db.models.fields.DateField`
+
+**Signature:** `DateField(format=None, input_formats=None)`
+
+* `format` - A string representing the output format.  If not specified, the `DATE_FORMAT` setting will be used, which defaults to `'iso8601'`.
+* `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `DATE_INPUT_FORMATS` setting will be used, which defaults to `['iso8601']`. 
+
+Date format strings may either be [python strftime formats][strftime] which explicitly specifiy the format, or the special string `'is8601'`, which indicates that [ISO 8601][iso8601] style dates should be used. (eg `'2013-01-29'`)
 
 ## TimeField
 
@@ -227,11 +225,12 @@ Optionally takes `format` as parameter to replace the matching pattern.
 
 Corresponds to `django.db.models.fields.TimeField`
 
-**Signature:** `TimeField(input_formats=None, output_format=False)`
+**Signature:** `TimeField(format=None, input_formats=None)`
 
- - `input_formats` designates which input formats are supported. This will override the `TIME_INPUT_FORMATS`
+* `format` - A string representing the output format.  If not specified, the `TIME_FORMAT` setting will be used, which defaults to `'iso8601'`.
+* `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `TIME_INPUT_FORMATS` setting will be used, which defaults to `['iso8601']`.
 
- - `output_format` designates which output format will be used. This will override the `TIME_OUTPUT_FORMAT`
+Time format strings may either be [python strftime formats][strftime] which explicitly specifiy the format, or the special string `'is8601'`, which indicates that [ISO 8601][iso8601] style times should be used. (eg `'12:34:56.000000'`)
 
 ## IntegerField
 
@@ -276,3 +275,5 @@ Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
+[strftime]: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
+[iso8601]: http://www.w3.org/TR/NOTE-datetime
