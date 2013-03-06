@@ -79,6 +79,10 @@ To run the tests.
 
     ./rest_framework/runtests/runtests.py
 
+To run the tests against all supported configurations, first install [the tox testing tool][tox] globally, using `pip install tox`, then simply run `tox`: 
+
+    tox
+
 # License
 
 Copyright (c) 2011-2013, Tom Christie
@@ -112,6 +116,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [sandbox]: http://restframework.herokuapp.com/
 [rest-framework-2-announcement]: http://django-rest-framework.org/topics/rest-framework-2-announcement.html
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
+
+[tox]: http://testrun.org/tox/latest/
 
 [docs]: http://django-rest-framework.org/
 [urlobject]: https://github.com/zacharyvoase/urlobject
