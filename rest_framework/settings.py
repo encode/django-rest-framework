@@ -22,7 +22,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.utils import importlib
 
-from rest_framework import ISO8601
+from rest_framework import ISO_8601
 from rest_framework.compat import six
 
 
@@ -82,19 +82,19 @@ DEFAULTS = {
 
     # Input and output formats
     'DATE_INPUT_FORMATS': (
-        ISO8601,
+        ISO_8601,
     ),
-    'DATE_OUTPUT_FORMAT': ISO8601,
+    'DATE_FORMAT': ISO_8601,
 
     'DATETIME_INPUT_FORMATS': (
-        ISO8601,
+        ISO_8601,
     ),
-    'DATETIME_OUTPUT_FORMAT': ISO8601,
+    'DATETIME_FORMAT': ISO_8601,
 
     'TIME_INPUT_FORMATS': (
-        ISO8601,
+        ISO_8601,
     ),
-    'TIME_OUTPUT_FORMAT': ISO8601,
+    'TIME_FORMAT': ISO_8601,
 }
 
 

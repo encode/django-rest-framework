@@ -34,7 +34,11 @@ The `api_settings` object will check for any user-defined settings, and otherwis
 
 # API Reference
 
-## DEFAULT_RENDERER_CLASSES
+## API policy settings
+
+*The following settings control the basic API policies, and are applied to every `APIView` class based view, or `@api_view` function based view.*
+
+#### DEFAULT_RENDERER_CLASSES
 
 A list or tuple of renderer classes, that determines the default set of renderers that may be used when returning a `Response` object.
 
@@ -45,7 +49,7 @@ Default:
         'rest_framework.renderers.BrowsableAPIRenderer',
     )
 
-## DEFAULT_PARSER_CLASSES
+#### DEFAULT_PARSER_CLASSES
 
 A list or tuple of parser classes, that determines the default set of parsers used when accessing the `request.DATA` property.
 
@@ -57,7 +61,7 @@ Default:
         'rest_framework.parsers.MultiPartParser'
     )
 
-## DEFAULT_AUTHENTICATION_CLASSES
+#### DEFAULT_AUTHENTICATION_CLASSES
 
 A list or tuple of authentication classes, that determines the default set of authenticators used when accessing the `request.user` or `request.auth` properties.
 
@@ -68,7 +72,7 @@ Default:
         'rest_framework.authentication.BasicAuthentication'
     )
 
-## DEFAULT_PERMISSION_CLASSES
+#### DEFAULT_PERMISSION_CLASSES
 
 A list or tuple of permission classes, that determines the default set of permissions checked at the start of a view.
 
@@ -78,59 +82,77 @@ Default:
         'rest_framework.permissions.AllowAny',
     )
 
-## DEFAULT_THROTTLE_CLASSES
+#### DEFAULT_THROTTLE_CLASSES
 
 A list or tuple of throttle classes, that determines the default set of throttles checked at the start of a view.
 
 Default: `()`
 
-## DEFAULT_CONTENT_NEGOTIATION_CLASS
+#### DEFAULT_CONTENT_NEGOTIATION_CLASS
 
 A content negotiation class, that determines how a renderer is selected for the response, given an incoming request.
 
 Default: `'rest_framework.negotiation.DefaultContentNegotiation'`
 
-## DEFAULT_MODEL_SERIALIZER_CLASS
+---
+
+## Generic view settings
+
+*The following settings control the behavior of the generic class based views.*
+
+#### DEFAULT_MODEL_SERIALIZER_CLASS
 
 A class that determines the default type of model serializer that should be used by a generic view if `model` is specified, but `serializer_class` is not provided.
 
 Default: `'rest_framework.serializers.ModelSerializer'`
 
-## DEFAULT_PAGINATION_SERIALIZER_CLASS
+#### DEFAULT_PAGINATION_SERIALIZER_CLASS
 
 A class the determines the default serialization style for paginated responses.
 
 Default: `rest_framework.pagination.PaginationSerializer`
 
-## FILTER_BACKEND
+#### FILTER_BACKEND
 
 The filter backend class that should be used for generic filtering.  If set to `None` then generic filtering is disabled.
 
-## PAGINATE_BY
+#### PAGINATE_BY
 
 The default page size to use for pagination.  If set to `None`, pagination is disabled by default.
 
 Default: `None`
 
-## PAGINATE_BY_PARAM
+#### PAGINATE_BY_PARAM
 
 The name of a query parameter, which can be used by the client to overide the default page size to use for pagination.  If set to `None`, clients may not override the default page size.
 
 Default: `None`
 
-## UNAUTHENTICATED_USER
+---
+
+## Authentication settings
+
+*The following settings control the behavior of unauthenticated requests.*
+
+#### UNAUTHENTICATED_USER
 
 The class that should be used to initialize `request.user` for unauthenticated requests.
 
 Default: `django.contrib.auth.models.AnonymousUser`
 
-## UNAUTHENTICATED_TOKEN
+#### UNAUTHENTICATED_TOKEN
 
 The class that should be used to initialize `request.auth` for unauthenticated requests.
 
 Default: `None`
 
-## FORM_METHOD_OVERRIDE
+---
+
+## Browser overrides
+
+*The following settings provide URL or form-based overrides of the default browser behavior.*
+
+#### FORM_METHOD_OVERRIDE
 
 The name of a form field that may be used to override the HTTP method of the form.
 
@@ -138,7 +160,7 @@ If the value of this setting is `None` then form method overloading will be disa
 
 Default: `'_method'`
 
-## FORM_CONTENT_OVERRIDE
+#### FORM_CONTENT_OVERRIDE
 
 The name of a form field that may be used to override the content of the form payload.  Must be used together with `FORM_CONTENTTYPE_OVERRIDE`.
 
@@ -146,7 +168,7 @@ If either setting is `None` then form content overloading will be disabled.
 
 Default: `'_content'`
 
-## FORM_CONTENTTYPE_OVERRIDE
+#### FORM_CONTENTTYPE_OVERRIDE
 
 The name of a form field that may be used to override the content type of the form payload.  Must be used together with `FORM_CONTENT_OVERRIDE`.
 
@@ -154,7 +176,7 @@ If either setting is `None` then form content overloading will be disabled.
 
 Default: `'_content_type'`
 
-## URL_ACCEPT_OVERRIDE
+#### URL_ACCEPT_OVERRIDE
 
 The name of a URL parameter that may be used to override the HTTP `Accept` header.
 
@@ -162,52 +184,62 @@ If the value of this setting is `None` then URL accept overloading will be disab
 
 Default: `'accept'`
 
-## URL_FORMAT_OVERRIDE
+#### URL_FORMAT_OVERRIDE
 
 The name of a URL parameter that may be used to override the default `Accept` header based content negotiation.
 
 Default: `'format'`
 
-## FORMAT_SUFFIX_KWARG
+---
+
+## Date/Time formatting
+
+*The following settings are used to control how date and time representations may be parsed and rendered.*
+
+#### DATETIME_FORMAT
+
+A format string that should be used by default for rendering the output of `DateTimeField` serializer fields.
+
+Default: `'iso-8601'`
+
+#### DATETIME_INPUT_FORMATS
+
+A list of format strings that should be used by default for parsing inputs to `DateTimeField` serializer fields.
+
+Default: `['iso-8601']`
+
+#### DATE_FORMAT
+
+A format string that should be used by default for rendering the output of `DateField` serializer fields.
+
+Default: `'iso-8601'`
+
+#### DATE_INPUT_FORMATS
+
+A list of format strings that should be used by default for parsing inputs to `DateField` serializer fields.
+
+Default: `['iso-8601']`
+
+#### TIME_FORMAT
+
+A format string that should be used by default for rendering the output of `TimeField` serializer fields.
+
+Default: `'iso-8601'`
+
+#### TIME_INPUT_FORMATS
+
+A list of format strings that should be used by default for parsing inputs to `TimeField` serializer fields.
+
+Default: `['iso-8601']`
+
+---
+
+## Miscellaneous settings
+
+#### FORMAT_SUFFIX_KWARG
 
 The name of a parameter in the URL conf that may be used to provide a format suffix.
 
 Default: `'format'`
-
-## DATETIME_FORMAT
-
-A format string that should be used by default for `DateTimeField` serializer fields.
-
-Default: `'iso8601'`
-
-## DATETIME_INPUT_FORMATS
-
-A list of format strings that should be used by default for parsing inputs to `DateTimeField` serializer fields.
-
-Default: `['iso8601']`
-
-## DATE_FORMAT
-
-A format string that should be used by default for `DateField` serializer fields.
-
-Default: `'iso8601'`
-
-## DATE_INPUT_FORMATS
-
-A list of format strings that should be used by default for parsing inputs to `DateField` serializer fields.
-
-Default: `['iso8601']`
-
-## TIME_FORMAT
-
-A format string that should be used by default for `TimeField` serializer fields.
-
-Default: `'iso8601'`
-
-## TIME_INPUT_FORMATS
-
-A list of format strings that should be used by default for parsing inputs to `TimeField` serializer fields.
-
-Default: `['iso8601']`
 
 [cite]: http://www.python.org/dev/peps/pep-0020/

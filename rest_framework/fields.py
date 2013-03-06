@@ -14,13 +14,12 @@ from django.forms import widgets
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
 
-from rest_framework import ISO8601
+from rest_framework import ISO_8601
 from rest_framework.compat import timezone, parse_date, parse_datetime, parse_time
 from rest_framework.compat import BytesIO
 from rest_framework.compat import six
 from rest_framework.compat import smart_text
 from rest_framework.settings import api_settings
-from rest_framework.utils.dates import get_readable_date_format
 
 
 def is_simple_callable(obj):
@@ -50,6 +49,46 @@ def get_component(obj, attr_name):
     if is_simple_callable(val):
         return val()
     return val
+
+
+def readable_datetime_formats(formats):
+    format = ', '.join(formats).replace(ISO_8601, 'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]')
+    return humanize_strptime(format)
+
+
+def readable_date_formats(formats):
+    format = ', '.join(formats).replace(ISO_8601, 'YYYY[-MM[-DD]]')
+    return humanize_strptime(format)
+
+
+def readable_time_formats(formats):
+    format = ', '.join(formats).replace(ISO_8601, 'hh:mm[:ss[.uuuuuu]]')
+    return humanize_strptime(format)
+
+
+def humanize_strptime(format_string):
+    # Note that we're missing some of the locale specific mappings that
+    # don't really make sense.
+    mapping = {
+        "%Y": "YYYY",
+        "%y": "YY",
+        "%m": "MM",
+        "%b": "[Jan-Dec]",
+        "%B": "[January-December]",
+        "%d": "DD",
+        "%H": "hh",
+        "%I": "hh",  # Requires '%p' to differentiate from '%H'.
+        "%M": "mm",
+        "%S": "ss",
+        "%f": "uuuuuu",
+        "%a": "[Mon-Sun]",
+        "%A": "[Monday-Sunday]",
+        "%p": "[AM|PM]",
+        "%z": "[+HHMM|-HHMM]"
+    }
+    for key, val in mapping.items():
+        format_string = format_string.replace(key, val)
+    return format_string
 
 
 class Field(object):
@@ -453,11 +492,11 @@ class DateField(WritableField):
     }
     empty = None
     input_formats = api_settings.DATE_INPUT_FORMATS
-    output_format = api_settings.DATE_OUTPUT_FORMAT
+    format = api_settings.DATE_FORMAT
 
-    def __init__(self, input_formats=None, output_format=None, *args, **kwargs):
+    def __init__(self, input_formats=None, format=None, *args, **kwargs):
         self.input_formats = input_formats if input_formats is not None else self.input_formats
-        self.output_format = output_format if output_format is not None else self.output_format
+        self.format = format if format is not None else self.format
         super(DateField, self).__init__(*args, **kwargs)
 
     def from_native(self, value):
@@ -475,7 +514,7 @@ class DateField(WritableField):
             return value
 
         for format in self.input_formats:
-            if format.lower() == ISO8601:
+            if format.lower() == ISO_8601:
                 try:
                     parsed = parse_date(value)
                 except (ValueError, TypeError):
@@ -491,16 +530,15 @@ class DateField(WritableField):
                 else:
                     return parsed.date()
 
-        date_input_formats = '; '.join(self.input_formats).replace(ISO8601, 'YYYY-MM-DD')
-        msg = self.error_messages['invalid'] % get_readable_date_format(date_input_formats)
+        msg = self.error_messages['invalid'] % readable_date_formats(self.input_formats)
         raise ValidationError(msg)
 
     def to_native(self, value):
         if isinstance(value, datetime.datetime):
             value = value.date()
-        if self.output_format.lower() == ISO8601:
+        if self.format.lower() == ISO_8601:
             return value.isoformat()
-        return value.strftime(self.output_format)
+        return value.strftime(self.format)
 
 
 class DateTimeField(WritableField):
@@ -513,11 +551,11 @@ class DateTimeField(WritableField):
     }
     empty = None
     input_formats = api_settings.DATETIME_INPUT_FORMATS
-    output_format = api_settings.DATETIME_OUTPUT_FORMAT
+    format = api_settings.DATETIME_FORMAT
 
-    def __init__(self, input_formats=None, output_format=None, *args, **kwargs):
+    def __init__(self, input_formats=None, format=None, *args, **kwargs):
         self.input_formats = input_formats if input_formats is not None else self.input_formats
-        self.output_format = output_format if output_format is not None else self.output_format
+        self.format = format if format is not None else self.format
         super(DateTimeField, self).__init__(*args, **kwargs)
 
     def from_native(self, value):
@@ -541,7 +579,7 @@ class DateTimeField(WritableField):
             return value
 
         for format in self.input_formats:
-            if format.lower() == ISO8601:
+            if format.lower() == ISO_8601:
                 try:
                     parsed = parse_datetime(value)
                 except (ValueError, TypeError):
@@ -557,14 +595,13 @@ class DateTimeField(WritableField):
                 else:
                     return parsed
 
-        datetime_input_formats = '; '.join(self.input_formats).replace(ISO8601, 'YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]')
-        msg = self.error_messages['invalid'] % get_readable_date_format(datetime_input_formats)
+        msg = self.error_messages['invalid'] % readable_datetime_formats(self.input_formats)
         raise ValidationError(msg)
 
     def to_native(self, value):
-        if self.output_format.lower() == ISO8601:
+        if self.format.lower() == ISO_8601:
             return value.isoformat()
-        return value.strftime(self.output_format)
+        return value.strftime(self.format)
 
 
 class TimeField(WritableField):
@@ -577,11 +614,11 @@ class TimeField(WritableField):
     }
     empty = None
     input_formats = api_settings.TIME_INPUT_FORMATS
-    output_format = api_settings.TIME_OUTPUT_FORMAT
+    format = api_settings.TIME_FORMAT
 
-    def __init__(self, input_formats=None, output_format=None, *args, **kwargs):
+    def __init__(self, input_formats=None, format=None, *args, **kwargs):
         self.input_formats = input_formats if input_formats is not None else self.input_formats
-        self.output_format = output_format if output_format is not None else self.output_format
+        self.format = format if format is not None else self.format
         super(TimeField, self).__init__(*args, **kwargs)
 
     def from_native(self, value):
@@ -592,7 +629,7 @@ class TimeField(WritableField):
             return value
 
         for format in self.input_formats:
-            if format.lower() == ISO8601:
+            if format.lower() == ISO_8601:
                 try:
                     parsed = parse_time(value)
                 except (ValueError, TypeError):
@@ -608,16 +645,15 @@ class TimeField(WritableField):
                 else:
                     return parsed.time()
 
-        time_input_formats = '; '.join(self.input_formats).replace(ISO8601, 'HH:MM[:ss[.uuuuuu]]')
-        msg = self.error_messages['invalid'] % get_readable_date_format(time_input_formats)
+        msg = self.error_messages['invalid'] % readable_time_formats(self.input_formats)
         raise ValidationError(msg)
 
     def to_native(self, value):
         if isinstance(value, datetime.datetime):
             value = value.time()
-        if self.output_format.lower() == ISO8601:
+        if self.format.lower() == ISO_8601:
             return value.isoformat()
-        return value.strftime(self.output_format)
+        return value.strftime(self.format)
 
 
 class IntegerField(WritableField):

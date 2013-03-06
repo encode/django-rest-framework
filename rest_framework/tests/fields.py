@@ -59,7 +59,7 @@ class BasicFieldTests(TestCase):
         PK fields other than AutoField fields should not be read_only by default.
         """
         serializer = CharPrimaryKeyModelSerializer()
-        self.assertEquals(serializer.fields['id'].read_only, False)
+        self.assertEqual(serializer.fields['id'].read_only, False)
 
 
 class DateFieldTest(TestCase):
@@ -134,7 +134,7 @@ class DateFieldTest(TestCase):
         try:
             f.from_native('1984-13-31')
         except validators.ValidationError as e:
-            self.assertEqual(e.messages, ["Date has wrong format. Use one of these formats instead: YYYY-MM-DD"])
+            self.assertEqual(e.messages, ["Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]]"])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -147,7 +147,7 @@ class DateFieldTest(TestCase):
         try:
             f.from_native('1984 -- 31')
         except validators.ValidationError as e:
-            self.assertEqual(e.messages, ["Date has wrong format. Use one of these formats instead: YYYY-MM-DD"])
+            self.assertEqual(e.messages, ["Date has wrong format. Use one of these formats instead: YYYY[-MM[-DD]]"])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -165,7 +165,7 @@ class DateFieldTest(TestCase):
         """
         Make sure to_native() returns correct custom format.
         """
-        f = serializers.DateField(output_format="%Y - %m.%d")
+        f = serializers.DateField(format="%Y - %m.%d")
 
         result_1 = f.to_native(datetime.date(1984, 7, 31))
 
@@ -221,7 +221,7 @@ class DateTimeFieldTest(TestCase):
         try:
             f.from_native('1984-07-31 04:31:59')
         except validators.ValidationError as e:
-            self.assertEqual(e.messages, ["Datetime has wrong format. Use one of these formats instead: YYYY -- HH:MM"])
+            self.assertEqual(e.messages, ["Datetime has wrong format. Use one of these formats instead: YYYY -- hh:mm"])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -253,7 +253,7 @@ class DateTimeFieldTest(TestCase):
             f.from_native('04:61:59')
         except validators.ValidationError as e:
             self.assertEqual(e.messages, ["Datetime has wrong format. Use one of these formats instead: "
-                                          "YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]"])
+                                          "YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]"])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -267,7 +267,7 @@ class DateTimeFieldTest(TestCase):
             f.from_native('04 -- 31')
         except validators.ValidationError as e:
             self.assertEqual(e.messages, ["Datetime has wrong format. Use one of these formats instead: "
-                                          "YYYY-MM-DD HH:MM[:ss[.uuuuuu]][TZ]"])
+                                          "YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]"])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -291,7 +291,7 @@ class DateTimeFieldTest(TestCase):
         """
         Make sure to_native() returns correct custom format.
         """
-        f = serializers.DateTimeField(output_format="%Y - %H:%M")
+        f = serializers.DateTimeField(format="%Y - %H:%M")
 
         result_1 = f.to_native(datetime.datetime(1984, 7, 31))
         result_2 = f.to_native(datetime.datetime(1984, 7, 31, 4, 31))
@@ -353,7 +353,7 @@ class TimeFieldTest(TestCase):
         try:
             f.from_native('04:31:59')
         except validators.ValidationError as e:
-            self.assertEqual(e.messages, ["Time has wrong format. Use one of these formats instead: HH -- MM"])
+            self.assertEqual(e.messages, ["Time has wrong format. Use one of these formats instead: hh -- mm"])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -385,7 +385,7 @@ class TimeFieldTest(TestCase):
             f.from_native('04:61:59')
         except validators.ValidationError as e:
             self.assertEqual(e.messages, ["Time has wrong format. Use one of these formats instead: "
-                                          "HH:MM[:ss[.uuuuuu]]"])
+                                          "hh:mm[:ss[.uuuuuu]]"])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -399,7 +399,7 @@ class TimeFieldTest(TestCase):
             f.from_native('04 -- 31')
         except validators.ValidationError as e:
             self.assertEqual(e.messages, ["Time has wrong format. Use one of these formats instead: "
-                                          "HH:MM[:ss[.uuuuuu]]"])
+                                          "hh:mm[:ss[.uuuuuu]]"])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -420,7 +420,7 @@ class TimeFieldTest(TestCase):
         """
         Make sure to_native() returns correct custom format.
         """
-        f = serializers.TimeField(output_format="%H - %S [%f]")
+        f = serializers.TimeField(format="%H - %S [%f]")
         result_1 = f.to_native(datetime.time(4, 31))
         result_2 = f.to_native(datetime.time(4, 31, 59))
         result_3 = f.to_native(datetime.time(4, 31, 59, 200))

@@ -6,4 +6,4 @@ VERSION = __version__  # synonym
 HTTP_HEADER_ENCODING = 'iso-8859-1'
 
 # Default input and output format
-ISO8601 = 'iso-8601'
+ISO_8601 = 'iso-8601'
