@@ -18,8 +18,11 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from __future__ import unicode_literals
+
 from django.conf import settings
 from django.utils import importlib
+
+from rest_framework import ISO_8601
 from rest_framework.compat import six
 
 
@@ -76,6 +79,22 @@ DEFAULTS = {
     'URL_FORMAT_OVERRIDE': 'format',
 
     'FORMAT_SUFFIX_KWARG': 'format',
+
+    # Input and output formats
+    'DATE_INPUT_FORMATS': (
+        ISO_8601,
+    ),
+    'DATE_FORMAT': ISO_8601,
+
+    'DATETIME_INPUT_FORMATS': (
+        ISO_8601,
+    ),
+    'DATETIME_FORMAT': ISO_8601,
+
+    'TIME_INPUT_FORMATS': (
+        ISO_8601,
+    ),
+    'TIME_FORMAT': ISO_8601,
 }
 
 
