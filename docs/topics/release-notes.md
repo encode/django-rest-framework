@@ -40,7 +40,9 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.2.x series
 
-### Master
+### 2.2.2
+
+**Date**: 6th March 2013
 
 * Support for custom input and output formats for `DateField`, `DateTimeField` and `TimeField`.
 * Cleanup: Request authentication is no longer lazily evaluated, instead authentication is always run, which results in more consistent, obvious behavior.  Eg. Supplying bad auth credentials will now always return an error response, even if no permissions are set on the view.
