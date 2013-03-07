@@ -185,7 +185,7 @@ class OAuthAuthentication(BaseAuthentication):
         try:
             consumer_key = oauth_request.get_parameter('oauth_consumer_key')
             consumer = oauth_provider_store.get_consumer(request, oauth_request, consumer_key)
-        except oauth_provider_store.InvalidConsumerError, err:
+        except oauth_provider_store.InvalidConsumerError as err:
             raise exceptions.AuthenticationFailed(err)
 
         if consumer.status != oauth_provider.consts.ACCEPTED:
@@ -201,8 +201,8 @@ class OAuthAuthentication(BaseAuthentication):
 
         try:
             self.validate_token(request, consumer, token)
-        except oauth.Error, e:
-            raise exceptions.AuthenticationFailed(e.message)
+        except oauth.Error as err:
+            raise exceptions.AuthenticationFailed(err.message)
 
         user = token.user
 
