@@ -209,17 +209,80 @@ If you're using an AJAX style API with SessionAuthentication, you'll need to mak
 
 ## OAuthAuthentication
 
-This authentication uses [OAuth 1.0][rfc5849] authentication scheme. It depends on optional `django-oauth-plus` and `oauth2` packages. In order to make it work you must istall these packages and add `oauth_provider` (from `django-oauth-plus`) to your `INSTALLED_APPS`:
+This authentication uses [OAuth 1.0a][oauth-1.0a] authentication scheme. It depends on the optional `django-oauth-plus` and `oauth2` packages. In order to make it work you must install these packages and add `oauth_provider` to your `INSTALLED_APPS`:
 
     INSTALLED_APPS = (
-        #(...)
+        ...
         `oauth_provider`,
     )
 
 OAuthAuthentication class provides only token verification and signature validation for requests. It doesn't provide authorization flow for your clients. You still need to implement your own views for accessing and authorizing Reqest/Access Tokens. This is because there are many different OAuth flows in use. Almost always they require end-user interaction, and most likely this is what you want to design yourself.
 
-Luckily `django-oauth-plus` provides simple foundation for classic 'three-legged' oauth flow, so if it is what you need please refer to [its documentation](http://code.larlet.fr/django-oauth-plus/wiki/Home). This documentation will provide you also information about how to work with supplied models and change basic settings.
+#### Getting started with django-oauth-plus
 
+The `django-oauth-plus` package provides simple foundation for classic 'three-legged' oauth flow, so if it is what you need please refer to [its documentation](http://code.larlet.fr/django-oauth-plus/wiki/Home). This documentation will provide you also information about how to work with supplied models and change basic settings.
+
+## OAuth2Authentication
+
+This authentication uses [OAuth 2.0][rfc6749] authentication scheme. It depends on the optional [`django-oauth2-provider`][django-oauth2-provider] project. In order to make it work you must install this package and add `provider` and `provider.oauth2` to your `INSTALLED_APPS` :
+
+    INSTALLED_APPS = (
+        ...
+        'provider',
+        'provider.oauth2',
+    )
+
+And include the urls needed in your root `urls.py` file to be able to begin the *oauth 2 dance* :
+
+    url(r'^oauth2/', include('provider.oauth2.urls', namespace='oauth2')),
+
+** Note**: The `namespace` argument is required
+
+Finally, sync your database with those two new django apps.
+
+    $ python manage.py syncdb
+    $ python manage.py migrate 
+
+`OAuth2Authentication` class provides only token verification for requests. The *oauth 2 dance* is taken care by the [`django-oaut2-provider`][django-oauth2-provider] dependency. The official [documentation][django-oauth2-provider--doc] is being [rewritten][django-oauth2-provider--rewritten-doc]. 
+
+The Good news is, here is a minimal "How to start" because **OAuth 2** is dramatically simpler than **OAuth 1**, so no more headache with signature, cryptography on client side, and other complex things.
+
+#### Getting started with django-oauth2-provider
+
+1. Create a client in the django-admin panel
+
+Go to the admin panel and create a new `Provider.Client` entry. It will create the `client_id` and `client_secret` properties for you.
+
+2. Request an access token
+
+To request an access toke, submit a `POST` request to the url `/oauth2/access_token` with the following fields :
+
+* `client_id` the client id you've just configured at the previous step.
+* `client_secret` again configured at the previous step.
+* `username` the username with which you want to log in.
+* `password` well, that speaks for itself.
+
+---
+
+**Note:** Remember that you should use HTTPS in production.
+
+---
+
+You can use the command line to test that your local configuration is working :
+
+    $ curl -X POST -d "client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&grant_type=password&username=YOUR_USERNAME&password=YOUR_PASSWORD" http://localhost:8000/oauth2/access_token/
+
+Here is the response you should get :
+
+    {"access_token": "<your-access-token>", "scope": "read", "expires_in": 86399, "refresh_token": "<your-refresh-token>"}
+
+3. Access the api
+
+The only thing needed to make the `OAuth2Authentication` class work is to insert the `access_token` you've received in the `Authorization` api request header.
+
+The command line to test the authentication looks like:
+
+    $ curl -H "Authorization: Bearer <your-access-token>" http://localhost:8000/api/?client_id=YOUR_CLIENT_ID\&client_secret=YOUR_CLIENT_SECRET
 
 # Custom authentication
 
@@ -276,4 +339,8 @@ HTTP digest authentication is a widely implemented scheme that was intended to r
 [south-dependencies]: http://south.readthedocs.org/en/latest/dependencies.html
 [juanriaza]: https://github.com/juanriaza
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
-[rfc5849] : http://tools.ietf.org/html/rfc5849
+[oauth-1.0a]: http://oauth.net/core/1.0a
+[django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
+[django-oauth2-provider--doc]: https://django-oauth2-provider.readthedocs.org/en/latest/
+[django-oauth2-provider--rewritten-doc]: http://django-oauth2-provider-dulaccc.readthedocs.org/en/latest/
+[rfc6749]: http://tools.ietf.org/html/rfc6749

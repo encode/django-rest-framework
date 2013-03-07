@@ -107,8 +107,19 @@ try:
 except ImportError:
     pass
 else:
-    INSTALLED_APPS += ('oauth_provider',)
+    INSTALLED_APPS += (
+        'oauth_provider',
+    )
 
+try:
+    import provider
+except ImportError:
+    pass
+else:
+    INSTALLED_APPS += (
+        'provider',
+        'provider.oauth2',
+    )
 
 STATIC_URL = '/static/'
 
