@@ -220,11 +220,11 @@ OAuthAuthentication class provides only token verification and signature validat
 
 #### Getting started with django-oauth-plus
 
-The `django-oauth-plus` package provides simple foundation for classic 'three-legged' oauth flow, so if it is what you need please refer to [its documentation](http://code.larlet.fr/django-oauth-plus/wiki/Home). This documentation will provide you also information about how to work with supplied models and change basic settings.
+The `django-oauth-plus` package provides simple foundation for classic 'three-legged' oauth flow, so if it is what you need please refer to [its documentation][django-oauth-plus]. This documentation will provide you also information about how to work with supplied models and change basic settings.
 
 ## OAuth2Authentication
 
-This authentication uses [OAuth 2.0][rfc6749] authentication scheme. It depends on the optional [`django-oauth2-provider`][django-oauth2-provider] project. In order to make it work you must install this package and add `provider` and `provider.oauth2` to your `INSTALLED_APPS` :
+This authentication uses [OAuth 2.0][rfc6749] authentication scheme. It depends on the optional [django-oauth2-provider][django-oauth2-provider] project. In order to make it work you must install this package and add `provider` and `provider.oauth2` to your `INSTALLED_APPS` :
 
     INSTALLED_APPS = (
         ...
@@ -236,14 +236,14 @@ And include the urls needed in your root `urls.py` file to be able to begin the 
 
     url(r'^oauth2/', include('provider.oauth2.urls', namespace='oauth2')),
 
-** Note**: The `namespace` argument is required
+**Note**: The `namespace` argument is required
 
 Finally, sync your database with those two new django apps.
 
     $ python manage.py syncdb
     $ python manage.py migrate 
 
-`OAuth2Authentication` class provides only token verification for requests. The *oauth 2 dance* is taken care by the [`django-oaut2-provider`][django-oauth2-provider] dependency. The official [documentation][django-oauth2-provider--doc] is being [rewritten][django-oauth2-provider--rewritten-doc]. 
+`OAuth2Authentication` class provides only token verification for requests. The *oauth 2 dance* is taken care by the [django-oaut2-provider][django-oauth2-provider] dependency. The official [documentation][django-oauth2-provider--doc] is being [rewritten][django-oauth2-provider--rewritten-doc]. 
 
 The Good news is, here is a minimal "How to start" because **OAuth 2** is dramatically simpler than **OAuth 1**, so no more headache with signature, cryptography on client side, and other complex things.
 
@@ -283,6 +283,8 @@ The only thing needed to make the `OAuth2Authentication` class work is to insert
 The command line to test the authentication looks like:
 
     $ curl -H "Authorization: Bearer <your-access-token>" http://localhost:8000/api/?client_id=YOUR_CLIENT_ID\&client_secret=YOUR_CLIENT_SECRET
+
+---
 
 # Custom authentication
 
@@ -340,6 +342,7 @@ HTTP digest authentication is a widely implemented scheme that was intended to r
 [juanriaza]: https://github.com/juanriaza
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
 [oauth-1.0a]: http://oauth.net/core/1.0a
+[django-oauth-plus]: http://code.larlet.fr/django-oauth-plus
 [django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
 [django-oauth2-provider--doc]: https://django-oauth2-provider.readthedocs.org/en/latest/
 [django-oauth2-provider--rewritten-doc]: http://django-oauth2-provider-dulaccc.readthedocs.org/en/latest/
