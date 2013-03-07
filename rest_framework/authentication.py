@@ -157,6 +157,7 @@ class OAuthAuthentication(BaseAuthentication):
     OAuth 1.0a authentication backend using `django-oauth-plus` and `oauth2`.
 
     Note: The `oauth2` package actually provides oauth1.0a support.  Urg.
+          We import it from the `compat` module as `oauth`.
     """
     www_authenticate_realm = 'api'
 
@@ -164,23 +165,42 @@ class OAuthAuthentication(BaseAuthentication):
         super(OAuthAuthentication, self).__init__(**kwargs)
 
         if oauth is None:
-            raise ImproperlyConfigured("The 'oauth2' package could not be imported. It is required for use with the 'OAuthAuthentication' class.")
+            raise ImproperlyConfigured(
+                "The 'oauth2' package could not be imported."
+                "It is required for use with the 'OAuthAuthentication' class.")
 
         if oauth_provider is None:
-            raise ImproperlyConfigured("The 'django-oauth-plus' package could not be imported. It is required for use with the 'OAuthAuthentication' class.")
+            raise ImproperlyConfigured(
+                "The 'django-oauth-plus' package could not be imported."
+                "It is required for use with the 'OAuthAuthentication' class.")
 
     def authenticate(self, request):
         """
         Returns two-tuple of (user, token) if authentication succeeds,
         or None otherwise.
         """
-        if not self.is_valid_request(request):
+        try:
+            oauth_request = oauth_provider.utils.get_oauth_request(request)
+        except oauth.Error as err:
+            raise exceptions.AuthenticationFailed(err.message)
+
+        oauth_params = oauth_provider.consts.OAUTH_PARAMETERS_NAMES
+
+        found = any(param for param in oauth_params if param in oauth_request)
+        missing = list(param for param in oauth_params if param not in oauth_request)
+
+        if not found:
+            # OAuth authentication was not attempted.
             return None
 
-        oauth_request = oauth_provider.utils.get_oauth_request(request)
+        if missing:
+            # OAuth was attempted but missing parameters.
+            msg = 'Missing parameters: %s' % (', '.join(missing))
+            raise exceptions.AuthenticationFailed(msg)
 
         if not self.check_nonce(request, oauth_request):
-            raise exceptions.AuthenticationFailed("Nonce check failed")
+            msg = 'Nonce check failed'
+            raise exceptions.AuthenticationFailed(msg)
 
         try:
             consumer_key = oauth_request.get_parameter('oauth_consumer_key')
@@ -207,40 +227,27 @@ class OAuthAuthentication(BaseAuthentication):
         user = token.user
 
         if not user.is_active:
-            raise exceptions.AuthenticationFailed('User inactive or deleted: %s' % user.username)
+            msg = 'User inactive or deleted: %s' % user.username
+            raise exceptions.AuthenticationFailed(msg)
 
         return (token.user, token)
 
     def authenticate_header(self, request):
+        """
+        If permission is denied, return a '401 Unauthorized' response,
+        with an appropraite 'WWW-Authenticate' header.
+        """
         return 'OAuth realm="%s"' % self.www_authenticate_realm
 
-    def is_in(self, params):
-        """
-        Checks to ensure that all the OAuth parameter names are in the
-        provided ``params``.
-        """
-        for param_name in oauth_provider.consts.OAUTH_PARAMETERS_NAMES:
-            if param_name not in params:
-                return False
-
-        return True
-
-    def is_valid_request(self, request):
-        """
-        Checks whether the required parameters are either in the HTTP
-        `Authorization` header sent by some clients.
-        (The preferred method according to OAuth spec.)
-        Or fall back to `GET/POST`.
-        """
-        auth_params = request.META.get('HTTP_AUTHORIZATION', [])
-        return self.is_in(auth_params) or self.is_in(request.REQUEST)
-
     def validate_token(self, request, consumer, token):
+        """
+        Check the token and raise an `oauth.Error` exception if invalid.
+        """
         oauth_server, oauth_request = oauth_provider.utils.initialize_server_request(request)
-        return oauth_server.verify_request(oauth_request, consumer, token)
+        oauth_server.verify_request(oauth_request, consumer, token)
 
     def check_nonce(self, request, oauth_request):
         """
-        Checks nonce of request.
+        Checks nonce of request, and return True if valid.
         """
-        return oauth_provider.store.store.check_nonce(request, oauth_request, oauth_request['oauth_nonce'])
+        return oauth_provider_store.check_nonce(request, oauth_request, oauth_request['oauth_nonce'])
