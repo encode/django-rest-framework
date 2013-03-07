@@ -40,6 +40,12 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.2.x series
 
+### 2.2.3
+
+**Date**: 7th March 2013
+
+* Bugfix: Fix None values for for `DateField`, `DateTimeField` and `TimeField`.
+
 ### 2.2.2
 
 **Date**: 6th March 2013
