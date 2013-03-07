@@ -37,8 +37,9 @@ The following packages are optional:
 * [defusedxml][defusedxml] (0.3+) - XML content-type support.
 * [django-filter][django-filter] (0.5.4+) - Filtering support.
 * [django-oauth-plus][django-oauth-plus] (2.0+) and [oauth2][oauth2] (1.5.211+) - OAuth 1.0a support.
+* [django-oauth2-provider][django-oauth2-provider] (0.2.3+) - OAuth 2.0 support.
 
-**Note**: The `oauth2` python package is badly misnamed, and actually provides oauth1.0a support.
+**Note**: The `oauth2` python package is badly misnamed, and actually provides OAuth 1.0a support.  Also note that packages required for both OAuth 1.0a, and OAuth 2.0 are not yet Python 3 compatible.
 
 ## Installation
 
@@ -185,6 +186,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [django-filter]: http://pypi.python.org/pypi/django-filter
 [oauth2]: https://github.com/simplegeo/python-oauth2
 [django-oauth-plus]: https://bitbucket.org/david/django-oauth-plus/wiki/Home
+[django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [image]: img/quickstart.png
 [sandbox]: http://restframework.herokuapp.com/
