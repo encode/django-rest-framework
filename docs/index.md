@@ -36,6 +36,9 @@ The following packages are optional:
 * [PyYAML][yaml] (3.10+) - YAML content-type support.
 * [defusedxml][defusedxml] (0.3+) - XML content-type support.
 * [django-filter][django-filter] (0.5.4+) - Filtering support.
+* [django-oauth-plus][django-oauth-plus] (2.0+) and [oauth2][oauth2] (1.5.211+) - OAuth 1.0a support.
+
+**Note**: The `oauth2` python package is badly misnamed, and actually provides oauth1.0a support.
 
 ## Installation
 
@@ -180,6 +183,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [yaml]: http://pypi.python.org/pypi/PyYAML
 [defusedxml]: https://pypi.python.org/pypi/defusedxml
 [django-filter]: http://pypi.python.org/pypi/django-filter
+[oauth2]: https://github.com/simplegeo/python-oauth2
+[django-oauth-plus]: https://bitbucket.org/david/django-oauth-plus/wiki/Home
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [image]: img/quickstart.png
 [sandbox]: http://restframework.herokuapp.com/

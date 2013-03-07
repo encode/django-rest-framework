@@ -426,3 +426,18 @@ try:
     import defusedxml.ElementTree as etree
 except ImportError:
     etree = None
+
+# OAuth is optional
+try:
+    # Note: The `oauth2` package actually provides oauth1.0a support.  Urg.
+    import oauth2 as oauth
+except ImportError:
+    oauth = None
+
+# OAuth is optional
+try:
+    import oauth_provider
+    from oauth_provider.store import store as oauth_provider_store
+except ImportError:
+    oauth_provider = None
+    oauth_provider_store = None
