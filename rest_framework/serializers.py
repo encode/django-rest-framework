@@ -531,6 +531,10 @@ class ModelSerializer(Serializer):
         if issubclass(model_field.__class__, models.TextField):
             kwargs['widget'] = widgets.Textarea
 
+        # URLField not getting correct max_length kwarg
+        if issubclass(model_field.__class__, models.URLField):
+            kwargs['max_length'] = model_field.max_length
+
         # TODO: TypedChoiceField?
         if model_field.flatchoices:  # This ModelField contains choices
             kwargs['choices'] = model_field.flatchoices
