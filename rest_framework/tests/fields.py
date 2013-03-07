@@ -171,6 +171,13 @@ class DateFieldTest(TestCase):
 
         self.assertEqual('1984 - 07.31', result_1)
 
+    def test_to_native_none(self):
+        """
+        Make sure from_native() returns None on None param.
+        """
+        f = serializers.DateField(required=False)
+        self.assertEqual(None, f.to_native(None))
+
 
 class DateTimeFieldTest(TestCase):
     """
@@ -302,6 +309,13 @@ class DateTimeFieldTest(TestCase):
         self.assertEqual('1984 - 04:31', result_2)
         self.assertEqual('1984 - 04:31', result_3)
         self.assertEqual('1984 - 04:31', result_4)
+
+    def test_to_native_none(self):
+        """
+        Make sure from_native() returns None on None param.
+        """
+        f = serializers.DateTimeField(required=False)
+        self.assertEqual(None, f.to_native(None))
 
 
 class TimeFieldTest(TestCase):
