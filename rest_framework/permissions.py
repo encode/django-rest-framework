@@ -120,7 +120,7 @@ class DjangoModelPermissions(BasePermission):
 
         perms = self.get_required_permissions(request.method, model_cls)
 
-        if (request.user and
+        if not perms or (request.user and
             request.user.is_authenticated() and
             request.user.has_perms(perms)):
             return True
