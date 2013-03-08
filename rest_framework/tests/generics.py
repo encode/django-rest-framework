@@ -263,7 +263,7 @@ class TestInstanceView(TestCase):
         at the requested url if it doesn't exist.
         """
         content = {'text': 'foobar'}
-        # pk fields can not be created on demand, only the database can set th pk for a new object
+        # pk fields can not be created on demand, only the database can set the pk for a new object
         request = factory.put('/5', json.dumps(content),
                               content_type='application/json')
         response = self.view(request, pk=5).render()
