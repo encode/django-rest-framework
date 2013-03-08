@@ -18,6 +18,16 @@ class GenericAPIView(views.APIView):
     model = None
     serializer_class = None
     model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
+    filter_backend = api_settings.FILTER_BACKEND
+
+    def filter_queryset(self, queryset):
+        """
+        Given a queryset, filter it with whichever filter backend is in use.
+        """
+        if not self.filter_backend:
+            return queryset
+        backend = self.filter_backend()
+        return backend.filter_queryset(self.request, queryset, self)
 
     def get_serializer_context(self):
         """
@@ -81,16 +91,6 @@ class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
     paginate_by = api_settings.PAGINATE_BY
     paginate_by_param = api_settings.PAGINATE_BY_PARAM
     pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
-    filter_backend = api_settings.FILTER_BACKEND
-
-    def filter_queryset(self, queryset):
-        """
-        Given a queryset, filter it with whichever filter backend is in use.
-        """
-        if not self.filter_backend:
-            return queryset
-        backend = self.filter_backend()
-        return backend.filter_queryset(self.request, queryset, self)
 
     def get_pagination_serializer(self, page=None):
         """
