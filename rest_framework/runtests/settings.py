@@ -97,8 +97,18 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework.tests'
+    'rest_framework.tests',
 )
+
+try:
+    import provider
+    INSTALLED_APPS += (
+        'provider',
+        'provider.oauth2',
+    )
+except ImportError:
+    import logging
+    logging.warning("django-oauth2-provider is not install, some tests will be skipped")
 
 STATIC_URL = '/static/'
 
