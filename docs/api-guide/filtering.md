@@ -140,6 +140,14 @@ For more details on using filter sets see the [django-filter documentation][djan
 
 ---
 
+### Filtering and object lookups
+
+Note that if a filter backend is configured for a view, then as well as being used to filter list views, it will also be used to filter the querysets used for returning a single object.
+
+For instance, given the previous example, and a product with an id of `4675`, the following URL would either return the corresponding object, or return a 404 response, depending on if the filtering conditions were met by the given product instance:
+
+    http://example.com/api/products/4675/?category=clothing&max_price=10.00
+
 ## Overriding the initial queryset
  
 Note that you can use both an overridden `.get_queryset()` and generic filtering together, and everything will work as expected.  For example, if `Product` had a many-to-many relationship with `User`, named `purchase`, you might want to write a view like this:

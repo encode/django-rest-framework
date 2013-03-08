@@ -40,6 +40,10 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.2.x series
 
+### Master
+
+* Filtering backends are now applied to the querysets for object lookups as well as lists.  (Eg you can use a filtering backend to control which objects should 404)
+
 ### 2.2.3
 
 **Date**: 7th March 2013
