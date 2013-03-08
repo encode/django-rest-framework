@@ -7,8 +7,7 @@ from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
-from rest_framework.compat import get_concrete_model
-from rest_framework.compat import six
+from rest_framework.compat import get_concrete_model, six
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -326,7 +325,7 @@ class BaseSerializer(Field):
         if self.many is not None:
             many = self.many
         else:
-            many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict))
+            many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict, six.text_type))
 
         if many:
             return [self.to_native(item) for item in obj]
@@ -344,7 +343,7 @@ class BaseSerializer(Field):
             if self.many is not None:
                 many = self.many
             else:
-                many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict))
+                many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict, six.text_type))
                 if many:
                     warnings.warn('Implict list/queryset serialization is due to be deprecated. '
                                   'Use the `many=True` flag when instantiating the serializer.',
@@ -362,6 +361,7 @@ class BaseSerializer(Field):
 
             if not self._errors:
                 self.object = ret
+
         return self._errors
 
     def is_valid(self):

@@ -1108,5 +1108,5 @@ class DeserializeListTestCase(TestCase):
 
         serializer = CommentSerializer(data=data)
         self.assertFalse(serializer.is_valid())
-        expected = [{}, {'email': [u'This field is required.']}, {}]
+        expected = [{}, {'email': ['This field is required.']}, {}]
         self.assertEqual(serializer.errors, expected)
