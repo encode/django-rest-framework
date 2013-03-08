@@ -268,7 +268,16 @@ class ValidationTests(TestCase):
         data = ['i am', 'a', 'list']
         serializer = CommentSerializer(self.comment, data=data, many=True)
         self.assertEqual(serializer.is_valid(), False)
-        self.assertEqual(serializer.errors, {'non_field_errors': ['Invalid data']})
+        self.assertTrue(isinstance(serializer.errors, list))
+
+        self.assertEqual(
+            serializer.errors,
+            [
+                {'non_field_errors': ['Invalid data']},
+                {'non_field_errors': ['Invalid data']},
+                {'non_field_errors': ['Invalid data']}
+            ]
+        )
 
         data = 'and i am a string'
         serializer = CommentSerializer(self.comment, data=data)
@@ -1072,3 +1081,32 @@ class NestedSerializerContextTests(TestCase):
 
         # This will raise RuntimeError if context doesn't get passed correctly to the nested Serializers
         AlbumCollectionSerializer(album_collection, context={'context_item': 'album context'}).data
+
+
+class DeserializeListTestCase(TestCase):
+
+    def setUp(self):
+        self.data = {
+            'email': 'nobody@nowhere.com',
+            'content': 'This is some test content',
+            'created': datetime.datetime(2013, 3, 7),
+        }
+
+    def test_no_errors(self):
+        data = [self.data.copy() for x in range(0, 3)]
+        serializer = CommentSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        self.assertTrue(isinstance(serializer.object, list))
+        self.assertTrue(
+            all((isinstance(item, Comment) for item in serializer.object))
+        )
+
+    def test_errors_return_as_list(self):
+        invalid_item = self.data.copy()
+        invalid_item['email'] = ''
+        data = [self.data.copy(), invalid_item, self.data.copy()]
+
+        serializer = CommentSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        expected = [{}, {'email': ['This field is required.']}, {}]
+        self.assertEqual(serializer.errors, expected)
