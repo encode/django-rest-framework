@@ -285,20 +285,6 @@ class BaseSerializer(Field):
         """
         Deserialize primitives -> objects.
         """
-        if hasattr(data, '__iter__') and not isinstance(data, (dict, six.text_type)):
-            object_list = list()
-            error_list = list()
-            for count, item in enumerate(data):
-                obj = self.from_native(item, None)
-                if self._errors:
-                    error_list.append((count, self._errors))
-                object_list.append(obj)
-            if not error_list:
-                return object_list
-
-            self._errors = error_list
-            return None
-
         self._errors = {}
         if data is not None or files is not None:
             attrs = self.restore_fields(data, files)
@@ -364,7 +350,15 @@ class BaseSerializer(Field):
                                   'Use the `many=True` flag when instantiating the serializer.',
                                   PendingDeprecationWarning, stacklevel=3)
 
-            ret = self.from_native(data, files)
+            if many:
+                ret = []
+                errors = []
+                for item in data:
+                    ret.append(self.from_native(item, None))
+                    errors.append(self._errors)
+                self._errors = any(errors) and errors or []
+            else:
+                ret = self.from_native(data, files)
 
             if not self._errors:
                 self.object = ret

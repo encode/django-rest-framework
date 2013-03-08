@@ -273,9 +273,9 @@ class ValidationTests(TestCase):
         self.assertEqual(
             serializer.errors,
             [
-                (0, {'non_field_errors': ['Invalid data']}),
-                (1, {'non_field_errors': ['Invalid data']}),
-                (2, {'non_field_errors': ['Invalid data']})
+                {'non_field_errors': ['Invalid data']},
+                {'non_field_errors': ['Invalid data']},
+                {'non_field_errors': ['Invalid data']}
             ]
         )
 
@@ -1108,10 +1108,5 @@ class DeserializeListTestCase(TestCase):
 
         serializer = CommentSerializer(data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertTrue(isinstance(serializer.errors, list))
-        self.assertEqual(1, len(serializer.errors))
-        expected = (1, {'email': ['This field is required.']})
-        self.assertEqual(
-            serializer.errors[0],
-            expected
-        )
+        expected = [{}, {'email': [u'This field is required.']}, {}]
+        self.assertEqual(serializer.errors, expected)
