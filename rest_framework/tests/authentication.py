@@ -159,7 +159,7 @@ class TokenAuthTests(TestCase):
 
     def test_post_form_passing_token_auth(self):
         """Ensure POSTing json over token auth with correct credentials passes and does not require CSRF"""
-        auth = "Token " + self.key
+        auth = 'Token ' + self.key
         response = self.csrf_client.post('/token/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 

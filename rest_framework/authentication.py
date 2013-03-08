@@ -63,7 +63,8 @@ class BasicAuthentication(BaseAuthentication):
 
         if len(auth) == 1:
             msg = 'Invalid basic header. No credentials provided.'
-        if len(auth) > 2:
+            raise exceptions.AuthenticationFailed(msg)
+        elif len(auth) > 2:
             msg = 'Invalid basic header. Credentials string should not contain spaces.'
             raise exceptions.AuthenticationFailed(msg)
 
@@ -144,12 +145,13 @@ class TokenAuthentication(BaseAuthentication):
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
 
-        if not auth or auth[0].lower() != "token":
+        if not auth or auth[0].lower() != b'token':
             return None
 
         if len(auth) == 1:
             msg = 'Invalid token header. No credentials provided.'
-        if len(auth) > 2:
+            raise exceptions.AuthenticationFailed(msg)
+        elif len(auth) > 2:
             msg = 'Invalid token header. Token string should not contain spaces.'
             raise exceptions.AuthenticationFailed(msg)
 
@@ -293,12 +295,13 @@ class OAuth2Authentication(BaseAuthentication):
 
         auth = get_authorization_header(request).split()
 
-        if not auth or auth[0].lower() != 'bearer':
+        if not auth or auth[0].lower() != b'bearer':
             return None
 
         if len(auth) == 1:
             msg = 'Invalid bearer header. No credentials provided.'
-        if len(auth) > 2:
+            raise exceptions.AuthenticationFailed(msg)
+        elif len(auth) > 2:
             msg = 'Invalid bearer header. Token string should not contain spaces.'
             raise exceptions.AuthenticationFailed(msg)
 
