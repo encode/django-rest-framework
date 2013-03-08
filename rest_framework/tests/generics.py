@@ -60,7 +60,8 @@ class TestRootView(TestCase):
         GET requests to ListCreateAPIView should return list of objects.
         """
         request = factory.get('/')
-        response = self.view(request).render()
+        with self.assertNumQueries(1):
+            response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, self.data)
 
@@ -71,7 +72,8 @@ class TestRootView(TestCase):
         content = {'text': 'foobar'}
         request = factory.post('/', json.dumps(content),
                                content_type='application/json')
-        response = self.view(request).render()
+        with self.assertNumQueries(1):
+            response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, {'id': 4, 'text': 'foobar'})
         created = self.objects.get(id=4)
@@ -84,7 +86,8 @@ class TestRootView(TestCase):
         content = {'text': 'foobar'}
         request = factory.put('/', json.dumps(content),
                               content_type='application/json')
-        response = self.view(request).render()
+        with self.assertNumQueries(0):
+            response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEqual(response.data, {"detail": "Method 'PUT' not allowed."})
 
@@ -93,7 +96,8 @@ class TestRootView(TestCase):
         DELETE requests to ListCreateAPIView should not be allowed
         """
         request = factory.delete('/')
-        response = self.view(request).render()
+        with self.assertNumQueries(0):
+            response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEqual(response.data, {"detail": "Method 'DELETE' not allowed."})
 
@@ -102,7 +106,8 @@ class TestRootView(TestCase):
         OPTIONS requests to ListCreateAPIView should return metadata
         """
         request = factory.options('/')
-        response = self.view(request).render()
+        with self.assertNumQueries(0):
+            response = self.view(request).render()
         expected = {
             'parses': [
                 'application/json',
@@ -126,7 +131,8 @@ class TestRootView(TestCase):
         content = {'id': 999, 'text': 'foobar'}
         request = factory.post('/', json.dumps(content),
                                content_type='application/json')
-        response = self.view(request).render()
+        with self.assertNumQueries(1):
+            response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, {'id': 4, 'text': 'foobar'})
         created = self.objects.get(id=4)
@@ -154,7 +160,8 @@ class TestInstanceView(TestCase):
         GET requests to RetrieveUpdateDestroyAPIView should return a single object.
         """
         request = factory.get('/1')
-        response = self.view(request, pk=1).render()
+        with self.assertNumQueries(1):
+            response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, self.data[0])
 
@@ -165,7 +172,8 @@ class TestInstanceView(TestCase):
         content = {'text': 'foobar'}
         request = factory.post('/', json.dumps(content),
                                content_type='application/json')
-        response = self.view(request).render()
+        with self.assertNumQueries(0):
+            response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
         self.assertEqual(response.data, {"detail": "Method 'POST' not allowed."})
 
@@ -176,7 +184,8 @@ class TestInstanceView(TestCase):
         content = {'text': 'foobar'}
         request = factory.put('/1', json.dumps(content),
                               content_type='application/json')
-        response = self.view(request, pk='1').render()
+        with self.assertNumQueries(3):
+            response = self.view(request, pk='1').render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
         updated = self.objects.get(id=1)
@@ -190,7 +199,8 @@ class TestInstanceView(TestCase):
         request = factory.patch('/1', json.dumps(content),
                               content_type='application/json')
 
-        response = self.view(request, pk=1).render()
+        with self.assertNumQueries(3):
+            response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
         updated = self.objects.get(id=1)
@@ -201,7 +211,8 @@ class TestInstanceView(TestCase):
         DELETE requests to RetrieveUpdateDestroyAPIView should delete an object.
         """
         request = factory.delete('/1')
-        response = self.view(request, pk=1).render()
+        with self.assertNumQueries(2):
+            response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(response.content, six.b(''))
         ids = [obj.id for obj in self.objects.all()]
@@ -212,7 +223,8 @@ class TestInstanceView(TestCase):
         OPTIONS requests to RetrieveUpdateDestroyAPIView should return metadata
         """
         request = factory.options('/')
-        response = self.view(request).render()
+        with self.assertNumQueries(0):
+            response = self.view(request).render()
         expected = {
             'parses': [
                 'application/json',
@@ -236,7 +248,8 @@ class TestInstanceView(TestCase):
         content = {'id': 999, 'text': 'foobar'}
         request = factory.put('/1', json.dumps(content),
                               content_type='application/json')
-        response = self.view(request, pk=1).render()
+        with self.assertNumQueries(3):
+            response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
         updated = self.objects.get(id=1)
@@ -251,7 +264,8 @@ class TestInstanceView(TestCase):
         content = {'text': 'foobar'}
         request = factory.put('/1', json.dumps(content),
                               content_type='application/json')
-        response = self.view(request, pk=1).render()
+        with self.assertNumQueries(4):
+            response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
         updated = self.objects.get(id=1)
@@ -266,7 +280,8 @@ class TestInstanceView(TestCase):
         # pk fields can not be created on demand, only the database can set the pk for a new object
         request = factory.put('/5', json.dumps(content),
                               content_type='application/json')
-        response = self.view(request, pk=5).render()
+        with self.assertNumQueries(4):
+            response = self.view(request, pk=5).render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         new_obj = self.objects.get(pk=5)
         self.assertEqual(new_obj.text, 'foobar')
@@ -279,7 +294,8 @@ class TestInstanceView(TestCase):
         content = {'text': 'foobar'}
         request = factory.put('/test_slug', json.dumps(content),
                               content_type='application/json')
-        response = self.slug_based_view(request, slug='test_slug').render()
+        with self.assertNumQueries(2):
+            response = self.slug_based_view(request, slug='test_slug').render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, {'slug': 'test_slug', 'text': 'foobar'})
         new_obj = SlugBasedModel.objects.get(slug='test_slug')
