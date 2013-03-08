@@ -108,6 +108,7 @@ The following people have helped make REST framework great.
 * Omer Katz - [thedrow]
 * Wiliam Souza - [waa]
 * Jonas Braun - [iekadou]
+* Pierre Dulac - [dulaccc]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -250,3 +251,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [thedrow]: https://github.com/thedrow
 [waa]: https://github.com/wiliamsouza
 [iekadou]: https://github.com/iekadou
+[dulaccc]: https://github.com/dulaccc
