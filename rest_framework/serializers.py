@@ -7,8 +7,7 @@ from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
-from rest_framework.compat import get_concrete_model
-from rest_framework.compat import six
+from rest_framework.compat import get_concrete_model, six
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -285,10 +284,6 @@ class BaseSerializer(Field):
         """
         Deserialize primitives -> objects.
         """
-        if hasattr(data, '__iter__') and not isinstance(data, (dict, six.text_type)):
-            # TODO: error data when deserializing lists
-            return [self.from_native(item, None) for item in data]
-
         self._errors = {}
         if data is not None or files is not None:
             attrs = self.restore_fields(data, files)
@@ -330,7 +325,7 @@ class BaseSerializer(Field):
         if self.many is not None:
             many = self.many
         else:
-            many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict))
+            many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict, six.text_type))
 
         if many:
             return [self.to_native(item) for item in obj]
@@ -348,19 +343,25 @@ class BaseSerializer(Field):
             if self.many is not None:
                 many = self.many
             else:
-                many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict))
+                many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict, six.text_type))
                 if many:
                     warnings.warn('Implict list/queryset serialization is due to be deprecated. '
                                   'Use the `many=True` flag when instantiating the serializer.',
                                   PendingDeprecationWarning, stacklevel=3)
 
-            # TODO: error data when deserializing lists
             if many:
-                ret = [self.from_native(item, None) for item in data]
-            ret = self.from_native(data, files)
+                ret = []
+                errors = []
+                for item in data:
+                    ret.append(self.from_native(item, None))
+                    errors.append(self._errors)
+                self._errors = any(errors) and errors or []
+            else:
+                ret = self.from_native(data, files)
 
             if not self._errors:
                 self.object = ret
+
         return self._errors
 
     def is_valid(self):

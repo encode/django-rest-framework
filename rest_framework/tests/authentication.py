@@ -145,7 +145,7 @@ class SessionAuthTests(TestCase):
 
 class TokenAuthTests(TestCase):
     """Token authentication"""
-    urls = 'rest_framework.tests.authentication'
+    urls = '§.tests.authentication'
 
     def setUp(self):
         self.csrf_client = Client(enforce_csrf_checks=True)

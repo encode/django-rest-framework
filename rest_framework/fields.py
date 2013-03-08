@@ -534,8 +534,12 @@ class DateField(WritableField):
         raise ValidationError(msg)
 
     def to_native(self, value):
+        if value is None:
+            return None
+
         if isinstance(value, datetime.datetime):
             value = value.date()
+
         if self.format.lower() == ISO_8601:
             return value.isoformat()
         return value.strftime(self.format)
@@ -599,6 +603,9 @@ class DateTimeField(WritableField):
         raise ValidationError(msg)
 
     def to_native(self, value):
+        if value is None:
+            return None
+
         if self.format.lower() == ISO_8601:
             return value.isoformat()
         return value.strftime(self.format)
@@ -649,8 +656,12 @@ class TimeField(WritableField):
         raise ValidationError(msg)
 
     def to_native(self, value):
+        if value is None:
+            return None
+
         if isinstance(value, datetime.datetime):
             value = value.time()
+
         if self.format.lower() == ISO_8601:
             return value.isoformat()
         return value.strftime(self.format)
