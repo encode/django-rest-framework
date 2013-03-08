@@ -12,6 +12,19 @@ from rest_framework.authtoken.models import Token
 import base64
 
 
+def get_authorization_header(request):
+    """
+    Return request's 'Authorization:' header, as a bytestring.
+
+    Hide some test client ickyness where the header can be unicode.
+    """
+    auth = request.META.get('HTTP_AUTHORIZATION', b'')
+    if type(auth) == type(''):
+        # Work around django test client oddness
+        auth = auth.encode(HTTP_HEADER_ENCODING)
+    return auth
+
+
 class BaseAuthentication(object):
     """
     All authentication classes should extend BaseAuthentication.
@@ -43,22 +56,22 @@ class BasicAuthentication(BaseAuthentication):
         Returns a `User` if a correct username and password have been supplied
         using HTTP Basic authentication.  Otherwise returns `None`.
         """
-        auth = request.META.get('HTTP_AUTHORIZATION', b'')
-        if type(auth) == type(''):
-            # Work around django test client oddness
-            auth = auth.encode(HTTP_HEADER_ENCODING)
-        auth = auth.split()
+        auth = get_authorization_header(request).split()
 
         if not auth or auth[0].lower() != b'basic':
             return None
 
-        if len(auth) != 2:
-            raise exceptions.AuthenticationFailed('Invalid basic header')
+        if len(auth) == 1:
+            msg = 'Invalid basic header. No credentials provided.'
+        if len(auth) > 2:
+            msg = 'Invalid basic header. Credentials string should not contain spaces.'
+            raise exceptions.AuthenticationFailed(msg)
 
         try:
             auth_parts = base64.b64decode(auth[1]).decode(HTTP_HEADER_ENCODING).partition(':')
         except (TypeError, UnicodeDecodeError):
-            raise exceptions.AuthenticationFailed('Invalid basic header')
+            msg = 'Invalid basic header. Credentials not correctly base64 encoded'
+            raise exceptions.AuthenticationFailed(msg)
 
         userid, password = auth_parts[0], auth_parts[2]
         return self.authenticate_credentials(userid, password)
@@ -68,9 +81,9 @@ class BasicAuthentication(BaseAuthentication):
         Authenticate the userid and password against username and password.
         """
         user = authenticate(username=userid, password=password)
-        if user is not None and user.is_active:
-            return (user, None)
-        raise exceptions.AuthenticationFailed('Invalid username/password')
+        if user is None or not user.is_active:
+            raise exceptions.AuthenticationFailed('Invalid username/password')
+        return (user, None)
 
     def authenticate_header(self, request):
         return 'Basic realm="%s"' % self.www_authenticate_realm
@@ -129,13 +142,16 @@ class TokenAuthentication(BaseAuthentication):
     """
 
     def authenticate(self, request):
-        auth = request.META.get('HTTP_AUTHORIZATION', '').split()
+        auth = get_authorization_header(request).split()
 
         if not auth or auth[0].lower() != "token":
             return None
 
-        if len(auth) != 2:
-            raise exceptions.AuthenticationFailed('Invalid token header')
+        if len(auth) == 1:
+            msg = 'Invalid token header. No credentials provided.'
+        if len(auth) > 2:
+            msg = 'Invalid token header. Token string should not contain spaces.'
+            raise exceptions.AuthenticationFailed(msg)
 
         return self.authenticate_credentials(auth[1])
 
@@ -145,9 +161,10 @@ class TokenAuthentication(BaseAuthentication):
         except self.model.DoesNotExist:
             raise exceptions.AuthenticationFailed('Invalid token')
 
-        if token.user.is_active:
-            return (token.user, token)
-        raise exceptions.AuthenticationFailed('User inactive or deleted')
+        if not token.user.is_active:
+            raise exceptions.AuthenticationFailed('User inactive or deleted')
+
+        return (token.user, token)
 
     def authenticate_header(self, request):
         return 'Token'
@@ -162,8 +179,8 @@ class OAuthAuthentication(BaseAuthentication):
     """
     www_authenticate_realm = 'api'
 
-    def __init__(self, **kwargs):
-        super(OAuthAuthentication, self).__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super(OAuthAuthentication, self).__init__(*args, **kwargs)
 
         if oauth is None:
             raise ImproperlyConfigured(
@@ -258,57 +275,59 @@ class OAuth2Authentication(BaseAuthentication):
     """
     OAuth 2 authentication backend using `django-oauth2-provider`
     """
-    require_active = True
+    www_authenticate_realm = 'api'
 
-    def __init__(self, **kwargs):
-        super(OAuth2Authentication, self).__init__(**kwargs)
+    def __init__(self, *args, **kwargs):
+        super(OAuth2Authentication, self).__init__(*args, **kwargs)
+
         if oauth2_provider is None:
-            raise ImproperlyConfigured("The 'django-oauth2-provider' package could not be imported. It is required for use with the 'OAuth2Authentication' class.")
+            raise ImproperlyConfigured(
+                "The 'django-oauth2-provider' package could not be imported. "
+                "It is required for use with the 'OAuth2Authentication' class.")
 
     def authenticate(self, request):
         """
-        The Bearer type is the only finalized type
-
-        Read the spec for more details
-        http://tools.ietf.org/html/rfc6749#section-7.1
+        Returns two-tuple of (user, token) if authentication succeeds,
+        or None otherwise.
         """
-        auth = request.META.get('HTTP_AUTHORIZATION', '').split()
-        if not auth or auth[0].lower() != "bearer":
-            raise exceptions.AuthenticationFailed('Invalid Authorization token type')
 
-        if len(auth) != 2:
-            raise exceptions.AuthenticationFailed('Invalid token header')
+        auth = get_authorization_header(request).split()
+
+        if not auth or auth[0].lower() != 'bearer':
+            return None
+
+        if len(auth) == 1:
+            msg = 'Invalid bearer header. No credentials provided.'
+        if len(auth) > 2:
+            msg = 'Invalid bearer header. Token string should not contain spaces.'
+            raise exceptions.AuthenticationFailed(msg)
 
         return self.authenticate_credentials(request, auth[1])
 
     def authenticate_credentials(self, request, access_token):
         """
-        :returns: two-tuple of (user, auth) if authentication succeeds, or None otherwise.
+        Authenticate the request, given the access token.
         """
 
-        # authenticate the client
+        # Authenticate the client
         oauth2_client_form = oauth2_provider_forms.ClientAuthForm(request.REQUEST)
         if not oauth2_client_form.is_valid():
-            raise exceptions.AuthenticationFailed("Client could not be validated")
+            raise exceptions.AuthenticationFailed('Client could not be validated')
         client = oauth2_client_form.cleaned_data.get('client')
 
-        # retrieve the `oauth2_provider.models.OAuth2AccessToken` instance from the access_token
+        # Retrieve the `OAuth2AccessToken` instance from the access_token
         auth_backend = oauth2_provider_backends.AccessTokenBackend()
         token = auth_backend.authenticate(access_token, client)
         if token is None:
-            raise exceptions.AuthenticationFailed("Invalid token")  # does not exist or is expired
+            raise exceptions.AuthenticationFailed('Invalid token')
 
-        # TODO check scope
+        user = token.user
 
-        if not self.check_active(token.user):
-            raise exceptions.AuthenticationFailed('User not active: %s' % token.user.username)
+        if not user.is_active:
+            msg = 'User inactive or deleted: %s' % user.username
+            raise exceptions.AuthenticationFailed(msg)
 
-        if client and token:
-            request.user = token.user
-            return (request.user, None)
-
-        raise exceptions.AuthenticationFailed(
-            'You are not allowed to access this resource.')
+        return (token.user, token)
 
     def authenticate_header(self, request):
         """
@@ -316,16 +335,4 @@ class OAuth2Authentication(BaseAuthentication):
 
         Check details on the `OAuth2Authentication.authenticate` method
         """
-        return 'Bearer'
-
-    def check_active(self, user):
-        """
-        Ensures the user has an active account.
-
-        Optimized for the ``django.contrib.auth.models.User`` case.
-        """
-        if not self.require_active:
-            # Ignore & move on.
-            return True
-
-        return user.is_active
+        return 'Bearer realm="%s"' % self.www_authenticate_realm
