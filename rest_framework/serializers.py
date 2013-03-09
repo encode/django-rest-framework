@@ -670,9 +670,6 @@ class HyperlinkedModelSerializer(ModelSerializer):
         }
         return self._default_view_name % format_kwargs
 
-    def get_pk_field(self, model_field):
-        return None
-
     def get_related_field(self, model_field, to_many):
         """
         Creates a default instance of a flat relational field.
