@@ -133,6 +133,10 @@ Run the tests:
 
     ./rest_framework/runtests/runtests.py
 
+To run the tests against all supported configurations, first install [the tox testing tool][tox] globally, using `pip install tox`, then simply run `tox`: 
+
+    tox
+
 ## Support
 
 For support please see the [REST framework discussion group][group], try the  `#restframework` channel on `irc.freenode.net`, or raise a  question on [Stack Overflow][stack-overflow], making sure to include the ['django-rest-framework'][django-rest-framework-tag] tag.
@@ -217,6 +221,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [2.2-announcement]: topics/2.2-announcement.md
 [release-notes]: topics/release-notes.md
 [credits]: topics/credits.md
+
+[tox]: http://testrun.org/tox/latest/
 
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [stack-overflow]: http://stackoverflow.com/

@@ -97,7 +97,9 @@ class RetrieveModelMixin(object):
     Should be mixed in with `SingleObjectAPIView`.
     """
     def retrieve(self, request, *args, **kwargs):
-        self.object = self.get_object()
+        queryset = self.get_queryset()
+        filtered_queryset = self.filter_queryset(queryset)
+        self.object = self.get_object(filtered_queryset)
         serializer = self.get_serializer(self.object)
         return Response(serializer.data)
 
