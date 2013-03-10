@@ -110,19 +110,21 @@ class BaseSerializer(WritableField):
     _dict_class = SortedDictWithMetadata
 
     def __init__(self, instance=None, data=None, files=None,
-                 context=None, partial=False, many=None, source=None):
+                 context=None, partial=False, many=None, source=None, required=True):
         super(BaseSerializer, self).__init__(source=source)
         self.opts = self._options_class(self.Meta)
         self.parent = None
         self.root = None
         self.partial = partial
         self.many = many
+        self.required = required
 
         self.context = context or {}
 
         self.init_data = data
         self.init_files = files
         self.object = instance
+        self.unused_objects = instance
         self.fields = self.get_fields()
 
         self._data = None
@@ -284,6 +286,19 @@ class BaseSerializer(WritableField):
             ret.fields[key] = field
         return ret
 
+    def _get_object_from_data(self, data):
+        """
+        Get the corresponding object to deserialize the data into.
+        """
+        # Just get the first object in the list.
+        if self.unused_objects:
+            obj = self.unused_objects[0]
+            self.unused_objects.remove(obj)
+        else:
+            obj = None
+
+        return obj
+
     def from_native(self, data, files):
         """
         Deserialize primitives -> objects.
@@ -356,9 +371,20 @@ class BaseSerializer(WritableField):
             if many:
                 ret = []
                 errors = []
+                siblings = []
                 for item in data:
-                    ret.append(self.from_native(item, None))
-                    errors.append(self._errors)
+                    obj = self._get_object_from_data(item)
+                    sibling = self.__class__(obj, data=item)
+                    siblings.append(sibling)
+                    sibling.object = sibling.from_native(item, None)
+                    ret.append(sibling.from_native(item, None))
+                    errors.append(sibling._errors)
+                # Unused objects will be deleted
+                for item in self.unused_objects or []:
+                    sibling = self.__class__(item)
+                    sibling._delete = True
+                    siblings.append(sibling)
+                self._siblings = siblings
                 self._errors = any(errors) and errors or []
             else:
                 ret = self.from_native(data, files)
@@ -450,6 +476,27 @@ class ModelSerializer(Serializer):
         models.ImageField: ImageField,
     }
 
+    def _get_object_from_data(self, data):
+        """
+        Get the corresponding object to deserialize the data into.
+        """
+        if self.unused_objects is None: return None
+
+        # Get the object based on pk
+        pk_field_name = self.opts.model._meta.pk.name
+        pk = data.get(pk_field_name, None)
+        if pk:
+            # Loop through objects and find one with pk or return None
+            obj = [o for o in self.unused_objects if o.pk == pk]
+            if obj:
+                obj = obj[0]
+                self.unused_objects.remove(obj)
+            else:
+                obj = None
+            return obj
+        else:
+            return None
+
     def field_from_native(self, data, files, field_name, into):
         if self.read_only:
             return
@@ -464,15 +511,39 @@ class ModelSerializer(Serializer):
         if self.parent.object:
             # Set the serializer object if it exists
             obj = getattr(self.parent.object, field_name)
+            if is_simple_callable(getattr(obj, 'all', None)):
+                # If this is a relational manager we just want the objects
+                obj = list(obj.all())
             self.object = obj
+            self.unused_objects = obj
 
         if value in (None, ''):
             self._delete = True
             into[(self.source or field_name)] = self
         else:
-            obj = self.from_native(value, files)
+            if self.many:
+                ret = []
+                errors = []
+                siblings = []
+                for item in value:
+                    obj = self._get_object_from_data(item)
+                    sibling = self.__class__(obj, data=item)
+                    siblings.append(sibling)
+                    sibling.object = sibling.from_native(item, None)
+                    ret.append(sibling.from_native(item, None))
+                    errors.append(sibling._errors)
+                # Unused objects will be deleted
+                for item in self.unused_objects or []:
+                    sibling = self.__class__(item)
+                    sibling._delete = True
+                    siblings.append(sibling)
+                self._siblings = siblings
+                self._errors = any(errors) and errors or []
+            else:
+                ret = self.from_native(value, files)
+
             if not self._errors:
-                self.object = obj
+                self.object = ret
                 into[self.source or field_name] = self
             else:
                 # Propagate errors up to our parent
@@ -647,13 +718,23 @@ class ModelSerializer(Serializer):
         Override the default method to also include model field validation.
         """
         instance = super(ModelSerializer, self).from_native(data, files)
-        if instance:
-            return self.full_clean(instance)
+        if self.many and hasattr(self, '_siblings'):
+            objects = [s.full_clean(s.object) if s.object else None for s in self._siblings]
+            self._errors = [s._errors for s in self._siblings]
+            return objects
+        else:
+            if instance:
+                return self.full_clean(instance)
 
     def save_object(self, obj, parent=None, fk_field=None):
         """
         Save the deserialized object and return it.
         """
+        if self.many:
+            for s in self._siblings:
+                s.save_object(s.object, parent, fk_field)
+            return
+
         if self._delete:
             obj.delete()
             return
