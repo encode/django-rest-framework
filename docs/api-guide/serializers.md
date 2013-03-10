@@ -93,6 +93,8 @@ To serialize a queryset instead of an object instance, you should pass the `many
 
 When deserializing data, you always need to call `is_valid()` before attempting to access the deserialized object.  If any validation errors occur, the `.errors` and `.non_field_errors` properties will contain the resulting error messages.
 
+When deserialising a list of items, errors will be returned as a list of tuples. The first item in an error tuple will be the index of the item with the error in the original data; The second item in the tuple will be a dict with the individual errors for that item.
+
 ### Field-level validation
 
 You can specify custom field-level validation by adding `.validate_<fieldname>` methods to your `Serializer` subclass. These are analagous to `.clean_<fieldname>` methods on Django forms, but accept slightly different arguments.

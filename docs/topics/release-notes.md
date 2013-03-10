@@ -42,9 +42,26 @@ You can determine your currently installed version using `pip freeze`:
 
 ### Master
 
-* Request authentication is no longer lazily evaluated, instead authentication is always run, which results in more consistent, obvious behavior.  Eg. Supplying bad auth credentials will now always return an error response, even if no permissions are set on the view.
+* Filtering backends are now applied to the querysets for object lookups as well as lists.  (Eg you can use a filtering backend to control which objects should 404)
+* Deal with error data nicely when deserializing lists of objects.
+* Extra override hook to configure `DjangoModelPermissions` for unauthenticated users.
+* Bugfix: Workaround for Django bug causing case where `Authtoken` could be registered for cascade delete from `User` even if not installed.
+
+### 2.2.3
+
+**Date**: 7th March 2013
+
+* Bugfix: Fix None values for for `DateField`, `DateTimeField` and `TimeField`.
+
+### 2.2.2
+
+**Date**: 6th March 2013
+
+* Support for custom input and output formats for `DateField`, `DateTimeField` and `TimeField`.
+* Cleanup: Request authentication is no longer lazily evaluated, instead authentication is always run, which results in more consistent, obvious behavior.  Eg. Supplying bad auth credentials will now always return an error response, even if no permissions are set on the view.
 * Bugfix for serializer data being uncacheable with pickle protocol 0.
 * Bugfixes for model field validation edge-cases.
+* Bugfix for authtoken migration while using a custom user model and south.
 
 ### 2.2.1
 

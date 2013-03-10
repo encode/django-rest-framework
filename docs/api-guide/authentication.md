@@ -113,7 +113,12 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
 This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.
 
-To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in your `INSTALLED_APPS` setting.
+To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in your `INSTALLED_APPS` setting:
+
+    INSTALLED_APPS = (
+        ...
+        'rest_framework.authtoken'
+    )
 
 You'll also need to create tokens for your users.
 
@@ -135,9 +140,13 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
     WWW-Authenticate: Token
 
+---
+
 **Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https` only.
 
 ---
+
+#### Generating Tokens
 
 If you want every user to have an automatically generated Token, you can simply catch the User's `post_save` signal.
 
@@ -154,8 +163,7 @@ If you've already created some users, you can generate tokens for all existing u
     for user in User.objects.all():
         Token.objects.get_or_create(user=user)
 
-When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password. 
-REST framework provides a built-in view to provide this behavior.  To use it, add the `obtain_auth_token` view to your URLconf:
+When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behavior.  To use it, add the `obtain_auth_token` view to your URLconf:
 
     urlpatterns += patterns('',
         url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token')
@@ -168,6 +176,23 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
     { 'token' : '9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b' }
 
 Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.  If you need a customized version of the `obtain_auth_token` view, you can do so by overriding the `ObtainAuthToken` view class, and using that in your url conf instead.
+
+#### Custom user models
+
+The `rest_framework.authtoken` app includes a south migration that will create the authtoken table.   If you're using a [custom user model][custom-user-model] you'll need to make sure that any initial migration that creates the user table runs before the authtoken table is created.
+
+You can do so by inserting a `needed_by` attribute in your user migration:
+
+    class Migration:
+
+        needed_by = (
+            ('authtoken', '0001_initial'),
+        )
+        
+        def forwards(self):
+            ...
+
+For more details, see the [south documentation on dependencies][south-dependencies].
 
 ## SessionAuthentication
 
@@ -233,5 +258,7 @@ HTTP digest authentication is a widely implemented scheme that was intended to r
 [throttling]: throttling.md
 [csrf-ajax]: https://docs.djangoproject.com/en/dev/ref/contrib/csrf/#ajax
 [mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
+[custom-user-model]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#specifying-a-custom-user-model
+[south-dependencies]: http://south.readthedocs.org/en/latest/dependencies.html
 [juanriaza]: https://github.com/juanriaza
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
