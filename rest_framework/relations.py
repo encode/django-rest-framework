@@ -235,7 +235,6 @@ class PrimaryKeyRelatedField(RelatedField):
                 pk = getattr(obj, self.source or field_name).pk
             except ObjectDoesNotExist:
                 return None
-            return self.to_native(obj.pk)
 
         # Forward relationship
         return self.to_native(pk)
