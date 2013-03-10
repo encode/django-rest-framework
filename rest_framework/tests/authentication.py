@@ -17,7 +17,7 @@ from rest_framework.authentication import (
 )
 from rest_framework.authtoken.models import Token
 from rest_framework.compat import patterns, url, include
-from rest_framework.compat import oauth2_provider, oauth2_provider_models
+from rest_framework.compat import oauth2_provider, oauth2_provider_models, oauth2_provider_scope
 from rest_framework.compat import oauth, oauth_provider
 from rest_framework.tests.utils import RequestFactory
 from rest_framework.views import APIView
@@ -54,6 +54,8 @@ if oauth2_provider is not None:
     urlpatterns += patterns('',
         url(r'^oauth2/', include('provider.oauth2.urls', namespace='oauth2')),
         url(r'^oauth2-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication])),
+        url(r'^oauth2-with-scope-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication], 
+            permission_classes=[permissions.TokenHasReadWriteScope])),
     )
 
 
@@ -514,3 +516,27 @@ class OAuth2Tests(TestCase):
         response = self.csrf_client.post('/oauth2-test/', params, HTTP_AUTHORIZATION=auth)
         self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
         self.assertIn('Invalid token', response.content)
+
+    @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
+    def test_post_form_with_invalid_scope_failing_auth(self):
+        """Ensure POSTing with a readonly scope instead of a write scope fails"""
+        read_only_access_token = self.access_token
+        read_only_access_token.scope = oauth2_provider_scope.SCOPE_NAME_DICT['read']
+        read_only_access_token.save()
+        auth = self._create_authorization_header(token=read_only_access_token.token)
+        params = self._client_credentials_params()
+        response = self.csrf_client.get('/oauth2-with-scope-test/', params, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 200)
+        response = self.csrf_client.post('/oauth2-with-scope-test/', params, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
+    def test_post_form_with_valid_scope_passing_auth(self):
+        """Ensure POSTing with a write scope succeed"""
+        read_write_access_token = self.access_token
+        read_write_access_token.scope = oauth2_provider_scope.SCOPE_NAME_DICT['write']
+        read_write_access_token.save()
+        auth = self._create_authorization_header(token=read_write_access_token.token)
+        params = self._client_credentials_params()
+        response = self.csrf_client.post('/oauth2-with-scope-test/', params, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 200)
