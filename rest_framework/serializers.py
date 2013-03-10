@@ -7,8 +7,7 @@ from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
-from rest_framework.compat import get_concrete_model
-from rest_framework.compat import six
+from rest_framework.compat import get_concrete_model, six
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -289,10 +288,6 @@ class BaseSerializer(WritableField):
         """
         Deserialize primitives -> objects.
         """
-        if hasattr(data, '__iter__') and not isinstance(data, (dict, six.text_type)):
-            # TODO: error data when deserializing lists
-            return [self.from_native(item, None) for item in data]
-
         self._errors = {}
         if data is not None or files is not None:
             attrs = self.restore_fields(data, files)
@@ -334,7 +329,7 @@ class BaseSerializer(WritableField):
         if self.many is not None:
             many = self.many
         else:
-            many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict))
+            many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict, six.text_type))
 
         if many:
             return [self.to_native(item) for item in obj]
@@ -352,19 +347,25 @@ class BaseSerializer(WritableField):
             if self.many is not None:
                 many = self.many
             else:
-                many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict))
+                many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict, six.text_type))
                 if many:
                     warnings.warn('Implict list/queryset serialization is due to be deprecated. '
                                   'Use the `many=True` flag when instantiating the serializer.',
                                   PendingDeprecationWarning, stacklevel=3)
 
-            # TODO: error data when deserializing lists
             if many:
-                ret = [self.from_native(item, None) for item in data]
-            ret = self.from_native(data, files)
+                ret = []
+                errors = []
+                for item in data:
+                    ret.append(self.from_native(item, None))
+                    errors.append(self._errors)
+                self._errors = any(errors) and errors or []
+            else:
+                ret = self.from_native(data, files)
 
             if not self._errors:
                 self.object = ret
+
         return self._errors
 
     def is_valid(self):
@@ -394,11 +395,17 @@ class BaseSerializer(WritableField):
 
         return self._data
 
+    def save_object(self, obj):
+        obj.save()
+
     def save(self):
         """
         Save the deserialized object and return it.
         """
-        self.object.save()
+        if isinstance(self.object, list):
+            [self.save_object(item) for item in self.object]
+        else:
+            self.save_object(self.object)
         return self.object
 
 
@@ -643,15 +650,18 @@ class ModelSerializer(Serializer):
         if instance:
             return self.full_clean(instance)
 
-    def _save(self, parent=None, fk_field=None):
+    def save_object(self, obj, parent=None, fk_field=None):
+        """
+        Save the deserialized object and return it.
+        """
         if self._delete:
-            self.object.delete()
+            obj.delete()
             return
 
         if parent and fk_field:
-            setattr(self.object, fk_field, parent)
+            setattr(obj, fk_field, parent)
 
-        self.object.save()
+        obj.save()
 
         if getattr(self, 'm2m_data', None):
             for accessor_name, object_list in self.m2m_data.items():
@@ -662,17 +672,10 @@ class ModelSerializer(Serializer):
             for accessor_name, object_list in self.related_data.items():
                 if isinstance(object_list, ModelSerializer):
                     fk_field = self.object._meta.get_field_by_name(accessor_name)[0].field.name
-                    object_list._save(parent=self.object, fk_field=fk_field)
+                    object_list.save_object(object_list.object, parent=self.object, fk_field=fk_field)
                 else:
                     setattr(self.object, accessor_name, object_list)
             self.related_data = {}
-            
-    def save(self):
-        """
-        Save the deserialized object and return it.
-        """
-        self._save()
-        return self.object
 
 
 class HyperlinkedModelSerializerOptions(ModelSerializerOptions):

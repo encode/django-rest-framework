@@ -90,12 +90,17 @@ This permission is suitable if you want to your API to allow read permissions to
 
 ## DjangoModelPermissions
 
-This permission class ties into Django's standard `django.contrib.auth` [model permissions][contribauth].  When applied to a view that has a `.model` property, authorization will only be granted if the user has the relevant model permissions assigned.
+This permission class ties into Django's standard `django.contrib.auth` [model permissions][contribauth].  When applied to a view that has a `.model` property, authorization will only be granted if the user *is authenticated* and has the *relevant model permissions* assigned.
 
 * `POST` requests require the user to have the `add` permission on the model.
 * `PUT` and `PATCH` requests require the user to have the `change` permission on the model.
 * `DELETE` requests require the user to have the `delete` permission on the model.
  
+If you want to use `DjangoModelPermissions` but also allow unauthenticated users to have read permission, override the class and set the `authenticated_users_only` property to `False`.  For example:
+
+    class HasModelPermissionsOrReadOnly(DjangoModelPermissions):
+        authenticated_users_only = False
+
 The default behaviour can also be overridden to support custom model permissions.  For example, you might want to include a `view` model permission for `GET` requests.
 
 To use custom model permissions, override `DjangoModelPermissions` and set the `.perms_map` property.  Refer to the source code for details.

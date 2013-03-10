@@ -65,8 +65,8 @@ class IntegrationTestFiltering(TestCase):
 
         self.objects = FilterableItem.objects
         self.data = [
-        {'id': obj.id, 'text': obj.text, 'decimal': obj.decimal, 'date': obj.date}
-        for obj in self.objects.all()
+            {'id': obj.id, 'text': obj.text, 'decimal': obj.decimal, 'date': obj.date.isoformat()}
+            for obj in self.objects.all()
         ]
 
     @unittest.skipUnless(django_filters, 'django-filters not installed')
@@ -95,7 +95,7 @@ class IntegrationTestFiltering(TestCase):
         request = factory.get('/?date=%s' % search_date)  # search_date str: '2012-09-22'
         response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected_data = [f for f in self.data if f['date'] == search_date]
+        expected_data = [f for f in self.data if datetime.datetime.strptime(f['date'], '%Y-%m-%d').date() == search_date]
         self.assertEqual(response.data, expected_data)
 
     @unittest.skipUnless(django_filters, 'django-filters not installed')
@@ -125,7 +125,7 @@ class IntegrationTestFiltering(TestCase):
         request = factory.get('/?date=%s' % search_date)  # search_date str: '2012-10-02'
         response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected_data = [f for f in self.data if f['date'] > search_date]
+        expected_data = [f for f in self.data if datetime.datetime.strptime(f['date'], '%Y-%m-%d').date() > search_date]
         self.assertEqual(response.data, expected_data)
 
         # Tests that the text filter set with 'icontains' in the filter class works.
@@ -142,8 +142,9 @@ class IntegrationTestFiltering(TestCase):
         request = factory.get('/?decimal=%s&date=%s' % (search_decimal, search_date))
         response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        expected_data = [f for f in self.data if f['date'] > search_date and
-                                                  f['decimal'] < search_decimal]
+        expected_data = [f for f in self.data if
+                         datetime.datetime.strptime(f['date'], '%Y-%m-%d').date() > search_date and
+                         f['decimal'] < search_decimal]
         self.assertEqual(response.data, expected_data)
 
     @unittest.skipUnless(django_filters, 'django-filters not installed')
