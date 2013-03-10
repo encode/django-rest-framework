@@ -47,7 +47,9 @@ urlpatterns = patterns('',
     (r'^basic/$', MockView.as_view(authentication_classes=[BasicAuthentication])),
     (r'^token/$', MockView.as_view(authentication_classes=[TokenAuthentication])),
     (r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
-    (r'^oauth/$', MockView.as_view(authentication_classes=[OAuthAuthentication]))
+    (r'^oauth/$', MockView.as_view(authentication_classes=[OAuthAuthentication])),
+    (r'^oauth-with-scope/$', MockView.as_view(authentication_classes=[OAuthAuthentication], 
+        permission_classes=[permissions.TokenHasReadWriteScope]))
 )
 
 if oauth2_provider is not None:
@@ -389,6 +391,39 @@ class OAuthTests(TestCase):
         auth = req.to_header()["Authorization"]
 
         response = self.csrf_client.post('/oauth/', HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 200)
+
+    @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
+    @unittest.skipUnless(oauth, 'oauth2 not installed')
+    def test_get_form_with_readonly_resource_passing_auth(self):
+        """Ensure POSTing with a readonly resource instead of a write scope fails"""
+        read_only_access_token = self.token
+        read_only_access_token.resource.is_readonly = True
+        read_only_access_token.resource.save()
+        params = self._create_authorization_url_parameters()
+        response = self.csrf_client.get('/oauth-with-scope/', params)
+        self.assertEqual(response.status_code, 200)
+
+    @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
+    @unittest.skipUnless(oauth, 'oauth2 not installed')
+    def test_post_form_with_readonly_resource_failing_auth(self):
+        """Ensure POSTing with a readonly resource instead of a write scope fails"""
+        read_only_access_token = self.token
+        read_only_access_token.resource.is_readonly = True
+        read_only_access_token.resource.save()
+        params = self._create_authorization_url_parameters()
+        response = self.csrf_client.post('/oauth-with-scope/', params)
+        self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
+
+    @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
+    @unittest.skipUnless(oauth, 'oauth2 not installed')
+    def test_post_form_with_write_resource_passing_auth(self):
+        """Ensure POSTing with a write resource succeed"""
+        read_write_access_token = self.token
+        read_write_access_token.resource.is_readonly = False
+        read_write_access_token.resource.save()
+        params = self._create_authorization_url_parameters()
+        response = self.csrf_client.post('/oauth-with-scope/', params)
         self.assertEqual(response.status_code, 200)
 
 

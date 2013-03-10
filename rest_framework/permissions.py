@@ -140,12 +140,16 @@ class TokenHasReadWriteScope(BasePermission):
 
         read_only = request.method in SAFE_METHODS
         if hasattr(request.auth, 'resource'):  # oauth 1
-            pass
+            if read_only:
+                return True
+            elif request.auth.resource.is_readonly is False:
+                return True
+            return False
         elif hasattr(request.auth, 'scope'):   # oauth 2
             scope_valid = lambda scope_wanted_key, scope_had: oauth2_provider_scope.check(
                 oauth2_provider_scope.SCOPE_NAME_DICT[scope_wanted_key], scope_had)
 
-            if (read_only and scope_valid('read', request.auth.scope)):
+            if read_only and scope_valid('read', request.auth.scope):
                 return True
             elif scope_valid('write', request.auth.scope):
                 return True
