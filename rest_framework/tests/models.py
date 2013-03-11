@@ -166,17 +166,3 @@ class NullableOneToOneSource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
     target = models.OneToOneField(OneToOneTarget, null=True, blank=True,
                                   related_name='nullable_source')
-
-
-# Inherited
-class ParentModel(RESTFrameworkModel):
-    name1 = models.CharField(max_length=100)
-
-
-class ChildModel(ParentModel):
-    name2 = models.CharField(max_length=100)
-
-
-class AssociatedModel(RESTFrameworkModel):
-    ref = models.OneToOneField(ParentModel, primary_key=True)
-    name = models.CharField(max_length=100)
