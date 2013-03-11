@@ -458,7 +458,7 @@ class ModelSerializer(Serializer):
         pk_field = opts.pk
 
         # If model is a child via multitable inheritance, use parent's pk
-        while isinstance(pk_field, models.OneToOneField) and pk_field.rel.parent_link:
+        while pk_field.rel and pk_field.rel.parent_link:
             pk_field = pk_field.rel.to._meta.pk
 
         fields = [pk_field]
