@@ -4,7 +4,8 @@ from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
-    ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
+    ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo, ParentModel, ChildModel,
+    AssociatedModel)
 import datetime
 import pickle
 
@@ -96,6 +97,16 @@ class BrokenModelSerializer(serializers.ModelSerializer):
         fields = ['some_field']
 
 
+class DerivedModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ChildModel
+
+
+class AssociatedModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AssociatedModel
+
+
 class BasicTests(TestCase):
     def setUp(self):
         self.comment = Comment(
@@ -169,6 +180,27 @@ class BasicTests(TestCase):
         serializer = PersonSerializer(self.person)
         self.assertEqual(set(serializer.data.keys()),
                           set(['name', 'age', 'info']))
+
+    def test_multitable_inherited_model_fields_as_expected(self):
+        """
+        Assert that the parent pointer field is not included in the fields
+        serialized fields
+        """
+        child = ChildModel(name1='parent name', name2='child name')
+        serializer = DerivedModelSerializer(child)
+        self.assertEqual(set(serializer.data.keys()),
+                         set(['name1', 'name2', 'id']))
+
+    def test_onetoone_primary_key_model_fields_as_expected(self):
+        """
+        Assert that a model with a onetoone field that is the primary key is
+        not treated like a derived model
+        """
+        parent = ParentModel(name1='parent name')
+        associate = AssociatedModel(name='hello', ref=parent)
+        serializer = AssociatedModelSerializer(associate)
+        self.assertEqual(set(serializer.data.keys()),
+                         set(['name', 'ref']))
 
     def test_field_with_dictionary(self):
         """
@@ -249,6 +281,14 @@ class ValidationTests(TestCase):
         serializer = CommentSerializer(self.comment, data=data)
         self.assertEqual(serializer.is_valid(), False)
         self.assertEqual(serializer.errors, {'email': ['This field is required.']})
+
+    def test_multitable_inherited_model(self):
+        data = {
+            'name1': 'parent name',
+            'name2': 'child name',
+        }
+        serializer = DerivedModelSerializer(data=data)
+        self.assertEqual(serializer.is_valid(), True)
 
     def test_missing_bool_with_default(self):
         """Make sure that a boolean value with a 'False' value is not
