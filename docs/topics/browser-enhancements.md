@@ -19,6 +19,23 @@ For example, given the following form:
 
 `request.method` would return `"DELETE"`.
 
+## HTTP header based method overriding
+
+REST framework also supports method overriding via the `X-HTTP-Method-Override` 
+header. This is useful if you are working with non-form content such as
+JSON and are working with an older web server and/or hosting provider 
+(e.g. [Amazon Web Services ELB][aws_elb]) that doesn't recognise particular 
+HTTP methods such as `PATCH`. 
+
+For example, making a `PATCH` request via `POST` in jQuery:
+
+	$.ajax({
+		url: '/myresource/',
+		method: 'POST',
+		headers: {'X-HTTP-Method-Override': 'PATCH'},
+		...
+	});
+
 ## Browser based submission of non-form content
 
 Browser-based submission of content types other than form are supported by
@@ -62,3 +79,4 @@ as well as how to support content types other than form-encoded data.
 [rails]: http://guides.rubyonrails.org/form_helpers.html#how-do-forms-with-put-or-delete-methods-work
 [html5]: http://www.w3.org/TR/html5-diff/#changes-2010-06-24
 [put_delete]: http://amundsen.com/examples/put-delete-forms/
+[aws_elb]: https://forums.aws.amazon.com/thread.jspa?messageID=400724
