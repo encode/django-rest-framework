@@ -153,7 +153,7 @@ class TokenHasReadWriteScope(BasePermission):
         elif hasattr(token, 'scope'):  # OAuth 2
             required = oauth2_constants.READ if read_only else oauth2_constants.WRITE
             return oauth2_provider_scope.check(required, request.auth.scope)
-        else:
-            assert False, ('TokenHasReadWriteScope requires either the'
-            '`OAuthAuthentication` or `OAuth2Authentication` authentication '
-            'class to be used.')
+
+        assert False, ('TokenHasReadWriteScope requires either the'
+        '`OAuthAuthentication` or `OAuth2Authentication` authentication '
+        'class to be used.')
