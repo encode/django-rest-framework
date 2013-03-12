@@ -42,6 +42,8 @@ You can determine your currently installed version using `pip freeze`:
 
 ### Master
 
+* OAuth 2 support.
+* OAuth 1.0a support.
 * Filtering backends are now applied to the querysets for object lookups as well as lists.  (Eg you can use a filtering backend to control which objects should 404)
 * Deal with error data nicely when deserializing lists of objects.
 * Extra override hook to configure `DjangoModelPermissions` for unauthenticated users.
