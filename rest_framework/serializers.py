@@ -21,6 +21,16 @@ from rest_framework.fields import *
 
 
 class NestedValidationError(ValidationError):
+    """
+    The default ValidationError behavior is to stringify each item in the list
+    if the messages are a list of error messages.
+
+    In the case of nested serializers, where the parent has many children,
+    then the child's `serializer.errors` will be a list of dicts.
+
+    We need to override the default behavior to get properly nested error dicts.
+    """
+
     def __init__(self, message):
         self.messages = message
 
