@@ -407,14 +407,14 @@ class PKNullableOneToOneTests(TestCase):
         target.save()
         new_target = OneToOneTarget(name='target-2')
         new_target.save()
-        source = NullableOneToOneSource(name='source-1', target=target)
+        source = NullableOneToOneSource(name='source-1', target=new_target)
         source.save()
 
     def test_reverse_foreign_key_retrieve_with_null(self):
         queryset = OneToOneTarget.objects.all()
         serializer = NullableOneToOneTargetSerializer(queryset, many=True)
         expected = [
-            {'id': 1, 'name': 'target-1', 'nullable_source': 1},
-            {'id': 2, 'name': 'target-2', 'nullable_source': None},
+            {'id': 1, 'name': 'target-1', 'nullable_source': None},
+            {'id': 2, 'name': 'target-2', 'nullable_source': 1},
         ]
         self.assertEqual(serializer.data, expected)

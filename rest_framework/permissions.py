@@ -104,6 +104,8 @@ class DjangoModelPermissions(BasePermission):
         'DELETE': ['%(app_label)s.delete_%(model_name)s'],
     }
 
+    authenticated_users_only = True
+
     def get_required_permissions(self, method, model_cls):
         """
         Given a model and an HTTP method, return the list of permission
@@ -117,13 +119,18 @@ class DjangoModelPermissions(BasePermission):
 
     def has_permission(self, request, view):
         model_cls = getattr(view, 'model', None)
-        if not model_cls:
-            return True
+        queryset = getattr(view, 'queryset', None)
+
+        if model_cls is None and queryset is not None:
+            model_cls = queryset.model
+
+        assert model_cls, ('Cannot apply DjangoModelPermissions on a view that'
+                           ' does not have `.model` or `.queryset` property.')
 
         perms = self.get_required_permissions(request.method, model_cls)
 
         if (request.user and
-            request.user.is_authenticated() and
+            (request.user.is_authenticated() or not self.authenticated_users_only) and
             request.user.has_perms(perms)):
             return True
         return False
