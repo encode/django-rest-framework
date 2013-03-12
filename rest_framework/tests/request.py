@@ -58,6 +58,14 @@ class TestMethodOverloading(TestCase):
         request = Request(factory.post('/', {api_settings.FORM_METHOD_OVERRIDE: 'DELETE'}))
         self.assertEqual(request.method, 'DELETE')
 
+    def test_x_http_method_override_header(self):
+        """
+        POST requests can also be overloaded to another method by setting
+        the X-HTTP-Method-Override header.
+        """
+        request = Request(factory.post('/', {'foo': 'bar'}, HTTP_X_HTTP_METHOD_OVERRIDE='DELETE'))
+        self.assertEqual(request.method, 'DELETE')
+
 
 class TestContentParsing(TestCase):
     def test_standard_behaviour_determines_no_content_GET(self):
