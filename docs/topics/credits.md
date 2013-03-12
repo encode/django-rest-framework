@@ -110,6 +110,7 @@ The following people have helped make REST framework great.
 * Jonas Braun - [iekadou]
 * Ian Dash - [bitmonkey]
 * Bouke Haarsma - [bouke]
+* Pierre Dulac - [dulaccc]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -254,4 +255,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [iekadou]: https://github.com/iekadou
 [bitmonkey]: https://github.com/bitmonkey
 [bouke]: https://github.com/bouke
-
+[dulaccc]: https://github.com/dulaccc
