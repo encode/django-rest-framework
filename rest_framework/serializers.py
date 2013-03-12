@@ -456,8 +456,11 @@ class ModelSerializer(Serializer):
                 "Serializer class '%s' is missing 'model' Meta option" % self.__class__.__name__
         opts = get_concrete_model(cls)._meta
         pk_field = opts.pk
-        # while pk_field.rel:
-        #     pk_field = pk_field.rel.to._meta.pk
+
+        # If model is a child via multitable inheritance, use parent's pk
+        while pk_field.rel and pk_field.rel.parent_link:
+            pk_field = pk_field.rel.to._meta.pk
+
         fields = [pk_field]
         fields += [field for field in opts.fields if field.serialize]
         fields += [field for field in opts.many_to_many if field.serialize]
