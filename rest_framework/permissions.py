@@ -7,7 +7,7 @@ import warnings
 
 SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
-from rest_framework.compat import oauth2_provider_scope
+from rest_framework.compat import oauth2_provider_scope, oauth2_constants
 
 
 class BasePermission(object):
@@ -142,25 +142,18 @@ class TokenHasReadWriteScope(BasePermission):
     """
 
     def has_permission(self, request, view):
-        if not request.auth:
-            return False
-
+        token = request.auth
         read_only = request.method in SAFE_METHODS
-        if hasattr(request.auth, 'resource'):  # oauth 1
-            if read_only:
-                return True
-            elif request.auth.resource.is_readonly is False:
-                return True
-            return False
-        elif hasattr(request.auth, 'scope'):   # oauth 2
-            scope_valid = lambda scope_wanted_key, scope_had: oauth2_provider_scope.check(
-                oauth2_provider_scope.SCOPE_NAME_DICT[scope_wanted_key], scope_had)
 
-            if read_only and scope_valid('read', request.auth.scope):
-                return True
-            elif scope_valid('write', request.auth.scope):
-                return True
+        if not token:
             return False
+
+        if hasattr(token, 'resource'):  # OAuth 1
+            return read_only or not request.auth.resource.is_readonly
+        elif hasattr(token, 'scope'):  # OAuth 2
+            required = oauth2_constants.READ if read_only else oauth2_constants.WRITE
+            return oauth2_provider_scope.check(required, request.auth.scope)
         else:
-            # Improperly configured!
-            pass
+            assert False, ('TokenHasReadWriteScope requires either the'
+            '`OAuthAuthentication` or `OAuth2Authentication` authentication '
+            'class to be used.')
