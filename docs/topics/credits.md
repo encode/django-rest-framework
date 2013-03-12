@@ -111,6 +111,7 @@ The following people have helped make REST framework great.
 * Ian Dash - [bitmonkey]
 * Bouke Haarsma - [bouke]
 * Pierre Dulac - [dulaccc]
+* Dave Kuhn - [kuhnza]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -256,3 +257,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [bitmonkey]: https://github.com/bitmonkey
 [bouke]: https://github.com/bouke
 [dulaccc]: https://github.com/dulaccc
+[kuhnza]: https://github.com/kuhnza
