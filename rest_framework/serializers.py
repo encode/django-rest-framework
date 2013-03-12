@@ -20,6 +20,11 @@ from rest_framework.relations import *
 from rest_framework.fields import *
 
 
+class NestedValidationError(ValidationError):
+    def __init__(self, message):
+        self.messages = message
+
+
 class DictWithMetadata(dict):
     """
     A dict-like object, that can have additional properties attached.
@@ -98,7 +103,7 @@ class SerializerOptions(object):
         self.exclude = getattr(meta, 'exclude', ())
 
 
-class BaseSerializer(Field):
+class BaseSerializer(WritableField):
     """
     This is the Serializer implementation.
     We need to implement it as `BaseSerializer` due to metaclass magicks.
@@ -303,33 +308,64 @@ class BaseSerializer(Field):
             return self.to_native(obj)
 
         try:
-            if self.source:
-                for component in self.source.split('.'):
-                    obj = getattr(obj, component)
-                    if is_simple_callable(obj):
-                        obj = obj()
-            else:
-                obj = getattr(obj, field_name)
-                if is_simple_callable(obj):
-                    obj = obj()
+            source = self.source or field_name
+            value = obj
+
+            for component in source.split('.'):
+                value = get_component(value, component)
+                if value is None:
+                    break
         except ObjectDoesNotExist:
             return None
 
-        # If the object has an "all" method, assume it's a relationship
-        if is_simple_callable(getattr(obj, 'all', None)):
-            return [self.to_native(item) for item in obj.all()]
+        if is_simple_callable(getattr(value, 'all', None)):
+            return [self.to_native(item) for item in value.all()]
 
-        if obj is None:
+        if value is None:
             return None
 
         if self.many is not None:
             many = self.many
         else:
-            many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict, six.text_type))
+            many = hasattr(value, '__iter__') and not isinstance(value, (Page, dict, six.text_type))
 
         if many:
-            return [self.to_native(item) for item in obj]
-        return self.to_native(obj)
+            return [self.to_native(item) for item in value]
+        return self.to_native(value)
+
+    def field_from_native(self, data, files, field_name, into):
+        if self.read_only:
+            return
+
+        try:
+            value = data[field_name]
+        except KeyError:
+            if self.required:
+                raise ValidationError(self.error_messages['required'])
+            return
+
+        if self.parent.object:
+            # Set the serializer object if it exists
+            obj = getattr(self.parent.object, field_name)
+            self.object = obj
+
+        if value in (None, ''):
+            into[(self.source or field_name)] = None
+        else:
+            kwargs = {
+                'data': value,
+                'context': self.context,
+                'partial': self.partial,
+                'many': self.many
+            }
+            serializer = self.__class__(**kwargs)
+
+            if serializer.is_valid():
+                self.object = serializer.object
+                into[self.source or field_name] = serializer.object
+            else:
+                # Propagate errors up to our parent
+                raise NestedValidationError(serializer.errors)
 
     @property
     def errors(self):
