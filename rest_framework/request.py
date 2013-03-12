@@ -233,11 +233,14 @@ class Request(object):
                                            self.META.get('CONTENT_TYPE', ''))
 
         self._perform_form_overloading()
+
         if not _hasattr(self, '_method'):
-            # Method wasn't overloaded by hidden form element, so look for 
-            # method override in header. If not present default to raw HTTP method
-            self._method = self.META.get('HTTP_X_HTTP_METHOD_OVERRIDE', 
-                                         self._request.method)
+            self._method = self._request.method
+
+            if self._method == 'POST':
+                # Allow X-HTTP-METHOD-OVERRIDE header
+                self._method = self.META.get('HTTP_X_HTTP_METHOD_OVERRIDE',
+                                             self._method)
 
     def _load_stream(self):
         """
