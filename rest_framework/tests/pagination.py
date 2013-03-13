@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 import datetime
 from decimal import Decimal
+import django
 from django.core.paginator import Paginator
 from django.test import TestCase
 from django.test.client import RequestFactory
@@ -18,21 +19,6 @@ class RootView(generics.ListCreateAPIView):
     """
     model = BasicModel
     paginate_by = 10
-
-
-if django_filters:
-    class DecimalFilter(django_filters.FilterSet):
-        decimal = django_filters.NumberFilter(lookup_type='lt')
-
-        class Meta:
-            model = FilterableItem
-            fields = ['text', 'decimal', 'date']
-
-    class FilterFieldsRootView(generics.ListCreateAPIView):
-        model = FilterableItem
-        paginate_by = 10
-        filter_class = DecimalFilter
-        filter_backend = filters.DjangoFilterBackend
 
 
 class DefaultPageSizeKwargView(generics.ListAPIView):
@@ -119,17 +105,44 @@ class IntegrationTestPaginationAndFiltering(TestCase):
             {'id': obj.id, 'text': obj.text, 'decimal': obj.decimal, 'date': obj.date.isoformat()}
             for obj in self.objects.all()
         ]
-        self.view = FilterFieldsRootView.as_view()
 
     @unittest.skipUnless(django_filters, 'django-filters not installed')
-    def test_get_paginated_filtered_root_view(self):
+    def test_get_django_filter_paginated_filtered_root_view(self):
         """
         GET requests to paginated filtered ListCreateAPIView should return
         paginated results. The next and previous links should preserve the
         filtered parameters.
         """
+        class DecimalFilter(django_filters.FilterSet):
+            decimal = django_filters.NumberFilter(lookup_type='lt')
+
+            class Meta:
+                model = FilterableItem
+                fields = ['text', 'decimal', 'date']
+
+        class FilterFieldsRootView(generics.ListCreateAPIView):
+            model = FilterableItem
+            paginate_by = 10
+            filter_class = DecimalFilter
+            filter_backend = filters.DjangoFilterBackend
+
+        view = FilterFieldsRootView.as_view()
+
+        EXPECTED_NUM_QUERIES = 2
+        if django.VERSION < (1, 4):
+            # On Django 1.3 we need to use django-filter 0.5.4
+            #
+            # The filter objects there don't expose a `.count()` method,
+            # which means we only make a single query *but* it's a single
+            # query across *all* of the queryset, instead of a COUNT and then
+            # a SELECT with a LIMIT.
+            #
+            # Although this is fewer queries, it's actually a regression.
+            EXPECTED_NUM_QUERIES = 1
+
         request = factory.get('/?decimal=15.20')
-        response = self.view(request).render()
+        with self.assertNumQueries(EXPECTED_NUM_QUERIES):
+            response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 15)
         self.assertEqual(response.data['results'], self.data[:10])
@@ -137,7 +150,8 @@ class IntegrationTestPaginationAndFiltering(TestCase):
         self.assertEqual(response.data['previous'], None)
 
         request = factory.get(response.data['next'])
-        response = self.view(request).render()
+        with self.assertNumQueries(EXPECTED_NUM_QUERIES):
+            response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 15)
         self.assertEqual(response.data['results'], self.data[10:15])
@@ -145,7 +159,53 @@ class IntegrationTestPaginationAndFiltering(TestCase):
         self.assertNotEqual(response.data['previous'], None)
 
         request = factory.get(response.data['previous'])
-        response = self.view(request).render()
+        with self.assertNumQueries(EXPECTED_NUM_QUERIES):
+            response = view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 15)
+        self.assertEqual(response.data['results'], self.data[:10])
+        self.assertNotEqual(response.data['next'], None)
+        self.assertEqual(response.data['previous'], None)
+
+    def test_get_basic_paginated_filtered_root_view(self):
+        """
+        Same as `test_get_django_filter_paginated_filtered_root_view`,
+        except using a custom filter backend instead of the django-filter
+        backend,
+        """
+
+        class DecimalFilterBackend(filters.BaseFilterBackend):
+            def filter_queryset(self, request, queryset, view):
+                return queryset.filter(decimal__lt=Decimal(request.GET['decimal']))
+
+        class BasicFilterFieldsRootView(generics.ListCreateAPIView):
+            model = FilterableItem
+            paginate_by = 10
+            filter_backend = DecimalFilterBackend
+
+        view = BasicFilterFieldsRootView.as_view()
+
+        request = factory.get('/?decimal=15.20')
+        with self.assertNumQueries(2):
+            response = view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 15)
+        self.assertEqual(response.data['results'], self.data[:10])
+        self.assertNotEqual(response.data['next'], None)
+        self.assertEqual(response.data['previous'], None)
+
+        request = factory.get(response.data['next'])
+        with self.assertNumQueries(2):
+            response = view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['count'], 15)
+        self.assertEqual(response.data['results'], self.data[10:15])
+        self.assertEqual(response.data['next'], None)
+        self.assertNotEqual(response.data['previous'], None)
+
+        request = factory.get(response.data['previous'])
+        with self.assertNumQueries(2):
+            response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 15)
         self.assertEqual(response.data['results'], self.data[:10])
