@@ -44,7 +44,7 @@ class CreateModelMixin(object):
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
-            self.object = serializer.save()
+            self.object = serializer.save(force_insert=True)
             self.post_save(self.object, created=True)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED,
@@ -119,9 +119,11 @@ class UpdateModelMixin(object):
             # we have relevant permissions, as if this was a POST request.
             self.check_permissions(clone_request(request, 'POST'))
             created = True
+            save_kwargs = {'force_insert': True}
             success_status_code = status.HTTP_201_CREATED
         else:
             created = False
+            save_kwargs = {'force_update': True}
             success_status_code = status.HTTP_200_OK
 
         serializer = self.get_serializer(self.object, data=request.DATA,
@@ -129,7 +131,7 @@ class UpdateModelMixin(object):
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
-            self.object = serializer.save()
+            self.object = serializer.save(**save_kwargs)
             self.post_save(self.object, created=created)
             return Response(serializer.data, status=success_status_code)
 

@@ -391,17 +391,17 @@ class BaseSerializer(Field):
 
         return self._data
 
-    def save_object(self, obj):
-        obj.save()
+    def save_object(self, obj, **kwargs):
+        obj.save(**kwargs)
 
-    def save(self):
+    def save(self, **kwargs):
         """
         Save the deserialized object and return it.
         """
         if isinstance(self.object, list):
-            [self.save_object(item) for item in self.object]
+            [self.save_object(item, **kwargs) for item in self.object]
         else:
-            self.save_object(self.object)
+            self.save_object(self.object, **kwargs)
         return self.object
 
 
@@ -621,11 +621,11 @@ class ModelSerializer(Serializer):
         if instance:
             return self.full_clean(instance)
 
-    def save_object(self, obj):
+    def save_object(self, obj, **kwargs):
         """
         Save the deserialized object and return it.
         """
-        obj.save()
+        obj.save(**kwargs)
 
         if getattr(self, 'm2m_data', None):
             for accessor_name, object_list in self.m2m_data.items():

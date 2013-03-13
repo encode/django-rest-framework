@@ -184,7 +184,7 @@ class TestInstanceView(TestCase):
         content = {'text': 'foobar'}
         request = factory.put('/1', json.dumps(content),
                               content_type='application/json')
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             response = self.view(request, pk='1').render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
@@ -199,7 +199,7 @@ class TestInstanceView(TestCase):
         request = factory.patch('/1', json.dumps(content),
                               content_type='application/json')
 
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
@@ -248,7 +248,7 @@ class TestInstanceView(TestCase):
         content = {'id': 999, 'text': 'foobar'}
         request = factory.put('/1', json.dumps(content),
                               content_type='application/json')
-        with self.assertNumQueries(3):
+        with self.assertNumQueries(2):
             response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
@@ -264,7 +264,7 @@ class TestInstanceView(TestCase):
         content = {'text': 'foobar'}
         request = factory.put('/1', json.dumps(content),
                               content_type='application/json')
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(3):
             response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
@@ -280,7 +280,7 @@ class TestInstanceView(TestCase):
         # pk fields can not be created on demand, only the database can set the pk for a new object
         request = factory.put('/5', json.dumps(content),
                               content_type='application/json')
-        with self.assertNumQueries(4):
+        with self.assertNumQueries(3):
             response = self.view(request, pk=5).render()
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         new_obj = self.objects.get(pk=5)

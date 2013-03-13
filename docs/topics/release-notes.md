@@ -40,6 +40,10 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.2.x series
 
+### Master
+
+* `Serializer.save()` now supports arbitrary keyword args which are passed through to the object `.save()` method.  Mixins use `force_insert` and `force_update` where appropriate, resulting in one less database query.
+
 ### 2.2.4
 
 **Date**: 13th March 2013
