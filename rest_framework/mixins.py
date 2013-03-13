@@ -100,8 +100,12 @@ class RetrieveModelMixin(object):
         queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
         self.object = self.get_object(filtered_queryset)
+        if self.use_etags:
+            if self.get_etag(self.object) == request.META.get('HTTP_IF_NONE_MATCH'):
+                return Response(status=304)
+            headers = {'ETag': self.get_etag(self.object)}
         serializer = self.get_serializer(self.object)
-        return Response(serializer.data)
+        return Response(serializer.data, headers=headers)
 
 
 class UpdateModelMixin(object):
@@ -110,6 +114,10 @@ class UpdateModelMixin(object):
     Should be mixed in with `SingleObjectAPIView`.
     """
     def update(self, request, *args, **kwargs):
+        header_etag = request.META.get('HTTP_IF_MATCH')
+        if header_etag is None:
+            return Response({'error': 'IF_MATCH header is required'}, status=400)
+
         partial = kwargs.pop('partial', False)
         self.object = None
         try:
@@ -121,6 +129,8 @@ class UpdateModelMixin(object):
             created = True
             success_status_code = status.HTTP_201_CREATED
         else:
+            if self.object.etag != header_etag:
+                return Response({'error': 'object has been updated since you last saw it'}, status=412)
             created = False
             success_status_code = status.HTTP_200_OK
 
@@ -164,5 +174,7 @@ class DestroyModelMixin(object):
     """
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
+        if self.get_etag(obj) != self.header_etag:
+            return Response({'error': 'object has been updated since you last saw it'}, status=412)
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
