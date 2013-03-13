@@ -73,7 +73,9 @@ class IntegrationTestPagination(TestCase):
         GET requests to paginated ListCreateAPIView should return paginated results.
         """
         request = factory.get('/')
-        response = self.view(request).render()
+        # Note: Database queries are a `SELECT COUNT`, and `SELECT <fields>`
+        with self.assertNumQueries(2):
+            response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 26)
         self.assertEqual(response.data['results'], self.data[:10])
@@ -81,7 +83,8 @@ class IntegrationTestPagination(TestCase):
         self.assertEqual(response.data['previous'], None)
 
         request = factory.get(response.data['next'])
-        response = self.view(request).render()
+        with self.assertNumQueries(2):
+            response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 26)
         self.assertEqual(response.data['results'], self.data[10:20])
@@ -89,7 +92,8 @@ class IntegrationTestPagination(TestCase):
         self.assertNotEqual(response.data['previous'], None)
 
         request = factory.get(response.data['next'])
-        response = self.view(request).render()
+        with self.assertNumQueries(2):
+            response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 26)
         self.assertEqual(response.data['results'], self.data[20:])
