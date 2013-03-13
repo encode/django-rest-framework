@@ -26,13 +26,17 @@ class NestedValidationError(ValidationError):
     if the messages are a list of error messages.
 
     In the case of nested serializers, where the parent has many children,
-    then the child's `serializer.errors` will be a list of dicts.
+    then the child's `serializer.errors` will be a list of dicts.  In the case
+    of a single child, the `serializer.errors` will be a dict.
 
     We need to override the default behavior to get properly nested error dicts.
     """
 
     def __init__(self, message):
-        self.messages = message
+        if isinstance(message, dict):
+            self.messages = [message]
+        else:
+            self.messages = message
 
 
 class DictWithMetadata(dict):
@@ -143,6 +147,7 @@ class BaseSerializer(WritableField):
         self._data = None
         self._files = None
         self._errors = None
+        self._delete = False
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
@@ -354,15 +359,19 @@ class BaseSerializer(WritableField):
                 raise ValidationError(self.error_messages['required'])
             return
 
-        if self.parent.object:
-            # Set the serializer object if it exists
-            obj = getattr(self.parent.object, field_name)
-            self.object = obj
+        # Set the serializer object if it exists
+        obj = getattr(self.parent.object, field_name) if self.parent.object else None
 
         if value in (None, ''):
-            into[(self.source or field_name)] = None
+            if isinstance(self, ModelSerializer):
+                self._delete = True
+                self.object = obj
+                into[(self.source or field_name)] = self
+            else:
+                into[(self.source or field_name)] = None
         else:
             kwargs = {
+                'instance': obj,
                 'data': value,
                 'context': self.context,
                 'partial': self.partial,
@@ -371,8 +380,10 @@ class BaseSerializer(WritableField):
             serializer = self.__class__(**kwargs)
 
             if serializer.is_valid():
-                self.object = serializer.object
-                into[self.source or field_name] = serializer.object
+                if isinstance(serializer, ModelSerializer):
+                    into[self.source or field_name] = serializer
+                else:
+                    into[self.source or field_name] = serializer.object
             else:
                 # Propagate errors up to our parent
                 raise NestedValidationError(serializer.errors)
@@ -664,10 +675,17 @@ class ModelSerializer(Serializer):
         if instance:
             return self.full_clean(instance)
 
-    def save_object(self, obj):
+    def save_object(self, obj, parent=None, fk_field=None):
         """
         Save the deserialized object and return it.
         """
+        if self._delete:
+            obj.delete()
+            return
+
+        if parent and fk_field:
+            setattr(self.object, fk_field, parent)
+
         obj.save()
 
         if getattr(self, 'm2m_data', None):
@@ -677,7 +695,11 @@ class ModelSerializer(Serializer):
 
         if getattr(self, 'related_data', None):
             for accessor_name, object_list in self.related_data.items():
-                setattr(self.object, accessor_name, object_list)
+                if isinstance(object_list, ModelSerializer):
+                    fk_field = self.object._meta.get_field_by_name(accessor_name)[0].field.name
+                    object_list.save_object(object_list.object, parent=self.object, fk_field=fk_field)
+                else:
+                    setattr(self.object, accessor_name, object_list)
             self.related_data = {}
 
 
