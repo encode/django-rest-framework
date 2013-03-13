@@ -40,7 +40,9 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.2.x series
 
-### Master
+### 2.2.4
+
+**Date**: 13th March 2013
 
 * OAuth 2 support.
 * OAuth 1.0a support.
