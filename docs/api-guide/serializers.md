@@ -91,7 +91,7 @@ To serialize a queryset instead of an object instance, you should pass the `many
 
 ## Validation
 
-When deserializing data, you always need to call `is_valid()` before attempting to access the deserialized object.  If any validation errors occur, the `.errors` and `.non_field_errors` properties will contain the resulting error messages.
+When deserializing data, you always need to call `is_valid()` before attempting to access the deserialized object.  If any validation errors occur, the `.errors` property will contain the resulting error messages (including non field errors).
 
 When deserialising a list of items, errors will be returned as a list of tuples. The first item in an error tuple will be the index of the item with the error in the original data; The second item in the tuple will be a dict with the individual errors for that item.
 
