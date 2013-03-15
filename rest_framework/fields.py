@@ -26,14 +26,16 @@ def is_simple_callable(obj):
     """
     True if the object is a callable that takes no arguments.
     """
-    try:
-        args, _, _, defaults = inspect.getargspec(obj)
-    except TypeError:
+    function = inspect.isfunction(obj)
+    method = inspect.ismethod(obj)
+
+    if not (function or method):
         return False
-    else:
-        len_args = len(args) if inspect.isfunction(obj) else len(args) - 1
-        len_defaults = len(defaults) if defaults else 0
-        return len_args <= len_defaults
+
+    args, _, _, defaults = inspect.getargspec(obj)
+    len_args = len(args) if function else len(args) - 1
+    len_defaults = len(defaults) if defaults else 0
+    return len_args <= len_defaults
 
 
 def get_component(obj, attr_name):

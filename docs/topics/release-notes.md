@@ -42,11 +42,19 @@ You can determine your currently installed version using `pip freeze`:
 
 ### Master
 
+* `Serializer.save()` now supports arbitrary keyword args which are passed through to the object `.save()` method.  Mixins use `force_insert` and `force_update` where appropriate, resulting in one less database query.
+
+### 2.2.4
+
+**Date**: 13th March 2013
+
 * OAuth 2 support.
 * OAuth 1.0a support.
+* Support X-HTTP-Method-Override header.
 * Filtering backends are now applied to the querysets for object lookups as well as lists.  (Eg you can use a filtering backend to control which objects should 404)
 * Deal with error data nicely when deserializing lists of objects.
 * Extra override hook to configure `DjangoModelPermissions` for unauthenticated users.
+* Bugfix: Fix regression which caused extra database query on paginated list views.
 * Bugfix: Fix pk relationship bug for some types of 1-to-1 relations.
 * Bugfix: Workaround for Django bug causing case where `Authtoken` could be registered for cascade delete from `User` even if not installed.
 

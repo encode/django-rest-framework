@@ -437,17 +437,17 @@ class BaseSerializer(WritableField):
 
         return self._data
 
-    def save_object(self, obj):
-        obj.save()
+    def save_object(self, obj, **kwargs):
+        obj.save(**kwargs)
 
-    def save(self):
+    def save(self, **kwargs):
         """
         Save the deserialized object and return it.
         """
         if isinstance(self.object, list):
-            [self.save_object(item) for item in self.object]
+            [self.save_object(item, **kwargs) for item in self.object]
         else:
-            self.save_object(self.object)
+            self.save_object(self.object, **kwargs)
         return self.object
 
 
@@ -502,8 +502,11 @@ class ModelSerializer(Serializer):
                 "Serializer class '%s' is missing 'model' Meta option" % self.__class__.__name__
         opts = get_concrete_model(cls)._meta
         pk_field = opts.pk
-        # while pk_field.rel:
-        #     pk_field = pk_field.rel.to._meta.pk
+
+        # If model is a child via multitable inheritance, use parent's pk
+        while pk_field.rel and pk_field.rel.parent_link:
+            pk_field = pk_field.rel.to._meta.pk
+
         fields = [pk_field]
         fields += [field for field in opts.fields if field.serialize]
         fields += [field for field in opts.many_to_many if field.serialize]
@@ -664,11 +667,11 @@ class ModelSerializer(Serializer):
         if instance:
             return self.full_clean(instance)
 
-    def save_object(self, obj):
+    def save_object(self, obj, **kwargs):
         """
         Save the deserialized object and return it.
         """
-        obj.save()
+        obj.save(**kwargs)
 
         if getattr(self, 'm2m_data', None):
             for accessor_name, object_list in self.m2m_data.items():

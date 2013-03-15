@@ -57,24 +57,36 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
 
         toc = ''
         text = open(path, 'r').read().decode('utf-8')
+        main_title = None
+        description = 'Django, API, REST'
         for line in text.splitlines():
             if line.startswith('# '):
                 title = line[2:].strip()
                 template = main_header
+                description = description + ', ' + title
             elif line.startswith('## '):
                 title = line[3:].strip()
                 template = sub_header
             else:
                 continue
 
+            if not main_title:
+                main_title = title
             anchor = title.lower().replace(' ', '-').replace(':-', '-').replace("'", '').replace('?', '').replace('.', '')
             template = template.replace('{{ title }}', title)
             template = template.replace('{{ anchor }}', anchor)
             toc += template + '\n'
 
+        if filename == 'index.md':
+            main_title = 'Django REST framework - APIs made easy'
+        else:
+            main_title = 'Django REST framework - ' + main_title
+
         content = markdown.markdown(text, ['headerid'])
 
         output = page.replace('{{ content }}', content).replace('{{ toc }}', toc).replace('{{ base_url }}', base_url).replace('{{ suffix }}', suffix).replace('{{ index }}', index)
+        output = output.replace('{{ title }}', main_title)
+        output = output.replace('{{ description }}', description)
         output = output.replace('{{ page_id }}', filename[:-3])
         output = re.sub(r'a href="([^"]*)\.md"', r'a href="\1%s"' % suffix, output)
         output = re.sub(r'<pre><code>:::bash', r'<pre class="prettyprint lang-bsh">', output)
