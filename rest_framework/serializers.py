@@ -676,13 +676,10 @@ class ModelSerializer(Serializer):
         if instance:
             return self.full_clean(instance)
 
-    def save_object(self, obj, parent=None, fk_field=None, **kwargs):
+    def save_object(self, obj, **kwargs):
         """
         Save the deserialized object and return it.
         """
-        if parent and fk_field:
-            setattr(self.object, fk_field, parent)
-
         obj.save(**kwargs)
 
         if getattr(obj, '_m2m_data', None):
