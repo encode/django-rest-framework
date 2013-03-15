@@ -379,11 +379,7 @@ class BaseSerializer(WritableField):
             serializer = self.__class__(**kwargs)
 
             if serializer.is_valid():
-                if isinstance(serializer, ModelSerializer):
-                    into[self.source or field_name] = serializer
-                else:
-                    into[self.source or field_name] = serializer.object
-                # into[self.source or field_name] = serializer.object
+                into[self.source or field_name] = serializer.object
             else:
                 # Propagate errors up to our parent
                 raise NestedValidationError(serializer.errors)
@@ -681,12 +677,6 @@ class ModelSerializer(Serializer):
         if instance:
             return self.full_clean(instance)
 
-#     def save_object(self, obj, **kwargs):
-#         """
-#         Save the deserialized object and return it.
-#         """
-#         obj.save(**kwargs)
-# =======
     def save_object(self, obj, parent=None, fk_field=None, **kwargs):
         """
         Save the deserialized object and return it.
@@ -706,13 +696,10 @@ class ModelSerializer(Serializer):
                 if related is None:
                     previous = getattr(self.object, accessor_name, related)
                     previous.delete()
-                elif isinstance(related, ModelSerializer):
-                    # print related.object
-                    # print related.related_data, related.m2m_data
+                elif isinstance(related, models.Model):
                     fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
-                    related.save_object(related.object, parent=self.object, fk_field=fk_field)
-                    # setattr(related, fk_field, obj)
-                    # related.save(**kwargs)
+                    setattr(related, fk_field, obj)
+                    self.save_object(related)
                 else:
                     setattr(self.object, accessor_name, related)
             obj._related_data = {}
