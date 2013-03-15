@@ -147,7 +147,6 @@ class BaseSerializer(WritableField):
         self._data = None
         self._files = None
         self._errors = None
-        self._delete = False
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
