@@ -1,5 +1,7 @@
 """
 Tests to cover nested serializers.
+
+Doesn't cover model serializers.
 """
 from __future__ import unicode_literals
 from django.test import TestCase
@@ -124,7 +126,7 @@ class WritableNestedSerializerObjectTests(TestCase):
             def __init__(self, order, title, duration):
                 self.order, self.title, self.duration = order, title, duration
 
-            def __cmp__(self, other):
+            def __eq__(self, other):
                 return (
                     self.order == other.order and
                     self.title == other.title and
@@ -135,7 +137,7 @@ class WritableNestedSerializerObjectTests(TestCase):
             def __init__(self, album_name, artist, tracks):
                 self.album_name, self.artist, self.tracks = album_name, artist, tracks
 
-            def __cmp__(self, other):
+            def __eq__(self, other):
                 return (
                     self.album_name == other.album_name and
                     self.artist == other.artist and

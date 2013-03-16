@@ -1,115 +1,125 @@
 from __future__ import unicode_literals
+from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
-from rest_framework.tests.models import ForeignKeyTarget, ForeignKeySource, NullableForeignKeySource, OneToOneTarget, NullableOneToOneSource
 
 
-class ForeignKeySourceSerializer(serializers.ModelSerializer):
+class OneToOneTarget(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class OneToOneTargetSource(models.Model):
+    name = models.CharField(max_length=100)
+    target = models.OneToOneField(OneToOneTarget, null=True, blank=True,
+                                  related_name='target_source')
+
+
+class OneToOneSource(models.Model):
+    name = models.CharField(max_length=100)
+    target_source = models.OneToOneField(OneToOneTargetSource, related_name='source')
+
+
+class OneToOneSourceSerializer(serializers.ModelSerializer):
     class Meta:
-        depth = 1
-        model = ForeignKeySource
+        model = OneToOneSource
+        exclude = ('target_source', )
 
 
-class FlatForeignKeySourceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ForeignKeySource
-
-
-class ForeignKeyTargetSerializer(serializers.ModelSerializer):
-    sources = FlatForeignKeySourceSerializer(many=True)
+class OneToOneTargetSourceSerializer(serializers.ModelSerializer):
+    source = OneToOneSourceSerializer()
 
     class Meta:
-        model = ForeignKeyTarget
+        model = OneToOneTargetSource
+        exclude = ('target', )
 
 
-class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
-    class Meta:
-        depth = 1
-        model = NullableForeignKeySource
-
-
-class NullableOneToOneSourceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = NullableOneToOneSource
-
-
-class NullableOneToOneTargetSerializer(serializers.ModelSerializer):
-    nullable_source = NullableOneToOneSourceSerializer()
+class OneToOneTargetSerializer(serializers.ModelSerializer):
+    target_source = OneToOneTargetSourceSerializer()
 
     class Meta:
         model = OneToOneTarget
 
 
-class ReverseForeignKeyTests(TestCase):
+class NestedOneToOneTests(TestCase):
     def setUp(self):
-        target = ForeignKeyTarget(name='target-1')
-        target.save()
-        new_target = ForeignKeyTarget(name='target-2')
-        new_target.save()
         for idx in range(1, 4):
-            source = ForeignKeySource(name='source-%d' % idx, target=target)
+            target = OneToOneTarget(name='target-%d' % idx)
+            target.save()
+            target_source = OneToOneTargetSource(name='target-source-%d' % idx, target=target)
+            target_source.save()
+            source = OneToOneSource(name='source-%d' % idx, target_source=target_source)
             source.save()
 
-    def test_foreign_key_retrieve(self):
-        queryset = ForeignKeySource.objects.all()
-        serializer = ForeignKeySourceSerializer(queryset, many=True)
-        expected = [
-            {'id': 1, 'name': 'source-1', 'target': {'id': 1, 'name': 'target-1'}},
-            {'id': 2, 'name': 'source-2', 'target': {'id': 1, 'name': 'target-1'}},
-            {'id': 3, 'name': 'source-3', 'target': {'id': 1, 'name': 'target-1'}},
-        ]
-        self.assertEqual(serializer.data, expected)
-
-    def test_reverse_foreign_key_retrieve(self):
-        queryset = ForeignKeyTarget.objects.all()
-        serializer = ForeignKeyTargetSerializer(queryset, many=True)
-        expected = [
-            {'id': 1, 'name': 'target-1', 'sources': [
-                {'id': 1, 'name': 'source-1', 'target': 1},
-                {'id': 2, 'name': 'source-2', 'target': 1},
-                {'id': 3, 'name': 'source-3', 'target': 1},
-            ]},
-            {'id': 2, 'name': 'target-2', 'sources': [
-            ]}
-        ]
-        self.assertEqual(serializer.data, expected)
-
-
-class NestedNullableForeignKeyTests(TestCase):
-    def setUp(self):
-        target = ForeignKeyTarget(name='target-1')
-        target.save()
-        for idx in range(1, 4):
-            if idx == 3:
-                target = None
-            source = NullableForeignKeySource(name='source-%d' % idx, target=target)
-            source.save()
-
-    def test_foreign_key_retrieve_with_null(self):
-        queryset = NullableForeignKeySource.objects.all()
-        serializer = NullableForeignKeySourceSerializer(queryset, many=True)
-        expected = [
-            {'id': 1, 'name': 'source-1', 'target': {'id': 1, 'name': 'target-1'}},
-            {'id': 2, 'name': 'source-2', 'target': {'id': 1, 'name': 'target-1'}},
-            {'id': 3, 'name': 'source-3', 'target': None},
-        ]
-        self.assertEqual(serializer.data, expected)
-
-
-class NestedNullableOneToOneTests(TestCase):
-    def setUp(self):
-        target = OneToOneTarget(name='target-1')
-        target.save()
-        new_target = OneToOneTarget(name='target-2')
-        new_target.save()
-        source = NullableOneToOneSource(name='source-1', target=target)
-        source.save()
-
-    def test_reverse_foreign_key_retrieve_with_null(self):
+    def test_one_to_one_retrieve(self):
         queryset = OneToOneTarget.objects.all()
-        serializer = NullableOneToOneTargetSerializer(queryset, many=True)
+        serializer = OneToOneTargetSerializer(queryset)
         expected = [
-            {'id': 1, 'name': 'target-1', 'nullable_source': {'id': 1, 'name': 'source-1', 'target': 1}},
-            {'id': 2, 'name': 'target-2', 'nullable_source': None},
+            {'id': 1, 'name': 'target-1', 'target_source': {'id': 1, 'name': 'target-source-1', 'source': {'id': 1, 'name': 'source-1'}}},
+            {'id': 2, 'name': 'target-2', 'target_source': {'id': 2, 'name': 'target-source-2', 'source': {'id': 2, 'name': 'source-2'}}},
+            {'id': 3, 'name': 'target-3', 'target_source': {'id': 3, 'name': 'target-source-3', 'source': {'id': 3, 'name': 'source-3'}}}
+        ]
+        self.assertEqual(serializer.data, expected)
+
+    def test_one_to_one_create(self):
+        data = {'id': 4, 'name': 'target-4', 'target_source': {'id': 4, 'name': 'target-source-4', 'source': {'id': 4, 'name': 'source-4'}}}
+        serializer = OneToOneTargetSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        obj = serializer.save()
+        self.assertEqual(serializer.data, data)
+        self.assertEqual(obj.name, 'target-4')
+
+        # Ensure (target 4, target_source 4, source 4) are added, and
+        # everything else is as expected.
+        queryset = OneToOneTarget.objects.all()
+        serializer = OneToOneTargetSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': 'target-1', 'target_source': {'id': 1, 'name': 'target-source-1', 'source': {'id': 1, 'name': 'source-1'}}},
+            {'id': 2, 'name': 'target-2', 'target_source': {'id': 2, 'name': 'target-source-2', 'source': {'id': 2, 'name': 'source-2'}}},
+            {'id': 3, 'name': 'target-3', 'target_source': {'id': 3, 'name': 'target-source-3', 'source': {'id': 3, 'name': 'source-3'}}},
+            {'id': 4, 'name': 'target-4', 'target_source': {'id': 4, 'name': 'target-source-4', 'source': {'id': 4, 'name': 'source-4'}}}
+        ]
+        self.assertEqual(serializer.data, expected)
+
+    def test_one_to_one_create_with_invalid_data(self):
+        data = {'id': 4, 'name': 'target-4', 'target_source': {'id': 4, 'name': 'target-source-4', 'source': {'id': 4}}}
+        serializer = OneToOneTargetSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors, {'target_source': [{'source': [{'name': ['This field is required.']}]}]})
+
+    def test_one_to_one_update(self):
+        data = {'id': 3, 'name': 'target-3-updated', 'target_source': {'id': 3, 'name': 'target-source-3-updated', 'source': {'id': 3, 'name': 'source-3-updated'}}}
+        instance = OneToOneTarget.objects.get(pk=3)
+        serializer = OneToOneTargetSerializer(instance, data=data)
+        self.assertTrue(serializer.is_valid())
+        obj = serializer.save()
+        self.assertEqual(serializer.data, data)
+        self.assertEqual(obj.name, 'target-3-updated')
+
+        # Ensure (target 3, target_source 3, source 3) are updated,
+        # and everything else is as expected.
+        queryset = OneToOneTarget.objects.all()
+        serializer = OneToOneTargetSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': 'target-1', 'target_source': {'id': 1, 'name': 'target-source-1', 'source': {'id': 1, 'name': 'source-1'}}},
+            {'id': 2, 'name': 'target-2', 'target_source': {'id': 2, 'name': 'target-source-2', 'source': {'id': 2, 'name': 'source-2'}}},
+            {'id': 3, 'name': 'target-3-updated', 'target_source': {'id': 3, 'name': 'target-source-3-updated', 'source': {'id': 3, 'name': 'source-3-updated'}}}
+        ]
+        self.assertEqual(serializer.data, expected)
+
+    def test_one_to_one_delete(self):
+        data = {'id': 3, 'name': 'target-3', 'target_source': None}
+        instance = OneToOneTarget.objects.get(pk=3)
+        serializer = OneToOneTargetSerializer(instance, data=data)
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+
+        # Ensure (target_source 3, source 3) are deleted,
+        # and everything else is as expected.
+        queryset = OneToOneTarget.objects.all()
+        serializer = OneToOneTargetSerializer(queryset)
+        expected = [
+            {'id': 1, 'name': 'target-1', 'target_source': {'id': 1, 'name': 'target-source-1', 'source': {'id': 1, 'name': 'source-1'}}},
+            {'id': 2, 'name': 'target-2', 'target_source': {'id': 2, 'name': 'target-source-2', 'source': {'id': 2, 'name': 'source-2'}}},
+            {'id': 3, 'name': 'target-3', 'target_source': None}
         ]
         self.assertEqual(serializer.data, expected)
