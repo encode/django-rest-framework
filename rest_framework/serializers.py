@@ -638,31 +638,38 @@ class ModelSerializer(Serializer):
         """
         m2m_data = {}
         related_data = {}
+        meta = self.opts.model._meta
 
-        # Reverse fk relations
-        for (obj, model) in self.opts.model._meta.get_all_related_objects_with_model():
+        # Reverse fk or one-to-one relations
+        for (obj, model) in meta.get_all_related_objects_with_model():
             field_name = obj.field.related_query_name()
             if field_name in attrs:
                 related_data[field_name] = attrs.pop(field_name)
 
         # Reverse m2m relations
-        for (obj, model) in self.opts.model._meta.get_all_related_m2m_objects_with_model():
+        for (obj, model) in meta.get_all_related_m2m_objects_with_model():
             field_name = obj.field.related_query_name()
             if field_name in attrs:
                 m2m_data[field_name] = attrs.pop(field_name)
 
         # Forward m2m relations
-        for field in self.opts.model._meta.many_to_many:
+        for field in meta.many_to_many:
             if field.name in attrs:
                 m2m_data[field.name] = attrs.pop(field.name)
 
+        # Update an existing instance...
         if instance is not None:
             for key, val in attrs.items():
                 setattr(instance, key, val)
 
+        # ...or create a new instance
         else:
             instance = self.opts.model(**attrs)
 
+        # Any relations that cannot be set until we've
+        # saved the model get hidden away on these
+        # private attributes, so we can deal with them
+        # at the point of save.
         instance._related_data = related_data
         instance._m2m_data = m2m_data
 
