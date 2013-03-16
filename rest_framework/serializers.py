@@ -705,7 +705,6 @@ class ModelSerializer(Serializer):
                     setattr(related, fk_field, obj)
                     self.save_object(related)
                 else:
-                    setattr(self.object, accessor_name, related)
                     setattr(obj, accessor_name, related)
             del(obj._related_data)
 
