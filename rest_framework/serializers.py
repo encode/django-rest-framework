@@ -26,13 +26,17 @@ class NestedValidationError(ValidationError):
     if the messages are a list of error messages.
 
     In the case of nested serializers, where the parent has many children,
-    then the child's `serializer.errors` will be a list of dicts.
+    then the child's `serializer.errors` will be a list of dicts.  In the case
+    of a single child, the `serializer.errors` will be a dict.
 
     We need to override the default behavior to get properly nested error dicts.
     """
 
     def __init__(self, message):
-        self.messages = message
+        if isinstance(message, dict):
+            self.messages = [message]
+        else:
+            self.messages = message
 
 
 class DictWithMetadata(dict):
@@ -311,8 +315,8 @@ class BaseSerializer(WritableField):
 
     def field_to_native(self, obj, field_name):
         """
-        Override default so that we can apply ModelSerializer as a nested
-        field to relationships.
+        Override default so that the serializer can be used as a nested field
+        across relationships.
         """
         if self.source == '*':
             return self.to_native(obj)
@@ -344,6 +348,10 @@ class BaseSerializer(WritableField):
         return self.to_native(value)
 
     def field_from_native(self, data, files, field_name, into):
+        """
+        Override default so that the serializer can be used as a writable
+        nested field across relationships.
+        """
         if self.read_only:
             return
 
@@ -354,15 +362,14 @@ class BaseSerializer(WritableField):
                 raise ValidationError(self.error_messages['required'])
             return
 
-        if self.parent.object:
-            # Set the serializer object if it exists
-            obj = getattr(self.parent.object, field_name)
-            self.object = obj
+        # Set the serializer object if it exists
+        obj = getattr(self.parent.object, field_name) if self.parent.object else None
 
         if value in (None, ''):
             into[(self.source or field_name)] = None
         else:
             kwargs = {
+                'instance': obj,
                 'data': value,
                 'context': self.context,
                 'partial': self.partial,
@@ -371,7 +378,6 @@ class BaseSerializer(WritableField):
             serializer = self.__class__(**kwargs)
 
             if serializer.is_valid():
-                self.object = serializer.object
                 into[self.source or field_name] = serializer.object
             else:
                 # Propagate errors up to our parent
@@ -630,32 +636,42 @@ class ModelSerializer(Serializer):
         """
         Restore the model instance.
         """
-        self.m2m_data = {}
-        self.related_data = {}
+        m2m_data = {}
+        related_data = {}
+        meta = self.opts.model._meta
 
-        # Reverse fk relations
-        for (obj, model) in self.opts.model._meta.get_all_related_objects_with_model():
+        # Reverse fk or one-to-one relations
+        for (obj, model) in meta.get_all_related_objects_with_model():
             field_name = obj.field.related_query_name()
             if field_name in attrs:
-                self.related_data[field_name] = attrs.pop(field_name)
+                related_data[field_name] = attrs.pop(field_name)
 
         # Reverse m2m relations
-        for (obj, model) in self.opts.model._meta.get_all_related_m2m_objects_with_model():
+        for (obj, model) in meta.get_all_related_m2m_objects_with_model():
             field_name = obj.field.related_query_name()
             if field_name in attrs:
-                self.m2m_data[field_name] = attrs.pop(field_name)
+                m2m_data[field_name] = attrs.pop(field_name)
 
         # Forward m2m relations
-        for field in self.opts.model._meta.many_to_many:
+        for field in meta.many_to_many:
             if field.name in attrs:
-                self.m2m_data[field.name] = attrs.pop(field.name)
+                m2m_data[field.name] = attrs.pop(field.name)
 
+        # Update an existing instance...
         if instance is not None:
             for key, val in attrs.items():
                 setattr(instance, key, val)
 
+        # ...or create a new instance
         else:
             instance = self.opts.model(**attrs)
+
+        # Any relations that cannot be set until we've
+        # saved the model get hidden away on these
+        # private attributes, so we can deal with them
+        # at the point of save.
+        instance._related_data = related_data
+        instance._m2m_data = m2m_data
 
         return instance
 
@@ -673,15 +689,24 @@ class ModelSerializer(Serializer):
         """
         obj.save(**kwargs)
 
-        if getattr(self, 'm2m_data', None):
-            for accessor_name, object_list in self.m2m_data.items():
-                setattr(self.object, accessor_name, object_list)
-            self.m2m_data = {}
+        if getattr(obj, '_m2m_data', None):
+            for accessor_name, object_list in obj._m2m_data.items():
+                setattr(obj, accessor_name, object_list)
+            del(obj._m2m_data)
 
-        if getattr(self, 'related_data', None):
-            for accessor_name, object_list in self.related_data.items():
-                setattr(self.object, accessor_name, object_list)
-            self.related_data = {}
+        if getattr(obj, '_related_data', None):
+            for accessor_name, related in obj._related_data.items():
+                if related is None:
+                    previous = getattr(obj, accessor_name, related)
+                    if previous:
+                        previous.delete()
+                elif isinstance(related, models.Model):
+                    fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
+                    setattr(related, fk_field, obj)
+                    self.save_object(related)
+                else:
+                    setattr(obj, accessor_name, related)
+            del(obj._related_data)
 
 
 class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
