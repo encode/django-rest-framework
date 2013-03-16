@@ -691,21 +691,23 @@ class ModelSerializer(Serializer):
 
         if getattr(obj, '_m2m_data', None):
             for accessor_name, object_list in obj._m2m_data.items():
-                setattr(self.object, accessor_name, object_list)
-            obj._m2m_data = {}
+                setattr(obj, accessor_name, object_list)
+            del(obj._m2m_data)
 
         if getattr(obj, '_related_data', None):
             for accessor_name, related in obj._related_data.items():
                 if related is None:
-                    previous = getattr(self.object, accessor_name, related)
-                    previous.delete()
+                    previous = getattr(obj, accessor_name, related)
+                    if previous:
+                        previous.delete()
                 elif isinstance(related, models.Model):
                     fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
                     setattr(related, fk_field, obj)
                     self.save_object(related)
                 else:
                     setattr(self.object, accessor_name, related)
-            obj._related_data = {}
+                    setattr(obj, accessor_name, related)
+            del(obj._related_data)
 
 
 class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
