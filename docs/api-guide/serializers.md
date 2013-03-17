@@ -25,6 +25,7 @@ Let's start by creating a simple object we can use for example purposes:
     comment = Comment(email='leila@example.com', content='foo bar')
 
 We'll declare a serializer that we can use to serialize and deserialize `Comment` objects.
+
 Declaring a serializer looks very similar to declaring a form:
 
     class CommentSerializer(serializers.Serializer):
@@ -33,6 +34,13 @@ Declaring a serializer looks very similar to declaring a form:
         created = serializers.DateTimeField()
 
         def restore_object(self, attrs, instance=None):
+            """
+            Given a dictionary of deserialized field values, either update
+            an existing model instance, or create a new model instance.
+            
+            Note that if we don't define this method, then deserializing
+            data will simply return a dictionary of items.
+            """
             if instance is not None:
                 instance.title = attrs['title']
                 instance.content = attrs['content']

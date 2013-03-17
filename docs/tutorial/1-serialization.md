@@ -126,7 +126,11 @@ The first thing we need to get started on our Web API is provide a way of serial
     
         def restore_object(self, attrs, instance=None):
             """
-            Create or update a new snippet instance.
+            Create or update a new snippet instance, given a dictionary
+            of deserialized field values.
+            
+            Note that if we don't define this method, then deserializing
+            data will simply return a dictionary of items.
             """
             if instance:
                 # Update existing instance
