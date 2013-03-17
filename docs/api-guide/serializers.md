@@ -42,9 +42,9 @@ Declaring a serializer looks very similar to declaring a form:
             data will simply return a dictionary of items.
             """
             if instance is not None:
-                instance.title = attrs['title']
-                instance.content = attrs['content']
-                instance.created = attrs['created']
+                instance.title = attrs.get('title', instance.title)
+                instance.content = attrs.get('content', instance.content)
+                instance.created = attrs.get('created', instance.created)
                 return instance
             return Comment(**attrs) 
 
