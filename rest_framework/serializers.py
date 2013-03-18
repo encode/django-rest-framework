@@ -358,11 +358,13 @@ class BaseSerializer(WritableField):
         try:
             value = data[field_name]
         except KeyError:
-            if self.required:
-                raise ValidationError(self.error_messages['required'])
-            if self.default is None:
+            if self.default is not None and not self.partial:
+                # Note: partial updates shouldn't set defaults
+                value = copy.deepcopy(self.default)
+            else:
+                if self.required:
+                    raise ValidationError(self.error_messages['required'])
                 return
-            value = copy.deepcopy(self.default)
 
         # Set the serializer object if it exists
         obj = getattr(self.parent.object, field_name) if self.parent.object else None
