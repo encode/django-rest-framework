@@ -129,8 +129,8 @@ class BaseSerializer(WritableField):
     _dict_class = SortedDictWithMetadata
 
     def __init__(self, instance=None, data=None, files=None,
-                 context=None, partial=False, many=None, source=None):
-        super(BaseSerializer, self).__init__(source=source)
+                 context=None, partial=False, many=None, **kwargs):
+        super(BaseSerializer, self).__init__(**kwargs)
         self.opts = self._options_class(self.Meta)
         self.parent = None
         self.root = None
