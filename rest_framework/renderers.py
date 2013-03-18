@@ -6,21 +6,25 @@ on the response, such as JSON encoded data or HTML output.
 
 REST framework also provides an HTML renderer the renders the browsable API.
 """
+from __future__ import unicode_literals
+
 import copy
 import string
 import json
 from django import forms
 from django.http.multipartparser import parse_header
 from django.template import RequestContext, loader, Template
+from django.utils.xmlutils import SimplerXMLGenerator
+from rest_framework.compat import StringIO
+from rest_framework.compat import six
+from rest_framework.compat import smart_text
 from rest_framework.compat import yaml
 from rest_framework.exceptions import ConfigurationError
 from rest_framework.settings import api_settings
 from rest_framework.request import clone_request
-from rest_framework.utils import dict2xml
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
-from rest_framework import VERSION, status
-from rest_framework import parsers
+from rest_framework import exceptions, parsers, status, VERSION
 
 
 class BaseRenderer(object):
@@ -60,7 +64,7 @@ class JSONRenderer(BaseRenderer):
         if accepted_media_type:
             # If the media type looks like 'application/json; indent=4',
             # then pretty print the result.
-            base_media_type, params = parse_header(accepted_media_type)
+            base_media_type, params = parse_header(accepted_media_type.encode('ascii'))
             indent = params.get('indent', indent)
             try:
                 indent = max(min(int(indent), 8), 0)
@@ -86,7 +90,7 @@ class JSONPRenderer(JSONRenderer):
         Determine the name of the callback to wrap around the json output.
         """
         request = renderer_context.get('request', None)
-        params = request and request.GET or {}
+        params = request and request.QUERY_PARAMS or {}
         return params.get(self.callback_parameter, self.default_callback)
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
@@ -100,7 +104,7 @@ class JSONPRenderer(JSONRenderer):
         callback = self.get_callback(renderer_context)
         json = super(JSONPRenderer, self).render(data, accepted_media_type,
                                                  renderer_context)
-        return u"%s(%s);" % (callback, json)
+        return "%s(%s);" % (callback, json)
 
 
 class XMLRenderer(BaseRenderer):
@@ -117,7 +121,38 @@ class XMLRenderer(BaseRenderer):
         """
         if data is None:
             return ''
-        return dict2xml(data)
+
+        stream = StringIO()
+
+        xml = SimplerXMLGenerator(stream, "utf-8")
+        xml.startDocument()
+        xml.startElement("root", {})
+
+        self._to_xml(xml, data)
+
+        xml.endElement("root")
+        xml.endDocument()
+        return stream.getvalue()
+
+    def _to_xml(self, xml, data):
+        if isinstance(data, (list, tuple)):
+            for item in data:
+                xml.startElement("list-item", {})
+                self._to_xml(xml, item)
+                xml.endElement("list-item")
+
+        elif isinstance(data, dict):
+            for key, value in six.iteritems(data):
+                xml.startElement(key, {})
+                self._to_xml(xml, value)
+                xml.endElement(key)
+
+        elif data is None:
+            # Don't output any value
+            pass
+
+        else:
+            xml.characters(smart_text(data))
 
 
 class YAMLRenderer(BaseRenderer):
@@ -133,6 +168,8 @@ class YAMLRenderer(BaseRenderer):
         """
         Renders *obj* into serialized YAML.
         """
+        assert yaml, 'YAMLRenderer requires pyyaml to be installed'
+
         if data is None:
             return ''
 
@@ -215,7 +252,7 @@ class TemplateHTMLRenderer(BaseRenderer):
         try:
             # Try to find an appropriate error template
             return self.resolve_template(template_names)
-        except:
+        except Exception:
             # Fall back to using eg '404 Not Found'
             return Template('%d %s' % (response.status_code,
                                        response.status_text.title()))
@@ -297,12 +334,10 @@ class BrowsableAPIRenderer(BaseRenderer):
         if not api_settings.FORM_METHOD_OVERRIDE:
             return  # Cannot use form overloading
 
-        request = clone_request(request, method)
         try:
-            if not view.has_permission(request, obj):
-                return  # Don't have permission
-        except:
-            return  # Don't have permission and exception explicitly raise
+            view.check_permissions(clone_request(request, method))
+        except exceptions.APIException:
+            return False  # Doesn't have permissions
         return True
 
     def serializer_to_form_fields(self, serializer):
@@ -333,6 +368,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             kwargs['label'] = k
 
             fields[k] = v.form_field_class(**kwargs)
+
         return fields
 
     def get_form(self, view, method, request):
@@ -345,24 +381,23 @@ class BrowsableAPIRenderer(BaseRenderer):
         if not self.show_form_for_method(view, method, request, obj):
             return
 
-        if method == 'DELETE' or method == 'OPTIONS':
+        if method in ('DELETE', 'OPTIONS'):
             return True  # Don't actually need to return a form
 
         if not getattr(view, 'get_serializer', None) or not parsers.FormParser in view.parser_classes:
-            media_types = [parser.media_type for parser in view.parser_classes]
-            return self.get_generic_content_form(media_types)
+            return
 
         serializer = view.get_serializer(instance=obj)
         fields = self.serializer_to_form_fields(serializer)
 
         # Creating an on the fly form see:
         # http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
-        OnTheFlyForm = type("OnTheFlyForm", (forms.Form,), fields)
+        OnTheFlyForm = type(str("OnTheFlyForm"), (forms.Form,), fields)
         data = (obj is not None) and serializer.data or None
         form_instance = OnTheFlyForm(data)
         return form_instance
 
-    def get_generic_content_form(self, media_types):
+    def get_raw_data_form(self, view, method, request, media_types):
         """
         Returns a form that allows for arbitrary content types to be tunneled
         via standard HTML forms.
@@ -375,6 +410,11 @@ class BrowsableAPIRenderer(BaseRenderer):
                 and api_settings.FORM_CONTENTTYPE_OVERRIDE):
             return None
 
+        # Check permissions
+        obj = getattr(view, 'object', None)
+        if not self.show_form_for_method(view, method, request, obj):
+            return
+
         content_type_field = api_settings.FORM_CONTENTTYPE_OVERRIDE
         content_field = api_settings.FORM_CONTENT_OVERRIDE
         choices = [(media_type, media_type) for media_type in media_types]
@@ -386,7 +426,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                 super(GenericContentForm, self).__init__()
 
                 self.fields[content_type_field] = forms.ChoiceField(
-                    label='Content Type',
+                    label='Media type',
                     choices=choices,
                     initial=initial
                 )
@@ -401,13 +441,13 @@ class BrowsableAPIRenderer(BaseRenderer):
         try:
             return view.get_name()
         except AttributeError:
-            return view.__doc__
+            return smart_text(view.__class__.__name__)
 
     def get_description(self, view):
         try:
             return view.get_description(html=True)
         except AttributeError:
-            return view.__doc__
+            return smart_text(view.__doc__ or '')
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -422,14 +462,21 @@ class BrowsableAPIRenderer(BaseRenderer):
         view = renderer_context['view']
         request = renderer_context['request']
         response = renderer_context['response']
+        media_types = [parser.media_type for parser in view.parser_classes]
 
         renderer = self.get_default_renderer(view)
         content = self.get_content(renderer, data, accepted_media_type, renderer_context)
 
         put_form = self.get_form(view, 'PUT', request)
         post_form = self.get_form(view, 'POST', request)
+        patch_form = self.get_form(view, 'PATCH', request)
         delete_form = self.get_form(view, 'DELETE', request)
         options_form = self.get_form(view, 'OPTIONS', request)
+
+        raw_data_put_form = self.get_raw_data_form(view, 'PUT', request, media_types)
+        raw_data_post_form = self.get_raw_data_form(view, 'POST', request, media_types)
+        raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request, media_types)
+        raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
         name = self.get_name(view)
         description = self.get_description(view)
@@ -447,10 +494,18 @@ class BrowsableAPIRenderer(BaseRenderer):
             'breadcrumblist': breadcrumb_list,
             'allowed_methods': view.allowed_methods,
             'available_formats': [renderer.format for renderer in view.renderer_classes],
+
             'put_form': put_form,
             'post_form': post_form,
+            'patch_form': patch_form,
             'delete_form': delete_form,
             'options_form': options_form,
+
+            'raw_data_put_form': raw_data_put_form,
+            'raw_data_post_form': raw_data_post_form,
+            'raw_data_patch_form': raw_data_patch_form,
+            'raw_data_put_or_patch_form': raw_data_put_or_patch_form,
+
             'api_settings': api_settings
         })
 

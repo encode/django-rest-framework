@@ -45,9 +45,9 @@ version = get_version('rest_framework')
 
 if sys.argv[-1] == 'publish':
     os.system("python setup.py sdist upload")
-    print "You probably want to also tag the version now:"
-    print "  git tag -a %s -m 'version %s'" % (version, version)
-    print "  git push --tags"
+    print("You probably want to also tag the version now:")
+    print("  git tag -a %s -m 'version %s'" % (version, version))
+    print("  git push --tags")
     sys.exit()
 
 
@@ -57,21 +57,28 @@ setup(
     url='http://django-rest-framework.org',
     download_url='http://pypi.python.org/pypi/rest_framework/',
     license='BSD',
-    description='A lightweight REST framework for Django.',
+    description='Web APIs for Django, made easy.',
     author='Tom Christie',
-    author_email='tom@tomchristie.com',
+    author_email='tom@tomchristie.com',  # SEE NOTE BELOW (*)
     packages=get_packages('rest_framework'),
     package_data=get_package_data('rest_framework'),
     test_suite='rest_framework.runtests.runtests.main',
     install_requires=[],
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Framework :: Django',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
         'Topic :: Internet :: WWW/HTTP',
     ]
 )
+
+# (*) Please direct queries to the discussion group, rather than to me directly
+#     Doing so helps ensure your question is helpful to other users.
+#     Queries directly to my email are likely to receive a canned response.
+#
+#     Many thanks for your understanding.

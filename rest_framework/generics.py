@@ -1,7 +1,7 @@
 """
 Generic views that provide commonly needed behaviour.
 """
-
+from __future__ import unicode_literals
 from rest_framework import views, mixins
 from rest_framework.settings import api_settings
 from django.views.generic.detail import SingleObjectMixin
@@ -18,6 +18,16 @@ class GenericAPIView(views.APIView):
     model = None
     serializer_class = None
     model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
+    filter_backend = api_settings.FILTER_BACKEND
+
+    def filter_queryset(self, queryset):
+        """
+        Given a queryset, filter it with whichever filter backend is in use.
+        """
+        if not self.filter_backend:
+            return queryset
+        backend = self.filter_backend()
+        return backend.filter_queryset(self.request, queryset, self)
 
     def get_serializer_context(self):
         """
@@ -48,7 +58,7 @@ class GenericAPIView(views.APIView):
         return serializer_class
 
     def get_serializer(self, instance=None, data=None,
-                       files=None, partial=False):
+                       files=None, many=False, partial=False):
         """
         Return the serializer instance that should be used for validating and
         deserializing input, and for serializing output.
@@ -56,7 +66,21 @@ class GenericAPIView(views.APIView):
         serializer_class = self.get_serializer_class()
         context = self.get_serializer_context()
         return serializer_class(instance, data=data, files=files,
-                                partial=partial, context=context)
+                                many=many, partial=partial, context=context)
+
+    def pre_save(self, obj):
+        """
+        Placeholder method for calling before saving an object.
+        May be used eg. to set attributes on the object that are implicit
+        in either the request, or the url.
+        """
+        pass
+
+    def post_save(self, obj, created=False):
+        """
+        Placeholder method for calling after saving an object.
+        """
+        pass
 
     def pre_save(self, obj):
         pass
@@ -70,16 +94,6 @@ class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
     paginate_by = api_settings.PAGINATE_BY
     paginate_by_param = api_settings.PAGINATE_BY_PARAM
     pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
-    filter_backend = api_settings.FILTER_BACKEND
-
-    def filter_queryset(self, queryset):
-        """
-        Given a queryset, filter it with whichever filter backend is in use.
-        """
-        if not self.filter_backend:
-            return queryset
-        backend = self.filter_backend()
-        return backend.filter_queryset(self.request, queryset, self)
 
     def get_pagination_serializer(self, page=None):
         """
@@ -120,8 +134,7 @@ class SingleObjectAPIView(SingleObjectMixin, GenericAPIView):
         Override default to add support for object-level permissions.
         """
         obj = super(SingleObjectAPIView, self).get_object(queryset)
-        if not self.has_permission(self.request, obj):
-            self.permission_denied(self.request)
+        self.check_object_permissions(self.request, obj)
         return obj
 
 

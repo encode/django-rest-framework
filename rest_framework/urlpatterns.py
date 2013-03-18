@@ -1,5 +1,36 @@
-from rest_framework.compat import url
+from __future__ import unicode_literals
+from django.core.urlresolvers import RegexURLResolver
+from rest_framework.compat import url, include
 from rest_framework.settings import api_settings
+
+
+def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required):
+    ret = []
+    for urlpattern in urlpatterns:
+        if isinstance(urlpattern, RegexURLResolver):
+            # Set of included URL patterns
+            regex = urlpattern.regex.pattern
+            namespace = urlpattern.namespace
+            app_name = urlpattern.app_name
+            kwargs = urlpattern.default_kwargs
+            # Add in the included patterns, after applying the suffixes
+            patterns = apply_suffix_patterns(urlpattern.url_patterns,
+                                             suffix_pattern,
+                                             suffix_required)
+            ret.append(url(regex, include(patterns, namespace, app_name), kwargs))
+
+        else:
+            # Regular URL pattern
+            regex = urlpattern.regex.pattern.rstrip('$') + suffix_pattern
+            view = urlpattern._callback or urlpattern._callback_str
+            kwargs = urlpattern.default_args
+            name = urlpattern.name
+            # Add in both the existing and the new urlpattern
+            if not suffix_required:
+                ret.append(urlpattern)
+            ret.append(url(regex, view, kwargs, name))
+
+    return ret
 
 
 def format_suffix_patterns(urlpatterns, suffix_required=False, allowed=None):
@@ -28,15 +59,4 @@ def format_suffix_patterns(urlpatterns, suffix_required=False, allowed=None):
     else:
         suffix_pattern = r'\.(?P<%s>[a-z]+)$' % suffix_kwarg
 
-    ret = []
-    for urlpattern in urlpatterns:
-        # Form our complementing '.format' urlpattern
-        regex = urlpattern.regex.pattern.rstrip('$') + suffix_pattern
-        view = urlpattern._callback or urlpattern._callback_str
-        kwargs = urlpattern.default_args
-        name = urlpattern.name
-        # Add in both the existing and the new urlpattern
-        if not suffix_required:
-            ret.append(urlpattern)
-        ret.append(url(regex, view, kwargs, name))
-    return ret
+    return apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required)

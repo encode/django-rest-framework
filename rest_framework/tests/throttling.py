@@ -1,11 +1,10 @@
 """
 Tests for the throttling implementations in the permissions module.
 """
-
+from __future__ import unicode_literals
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.cache import cache
-
 from django.test.client import RequestFactory
 from rest_framework.views import APIView
 from rest_framework.throttling import UserRateThrottle
@@ -104,7 +103,7 @@ class ThrottlingTests(TestCase):
             self.set_throttle_timer(view, timer)
             response = view.as_view()(request)
             if expect is not None:
-                self.assertEquals(response['X-Throttle-Wait-Seconds'], expect)
+                self.assertEqual(response['X-Throttle-Wait-Seconds'], expect)
             else:
                 self.assertFalse('X-Throttle-Wait-Seconds' in response)
 

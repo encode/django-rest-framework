@@ -17,8 +17,13 @@ This module provides the `api_setting` object, that is used to access
 REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
+from __future__ import unicode_literals
+
 from django.conf import settings
 from django.utils import importlib
+
+from rest_framework import ISO_8601
+from rest_framework.compat import six
 
 
 USER_SETTINGS = getattr(settings, 'REST_FRAMEWORK', None)
@@ -74,6 +79,22 @@ DEFAULTS = {
     'URL_FORMAT_OVERRIDE': 'format',
 
     'FORMAT_SUFFIX_KWARG': 'format',
+
+    # Input and output formats
+    'DATE_INPUT_FORMATS': (
+        ISO_8601,
+    ),
+    'DATE_FORMAT': ISO_8601,
+
+    'DATETIME_INPUT_FORMATS': (
+        ISO_8601,
+    ),
+    'DATETIME_FORMAT': ISO_8601,
+
+    'TIME_INPUT_FORMATS': (
+        ISO_8601,
+    ),
+    'TIME_FORMAT': ISO_8601,
 }
 
 
@@ -98,7 +119,7 @@ def perform_import(val, setting_name):
     If the given setting is a string import notation,
     then perform the necessary import or imports.
     """
-    if isinstance(val, basestring):
+    if isinstance(val, six.string_types):
         return import_from_string(val, setting_name)
     elif isinstance(val, (list, tuple)):
         return [import_from_string(item, setting_name) for item in val]

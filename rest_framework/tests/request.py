@@ -1,7 +1,7 @@
 """
 Tests for content parsing, and form-overloaded content parsing.
 """
-import json
+from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.sessions.middleware import SessionMiddleware
@@ -20,6 +20,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
+from rest_framework.compat import six
+import json
 
 
 factory = RequestFactory()
@@ -56,21 +58,29 @@ class TestMethodOverloading(TestCase):
         request = Request(factory.post('/', {api_settings.FORM_METHOD_OVERRIDE: 'DELETE'}))
         self.assertEqual(request.method, 'DELETE')
 
+    def test_x_http_method_override_header(self):
+        """
+        POST requests can also be overloaded to another method by setting
+        the X-HTTP-Method-Override header.
+        """
+        request = Request(factory.post('/', {'foo': 'bar'}, HTTP_X_HTTP_METHOD_OVERRIDE='DELETE'))
+        self.assertEqual(request.method, 'DELETE')
+
 
 class TestContentParsing(TestCase):
     def test_standard_behaviour_determines_no_content_GET(self):
         """
-        Ensure request.DATA returns None for GET request with no content.
+        Ensure request.DATA returns empty QueryDict for GET request.
         """
         request = Request(factory.get('/'))
-        self.assertEqual(request.DATA, None)
+        self.assertEqual(request.DATA, {})
 
     def test_standard_behaviour_determines_no_content_HEAD(self):
         """
-        Ensure request.DATA returns None for HEAD request.
+        Ensure request.DATA returns empty QueryDict for HEAD request.
         """
         request = Request(factory.head('/'))
-        self.assertEqual(request.DATA, None)
+        self.assertEqual(request.DATA, {})
 
     def test_request_DATA_with_form_content(self):
         """
@@ -79,14 +89,14 @@ class TestContentParsing(TestCase):
         data = {'qwerty': 'uiop'}
         request = Request(factory.post('/', data))
         request.parsers = (FormParser(), MultiPartParser())
-        self.assertEqual(request.DATA.items(), data.items())
+        self.assertEqual(list(request.DATA.items()), list(data.items()))
 
     def test_request_DATA_with_text_content(self):
         """
         Ensure request.DATA returns content for POST request with
         non-form content.
         """
-        content = 'qwerty'
+        content = six.b('qwerty')
         content_type = 'text/plain'
         request = Request(factory.post('/', content, content_type=content_type))
         request.parsers = (PlainTextParser(),)
@@ -99,7 +109,7 @@ class TestContentParsing(TestCase):
         data = {'qwerty': 'uiop'}
         request = Request(factory.post('/', data))
         request.parsers = (FormParser(), MultiPartParser())
-        self.assertEqual(request.POST.items(), data.items())
+        self.assertEqual(list(request.POST.items()), list(data.items()))
 
     def test_standard_behaviour_determines_form_content_PUT(self):
         """
@@ -117,14 +127,14 @@ class TestContentParsing(TestCase):
             request = Request(factory.put('/', data))
 
         request.parsers = (FormParser(), MultiPartParser())
-        self.assertEqual(request.DATA.items(), data.items())
+        self.assertEqual(list(request.DATA.items()), list(data.items()))
 
     def test_standard_behaviour_determines_non_form_content_PUT(self):
         """
         Ensure request.DATA returns content for PUT request with
         non-form content.
         """
-        content = 'qwerty'
+        content = six.b('qwerty')
         content_type = 'text/plain'
         request = Request(factory.put('/', content, content_type=content_type))
         request.parsers = (PlainTextParser(), )

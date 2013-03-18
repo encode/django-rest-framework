@@ -4,7 +4,7 @@ The following people have helped make REST framework great.
 
 * Tom Christie - [tomchristie]
 * Marko Tibold - [markotibold]
-* Paul Bagwell - [pbgwl]
+* Paul Miller - [paulmillr]
 * Sébastien Piquemal - [sebpiq]
 * Carmen Wick - [cwick]
 * Alex Ehlke - [aehlke]
@@ -19,7 +19,7 @@ The following people have helped make REST framework great.
 * Craig Blaszczyk - [jakul]
 * Garcia Solero - [garciasolero]
 * Tom Drummond - [devioustree]
-* Danilo Bargen - [gwrtheyrn]
+* Danilo Bargen - [dbrgn]
 * Andrew McCloud - [amccloud]
 * Thomas Steinacher - [thomasst]
 * Meurig Freeman - [meurig]
@@ -91,6 +91,27 @@ The following people have helped make REST framework great.
 * Richard Wackerbarth - [wackerbarth]
 * Johannes Spielmann - [shezi]
 * James Cleveland - [radiosilence]
+* Steve Gregory - [steve-gregory]
+* Federico Capoano - [nemesisdesign]
+* Bruno Renié - [brutasse]
+* Kevin Stone - [kevinastone]
+* Guglielmo Celata - [guglielmo]
+* Mike Tums - [mktums]
+* Michael Elovskikh - [wronglink]
+* Michał Jaworski - [swistakm]
+* Andrea de Marco - [z4r]
+* Fernando Rocha - [fernandogrd]
+* Xavier Ordoquy - [xordoquy]
+* Adam Wentz - [floppya]
+* Andreas Pelme - [pelme]
+* Ryan Detzel - [ryanrdetzel]
+* Omer Katz - [thedrow]
+* Wiliam Souza - [waa]
+* Jonas Braun - [iekadou]
+* Ian Dash - [bitmonkey]
+* Bouke Haarsma - [bouke]
+* Pierre Dulac - [dulaccc]
+* Dave Kuhn - [kuhnza]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -114,7 +135,6 @@ For usage questions please see the [REST framework discussion group][group].
 
 You can also contact [@_tomchristie][twitter] directly on twitter.
 
-[email]: mailto:tom@tomchristie.com
 [twitter]: http://twitter.com/_tomchristie
 [bootstrap]: http://twitter.github.com/bootstrap/
 [markdown]: http://daringfireball.net/projects/markdown/
@@ -130,7 +150,7 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 
 [tomchristie]: https://github.com/tomchristie
 [markotibold]: https://github.com/markotibold
-[pbgwl]: https://github.com/pbgwl
+[paulmillr]: https://github.com/paulmillr
 [sebpiq]: https://github.com/sebpiq
 [cwick]: https://github.com/cwick
 [aehlke]: https://github.com/aehlke
@@ -145,7 +165,7 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [jakul]: https://github.com/jakul
 [garciasolero]: https://github.com/garciasolero
 [devioustree]: https://github.com/devioustree
-[gwrtheyrn]: https://github.com/gwrtheyrn
+[dbrgn]: https://github.com/dbrgn
 [amccloud]: https://github.com/amccloud
 [thomasst]: https://github.com/thomasst
 [meurig]: https://github.com/meurig
@@ -217,3 +237,24 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [wackerbarth]: https://github.com/wackerbarth
 [shezi]: https://github.com/shezi
 [radiosilence]: https://github.com/radiosilence
+[steve-gregory]: https://github.com/steve-gregory
+[nemesisdesign]: https://github.com/nemesisdesign
+[brutasse]: https://github.com/brutasse
+[kevinastone]: https://github.com/kevinastone
+[guglielmo]: https://github.com/guglielmo
+[mktums]: https://github.com/mktums
+[wronglink]: https://github.com/wronglink
+[swistakm]: https://github.com/swistakm
+[z4r]: https://github.com/z4r
+[fernandogrd]: https://github.com/fernandogrd
+[xordoquy]: https://github.com/xordoquy
+[floppya]: https://github.com/floppya
+[pelme]: https://github.com/pelme
+[ryanrdetzel]: https://github.com/ryanrdetzel
+[thedrow]: https://github.com/thedrow
+[waa]: https://github.com/wiliamsouza
+[iekadou]: https://github.com/iekadou
+[bitmonkey]: https://github.com/bitmonkey
+[bouke]: https://github.com/bouke
+[dulaccc]: https://github.com/dulaccc
+[kuhnza]: https://github.com/kuhnza

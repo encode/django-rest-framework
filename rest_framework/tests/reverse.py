@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.test import TestCase
 from django.test.client import RequestFactory
 from rest_framework.compat import patterns, url
@@ -16,7 +17,7 @@ urlpatterns = patterns('',
 
 class ReverseTests(TestCase):
     """
-    Tests for fully qualifed URLs when using `reverse`.
+    Tests for fully qualified URLs when using `reverse`.
     """
     urls = 'rest_framework.tests.reverse'
 

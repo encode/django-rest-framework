@@ -1,7 +1,7 @@
 """
 General tests for relational fields.
 """
-
+from __future__ import unicode_literals
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
@@ -31,3 +31,17 @@ class FieldTests(TestCase):
         field = serializers.SlugRelatedField(queryset=NullModel.objects.all(), slug_field='pk')
         self.assertRaises(serializers.ValidationError, field.from_native, '')
         self.assertRaises(serializers.ValidationError, field.from_native, [])
+
+
+class TestManyRelateMixin(TestCase):
+    def test_missing_many_to_many_related_field(self):
+        '''
+        Regression test for #632
+
+        https://github.com/tomchristie/django-rest-framework/pull/632
+        '''
+        field = serializers.RelatedField(many=True, read_only=False)
+
+        into = {}
+        field.field_from_native({}, None, 'field_name', into)
+        self.assertEqual(into['field_name'], [])

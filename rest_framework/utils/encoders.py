@@ -1,13 +1,14 @@
 """
 Helper classes for parsers.
 """
+from __future__ import unicode_literals
+from django.utils.datastructures import SortedDict
+from rest_framework.compat import timezone
+from rest_framework.serializers import DictWithMetadata, SortedDictWithMetadata
 import datetime
 import decimal
 import types
 import json
-from django.utils.datastructures import SortedDict
-from rest_framework.compat import timezone
-from rest_framework.serializers import DictWithMetadata, SortedDictWithMetadata
 
 
 class JSONEncoder(json.JSONEncoder):

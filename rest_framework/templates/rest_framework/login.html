@@ -25,14 +25,14 @@
                     <form action="{% url 'rest_framework:login' %}" class=" form-inline" method="post">
                         {% csrf_token %}
                         <div id="div_id_username" class="clearfix control-group">
-                            <div class="controls" style="height: 30px">
-                                <Label class="span4" style="margin-top: 3px">Username:</label>
+                            <div class="controls">
+                                <Label class="span4">Username:</label>
                                 <input style="height: 25px" type="text" name="username" maxlength="100" autocapitalize="off" autocorrect="off" class="textinput textInput" id="id_username">
                             </div>
                         </div>
                         <div id="div_id_password" class="clearfix control-group">
-                            <div class="controls" style="height: 30px">
-                                <Label class="span4" style="margin-top: 3px">Password:</label>
+                            <div class="controls">
+                                <Label class="span4">Password:</label>
                                 <input style="height: 25px" type="password" name="password" maxlength="100" autocapitalize="off" autocorrect="off" class="textinput textInput" id="id_password">
                             </div>
                         </div>

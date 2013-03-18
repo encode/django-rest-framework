@@ -3,16 +3,34 @@ language: python
 python:
   - "2.6"
   - "2.7"
+  - "3.2"
+  - "3.3"
 
 env:
-  - DJANGO=https://github.com/django/django/zipball/master
-  - DJANGO=django==1.4.3 --use-mirrors
-  - DJANGO=django==1.3.5 --use-mirrors
+  - DJANGO="django==1.5 --use-mirrors"
+  - DJANGO="django==1.4.3 --use-mirrors"
+  - DJANGO="django==1.3.5 --use-mirrors"
 
 install:
   - pip install $DJANGO
-  - pip install django-filter==0.5.4 --use-mirrors
+  - pip install defusedxml==0.3
+  - "if [[ ${TRAVIS_PYTHON_VERSION::1} != '3' ]]; then pip install oauth2==1.5.211 --use-mirrors; fi"
+  - "if [[ ${TRAVIS_PYTHON_VERSION::1} != '3' ]]; then pip install django-oauth-plus==2.0 --use-mirrors; fi"
+  - "if [[ ${TRAVIS_PYTHON_VERSION::1} != '3' ]]; then pip install django-oauth2-provider==0.2.3 --use-mirrors; fi"
+  - "if [[ ${DJANGO::11} == 'django==1.3' ]]; then pip install django-filter==0.5.4 --use-mirrors; fi"
+  - "if [[ ${DJANGO::11} != 'django==1.3' ]]; then pip install django-filter==0.6a1 --use-mirrors; fi"
   - export PYTHONPATH=.
 
 script:
   - python rest_framework/runtests/runtests.py
+
+matrix:
+  exclude:
+    - python: "3.2"
+      env: DJANGO="django==1.4.3 --use-mirrors"
+    - python: "3.2"
+      env: DJANGO="django==1.3.5 --use-mirrors"
+    - python: "3.3"
+      env: DJANGO="django==1.4.3 --use-mirrors"
+    - python: "3.3"
+      env: DJANGO="django==1.3.5 --use-mirrors"

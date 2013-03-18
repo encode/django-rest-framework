@@ -2,7 +2,7 @@
 
 # Serializer fields
 
-> Each field in a Form class is responsible not only for validating data, but also for "cleaning" it -- normalizing it to a consistent format. 
+> Each field in a Form class is responsible not only for validating data, but also for "cleaning" it &mdash; normalizing it to a consistent format. 
 >
 > &mdash; [Django documentation][cite]
 
@@ -102,7 +102,7 @@ You can customize this  behavior by overriding the `.to_native(self, value)` met
 
 ## WritableField
 
-A field that supports both read and write operations.  By itself `WriteableField` does not perform any translation of input values into a given type.  You won't typically use this field directly, but you may want to override it and implement the `.to_native(self, value)` and `.from_native(self, value)` methods.
+A field that supports both read and write operations.  By itself `WritableField` does not perform any translation of input values into a given type.  You won't typically use this field directly, but you may want to override it and implement the `.to_native(self, value)` and `.from_native(self, value)` methods.
 
 ## ModelField
 
@@ -181,17 +181,56 @@ Corresponds to `django.forms.fields.RegexField`
 
 **Signature:** `RegexField(regex, max_length=None, min_length=None)`
 
+## DateTimeField
+
+A date and time representation.
+
+Corresponds to `django.db.models.fields.DateTimeField`
+
+When using `ModelSerializer` or `HyperlinkedModelSerializer`, note that any model fields with `auto_now=True` or `auto_now_add=True` will use serializer fields that are `read_only=True` by default.
+
+If you want to override this behavior, you'll need to declare the `DateTimeField` explicitly on the serializer.  For example:
+
+    class CommentSerializer(serializers.ModelSerializer):
+        created = serializers.DateTimeField()
+
+        class Meta:
+            model = Comment
+
+**Signature:** `DateTimeField(format=None, input_formats=None)`
+
+* `format` - A string representing the output format.  If not specified, the `DATETIME_FORMAT` setting will be used, which defaults to `'iso-8601'`.
+* `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
+
+DateTime format strings may either be [python strftime formats][strftime] which explicitly specifiy the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style datetimes should be used. (eg `'2013-01-29T12:34:56.000000'`)
+
 ## DateField
 
 A date representation.
 
 Corresponds to `django.db.models.fields.DateField`
 
-## DateTimeField
+**Signature:** `DateField(format=None, input_formats=None)`
 
-A date and time representation.
+* `format` - A string representing the output format.  If not specified, the `DATE_FORMAT` setting will be used, which defaults to `'iso-8601'`.
+* `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `DATE_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`. 
 
-Corresponds to `django.db.models.fields.DateTimeField`
+Date format strings may either be [python strftime formats][strftime] which explicitly specifiy the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style dates should be used. (eg `'2013-01-29'`)
+
+## TimeField
+
+A time representation.
+
+Optionally takes `format` as parameter to replace the matching pattern.
+
+Corresponds to `django.db.models.fields.TimeField`
+
+**Signature:** `TimeField(format=None, input_formats=None)`
+
+* `format` - A string representing the output format.  If not specified, the `TIME_FORMAT` setting will be used, which defaults to `'iso-8601'`.
+* `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `TIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
+
+Time format strings may either be [python strftime formats][strftime] which explicitly specifiy the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style times should be used. (eg `'12:34:56.000000'`)
 
 ## IntegerField
 
@@ -230,7 +269,11 @@ Signature and validation is the same as with `FileField`.
 ---
 
 **Note:** `FileFields` and `ImageFields` are only suitable for use with MultiPartParser, since e.g. json doesn't support file uploads.
-Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files. 
+Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
+
+---
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
+[strftime]: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
+[iso8601]: http://www.w3.org/TR/NOTE-datetime

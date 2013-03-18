@@ -2,11 +2,11 @@
 <html lang="en">
 <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>Django REST framework</title>
+    <title>{{ title }}</title>
     <link href="{{ base_url }}/img/favicon.ico" rel="icon" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="description" content="{{ description }}">
+    <meta name="author" content="Tom Christie">
 
     <!-- Le styles -->
     <link href="{{ base_url }}/css/prettify.css" rel="stylesheet">
@@ -89,10 +89,12 @@
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
                 <ul class="dropdown-menu">
+                  <li><a href="{{ base_url }}/topics/ajax-csrf-cors{{ suffix }}">AJAX, CSRF & CORS</a></li>
                   <li><a href="{{ base_url }}/topics/browser-enhancements{{ suffix }}">Browser enhancements</a></li>
                   <li><a href="{{ base_url }}/topics/browsable-api{{ suffix }}">The Browsable API</a></li>
                   <li><a href="{{ base_url }}/topics/rest-hypermedia-hateoas{{ suffix }}">REST, Hypermedia & HATEOAS</a></li>
                   <li><a href="{{ base_url }}/topics/rest-framework-2-announcement{{ suffix }}">2.0 Announcement</a></li>
+                  <li><a href="{{ base_url }}/topics/2.2-announcement{{ suffix }}">2.2 Announcement</a></li>
                   <li><a href="{{ base_url }}/topics/release-notes{{ suffix }}">Release Notes</a></li>
                   <li><a href="{{ base_url }}/topics/credits{{ suffix }}">Credits</a></li>
                 </ul>

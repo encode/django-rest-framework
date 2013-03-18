@@ -3,8 +3,9 @@ Handling of media types, as found in HTTP Content-Type and Accept headers.
 
 See http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.7
 """
-
+from __future__ import unicode_literals
 from django.http.multipartparser import parse_header
+from rest_framework import HTTP_HEADER_ENCODING
 
 
 def media_type_matches(lhs, rhs):
@@ -47,7 +48,7 @@ class _MediaType(object):
         if media_type_str is None:
             media_type_str = ''
         self.orig = media_type_str
-        self.full_type, self.params = parse_header(media_type_str)
+        self.full_type, self.params = parse_header(media_type_str.encode(HTTP_HEADER_ENCODING))
         self.main_type, sep, self.sub_type = self.full_type.partition('/')
 
     def match(self, other):

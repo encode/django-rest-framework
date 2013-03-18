@@ -8,28 +8,139 @@
 
 Minor version numbers (0.0.x) are used for changes that are API compatible.  You should be able to upgrade between minor point releases without any other code changes.
 
-Medium version numbers (0.x.0) may include minor API changes.  You should read the release notes carefully before upgrading between medium point releases.
+Medium version numbers (0.x.0) may include API changes, in line with the [deprecation policy][deprecation-policy].  You should read the release notes carefully before upgrading between medium point releases.
 
-Major version numbers (x.0.0) are reserved for project milestones.  No major point releases are currently planned.
+Major version numbers (x.0.0) are reserved for substantial project milestones.  No major point releases are currently planned.
+
+## Deprecation policy
+
+REST framework releases follow a formal deprecation policy, which is in line with [Django's deprecation policy][django-deprecation-policy].
+
+The timeline for deprecation of a feature present in version 1.0 would work as follows:
+
+* Version 1.1 would remain **fully backwards compatible** with 1.0, but would raise `PendingDeprecationWarning` warnings if you use the feature that are due to be deprecated.  These warnings are **silent by default**, but can be explicitly enabled when you're ready to start migrating any required changes.  For example if you start running your tests using `python -Wd manage.py test`, you'll be warned of any API changes you need to make.
+
+* Version 1.2 would escalate these warnings to `DeprecationWarning`, which is loud by default.
+
+* Version 1.3 would remove the deprecated bits of API entirely.
+
+Note that in line with Django's policy, any parts of the framework not mentioned in the documentation should generally be considered private API, and may be subject to change.
+
+## Upgrading
+
+To upgrade Django REST framework to the latest version, use pip:
+
+    pip install -U djangorestframework
+
+You can determine your currently installed version using `pip freeze`:
+
+    pip freeze | grep djangorestframework
+
+---
+
+## 2.2.x series
+
+### Master
+
+* `Serializer.save()` now supports arbitrary keyword args which are passed through to the object `.save()` method.  Mixins use `force_insert` and `force_update` where appropriate, resulting in one less database query.
+
+### 2.2.4
+
+**Date**: 13th March 2013
+
+* OAuth 2 support.
+* OAuth 1.0a support.
+* Support X-HTTP-Method-Override header.
+* Filtering backends are now applied to the querysets for object lookups as well as lists.  (Eg you can use a filtering backend to control which objects should 404)
+* Deal with error data nicely when deserializing lists of objects.
+* Extra override hook to configure `DjangoModelPermissions` for unauthenticated users.
+* Bugfix: Fix regression which caused extra database query on paginated list views.
+* Bugfix: Fix pk relationship bug for some types of 1-to-1 relations.
+* Bugfix: Workaround for Django bug causing case where `Authtoken` could be registered for cascade delete from `User` even if not installed.
+
+### 2.2.3
+
+**Date**: 7th March 2013
+
+* Bugfix: Fix None values for for `DateField`, `DateTimeField` and `TimeField`.
+
+### 2.2.2
+
+**Date**: 6th March 2013
+
+* Support for custom input and output formats for `DateField`, `DateTimeField` and `TimeField`.
+* Cleanup: Request authentication is no longer lazily evaluated, instead authentication is always run, which results in more consistent, obvious behavior.  Eg. Supplying bad auth credentials will now always return an error response, even if no permissions are set on the view.
+* Bugfix for serializer data being uncacheable with pickle protocol 0.
+* Bugfixes for model field validation edge-cases.
+* Bugfix for authtoken migration while using a custom user model and south.
+
+### 2.2.1
+
+**Date**: 22nd Feb 2013
+
+* Security fix: Use `defusedxml` package to address XML parsing vulnerabilities.
+* Raw data tab added to browseable API.  (Eg. Allow for JSON input.)
+* Added TimeField.
+* Serializer fields can be mapped to any method that takes no args, or only takes kwargs which have defaults.
+* Unicode support for view names/descriptions in browseable API.
+* Bugfix: request.DATA should return an empty `QueryDict` with no data, not `None`.
+* Bugfix: Remove unneeded field validation, which caused extra queries.
+
+**Security note**: Following the [disclosure of security vulnerabilities][defusedxml-announce] in Python's XML parsing libraries, use of the `XMLParser` class now requires the `defusedxml` package to be installed.
+
+The security vulnerabilities only affect APIs which use the `XMLParser` class, by enabling it in any views, or by having it set in the `DEFAULT_PARSER_CLASSES` setting.  Note that the `XMLParser` class is not enabled by default, so this change should affect a minority of users.
+
+### 2.2.0
+
+**Date**: 13th Feb 2013
+
+* Python 3 support.
+* Added a `post_save()` hook to the generic views.
+* Allow serializers to handle dicts as well as objects.
+* Deprecate `ManyRelatedField()` syntax in favor of `RelatedField(many=True)`
+* Deprecate `null=True` on relations in favor of `required=False`.
+* Deprecate `blank=True` on CharFields, just use `required=False`.
+* Deprecate optional `obj` argument in permissions checks in favor of `has_object_permission`.
+* Deprecate implicit hyperlinked relations behavior.
+* Bugfix: Fix broken DjangoModelPermissions.
+* Bugfix: Allow serializer output to be cached.
+* Bugfix: Fix styling on browsable API login.
+* Bugfix: Fix issue with deserializing empty to-many relations.
+* Bugfix: Ensure model field validation is still applied for ModelSerializer subclasses with an custom `.restore_object()` method.
+
+**Note**: See the [2.2 announcement][2.2-announcement] for full details.
 
 ---
 
 ## 2.1.x series
 
-### Master
+### 2.1.17
 
+**Date**: 26th Jan 2013
+
+* Support proper 401 Unauthorized responses where appropriate, instead of always using 403 Forbidden.
 * Support json encoding of timedelta objects.
+* `format_suffix_patterns()` now supports `include` style URL patterns.
+* Bugfix: Fix issues with custom pagination serializers.
+* Bugfix: Nested serializers now accept `source='*'` argument.
+* Bugfix: Return proper validation errors when incorrect types supplied for relational fields.
+* Bugfix: Support nullable FKs with `SlugRelatedField`.
+* Bugfix: Don't call custom validation methods if the field has an error.
+
+**Note**: If the primary authentication class is `TokenAuthentication` or `BasicAuthentication`, a view will now correctly return 401 responses to unauthenticated access, with an appropriate `WWW-Authenticate` header, instead of 403 responses.
 
 ### 2.1.16
 
 **Date**: 14th Jan 2013
 
-* Deprecate django.utils.simplejson in favor of Python 2.6's built-in json module.
+* Deprecate `django.utils.simplejson` in favor of Python 2.6's built-in json module.
 * Bugfix: `auto_now`, `auto_now_add` and other `editable=False` fields now default to read-only.
 * Bugfix: PK fields now only default to read-only if they are an AutoField or if `editable=False`.
 * Bugfix: Validation errors instead of exceptions when serializers receive incorrect types.
 * Bugfix: Validation errors instead of exceptions when related fields receive incorrect types.
 * Bugfix: Handle ObjectDoesNotExist exception when serializing null reverse one-to-one
+
+**Note**: Prior to 2.1.16, The Decimals would render in JSON using floating point if `simplejson` was installed, but otherwise render using string notation. Now that use of `simplejson` has been deprecated, Decimals will consistently render using string notation.  See [#582] for more details. 
 
 ### 2.1.15
 
@@ -319,7 +430,12 @@ This change will not affect user code, so long as it's following the recommended
 * Initial release.
 
 [cite]: http://www.catb.org/~esr/writings/cathedral-bazaar/cathedral-bazaar/ar01s04.html
+[deprecation-policy]: #deprecation-policy
+[django-deprecation-policy]: https://docs.djangoproject.com/en/dev/internals/release-process/#internal-release-deprecation-policy
+[defusedxml-announce]: http://blog.python.org/2013/02/announcing-defusedxml-fixes-for-xml.html
+[2.2-announcement]: 2.2-announcement.md
 [staticfiles14]: https://docs.djangoproject.com/en/1.4/howto/static-files/#with-a-template-tag
 [staticfiles13]: https://docs.djangoproject.com/en/1.3/howto/static-files/#with-a-template-tag
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
 [announcement]: rest-framework-2-announcement.md
+[#582]: https://github.com/tomchristie/django-rest-framework/issues/582

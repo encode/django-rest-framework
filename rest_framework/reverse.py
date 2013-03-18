@@ -1,6 +1,7 @@
 """
 Provide reverse functions that return fully qualified URLs
 """
+from __future__ import unicode_literals
 from django.core.urlresolvers import reverse as django_reverse
 from django.utils.functional import lazy
 

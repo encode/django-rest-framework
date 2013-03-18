@@ -76,16 +76,16 @@ The following methods are used by REST framework to instantiate the various plug
 
 The following methods are called before dispatching to the handler method.
 
-### .check_permissions(...)
+### .check_permissions(self, request)
 
-### .check_throttles(...)
+### .check_throttles(self, request)
 
-### .perform_content_negotiation(...)
+### .perform_content_negotiation(self, request, force=False)
 
 ## Dispatch methods
 
 The following methods are called directly by the view's `.dispatch()` method.
-These perform any actions that need to occur before or after calling the handler methods such as `.get()`, `.post()`, `put()` and `.delete()`.  
+These perform any actions that need to occur before or after calling the handler methods such as `.get()`, `.post()`, `put()`, `patch()` and `.delete()`.
 
 ### .initial(self, request, \*args, **kwargs)
 

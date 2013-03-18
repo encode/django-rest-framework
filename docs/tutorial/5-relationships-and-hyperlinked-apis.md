@@ -70,8 +70,8 @@ The `HyperlinkedModelSerializer` has the following differences from `ModelSerial
 
 * It does not include the `pk` field by default.
 * It includes a `url` field, using `HyperlinkedIdentityField`.
-* Relationships use `HyperlinkedRelatedField` and `ManyHyperlinkedRelatedField`,
-  instead of `PrimaryKeyRelatedField` and `ManyPrimaryKeyRelatedField`.
+* Relationships use `HyperlinkedRelatedField`,
+  instead of `PrimaryKeyRelatedField`.
 
 We can easily re-write our existing serializers to use hyperlinking.
 
@@ -86,7 +86,7 @@ We can easily re-write our existing serializers to use hyperlinking.
     
     
     class UserSerializer(serializers.HyperlinkedModelSerializer):
-        snippets = serializers.ManyHyperlinkedRelatedField(view_name='snippet-detail')
+        snippets = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail')
     
         class Meta:
             model = User
@@ -123,7 +123,7 @@ After adding all those names into our URLconf, our final `'urls.py'` file should
             views.UserList.as_view(),
             name='user-list'),
         url(r'^users/(?P<pk>[0-9]+)/$',
-            views.UserInstance.as_view(),
+            views.UserDetail.as_view(),
             name='user-detail')
     ))
     
@@ -165,7 +165,7 @@ We've reached the end of our tutorial.  If you want to get more involved in the 
 
 * Contribute on [GitHub][github] by reviewing and submitting issues, and making pull requests.
 * Join the [REST framework discussion group][group], and help build the community.
-* [Follow the author on Twitter][twitter] and say hi.
+* Follow [the author][twitter] on Twitter and say hi.
 
 **Now go build awesome things.**
 

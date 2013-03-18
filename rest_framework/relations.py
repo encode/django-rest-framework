@@ -1,13 +1,16 @@
+from __future__ import unicode_literals
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.core.urlresolvers import resolve, get_script_prefix
+from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch
 from django import forms
 from django.forms import widgets
 from django.forms.models import ModelChoiceIterator
-from django.utils.encoding import smart_unicode
 from django.utils.translation import ugettext_lazy as _
-from rest_framework.fields import Field, WritableField
+from rest_framework.fields import Field, WritableField, get_component
 from rest_framework.reverse import reverse
-from urlparse import urlparse
+from rest_framework.compat import urlparse
+from rest_framework.compat import smart_text
+import warnings
+
 
 ##### Relational fields #####
 
@@ -17,19 +20,35 @@ class RelatedField(WritableField):
     """
     Base class for related model fields.
 
-    If not overridden, this represents a to-one relationship, using the unicode
-    representation of the target.
+    This represents a relationship using the unicode representation of the target.
     """
     widget = widgets.Select
+    many_widget = widgets.SelectMultiple
+    form_field_class = forms.ChoiceField
+    many_form_field_class = forms.MultipleChoiceField
+
     cache_choices = False
     empty_label = None
-    default_read_only = True  # TODO: Remove this
+    read_only = True
+    many = False
 
     def __init__(self, *args, **kwargs):
+
+        # 'null' is to be deprecated in favor of 'required'
+        if 'null' in kwargs:
+            warnings.warn('The `null` keyword argument is due to be deprecated. '
+                          'Use the `required` keyword argument instead.',
+                          PendingDeprecationWarning, stacklevel=2)
+            kwargs['required'] = not kwargs.pop('null')
+
         self.queryset = kwargs.pop('queryset', None)
-        self.null = kwargs.pop('null', False)
+        self.many = kwargs.pop('many', self.many)
+        if self.many:
+            self.widget = self.many_widget
+            self.form_field_class = self.many_form_field_class
+
+        kwargs['read_only'] = kwargs.pop('read_only', self.read_only)
         super(RelatedField, self).__init__(*args, **kwargs)
-        self.read_only = kwargs.pop('read_only', self.default_read_only)
 
     def initialize(self, parent, field_name):
         super(RelatedField, self).initialize(parent, field_name)
@@ -40,18 +59,13 @@ class RelatedField(WritableField):
                     self.queryset = manager.related.model._default_manager.all()
                 else:  # Reverse
                     self.queryset = manager.field.rel.to._default_manager.all()
-            except:
+            except Exception:
                 raise
                 msg = ('Serializer related fields must include a `queryset`' +
                        ' argument or set `read_only=True')
                 raise Exception(msg)
 
     ### We need this stuff to make form choices work...
-
-    # def __deepcopy__(self, memo):
-    #     result = super(RelatedField, self).__deepcopy__(memo)
-    #     result.queryset = result.queryset
-    #     return result
 
     def prepare_value(self, obj):
         return self.to_native(obj)
@@ -60,8 +74,8 @@ class RelatedField(WritableField):
         """
         Return a readable representation for use with eg. select widgets.
         """
-        desc = smart_unicode(obj)
-        ident = smart_unicode(self.to_native(obj))
+        desc = smart_text(obj)
+        ident = smart_text(self.to_native(obj))
         if desc == ident:
             return desc
         return "%s - %s" % (desc, ident)
@@ -102,9 +116,24 @@ class RelatedField(WritableField):
 
     def field_to_native(self, obj, field_name):
         try:
-            value = getattr(obj, self.source or field_name)
+            if self.source == '*':
+                return self.to_native(obj)
+
+            source = self.source or field_name
+            value = obj
+
+            for component in source.split('.'):
+                value = get_component(value, component)
+                if value is None:
+                    break
         except ObjectDoesNotExist:
             return None
+
+        if value is None:
+            return None
+
+        if self.many:
+            return [self.to_native(item) for item in value.all()]
         return self.to_native(value)
 
     def field_from_native(self, data, files, field_name, into):
@@ -112,69 +141,43 @@ class RelatedField(WritableField):
             return
 
         try:
-            value = data[field_name]
+            if self.many:
+                try:
+                    # Form data
+                    value = data.getlist(field_name)
+                    if value == [''] or value == []:
+                        raise KeyError
+                except AttributeError:
+                    # Non-form data
+                    value = data[field_name]
+            else:
+                value = data[field_name]
         except KeyError:
-            if self.required:
-                raise ValidationError(self.error_messages['required'])
-            return
+            if self.partial:
+                return
+            value = [] if self.many else None
 
-        if value in (None, '') and not self.null:
-            raise ValidationError('Value may not be null')
-        elif value in (None, '') and self.null:
+        if value in (None, '') and self.required:
+            raise ValidationError(self.error_messages['required'])
+        elif value in (None, ''):
             into[(self.source or field_name)] = None
+        elif self.many:
+            into[(self.source or field_name)] = [self.from_native(item) for item in value]
         else:
             into[(self.source or field_name)] = self.from_native(value)
-
-
-class ManyRelatedMixin(object):
-    """
-    Mixin to convert a related field to a many related field.
-    """
-    widget = widgets.SelectMultiple
-
-    def field_to_native(self, obj, field_name):
-        value = getattr(obj, self.source or field_name)
-        return [self.to_native(item) for item in value.all()]
-
-    def field_from_native(self, data, files, field_name, into):
-        if self.read_only:
-            return
-
-        try:
-            # Form data
-            value = data.getlist(self.source or field_name)
-        except:
-            # Non-form data
-            value = data.get(self.source or field_name)
-        else:
-            if value == ['']:
-                value = []
-
-        into[field_name] = [self.from_native(item) for item in value]
-
-
-class ManyRelatedField(ManyRelatedMixin, RelatedField):
-    """
-    Base class for related model managers.
-
-    If not overridden, this represents a to-many relationship, using the unicode
-    representations of the target, and is read-only.
-    """
-    pass
 
 
 ### PrimaryKey relationships
 
 class PrimaryKeyRelatedField(RelatedField):
     """
-    Represents a to-one relationship as a pk value.
+    Represents a relationship as a pk value.
     """
-    default_read_only = False
-    form_field_class = forms.ChoiceField
+    read_only = False
 
     default_error_messages = {
         'does_not_exist': _("Invalid pk '%s' - object does not exist."),
-        'invalid': _('Invalid value.'),
+        'incorrect_type': _('Incorrect type.  Expected pk value, received %s.'),
     }
 
     # TODO: Remove these field hacks...
@@ -185,8 +188,8 @@ class PrimaryKeyRelatedField(RelatedField):
         """
         Return a readable representation for use with eg. select widgets.
         """
-        desc = smart_unicode(obj)
-        ident = smart_unicode(self.to_native(obj.pk))
+        desc = smart_text(obj)
+        ident = smart_text(self.to_native(obj.pk))
         if desc == ident:
             return desc
         return "%s - %s" % (desc, ident)
@@ -202,85 +205,49 @@ class PrimaryKeyRelatedField(RelatedField):
         try:
             return self.queryset.get(pk=data)
         except ObjectDoesNotExist:
-            msg = self.error_messages['does_not_exist'] % smart_unicode(data)
+            msg = self.error_messages['does_not_exist'] % smart_text(data)
             raise ValidationError(msg)
         except (TypeError, ValueError):
-            msg = self.error_messages['invalid']
+            received = type(data).__name__
+            msg = self.error_messages['incorrect_type'] % received
             raise ValidationError(msg)
 
     def field_to_native(self, obj, field_name):
+        if self.many:
+            # To-many relationship
+            try:
+                # Prefer obj.serializable_value for performance reasons
+                queryset = obj.serializable_value(self.source or field_name)
+            except AttributeError:
+                # RelatedManager (reverse relationship)
+                queryset = getattr(obj, self.source or field_name)
+
+            # Forward relationship
+            return [self.to_native(item.pk) for item in queryset.all()]
+
+        # To-one relationship
         try:
             # Prefer obj.serializable_value for performance reasons
             pk = obj.serializable_value(self.source or field_name)
         except AttributeError:
             # RelatedObject (reverse relationship)
             try:
-                obj = getattr(obj, self.source or field_name)
+                pk = getattr(obj, self.source or field_name).pk
             except ObjectDoesNotExist:
                 return None
-            return self.to_native(obj.pk)
+
         # Forward relationship
         return self.to_native(pk)
 
-
-class ManyPrimaryKeyRelatedField(ManyRelatedField):
-    """
-    Represents a to-many relationship as a pk value.
-    """
-    default_read_only = False
-    form_field_class = forms.MultipleChoiceField
-
-    default_error_messages = {
-        'does_not_exist': _("Invalid pk '%s' - object does not exist."),
-        'invalid': _('Invalid value.'),
-    }
-
-    def prepare_value(self, obj):
-        return self.to_native(obj.pk)
-
-    def label_from_instance(self, obj):
-        """
-        Return a readable representation for use with eg. select widgets.
-        """
-        desc = smart_unicode(obj)
-        ident = smart_unicode(self.to_native(obj.pk))
-        if desc == ident:
-            return desc
-        return "%s - %s" % (desc, ident)
-
-    def to_native(self, pk):
-        return pk
-
-    def field_to_native(self, obj, field_name):
-        try:
-            # Prefer obj.serializable_value for performance reasons
-            queryset = obj.serializable_value(self.source or field_name)
-        except AttributeError:
-            # RelatedManager (reverse relationship)
-            queryset = getattr(obj, self.source or field_name)
-            return [self.to_native(item.pk) for item in queryset.all()]
-        # Forward relationship
-        return [self.to_native(item.pk) for item in queryset.all()]
-
-    def from_native(self, data):
-        if self.queryset is None:
-            raise Exception('Writable related fields must include a `queryset` argument')
-
-        try:
-            return self.queryset.get(pk=data)
-        except ObjectDoesNotExist:
-            msg = self.error_messages['does_not_exist'] % smart_unicode(data)
-            raise ValidationError(msg)
-        except (TypeError, ValueError):
-            msg = self.error_messages['invalid']
-            raise ValidationError(msg)
 
 ### Slug relationships
 
 
 class SlugRelatedField(RelatedField):
-    default_read_only = False
-    form_field_class = forms.ChoiceField
+    """
+    Represents a relationship using a unique field on the target.
+    """
+    read_only = False
 
     default_error_messages = {
         'does_not_exist': _("Object with %s=%s does not exist."),
@@ -303,40 +270,35 @@ class SlugRelatedField(RelatedField):
             return self.queryset.get(**{self.slug_field: data})
         except ObjectDoesNotExist:
             raise ValidationError(self.error_messages['does_not_exist'] %
-                                  (self.slug_field, unicode(data)))
+                                  (self.slug_field, smart_text(data)))
         except (TypeError, ValueError):
             msg = self.error_messages['invalid']
             raise ValidationError(msg)
-
-
-class ManySlugRelatedField(ManyRelatedMixin, SlugRelatedField):
-    form_field_class = forms.MultipleChoiceField
 
 
 ### Hyperlinked relationships
 
 class HyperlinkedRelatedField(RelatedField):
     """
-    Represents a to-one relationship, using hyperlinking.
+    Represents a relationship using hyperlinking.
     """
     pk_url_kwarg = 'pk'
     slug_field = 'slug'
     slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
-    default_read_only = False
-    form_field_class = forms.ChoiceField
+    read_only = False
 
     default_error_messages = {
         'no_match': _('Invalid hyperlink - No URL match'),
         'incorrect_match': _('Invalid hyperlink - Incorrect URL match'),
         'configuration_error': _('Invalid hyperlink due to configuration error'),
         'does_not_exist': _("Invalid hyperlink - object does not exist."),
-        'invalid': _('Invalid value.'),
+        'incorrect_type': _('Incorrect type.  Expected url string, received %s.'),
     }
 
     def __init__(self, *args, **kwargs):
         try:
             self.view_name = kwargs.pop('view_name')
-        except:
+        except KeyError:
             raise ValueError("Hyperlinked field requires 'view_name' kwarg")
 
         self.slug_field = kwargs.pop('slug_field', self.slug_field)
@@ -357,13 +319,20 @@ class HyperlinkedRelatedField(RelatedField):
         view_name = self.view_name
         request = self.context.get('request', None)
         format = self.format or self.context.get('format', None)
+
+        if request is None:
+            warnings.warn("Using `HyperlinkedRelatedField` without including the "
+                          "request in the serializer context is due to be deprecated. "
+                          "Add `context={'request': request}` when instantiating the serializer.",
+                          PendingDeprecationWarning, stacklevel=4)
+
         pk = getattr(obj, 'pk', None)
         if pk is None:
             return
         kwargs = {self.pk_url_kwarg: pk}
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except:
+        except NoReverseMatch:
             pass
 
         slug = getattr(obj, self.slug_field, None)
@@ -374,13 +343,13 @@ class HyperlinkedRelatedField(RelatedField):
         kwargs = {self.slug_url_kwarg: slug}
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except:
+        except NoReverseMatch:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except:
+        except NoReverseMatch:
             pass
 
         raise Exception('Could not resolve URL for field using view name "%s"' % view_name)
@@ -394,19 +363,19 @@ class HyperlinkedRelatedField(RelatedField):
         try:
             http_prefix = value.startswith('http:') or value.startswith('https:')
         except AttributeError:
-            msg = self.error_messages['invalid']
-            raise ValidationError(msg)
+            msg = self.error_messages['incorrect_type']
+            raise ValidationError(msg % type(value).__name__)
 
         if http_prefix:
             # If needed convert absolute URLs to relative path
-            value = urlparse(value).path
+            value = urlparse.urlparse(value).path
             prefix = get_script_prefix()
             if value.startswith(prefix):
                 value = '/' + value[len(prefix):]
 
         try:
             match = resolve(value)
-        except:
+        except Exception:
             raise ValidationError(self.error_messages['no_match'])
 
         if match.view_name != self.view_name:
@@ -431,17 +400,10 @@ class HyperlinkedRelatedField(RelatedField):
         except ObjectDoesNotExist:
             raise ValidationError(self.error_messages['does_not_exist'])
         except (TypeError, ValueError):
-            msg = self.error_messages['invalid']
-            raise ValidationError(msg)
+            msg = self.error_messages['incorrect_type']
+            raise ValidationError(msg % type(value).__name__)
 
         return obj
-
-
-class ManyHyperlinkedRelatedField(ManyRelatedMixin, HyperlinkedRelatedField):
-    """
-    Represents a to-many relationship, using hyperlinking.
-    """
-    form_field_class = forms.MultipleChoiceField
 
 
 class HyperlinkedIdentityField(Field):
@@ -451,6 +413,7 @@ class HyperlinkedIdentityField(Field):
     pk_url_kwarg = 'pk'
     slug_field = 'slug'
     slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
+    read_only = True
 
     def __init__(self, *args, **kwargs):
         # TODO: Make view_name mandatory, and have the
@@ -472,6 +435,12 @@ class HyperlinkedIdentityField(Field):
         view_name = self.view_name or self.parent.opts.view_name
         kwargs = {self.pk_url_kwarg: obj.pk}
 
+        if request is None:
+            warnings.warn("Using `HyperlinkedIdentityField` without including the "
+                          "request in the serializer context is due to be deprecated. "
+                          "Add `context={'request': request}` when instantiating the serializer.",
+                          PendingDeprecationWarning, stacklevel=4)
+
         # By default use whatever format is given for the current context
         # unless the target is a different type to the source.
         #
@@ -486,7 +455,7 @@ class HyperlinkedIdentityField(Field):
 
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except:
+        except NoReverseMatch:
             pass
 
         slug = getattr(obj, self.slug_field, None)
@@ -497,13 +466,51 @@ class HyperlinkedIdentityField(Field):
         kwargs = {self.slug_url_kwarg: slug}
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except:
+        except NoReverseMatch:
             pass
 
         kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except:
+        except NoReverseMatch:
             pass
 
         raise Exception('Could not resolve URL for field using view name "%s"' % view_name)
+
+
+### Old-style many classes for backwards compat
+
+class ManyRelatedField(RelatedField):
+    def __init__(self, *args, **kwargs):
+        warnings.warn('`ManyRelatedField()` is due to be deprecated. '
+                      'Use `RelatedField(many=True)` instead.',
+                       PendingDeprecationWarning, stacklevel=2)
+        kwargs['many'] = True
+        super(ManyRelatedField, self).__init__(*args, **kwargs)
+
+
+class ManyPrimaryKeyRelatedField(PrimaryKeyRelatedField):
+    def __init__(self, *args, **kwargs):
+        warnings.warn('`ManyPrimaryKeyRelatedField()` is due to be deprecated. '
+                      'Use `PrimaryKeyRelatedField(many=True)` instead.',
+                       PendingDeprecationWarning, stacklevel=2)
+        kwargs['many'] = True
+        super(ManyPrimaryKeyRelatedField, self).__init__(*args, **kwargs)
+
+
+class ManySlugRelatedField(SlugRelatedField):
+    def __init__(self, *args, **kwargs):
+        warnings.warn('`ManySlugRelatedField()` is due to be deprecated. '
+                      'Use `SlugRelatedField(many=True)` instead.',
+                       PendingDeprecationWarning, stacklevel=2)
+        kwargs['many'] = True
+        super(ManySlugRelatedField, self).__init__(*args, **kwargs)
+
+
+class ManyHyperlinkedRelatedField(HyperlinkedRelatedField):
+    def __init__(self, *args, **kwargs):
+        warnings.warn('`ManyHyperlinkedRelatedField()` is due to be deprecated. '
+                      'Use `HyperlinkedRelatedField(many=True)` instead.',
+                       PendingDeprecationWarning, stacklevel=2)
+        kwargs['many'] = True
+        super(ManyHyperlinkedRelatedField, self).__init__(*args, **kwargs)

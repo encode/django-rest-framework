@@ -25,6 +25,7 @@ Let's start by creating a simple object we can use for example purposes:
     comment = Comment(email='leila@example.com', content='foo bar')
 
 We'll declare a serializer that we can use to serialize and deserialize `Comment` objects.
+
 Declaring a serializer looks very similar to declaring a form:
 
     class CommentSerializer(serializers.Serializer):
@@ -33,10 +34,17 @@ Declaring a serializer looks very similar to declaring a form:
         created = serializers.DateTimeField()
 
         def restore_object(self, attrs, instance=None):
+            """
+            Given a dictionary of deserialized field values, either update
+            an existing model instance, or create a new model instance.
+            
+            Note that if we don't define this method, then deserializing
+            data will simply return a dictionary of items.
+            """
             if instance is not None:
-                instance.title = attrs['title']
-                instance.content = attrs['content']
-                instance.created = attrs['created']
+                instance.title = attrs.get('title', instance.title)
+                instance.content = attrs.get('content', instance.content)
+                instance.created = attrs.get('created', instance.created)
                 return instance
             return Comment(**attrs) 
 
@@ -80,9 +88,21 @@ By default, serializers must be passed values for all required fields or they wi
 
     serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)  # Update `instance` with partial data
 
+## Serializing querysets
+
+To serialize a queryset instead of an object instance, you should pass the `many=True` flag when instantiating the serializer.
+
+    queryset = Comment.objects.all()
+    serializer = CommentSerializer(queryset, many=True)
+    serializer.data
+    # [{'email': u'leila@example.com', 'content': u'foo bar', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774)}, {'email': u'jamie@example.com', 'content': u'baz', 'created': datetime.datetime(2013, 1, 12, 16, 12, 45, 104445)}]
+
 ## Validation
 
-When deserializing data, you always need to call `is_valid()` before attempting to access the deserialized object.  If any validation errors occur, the `.errors` and `.non_field_errors` properties will contain the resulting error messages.
+When deserializing data, you always need to call `is_valid()` before attempting to access the deserialized object.  If any validation errors occur, the `.errors` property will contain a dictionary representing the resulting error messages.
+Each key in the dictionary will be the field name, and the values will be lists of strings of any error messages corresponding to that field.  The `non_field_errors` key may also be present, and will list any general validation errors.
+
+When deserializing a list of items, errors will be returned as a list of dictionaries representing each of the deserialized items.
 
 ### Field-level validation
 
@@ -114,7 +134,7 @@ To do any other validation that requires access to multiple fields, add a method
     from rest_framework import serializers
 
     class EventSerializer(serializers.Serializer):
-        description = serializers.CahrField(max_length=100)
+        description = serializers.CharField(max_length=100)
         start = serializers.DateTimeField()
         finish = serializers.DateTimeField()
 
@@ -155,6 +175,17 @@ The `Serializer` class is itself a type of `Field`, and can be used to represent
 
 ---
 
+## Including extra context
+
+There are some cases where you need to provide extra context to the serializer in addition to the object being serialized.  One common case is if you're using a serializer that includes hyperlinked relations, which requires the serializer to have access to the current request so that it can properly generate fully qualified URLs.
+
+You can provide arbitrary additional context by passing a `context` argument when instantiating the serializer. For example:
+
+    serializer = AccountSerializer(account, context={'request': request})
+    serializer.data
+    # {'id': 6, 'owner': u'denvercoder9', 'created': datetime.datetime(2013, 2, 12, 09, 44, 56, 678870), 'details': 'http://example.com/accounts/6/details'}
+
+The context dictionary can be used within any serializer field logic, such as a custom `.to_native()` method, by accessing the `self.context` attribute.
 
 ## Creating custom fields
 
@@ -190,18 +221,12 @@ By default field values are treated as mapping to an attribute on the object.  I
 
 As an example, let's create a field that can be used represent the class name of the object being serialized:
 
-    class ClassNameField(serializers.WritableField):
+    class ClassNameField(serializers.Field):
         def field_to_native(self, obj, field_name):
             """
-            Serialize the object's class name, not an attribute of the object.
+            Serialize the object's class name.
             """
-            return obj.__class__.__name__
-
-        def field_from_native(self, data, field_name, into):
-            """
-            We don't want to set anything when we revert this field.
-            """
-            pass
+            return obj.__class__
 
 ---
 
@@ -214,15 +239,17 @@ The `ModelSerializer` class lets you automatically create a Serializer class wit
         class Meta:
             model = Account
 
-**[TODO: Explain model field to serializer field mapping in more detail]**
+By default, all the model fields on the class will be mapped to corresponding serializer fields.
+
+Any foreign keys on the model will be mapped to `PrimaryKeyRelatedField` if you're using a `ModelSerializer`, or `HyperlinkedRelatedField` if you're using a `HyperlinkedModelSerializer`.
 
 ## Specifying fields explicitly 
 
 You can add extra fields to a `ModelSerializer` or override the default fields by declaring fields on the class, just as you would for a `Serializer` class.
 
     class AccountSerializer(serializers.ModelSerializer):
-        url = CharField(source='get_absolute_url', read_only=True)
-        group = NaturalKeyField()
+        url = serializers.CharField(source='get_absolute_url', read_only=True)
+        groups = serializers.PrimaryKeyRelatedField(many=True)
 
         class Meta:
             model = Account
@@ -231,17 +258,11 @@ Extra fields can correspond to any property or callable on the model.
 
 ## Relational fields
 
-When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation is to use the primary keys of the related instances.
+When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation for `ModelSerializer` is to use the primary keys of the related instances.
 
-Alternative representations include serializing using natural keys, serializing complete nested representations, or serializing using a custom representation, such as a URL that uniquely identifies the model instances.
+Alternative representations include serializing using hyperlinks, serializing complete nested representations, or serializing with a custom representation.
 
-The `PrimaryKeyRelatedField` and `HyperlinkedRelatedField` fields provide alternative flat representations.
-
-The `ModelSerializer` class can itself be used as a field, in order to serialize relationships using nested representations.
-
-The `RelatedField` class may be subclassed to create a custom representation of a relationship.  The subclass should override `.to_native()`, and optionally `.from_native()` if deserialization is supported.
-
-All the relational fields may be used for any relationship or reverse relationship on a model.
+For full details see the [serializer relations][relations] documentation.
 
 ## Specifying which fields should be included
 
@@ -316,3 +337,4 @@ The following custom model serializer could be used as a base class for model se
 
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
+[relations]: relations.md

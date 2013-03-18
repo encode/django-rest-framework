@@ -1,7 +1,8 @@
-import time
+from __future__ import unicode_literals
 from django.core.cache import cache
 from rest_framework import exceptions
 from rest_framework.settings import api_settings
+import time
 
 
 class BaseThrottle(object):

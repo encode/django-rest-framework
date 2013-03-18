@@ -4,14 +4,14 @@ Parsers are used to parse the content of incoming HTTP requests.
 They give us a generic way of being able to handle various media types
 on the request, such as form content or json encoded data.
 """
-
+from __future__ import unicode_literals
+from django.conf import settings
 from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError
-from rest_framework.compat import yaml, ETParseError
+from rest_framework.compat import yaml, etree
 from rest_framework.exceptions import ParseError
-from xml.etree import ElementTree as ET
-from xml.parsers.expat import ExpatError
+from rest_framework.compat import six
 import json
 import datetime
 import decimal
@@ -54,10 +54,14 @@ class JSONParser(BaseParser):
         `data` will be an object which is the parsed content of the response.
         `files` will always be `None`.
         """
+        parser_context = parser_context or {}
+        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+
         try:
-            return json.load(stream)
-        except ValueError, exc:
-            raise ParseError('JSON parse error - %s' % unicode(exc))
+            data = stream.read().decode(encoding)
+            return json.loads(data)
+        except ValueError as exc:
+            raise ParseError('JSON parse error - %s' % six.text_type(exc))
 
 
 class YAMLParser(BaseParser):
@@ -74,10 +78,16 @@ class YAMLParser(BaseParser):
         `data` will be an object which is the parsed content of the response.
         `files` will always be `None`.
         """
+        assert yaml, 'YAMLParser requires pyyaml to be installed'
+
+        parser_context = parser_context or {}
+        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+
         try:
-            return yaml.safe_load(stream)
-        except (ValueError, yaml.parser.ParserError), exc:
-            raise ParseError('YAML parse error - %s' % unicode(exc))
+            data = stream.read().decode(encoding)
+            return yaml.safe_load(data)
+        except (ValueError, yaml.parser.ParserError) as exc:
+            raise ParseError('YAML parse error - %s' % six.u(exc))
 
 
 class FormParser(BaseParser):
@@ -94,7 +104,9 @@ class FormParser(BaseParser):
         `data` will be a :class:`QueryDict` containing all the form parameters.
         `files` will always be :const:`None`.
         """
-        data = QueryDict(stream.read())
+        parser_context = parser_context or {}
+        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+        data = QueryDict(stream.read(), encoding=encoding)
         return data
 
 
@@ -114,15 +126,16 @@ class MultiPartParser(BaseParser):
         """
         parser_context = parser_context or {}
         request = parser_context['request']
+        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
         meta = request.META
         upload_handlers = request.upload_handlers
 
         try:
-            parser = DjangoMultiPartParser(meta, stream, upload_handlers)
+            parser = DjangoMultiPartParser(meta, stream, upload_handlers, encoding)
             data, files = parser.parse()
             return DataAndFiles(data, files)
-        except MultiPartParserError, exc:
-            raise ParseError('Multipart form parse error - %s' % unicode(exc))
+        except MultiPartParserError as exc:
+            raise ParseError('Multipart form parse error - %s' % six.u(exc))
 
 
 class XMLParser(BaseParser):
@@ -133,10 +146,15 @@ class XMLParser(BaseParser):
     media_type = 'application/xml'
 
     def parse(self, stream, media_type=None, parser_context=None):
+        assert etree, 'XMLParser requires defusedxml to be installed'
+
+        parser_context = parser_context or {}
+        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+        parser = etree.DefusedXMLParser(encoding=encoding)
         try:
-            tree = ET.parse(stream)
-        except (ExpatError, ETParseError, ValueError), exc:
-            raise ParseError('XML parse error - %s' % unicode(exc))
+            tree = etree.parse(stream, parser=parser, forbid_dtd=True)
+        except (etree.ParseError, ValueError) as exc:
+            raise ParseError('XML parse error - %s' % six.u(exc))
         data = self._xml_convert(tree.getroot())
 
         return data
@@ -146,7 +164,7 @@ class XMLParser(BaseParser):
         convert the xml `element` into the corresponding python object
         """
 
-        children = element.getchildren()
+        children = list(element)
 
         if len(children) == 0:
             return self._type_convert(element.text)

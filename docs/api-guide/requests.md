@@ -83,13 +83,13 @@ You won't typically need to access this property.
 
 # Browser enhancements
 
-REST framework supports a few browser enhancements such as browser-based `PUT` and `DELETE` forms.
+REST framework supports a few browser enhancements such as browser-based `PUT`, `PATCH` and `DELETE` forms.
 
 ## .method
 
 `request.method` returns the **uppercased** string representation of the request's HTTP method.
 
-Browser-based `PUT` and `DELETE` forms are transparently supported.
+Browser-based `PUT`, `PATCH` and `DELETE` forms are transparently supported.
 
 For more information see the [browser enhancements documentation].    
 

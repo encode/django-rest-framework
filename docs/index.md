@@ -1,19 +1,19 @@
-<iframe src="http://ghbtns.com/github-btn.html?user=tomchristie&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
-[![Travis build image][travis-build-image]][travis]
+<p class="badges">
+<iframe src="http://ghbtns.com/github-btn.html?user=tomchristie&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" class="github-star-button" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
+
+<a href="https://twitter.com/share" class="twitter-share-button" data-url="django-rest-framework.org" data-text="Checking out the totally awesome Django REST framework! http://django-rest-framework.org" data-count="none">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="http://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+<img alt="Travis build image" src="https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master" class="travis-build-image">
+</p>
 
 # Django REST framework
 
-**A toolkit for building well-connected, self-describing Web APIs.**
+**Web APIs for Django, made easy.**
 
----
+Django REST framework is a flexible, powerful library that makes it incredibly easy to build Web APIs.  It is designed as a modular and easy to customize architecture, based on Django's class based views.
 
-**Note**: This documentation is for the 2.0 version of REST framework.  If you are looking for earlier versions please see the [0.4.x branch][0.4] on GitHub.
-
----
-
-Django REST framework is a lightweight library that makes it easy to build Web APIs.  It is designed as a modular and easy to customize architecture, based on Django's class based views.
-
-Web APIs built using REST framework are fully self-describing and web browseable - a huge useability win for your developers.  It also supports a wide range of media types, authentication and permission policies out of the box.
+APIs built using REST framework are fully self-describing and web browseable - a huge useability win for your developers.  It also supports a wide range of media types, authentication and permission policies out of the box.
 
 If you are considering using REST framework for your API, we recommend reading the [REST framework 2 announcement][rest-framework-2-announcement] which gives a good overview of the framework and it's capabilities.
 
@@ -27,14 +27,19 @@ There is also a sandbox API you can use for testing purposes, [available here][s
 
 REST framework requires the following:
 
-* Python (2.6, 2.7)
+* Python (2.6.5+, 2.7, 3.2, 3.3)
 * Django (1.3, 1.4, 1.5)
 
 The following packages are optional:
 
 * [Markdown][markdown] (2.1.0+) - Markdown support for the browseable API.
 * [PyYAML][yaml] (3.10+) - YAML content-type support.
+* [defusedxml][defusedxml] (0.3+) - XML content-type support.
 * [django-filter][django-filter] (0.5.4+) - Filtering support.
+* [django-oauth-plus][django-oauth-plus] (2.0+) and [oauth2][oauth2] (1.5.211+) - OAuth 1.0a support.
+* [django-oauth2-provider][django-oauth2-provider] (0.2.3+) - OAuth 2.0 support.
+
+**Note**: The `oauth2` python package is badly misnamed, and actually provides OAuth 1.0a support.  Also note that packages required for both OAuth 1.0a, and OAuth 2.0 are not yet Python 3 compatible.
 
 ## Installation
 
@@ -70,7 +75,7 @@ Note that the URL path can be whatever you want, but you must include `'rest_fra
 
 ## Quickstart
 
-Can't wait to get started?  The [quickstart guide][quickstart] is the fastest way to get up and running with REST framework.
+Can't wait to get started?  The [quickstart guide][quickstart] is the fastest way to get up and running, and building APIs with REST framework.
 
 ## Tutorial
 
@@ -111,10 +116,12 @@ The API guide is your complete reference manual to all the functionality provide
 
 General guides to using REST framework.
 
+* [AJAX, CSRF & CORS][ajax-csrf-cors]
 * [Browser enhancements][browser-enhancements]
 * [The Browsable API][browsableapi]
 * [REST, Hypermedia & HATEOAS][rest-hypermedia-hateoas]
 * [2.0 Announcement][rest-framework-2-announcement]
+* [2.2 Announcement][2.2-announcement]
 * [Release Notes][release-notes]
 * [Credits][credits]
 
@@ -130,12 +137,21 @@ Run the tests:
 
     ./rest_framework/runtests/runtests.py
 
+To run the tests against all supported configurations, first install [the tox testing tool][tox] globally, using `pip install tox`, then simply run `tox`: 
+
+    tox
+
 ## Support
 
-For support please see the [REST framework discussion group][group], or try the  `#restframework` channel on `irc.freenode.net`.
+For support please see the [REST framework discussion group][group], try the  `#restframework` channel on `irc.freenode.net`, or raise a  question on [Stack Overflow][stack-overflow], making sure to include the ['django-rest-framework'][django-rest-framework-tag] tag.
 
-Paid support is also available from [DabApps], and can include work on REST framework core, or support with building your REST framework API.  Please contact [Tom Christie][email] if you'd like to discuss commercial support options.
+[Paid support is available][paid-support] from [DabApps][dabapps], and can include work on REST framework core, or support with building your REST framework API.  Please [contact DabApps][contact-dabapps] if you'd like to discuss commercial support options.
 
+For updates on REST framework development, you may also want to follow [the author][twitter] on Twitter.
+
+<a style="padding-top: 10px" href="https://twitter.com/_tomchristie" class="twitter-follow-button" data-show-count="false">Follow @_tomchristie</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+ 
 ## License
 
 Copyright (c) 2011-2013, Tom Christie
@@ -166,7 +182,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [yaml]: http://pypi.python.org/pypi/PyYAML
+[defusedxml]: https://pypi.python.org/pypi/defusedxml
 [django-filter]: http://pypi.python.org/pypi/django-filter
+[oauth2]: https://github.com/simplegeo/python-oauth2
+[django-oauth-plus]: https://bitbucket.org/david/django-oauth-plus/wiki/Home
+[django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [image]: img/quickstart.png
 [sandbox]: http://restframework.herokuapp.com/
@@ -199,15 +219,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [status]: api-guide/status-codes.md
 [settings]: api-guide/settings.md
 
-[csrf]: topics/csrf.md
+[ajax-csrf-cors]: topics/ajax-csrf-cors.md
 [browser-enhancements]: topics/browser-enhancements.md
 [browsableapi]: topics/browsable-api.md
 [rest-hypermedia-hateoas]: topics/rest-hypermedia-hateoas.md
 [contributing]: topics/contributing.md
 [rest-framework-2-announcement]: topics/rest-framework-2-announcement.md
+[2.2-announcement]: topics/2.2-announcement.md
 [release-notes]: topics/release-notes.md
 [credits]: topics/credits.md
 
+[tox]: http://testrun.org/tox/latest/
+
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
-[DabApps]: http://dabapps.com
-[email]: mailto:tom@tomchristie.com
+[stack-overflow]: http://stackoverflow.com/
+[django-rest-framework-tag]: http://stackoverflow.com/questions/tagged/django-rest-framework
+[django-tag]: http://stackoverflow.com/questions/tagged/django
+[paid-support]: http://dabapps.com/services/build/api-development/
+[dabapps]: http://dabapps.com
+[contact-dabapps]: http://dabapps.com/contact/
+[twitter]: https://twitter.com/_tomchristie

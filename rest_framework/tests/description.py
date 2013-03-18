@@ -1,3 +1,6 @@
+# -- coding: utf-8 --
+
+from __future__ import unicode_literals
 from django.test import TestCase
 from rest_framework.views import APIView
 from rest_framework.compat import apply_markdown
@@ -50,7 +53,7 @@ class TestViewNamesAndDescriptions(TestCase):
         """Ensure Resource names are based on the classname by default."""
         class MockView(APIView):
             pass
-        self.assertEquals(MockView().get_name(), 'Mock')
+        self.assertEqual(MockView().get_name(), 'Mock')
 
     def test_resource_name_can_be_set_explicitly(self):
         """Ensure Resource names can be set using the 'get_name' method."""
@@ -58,7 +61,7 @@ class TestViewNamesAndDescriptions(TestCase):
         class MockView(APIView):
             def get_name(self):
                 return example
-        self.assertEquals(MockView().get_name(), example)
+        self.assertEqual(MockView().get_name(), example)
 
     def test_resource_description_uses_docstring_by_default(self):
         """Ensure Resource names are based on the docstring by default."""
@@ -78,7 +81,7 @@ class TestViewNamesAndDescriptions(TestCase):
 
             # hash style header #"""
 
-        self.assertEquals(MockView().get_description(), DESCRIPTION)
+        self.assertEqual(MockView().get_description(), DESCRIPTION)
 
     def test_resource_description_can_be_set_explicitly(self):
         """Ensure Resource descriptions can be set using the 'get_description' method."""
@@ -88,7 +91,16 @@ class TestViewNamesAndDescriptions(TestCase):
             """docstring"""
             def get_description(self):
                 return example
-        self.assertEquals(MockView().get_description(), example)
+        self.assertEqual(MockView().get_description(), example)
+
+    def test_resource_description_supports_unicode(self):
+
+        class MockView(APIView):
+            """Проверка"""
+            pass
+
+        self.assertEqual(MockView().get_description(), "Проверка")
+
 
     def test_resource_description_does_not_require_docstring(self):
         """Ensure that empty docstrings do not affect the Resource's description if it has been set using the 'get_description' method."""
@@ -97,13 +109,13 @@ class TestViewNamesAndDescriptions(TestCase):
         class MockView(APIView):
             def get_description(self):
                 return example
-        self.assertEquals(MockView().get_description(), example)
+        self.assertEqual(MockView().get_description(), example)
 
     def test_resource_description_can_be_empty(self):
         """Ensure that if a resource has no doctring or 'description' class attribute, then it's description is the empty string."""
         class MockView(APIView):
             pass
-        self.assertEquals(MockView().get_description(), '')
+        self.assertEqual(MockView().get_description(), '')
 
     def test_markdown(self):
         """Ensure markdown to HTML works as expected"""

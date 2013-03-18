@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.response import Response
@@ -28,13 +29,27 @@ class DecoratorTestCase(TestCase):
         response.request = request
         return APIView.finalize_response(self, request, response, *args, **kwargs)
 
-    def test_wrap_view(self):
+    def test_api_view_incorrect(self):
+        """
+        If @api_view is not applied correct, we should raise an assertion.
+        """
 
-        @api_view(['GET'])
+        @api_view
         def view(request):
-            return Response({})
+            return Response()
 
-        self.assertTrue(isinstance(view.cls_instance, APIView))
+        request = self.factory.get('/')
+        self.assertRaises(AssertionError, view, request)
+
+    def test_api_view_incorrect_arguments(self):
+        """
+        If @api_view is missing arguments, we should raise an assertion.
+        """
+
+        with self.assertRaises(AssertionError):
+            @api_view('GET')
+            def view(request):
+                return Response()
 
     def test_calling_method(self):
 
@@ -44,11 +59,11 @@ class DecoratorTestCase(TestCase):
 
         request = self.factory.get('/')
         response = view(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         request = self.factory.post('/')
         response = view(request)
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_calling_put_method(self):
 
@@ -58,11 +73,11 @@ class DecoratorTestCase(TestCase):
 
         request = self.factory.put('/')
         response = view(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         request = self.factory.post('/')
         response = view(request)
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_calling_patch_method(self):
 
@@ -72,11 +87,11 @@ class DecoratorTestCase(TestCase):
 
         request = self.factory.patch('/')
         response = view(request)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         request = self.factory.post('/')
         response = view(request)
-        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
 
     def test_renderer_classes(self):
 
@@ -124,7 +139,7 @@ class DecoratorTestCase(TestCase):
 
         request = self.factory.get('/')
         response = view(request)
-        self.assertEquals(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_throttle_classes(self):
         class OncePerDayUserThrottle(UserRateThrottle):
@@ -137,7 +152,7 @@ class DecoratorTestCase(TestCase):
 
         request = self.factory.get('/')
         response = view(request)
-        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         response = view(request)
-        self.assertEquals(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
