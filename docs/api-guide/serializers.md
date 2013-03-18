@@ -25,6 +25,7 @@ Let's start by creating a simple object we can use for example purposes:
     comment = Comment(email='leila@example.com', content='foo bar')
 
 We'll declare a serializer that we can use to serialize and deserialize `Comment` objects.
+
 Declaring a serializer looks very similar to declaring a form:
 
     class CommentSerializer(serializers.Serializer):
@@ -33,10 +34,17 @@ Declaring a serializer looks very similar to declaring a form:
         created = serializers.DateTimeField()
 
         def restore_object(self, attrs, instance=None):
+            """
+            Given a dictionary of deserialized field values, either update
+            an existing model instance, or create a new model instance.
+            
+            Note that if we don't define this method, then deserializing
+            data will simply return a dictionary of items.
+            """
             if instance is not None:
-                instance.title = attrs['title']
-                instance.content = attrs['content']
-                instance.created = attrs['created']
+                instance.title = attrs.get('title', instance.title)
+                instance.content = attrs.get('content', instance.content)
+                instance.created = attrs.get('created', instance.created)
                 return instance
             return Comment(**attrs) 
 
@@ -91,9 +99,10 @@ To serialize a queryset instead of an object instance, you should pass the `many
 
 ## Validation
 
-When deserializing data, you always need to call `is_valid()` before attempting to access the deserialized object.  If any validation errors occur, the `.errors` and `.non_field_errors` properties will contain the resulting error messages.
+When deserializing data, you always need to call `is_valid()` before attempting to access the deserialized object.  If any validation errors occur, the `.errors` property will contain a dictionary representing the resulting error messages.
+Each key in the dictionary will be the field name, and the values will be lists of strings of any error messages corresponding to that field.  The `non_field_errors` key may also be present, and will list any general validation errors.
 
-When deserialising a list of items, errors will be returned as a list of tuples. The first item in an error tuple will be the index of the item with the error in the original data; The second item in the tuple will be a dict with the individual errors for that item.
+When deserializing a list of items, errors will be returned as a list of dictionaries representing each of the deserialized items.
 
 ### Field-level validation
 
