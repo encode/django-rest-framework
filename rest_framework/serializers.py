@@ -299,6 +299,19 @@ class BaseSerializer(WritableField):
             ret.fields[key] = field
         return ret
 
+    def _get_object_from_data(self, objects, data):
+        """
+        Get the corresponding object to deserialize the data into.
+        """
+        # Just get the first object in the list.
+        if objects:
+            obj = objects[0]
+            objects.remove(obj)
+        else:
+            obj = None
+
+        return obj
+
     def from_native(self, data, files):
         """
         Deserialize primitives -> objects.
@@ -369,6 +382,9 @@ class BaseSerializer(WritableField):
         # Set the serializer object if it exists
         obj = getattr(self.parent.object, field_name) if self.parent.object else None
 
+        if is_simple_callable(getattr(obj, 'all', None)):
+            obj = list(obj.all())
+
         if value in (None, ''):
             into[(self.source or field_name)] = None
         else:
@@ -408,9 +424,17 @@ class BaseSerializer(WritableField):
             if many:
                 ret = []
                 errors = []
+                objects = self.object
                 for item in data:
+                    obj = self._get_object_from_data(objects, item)
+                    self.object = obj
                     ret.append(self.from_native(item, None))
                     errors.append(self._errors)
+                self.object = objects
+                # Unused objects will be deleted
+                for obj in objects or []:
+                    obj._delete = True
+                    ret.append(obj)
                 self._errors = any(errors) and errors or []
             else:
                 ret = self.from_native(data, files)
@@ -501,6 +525,27 @@ class ModelSerializer(Serializer):
         models.FileField: FileField,
         models.ImageField: ImageField,
     }
+
+    def _get_object_from_data(self, objects, data):
+        """
+        Get the corresponding object to deserialize the data into.
+        """
+        if objects is None: return None
+
+        # Get the object based on pk
+        pk_field_name = self.opts.model._meta.pk.name
+        pk = data.get(pk_field_name, None)
+        if pk:
+            # Loop through objects and find one with pk or return None
+            obj = [o for o in objects if o.pk == pk]
+            if obj:
+                obj = obj[0]
+                objects.remove(obj)
+            else:
+                obj = None
+            return obj
+        else:
+            return None
 
     def get_default_fields(self):
         """
@@ -708,6 +753,14 @@ class ModelSerializer(Serializer):
                     fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
                     setattr(related, fk_field, obj)
                     self.save_object(related)
+                elif hasattr(related, '__iter__'):
+                    for related_obj in related:
+                        if getattr(related_obj, '_delete', None):
+                            related_obj.delete()
+                            continue
+                        fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
+                        setattr(related_obj, fk_field, obj)
+                        self.save_object(related_obj)                        
                 else:
                     setattr(obj, accessor_name, related)
             del(obj._related_data)
