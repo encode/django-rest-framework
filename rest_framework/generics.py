@@ -82,9 +82,6 @@ class GenericAPIView(views.APIView):
         """
         pass
 
-    def pre_save(self, obj):
-        pass
-
 
 class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
     """
