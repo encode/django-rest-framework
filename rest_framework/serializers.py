@@ -360,7 +360,9 @@ class BaseSerializer(WritableField):
         except KeyError:
             if self.required:
                 raise ValidationError(self.error_messages['required'])
-            return
+            if self.default is None:
+                return
+            value = copy.deepcopy(self.default)
 
         # Set the serializer object if it exists
         obj = getattr(self.parent.object, field_name) if self.parent.object else None
