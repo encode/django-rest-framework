@@ -5,6 +5,8 @@ from django import forms
 from django.forms import widgets
 from django.forms.models import ModelChoiceIterator
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.related import RelatedObject
+from django.db.models.fields.related import ForeignKey
 from rest_framework.fields import Field, WritableField, get_component
 from rest_framework.reverse import reverse
 from rest_framework.compat import urlparse
@@ -476,6 +478,38 @@ class HyperlinkedIdentityField(Field):
             pass
 
         raise Exception('Could not resolve URL for field using view name "%s"' % view_name)
+
+
+class Relationship(object):
+    """
+    Wrapper for a relationship
+
+    Encapsulate the `RelatedObject` & `ForeignKey` resolution.
+    """
+    _field = None
+
+    def __init__(self, field):
+        if not isinstance(field, RelatedObject) and not isinstance(field, ForeignKey):
+            raise Exception("Unsupported type of relationship '%s'" % field)
+        self._field = field
+
+    @property
+    def to_many(self):
+        if isinstance(self._field, RelatedObject):
+            return True
+        return False
+
+    @property
+    def field_name(self):
+        if isinstance(self._field, RelatedObject):
+            return self._field.field.related_query_name()
+        return self._field.name
+
+    @property
+    def model(self):
+        if isinstance(self._field, RelatedObject):
+            return self._field.model
+        return self._field.related.parent_model
 
 
 ### Old-style many classes for backwards compat

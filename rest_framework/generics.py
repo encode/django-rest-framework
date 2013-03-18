@@ -253,3 +253,24 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+
+class RetrieveRelationshipAPIView(mixins.RetrieveRelationshipMixin,
+                                  SingleObjectAPIView):
+    """
+    Rails-like relationship access
+
+    Eg. /api/album/1/tracks
+        to access the related field `tracks` of the album with pk=1
+    """
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        relationship = self.get_related_field_from_relationship()
+
+        class DefaultSerializer(self.model_serializer_class):
+            class Meta:
+                model = relationship.model
+
+        return DefaultSerializer
