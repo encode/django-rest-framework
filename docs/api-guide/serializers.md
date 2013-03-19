@@ -37,9 +37,6 @@ Declaring a serializer looks very similar to declaring a form:
             """
             Given a dictionary of deserialized field values, either update
             an existing model instance, or create a new model instance.
-            
-            Note that if we don't define this method, then deserializing
-            data will simply return a dictionary of items.
             """
             if instance is not None:
                 instance.title = attrs.get('title', instance.title)
@@ -48,7 +45,9 @@ Declaring a serializer looks very similar to declaring a form:
                 return instance
             return Comment(**attrs) 
 
-The first part of serializer class defines the fields that get serialized/deserialized.  The `restore_object` method defines how fully fledged instances get created when deserializing data.  The `restore_object` method is optional, and is only required if we want our serializer to support deserialization.
+The first part of serializer class defines the fields that get serialized/deserialized.  The `restore_object` method defines how fully fledged instances get created when deserializing data.
+
+The `restore_object` method is optional, and is only required if we want our serializer to support deserialization into fully fledged object instances.  If we don't define this method, then deserializing data will simply return a dictionary of items.
 
 ## Serializing objects
 
@@ -88,18 +87,22 @@ By default, serializers must be passed values for all required fields or they wi
 
     serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)  # Update `instance` with partial data
 
-## Serializing querysets
+## Serializing multiple objects
 
-To serialize a queryset instead of an object instance, you should pass the `many=True` flag when instantiating the serializer.
+To serialize a queryset or list of objects instead of a single object instance, you should pass the `many=True` flag when instantiating the serializer.
 
     queryset = Comment.objects.all()
     serializer = CommentSerializer(queryset, many=True)
     serializer.data
-    # [{'email': u'leila@example.com', 'content': u'foo bar', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774)}, {'email': u'jamie@example.com', 'content': u'baz', 'created': datetime.datetime(2013, 1, 12, 16, 12, 45, 104445)}]
+    # [
+    #     {'email': u'leila@example.com', 'content': u'foo bar', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774)},
+    #     {'email': u'jamie@example.com', 'content': u'baz', 'created': datetime.datetime(2013, 1, 12, 16, 12, 45, 104445)}
+    # ]
 
 ## Validation
 
 When deserializing data, you always need to call `is_valid()` before attempting to access the deserialized object.  If any validation errors occur, the `.errors` property will contain a dictionary representing the resulting error messages.
+
 Each key in the dictionary will be the field name, and the values will be lists of strings of any error messages corresponding to that field.  The `non_field_errors` key may also be present, and will list any general validation errors.
 
 When deserializing a list of items, errors will be returned as a list of dictionaries representing each of the deserialized items.

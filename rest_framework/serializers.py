@@ -128,6 +128,7 @@ class BaseSerializer(Field):
         self._data = None
         self._files = None
         self._errors = None
+        self._deleted = None
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
@@ -331,6 +332,13 @@ class BaseSerializer(Field):
             return [self.to_native(item) for item in obj]
         return self.to_native(obj)
 
+    def get_identity(self, data):
+        """
+        This hook is required for bulk update.
+        It is used to determine the canonical identity of a given object.
+        """
+        return data.get('id')
+
     @property
     def errors(self):
         """
@@ -352,9 +360,32 @@ class BaseSerializer(Field):
             if many:
                 ret = []
                 errors = []
+                update = self.object is not None
+
+                if update:
+                    # If this is a bulk update we need to map all the objects
+                    # to a canonical identity so we can determine which
+                    # individual object is being updated for each item in the
+                    # incoming data
+                    objects = self.object
+                    identities = [self.get_identity(self.to_native(obj)) for obj in objects]
+                    identity_to_objects = dict(zip(identities, objects))
+
                 for item in data:
+                    if update:
+                        # Determine which object we're updating
+                        try:
+                            identity = self.get_identity(item)
+                        except:
+                            self.object = None
+                        else:
+                            self.object = identity_to_objects.pop(identity, None)
+
                     ret.append(self.from_native(item, None))
                     errors.append(self._errors)
+
+                if update:
+                    self._deleted = identity_to_objects.values()
                 self._errors = any(errors) and errors or []
             else:
                 ret = self.from_native(data, files)
@@ -394,6 +425,9 @@ class BaseSerializer(Field):
     def save_object(self, obj, **kwargs):
         obj.save(**kwargs)
 
+    def delete_object(self, obj):
+        obj.delete()
+
     def save(self, **kwargs):
         """
         Save the deserialized object and return it.
@@ -402,6 +436,10 @@ class BaseSerializer(Field):
             [self.save_object(item, **kwargs) for item in self.object]
         else:
             self.save_object(self.object, **kwargs)
+
+        if self._deleted:
+            [self.delete_object(item) for item in self._deleted]
+
         return self.object
 
 
