@@ -98,7 +98,7 @@ class PreconditionFailed(APIException):
 
 class IfMatchMissing(APIException):
     default_detail = 'IF_MATCH header is required'
-    status_code = 400
+    status_code = status.HTTP_400_BAD_REQUEST
 
     def __init__(self, detail=None):
         self.detail = detail or self.default_detail
