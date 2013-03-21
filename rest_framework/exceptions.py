@@ -88,6 +88,14 @@ class Throttled(APIException):
             self.detail = detail or self.default_detail
 
 
+class PreconditionFailed(APIException):
+    status_code = status.HTTP_412_PRECONDITION_FAILED
+    default_detail = 'Object has been updated since you retrieved it.'
+
+    def __init__(self, detail=None):
+        self.detail = detail or self.default_detail
+
+
 class ConfigurationError(Exception):
     """
     Indicates an internal server error.
