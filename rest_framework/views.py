@@ -398,12 +398,10 @@ class APIView(View):
             else:
                 handler = self.http_method_not_allowed
 
-            if self.use_etags and request.method.lower() in ('put', 'delete'):
-                etag_header = request.META.get('HTTP_IF_MATCH')
-                if etag_header is None:
-                    return Response({'error': 'IF_MATCH header is required'}, status=400)
-                else:
-                    self.etag_header = etag_header
+            if getattr(self, 'use_etags', False) and request.method.lower() in ('put', 'delete'):
+                self.etag_header = request.META.get('HTTP_IF_MATCH')
+                if self.etag_header is None:
+                    return Response({'detail': 'IF_MATCH header is required'}, status=400, exception=True)
 
             response = handler(request, *args, **kwargs)
 
