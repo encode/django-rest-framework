@@ -101,10 +101,11 @@ class RetrieveModelMixin(object):
         queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
         self.object = self.get_object(filtered_queryset)
-        if self.use_etags:
+        headers = {}
+        if getattr(self, 'use_etags', False):
             if self.get_etag(self.object) == request.META.get('HTTP_IF_NONE_MATCH'):
                 return Response(status=304)
-            headers = {'ETag': self.get_etag(self.object)}
+            headers.update({'ETag': self.get_etag(self.object)})
         serializer = self.get_serializer(self.object)
         return Response(serializer.data, headers=headers)
 
