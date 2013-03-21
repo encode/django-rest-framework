@@ -401,7 +401,7 @@ class APIView(View):
             if getattr(self, 'use_etags', False) and request.method.lower() in ('put', 'delete'):
                 self.etag_header = request.META.get('HTTP_IF_MATCH')
                 if self.etag_header is None:
-                    return Response({'detail': 'IF_MATCH header is required'}, status=400, exception=True)
+                    raise exceptions.IfMatchMissing
 
             response = handler(request, *args, **kwargs)
 
