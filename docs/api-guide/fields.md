@@ -199,7 +199,7 @@ If you want to override this behavior, you'll need to declare the `DateTimeField
 
 **Signature:** `DateTimeField(format=None, input_formats=None)`
 
-* `format` - A string representing the output format.  If not specified, the `DATETIME_FORMAT` setting will be used, which defaults to `'iso-8601'`.
+* `format` - A string representing the output format.  If not specified, this defaults to `None`, which indicates that python `datetime` objects should be returned by `to_native`.  In this case the datetime encoding will be determined by the renderer. 
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
 
 DateTime format strings may either be [python strftime formats][strftime] which explicitly specifiy the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style datetimes should be used. (eg `'2013-01-29T12:34:56.000000'`)
@@ -212,7 +212,7 @@ Corresponds to `django.db.models.fields.DateField`
 
 **Signature:** `DateField(format=None, input_formats=None)`
 
-* `format` - A string representing the output format.  If not specified, the `DATE_FORMAT` setting will be used, which defaults to `'iso-8601'`.
+* `format` - A string representing the output format.  If not specified, this defaults to `None`, which indicates that python `date` objects should be returned by `to_native`.  In this case the date encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `DATE_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`. 
 
 Date format strings may either be [python strftime formats][strftime] which explicitly specifiy the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style dates should be used. (eg `'2013-01-29'`)
@@ -227,7 +227,7 @@ Corresponds to `django.db.models.fields.TimeField`
 
 **Signature:** `TimeField(format=None, input_formats=None)`
 
-* `format` - A string representing the output format.  If not specified, the `TIME_FORMAT` setting will be used, which defaults to `'iso-8601'`.
+* `format` - A string representing the output format.  If not specified, this defaults to `None`, which indicates that python `time` objects should be returned by `to_native`.  In this case the time encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `TIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
 
 Time format strings may either be [python strftime formats][strftime] which explicitly specifiy the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style times should be used. (eg `'12:34:56.000000'`)
