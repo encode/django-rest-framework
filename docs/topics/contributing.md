@@ -26,8 +26,6 @@ Some tips on good issue reporting:
 * Search the issue list first for related items, and make sure you're running the latest version of REST framework before reporting an issue.
 * If reporting a bug, then try to include a pull request with a failing test case.  This'll help us quickly identify if there is a valid issue, and make sure that it gets fixed more quickly if there is one. 
 
-
-
 * TODO: Triage
 
 # Development
@@ -139,4 +137,3 @@ If you want to draw attention to a note or warning, use a pair of enclosing line
 [markdown]: http://daringfireball.net/projects/markdown/basics
 [docs]: https://github.com/tomchristie/django-rest-framework/tree/master/docs
 [mou]: http://mouapp.com/
-
