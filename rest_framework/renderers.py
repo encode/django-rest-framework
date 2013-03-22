@@ -518,3 +518,10 @@ class BrowsableAPIRenderer(BaseRenderer):
             response.status_code = status.HTTP_200_OK
 
         return ret
+
+class BulckBrowsableAPIRenderer(BrowsableAPIRenderer):
+    def get_form(self, view, method, request):
+        # TODO: change this to render multible create form
+        if not method=='POST':
+            return BrowsableAPIRenderer.get_form(self, view, method, request)
+        return None

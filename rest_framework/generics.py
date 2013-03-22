@@ -6,6 +6,9 @@ from rest_framework import views, mixins
 from rest_framework.settings import api_settings
 from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.list import MultipleObjectMixin
+from rest_framework.mixins import ListModelMixin, CreateBulkMixin
+from rest_framework.renderers import BrowsableAPIRenderer,\
+    BulckBrowsableAPIRenderer
 
 
 ### Base classes for the generic views ###
@@ -253,3 +256,28 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+class BulckAPIView(ListModelMixin,
+                        CreateBulkMixin,
+                        MultipleObjectAPIView):
+    """
+    Concrete view for listing a queryset or creating a model instance.
+    """
+    
+
+    def __init__(self, **kwargs):
+        self.renderer_classes = self._renderer_classes_modefier()
+        MultipleObjectAPIView.__init__(self, **kwargs)
+
+    def _renderer_classes_modefier(self):
+        renderer_classes = self.renderer_classes
+        if BrowsableAPIRenderer in renderer_classes:
+            index = renderer_classes.index(BrowsableAPIRenderer)
+            renderer_classes[index] = BulckBrowsableAPIRenderer
+        return renderer_classes
+            
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
