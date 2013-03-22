@@ -37,9 +37,6 @@ Declaring a serializer looks very similar to declaring a form:
             """
             Given a dictionary of deserialized field values, either update
             an existing model instance, or create a new model instance.
-            
-            Note that if we don't define this method, then deserializing
-            data will simply return a dictionary of items.
             """
             if instance is not None:
                 instance.title = attrs.get('title', instance.title)
@@ -48,7 +45,9 @@ Declaring a serializer looks very similar to declaring a form:
                 return instance
             return Comment(**attrs) 
 
-The first part of serializer class defines the fields that get serialized/deserialized.  The `restore_object` method defines how fully fledged instances get created when deserializing data.  The `restore_object` method is optional, and is only required if we want our serializer to support deserialization.
+The first part of serializer class defines the fields that get serialized/deserialized.  The `restore_object` method defines how fully fledged instances get created when deserializing data.
+
+The `restore_object` method is optional, and is only required if we want our serializer to support deserialization into fully fledged object instances.  If we don't define this method, then deserializing data will simply return a dictionary of items.
 
 ## Serializing objects
 
@@ -88,23 +87,21 @@ By default, serializers must be passed values for all required fields or they wi
 
     serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)  # Update `instance` with partial data
 
-## Serializing querysets
-
-To serialize a queryset instead of an object instance, you should pass the `many=True` flag when instantiating the serializer.
-
-    queryset = Comment.objects.all()
-    serializer = CommentSerializer(queryset, many=True)
-    serializer.data
-    # [{'email': u'leila@example.com', 'content': u'foo bar', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774)}, {'email': u'jamie@example.com', 'content': u'baz', 'created': datetime.datetime(2013, 1, 12, 16, 12, 45, 104445)}]
-
 ## Validation
 
-When deserializing data, you always need to call `is_valid()` before attempting to access the deserialized object.  If any validation errors occur, the `.errors` property will contain a dictionary representing the resulting error messages.
+When deserializing data, you always need to call `is_valid()` before attempting to access the deserialized object.  If any validation errors occur, the `.errors` property will contain a dictionary representing the resulting error messages.  For example:
+
+    serializer = CommentSerializer(data={'email': 'foobar', 'content': 'baz'})
+    serializer.is_valid()
+    # False
+    serializer.errors
+    # {'email': [u'Enter a valid e-mail address.'], 'created': [u'This field is required.']}
+
 Each key in the dictionary will be the field name, and the values will be lists of strings of any error messages corresponding to that field.  The `non_field_errors` key may also be present, and will list any general validation errors.
 
 When deserializing a list of items, errors will be returned as a list of dictionaries representing each of the deserialized items.
 
-### Field-level validation
+#### Field-level validation
 
 You can specify custom field-level validation by adding `.validate_<fieldname>` methods to your `Serializer` subclass. These are analagous to `.clean_<fieldname>` methods on Django forms, but accept slightly different arguments.
 
@@ -127,7 +124,7 @@ Your `validate_<fieldname>` methods should either just return the `attrs` dictio
                 raise serializers.ValidationError("Blog post is not about Django")
             return attrs
 
-### Object-level validation
+#### Object-level validation
 
 To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass. This method takes a single argument, which is the `attrs` dictionary. It should raise a `ValidationError` if necessary, or just return `attrs`.  For example:
 
@@ -148,32 +145,140 @@ To do any other validation that requires access to multiple fields, add a method
 
 ## Saving object state
 
-Serializers also include a `.save()` method that you can override if you want to provide a method of persisting the state of a deserialized object.  The default behavior of the method is to simply call `.save()` on the deserialized object instance.
+To save the deserialized objects created by a serializer, call the `.save()` method:
+
+    if serializer.is_valid():
+        serializer.save()
+
+The default behavior of the method is to simply call `.save()` on the deserialized object instance.  You can override the default save behaviour by overriding the `.save_object(obj)` method on the serializer class.
 
 The generic views provided by REST framework call the `.save()` method when updating or creating entities.  
 
 ## Dealing with nested objects
 
-The previous example is fine for dealing with objects that only have simple datatypes, but sometimes we also need to be able to represent more complex objects,
-where some of the attributes of an object might not be simple datatypes such as strings, dates or integers.
+The previous examples are fine for dealing with objects that only have simple datatypes, but sometimes we also need to be able to represent more complex objects, where some of the attributes of an object might not be simple datatypes such as strings, dates or integers.
 
 The `Serializer` class is itself a type of `Field`, and can be used to represent relationships where one object type is nested inside another.
 
     class UserSerializer(serializers.Serializer):
-        email = serializers.Field()
-        username = serializers.Field()
+        email = serializers.EmailField()
+        username = serializers.CharField(max_length=100)
 
     class CommentSerializer(serializers.Serializer):
         user = UserSerializer()
-        title = serializers.Field()
-        content = serializers.Field()
-        created = serializers.Field()
+        content = serializers.CharField(max_length=200)
+        created = serializers.DateTimeField()
+
+If a nested representation may optionally accept the `None` value you should pass the `required=False` flag to the nested serializer.
+
+    class CommentSerializer(serializers.Serializer):
+        user = UserSerializer(required=False)  # May be an anonymous user.
+        content = serializers.CharField(max_length=200)
+        created = serializers.DateTimeField()
+
+Similarly if a nested representation should be a list of items, you should the `many=True` flag to the nested serialized.
+
+    class CommentSerializer(serializers.Serializer):
+        user = UserSerializer(required=False)
+        edits = EditItemSerializer(many=True)  # A nested list of 'edit' items.
+        content = serializers.CharField(max_length=200)
+        created = serializers.DateTimeField()
 
 ---
 
 **Note**: Nested serializers are only suitable for read-only representations, as there are cases where they would have ambiguous or non-obvious behavior if used when updating instances.  For read-write representations you should always use a flat representation, by using one of the `RelatedField` subclasses.
 
 ---
+
+## Dealing with multiple objects
+
+The `Serializer` class can also handle serializing or deserializing lists of objects.
+
+#### Serializing multiple objects
+
+To serialize a queryset or list of objects instead of a single object instance, you should pass the `many=True` flag when instantiating the serializer.  You can then pass a queryset or list of objects to be serialized.
+
+    queryset = Book.objects.all()
+    serializer = BookSerializer(queryset, many=True)
+    serializer.data
+    # [
+    #     {'id': 0, 'title': 'The electric kool-aid acid test', 'author': 'Tom Wolfe'},
+    #     {'id': 1, 'title': 'If this is a man', 'author': 'Primo Levi'},
+    #     {'id': 2, 'title': 'The wind-up bird chronicle', 'author': 'Haruki Murakami'}
+    # ]
+
+#### Deserializing multiple objects for creation
+
+To deserialize a list of object data, and create multiple object instances in a single pass, you should also set the `many=True` flag, and pass a list of data to be deserialized.
+
+This allows you to write views that create multiple items when a `POST` request is made.
+
+For example:
+
+    data = [
+        {'title': 'The bell jar', 'author': 'Sylvia Plath'},
+        {'title': 'For whom the bell tolls', 'author': 'Ernest Hemingway'}
+    ]
+    serializer = BookSerializer(data=data, many=True)
+    serializer.is_valid()
+    # True
+    serializer.save()  # `.save()` will be called on each deserialized instance
+
+#### Deserializing multiple objects for update
+
+You can also deserialize a list of objects as part of a bulk update of multiple existing items.
+In this case you need to supply both an existing list or queryset of items, as well as a list of data to update those items with.
+
+This allows you to write views that update or create multiple items when a `PUT` request is made.
+
+    # Capitalizing the titles of the books
+    queryset = Book.objects.all()
+    data = [
+        {'id': 3, 'title': 'The Bell Jar', 'author': 'Sylvia Plath'},
+        {'id': 4, 'title': 'For Whom the Bell Tolls', 'author': 'Ernest Hemingway'}
+    ]
+    serializer = BookSerializer(queryset, data=data, many=True)
+    serializer.is_valid()
+    # True
+    serialize.save()  # `.save()` will be called on each updated or newly created instance.
+
+Bulk updates will update any instances that already exist, and create new instances for data items that do not have a corresponding instance.
+
+When performing a bulk update you may want any items that are not present in the incoming data to be deleted.  To do so, pass `allow_delete=True` to the serializer.
+
+    serializer = BookSerializer(queryset, data=data, many=True, allow_delete=True)
+    serializer.is_valid()
+    # True
+    serializer.save()  # `.save()` will be called on each updated or newly created instance.
+                       # `.delete()` will be called on any other items in the `queryset`.
+
+Passing `allow_delete=True` ensures that any update operations will completely overwrite the existing queryset, rather than simply updating any objects found in the incoming data. 
+
+#### How identity is determined when performing bulk updates
+
+Performing a bulk update is slightly more complicated than performing a bulk creation, because the serializer needs a way of determining how the items in the incoming data should be matched against the existing object instances.
+
+By default the serializer class will use the `id` key on the incoming data to determine the canonical identity of an object.  If you need to change this behavior you should override the `get_identity` method on the `Serializer` class.  For example:
+
+    class AccountSerializer(serializers.Serializer):
+        slug = serializers.CharField(max_length=100)
+        created = serializers.DateTimeField()
+        ...  # Various other fields
+        
+        def get_identity(self, data):
+            """
+            This hook is required for bulk update.
+            We need to override the default, to use the slug as the identity.
+            
+            Note that the data has not yet been validated at this point,
+            so we need to deal gracefully with incorrect datatypes.
+            """
+            try:
+                return data.get('slug', None)
+            except AttributeError:
+                return None
+
+To map the incoming data items to their corresponding object instances, the `.get_identity()` method will be called both against the incoming data, and against the serialized representation of the existing objects.
 
 ## Including extra context
 
@@ -186,47 +291,6 @@ You can provide arbitrary additional context by passing a `context` argument whe
     # {'id': 6, 'owner': u'denvercoder9', 'created': datetime.datetime(2013, 2, 12, 09, 44, 56, 678870), 'details': 'http://example.com/accounts/6/details'}
 
 The context dictionary can be used within any serializer field logic, such as a custom `.to_native()` method, by accessing the `self.context` attribute.
-
-## Creating custom fields
-
-If you want to create a custom field, you'll probably want to override either one or both of the `.to_native()` and `.from_native()` methods.  These two methods are used to convert between the intial datatype, and a primative, serializable datatype.  Primative datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primative objects.
-
-The `.to_native()` method is called to convert the initial datatype into a primative, serializable datatype.  The `from_native()` method is called to restore a primative datatype into it's initial representation.
-
-Let's look at an example of serializing a class that represents an RGB color value:
-
-    class Color(object):
-        """
-        A color represented in the RGB colorspace.
-        """
-        def __init__(self, red, green, blue):
-            assert(red >= 0 and green >= 0 and blue >= 0)
-            assert(red < 256 and green < 256 and blue < 256)
-            self.red, self.green, self.blue = red, green, blue
-
-    class ColourField(serializers.WritableField):
-        """
-        Color objects are serialized into "rgb(#, #, #)" notation.
-        """
-        def to_native(self, obj):
-            return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)
-      
-        def from_native(self, data):
-            data = data.strip('rgb(').rstrip(')')
-            red, green, blue = [int(col) for col in data.split(',')]
-            return Color(red, green, blue)
-            
-
-By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override `.field_to_native()` and/or `.field_from_native()`.
-
-As an example, let's create a field that can be used represent the class name of the object being serialized:
-
-    class ClassNameField(serializers.Field):
-        def field_to_native(self, obj, field_name):
-            """
-            Serialize the object's class name.
-            """
-            return obj.__class__
 
 ---
 
