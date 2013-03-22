@@ -201,7 +201,29 @@ class BulkUpdateSerializerTests(TestCase):
                 'author': 'Haruki Murakami'
             }
         ]
-        serializer = self.BookSerializer(self.books(), data=data, many=True)
+        serializer = self.BookSerializer(self.books(), data=data, many=True, allow_delete=True)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.data, data)
+        serializer.save()
+        new_data = self.BookSerializer(self.books(), many=True).data
+        self.assertEqual(data, new_data)
+
+    def test_bulk_update_and_create(self):
+        """
+        Bulk update serialization may also include created items.
+        """
+        data = [
+            {
+                'id': 0,
+                'title': 'The electric kool-aid acid test',
+                'author': 'Tom Wolfe'
+            }, {
+                'id': 3,
+                'title': 'Kafka on the shore',
+                'author': 'Haruki Murakami'
+            }
+        ]
+        serializer = self.BookSerializer(self.books(), data=data, many=True, allow_delete=True)
         self.assertEqual(serializer.is_valid(), True)
         self.assertEqual(serializer.data, data)
         serializer.save()
@@ -227,6 +249,6 @@ class BulkUpdateSerializerTests(TestCase):
             {},
             {'id': ['Enter a whole number.']}
         ]
-        serializer = self.BookSerializer(self.books(), data=data, many=True)
+        serializer = self.BookSerializer(self.books(), data=data, many=True, allow_delete=True)
         self.assertEqual(serializer.is_valid(), False)
         self.assertEqual(serializer.errors, expected_errors)
