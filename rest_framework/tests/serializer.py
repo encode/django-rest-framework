@@ -261,34 +261,6 @@ class ValidationTests(TestCase):
         self.assertEqual(serializer.is_valid(), True)
         self.assertEqual(serializer.errors, {})
 
-    def test_bad_type_data_is_false(self):
-        """
-        Data of the wrong type is not valid.
-        """
-        data = ['i am', 'a', 'list']
-        serializer = CommentSerializer(self.comment, data=data, many=True)
-        self.assertEqual(serializer.is_valid(), False)
-        self.assertTrue(isinstance(serializer.errors, list))
-
-        self.assertEqual(
-            serializer.errors,
-            [
-                {'non_field_errors': ['Invalid data']},
-                {'non_field_errors': ['Invalid data']},
-                {'non_field_errors': ['Invalid data']}
-            ]
-        )
-
-        data = 'and i am a string'
-        serializer = CommentSerializer(self.comment, data=data)
-        self.assertEqual(serializer.is_valid(), False)
-        self.assertEqual(serializer.errors, {'non_field_errors': ['Invalid data']})
-
-        data = 42
-        serializer = CommentSerializer(self.comment, data=data)
-        self.assertEqual(serializer.is_valid(), False)
-        self.assertEqual(serializer.errors, {'non_field_errors': ['Invalid data']})
-
     def test_cross_field_validation(self):
 
         class CommentSerializerWithCrossFieldValidator(CommentSerializer):

@@ -273,6 +273,49 @@ Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
 
 ---
 
+# Custom fields
+
+If you want to create a custom field, you'll probably want to override either one or both of the `.to_native()` and `.from_native()` methods.  These two methods are used to convert between the intial datatype, and a primative, serializable datatype.  Primative datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primative objects.
+
+The `.to_native()` method is called to convert the initial datatype into a primative, serializable datatype.  The `from_native()` method is called to restore a primative datatype into it's initial representation.
+
+## Examples
+
+Let's look at an example of serializing a class that represents an RGB color value:
+
+    class Color(object):
+        """
+        A color represented in the RGB colorspace.
+        """
+        def __init__(self, red, green, blue):
+            assert(red >= 0 and green >= 0 and blue >= 0)
+            assert(red < 256 and green < 256 and blue < 256)
+            self.red, self.green, self.blue = red, green, blue
+
+    class ColourField(serializers.WritableField):
+        """
+        Color objects are serialized into "rgb(#, #, #)" notation.
+        """
+        def to_native(self, obj):
+            return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)
+      
+        def from_native(self, data):
+            data = data.strip('rgb(').rstrip(')')
+            red, green, blue = [int(col) for col in data.split(',')]
+            return Color(red, green, blue)
+            
+
+By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override `.field_to_native()` and/or `.field_from_native()`.
+
+As an example, let's create a field that can be used represent the class name of the object being serialized:
+
+    class ClassNameField(serializers.Field):
+        def field_to_native(self, obj, field_name):
+            """
+            Serialize the object's class name.
+            """
+            return obj.__class__
+
 [cite]: https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
 [strftime]: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
