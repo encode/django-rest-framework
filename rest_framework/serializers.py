@@ -20,6 +20,25 @@ from rest_framework.relations import *
 from rest_framework.fields import *
 
 
+class NestedValidationError(ValidationError):
+    """
+    The default ValidationError behavior is to stringify each item in the list
+    if the messages are a list of error messages.
+
+    In the case of nested serializers, where the parent has many children,
+    then the child's `serializer.errors` will be a list of dicts.  In the case
+    of a single child, the `serializer.errors` will be a dict.
+
+    We need to override the default behavior to get properly nested error dicts.
+    """
+
+    def __init__(self, message):
+        if isinstance(message, dict):
+            self.messages = [message]
+        else:
+            self.messages = message
+
+
 class DictWithMetadata(dict):
     """
     A dict-like object, that can have additional properties attached.
@@ -98,7 +117,7 @@ class SerializerOptions(object):
         self.exclude = getattr(meta, 'exclude', ())
 
 
-class BaseSerializer(Field):
+class BaseSerializer(WritableField):
     """
     This is the Serializer implementation.
     We need to implement it as `BaseSerializer` due to metaclass magicks.
@@ -110,9 +129,9 @@ class BaseSerializer(Field):
     _dict_class = SortedDictWithMetadata
 
     def __init__(self, instance=None, data=None, files=None,
-                 context=None, partial=False, many=None, source=None,
-                 allow_delete=False):
-        super(BaseSerializer, self).__init__(source=source)
+                 context=None, partial=False, many=None,
+                 allow_delete=False, **kwargs):
+        super(BaseSerializer, self).__init__(**kwargs)
         self.opts = self._options_class(self.Meta)
         self.parent = None
         self.root = None
@@ -305,40 +324,77 @@ class BaseSerializer(Field):
 
     def field_to_native(self, obj, field_name):
         """
-        Override default so that we can apply ModelSerializer as a nested
-        field to relationships.
+        Override default so that the serializer can be used as a nested field
+        across relationships.
         """
         if self.source == '*':
             return self.to_native(obj)
 
         try:
-            if self.source:
-                for component in self.source.split('.'):
-                    obj = getattr(obj, component)
-                    if is_simple_callable(obj):
-                        obj = obj()
-            else:
-                obj = getattr(obj, field_name)
-                if is_simple_callable(obj):
-                    obj = obj()
+            source = self.source or field_name
+            value = obj
+
+            for component in source.split('.'):
+                value = get_component(value, component)
+                if value is None:
+                    break
         except ObjectDoesNotExist:
             return None
 
-        # If the object has an "all" method, assume it's a relationship
-        if is_simple_callable(getattr(obj, 'all', None)):
-            return [self.to_native(item) for item in obj.all()]
+        if is_simple_callable(getattr(value, 'all', None)):
+            return [self.to_native(item) for item in value.all()]
 
-        if obj is None:
+        if value is None:
             return None
 
         if self.many is not None:
             many = self.many
         else:
-            many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict, six.text_type))
+            many = hasattr(value, '__iter__') and not isinstance(value, (Page, dict, six.text_type))
 
         if many:
-            return [self.to_native(item) for item in obj]
-        return self.to_native(obj)
+            return [self.to_native(item) for item in value]
+        return self.to_native(value)
+
+    def field_from_native(self, data, files, field_name, into):
+        """
+        Override default so that the serializer can be used as a writable
+        nested field across relationships.
+        """
+        if self.read_only:
+            return
+
+        try:
+            value = data[field_name]
+        except KeyError:
+            if self.default is not None and not self.partial:
+                # Note: partial updates shouldn't set defaults
+                value = copy.deepcopy(self.default)
+            else:
+                if self.required:
+                    raise ValidationError(self.error_messages['required'])
+                return
+
+        # Set the serializer object if it exists
+        obj = getattr(self.parent.object, field_name) if self.parent.object else None
+
+        if value in (None, ''):
+            into[(self.source or field_name)] = None
+        else:
+            kwargs = {
+                'instance': obj,
+                'data': value,
+                'context': self.context,
+                'partial': self.partial,
+                'many': self.many
+            }
+            serializer = self.__class__(**kwargs)
+
+            if serializer.is_valid():
+                into[self.source or field_name] = serializer.object
+            else:
+                # Propagate errors up to our parent
+                raise NestedValidationError(serializer.errors)
 
     def get_identity(self, data):
         """
@@ -637,32 +693,42 @@ class ModelSerializer(Serializer):
         """
         Restore the model instance.
         """
-        self.m2m_data = {}
-        self.related_data = {}
+        m2m_data = {}
+        related_data = {}
+        meta = self.opts.model._meta
 
-        # Reverse fk relations
-        for (obj, model) in self.opts.model._meta.get_all_related_objects_with_model():
+        # Reverse fk or one-to-one relations
+        for (obj, model) in meta.get_all_related_objects_with_model():
             field_name = obj.field.related_query_name()
             if field_name in attrs:
-                self.related_data[field_name] = attrs.pop(field_name)
+                related_data[field_name] = attrs.pop(field_name)
 
         # Reverse m2m relations
-        for (obj, model) in self.opts.model._meta.get_all_related_m2m_objects_with_model():
+        for (obj, model) in meta.get_all_related_m2m_objects_with_model():
             field_name = obj.field.related_query_name()
             if field_name in attrs:
-                self.m2m_data[field_name] = attrs.pop(field_name)
+                m2m_data[field_name] = attrs.pop(field_name)
 
         # Forward m2m relations
-        for field in self.opts.model._meta.many_to_many:
+        for field in meta.many_to_many:
             if field.name in attrs:
-                self.m2m_data[field.name] = attrs.pop(field.name)
+                m2m_data[field.name] = attrs.pop(field.name)
 
+        # Update an existing instance...
         if instance is not None:
             for key, val in attrs.items():
                 setattr(instance, key, val)
 
+        # ...or create a new instance
         else:
             instance = self.opts.model(**attrs)
+
+        # Any relations that cannot be set until we've
+        # saved the model get hidden away on these
+        # private attributes, so we can deal with them
+        # at the point of save.
+        instance._related_data = related_data
+        instance._m2m_data = m2m_data
 
         return instance
 
@@ -680,15 +746,15 @@ class ModelSerializer(Serializer):
         """
         obj.save(**kwargs)
 
-        if getattr(self, 'm2m_data', None):
-            for accessor_name, object_list in self.m2m_data.items():
-                setattr(self.object, accessor_name, object_list)
-            self.m2m_data = {}
+        if getattr(obj, '_m2m_data', None):
+            for accessor_name, object_list in obj._m2m_data.items():
+                setattr(obj, accessor_name, object_list)
+            del(obj._m2m_data)
 
-        if getattr(self, 'related_data', None):
-            for accessor_name, object_list in self.related_data.items():
-                setattr(self.object, accessor_name, object_list)
-            self.related_data = {}
+        if getattr(obj, '_related_data', None):
+            for accessor_name, related in obj._related_data.items():
+                setattr(obj, accessor_name, related)
+            del(obj._related_data)
 
 
 class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
