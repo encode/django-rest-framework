@@ -204,6 +204,9 @@ class OAuthAuthentication(BaseAuthentication):
         except oauth.Error as err:
             raise exceptions.AuthenticationFailed(err.message)
 
+        if not oauth_request:
+            return None
+
         oauth_params = oauth_provider.consts.OAUTH_PARAMETERS_NAMES
 
         found = any(param for param in oauth_params if param in oauth_request)

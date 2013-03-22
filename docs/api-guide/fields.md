@@ -199,7 +199,7 @@ If you want to override this behavior, you'll need to declare the `DateTimeField
 
 **Signature:** `DateTimeField(format=None, input_formats=None)`
 
-* `format` - A string representing the output format.  If not specified, the `DATETIME_FORMAT` setting will be used, which defaults to `'iso-8601'`.
+* `format` - A string representing the output format.  If not specified, this defaults to `None`, which indicates that python `datetime` objects should be returned by `to_native`.  In this case the datetime encoding will be determined by the renderer. 
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
 
 DateTime format strings may either be [python strftime formats][strftime] which explicitly specifiy the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style datetimes should be used. (eg `'2013-01-29T12:34:56.000000'`)
@@ -212,7 +212,7 @@ Corresponds to `django.db.models.fields.DateField`
 
 **Signature:** `DateField(format=None, input_formats=None)`
 
-* `format` - A string representing the output format.  If not specified, the `DATE_FORMAT` setting will be used, which defaults to `'iso-8601'`.
+* `format` - A string representing the output format.  If not specified, this defaults to `None`, which indicates that python `date` objects should be returned by `to_native`.  In this case the date encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `DATE_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`. 
 
 Date format strings may either be [python strftime formats][strftime] which explicitly specifiy the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style dates should be used. (eg `'2013-01-29'`)
@@ -227,7 +227,7 @@ Corresponds to `django.db.models.fields.TimeField`
 
 **Signature:** `TimeField(format=None, input_formats=None)`
 
-* `format` - A string representing the output format.  If not specified, the `TIME_FORMAT` setting will be used, which defaults to `'iso-8601'`.
+* `format` - A string representing the output format.  If not specified, this defaults to `None`, which indicates that python `time` objects should be returned by `to_native`.  In this case the time encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `TIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
 
 Time format strings may either be [python strftime formats][strftime] which explicitly specifiy the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style times should be used. (eg `'12:34:56.000000'`)
@@ -272,6 +272,49 @@ Signature and validation is the same as with `FileField`.
 Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
 
 ---
+
+# Custom fields
+
+If you want to create a custom field, you'll probably want to override either one or both of the `.to_native()` and `.from_native()` methods.  These two methods are used to convert between the intial datatype, and a primative, serializable datatype.  Primative datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primative objects.
+
+The `.to_native()` method is called to convert the initial datatype into a primative, serializable datatype.  The `from_native()` method is called to restore a primative datatype into it's initial representation.
+
+## Examples
+
+Let's look at an example of serializing a class that represents an RGB color value:
+
+    class Color(object):
+        """
+        A color represented in the RGB colorspace.
+        """
+        def __init__(self, red, green, blue):
+            assert(red >= 0 and green >= 0 and blue >= 0)
+            assert(red < 256 and green < 256 and blue < 256)
+            self.red, self.green, self.blue = red, green, blue
+
+    class ColourField(serializers.WritableField):
+        """
+        Color objects are serialized into "rgb(#, #, #)" notation.
+        """
+        def to_native(self, obj):
+            return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)
+      
+        def from_native(self, data):
+            data = data.strip('rgb(').rstrip(')')
+            red, green, blue = [int(col) for col in data.split(',')]
+            return Color(red, green, blue)
+            
+
+By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override `.field_to_native()` and/or `.field_from_native()`.
+
+As an example, let's create a field that can be used represent the class name of the object being serialized:
+
+    class ClassNameField(serializers.Field):
+        def field_to_native(self, obj, field_name):
+            """
+            Serialize the object's class name.
+            """
+            return obj.__class__
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS

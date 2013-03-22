@@ -129,13 +129,15 @@ class BaseSerializer(WritableField):
     _dict_class = SortedDictWithMetadata
 
     def __init__(self, instance=None, data=None, files=None,
-                 context=None, partial=False, many=None, **kwargs):
+                 context=None, partial=False, many=None,
+                 allow_delete=False, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
         self.opts = self._options_class(self.Meta)
         self.parent = None
         self.root = None
         self.partial = partial
         self.many = many
+        self.allow_delete = allow_delete
 
         self.context = context or {}
 
@@ -147,6 +149,13 @@ class BaseSerializer(WritableField):
         self._data = None
         self._files = None
         self._errors = None
+        self._deleted = None
+
+        if many and instance is not None and not hasattr(instance, '__iter__'):
+            raise ValueError('instance should be a queryset or other iterable with many=True')
+
+        if allow_delete and not many:
+            raise ValueError('allow_delete should only be used for bulk updates, but you have not set many=True')
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
@@ -387,6 +396,20 @@ class BaseSerializer(WritableField):
                 # Propagate errors up to our parent
                 raise NestedValidationError(serializer.errors)
 
+    def get_identity(self, data):
+        """
+        This hook is required for bulk update.
+        It is used to determine the canonical identity of a given object.
+
+        Note that the data has not been validated at this point, so we need
+        to make sure that we catch any cases of incorrect datatypes being
+        passed to this method.
+        """
+        try:
+            return data.get('id', None)
+        except AttributeError:
+            return None
+
     @property
     def errors(self):
         """
@@ -408,10 +431,33 @@ class BaseSerializer(WritableField):
             if many:
                 ret = []
                 errors = []
-                for item in data:
-                    ret.append(self.from_native(item, None))
-                    errors.append(self._errors)
-                self._errors = any(errors) and errors or []
+                update = self.object is not None
+
+                if update:
+                    # If this is a bulk update we need to map all the objects
+                    # to a canonical identity so we can determine which
+                    # individual object is being updated for each item in the
+                    # incoming data
+                    objects = self.object
+                    identities = [self.get_identity(self.to_native(obj)) for obj in objects]
+                    identity_to_objects = dict(zip(identities, objects))
+
+                if hasattr(data, '__iter__') and not isinstance(data, (dict, six.text_type)):
+                    for item in data:
+                        if update:
+                            # Determine which object we're updating
+                            identity = self.get_identity(item)
+                            self.object = identity_to_objects.pop(identity, None)
+
+                        ret.append(self.from_native(item, None))
+                        errors.append(self._errors)
+
+                    if update:
+                        self._deleted = identity_to_objects.values()
+
+                    self._errors = any(errors) and errors or []
+                else:
+                    self._errors = {'non_field_errors': ['Expected a list of items']}
             else:
                 ret = self.from_native(data, files)
 
@@ -450,6 +496,9 @@ class BaseSerializer(WritableField):
     def save_object(self, obj, **kwargs):
         obj.save(**kwargs)
 
+    def delete_object(self, obj):
+        obj.delete()
+
     def save(self, **kwargs):
         """
         Save the deserialized object and return it.
@@ -458,6 +507,10 @@ class BaseSerializer(WritableField):
             [self.save_object(item, **kwargs) for item in self.object]
         else:
             self.save_object(self.object, **kwargs)
+
+        if self.allow_delete and self._deleted:
+            [self.delete_object(item) for item in self._deleted]
+
         return self.object
 
 
@@ -765,3 +818,13 @@ class HyperlinkedModelSerializer(ModelSerializer):
             'many': to_many
         }
         return HyperlinkedRelatedField(**kwargs)
+
+    def get_identity(self, data):
+        """
+        This hook is required for bulk update.
+        We need to override the default, to use the url as the identity.
+        """
+        try:
+            return data.get('url', None)
+        except AttributeError:
+            return None
