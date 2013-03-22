@@ -753,16 +753,7 @@ class ModelSerializer(Serializer):
 
         if getattr(obj, '_related_data', None):
             for accessor_name, related in obj._related_data.items():
-                if related is None:
-                    previous = getattr(obj, accessor_name, related)
-                    if previous:
-                        previous.delete()
-                elif isinstance(related, models.Model):
-                    fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
-                    setattr(related, fk_field, obj)
-                    self.save_object(related)
-                else:
-                    setattr(obj, accessor_name, related)
+                setattr(obj, accessor_name, related)
             del(obj._related_data)
 
 
