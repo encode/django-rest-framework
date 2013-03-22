@@ -371,22 +371,30 @@ class BaseSerializer(Field):
                     identities = [self.get_identity(self.to_native(obj)) for obj in objects]
                     identity_to_objects = dict(zip(identities, objects))
 
-                for item in data:
+                try:
+                    iter(data)
+                    if isinstance(data, dict):
+                        raise TypeError
+                except TypeError:
+                    self._errors = {'non_field_errors': ['Expected a list of items']}
+                else:
+                    for item in data:
+                        if update:
+                            # Determine which object we're updating
+                            try:
+                                identity = self.get_identity(item)
+                            except:
+                                self.object = None
+                            else:
+                                self.object = identity_to_objects.pop(identity, None)
+
+                        ret.append(self.from_native(item, None))
+                        errors.append(self._errors)
+
                     if update:
-                        # Determine which object we're updating
-                        try:
-                            identity = self.get_identity(item)
-                        except:
-                            self.object = None
-                        else:
-                            self.object = identity_to_objects.pop(identity, None)
+                        self._deleted = identity_to_objects.values()
 
-                    ret.append(self.from_native(item, None))
-                    errors.append(self._errors)
-
-                if update:
-                    self._deleted = identity_to_objects.values()
-                self._errors = any(errors) and errors or []
+                    self._errors = any(errors) and errors or []
             else:
                 ret = self.from_native(data, files)
 

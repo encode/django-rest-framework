@@ -7,6 +7,9 @@ from rest_framework import serializers
 
 
 class BulkCreateSerializerTests(TestCase):
+    """
+    Creating multiple instances using serializers.
+    """
 
     def setUp(self):
         class BookSerializer(serializers.Serializer):
@@ -71,11 +74,63 @@ class BulkCreateSerializerTests(TestCase):
         self.assertEqual(serializer.is_valid(), False)
         self.assertEqual(serializer.errors, expected_errors)
 
+    def test_invalid_list_datatype(self):
+        """
+        Data containing list of incorrect data type should return errors.
+        """
+        data = ['foo', 'bar', 'baz']
+        serializer = self.BookSerializer(data=data, many=True)
+        self.assertEqual(serializer.is_valid(), False)
+
+        expected_errors = [
+                {'non_field_errors': ['Invalid data']},
+                {'non_field_errors': ['Invalid data']},
+                {'non_field_errors': ['Invalid data']}
+        ]
+
+        self.assertEqual(serializer.errors, expected_errors)
+
+    def test_invalid_single_datatype(self):
+        """
+        Data containing a single incorrect data type should return errors.
+        """
+        data = 123
+        serializer = self.BookSerializer(data=data, many=True)
+        self.assertEqual(serializer.is_valid(), False)
+
+        expected_errors = {'non_field_errors': ['Expected a list of items']}
+
+        self.assertEqual(serializer.errors, expected_errors)
+
+    def test_invalid_single_object(self):
+        """
+        Data containing only a single object, instead of a list of objects
+        should return errors.
+        """
+        data = {
+            'id': 0,
+            'title': 'The electric kool-aid acid test',
+            'author': 'Tom Wolfe'
+        }
+        serializer = self.BookSerializer(data=data, many=True)
+        self.assertEqual(serializer.is_valid(), False)
+
+        expected_errors = {'non_field_errors': ['Expected a list of items']}
+
+        self.assertEqual(serializer.errors, expected_errors)
+
 
 class BulkUpdateSerializerTests(TestCase):
+    """
+    Updating multiple instances using serializers.
+    """
 
     def setUp(self):
         class Book(object):
+            """
+            A data type that can be persisted to a mock storage backend
+            with `.save()` and `.delete()`.
+            """
             object_map = {}
 
             def __init__(self, id, title, author):
@@ -126,6 +181,9 @@ class BulkUpdateSerializerTests(TestCase):
             book.save()
 
     def books(self):
+        """
+        Return all the objects in the mock storage backend.
+        """
         return self.Book.object_map.values()
 
     def test_bulk_update_success(self):
@@ -152,7 +210,7 @@ class BulkUpdateSerializerTests(TestCase):
 
     def test_bulk_update_error(self):
         """
-        Correct bulk update serialization should return the input data.
+        Incorrect bulk update serialization should return error data.
         """
         data = [
             {
