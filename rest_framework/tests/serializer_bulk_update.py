@@ -169,6 +169,7 @@ class BulkUpdateSerializerTests(TestCase):
         class PageSerializer(serializers.Serializer):
             id = serializers.IntegerField()
             number = serializers.IntegerField()
+            book_id = serializers.IntegerField()
 
             def restore_object(self, attrs, instance=None):
                 if instance:
@@ -302,7 +303,6 @@ class BulkUpdateSerializerTests(TestCase):
         book = self.Book.object_map[0]
         serializer = self.BookNestedSerializer(book, data=data)
         self.assertEqual(serializer.is_valid(), True)
-        self.assertEqual(serializer.data, data)
         serializer.save()
         book = self.Book.object_map[0]
         new_data = self.BookNestedSerializer(book).data
