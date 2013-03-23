@@ -138,11 +138,45 @@ class BulkUpdateSerializerTests(TestCase):
                 self.title = title
                 self.author = author
 
+            @property
+            def pages(self):
+                return [item for item in Page.object_map.values() if item.book_id == self.id]
+
             def save(self):
                 Book.object_map[self.id] = self
 
             def delete(self):
                 del Book.object_map[self.id]
+
+        class Page(object):
+            """
+            A data type that can be persisted to a mock storage backend
+            with `.save()` and `.delete()`.
+            """
+            object_map = {}
+
+            def __init__(self, id, number, book_id):
+                self.id = id
+                self.number = number
+                self.book_id = book_id
+
+            def save(self):
+                Page.object_map[self.id] = self
+
+            def delete(self):
+                del Page.object_map[self.id]
+
+        class PageSerializer(serializers.Serializer):
+            id = serializers.IntegerField()
+            number = serializers.IntegerField()
+            book_id = serializers.IntegerField()
+
+            def restore_object(self, attrs, instance=None):
+                if instance:
+                    instance.id = attrs['id']
+                    instance.number = attrs['number']
+                    return instance
+                return Page(**attrs)
 
         class BookSerializer(serializers.Serializer):
             id = serializers.IntegerField()
@@ -157,8 +191,22 @@ class BulkUpdateSerializerTests(TestCase):
                     return instance
                 return Book(**attrs)
 
-        self.Book = Book
-        self.BookSerializer = BookSerializer
+        class BookNestedSerializer(serializers.Serializer):
+            id = serializers.IntegerField()
+            title = serializers.CharField(max_length=100)
+            author = serializers.CharField(max_length=100)
+            pages = PageSerializer(many=True, allow_delete=True)
+
+            def restore_object(self, attrs, instance=None):
+                if instance:
+                    instance.id = attrs['id']
+                    instance.title = attrs['title']
+                    instance.author = attrs['author']
+                    return instance
+                return Book(**attrs)
+
+        self.Book, self.Page = Book, Page
+        self.BookSerializer, self.BookNestedSerializer = BookSerializer, BookNestedSerializer
 
         data = [
             {
@@ -179,6 +227,29 @@ class BulkUpdateSerializerTests(TestCase):
         for item in data:
             book = Book(item['id'], item['title'], item['author'])
             book.save()
+
+        data = [
+            {
+                'id': 0,
+                'number': 1,
+                'book_id': 0
+            },
+            {
+                'id': 1,
+                'number': 2,
+                'book_id': 0
+            },
+            {
+                'id': 2,
+                'number': 3,
+                'book_id': 0
+            }
+        ]
+
+        for item in data:
+            page = Page(item['id'], item['number'], item['book_id'])
+            page.save()
+
 
     def books(self):
         """
@@ -206,6 +277,35 @@ class BulkUpdateSerializerTests(TestCase):
         self.assertEqual(serializer.data, data)
         serializer.save()
         new_data = self.BookSerializer(self.books(), many=True).data
+        self.assertEqual(data, new_data)
+
+    def test_nested_bulk_update_success(self):
+        """
+        Correct bulk update serialization should return the input data.
+        """
+        data = {
+                'id': 0,
+                'title': 'The electric kool-aid acid test',
+                'author': 'Tom Wolfe',
+                'pages': [
+                    {
+                        'id': 0,
+                        'number': 1,
+                        'book_id': 0
+                    },
+                    {
+                        'id': 2,
+                        'number': 3,
+                        'book_id': 0
+                    }
+                ]
+        }
+        book = self.Book.object_map[0]
+        serializer = self.BookNestedSerializer(book, data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        serializer.save()
+        book = self.Book.object_map[0]
+        new_data = self.BookNestedSerializer(book).data
         self.assertEqual(data, new_data)
 
     def test_bulk_update_and_create(self):

@@ -386,12 +386,15 @@ class BaseSerializer(WritableField):
                 'data': value,
                 'context': self.context,
                 'partial': self.partial,
-                'many': self.many
+                'many': self.many,
+                'allow_delete': self.allow_delete
             }
             serializer = self.__class__(**kwargs)
+            serializer.root = self.root
 
             if serializer.is_valid():
                 into[self.source or field_name] = serializer.object
+                self.root._deleted = (self.root._deleted or []) + (serializer._deleted or [])
             else:
                 # Propagate errors up to our parent
                 raise NestedValidationError(serializer.errors)
@@ -452,7 +455,7 @@ class BaseSerializer(WritableField):
                         ret.append(self.from_native(item, None))
                         errors.append(self._errors)
 
-                    if update:
+                    if update and self.allow_delete:
                         self._deleted = identity_to_objects.values()
 
                     self._errors = any(errors) and errors or []
@@ -508,7 +511,7 @@ class BaseSerializer(WritableField):
         else:
             self.save_object(self.object, **kwargs)
 
-        if self.allow_delete and self._deleted:
+        if self._deleted:
             [self.delete_object(item) for item in self._deleted]
 
         return self.object
