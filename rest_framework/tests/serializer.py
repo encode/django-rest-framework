@@ -1082,3 +1082,32 @@ class DeserializeListTestCase(TestCase):
         self.assertFalse(serializer.is_valid())
         expected = [{}, {'email': ['This field is required.']}, {}]
         self.assertEqual(serializer.errors, expected)
+
+
+# test for issue 747
+
+class LazyStringModel(object):
+    def __init__(self, lazystring):
+        self.lazystring = lazystring
+
+
+class LazyStringSerializer(serializers.Serializer):
+    lazystring = serializers.Field()
+
+    def restore_object(self, attrs, instance=None):
+        if instance is not None:
+            instance.lazystring = attrs.get('lazystring', instance.lazystring)
+            return instance
+        return Comment(**attrs)
+
+
+class LazyStringsTestCase(TestCase):
+
+    def setUp(self):
+        from django.utils.translation import ugettext_lazy as _
+
+        self.model = LazyStringModel(lazystring=_("lazystring"))
+
+    def test_lazy_strings_are_translated(self):
+        serializer = LazyStringSerializer(self.model)
+        self.assertEqual(type(serializer.data['lazystring']), type("lazystring"))
