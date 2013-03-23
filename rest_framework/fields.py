@@ -18,7 +18,7 @@ from rest_framework import ISO_8601
 from rest_framework.compat import timezone, parse_date, parse_datetime, parse_time
 from rest_framework.compat import BytesIO
 from rest_framework.compat import six
-from rest_framework.compat import smart_text
+from rest_framework.compat import smart_text, force_text
 from rest_framework.settings import api_settings
 
 
@@ -165,7 +165,7 @@ class Field(object):
             return [self.to_native(item) for item in value]
         elif isinstance(value, dict):
             return dict(map(self.to_native, (k, v)) for k, v in value.items())
-        return smart_text(value)
+        return force_text(value)
 
     def attributes(self):
         """
