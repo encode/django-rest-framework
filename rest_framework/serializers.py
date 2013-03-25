@@ -667,9 +667,12 @@ class ModelSerializer(Serializer):
         cls = self.opts.model
         opts = get_concrete_model(cls)._meta
         exclusions = [field.name for field in opts.fields + opts.many_to_many]
+
         for field_name, field in self.fields.items():
             field_name = field.source or field_name
-            if field_name in exclusions and not field.read_only:
+            if field_name in exclusions \
+                and not field.read_only \
+                and not isinstance(field, Serializer):
                 exclusions.remove(field_name)
         return exclusions
 
@@ -695,6 +698,7 @@ class ModelSerializer(Serializer):
         """
         m2m_data = {}
         related_data = {}
+        nested_forward_relations = {}
         meta = self.opts.model._meta
 
         # Reverse fk or one-to-one relations
@@ -714,6 +718,12 @@ class ModelSerializer(Serializer):
             if field.name in attrs:
                 m2m_data[field.name] = attrs.pop(field.name)
 
+        # Nested forward relations - These need to be marked so we can save
+        # them before saving the parent model instance.
+        for field_name in attrs.keys():
+            if isinstance(self.fields.get(field_name, None), Serializer):
+                nested_forward_relations[field_name] = attrs[field_name]
+
         # Update an existing instance...
         if instance is not None:
             for key, val in attrs.items():
@@ -729,6 +739,7 @@ class ModelSerializer(Serializer):
         # at the point of save.
         instance._related_data = related_data
         instance._m2m_data = m2m_data
+        instance._nested_forward_relations = nested_forward_relations
 
         return instance
 
@@ -744,6 +755,13 @@ class ModelSerializer(Serializer):
         """
         Save the deserialized object and return it.
         """
+        if getattr(obj, '_nested_forward_relations', None):
+            # Nested relationships need to be saved before we can save the
+            # parent instance.
+            for field_name, sub_object in obj._nested_forward_relations.items():
+                self.save_object(sub_object)
+                setattr(obj, field_name, sub_object)
+
         obj.save(**kwargs)
 
         if getattr(obj, '_m2m_data', None):
@@ -753,15 +771,22 @@ class ModelSerializer(Serializer):
 
         if getattr(obj, '_related_data', None):
             for accessor_name, related in obj._related_data.items():
-                if related is None:
-                    previous = getattr(obj, accessor_name, related)
-                    if previous:
-                        previous.delete()
-                elif isinstance(related, models.Model):
+                field = self.fields.get(accessor_name, None)
+                if isinstance(field, Serializer):
+                    # TODO: Following will be needed for reverse FK
+                    # if field.many:
+                    #     # Nested reverse fk relationship
+                    #     for related_item in related:
+                    #         fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
+                    #         setattr(related_item, fk_field, obj)
+                    #         self.save_object(related_item)
+                    # else:
+                    # Nested reverse one-one relationship
                     fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
                     setattr(related, fk_field, obj)
                     self.save_object(related)
                 else:
+                    # Reverse FK or reverse one-one
                     setattr(obj, accessor_name, related)
             del(obj._related_data)
 
