@@ -179,7 +179,7 @@ Now, if you open a browser again, you find that the 'DELETE' and 'PUT' actions o
 
 ## Authenticating with the API
 
-Because we now have a set of permissions on the API, we need to authenticate our requests to it if we want to edit any snippets.  We havn't set up any [authentication classes][authentication], so the defaults are currently applied, which are `SessionAuthentication` and `BasicAuthentication`.
+Because we now have a set of permissions on the API, we need to authenticate our requests to it if we want to edit any snippets.  We haven't set up any [authentication classes][authentication], so the defaults are currently applied, which are `SessionAuthentication` and `BasicAuthentication`.
 
 When we interact with the API through the web browser, we can login, and the browser session will then provide the required authentication for the requests.
 
