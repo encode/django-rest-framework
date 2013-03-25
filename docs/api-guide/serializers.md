@@ -252,7 +252,7 @@ When performing a bulk update you may want to allow new items to be created, and
     serializer.save()  # `.save()` will be called on updated or newly created instances.
                        # `.delete()` will be called on any other items in the `queryset`.
 
-Passing `allow_delete=True` ensures that any update operations will completely overwrite the existing queryset, rather than simply updating existing objects. 
+Passing `allow_add_remove=True` ensures that any update operations will completely overwrite the existing queryset, rather than simply updating existing objects. 
 
 #### How identity is determined when performing bulk updates
 
