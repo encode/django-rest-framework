@@ -98,7 +98,7 @@ class BulkCreateSerializerTests(TestCase):
         serializer = self.BookSerializer(data=data, many=True)
         self.assertEqual(serializer.is_valid(), False)
 
-        expected_errors = {'non_field_errors': ['Expected a list of items']}
+        expected_errors = {'non_field_errors': ['Expected a list of items.']}
 
         self.assertEqual(serializer.errors, expected_errors)
 
@@ -115,7 +115,7 @@ class BulkCreateSerializerTests(TestCase):
         serializer = self.BookSerializer(data=data, many=True)
         self.assertEqual(serializer.is_valid(), False)
 
-        expected_errors = {'non_field_errors': ['Expected a list of items']}
+        expected_errors = {'non_field_errors': ['Expected a list of items.']}
 
         self.assertEqual(serializer.errors, expected_errors)
 
@@ -201,11 +201,12 @@ class BulkUpdateSerializerTests(TestCase):
                 'author': 'Haruki Murakami'
             }
         ]
-        serializer = self.BookSerializer(self.books(), data=data, many=True, allow_delete=True)
+        serializer = self.BookSerializer(self.books(), data=data, many=True, allow_add_remove=True)
         self.assertEqual(serializer.is_valid(), True)
         self.assertEqual(serializer.data, data)
         serializer.save()
         new_data = self.BookSerializer(self.books(), many=True).data
+
         self.assertEqual(data, new_data)
 
     def test_bulk_update_and_create(self):
@@ -223,12 +224,35 @@ class BulkUpdateSerializerTests(TestCase):
                 'author': 'Haruki Murakami'
             }
         ]
-        serializer = self.BookSerializer(self.books(), data=data, many=True, allow_delete=True)
+        serializer = self.BookSerializer(self.books(), data=data, many=True, allow_add_remove=True)
         self.assertEqual(serializer.is_valid(), True)
         self.assertEqual(serializer.data, data)
         serializer.save()
         new_data = self.BookSerializer(self.books(), many=True).data
         self.assertEqual(data, new_data)
+
+    def test_bulk_update_invalid_create(self):
+        """
+        Bulk update serialization without allow_add_remove may not create items.
+        """
+        data = [
+            {
+                'id': 0,
+                'title': 'The electric kool-aid acid test',
+                'author': 'Tom Wolfe'
+            }, {
+                'id': 3,
+                'title': 'Kafka on the shore',
+                'author': 'Haruki Murakami'
+            }
+        ]
+        expected_errors = [
+            {},
+            {'non_field_errors': ['Cannot create a new item, only existing items may be updated.']}
+        ]
+        serializer = self.BookSerializer(self.books(), data=data, many=True)
+        self.assertEqual(serializer.is_valid(), False)
+        self.assertEqual(serializer.errors, expected_errors)
 
     def test_bulk_update_error(self):
         """
@@ -249,6 +273,6 @@ class BulkUpdateSerializerTests(TestCase):
             {},
             {'id': ['Enter a whole number.']}
         ]
-        serializer = self.BookSerializer(self.books(), data=data, many=True, allow_delete=True)
+        serializer = self.BookSerializer(self.books(), data=data, many=True, allow_add_remove=True)
         self.assertEqual(serializer.is_valid(), False)
         self.assertEqual(serializer.errors, expected_errors)

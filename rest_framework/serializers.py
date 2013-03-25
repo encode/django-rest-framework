@@ -130,14 +130,14 @@ class BaseSerializer(WritableField):
 
     def __init__(self, instance=None, data=None, files=None,
                  context=None, partial=False, many=None,
-                 allow_delete=False, **kwargs):
+                 allow_add_remove=False, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
         self.opts = self._options_class(self.Meta)
         self.parent = None
         self.root = None
         self.partial = partial
         self.many = many
-        self.allow_delete = allow_delete
+        self.allow_add_remove = allow_add_remove
 
         self.context = context or {}
 
@@ -154,8 +154,8 @@ class BaseSerializer(WritableField):
         if many and instance is not None and not hasattr(instance, '__iter__'):
             raise ValueError('instance should be a queryset or other iterable with many=True')
 
-        if allow_delete and not many:
-            raise ValueError('allow_delete should only be used for bulk updates, but you have not set many=True')
+        if allow_add_remove and not many:
+            raise ValueError('allow_add_remove should only be used for bulk updates, but you have not set many=True')
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
@@ -448,6 +448,10 @@ class BaseSerializer(WritableField):
                             # Determine which object we're updating
                             identity = self.get_identity(item)
                             self.object = identity_to_objects.pop(identity, None)
+                            if self.object is None and not self.allow_add_remove:
+                                ret.append(None)
+                                errors.append({'non_field_errors': ['Cannot create a new item, only existing items may be updated.']})
+                                continue
 
                         ret.append(self.from_native(item, None))
                         errors.append(self._errors)
@@ -457,7 +461,7 @@ class BaseSerializer(WritableField):
 
                     self._errors = any(errors) and errors or []
                 else:
-                    self._errors = {'non_field_errors': ['Expected a list of items']}
+                    self._errors = {'non_field_errors': ['Expected a list of items.']}
             else:
                 ret = self.from_native(data, files)
 
@@ -508,7 +512,7 @@ class BaseSerializer(WritableField):
         else:
             self.save_object(self.object, **kwargs)
 
-        if self.allow_delete and self._deleted:
+        if self.allow_add_remove and self._deleted:
             [self.delete_object(item) for item in self._deleted]
 
         return self.object
