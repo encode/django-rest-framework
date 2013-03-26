@@ -40,9 +40,11 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.2.x series
 
-### Master
+### 2.2.5
 
-* Serializers now support bulk create and bulk update operations.
+**Date**: 26th March 2013
+
+* Serializer support for bulk create and bulk update operations.
 * Regression fix: Date and time fields return date/time objects by default.  Fixes regressions caused by 2.2.2.  See [#743][743] for more details.
 * Bugfix: Fix 500 error is OAuth not attempted with OAuthAuthentication class installed.
 * `Serializer.save()` now supports arbitrary keyword args which are passed through to the object `.save()` method.  Mixins use `force_insert` and `force_update` where appropriate, resulting in one less database query.
