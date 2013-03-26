@@ -256,7 +256,7 @@ Passing `allow_add_remove=True` ensures that any update operations will complete
 
 #### How identity is determined when performing bulk updates
 
-Performing a bulk update is slightly more complicated than performing a bulk creation, because the serializer needs a way of determining how the items in the incoming data should be matched against the existing object instances.
+Performing a bulk update is slightly more complicated than performing a bulk creation, because the serializer needs a way to determine how the items in the incoming data should be matched against the existing object instances.
 
 By default the serializer class will use the `id` key on the incoming data to determine the canonical identity of an object.  If you need to change this behavior you should override the `get_identity` method on the `Serializer` class.  For example:
 
