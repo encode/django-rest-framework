@@ -1,3 +1,75 @@
+"""
+# Generic relations
+
+## Introduction
+
+This is an attempt to implement generic relation foreign keys as provided by Django's
+[contenttype framework](https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/) and I tried to follow the
+suggestions and requirements described here:
+* https://github.com/tomchristie/django-rest-framework/issues/606
+* http://stackoverflow.com/a/14454629/1326146
+
+The `GenericRelatedField` field enables you to read and write `GenericForeignKey`s within the scope of Django REST
+Framework. While you can decide whether to output `GenericForeignKey`s as nested objects (`ModelSerializer`) or valid
+resource URLs (`HyperlinkedRelatedField`), the input is restricted to resource URLs mainly because of two reasons:
+* The sheer impossibility of deriving a valid `Model` class from a simple data dictionary.
+* My inner storm of indignation when thinking of exposing the actual `ContentType`s to the public scope.
+
+## Disclaimer
+
+Although I'm pretty experienced with Django and REST etc, please note that this piece of code is also my first
+experience with Django REST framework at all. I am the maintainer of a pretty large REST service application based on
+[tastypie](tastypieapi.org), but Daniel's recent
+[blog post](http://toastdriven.com/blog/2013/feb/05/committers-needed-tastypie-haystack/) made me feel a little
+uncomfortable. As much I'd like to spend more time contributing, I fear that my current work-life balance doesn't allow
+me to do so at the level I'd expect from myself. So I thought it would be a good thing to reach out for other solutions.
+It's a good thing anyway, I guess. But a sane and approved way of representing `GenericForeignKeys` is just essential to
+the data structure I'm working with. So that's basically why I got in the mix.
+
+
+## Minimalist example
+
+This is based on the models mentioned in
+[this article](http://django-rest-framework.org/api-guide/relations.html#generic-relationships). The examples are also
+based on working URL patterns for each model fitting the pattern `<model_lowercase>-detail`.
+
+A minimalist but still working example of a `TagSerializer` with `GenericRelatedField` would look like this:
+
+    class TagSerializer(serializers.ModelSerializer):
+        tagged_item = GenericRelatedField([
+            GenericRelationOption(Bookmark, 'bookmark-detail'),
+            GenericRelationOption(Note, 'note-detail'),
+        ], source='tagged_item')
+
+        class Meta:
+            model = Tag
+            exclude = ('id', 'content_type', 'object_id', )
+
+## ``GenericRelationOption``
+
+Constructor:
+
+    GenericRelationOption(model, view_name, as_hyperlink=True, related_field=None, serializer=None)
+
+**`model`**
+The model class.
+
+**`view_name`**
+The view name as used in url patterns.
+
+**`as_hyperlink`**
+Decides whether the output of the `GenericForeignKey` should be as end point or nested object. In the case of the
+latter a generic serializer will be used unless you pass a specific one.
+
+**`related_field`**
+A specific subclass of `HyperlinkedRelatedField` that should be used for resolving input data and resolving output data
+in case of `as_hyperlink` is `True`.
+
+**`serializer`**
+A specific subclass of `ModelSerializer` that should be used for resolving output data
+in case of `as_hyperlink` is `True`.
+
+"""
 from __future__ import unicode_literals
 
 import urlparse
