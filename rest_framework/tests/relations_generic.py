@@ -153,15 +153,15 @@ class TestGenericRelatedFieldToNative(TestCase):
         expected = [
             {
                 'tagged_item': '/bookmark/1/',
-                'tag': u'django'
+                'tag': 'django',
             },
             {
                 'tagged_item': '/bookmark/1/',
-                'tag': u'python'
+                'tag': 'python',
             },
             {
                 'tagged_item': '/note/1/',
-                'tag': u'reminder'
+                'tag': 'reminder'
             }
         ]
         self.assertEqual(serializer.data, expected)
@@ -182,18 +182,18 @@ class TestGenericRelatedFieldToNative(TestCase):
         expected = [
             {
                 'tagged_item': '/bookmark/1/',
-                'tag': u'django'
+                'tag': 'django'
             },
             {
                 'tagged_item': '/bookmark/1/',
-                'tag': u'python'
+                'tag': 'python'
             },
             {
                 'tagged_item': {
                     'id': 1,
                     'text': 'Remember the milk',
                 },
-                'tag': u'reminder'
+                'tag': 'reminder'
             }
         ]
         self.assertEqual(serializer.data, expected)
@@ -220,22 +220,22 @@ class TestGenericRelatedFieldToNative(TestCase):
         expected = [
             {
                 'tagged_item': '/bookmark/1/',
-                'tag': u'django'
+                'tag': 'django'
             },
             {
                 'tagged_item': '/bookmark/1/',
-                'tag': u'python'
+                'tag': 'python'
             },
             {
                 'tagged_item': {
                     'id': 1,
                     'text': 'Remember the milk',
                 },
-                'tag': u'reminder'
+                'tag': 'reminder'
             },
             {
                 'tagged_item': '/contact/lukas-buenger/',
-                'tag': u'developer'
+                'tag': 'developer'
             }
         ]
         self.assertEqual(serializer.data, expected)
@@ -269,24 +269,24 @@ class TestGenericRelatedFieldToNative(TestCase):
         expected = [
             {
                 'tagged_item': '/bookmark/1/',
-                'tag': u'django'
+                'tag': 'django'
             },
             {
                 'tagged_item': '/bookmark/1/',
-                'tag': u'python'
+                'tag': 'python'
             },
             {
                 'tagged_item': {
                     'id': 1,
                     'text': 'Remember the milk',
                 },
-                'tag': u'reminder'
+                'tag': 'reminder'
             },
             {
                 'tagged_item': {
                     'name': 'Lukas Buenger'
                  },
-                'tag': u'developer'
+                'tag': 'developer'
             }
         ]
         self.assertEqual(serializer.data, expected)
@@ -322,6 +322,6 @@ class TestGenericRelatedFieldFromNative(TestCase):
         serializer.is_valid()
         expected = {
             'tagged_item': '/note/1/',
-            'tag': u'reminder'
+            'tag': 'reminder'
         }
         self.assertEqual(serializer.data, expected)
