@@ -517,6 +517,18 @@ class OAuth2Tests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
+    def test_get_form_passing_auth_without_client_params(self):
+        """
+        Ensure GETing form over OAuth without client credentials
+
+        Regression test for issue #759:
+        https://github.com/tomchristie/django-rest-framework/issues/759
+        """
+        auth = self._create_authorization_header()
+        response = self.csrf_client.get('/oauth2-test/', HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 200)
+
+    @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
     def test_post_form_passing_auth(self):
         """Ensure POSTing form over OAuth with correct credentials passes and does not require CSRF"""
         auth = self._create_authorization_header()
