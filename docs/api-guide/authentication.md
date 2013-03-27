@@ -294,7 +294,7 @@ The only thing needed to make the `OAuth2Authentication` class work is to insert
 
 The command line to test the authentication looks like:
 
-    curl -H "Authorization: Bearer <your-access-token>" http://localhost:8000/api/?client_id=YOUR_CLIENT_ID\&client_secret=YOUR_CLIENT_SECRET
+    curl -H "Authorization: Bearer <your-access-token>" http://localhost:8000/api/
 
 ---
 

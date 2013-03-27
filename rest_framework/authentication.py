@@ -316,19 +316,11 @@ class OAuth2Authentication(BaseAuthentication):
         """
         Authenticate the request, given the access token.
         """
-        client = None
-
-        # Authenticate the client
-        if 'client_id' in request.REQUEST:
-            oauth2_client_form = oauth2_provider_forms.ClientAuthForm(request.REQUEST)
-            if not oauth2_client_form.is_valid():
-                raise exceptions.AuthenticationFailed('Client could not be validated')
-            client = oauth2_client_form.cleaned_data.get('client')
 
         try:
             token = oauth2_provider.models.AccessToken.objects.select_related('user')
-            if client is not None:
-                token = token.filter(client=client)
+            # TODO: Change to timezone aware datetime when oauth2_provider add
+            # support to it.
             token = token.get(token=access_token, expires__gt=datetime.now())
         except oauth2_provider.models.AccessToken.DoesNotExist:
             raise exceptions.AuthenticationFailed('Invalid token')
