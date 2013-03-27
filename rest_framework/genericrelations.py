@@ -72,13 +72,13 @@ in case of `as_hyperlink` is `True`.
 """
 from __future__ import unicode_literals
 
-import urlparse
 
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import get_script_prefix, resolve
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 
+from rest_framework.compat import  urlparse
 from rest_framework import serializers
 from rest_framework.settings import api_settings
 
