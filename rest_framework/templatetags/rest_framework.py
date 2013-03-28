@@ -4,12 +4,8 @@ from django.core.urlresolvers import reverse, NoReverseMatch
 from django.http import QueryDict
 from django.utils.html import escape
 from django.utils.safestring import SafeData, mark_safe
-from rest_framework.compat import urlparse
-from rest_framework.compat import force_text
-from rest_framework.compat import six
-from rest_framework.compat import smart_urlquote
-import re
-import string
+from rest_framework.compat import urlparse, force_text, six, smart_urlquote
+import re, string
 
 register = template.Library()
 
