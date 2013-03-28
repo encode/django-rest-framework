@@ -119,6 +119,8 @@ To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in y
         ...
         'rest_framework.authtoken'
     )
+    
+Make sure to run `manage.py syncdb` after changing your settings.
 
 You'll also need to create tokens for your users.
 
@@ -139,6 +141,10 @@ If successfully authenticated, `TokenAuthentication` provides the following cred
 Unauthenticated responses that are denied permission will result in an `HTTP 401 Unauthorized` response with an appropriate WWW-Authenticate header.  For example:
 
     WWW-Authenticate: Token
+
+The `curl` command line tool may be useful for testing token authenticated APIs.  For example:
+
+    curl -X GET http://127.0.0.1:8000/api/example/ -H 'Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b'
 
 ---
 
