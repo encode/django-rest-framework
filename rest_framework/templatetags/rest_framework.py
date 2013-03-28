@@ -2,11 +2,12 @@ from __future__ import unicode_literals, absolute_import
 from django import template
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.http import QueryDict
-from django.utils.html import escape, smart_urlquote
+from django.utils.html import escape
 from django.utils.safestring import SafeData, mark_safe
 from rest_framework.compat import urlparse
 from rest_framework.compat import force_text
 from rest_framework.compat import six
+from rest_framework.compat import smart_urlquote
 import re
 import string
 
