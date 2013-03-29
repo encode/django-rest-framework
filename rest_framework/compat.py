@@ -476,14 +476,12 @@ except ImportError:
 # OAuth 2 support is optional
 try:
     import provider.oauth2 as oauth2_provider
-    from provider.oauth2 import backends as oauth2_provider_backends
     from provider.oauth2 import models as oauth2_provider_models
     from provider.oauth2 import forms as oauth2_provider_forms
     from provider import scope as oauth2_provider_scope
     from provider import constants as oauth2_constants
 except ImportError:
     oauth2_provider = None
-    oauth2_provider_backends = None
     oauth2_provider_models = None
     oauth2_provider_forms = None
     oauth2_provider_scope = None
