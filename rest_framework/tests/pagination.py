@@ -129,16 +129,6 @@ class IntegrationTestPaginationAndFiltering(TestCase):
         view = FilterFieldsRootView.as_view()
 
         EXPECTED_NUM_QUERIES = 2
-        if django.VERSION < (1, 4):
-            # On Django 1.3 we need to use django-filter 0.5.4
-            #
-            # The filter objects there don't expose a `.count()` method,
-            # which means we only make a single query *but* it's a single
-            # query across *all* of the queryset, instead of a COUNT and then
-            # a SELECT with a LIMIT.
-            #
-            # Although this is fewer queries, it's actually a regression.
-            EXPECTED_NUM_QUERIES = 1
 
         request = factory.get('/?decimal=15.20')
         with self.assertNumQueries(EXPECTED_NUM_QUERIES):
