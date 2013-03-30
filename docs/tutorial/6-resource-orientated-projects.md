@@ -1,27 +1,25 @@
-# Tutorial 6 - Resources
+# Tutorial 6 - ViewSets & Routers
 
-REST framework includes an abstraction for dealing with resources, that allows the developer to concentrate on modelling the state and interactions of the API, and leave the URL construction to be handled automatically, based on common conventions.
+REST framework includes an abstraction for dealing with `ViewSets`, that allows the developer to concentrate on modelling the state and interactions of the API, and leave the URL construction to be handled automatically, based on common conventions.
 
-To work with resources, we can use either the `Resource` class, which does not define any default handlers, or the `ModelResource` class, which provides a default set of CRUD operations.
+`ViewSet` classes are almost the same thing as `View` classes, except that they provide operations such as `read`, or `update`, and not method handlers such as `get` or `put`.
 
-Resource classes are very similar to class based views, except that they provide operations such as `read`, or `update`, and not HTTP method handlers such as `get` or `put`.  Resources are only bound to HTTP method handlers at the last moment, when they are instantiated into views, typically by using a `Router` class which handles the complexities of defining the URL conf for you.
+A `ViewSet` class is only bound to a set of method handlers at the last moment, when it is instantiated into a set of views, typically by using a `Router` class which handles the complexities of defining the URL conf for you.
 
-## Refactoring to use Resources, instead of Views
+## Refactoring to use ViewSets
 
-Let's take our current set of views, and refactor them into resources.
-We'll remove our existing `views.py` module, and instead create a `resources.py`
+Let's take our current set of views, and refactor them into view sets.
 
-Our `UserResource` is simple, since we just want the default model CRUD behavior, so we inherit from `ModelResource` and include the same set of attributes we used for the corresponding view classes.
+First of all let's refactor our `UserListView` and `UserDetailView` views into a single `UserViewSet`.  We can remove the two views, and replace then with a single class:
 
-    class UserResource(resources.ModelResource):
-        model = User
+    class UserViewSet(viewsets.ModelViewSet):
+        queryset = User.objects.all()
         serializer_class = UserSerializer
 
-There's a little bit more work to do for the `SnippetResource`.  Again, we want the 
-default set of CRUD behavior, but we also want to include an endpoint for snippet highlights. 
+Next we're going to replace the `SnippetList`, `SnippetDetail` and `SnippetHighlight` view classes.  We can remove the three views, and again replace them with a single class.
 
-    class SnippetResource(resources.ModelResource):
-        model = Snippet
+    class SnippetViewSet(viewsets.ModelViewSet):
+        queryset = Snippet.objects.all()
         serializer_class = SnippetSerializer
         permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                               IsOwnerOrReadOnly,)
@@ -34,25 +32,27 @@ default set of CRUD behavior, but we also want to include an endpoint for snippe
         def pre_save(self, obj):
             obj.owner = self.request.user
 
-Notice that we've used the `@link` decorator for the `highlight` endpoint.  This decorator can be used for non-CRUD endpoints that are "safe" operations that do not change server state.  Using `@link` indicates that we want to use a `GET` method for these operations.  For non-CRUD operations we can also use the `@action` decorator for any operations that change server state, which ensures that the `POST` method will be used for the operation.
+Notice that we've used the `@link` decorator for the `highlight` method.
+This decorator can be used to add custom endpoints, other than the standard `create`/`update`/`delete` endpoints.
 
+The `@link` decorator will  
 
-## Binding Resources to URLs explicitly
+## Binding ViewSets to URLs explicitly
 
 The handler methods only get bound to the actions when we define the URLConf.
-To see what's going on under the hood let's first explicitly create a set of views from our resources.
+To see what's going on under the hood let's first explicitly create a set of views from our ViewSets.
 
-In the `urls.py` file we first need to bind our resource classes into a set of concrete views.
+In the `urls.py` file we first need to bind our `ViewSet` classes into a set of concrete views.
 
     from snippets.resources import SnippetResource, UserResource
 
-    snippet_list = SnippetResource.as_view({'get': 'list', 'post': 'create'})
-    snippet_detail = SnippetResource.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})
-    snippet_highlight = SnippetResource.as_view({'get': 'highlight'})
-    user_list = UserResource.as_view({'get': 'list', 'post': 'create'})
-    user_detail = UserResource.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})
+    snippet_list = SnippetViewSet.as_view({'get': 'list', 'post': 'create'})
+    snippet_detail = SnippetViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})
+    snippet_highlight = SnippetViewSet.as_view({'get': 'highlight'})
+    user_list = UserViewSet.as_view({'get': 'list', 'post': 'create'})
+    user_detail = UserViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})
 
-Notice how create multiple views onto a single resource class, by binding the http methods to the required action for each view.
+Notice how we're creating multiple views from each `ViewSet` class, by binding the http methods to the required action for each view.
 
 Now that we've bound our resources into concrete views, that we can register the views with the URL conf as usual.
 
@@ -67,21 +67,28 @@ Now that we've bound our resources into concrete views, that we can register the
 
 ## Using Routers
 
-Now that we're using Resources rather than Views, we actually don't need to design the URL conf ourselves.  The conventions for wiring up resources into views and urls can be handled automatically, using `Router` classes.  All we need to do is register the appropriate resources with a router, and let it do the rest.
+Now that we're using `ViewSet` classes rather than `View` classes, we actually don't need to design the URL conf ourselves.  The conventions for wiring up resources into views and urls can be handled automatically, using a `Router` class.  All we need to do is register the appropriate view sets with a router, and let it do the rest.
 
 Here's our re-wired `urls.py` file.
 
-    from snippets import resources
+    from snippets import views
     from rest_framework.routers import DefaultRouter
 
+    # Create a router and register our views and view sets with it.
     router = DefaultRouter()
-    router.register(r'^snippets/', resources.SnippetResource, 'snippet')
-    router.register(r'^users/', resources.UserResource, 'user')
+    router.register(r'^/', views.api_root)
+    router.register(r'^snippets/', views.SnippetViewSet, 'snippet')
+    router.register(r'^users/', views.UserViewSet, 'user')
+    
+    # The urlconf is determined automatically by the router.
     urlpatterns = router.urlpatterns
+    
+    # Add format suffixes to all our URL patterns.
+    urlpatterns = format_suffix_patterns(urlpatterns)
 
-## Trade-offs between views vs resources.
+## Trade-offs between views vs viewsets.
 
-Writing resource-oriented code can be a good thing.  It helps ensure that URL conventions will be consistent across your APIs, minimises the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.
+Using view sets can be a really useful abstraction.  It helps ensure that URL conventions will be consistent across your API, minimises the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.
 
-That doesn't mean it's always the right approach to take.  There's a similar set of trade-offs to consider as when using class-based views.  Using resources is less explicit than building your views individually.
+That doesn't mean it's always the right approach to take.  There's a similar set of trade-offs to consider as when using class-based views instead of function based views.  Using view sets is less explicit than building your views individually.
 
