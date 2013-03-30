@@ -395,6 +395,37 @@ except ImportError:
             kw = dict((k, int(v)) for k, v in kw.iteritems() if v is not None)
             return datetime.datetime(**kw)
 
+
+# smart_urlquote is new on Django 1.4
+try:
+    from django.utils.html import smart_urlquote
+except ImportError:
+    try:
+        from urllib.parse import quote, urlsplit, urlunsplit
+    except ImportError:     # Python 2
+        from urllib import quote
+        from urlparse import urlsplit, urlunsplit
+
+    def smart_urlquote(url):
+        "Quotes a URL if it isn't already quoted."
+        # Handle IDN before quoting.
+        scheme, netloc, path, query, fragment = urlsplit(url)
+        try:
+            netloc = netloc.encode('idna').decode('ascii') # IDN -> ACE
+        except UnicodeError: # invalid domain part
+            pass
+        else:
+            url = urlunsplit((scheme, netloc, path, query, fragment))
+
+        # An URL is considered unquoted if it contains no % characters or
+        # contains a % not followed by two hexadecimal digits. See #9655.
+        if '%' not in url or unquoted_percents_re.search(url):
+            # See http://bugs.python.org/issue2637
+            url = quote(force_bytes(url), safe=b'!*\'();:@&=+$,/?#[]~')
+
+        return force_text(url)
+
+
 # Markdown is optional
 try:
     import markdown
@@ -445,14 +476,12 @@ except ImportError:
 # OAuth 2 support is optional
 try:
     import provider.oauth2 as oauth2_provider
-    from provider.oauth2 import backends as oauth2_provider_backends
     from provider.oauth2 import models as oauth2_provider_models
     from provider.oauth2 import forms as oauth2_provider_forms
     from provider import scope as oauth2_provider_scope
     from provider import constants as oauth2_constants
 except ImportError:
     oauth2_provider = None
-    oauth2_provider_backends = None
     oauth2_provider_models = None
     oauth2_provider_forms = None
     oauth2_provider_scope = None
