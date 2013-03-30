@@ -153,9 +153,19 @@ class DateFieldTest(TestCase):
 
     def test_to_native(self):
         """
-        Make sure to_native() returns isoformat as default.
+        Make sure to_native() returns datetime as default.
         """
         f = serializers.DateField()
+
+        result_1 = f.to_native(datetime.date(1984, 7, 31))
+
+        self.assertEqual(datetime.date(1984, 7, 31), result_1)
+
+    def test_to_native_iso(self):
+        """
+        Make sure to_native() with 'iso-8601' returns iso formated date.
+        """
+        f = serializers.DateField(format='iso-8601')
 
         result_1 = f.to_native(datetime.date(1984, 7, 31))
 
@@ -283,6 +293,22 @@ class DateTimeFieldTest(TestCase):
         Make sure to_native() returns isoformat as default.
         """
         f = serializers.DateTimeField()
+
+        result_1 = f.to_native(datetime.datetime(1984, 7, 31))
+        result_2 = f.to_native(datetime.datetime(1984, 7, 31, 4, 31))
+        result_3 = f.to_native(datetime.datetime(1984, 7, 31, 4, 31, 59))
+        result_4 = f.to_native(datetime.datetime(1984, 7, 31, 4, 31, 59, 200))
+
+        self.assertEqual(datetime.datetime(1984, 7, 31), result_1)
+        self.assertEqual(datetime.datetime(1984, 7, 31, 4, 31), result_2)
+        self.assertEqual(datetime.datetime(1984, 7, 31, 4, 31, 59), result_3)
+        self.assertEqual(datetime.datetime(1984, 7, 31, 4, 31, 59, 200), result_4)
+
+    def test_to_native_iso(self):
+        """
+        Make sure to_native() with format=iso-8601 returns iso formatted datetime.
+        """
+        f = serializers.DateTimeField(format='iso-8601')
 
         result_1 = f.to_native(datetime.datetime(1984, 7, 31))
         result_2 = f.to_native(datetime.datetime(1984, 7, 31, 4, 31))
@@ -419,9 +445,22 @@ class TimeFieldTest(TestCase):
 
     def test_to_native(self):
         """
-        Make sure to_native() returns isoformat as default.
+        Make sure to_native() returns time object as default.
         """
         f = serializers.TimeField()
+        result_1 = f.to_native(datetime.time(4, 31))
+        result_2 = f.to_native(datetime.time(4, 31, 59))
+        result_3 = f.to_native(datetime.time(4, 31, 59, 200))
+
+        self.assertEqual(datetime.time(4, 31), result_1)
+        self.assertEqual(datetime.time(4, 31, 59), result_2)
+        self.assertEqual(datetime.time(4, 31, 59, 200), result_3)
+
+    def test_to_native_iso(self):
+        """
+        Make sure to_native() with format='iso-8601' returns iso formatted time.
+        """
+        f = serializers.TimeField(format='iso-8601')
         result_1 = f.to_native(datetime.time(4, 31))
         result_2 = f.to_native(datetime.time(4, 31, 59))
         result_3 = f.to_native(datetime.time(4, 31, 59, 200))

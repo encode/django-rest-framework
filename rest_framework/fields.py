@@ -494,7 +494,7 @@ class DateField(WritableField):
     }
     empty = None
     input_formats = api_settings.DATE_INPUT_FORMATS
-    format = api_settings.DATE_FORMAT
+    format = None
 
     def __init__(self, input_formats=None, format=None, *args, **kwargs):
         self.input_formats = input_formats if input_formats is not None else self.input_formats
@@ -536,8 +536,8 @@ class DateField(WritableField):
         raise ValidationError(msg)
 
     def to_native(self, value):
-        if value is None:
-            return None
+        if value is None or self.format is None:
+            return value
 
         if isinstance(value, datetime.datetime):
             value = value.date()
@@ -557,7 +557,7 @@ class DateTimeField(WritableField):
     }
     empty = None
     input_formats = api_settings.DATETIME_INPUT_FORMATS
-    format = api_settings.DATETIME_FORMAT
+    format = None
 
     def __init__(self, input_formats=None, format=None, *args, **kwargs):
         self.input_formats = input_formats if input_formats is not None else self.input_formats
@@ -605,11 +605,14 @@ class DateTimeField(WritableField):
         raise ValidationError(msg)
 
     def to_native(self, value):
-        if value is None:
-            return None
+        if value is None or self.format is None:
+            return value
 
         if self.format.lower() == ISO_8601:
-            return value.isoformat()
+            ret = value.isoformat()
+            if ret.endswith('+00:00'):
+                ret = ret[:-6] + 'Z'
+            return ret
         return value.strftime(self.format)
 
 
@@ -623,7 +626,7 @@ class TimeField(WritableField):
     }
     empty = None
     input_formats = api_settings.TIME_INPUT_FORMATS
-    format = api_settings.TIME_FORMAT
+    format = None
 
     def __init__(self, input_formats=None, format=None, *args, **kwargs):
         self.input_formats = input_formats if input_formats is not None else self.input_formats
@@ -658,8 +661,8 @@ class TimeField(WritableField):
         raise ValidationError(msg)
 
     def to_native(self, value):
-        if value is None:
-            return None
+        if value is None or self.format is None:
+            return value
 
         if isinstance(value, datetime.datetime):
             value = value.time()

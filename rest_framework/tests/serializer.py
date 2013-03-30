@@ -112,7 +112,7 @@ class BasicTests(TestCase):
         self.expected = {
             'email': 'tom@example.com',
             'content': 'Happy new year!',
-            'created': '2012-01-01T00:00:00',
+            'created': datetime.datetime(2012, 1, 1),
             'sub_comment': 'And Merry Christmas!'
         }
         self.person_data = {'name': 'dwight', 'age': 35}
@@ -260,34 +260,6 @@ class ValidationTests(TestCase):
         serializer = ActionItemSerializer(self.actionitem, data=data)
         self.assertEqual(serializer.is_valid(), True)
         self.assertEqual(serializer.errors, {})
-
-    def test_bad_type_data_is_false(self):
-        """
-        Data of the wrong type is not valid.
-        """
-        data = ['i am', 'a', 'list']
-        serializer = CommentSerializer(self.comment, data=data, many=True)
-        self.assertEqual(serializer.is_valid(), False)
-        self.assertTrue(isinstance(serializer.errors, list))
-
-        self.assertEqual(
-            serializer.errors,
-            [
-                {'non_field_errors': ['Invalid data']},
-                {'non_field_errors': ['Invalid data']},
-                {'non_field_errors': ['Invalid data']}
-            ]
-        )
-
-        data = 'and i am a string'
-        serializer = CommentSerializer(self.comment, data=data)
-        self.assertEqual(serializer.is_valid(), False)
-        self.assertEqual(serializer.errors, {'non_field_errors': ['Invalid data']})
-
-        data = 42
-        serializer = CommentSerializer(self.comment, data=data)
-        self.assertEqual(serializer.is_valid(), False)
-        self.assertEqual(serializer.errors, {'non_field_errors': ['Invalid data']})
 
     def test_cross_field_validation(self):
 

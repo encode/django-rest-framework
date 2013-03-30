@@ -42,6 +42,17 @@ You can determine your currently installed version using `pip freeze`:
 
 ### Master
 
+* OAuth2 authentication no longer requires unneccessary URL parameters in addition to the token.
+* URL hyperlinking in browseable API now handles more cases correctly.
+* Bugfix: Fix regression with DjangoFilterBackend not worthing correctly with single object views.
+
+### 2.2.5
+
+**Date**: 26th March 2013
+
+* Serializer support for bulk create and bulk update operations.
+* Regression fix: Date and time fields return date/time objects by default.  Fixes regressions caused by 2.2.2.  See [#743][743] for more details.
+* Bugfix: Fix 500 error is OAuth not attempted with OAuthAuthentication class installed.
 * `Serializer.save()` now supports arbitrary keyword args which are passed through to the object `.save()` method.  Mixins use `force_insert` and `force_update` where appropriate, resulting in one less database query.
 
 ### 2.2.4
@@ -434,6 +445,7 @@ This change will not affect user code, so long as it's following the recommended
 [django-deprecation-policy]: https://docs.djangoproject.com/en/dev/internals/release-process/#internal-release-deprecation-policy
 [defusedxml-announce]: http://blog.python.org/2013/02/announcing-defusedxml-fixes-for-xml.html
 [2.2-announcement]: 2.2-announcement.md
+[743]: https://github.com/tomchristie/django-rest-framework/pull/743
 [staticfiles14]: https://docs.djangoproject.com/en/1.4/howto/static-files/#with-a-template-tag
 [staticfiles13]: https://docs.djangoproject.com/en/1.3/howto/static-files/#with-a-template-tag
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
