@@ -398,7 +398,7 @@ The JSON representation of a `Tag` object with `name='django'` and its generic f
         'tagged_object': {
             'url': 'https://www.djangoproject.com/'
         },
-        'tag': 'django'
+        'tag_name': 'django'
     }
 
 If you want to have your generic foreign key represented as hyperlink, simply use `HyperlinkedRelatedField` objects:
@@ -421,7 +421,7 @@ The JSON representation of the same `Tag` example object could now look somethin
 
     {
         'tagged_object': '/bookmark/1/',
-        'tag': 'django'
+        'tag_name': 'django'
     }
 
 These examples cover the default behavior of generic foreign key representation. However, you may also want to write to generic foreign key fields through your API.
@@ -447,7 +447,7 @@ This `Tag` serializer is able to write to it's generic foreign key field:
 The following operations would create a `Tag` object with it's `tagged_object` property pointing at the `Bookmark` object found at the given detail end point.
 
     tag_serializer = TagSerializer(data={
-        'tag': 'python'
+        'tag_name': 'python'
         'tagged_object': '/bookmark/1/'
     })
 
