@@ -60,6 +60,7 @@ class APIView(View):
     throttle_classes = api_settings.DEFAULT_THROTTLE_CLASSES
     permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
     content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
+    cache_lookup_classes = api_settings.DEFAULT_CACHE_LOOKUP_CLASSES
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -241,6 +242,12 @@ class APIView(View):
             self._negotiator = self.content_negotiation_class()
         return self._negotiator
 
+    def get_cache_lookups(self):
+        """
+        Instantiates and returns the list of cache lookups that this view requires.
+        """
+        return [cache_lookup() for cache_lookup in self.cache_lookup_classes]
+
     # API policy implementation methods
 
     def perform_content_negotiation(self, request, force=False):
@@ -294,6 +301,33 @@ class APIView(View):
             if not throttle.allow_request(request, self):
                 self.throttled(request, throttle.wait())
 
+    def check_preemptive_cache(self, request):
+        for cache_lookup in self.get_cache_lookups():
+            cache_key = cache_lookup.get_cache_key(self.model, self.kwargs['pk'])
+            if cache_lookup.resource_unchanged(request, cache_key):
+                return Response(status=304)
+
+    def get_cache_lookup_headers(self, obj):
+        headers = {}
+        for cache_lookup in self.get_cache_lookups():
+            headers.update(cache_lookup.get_header(obj))
+        return headers
+
+    def check_update_validity(self, request):
+        """
+        """
+        # TODO add setting to cover
+        #  * raise IfMatchMissing when it's missing (if it's there, carry on)
+        #  * continue regardless
+        if request.META.get('HTTP_IF_MATCH') is None:
+            raise exceptions.IfMatchMissing
+
+    def cache_precondition_check(self, obj, request):
+        header = request.META.get('HTTP_IF_MATCH')
+        for cache_lookup in self.get_cache_lookups():
+            if cache_lookup.get_etag(obj) != header:
+                raise exceptions.PreconditionFailed
+
     # Dispatch methods
 
     def initialize_request(self, request, *args, **kargs):
@@ -318,6 +352,7 @@ class APIView(View):
         self.perform_authentication(request)
         self.check_permissions(request)
         self.check_throttles(request)
+        self.check_preemptive_cache(request)
 
         # Perform content negotiation and store the accepted info on the request
         neg = self.perform_content_negotiation(request)
@@ -398,10 +433,9 @@ class APIView(View):
             else:
                 handler = self.http_method_not_allowed
 
-            if getattr(self, 'use_etags', False) and request.method.lower() in ('put', 'delete'):
-                self.etag_header = request.META.get('HTTP_IF_MATCH')
-                if self.etag_header is None:
-                    raise exceptions.IfMatchMissing
+            if request.method.lower() in ('put', 'delete'):
+                # FIXME this method name isn't obvious
+                self.check_update_validity(request)
 
             response = handler(request, *args, **kwargs)
 
@@ -418,5 +452,3 @@ class APIView(View):
         a less useful default implementation.
         """
         return Response(self.metadata(request), status=status.HTTP_200_OK)
-    def get_etag(self, obj):
-        return getattr(obj, self.etag_var)

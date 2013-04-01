@@ -8,7 +8,6 @@ from __future__ import unicode_literals
 
 from django.http import Http404
 from rest_framework import status
-from rest_framework.exceptions import PreconditionFailed
 from rest_framework.response import Response
 from rest_framework.request import clone_request
 
@@ -101,11 +100,9 @@ class RetrieveModelMixin(object):
         queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
         self.object = self.get_object(filtered_queryset)
-        headers = {}
-        if getattr(self, 'use_etags', False):
-            if self.get_etag(self.object) == request.META.get('HTTP_IF_NONE_MATCH'):
-                return Response(status=304)
-            headers.update({'ETag': self.get_etag(self.object)})
+
+        headers = self.get_cache_lookup_headers(self.object)
+
         serializer = self.get_serializer(self.object)
         return Response(serializer.data, headers=headers)
 
@@ -127,8 +124,7 @@ class UpdateModelMixin(object):
             created = True
             success_status_code = status.HTTP_201_CREATED
         else:
-            if getattr(self, 'use_etags', False) and self.object.etag != self.etag_header:
-                raise PreconditionFailed
+            self.cache_precondition_check(self.object, request)
             created = False
             success_status_code = status.HTTP_200_OK
 
@@ -172,7 +168,6 @@ class DestroyModelMixin(object):
     """
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
-        if self.get_etag(obj) != self.etag_header:
-            raise PreconditionFailed
+        self.cache_precondition_check(obj, request)
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
