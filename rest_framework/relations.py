@@ -478,6 +478,41 @@ class HyperlinkedIdentityField(Field):
         raise Exception('Could not resolve URL for field using view name "%s"' % view_name)
 
 
+### Recursive relationships
+
+class RecursiveRelatedField(RelatedField):
+
+    def __init__(self, *args, **kwargs):
+        super(RecursiveRelatedField, self).__init__(*args, **kwargs)
+        # Forced read only.
+        self.read_only = True
+
+    def field_to_native(self, obj, field_name):
+
+        serializer_class = self.parent.__class__
+        serializer = serializer_class()
+        serializer.initialize(self.parent, field_name)
+
+        if self.many:
+            related_manager = getattr(obj, self.source or field_name)
+            if not obj.__class__ == related_manager.model:
+                raise Exception('`RecursiveRelatedField` must point at a self-referencing relation.')
+            queryset = related_manager.all()
+            return [serializer.to_native(item) for item in queryset]
+
+        try:
+            queryset = getattr(obj, self.source or field_name)
+            if not obj.__class__ == queryset.__class__:
+                raise Exception('`RecursiveRelatedField` must point at a self-referencing relation.')
+        except ObjectDoesNotExist:
+            return None
+        return serializer.to_native(queryset)
+
+    def to_native(self, value):
+        # Override to prevent simplifying process as present in `WritableField`.
+        return value
+
+
 ### Old-style many classes for backwards compat
 
 class ManyRelatedField(RelatedField):

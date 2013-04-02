@@ -394,6 +394,33 @@ Note that reverse generic keys, expressed using the `GenericRelation` field, can
 
 For more information see [the Django documentation on generic relations][generic-relations].
 
+
+## Recursive relationships
+
+If you want to serialize recursive relationships, you can use the `RecursiveRelatedField`.
+
+For example, given the following model that has a self-referencing foreign key to establish a tree-like structure:
+
+    class TreeModel(models.Model):
+
+        name = models.CharField(max_length=127)
+        parent = models.ForeignKey('self', null=True, related_name='children')
+
+        def __unicode__(self):
+            return self.name
+
+You could have the child objects nested recursively with the following serializer:
+
+    class TreeSerializer(serializers.ModelSerializer):
+
+        children = RecursiveRelatedField(many=True)
+
+        class Meta:
+            model = TreeModel
+            exclude = ('id', )
+
+Note that as for now the the `RecursiveRelatedField` is read only.
+
 ---
 
 ## Deprecated APIs
