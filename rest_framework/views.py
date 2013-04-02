@@ -323,10 +323,8 @@ class APIView(View):
             raise exceptions.IfMatchMissing
 
     def cache_precondition_check(self, obj, request):
-        header = request.META.get('HTTP_IF_MATCH')
         for cache_lookup in self.get_cache_lookups():
-            if cache_lookup.get_etag(obj) != header:
-                raise exceptions.PreconditionFailed
+            cache_lookup.precondition_check(obj, request)
 
     # Dispatch methods
 

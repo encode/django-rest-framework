@@ -2,6 +2,7 @@
 Provides a set of pluggable cache policies.
 """
 from django.core.cache import cache
+from rest_framework.exceptions import PreconditionFailed
 
 
 class BaseCacheLookup(object):
@@ -36,6 +37,10 @@ class ETagCacheLookup(BaseCacheLookup):
         etag = self.get_etag(obj)
         cache.set(key, etag)
         return {'ETag': etag}
+
+    def precondition_check(self, obj, request):
+        if self.get_etag(obj) != request.META.get('HTTP_IF_NONE_MATCH'):
+            raise PreconditionFailed
 
     def resource_unchanged(self, request, key):
         etag = cache.get(key)
