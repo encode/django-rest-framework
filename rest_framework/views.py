@@ -313,15 +313,6 @@ class APIView(View):
             headers.update(cache_lookup.get_response_header(obj))
         return headers
 
-    def check_update_validity(self, request):
-        """
-        """
-        # TODO add setting to cover
-        #  * raise IfMatchMissing when it's missing (if it's there, carry on)
-        #  * continue regardless
-        if request.META.get('HTTP_IF_MATCH') is None:
-            raise exceptions.IfMatchMissing
-
     def cache_precondition_check(self, obj, request):
         for cache_lookup in self.get_cache_lookups():
             cache_lookup.precondition_check(obj, request)
@@ -429,10 +420,6 @@ class APIView(View):
                                   self.http_method_not_allowed)
             else:
                 handler = self.http_method_not_allowed
-
-            if request.method.lower() in ('put', 'delete'):
-                # FIXME this method name isn't obvious
-                self.check_update_validity(request)
 
             response = handler(request, *args, **kwargs)
 
