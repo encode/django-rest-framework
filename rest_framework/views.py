@@ -307,10 +307,10 @@ class APIView(View):
             if cache_lookup.resource_unchanged(request, cache_key):
                 return Response(status=304)
 
-    def get_cache_lookup_headers(self, obj):
+    def get_cache_lookup_response_headers(self, obj):
         headers = {}
         for cache_lookup in self.get_cache_lookups():
-            headers.update(cache_lookup.get_header(obj))
+            headers.update(cache_lookup.get_response_header(obj))
         return headers
 
     def check_update_validity(self, request):

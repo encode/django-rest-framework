@@ -105,7 +105,7 @@ class RetrieveModelMixin(object):
         filtered_queryset = self.filter_queryset(queryset)
         self.object = self.get_object(filtered_queryset)
 
-        headers = self.get_cache_lookup_headers(self.object)
+        headers = self.get_cache_lookup_response_headers(self.object)
 
         serializer = self.get_serializer(self.object)
         return Response(serializer.data, headers=headers)
