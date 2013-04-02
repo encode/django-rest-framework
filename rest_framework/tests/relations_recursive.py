@@ -23,6 +23,15 @@ class TreeSerializer(serializers.ModelSerializer):
         exclude = ('id', )
 
 
+class MaxDepthTreeSerializer(serializers.ModelSerializer):
+
+    children = RecursiveRelatedField(many=True, max_depth=1)
+
+    class Meta:
+        model = TreeModel
+        exclude = ('id', )
+
+
 class ChainModel(models.Model):
 
     name = models.CharField(max_length=127)
@@ -112,6 +121,31 @@ class TestRecursiveRelatedField(TestCase):
                     'previous': 1},
             'name': 'Chain Root',
             'previous': None
+        }
+        self.assertEqual(serializer.data, expected)
+
+    def test_max_depth(self):
+        serializer = MaxDepthTreeSerializer(self.tree_root)
+        expected = {
+            'children': [
+                {
+                    'children': [],
+                    'name': 'Child 1:0',
+                    'parent': 1
+                },
+                {
+                    'children': [],
+                    'name': 'Child 1:1',
+                    'parent': 1
+                },
+                {
+                    'children': [],
+                    'name': 'Child 1:2',
+                    'parent': 1
+                }
+            ],
+            'name': 'Tree Root',
+            'parent': None
         }
         self.assertEqual(serializer.data, expected)
 

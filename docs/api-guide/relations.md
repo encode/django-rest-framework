@@ -419,6 +419,12 @@ You could have the child objects nested recursively with the following serialize
             model = TreeModel
             exclude = ('id', )
 
+By default, the number of recursions is made until no further objects are found (`max_depth=-1`).
+
+However, you can restrict the number of recursions by passing the number of levels as `max_depth` argument:
+
+    children = RecursiveRelatedField(many=True, max_depth=1)
+
 Note that as for now the the `RecursiveRelatedField` is read only.
 
 ---

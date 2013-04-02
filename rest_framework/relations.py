@@ -482,9 +482,10 @@ class HyperlinkedIdentityField(Field):
 
 class RecursiveRelatedField(RelatedField):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, max_depth=-1, *args, **kwargs):
         super(RecursiveRelatedField, self).__init__(*args, **kwargs)
         # Forced read only.
+        self.max_depth = max_depth
         self.read_only = True
 
     def field_to_native(self, obj, field_name):
@@ -492,6 +493,12 @@ class RecursiveRelatedField(RelatedField):
         serializer_class = self.parent.__class__
         serializer = serializer_class()
         serializer.initialize(self.parent, field_name)
+
+        if self.max_depth > -1:
+            if self.max_depth > 0:
+                serializer.fields[field_name].max_depth = self.max_depth - 1
+            else:
+                return [] if self.many else None
 
         if self.many:
             related_manager = getattr(obj, self.source or field_name)
