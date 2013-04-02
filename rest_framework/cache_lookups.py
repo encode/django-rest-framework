@@ -2,18 +2,25 @@
 Provides a set of pluggable cache policies.
 """
 from django.core.cache import cache
+from django.core.exceptions import ImproperlyConfigured
 from rest_framework.exceptions import PreconditionFailed
 
 
 class BaseCacheLookup(object):
-    def get_header(self, obj):
-        return {}
+    def get_request_header(self):
+        raise ImproperlyConfigured('Subclass must implement `get_request_header`.')
+
+    def get_update_header(self):
+        raise ImproperlyConfigured('Subclass must implement `get_update_header`.')
+
+    def get_response_header(self, obj):
+        raise ImproperlyConfigured('Subclass must impelement `get_response_header`.')
+
+    def precondition_check(self, obj, request):
+        raise ImproperlyConfigured('Subclass must implement `precondition_check`.')
 
     def resource_unchanged(self, request):
-        """
-        Return `False` if resource has changed, `True` otherwise.
-        """
-        return False
+        raise ImproperlyConfigured('Subclass must implement `resource_unchanged`.')
 
 
 class ETagCacheLookup(BaseCacheLookup):
