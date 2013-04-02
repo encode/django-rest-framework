@@ -21,6 +21,7 @@ class ETagCacheLookup(BaseCacheLookup):
     """
     etag_variable = 'etag'
     request_header = 'HTTP_IF_NONE_MATCH'
+    update_header = 'HTTP_IF_MATCH'
 
     @staticmethod
     def get_cache_key(cls, pk):
@@ -36,6 +37,9 @@ class ETagCacheLookup(BaseCacheLookup):
     def get_request_header(self):
         return self.request_header
 
+    def get_update_header(self):
+        return self.update_header
+
     def get_response_header(self, obj):
         key = self.get_cache_key(obj, 'pk')
         etag = self.get_etag(obj)
@@ -43,7 +47,7 @@ class ETagCacheLookup(BaseCacheLookup):
         return {'ETag': etag}
 
     def precondition_check(self, obj, request):
-        if self.get_etag(obj) != request.META.get(self.get_request_header()):
+        if self.get_etag(obj) != request.META.get(self.get_update_header()):
             raise PreconditionFailed
 
     def resource_unchanged(self, request, key):
