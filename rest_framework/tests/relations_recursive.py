@@ -66,32 +66,32 @@ class TestRecursiveRelatedField(TestCase):
             'children': [
                 {
                     'children': [],
-                    'name': u'Child 1:0',
+                    'name': 'Child 1:0',
                     'parent': 1
                 },
                 {
                     'children': [
                         {
                             'children': [],
-                            'name': u'Child 2:0',
+                            'name': 'Child 2:0',
                             'parent': 3
                         },
                         {
                             'children': [],
-                            'name': u'Child 2:1',
+                            'name': 'Child 2:1',
                             'parent': 3
                         }
                     ],
-                    'name': u'Child 1:1',
+                    'name': 'Child 1:1',
                     'parent': 1
                 },
                 {
                     'children': [],
-                    'name': u'Child 1:2',
+                    'name': 'Child 1:2',
                     'parent': 1
                 }
             ],
-            'name': u'Tree Root',
+            'name': 'Tree Root',
             'parent': None
         }
         self.assertEqual(serializer.data, expected)
@@ -104,13 +104,13 @@ class TestRecursiveRelatedField(TestCase):
                     'next':
                         {'next':
                              {'next':  None,
-                              'name': u'Chain link 2',
+                              'name': 'Chain link 2',
                               'previous': 3},
-                         'name': u'Chain link 1',
+                         'name': 'Chain link 1',
                          'previous': 2},
-                    'name': u'Chain link 0',
+                    'name': 'Chain link 0',
                     'previous': 1},
-            'name': u'Chain Root',
+            'name': 'Chain Root',
             'previous': None
         }
         self.assertEqual(serializer.data, expected)
