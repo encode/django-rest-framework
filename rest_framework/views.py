@@ -350,7 +350,6 @@ class APIView(View):
         self.perform_authentication(request)
         self.check_permissions(request)
         self.check_throttles(request)
-        self.check_preemptive_cache(request)
 
         # Perform content negotiation and store the accepted info on the request
         neg = self.perform_content_negotiation(request)
