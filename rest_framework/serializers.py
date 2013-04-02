@@ -741,7 +741,7 @@ class ModelSerializer(Serializer):
         Override the default method to also include model field validation.
         """
         instance = super(ModelSerializer, self).from_native(data, files)
-        if instance:
+        if not self._errors:
             return self.full_clean(instance)
 
     def save_object(self, obj, **kwargs):
