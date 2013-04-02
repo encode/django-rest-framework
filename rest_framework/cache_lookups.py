@@ -22,7 +22,10 @@ class ETagCacheLookup(BaseCacheLookup):
 
     @staticmethod
     def get_cache_key(cls, pk):
-        class_name = cls.__class__.__name__
+        try:
+            class_name = cls.__name__  # class
+        except AttributeError:
+            class_name = cls.__class__.__name__  # instance
         return 'etag-{}-{}'.format(class_name, pk)
 
     def get_etag(self, obj):
