@@ -114,6 +114,7 @@ The following people have helped make REST framework great.
 * Dave Kuhn - [kuhnza]
 * Sitong Peng - [stoneg]
 * Victor Shih - [vshih]
+* Atle Frenvik Sveen - [atlefren]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -262,3 +263,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [kuhnza]: https://github.com/kuhnza
 [stoneg]: https://github.com/stoneg
 [vshih]: https://github.com/vshih
+[atlefren]: https://github.com/atlefren
