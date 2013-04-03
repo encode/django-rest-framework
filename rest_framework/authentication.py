@@ -10,7 +10,7 @@ from django.core.exceptions import ImproperlyConfigured
 from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.compat import CsrfViewMiddleware
 from rest_framework.compat import oauth, oauth_provider, oauth_provider_store
-from rest_framework.compat import oauth2_provider, oauth2_provider_forms
+from rest_framework.compat import oauth2_provider
 from rest_framework.authtoken.models import Token
 
 
@@ -325,11 +325,13 @@ class OAuth2Authentication(BaseAuthentication):
         except oauth2_provider.models.AccessToken.DoesNotExist:
             raise exceptions.AuthenticationFailed('Invalid token')
 
-        if not token.user.is_active:
+        user = token.user
+
+        if not user.is_active:
             msg = 'User inactive or deleted: %s' % user.username
             raise exceptions.AuthenticationFailed(msg)
 
-        return (token.user, token)
+        return (user, token)
 
     def authenticate_header(self, request):
         """
