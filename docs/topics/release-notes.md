@@ -46,6 +46,7 @@ You can determine your currently installed version using `pip freeze`:
 * URL hyperlinking in browseable API now handles more cases correctly.
 * Bugfix: Fix regression with DjangoFilterBackend not worthing correctly with single object views.
 * Bugfix: OAuth should fail hard when invalid token used.
+* Bugfix: Fix serializer potentially returning `None` object for models that define `__bool__` or `__len__`. 
 
 ### 2.2.5
 
