@@ -230,7 +230,7 @@ class OAuthAuthentication(BaseAuthentication):
         try:
             consumer_key = oauth_request.get_parameter('oauth_consumer_key')
             consumer = oauth_provider_store.get_consumer(request, oauth_request, consumer_key)
-        except oauth_provider_store.InvalidConsumerError as err:
+        except oauth_provider.store.InvalidConsumerError as err:
             raise exceptions.AuthenticationFailed(err)
 
         if consumer.status != oauth_provider.consts.ACCEPTED:
@@ -240,7 +240,7 @@ class OAuthAuthentication(BaseAuthentication):
         try:
             token_param = oauth_request.get_parameter('oauth_token')
             token = oauth_provider_store.get_access_token(request, oauth_request, consumer, token_param)
-        except oauth_provider_store.InvalidTokenError:
+        except oauth_provider.store.InvalidTokenError:
             msg = 'Invalid access token: %s' % oauth_request.get_parameter('oauth_token')
             raise exceptions.AuthenticationFailed(msg)
 
