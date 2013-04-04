@@ -48,6 +48,14 @@ If we need to, we can bind this viewset into two seperate views, like so:
 
 Typically we wouldn't do this, but would instead register the viewset with a router, and allow the urlconf to be automatically generated.
 
+There are two main advantages of using a `ViewSet` class over using a `View` class.
+
+* Repeated logic can be combined into a single class.  In the above example, we only need to specify the `queryset` once, and it'll be used across multiple views.
+* By using routers, we no longer need to deal with wiring up the URL conf ourselves.
+
+Both of these come with a trade-off.  Using regular views and URL confs is more explicit and gives you more control.  ViewSets are helpful if you want to get up and running quickly, or when you have a large API and you want to enforce a consistent URL configuration throughout.
+
+
 # API Reference
 
 ## ViewSet
@@ -62,9 +70,49 @@ The `ModelViewSet` class inherits from `GenericAPIView` and includes implementat
 
 The actions provided by the `ModelViewSet` class are `.list()`, `.retrieve()`,  `.create()`, `.update()`, and `.destroy()`.
 
+#### Example
+
+Because `ModelViewSet` extends `GenericAPIView`, you'll normally need to provide at least the `queryset` and `serializer_class` attributes.  For example:
+
+    class AccountViewSet(viewsets.ModelViewSet):
+        """
+        A simple ViewSet for viewing and editing accounts.
+        """
+        queryset = Account.objects.all()
+        serializer_class = AccountSerializer
+        permission_classes = [IsAccountAdminOrReadOnly]
+
+Note that you can use any of the standard attributes or method overrides provided by `GenericAPIView`.  For example, to use a `ViewSet` that dynamically determines the queryset it should operate on, you might do something like this:
+
+    class AccountViewSet(viewsets.ModelViewSet):
+        """
+        A simple ViewSet for viewing and editing the accounts
+        associated with the user.
+        """
+        serializer_class = AccountSerializer
+        permission_classes = [IsAccountAdminOrReadOnly]
+
+        def get_queryset(self):
+            return request.user.accounts.all()
+
+Also note that although this class provides the complete set of create/list/retrieve/update/destroy actions by default, you can restrict the available operations by using the standard permission classes.
+
 ## ReadOnlyModelViewSet
 
 The `ReadOnlyModelViewSet` class also inherits from `GenericAPIView`.  As with `ModelViewSet` it also includes implementations for various actions, but unlike `ModelViewSet` only provides the 'read-only' actions, `.list()` and `.retrieve()`.
+
+#### Example
+
+As with `ModelViewSet`, you'll normally need to provide at least the `queryset` and `serializer_class` attributes.  For example:
+
+    class AccountViewSet(viewsets.ReadOnlyModelViewSet):
+        """
+        A simple ViewSet for viewing accounts.
+        """
+        queryset = Account.objects.all()
+        serializer_class = AccountSerializer
+
+Again, as with `ModelViewSet`, you can use any of the standard attributes and method overrides available to `GenericAPIView`.
 
 # Custom ViewSet base classes 
 
@@ -90,7 +138,7 @@ For example, the definition of `ModelViewSet` looks like this:
 
 By creating your own base `ViewSet` classes, you can provide common behavior that can be reused in multiple views across your API.
 
-Note the that `ViewSetMixin` class can also be applied to the standard Django `View` class if you want to use REST framework's automatic routing, but don't want to use it's permissions, authentication and other API policies.
+For advanced usage, it's worth noting the that `ViewSetMixin` class can also be applied to the standard Django `View` class.  Doing so allows you to use REST framework's automatic routing, but don't want to use it's permissions, authentication and other API policies.
 
 ---
 
