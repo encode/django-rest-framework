@@ -12,13 +12,26 @@ Let's take our current set of views, and refactor them into view sets.
 
 First of all let's refactor our `UserListView` and `UserDetailView` views into a single `UserViewSet`.  We can remove the two views, and replace then with a single class:
 
-    class UserViewSet(viewsets.ModelViewSet):
+    class UserViewSet(viewsets.ReadOnlyModelViewSet):
+        """
+        This viewset automatically provides `list` and `detail` actions.
+        """
         queryset = User.objects.all()
         serializer_class = UserSerializer
 
 Next we're going to replace the `SnippetList`, `SnippetDetail` and `SnippetHighlight` view classes.  We can remove the three views, and again replace them with a single class.
 
+    from rest_framework import viewsets
+    from rest_framework.decorators import link
+
     class SnippetViewSet(viewsets.ModelViewSet):
+        """
+        This viewset automatically provides `list`, `create`, `retrieve`,
+        `update` and `destroy` actions.
+        
+        Additionally we provide an extra `highlight` action, by using the
+        `@link` decorator. 
+        """
         queryset = Snippet.objects.all()
         serializer_class = SnippetSerializer
         permission_classes = (permissions.IsAuthenticatedOrReadOnly,
