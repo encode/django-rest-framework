@@ -260,3 +260,14 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
         elif autoescape:
             words[i] = escape(word)
     return ''.join(words)
+
+
+@register.filter
+def break_long_headers(header):
+    """
+    Breaks headers longer than 160 characters (~page length)
+    when possible (are comma separated)
+    """
+    if len(header) > 160 and ',' in header:
+        header = mark_safe('<br> ' + ', <br>'.join(header.split(',')))
+    return header
