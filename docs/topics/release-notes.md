@@ -40,7 +40,9 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.2.x series
 
-### Master
+### 2.2.6
+
+**Date**: 4th April 2013
 
 * OAuth2 authentication no longer requires unneccessary URL parameters in addition to the token.
 * URL hyperlinking in browseable API now handles more cases correctly.
