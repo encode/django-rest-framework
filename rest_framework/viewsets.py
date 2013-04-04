@@ -15,9 +15,10 @@ class ViewSetMixin(object):
 
     view = MyViewSet.as_view({'get': 'list', 'post': 'create'})
     """
+    _is_viewset = True
 
     @classonlymethod
-    def as_view(cls, actions=None, **initkwargs):
+    def as_view(cls, actions=None, name_suffix=None, **initkwargs):
         """
         Main entry point for a request-response process.
 
@@ -57,6 +58,8 @@ class ViewSetMixin(object):
         # and possible attributes set by decorators
         # like csrf_exempt from dispatch
         update_wrapper(view, cls.dispatch, assigned=())
+
+        view.cls = cls
         return view
 
 
