@@ -268,6 +268,6 @@ def break_long_headers(header):
     Breaks headers longer than 160 characters (~page length)
     when possible (are comma separated)
     """
-    if len(header) > 160:
+    if len(header) > 160 and ',' in header:
         header = mark_safe('<br> ' + ', <br>'.join(header.split(',')))
     return header
