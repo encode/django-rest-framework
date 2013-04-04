@@ -44,6 +44,7 @@ You can determine your currently installed version using `pip freeze`:
 
 * OAuth2 authentication no longer requires unneccessary URL parameters in addition to the token.
 * URL hyperlinking in browseable API now handles more cases correctly.
+* Long HTTP headers in browsable API are broken in multiple lines when possible.
 * Bugfix: Fix regression with DjangoFilterBackend not worthing correctly with single object views.
 * Bugfix: OAuth should fail hard when invalid token used.
 * Bugfix: Fix serializer potentially returning `None` object for models that define `__bool__` or `__len__`. 
