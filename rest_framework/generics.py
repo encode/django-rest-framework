@@ -187,8 +187,7 @@ class UpdateAPIView(mixins.UpdateModelMixin,
         return self.update(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):
-        kwargs['partial'] = True
-        return self.update(request, *args, **kwargs)
+        return self.partial_update(request, *args, **kwargs)
 
 
 class ListCreateAPIView(mixins.ListModelMixin,
@@ -217,8 +216,7 @@ class RetrieveUpdateAPIView(mixins.RetrieveModelMixin,
         return self.update(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):
-        kwargs['partial'] = True
-        return self.update(request, *args, **kwargs)
+        return self.partial_update(request, *args, **kwargs)
 
 
 class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
@@ -248,8 +246,7 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
         return self.update(request, *args, **kwargs)
 
     def patch(self, request, *args, **kwargs):
-        kwargs['partial'] = True
-        return self.update(request, *args, **kwargs)
+        return self.partial_update(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)

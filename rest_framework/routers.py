@@ -20,8 +20,16 @@ class BaseRouter(object):
 
 class DefaultRouter(BaseRouter):
     route_list = [
-        (r'$', {'get': 'list', 'post': 'create'}, 'list'),
-        (r'(?P<pk>[^/]+)/$', {'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}, 'detail'),
+        (r'$', {
+            'get': 'list',
+            'post': 'create'
+        }, 'list'),
+        (r'(?P<pk>[^/]+)/$', {
+            'get': 'retrieve',
+            'put': 'update',
+            'patch': 'partial_update',
+            'delete': 'destroy'
+        }, 'detail'),
     ]
     extra_routes = r'(?P<pk>[^/]+)/%s/$'
     name_format = '%s-%s'

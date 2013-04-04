@@ -137,6 +137,10 @@ class UpdateModelMixin(object):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
+
     def pre_save(self, obj):
         """
         Set any attributes on the object that are implicit in the request.

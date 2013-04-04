@@ -208,13 +208,13 @@ Should be mixed in with [SingleObjectAPIView].
 
 Provides a `.update(request, *args, **kwargs)` method, that implements updating and saving an existing model instance.
 
+Also provides a `.partial_update(request, *args, **kwargs)` method, which is similar to the `update` method, except that all fields for the update will be optional.  This allows support for HTTP `PATCH` requests.
+
 If an object is updated this returns a `200 OK` response, with a serialized representation of the object as the body of the response.
 
 If an object is created, for example when making a `DELETE` request followed by a `PUT` request to the same URL, this returns a `201 Created` response, with a serialized representation of the object as the body of the response.
 
 If the request data provided for updating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
-
-A boolean `partial` keyword argument may be supplied to the `.update()` method.  If `partial` is set to `True`, all fields for the update will be optional.  This allows support for HTTP `PATCH` requests.
 
 Should be mixed in with [SingleObjectAPIView].
 
