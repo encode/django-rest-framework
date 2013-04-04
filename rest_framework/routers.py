@@ -29,7 +29,7 @@ class DefaultRouter(BaseRouter):
     def get_urlpatterns(self):
         ret = []
         for prefix, viewset, base_name in self.registry:
-            # Bind standard routes
+            # Bind standard CRUD routes
             for suffix, action_mapping, name_format in self.route_list:
 
                 # Only actions which actually exist on the viewset will be bound
@@ -44,10 +44,12 @@ class DefaultRouter(BaseRouter):
                 name = name_format % base_name
                 ret.append(url(regex, view, name=name))
 
-            # Bind any extra @action or @link routes
+            # Bind any extra `@action` or `@link` routes
             for attr in dir(viewset):
                 func = getattr(viewset, attr)
                 http_method = getattr(func, 'bind_to_method', None)
+
+                # Skip if this is not an @action or @link method
                 if not http_method:
                     continue
 
