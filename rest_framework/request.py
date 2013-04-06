@@ -10,6 +10,7 @@ The wrapped request then offers a richer API, in particular :
     - form overloading of HTTP method, content type and content
 """
 from __future__ import unicode_literals
+import json
 from django.conf import settings
 from django.http import QueryDict
 from django.http.multipartparser import parse_header
@@ -27,6 +28,14 @@ def is_form_media_type(media_type):
     base_media_type, params = parse_header(media_type.encode(HTTP_HEADER_ENCODING))
     return (base_media_type == 'application/x-www-form-urlencoded' or
             base_media_type == 'multipart/form-data')
+
+
+def is_json_media_type(media_type):
+    """
+    Return True if the media type is a valid json media type.
+    """
+    base_media_type, params = parse_header(media_type.encode(HTTP_HEADER_ENCODING))
+    return base_media_type == 'application/json'
 
 
 class Empty(object):
@@ -248,7 +257,7 @@ class Request(object):
         """
         try:
             content_length = int(self.META.get('CONTENT_LENGTH',
-                                    self.META.get('HTTP_CONTENT_LENGTH')))
+                                 self.META.get('HTTP_CONTENT_LENGTH')))
         except (ValueError, TypeError):
             content_length = 0
 
@@ -271,15 +280,21 @@ class Request(object):
             (self._CONTENT_PARAM and self._CONTENTTYPE_PARAM)
         )
 
-        # We only need to use form overloading on form POST requests.
-        if (not USE_FORM_OVERLOADING
-            or self._request.method != 'POST'
-            or not is_form_media_type(self._content_type)):
+        # We only need to use form overloading on POST requests.
+        if not USE_FORM_OVERLOADING or self._request.method != 'POST':
             return
 
         # At this point we're committed to parsing the request as form data.
-        self._data = self._request.POST
-        self._files = self._request.FILES
+        if is_form_media_type(self._content_type):
+            self._data = self._request.POST
+            self._files = self._request.FILES
+        elif is_json_media_type(self._content_type):
+            try:
+                self._data = json.loads(self._request.body)
+            except ValueError:
+                return
+        else:
+            return
 
         # Method overloading - change the method and remove the param from the content.
         if (self._METHOD_PARAM and
