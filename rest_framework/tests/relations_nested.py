@@ -13,6 +13,15 @@ class OneToOneSource(models.Model):
     target = models.OneToOneField(OneToOneTarget, related_name='source')
 
 
+class OneToManyTarget(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class OneToManySource(models.Model):
+    name = models.CharField(max_length=100)
+    target = models.ForeignKey(OneToManyTarget, related_name='sources')
+
+        
 class ReverseNestedOneToOneTests(TestCase):
     def setUp(self):
         class OneToOneSourceSerializer(serializers.ModelSerializer):
@@ -189,3 +198,92 @@ class ForwardNestedOneToOneTests(TestCase):
     #         {'id': 3, 'name': 'target-3', 'source': None}
     #     ]
     #     self.assertEqual(serializer.data, expected)
+
+
+class ReverseNestedOneToManyTests(TestCase):
+    def setUp(self):
+        class OneToManySourceSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = OneToManySource
+                fields = ('id', 'name')
+
+        class OneToManyTargetSerializer(serializers.ModelSerializer):
+            sources = OneToManySourceSerializer(many=True, allow_add_remove=True)
+
+            class Meta:
+                model = OneToManyTarget
+                fields = ('id', 'name', 'sources')
+
+        self.Serializer = OneToManyTargetSerializer
+
+        target = OneToManyTarget(name='target-1')
+        target.save()
+        for idx in range(1, 4):
+            source = OneToManySource(name='source-%d' % idx, target=target)
+            source.save()
+
+    def test_one_to_many_retrieve(self):
+        queryset = OneToManyTarget.objects.all()
+        serializer = self.Serializer(queryset)
+        expected = [
+            {'id': 1, 'name': 'target-1', 'sources': [{'id': 1, 'name': 'source-1'},
+                                                      {'id': 2, 'name': 'source-2'},
+                                                      {'id': 3, 'name': 'source-3'}]},
+        ]
+        self.assertEqual(serializer.data, expected)
+
+    def test_one_to_many_create(self):
+        data = {'id': 1, 'name': 'target-1', 'sources': [{'id': 1, 'name': 'source-1'},
+                                                         {'id': 2, 'name': 'source-2'},
+                                                         {'id': 3, 'name': 'source-3'},
+                                                         {'id': 4, 'name': 'source-4'}]}
+        instance = OneToManyTarget.objects.get(pk=1)
+        serializer = self.Serializer(instance, data=data)
+        self.assertTrue(serializer.is_valid())
+        obj = serializer.save()
+        self.assertEqual(serializer.data, data)
+        self.assertEqual(obj.name, 'target-1')
+
+        # Ensure source 4 is added, and everything else is as
+        # expected.
+        queryset = OneToManyTarget.objects.all()
+        serializer = self.Serializer(queryset)
+        expected = [
+            {'id': 1, 'name': 'target-1', 'sources': [{'id': 1, 'name': 'source-1'},
+                                                      {'id': 2, 'name': 'source-2'},
+                                                      {'id': 3, 'name': 'source-3'},
+                                                      {'id': 4, 'name': 'source-4'}]}
+        ]
+        self.assertEqual(serializer.data, expected)
+
+    def test_one_to_many_create_with_invalid_data(self):
+        data = {'id': 1, 'name': 'target-1', 'sources': [{'id': 1, 'name': 'source-1'},
+                                                         {'id': 2, 'name': 'source-2'},
+                                                         {'id': 3, 'name': 'source-3'},
+                                                         {'id': 4}]}
+        serializer = self.Serializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors, {'sources': [{}, {}, {}, {'name': ['This field is required.']}]})
+
+    def test_one_to_many_update(self):
+        data = {'id': 1, 'name': 'target-1-updated', 'sources': [{'id': 1, 'name': 'source-1-updated'},
+                                                                 {'id': 2, 'name': 'source-2'},
+                                                                 {'id': 3, 'name': 'source-3'}]}
+        instance = OneToManyTarget.objects.get(pk=1)
+        serializer = self.Serializer(instance, data=data)
+        self.assertTrue(serializer.is_valid())
+        obj = serializer.save()
+        self.assertEqual(serializer.data, data)
+        self.assertEqual(obj.name, 'target-1-updated')
+
+        # Ensure (target 1, source 1) are updated,
+        # and everything else is as expected.
+        queryset = OneToManyTarget.objects.all()
+        serializer = self.Serializer(queryset)
+        expected = [
+            {'id': 1, 'name': 'target-1-updated', 'sources': [{'id': 1, 'name': 'source-1-updated'},
+                                                              {'id': 2, 'name': 'source-2'},
+                                                              {'id': 3, 'name': 'source-3'}]}
+
+        ]
+        self.assertEqual(serializer.data, expected)
