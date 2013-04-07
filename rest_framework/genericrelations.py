@@ -55,6 +55,13 @@ class GenericRelatedField(serializers.WritableField):
         # Get the serializer responsible for input resolving
         serializer = self.determine_serializer_for_data(value)
         serializer.initialize(self.parent, self.source)
+
+        # The following is necessary due to the inconsistency of the `from_native` argument count when a serializer
+        # accepts files.
+        args = [value]
+        import inspect
+        if len(inspect.getargspec(serializer.from_native).args) > 2:
+            args.append(None)
         return serializer.from_native(value)
 
     def determine_deserializer_for_data(self, value):
