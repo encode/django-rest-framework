@@ -201,7 +201,7 @@ class BulkUpdateSerializerTests(TestCase):
                 'author': 'Haruki Murakami'
             }
         ]
-        serializer = self.BookSerializer(self.books(), data=data, many=True, allow_delete=True)
+        serializer = self.BookSerializer(self.books(), data=data, many=True, allow_add_remove=True)
         self.assertEqual(serializer.is_valid(), True)
         self.assertEqual(serializer.data, data)
         serializer.save()
@@ -223,7 +223,7 @@ class BulkUpdateSerializerTests(TestCase):
                 'author': 'Haruki Murakami'
             }
         ]
-        serializer = self.BookSerializer(self.books(), data=data, many=True, allow_delete=True)
+        serializer = self.BookSerializer(self.books(), data=data, many=True, allow_add_remove=True)
         self.assertEqual(serializer.is_valid(), True)
         self.assertEqual(serializer.data, data)
         serializer.save()
@@ -249,6 +249,6 @@ class BulkUpdateSerializerTests(TestCase):
             {},
             {'id': ['Enter a whole number.']}
         ]
-        serializer = self.BookSerializer(self.books(), data=data, many=True, allow_delete=True)
+        serializer = self.BookSerializer(self.books(), data=data, many=True, allow_add_remove=True)
         self.assertEqual(serializer.is_valid(), False)
         self.assertEqual(serializer.errors, expected_errors)
