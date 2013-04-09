@@ -87,9 +87,7 @@ else:
         raise ImportError("User model is not to be found.")
 
 
-# First implementation of Django class-based views did not include head method
-# in base View class - https://code.djangoproject.com/ticket/15668
-if django.VERSION >= (1, 4):
+if django.VERSION >= (1, 5):
     from django.views.generic import View
 else:
     from django.views.generic import View as _View
@@ -97,6 +95,8 @@ else:
     from django.utils.functional import update_wrapper
 
     class View(_View):
+        # 1.3 does not include head method in base View class
+        # See: https://code.djangoproject.com/ticket/15668
         @classonlymethod
         def as_view(cls, **initkwargs):
             """
@@ -126,11 +126,15 @@ else:
             update_wrapper(view, cls.dispatch, assigned=())
             return view
 
-# Taken from @markotibold's attempt at supporting PATCH.
-# https://github.com/markotibold/django-rest-framework/tree/patch
-http_method_names = set(View.http_method_names)
-http_method_names.add('patch')
-View.http_method_names = list(http_method_names)  # PATCH method is not implemented by Django
+        # _allowed_methods only present from 1.5 onwards
+        def _allowed_methods(self):
+            return [m.upper() for m in self.http_method_names if hasattr(self, m)]
+
+
+# PATCH method is not implemented by Django
+if 'patch' not in View.http_method_names:
+    View.http_method_names = View.http_method_names + ['patch']
+
 
 # PUT, DELETE do not require CSRF until 1.4.  They should.  Make it better.
 if django.VERSION >= (1, 4):

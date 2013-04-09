@@ -38,10 +38,9 @@ class APIView(View):
     @property
     def allowed_methods(self):
         """
-        Return the list of allowed HTTP methods, uppercased.
+        Wrap Django's private `_allowed_methods` interface in a public property.
         """
-        return [method.upper() for method in self.http_method_names
-                if hasattr(self, method)]
+        return self._allowed_methods()
 
     @property
     def default_response_headers(self):
@@ -69,7 +68,8 @@ class APIView(View):
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
-        Called if `request.method` does not correspond to a handler method.
+        If `request.method` does not correspond to a handler method,
+        determine what kind of exception to raise.
         """
         raise exceptions.MethodNotAllowed(request.method)
 
