@@ -97,11 +97,18 @@ class RetrieveModelMixin(object):
     Should be mixed in with `SingleObjectAPIView`.
     """
     def retrieve(self, request, *args, **kwargs):
+        cached_object = self.check_preemptive_cache(request)
+        if cached_object:
+            return cached_object
+
         queryset = self.get_queryset()
         filtered_queryset = self.filter_queryset(queryset)
         self.object = self.get_object(filtered_queryset)
+
+        headers = self.get_cache_lookup_response_headers(self.object)
+
         serializer = self.get_serializer(self.object)
-        return Response(serializer.data)
+        return Response(serializer.data, headers=headers)
 
 
 class UpdateModelMixin(object):
@@ -122,6 +129,7 @@ class UpdateModelMixin(object):
             save_kwargs = {'force_insert': True}
             success_status_code = status.HTTP_201_CREATED
         else:
+            self.cache_precondition_check(self.object, request)
             created = False
             save_kwargs = {'force_update': True}
             success_status_code = status.HTTP_200_OK
@@ -166,5 +174,6 @@ class DestroyModelMixin(object):
     """
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
+        self.cache_precondition_check(obj, request)
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

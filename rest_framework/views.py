@@ -60,6 +60,7 @@ class APIView(View):
     throttle_classes = api_settings.DEFAULT_THROTTLE_CLASSES
     permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
     content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
+    cache_lookup_classes = api_settings.DEFAULT_CACHE_LOOKUP_CLASSES
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -241,6 +242,12 @@ class APIView(View):
             self._negotiator = self.content_negotiation_class()
         return self._negotiator
 
+    def get_cache_lookups(self):
+        """
+        Instantiates and returns the list of cache lookups that this view requires.
+        """
+        return [cache_lookup() for cache_lookup in self.cache_lookup_classes]
+
     # API policy implementation methods
 
     def perform_content_negotiation(self, request, force=False):
@@ -293,6 +300,22 @@ class APIView(View):
         for throttle in self.get_throttles():
             if not throttle.allow_request(request, self):
                 self.throttled(request, throttle.wait())
+
+    def check_preemptive_cache(self, request):
+        for cache_lookup in self.get_cache_lookups():
+            cache_key = cache_lookup.get_cache_key(self.model, self.kwargs['pk'])
+            if cache_lookup.resource_unchanged(request, cache_key):
+                return Response(status=304)
+
+    def get_cache_lookup_response_headers(self, obj):
+        headers = {}
+        for cache_lookup in self.get_cache_lookups():
+            headers.update(cache_lookup.get_response_header(obj))
+        return headers
+
+    def cache_precondition_check(self, obj, request):
+        for cache_lookup in self.get_cache_lookups():
+            cache_lookup.precondition_check(obj, request)
 
     # Dispatch methods
 

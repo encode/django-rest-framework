@@ -47,6 +47,8 @@ DEFAULTS = {
     ),
     'DEFAULT_THROTTLE_CLASSES': (
     ),
+    'DEFAULT_CACHE_LOOKUP_CLASSES': (
+    ),
 
     'DEFAULT_CONTENT_NEGOTIATION_CLASS':
         'rest_framework.negotiation.DefaultContentNegotiation',
