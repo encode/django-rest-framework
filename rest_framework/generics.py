@@ -26,6 +26,7 @@ class GenericAPIView(views.APIView):
     pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
     allow_empty = True
     page_kwarg = 'page'
+    lookup_kwarg = 'pk'
 
     # Pending deprecation
     model = None
@@ -167,23 +168,26 @@ class GenericAPIView(views.APIView):
         By default this requires `self.queryset` and a `pk` or `slug` argument
         in the URLconf, but subclasses can override this to return any object.
         """
-        # Use a custom queryset if provided; this is required for subclasses
-        # like DateDetailView
+        # Determine the base queryset to use.
         if queryset is None:
             queryset = self.get_queryset()
-        # Next, try looking up by primary key.
+
+        # Perform the lookup filtering.
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         slug = self.kwargs.get(self.slug_url_kwarg, None)
-        if pk is not None:
+        lookup = self.kwargs.get(self.lookup_kwarg, None)
+
+        if lookup is not None:
+            queryset = queryset.filter(**{self.lookup_kwarg: lookup})
+        elif pk is not None:
             queryset = queryset.filter(pk=pk)
-        # Next, try looking up by slug.
         elif slug is not None:
             queryset = queryset.filter(**{self.slug_field: slug})
-        # If none of those are defined, it's an error.
         else:
             raise AttributeError("Generic detail view %s must be called with "
                                  "either an object pk or a slug."
                                  % self.__class__.__name__)
+
         try:
             # Get the single item from the filtered queryset
             obj = queryset.get()
@@ -191,7 +195,9 @@ class GenericAPIView(views.APIView):
             raise Http404(_("No %(verbose_name)s found matching the query") %
                           {'verbose_name': queryset.model._meta.verbose_name})
 
+        # May raise a permission denied
         self.check_object_permissions(self.request, obj)
+
         return obj
 
 
