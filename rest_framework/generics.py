@@ -4,21 +4,35 @@ Generic views that provide commonly needed behaviour.
 from __future__ import unicode_literals
 from rest_framework import views, mixins
 from rest_framework.settings import api_settings
-from django.views.generic.detail import SingleObjectMixin
-from django.views.generic.list import MultipleObjectMixin
-
+from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
+from django.core.paginator import Paginator, InvalidPage
+from django.http import Http404
+from django.utils.translation import ugettext as _
 
 ### Base classes for the generic views ###
+
 
 class GenericAPIView(views.APIView):
     """
     Base class for all other generic views.
     """
 
-    model = None
+    queryset = None
     serializer_class = None
-    model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
+
     filter_backend = api_settings.FILTER_BACKEND
+    paginate_by = api_settings.PAGINATE_BY
+    paginate_by_param = api_settings.PAGINATE_BY_PARAM
+    pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
+    allow_empty = True
+    page_kwarg = 'page'
+
+    # Pending deprecation
+    model = None
+    model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
+    pk_url_kwarg = 'pk'  # Not provided in Django 1.3
+    slug_url_kwarg = 'slug'  # Not provided in Django 1.3
+    slug_field = 'slug'
 
     def filter_queryset(self, queryset):
         """
@@ -82,15 +96,7 @@ class GenericAPIView(views.APIView):
         """
         pass
 
-
-class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
-    """
-    Base class for generic views onto a queryset.
-    """
-
-    paginate_by = api_settings.PAGINATE_BY
-    paginate_by_param = api_settings.PAGINATE_BY_PARAM
-    pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
+    # Pagination
 
     def get_pagination_serializer(self, page=None):
         """
@@ -116,28 +122,81 @@ class MultipleObjectAPIView(MultipleObjectMixin, GenericAPIView):
                 pass
         return self.paginate_by
 
+    def paginate_queryset(self, queryset, page_size, paginator_class=Paginator):
+        """
+        Paginate a queryset.
+        """
+        paginator = paginator_class(queryset, page_size, allow_empty_first_page=self.allow_empty)
+        page_kwarg = self.page_kwarg
+        page = self.kwargs.get(page_kwarg) or self.request.GET.get(page_kwarg) or 1
+        try:
+            page_number = int(page)
+        except ValueError:
+            if page == 'last':
+                page_number = paginator.num_pages
+            else:
+                raise Http404(_("Page is not 'last', nor can it be converted to an int."))
+        try:
+            page = paginator.page(page_number)
+            return (paginator, page, page.object_list, page.has_other_pages())
+        except InvalidPage as e:
+            raise Http404(_('Invalid page (%(page_number)s): %(message)s') % {
+                                'page_number': page_number,
+                                'message': str(e)
+            })
 
-class SingleObjectAPIView(SingleObjectMixin, GenericAPIView):
-    """
-    Base class for generic views onto a model instance.
-    """
-
-    pk_url_kwarg = 'pk'  # Not provided in Django 1.3
-    slug_url_kwarg = 'slug'  # Not provided in Django 1.3
-    slug_field = 'slug'
+    def get_queryset(self):
+        """
+        Get the list of items for this view. This must be an iterable, and may
+        be a queryset (in which qs-specific behavior will be enabled).
+        """
+        if self.queryset is not None:
+            queryset = self.queryset
+            if hasattr(queryset, '_clone'):
+                queryset = queryset._clone()
+        elif self.model is not None:
+            queryset = self.model._default_manager.all()
+        else:
+            raise ImproperlyConfigured("'%s' must define 'queryset' or 'model'"
+                                       % self.__class__.__name__)
+        return queryset
 
     def get_object(self, queryset=None):
         """
-        Override default to add support for object-level permissions.
+        Returns the object the view is displaying.
+        By default this requires `self.queryset` and a `pk` or `slug` argument
+        in the URLconf, but subclasses can override this to return any object.
         """
-        obj = super(SingleObjectAPIView, self).get_object(queryset)
+        # Use a custom queryset if provided; this is required for subclasses
+        # like DateDetailView
+        if queryset is None:
+            queryset = self.get_queryset()
+        # Next, try looking up by primary key.
+        pk = self.kwargs.get(self.pk_url_kwarg, None)
+        slug = self.kwargs.get(self.slug_url_kwarg, None)
+        if pk is not None:
+            queryset = queryset.filter(pk=pk)
+        # Next, try looking up by slug.
+        elif slug is not None:
+            queryset = queryset.filter(**{self.slug_field: slug})
+        # If none of those are defined, it's an error.
+        else:
+            raise AttributeError("Generic detail view %s must be called with "
+                                 "either an object pk or a slug."
+                                 % self.__class__.__name__)
+        try:
+            # Get the single item from the filtered queryset
+            obj = queryset.get()
+        except ObjectDoesNotExist:
+            raise Http404(_("No %(verbose_name)s found matching the query") %
+                          {'verbose_name': queryset.model._meta.verbose_name})
+
         self.check_object_permissions(self.request, obj)
         return obj
 
 
 ### Concrete view classes that provide method handlers ###
-### by composing the mixin classes with a base view.   ###
-
+### by composing the mixin classes with the base view. ###
 
 class CreateAPIView(mixins.CreateModelMixin,
                     GenericAPIView):
@@ -150,7 +209,7 @@ class CreateAPIView(mixins.CreateModelMixin,
 
 
 class ListAPIView(mixins.ListModelMixin,
-                  MultipleObjectAPIView):
+                  GenericAPIView):
     """
     Concrete view for listing a queryset.
     """
@@ -159,7 +218,7 @@ class ListAPIView(mixins.ListModelMixin,
 
 
 class RetrieveAPIView(mixins.RetrieveModelMixin,
-                      SingleObjectAPIView):
+                      GenericAPIView):
     """
     Concrete view for retrieving a model instance.
     """
@@ -168,7 +227,7 @@ class RetrieveAPIView(mixins.RetrieveModelMixin,
 
 
 class DestroyAPIView(mixins.DestroyModelMixin,
-                     SingleObjectAPIView):
+                     GenericAPIView):
 
     """
     Concrete view for deleting a model instance.
@@ -178,7 +237,7 @@ class DestroyAPIView(mixins.DestroyModelMixin,
 
 
 class UpdateAPIView(mixins.UpdateModelMixin,
-                    SingleObjectAPIView):
+                    GenericAPIView):
 
     """
     Concrete view for updating a model instance.
@@ -192,7 +251,7 @@ class UpdateAPIView(mixins.UpdateModelMixin,
 
 class ListCreateAPIView(mixins.ListModelMixin,
                         mixins.CreateModelMixin,
-                        MultipleObjectAPIView):
+                        GenericAPIView):
     """
     Concrete view for listing a queryset or creating a model instance.
     """
@@ -205,7 +264,7 @@ class ListCreateAPIView(mixins.ListModelMixin,
 
 class RetrieveUpdateAPIView(mixins.RetrieveModelMixin,
                             mixins.UpdateModelMixin,
-                            SingleObjectAPIView):
+                            GenericAPIView):
     """
     Concrete view for retrieving, updating a model instance.
     """
@@ -221,7 +280,7 @@ class RetrieveUpdateAPIView(mixins.RetrieveModelMixin,
 
 class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
                              mixins.DestroyModelMixin,
-                             SingleObjectAPIView):
+                             GenericAPIView):
     """
     Concrete view for retrieving or deleting a model instance.
     """
@@ -235,7 +294,7 @@ class RetrieveDestroyAPIView(mixins.RetrieveModelMixin,
 class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
                                    mixins.UpdateModelMixin,
                                    mixins.DestroyModelMixin,
-                                   SingleObjectAPIView):
+                                   GenericAPIView):
     """
     Concrete view for retrieving, updating or deleting a model instance.
     """
@@ -250,3 +309,13 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
+
+
+### Deprecated classes ###
+
+class MultipleObjectAPIView(GenericAPIView):
+    pass
+
+
+class SingleObjectAPIView(GenericAPIView):
+    pass

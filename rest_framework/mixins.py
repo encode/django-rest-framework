@@ -72,8 +72,7 @@ class ListModelMixin(object):
 
         # Default is to allow empty querysets.  This can be altered by setting
         # `.allow_empty = False`, to raise 404 errors on empty querysets.
-        allow_empty = self.get_allow_empty()
-        if not allow_empty and not self.object_list:
+        if not self.allow_empty and not self.object_list:
             class_name = self.__class__.__name__
             error_msg = self.empty_error % {'class_name': class_name}
             raise Http404(error_msg)
@@ -148,7 +147,7 @@ class UpdateModelMixin(object):
         # pk and/or slug attributes are implicit in the URL.
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         slug = self.kwargs.get(self.slug_url_kwarg, None)
-        slug_field = slug and self.get_slug_field() or None
+        slug_field = slug and self.slug_field or None
 
         if pk:
             setattr(obj, 'pk', pk)
