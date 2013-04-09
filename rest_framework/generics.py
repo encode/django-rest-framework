@@ -148,25 +148,22 @@ class GenericAPIView(views.APIView):
 
     def get_queryset(self):
         """
-        Get the list of items for this view. This must be an iterable, and may
-        be a queryset (in which qs-specific behavior will be enabled).
+        Get the list of items for this view.
+
+        This must be an iterable, and may be a queryset.
         """
         if self.queryset is not None:
-            queryset = self.queryset
-            if hasattr(queryset, '_clone'):
-                queryset = queryset._clone()
-        elif self.model is not None:
-            queryset = self.model._default_manager.all()
-        else:
-            raise ImproperlyConfigured("'%s' must define 'queryset' or 'model'"
-                                       % self.__class__.__name__)
-        return queryset
+            return self.queryset._clone()
+
+        if self.model is not None:
+            return self.model._default_manager.all()
+
+        raise ImproperlyConfigured("'%s' must define 'queryset' or 'model'"
+                                    % self.__class__.__name__)
 
     def get_object(self, queryset=None):
         """
         Returns the object the view is displaying.
-        By default this requires `self.queryset` and a `pk` or `slug` argument
-        in the URLconf, but subclasses can override this to return any object.
         """
         # Determine the base queryset to use.
         if queryset is None:
