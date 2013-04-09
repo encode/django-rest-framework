@@ -76,14 +76,12 @@ class ModelViewSet(mixins.CreateModelMixin,
                     mixins.DestroyModelMixin,
                     mixins.ListModelMixin,
                     ViewSetMixin,
-                    generics.MultipleObjectAPIView,
-                    generics.SingleObjectAPIView):
+                    generics.GenericAPIView):
     pass
 
 
 class ReadOnlyModelViewSet(mixins.RetrieveModelMixin,
                            mixins.ListModelMixin,
                            ViewSetMixin,
-                           generics.MultipleObjectAPIView,
-                           generics.SingleObjectAPIView):
+                           generics.GenericAPIView):
     pass

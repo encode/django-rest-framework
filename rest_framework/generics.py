@@ -35,15 +35,6 @@ class GenericAPIView(views.APIView):
     slug_url_kwarg = 'slug'  # Not provided in Django 1.3
     slug_field = 'slug'
 
-    def filter_queryset(self, queryset):
-        """
-        Given a queryset, filter it with whichever filter backend is in use.
-        """
-        if not self.filter_backend:
-            return queryset
-        backend = self.filter_backend()
-        return backend.filter_queryset(self.request, queryset, self)
-
     def get_serializer_context(self):
         """
         Extra context provided to the serializer class.
@@ -53,24 +44,6 @@ class GenericAPIView(views.APIView):
             'format': self.format_kwarg,
             'view': self
         }
-
-    def get_serializer_class(self):
-        """
-        Return the class to use for the serializer.
-
-        Defaults to using `self.serializer_class`, falls back to constructing a
-        model serializer class using `self.model_serializer_class`, with
-        `self.model` as the model.
-        """
-        serializer_class = self.serializer_class
-
-        if serializer_class is None:
-            class DefaultSerializer(self.model_serializer_class):
-                class Meta:
-                    model = self.model
-            serializer_class = DefaultSerializer
-
-        return serializer_class
 
     def get_serializer(self, instance=None, data=None,
                        files=None, many=False, partial=False):
@@ -82,22 +55,6 @@ class GenericAPIView(views.APIView):
         context = self.get_serializer_context()
         return serializer_class(instance, data=data, files=files,
                                 many=many, partial=partial, context=context)
-
-    def pre_save(self, obj):
-        """
-        Placeholder method for calling before saving an object.
-        May be used eg. to set attributes on the object that are implicit
-        in either the request, or the url.
-        """
-        pass
-
-    def post_save(self, obj, created=False):
-        """
-        Placeholder method for calling after saving an object.
-        """
-        pass
-
-    # Pagination
 
     def get_pagination_serializer(self, page=None):
         """
@@ -111,9 +68,14 @@ class GenericAPIView(views.APIView):
         context = self.get_serializer_context()
         return pagination_serializer_class(instance=page, context=context)
 
-    def get_paginate_by(self, queryset):
+    def get_paginate_by(self, queryset=None):
         """
         Return the size of pages to use with pagination.
+
+        If `PAGINATE_BY_PARAM` is set it will attempt to get the page size
+        from a named query parameter in the url, eg. ?page_size=100
+
+        Otherwise defaults to using `self.paginate_by`.
         """
         if self.paginate_by_param:
             query_params = self.request.QUERY_PARAMS
@@ -121,6 +83,7 @@ class GenericAPIView(views.APIView):
                 return int(query_params[self.paginate_by_param])
             except (KeyError, ValueError):
                 pass
+
         return self.paginate_by
 
     def paginate_queryset(self, queryset, page_size, paginator_class=Paginator):
@@ -146,16 +109,54 @@ class GenericAPIView(views.APIView):
                                 'message': str(e)
             })
 
+    def filter_queryset(self, queryset):
+        """
+        Given a queryset, filter it with whichever filter backend is in use.
+        """
+        if not self.filter_backend:
+            return queryset
+        backend = self.filter_backend()
+        return backend.filter_queryset(self.request, queryset, self)
+
+    ### The following methods provide default implementations
+    ### that you may want to override for more complex cases.
+
+    def get_serializer_class(self):
+        """
+        Return the class to use for the serializer.
+        Defaults to using `self.serializer_class`.
+
+        You may want to override this if you need to provide different
+        serializations depending on the incoming request.
+
+        (Eg. admins get full serialization, others get basic serilization)
+        """
+        serializer_class = self.serializer_class
+        if serializer_class is not None:
+            return serializer_class
+
+        # TODO: Deprecation warning
+        class DefaultSerializer(self.model_serializer_class):
+            class Meta:
+                model = self.model
+        return DefaultSerializer
+
     def get_queryset(self):
         """
         Get the list of items for this view.
-
         This must be an iterable, and may be a queryset.
+        Defaults to using `self.queryset`.
+
+        You may want to override this if you need to provide different
+        querysets depending on the incoming request.
+
+        (Eg. return a list of items that is specific to the user)
         """
         if self.queryset is not None:
             return self.queryset._clone()
 
         if self.model is not None:
+            # TODO: Deprecation warning
             return self.model._default_manager.all()
 
         raise ImproperlyConfigured("'%s' must define 'queryset' or 'model'"
@@ -164,10 +165,14 @@ class GenericAPIView(views.APIView):
     def get_object(self, queryset=None):
         """
         Returns the object the view is displaying.
+
+        You may want to override this if you need to provide non-standard
+        queryset lookups.  Eg if objects are referenced using multiple
+        keyword arguments in the url conf.
         """
         # Determine the base queryset to use.
         if queryset is None:
-            queryset = self.get_queryset()
+            queryset = self.filter_queryset(self.get_queryset())
 
         # Perform the lookup filtering.
         pk = self.kwargs.get(self.pk_url_kwarg, None)
@@ -177,8 +182,10 @@ class GenericAPIView(views.APIView):
         if lookup is not None:
             queryset = queryset.filter(**{self.lookup_kwarg: lookup})
         elif pk is not None:
+            # TODO: Deprecation warning
             queryset = queryset.filter(pk=pk)
         elif slug is not None:
+            # TODO: Deprecation warning
             queryset = queryset.filter(**{self.slug_field: slug})
         else:
             raise AttributeError("Generic detail view %s must be called with "
@@ -196,6 +203,23 @@ class GenericAPIView(views.APIView):
         self.check_object_permissions(self.request, obj)
 
         return obj
+
+    ### The following methods are intended to be overridden.
+
+    def pre_save(self, obj):
+        """
+        Placeholder method for calling before saving an object.
+
+        May be used to set attributes on the object that are implicit
+        in either the request, or the url.
+        """
+        pass
+
+    def post_save(self, obj, created=False):
+        """
+        Placeholder method for calling after saving an object.
+        """
+        pass
 
 
 ### Concrete view classes that provide method handlers ###

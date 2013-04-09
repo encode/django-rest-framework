@@ -67,8 +67,7 @@ class ListModelMixin(object):
     empty_error = "Empty list and '%(class_name)s.allow_empty' is False."
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        self.object_list = self.filter_queryset(queryset)
+        self.object_list = self.filter_queryset(self.get_queryset())
 
         # Default is to allow empty querysets.  This can be altered by setting
         # `.allow_empty = False`, to raise 404 errors on empty querysets.
@@ -79,7 +78,7 @@ class ListModelMixin(object):
 
         # Pagination size is set by the `.paginate_by` attribute,
         # which may be `None` to disable pagination.
-        page_size = self.get_paginate_by(self.object_list)
+        page_size = self.get_paginate_by()
         if page_size:
             packed = self.paginate_queryset(self.object_list, page_size)
             paginator, page, queryset, is_paginated = packed
@@ -96,9 +95,7 @@ class RetrieveModelMixin(object):
     Should be mixed in with `SingleObjectAPIView`.
     """
     def retrieve(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        filtered_queryset = self.filter_queryset(queryset)
-        self.object = self.get_object(filtered_queryset)
+        self.object = self.get_object()
         serializer = self.get_serializer(self.object)
         return Response(serializer.data)
 
