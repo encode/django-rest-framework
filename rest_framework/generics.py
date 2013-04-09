@@ -24,15 +24,17 @@ class GenericAPIView(views.APIView):
     paginate_by = api_settings.PAGINATE_BY
     paginate_by_param = api_settings.PAGINATE_BY_PARAM
     pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
-    allow_empty = True
     page_kwarg = 'page'
     lookup_kwarg = 'pk'
+    allow_empty = True
 
-    # Pending deprecation
+    ######################################
+    # These are all pending deprecation...
+
     model = None
     model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
-    pk_url_kwarg = 'pk'  # Not provided in Django 1.3
-    slug_url_kwarg = 'slug'  # Not provided in Django 1.3
+    pk_url_kwarg = 'pk'
+    slug_url_kwarg = 'slug'
     slug_field = 'slug'
 
     def get_serializer_context(self):
@@ -90,7 +92,8 @@ class GenericAPIView(views.APIView):
         """
         Paginate a queryset.
         """
-        paginator = paginator_class(queryset, page_size, allow_empty_first_page=self.allow_empty)
+        paginator = paginator_class(queryset, page_size,
+                                    allow_empty_first_page=self.allow_empty)
         page_kwarg = self.page_kwarg
         page = self.kwargs.get(page_kwarg) or self.request.GET.get(page_kwarg) or 1
         try:
@@ -118,6 +121,7 @@ class GenericAPIView(views.APIView):
         backend = self.filter_backend()
         return backend.filter_queryset(self.request, queryset, self)
 
+    ########################
     ### The following methods provide default implementations
     ### that you may want to override for more complex cases.
 
@@ -204,7 +208,9 @@ class GenericAPIView(views.APIView):
 
         return obj
 
-    ### The following methods are intended to be overridden.
+    ########################
+    ### The following are placeholder methods,
+    ### and are intended to be overridden.
 
     def pre_save(self, obj):
         """
@@ -222,8 +228,10 @@ class GenericAPIView(views.APIView):
         pass
 
 
+##########################################################
 ### Concrete view classes that provide method handlers ###
 ### by composing the mixin classes with the base view. ###
+##########################################################
 
 class CreateAPIView(mixins.CreateModelMixin,
                     GenericAPIView):
@@ -338,7 +346,9 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
         return self.destroy(request, *args, **kwargs)
 
 
+##########################
 ### Deprecated classes ###
+##########################
 
 class MultipleObjectAPIView(GenericAPIView):
     pass
