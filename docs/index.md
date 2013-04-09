@@ -86,7 +86,7 @@ The tutorial will walk you through the building blocks that make up REST framewo
 * [3 - Class based views][tut-3]
 * [4 - Authentication & permissions][tut-4]
 * [5 - Relationships & hyperlinked APIs][tut-5]
-* [6 - ViewSets & Routers][tut-6]
+* [6 - Viewsets & routers][tut-6]
 
 ## API Guide
 
@@ -96,7 +96,8 @@ The API guide is your complete reference manual to all the functionality provide
 * [Responses][response]
 * [Views][views]
 * [Generic views][generic-views]
-* [ViewSets and Routers][viewsets-routers]
+* [Viewsets][viewsets]
+* [Routers][routers]
 * [Parsers][parsers]
 * [Renderers][renderers]
 * [Serializers][serializers]
@@ -205,7 +206,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [response]: api-guide/responses.md
 [views]: api-guide/views.md
 [generic-views]: api-guide/generic-views.md
-[viewsets-routers]: api-guide/viewsets-routers.md
+[viewsets]: api-guide/viewsets.md
+[routers]: api-guide/routers.md
 [parsers]: api-guide/parsers.md
 [renderers]: api-guide/renderers.md
 [serializers]: api-guide/serializers.md
