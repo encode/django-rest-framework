@@ -244,15 +244,15 @@ This allows you to write views that update or create multiple items when a `PUT`
 
 Bulk updates will update any instances that already exist, and create new instances for data items that do not have a corresponding instance.
 
-When performing a bulk update you may want any items that are not present in the incoming data to be deleted.  To do so, pass `allow_delete=True` to the serializer.
+When performing a bulk update you may want any items that are not present in the incoming data to be deleted.  To do so, pass `allow_add_remove=True` to the serializer.
 
-    serializer = BookSerializer(queryset, data=data, many=True, allow_delete=True)
+    serializer = BookSerializer(queryset, data=data, many=True, allow_add_remove=True)
     serializer.is_valid()
     # True
     serializer.save()  # `.save()` will be called on each updated or newly created instance.
                        # `.delete()` will be called on any other items in the `queryset`.
 
-Passing `allow_delete=True` ensures that any update operations will completely overwrite the existing queryset, rather than simply updating any objects found in the incoming data. 
+Passing `allow_add_remove=True` ensures that any update operations will completely overwrite the existing queryset, rather than simply updating any objects found in the incoming data. 
 
 #### How identity is determined when performing bulk updates
 
