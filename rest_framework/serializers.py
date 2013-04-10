@@ -598,6 +598,24 @@ class ModelSerializer(Serializer):
             if field:
                 ret[model_field.name] = field
 
+        # Reverse relationships are only included if they are explicitly
+        # present in `Meta.fields`.
+        if self.opts.fields:
+            reverse = opts.get_all_related_objects()
+            reverse += opts.get_all_related_many_to_many_objects()
+            for rel in reverse:
+                name = rel.get_accessor_name()
+                if name not in self.opts.fields:
+                    continue
+
+                if nested:
+                    field = self.get_nested_field(None, rel)
+                else:
+                    field = self.get_related_field(None, rel, to_many=True)
+
+                if field:
+                    ret[name] = field
+
         for field_name in self.opts.read_only_fields:
             assert field_name in ret, \
                 "read_only_fields on '%s' included invalid item '%s'" % \
@@ -612,24 +630,36 @@ class ModelSerializer(Serializer):
         """
         return self.get_field(model_field)
 
-    def get_nested_field(self, model_field):
+    def get_nested_field(self, model_field, rel=None):
         """
         Creates a default instance of a nested relational field.
         """
+        if rel:
+            model_class = rel.model
+        else:
+            model_class = model_field.rel.to
+
         class NestedModelSerializer(ModelSerializer):
             class Meta:
-                model = model_field.rel.to
+                model = model_class
         return NestedModelSerializer()
 
-    def get_related_field(self, model_field, to_many=False):
+    def get_related_field(self, model_field, rel=None, to_many=False):
         """
         Creates a default instance of a flat relational field.
         """
         # TODO: filter queryset using:
         # .using(db).complex_filter(self.rel.limit_choices_to)
+        if rel:
+            model_class = rel.model
+            required = True
+        else:
+            model_class = model_field.rel.to
+            required = not(model_field.null or model_field.blank)
+
         kwargs = {
-            'required': not(model_field.null or model_field.blank),
-            'queryset': model_field.rel.to._default_manager,
+            'required': required,
+            'queryset': model_class._default_manager,
             'many': to_many
         }
 
@@ -797,7 +827,8 @@ class HyperlinkedModelSerializer(ModelSerializer):
         return self._default_view_name % format_kwargs
 
     def get_pk_field(self, model_field):
-        return None
+        if self.opts.fields and model_field.name in self.opts.fields:
+            return self.get_field(model_field)
 
     def get_related_field(self, model_field, to_many):
         """
