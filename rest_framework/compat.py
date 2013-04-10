@@ -400,19 +400,23 @@ except ImportError:
 try:
     from django.utils.html import smart_urlquote
 except ImportError:
+    import re
+    from django.utils.encoding import smart_str
     try:
         from urllib.parse import quote, urlsplit, urlunsplit
     except ImportError:     # Python 2
         from urllib import quote
         from urlparse import urlsplit, urlunsplit
 
+    unquoted_percents_re = re.compile(r'%(?![0-9A-Fa-f]{2})')
+
     def smart_urlquote(url):
         "Quotes a URL if it isn't already quoted."
         # Handle IDN before quoting.
         scheme, netloc, path, query, fragment = urlsplit(url)
         try:
-            netloc = netloc.encode('idna').decode('ascii') # IDN -> ACE
-        except UnicodeError: # invalid domain part
+            netloc = netloc.encode('idna').decode('ascii')  # IDN -> ACE
+        except UnicodeError:  # invalid domain part
             pass
         else:
             url = urlunsplit((scheme, netloc, path, query, fragment))
@@ -421,7 +425,7 @@ except ImportError:
         # contains a % not followed by two hexadecimal digits. See #9655.
         if '%' not in url or unquoted_percents_re.search(url):
             # See http://bugs.python.org/issue2637
-            url = quote(force_bytes(url), safe=b'!*\'();:@&=+$,/?#[]~')
+            url = quote(smart_str(url), safe=b'!*\'();:@&=+$,/?#[]~')
 
         return force_text(url)
 
