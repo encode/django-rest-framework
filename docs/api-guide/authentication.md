@@ -107,7 +107,7 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
     WWW-Authenticate: Basic realm="api"
 
-**Note:** If you use `BasicAuthentication` in production you must ensure that your API is only available over `https` only.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.
+**Note:** If you use `BasicAuthentication` in production you must ensure that your API is only available over `https`.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.
 
 ## TokenAuthentication
 
@@ -148,7 +148,7 @@ The `curl` command line tool may be useful for testing token authenticated APIs.
 
 ---
 
-**Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https` only.
+**Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https`.
 
 ---
 
@@ -259,7 +259,7 @@ Finally, sync your database.
 
 ---
 
-**Note:** If you use `OAuth2Authentication` in production you must ensure that your API is only available over `https` only.
+**Note:** If you use `OAuth2Authentication` in production you must ensure that your API is only available over `https`.
 
 ---
 
