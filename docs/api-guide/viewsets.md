@@ -2,6 +2,11 @@
 
 # ViewSets
 
+> After routing has determined which controller to use for a request, your controller is responsible for making sense of the request and producing the appropriate output.
+>
+> &mdash; [Ruby on Rails Documentation][cite]
+
+
 Django REST framework allows you to combine the logic for a set of related views in a single class, called a `ViewSet`.  In other frameworks you may also find conceptually similar implementations named something like 'Resources' or 'Controllers'.
 
 A `ViewSet` class is simply **a type of class-based View, that does not provide any method handlers** such as `.get()` or `.post()`, and instead provides actions such as `.list()` and `.create()`.
@@ -127,19 +132,5 @@ For example, the definition of `ModelViewSet` looks like this:
 By creating your own base `ViewSet` classes, you can provide common behavior that can be reused in multiple views across your API.
 
 For advanced usage, it's worth noting the that `ViewSetMixin` class can also be applied to the standard Django `View` class.  Doing so allows you to use REST framework's automatic routing, but don't want to use it's permissions, authentication and other API policies.
-
----
-
-# Routers
-
-Routers provide a convenient and simple shortcut for wiring up your application's URLs.
-
-    router = routers.DefaultRouter()
-    router.register('^/', APIRoot, 'api-root')
-    router.register('^users/', UserViewSet, 'user')
-    router.register('^groups/', GroupViewSet, 'group')
-    router.register('^accounts/', AccountViewSet, 'account')
-
-    urlpatterns = router.urlpatterns
 
 [cite]: http://guides.rubyonrails.org/routing.html
