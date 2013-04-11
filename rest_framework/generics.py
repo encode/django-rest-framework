@@ -4,9 +4,10 @@ Generic views that provide commonly needed behaviour.
 from __future__ import unicode_literals
 from rest_framework import views, mixins
 from rest_framework.settings import api_settings
-from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
+from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
 
 ### Base classes for the generic views ###
@@ -163,7 +164,7 @@ class GenericAPIView(views.APIView):
             # TODO: Deprecation warning
             return self.model._default_manager.all()
 
-        raise ImproperlyConfigured("'%s' must define 'queryset' or 'model'"
+        raise ImproperlyConfigured("'%s' must define 'queryset'"
                                     % self.__class__.__name__)
 
     def get_object(self, queryset=None):
@@ -177,6 +178,8 @@ class GenericAPIView(views.APIView):
         # Determine the base queryset to use.
         if queryset is None:
             queryset = self.filter_queryset(self.get_queryset())
+        else:
+            pass  # Deprecation warning
 
         # Perform the lookup filtering.
         pk = self.kwargs.get(self.pk_url_kwarg, None)
@@ -184,24 +187,19 @@ class GenericAPIView(views.APIView):
         lookup = self.kwargs.get(self.lookup_kwarg, None)
 
         if lookup is not None:
-            queryset = queryset.filter(**{self.lookup_kwarg: lookup})
+            filter_kwargs = {self.lookup_kwarg: lookup}
         elif pk is not None:
             # TODO: Deprecation warning
-            queryset = queryset.filter(pk=pk)
+            filter_kwargs = {'pk': pk}
         elif slug is not None:
             # TODO: Deprecation warning
-            queryset = queryset.filter(**{self.slug_field: slug})
+            filter_kwargs = {self.slug_field: slug}
         else:
             raise AttributeError("Generic detail view %s must be called with "
                                  "either an object pk or a slug."
                                  % self.__class__.__name__)
 
-        try:
-            # Get the single item from the filtered queryset
-            obj = queryset.get()
-        except ObjectDoesNotExist:
-            raise Http404(_("No %(verbose_name)s found matching the query") %
-                          {'verbose_name': queryset.model._meta.verbose_name})
+        obj = get_object_or_404(queryset, **filter_kwargs)
 
         # May raise a permission denied
         self.check_object_permissions(self.request, obj)
