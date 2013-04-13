@@ -26,6 +26,9 @@ from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework import exceptions, parsers, status, VERSION
 
+import re
+control_chars = ''.join(map(unichr, range(0,32) + range(127,160)))
+control_char_re = re.compile('[%s]' % re.escape(control_chars))
 
 class BaseRenderer(object):
     """
@@ -320,7 +323,9 @@ class BrowsableAPIRenderer(BaseRenderer):
         renderer_context['indent'] = 4
         content = renderer.render(data, accepted_media_type, renderer_context)
 
-        if not all(char in string.printable for char in content):
+        if type(content) == unicode and control_char_re.match(content):
+            return '[%d bytes of binary content]'
+        if type(content) == str and not all(char in string.printable for char in content):
             return '[%d bytes of binary content]'
 
         return content
@@ -519,32 +524,6 @@ class BrowsableAPIRenderer(BaseRenderer):
             response.status_code = status.HTTP_200_OK
 
         return ret
-
-
-
-import re
-all_chars = (unichr(i) for i in xrange(0x110000))
-control_chars = ''.join(map(unichr, range(0,32) + range(127,160)))
-control_char_re = re.compile('[%s]' % re.escape(control_chars))
-
-class BrowsableAPIUnicodeRenderer(BrowsableAPIRenderer):
-    def get_content(self, renderer, data,
-                    accepted_media_type, renderer_context):
-        """
-            Get the content as if it had been rendered by the default
-            non-documenting renderer.
-            """
-        if not renderer:
-            return '[No renderers were found]'
-        
-        renderer_context['indent'] = 4
-        content = renderer.render(data, accepted_media_type, renderer_context)
-        
-        if not not control_char_re.match(content):
-            return '[%d bytes of binary content]'
-        
-        return content
-
 
 class UnicodeJSONRenderer(BaseRenderer):
     ensure_ascii = False
