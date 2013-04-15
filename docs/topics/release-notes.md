@@ -48,7 +48,6 @@ You can determine your currently installed version using `pip freeze`:
 
 **Date**: 4th April 2013
 
-* DecimalField support.
 * OAuth2 authentication no longer requires unneccessary URL parameters in addition to the token.
 * URL hyperlinking in browseable API now handles more cases correctly.
 * Long HTTP headers in browsable API are broken in multiple lines when possible.
