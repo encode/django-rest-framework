@@ -597,7 +597,7 @@ class DecimalFieldTest(TestCase):
         s = DecimalSerializer(data={'decimal_field': '123'})
 
         self.assertFalse(s.is_valid())
-        self.assertEqual(s.errors,  {'decimal_field': [u'Ensure this value is less than or equal to 100.']})
+        self.assertEqual(s.errors,  {'decimal_field': ['Ensure this value is less than or equal to 100.']})
 
     def test_raise_min_value(self):
         """
@@ -609,7 +609,7 @@ class DecimalFieldTest(TestCase):
         s = DecimalSerializer(data={'decimal_field': '99'})
 
         self.assertFalse(s.is_valid())
-        self.assertEqual(s.errors,  {'decimal_field': [u'Ensure this value is greater than or equal to 100.']})
+        self.assertEqual(s.errors,  {'decimal_field': ['Ensure this value is greater than or equal to 100.']})
 
     def test_raise_max_digits(self):
         """
@@ -621,7 +621,7 @@ class DecimalFieldTest(TestCase):
         s = DecimalSerializer(data={'decimal_field': '123.456'})
 
         self.assertFalse(s.is_valid())
-        self.assertEqual(s.errors,  {'decimal_field': [u'Ensure that there are no more than 5 digits in total.']})
+        self.assertEqual(s.errors,  {'decimal_field': ['Ensure that there are no more than 5 digits in total.']})
 
     def test_raise_max_decimal_places(self):
         """
@@ -633,7 +633,7 @@ class DecimalFieldTest(TestCase):
         s = DecimalSerializer(data={'decimal_field': '123.4567'})
 
         self.assertFalse(s.is_valid())
-        self.assertEqual(s.errors,  {'decimal_field': [u'Ensure that there are no more than 3 decimal places.']})
+        self.assertEqual(s.errors,  {'decimal_field': ['Ensure that there are no more than 3 decimal places.']})
 
     def test_raise_max_whole_digits(self):
         """
@@ -645,4 +645,4 @@ class DecimalFieldTest(TestCase):
         s = DecimalSerializer(data={'decimal_field': '12345.6'})
 
         self.assertFalse(s.is_valid())
-        self.assertEqual(s.errors,  {'decimal_field': [u'Ensure that there are no more than 4 digits in total.']})
+        self.assertEqual(s.errors,  {'decimal_field': ['Ensure that there are no more than 4 digits in total.']})
