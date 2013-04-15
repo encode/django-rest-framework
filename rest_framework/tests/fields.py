@@ -559,8 +559,8 @@ class DecimalFieldTest(TestCase):
         result_1 = f.to_native(Decimal('9000'))
         result_2 = f.to_native(Decimal('1.00000001'))
 
-        self.assertEqual('9000', result_1)
-        self.assertEqual('1.00000001', result_2)
+        self.assertEqual(Decimal('9000'), result_1)
+        self.assertEqual(Decimal('1.00000001'), result_2)
 
     def test_to_native_none(self):
         """

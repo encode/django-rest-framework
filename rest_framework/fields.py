@@ -761,11 +761,6 @@ class DecimalField(WritableField):
             raise ValidationError(self.error_messages['invalid'])
         return value
 
-    def to_native(self, value):
-        if value is not None:
-            return str(value)
-        return value
-
     def validate(self, value):
         super(DecimalField, self).validate(value)
         if value in validators.EMPTY_VALUES:
