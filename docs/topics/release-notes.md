@@ -40,6 +40,10 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.2.x series
 
+### Master
+
+* DecimalField support
+
 ### 2.2.6
 
 **Date**: 4th April 2013
