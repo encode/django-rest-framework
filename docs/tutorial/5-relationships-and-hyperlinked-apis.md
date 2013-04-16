@@ -1,4 +1,4 @@
-# Tutorial 5 - Relationships & Hyperlinked APIs
+# Tutorial 5: Relationships & Hyperlinked APIs
 
 At the moment relationships within our API are represented by using primary keys.  In this part of the tutorial we'll improve the cohesion and discoverability of our API, by instead using hyperlinking for relationships. 
 

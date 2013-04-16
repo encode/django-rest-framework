@@ -40,8 +40,22 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.2.x series
 
-### Master
+### 2.2.6
 
+**Date**: 4th April 2013
+
+* OAuth2 authentication no longer requires unneccessary URL parameters in addition to the token.
+* URL hyperlinking in browseable API now handles more cases correctly.
+* Long HTTP headers in browsable API are broken in multiple lines when possible.
+* Bugfix: Fix regression with DjangoFilterBackend not worthing correctly with single object views.
+* Bugfix: OAuth should fail hard when invalid token used.
+* Bugfix: Fix serializer potentially returning `None` object for models that define `__bool__` or `__len__`. 
+
+### 2.2.5
+
+**Date**: 26th March 2013
+
+* Serializer support for bulk create and bulk update operations.
 * Regression fix: Date and time fields return date/time objects by default.  Fixes regressions caused by 2.2.2.  See [#743][743] for more details.
 * Bugfix: Fix 500 error is OAuth not attempted with OAuthAuthentication class installed.
 * `Serializer.save()` now supports arbitrary keyword args which are passed through to the object `.save()` method.  Mixins use `force_insert` and `force_update` where appropriate, resulting in one less database query.
