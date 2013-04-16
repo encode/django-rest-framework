@@ -37,6 +37,60 @@ page = open(os.path.join(docs_dir, 'template.html'), 'r').read()
 #         shutil.rmtree(target)
 #     shutil.copytree(source, target)
 
+
+# Hacky, but what the hell, it'll do the job
+path_list = [
+    'index.md',
+    'tutorial/quickstart.md',
+    'tutorial/1-serialization.md',
+    'tutorial/2-requests-and-responses.md',
+    'tutorial/3-class-based-views.md',
+    'tutorial/4-authentication-and-permissions.md',
+    'tutorial/5-relationships-and-hyperlinked-apis.md',
+    'api-guide/requests.md',
+    'api-guide/responses.md',
+    'api-guide/views.md',
+    'api-guide/generic-views.md',
+    'api-guide/parsers.md',
+    'api-guide/renderers.md',
+    'api-guide/serializers.md',
+    'api-guide/fields.md',
+    'api-guide/relations.md',
+    'api-guide/authentication.md',
+    'api-guide/permissions.md',
+    'api-guide/throttling.md',
+    'api-guide/filtering.md',
+    'api-guide/pagination.md',
+    'api-guide/content-negotiation.md',
+    'api-guide/format-suffixes.md',
+    'api-guide/reverse.md',
+    'api-guide/exceptions.md',
+    'api-guide/status-codes.md',
+    'api-guide/settings.md',
+    'topics/ajax-csrf-cors.md',
+    'topics/browser-enhancements.md',
+    'topics/browsable-api.md',
+    'topics/rest-hypermedia-hateoas.md',
+    'topics/contributing.md',
+    'topics/rest-framework-2-announcement.md',
+    'topics/2.2-announcement.md',
+    'topics/release-notes.md',
+    'topics/credits.md',
+]
+
+prev_url_map = {}
+next_url_map = {}
+for idx in range(len(path_list)):
+    path = path_list[idx]
+    rel = '../' * path.count('/')
+
+    if idx > 0:
+        prev_url_map[path] = rel + path_list[idx - 1][:-3] + suffix
+
+    if idx < len(path_list) - 1:
+        next_url_map[path] = rel + path_list[idx + 1][:-3] + suffix
+
+
 for (dirpath, dirnames, filenames) in os.walk(docs_dir):
     relative_dir = dirpath.replace(docs_dir, '').lstrip(os.path.sep)
     build_dir = os.path.join(html_dir, relative_dir)
@@ -46,6 +100,7 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
 
     for filename in filenames:
         path = os.path.join(dirpath, filename)
+        relative_path = os.path.join(relative_dir, filename)
 
         if not filename.endswith('.md'):
             if relative_dir:
@@ -78,9 +133,12 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
             toc += template + '\n'
 
         if filename == 'index.md':
-            main_title = 'Django REST framework - APIs made easy'
+            main_title = 'Django REST framework - Web Browseable APIs'
         else:
             main_title = 'Django REST framework - ' + main_title
+
+        prev_url = prev_url_map.get(relative_path)
+        next_url = next_url_map.get(relative_path)
 
         content = markdown.markdown(text, ['headerid'])
 
@@ -88,6 +146,21 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
         output = output.replace('{{ title }}', main_title)
         output = output.replace('{{ description }}', description)
         output = output.replace('{{ page_id }}', filename[:-3])
+
+        if prev_url:
+            output = output.replace('{{ prev_url }}', prev_url)
+            output = output.replace('{{ prev_url_disabled }}', '')
+        else:
+            output = output.replace('{{ prev_url }}', '#')
+            output = output.replace('{{ prev_url_disabled }}', 'disabled')
+
+        if next_url:
+            output = output.replace('{{ next_url }}', next_url)
+            output = output.replace('{{ next_url_disabled }}', '')
+        else:
+            output = output.replace('{{ next_url }}', '#')
+            output = output.replace('{{ next_url_disabled }}', 'disabled')
+
         output = re.sub(r'a href="([^"]*)\.md"', r'a href="\1%s"' % suffix, output)
         output = re.sub(r'<pre><code>:::bash', r'<pre class="prettyprint lang-bsh">', output)
         output = re.sub(r'<pre>', r'<pre class="prettyprint lang-py">', output)

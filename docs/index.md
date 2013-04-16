@@ -9,9 +9,9 @@
 
 # Django REST framework
 
-**Web APIs for Django, made easy.**
+**Awesome web-browseable Web APIs.**
 
-Django REST framework is a flexible, powerful library that makes it incredibly easy to build Web APIs.  It is designed as a modular and easy to customize architecture, based on Django's class based views.
+Django REST framework is a flexible, powerful Web API toolkit.  It is designed as a modular and easy to customize architecture, based on Django's class based views.
 
 APIs built using REST framework are fully self-describing and web browseable - a huge useability win for your developers.  It also supports a wide range of media types, authentication and permission policies out of the box.
 

@@ -466,17 +466,13 @@ class OAuth2Tests(TestCase):
     def _create_authorization_header(self, token=None):
         return "Bearer {0}".format(token or self.access_token.token)
 
-    def _client_credentials_params(self):
-        return {'client_id': self.CLIENT_ID, 'client_secret': self.CLIENT_SECRET}
-
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
     def test_get_form_with_wrong_authorization_header_token_type_failing(self):
         """Ensure that a wrong token type lead to the correct HTTP error status code"""
         auth = "Wrong token-type-obsviously"
         response = self.csrf_client.get('/oauth2-test/', {}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 401)
-        params = self._client_credentials_params()
-        response = self.csrf_client.get('/oauth2-test/', params, HTTP_AUTHORIZATION=auth)
+        response = self.csrf_client.get('/oauth2-test/', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 401)
 
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
@@ -485,8 +481,7 @@ class OAuth2Tests(TestCase):
         auth = "Bearer wrong token format"
         response = self.csrf_client.get('/oauth2-test/', {}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 401)
-        params = self._client_credentials_params()
-        response = self.csrf_client.get('/oauth2-test/', params, HTTP_AUTHORIZATION=auth)
+        response = self.csrf_client.get('/oauth2-test/', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 401)
 
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
@@ -495,33 +490,21 @@ class OAuth2Tests(TestCase):
         auth = "Bearer wrong-token"
         response = self.csrf_client.get('/oauth2-test/', {}, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 401)
-        params = self._client_credentials_params()
-        response = self.csrf_client.get('/oauth2-test/', params, HTTP_AUTHORIZATION=auth)
-        self.assertEqual(response.status_code, 401)
-
-    @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
-    def test_get_form_with_wrong_client_data_failing_auth(self):
-        """Ensure GETing form over OAuth with incorrect client credentials fails"""
-        auth = self._create_authorization_header()
-        params = self._client_credentials_params()
-        params['client_id'] += 'a'
-        response = self.csrf_client.get('/oauth2-test/', params, HTTP_AUTHORIZATION=auth)
+        response = self.csrf_client.get('/oauth2-test/', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 401)
 
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
     def test_get_form_passing_auth(self):
         """Ensure GETing form over OAuth with correct client credentials succeed"""
         auth = self._create_authorization_header()
-        params = self._client_credentials_params()
-        response = self.csrf_client.get('/oauth2-test/', params, HTTP_AUTHORIZATION=auth)
+        response = self.csrf_client.get('/oauth2-test/', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
     def test_post_form_passing_auth(self):
         """Ensure POSTing form over OAuth with correct credentials passes and does not require CSRF"""
         auth = self._create_authorization_header()
-        params = self._client_credentials_params()
-        response = self.csrf_client.post('/oauth2-test/', params, HTTP_AUTHORIZATION=auth)
+        response = self.csrf_client.post('/oauth2-test/', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
@@ -529,16 +512,14 @@ class OAuth2Tests(TestCase):
         """Ensure POSTing when there is no OAuth access token in db fails"""
         self.access_token.delete()
         auth = self._create_authorization_header()
-        params = self._client_credentials_params()
-        response = self.csrf_client.post('/oauth2-test/', params, HTTP_AUTHORIZATION=auth)
+        response = self.csrf_client.post('/oauth2-test/', HTTP_AUTHORIZATION=auth)
         self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
 
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
     def test_post_form_with_refresh_token_failing_auth(self):
         """Ensure POSTing with refresh token instead of access token fails"""
         auth = self._create_authorization_header(token=self.refresh_token.token)
-        params = self._client_credentials_params()
-        response = self.csrf_client.post('/oauth2-test/', params, HTTP_AUTHORIZATION=auth)
+        response = self.csrf_client.post('/oauth2-test/', HTTP_AUTHORIZATION=auth)
         self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
 
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
@@ -547,8 +528,7 @@ class OAuth2Tests(TestCase):
         self.access_token.expires = datetime.datetime.now() - datetime.timedelta(seconds=10)  # 10 seconds late
         self.access_token.save()
         auth = self._create_authorization_header()
-        params = self._client_credentials_params()
-        response = self.csrf_client.post('/oauth2-test/', params, HTTP_AUTHORIZATION=auth)
+        response = self.csrf_client.post('/oauth2-test/', HTTP_AUTHORIZATION=auth)
         self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
         self.assertIn('Invalid token', response.content)
 
@@ -559,10 +539,9 @@ class OAuth2Tests(TestCase):
         read_only_access_token.scope = oauth2_provider_scope.SCOPE_NAME_DICT['read']
         read_only_access_token.save()
         auth = self._create_authorization_header(token=read_only_access_token.token)
-        params = self._client_credentials_params()
-        response = self.csrf_client.get('/oauth2-with-scope-test/', params, HTTP_AUTHORIZATION=auth)
+        response = self.csrf_client.get('/oauth2-with-scope-test/', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
-        response = self.csrf_client.post('/oauth2-with-scope-test/', params, HTTP_AUTHORIZATION=auth)
+        response = self.csrf_client.post('/oauth2-with-scope-test/', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
@@ -572,6 +551,5 @@ class OAuth2Tests(TestCase):
         read_write_access_token.scope = oauth2_provider_scope.SCOPE_NAME_DICT['write']
         read_write_access_token.save()
         auth = self._create_authorization_header(token=read_write_access_token.token)
-        params = self._client_credentials_params()
-        response = self.csrf_client.post('/oauth2-with-scope-test/', params, HTTP_AUTHORIZATION=auth)
+        response = self.csrf_client.post('/oauth2-with-scope-test/', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)

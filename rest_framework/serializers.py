@@ -457,6 +457,10 @@ class BaseSerializer(WritableField):
                             # Determine which object we're updating
                             identity = self.get_identity(item)
                             self.object = identity_to_objects.pop(identity, None)
+                            if self.object is None and not self.allow_add_remove:
+                                ret.append(None)
+                                errors.append({'non_field_errors': ['Cannot create a new item, only existing items may be updated.']})
+                                continue
 
                         ret.append(self.from_native(item, None))
                         errors.append(self._errors)
@@ -466,7 +470,7 @@ class BaseSerializer(WritableField):
 
                     self._errors = any(errors) and errors or []
                 else:
-                    self._errors = {'non_field_errors': ['Expected a list of items']}
+                    self._errors = {'non_field_errors': ['Expected a list of items.']}
             else:
                 ret = self.from_native(data, files)
 
@@ -766,7 +770,7 @@ class ModelSerializer(Serializer):
         Override the default method to also include model field validation.
         """
         instance = super(ModelSerializer, self).from_native(data, files)
-        if instance:
+        if not self._errors:
             return self.full_clean(instance)
 
     def save_object(self, obj, **kwargs):

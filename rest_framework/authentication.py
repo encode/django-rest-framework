@@ -2,14 +2,16 @@
 Provides a set of pluggable authentication policies.
 """
 from __future__ import unicode_literals
+import base64
+from datetime import datetime
+
 from django.contrib.auth import authenticate
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.compat import CsrfViewMiddleware
 from rest_framework.compat import oauth, oauth_provider, oauth_provider_store
-from rest_framework.compat import oauth2_provider, oauth2_provider_forms, oauth2_provider_backends
+from rest_framework.compat import oauth2_provider
 from rest_framework.authtoken.models import Token
-import base64
 
 
 def get_authorization_header(request):
@@ -228,7 +230,7 @@ class OAuthAuthentication(BaseAuthentication):
         try:
             consumer_key = oauth_request.get_parameter('oauth_consumer_key')
             consumer = oauth_provider_store.get_consumer(request, oauth_request, consumer_key)
-        except oauth_provider_store.InvalidConsumerError as err:
+        except oauth_provider.store.InvalidConsumerError as err:
             raise exceptions.AuthenticationFailed(err)
 
         if consumer.status != oauth_provider.consts.ACCEPTED:
@@ -238,7 +240,7 @@ class OAuthAuthentication(BaseAuthentication):
         try:
             token_param = oauth_request.get_parameter('oauth_token')
             token = oauth_provider_store.get_access_token(request, oauth_request, consumer, token_param)
-        except oauth_provider_store.InvalidTokenError:
+        except oauth_provider.store.InvalidTokenError:
             msg = 'Invalid access token: %s' % oauth_request.get_parameter('oauth_token')
             raise exceptions.AuthenticationFailed(msg)
 
@@ -315,16 +317,12 @@ class OAuth2Authentication(BaseAuthentication):
         Authenticate the request, given the access token.
         """
 
-        # Authenticate the client
-        oauth2_client_form = oauth2_provider_forms.ClientAuthForm(request.REQUEST)
-        if not oauth2_client_form.is_valid():
-            raise exceptions.AuthenticationFailed('Client could not be validated')
-        client = oauth2_client_form.cleaned_data.get('client')
-
-        # Retrieve the `OAuth2AccessToken` instance from the access_token
-        auth_backend = oauth2_provider_backends.AccessTokenBackend()
-        token = auth_backend.authenticate(access_token, client)
-        if token is None:
+        try:
+            token = oauth2_provider.models.AccessToken.objects.select_related('user')
+            # TODO: Change to timezone aware datetime when oauth2_provider add
+            # support to it.
+            token = token.get(token=access_token, expires__gt=datetime.now())
+        except oauth2_provider.models.AccessToken.DoesNotExist:
             raise exceptions.AuthenticationFailed('Invalid token')
 
         user = token.user
@@ -333,7 +331,7 @@ class OAuth2Authentication(BaseAuthentication):
             msg = 'User inactive or deleted: %s' % user.username
             raise exceptions.AuthenticationFailed(msg)
 
-        return (token.user, token)
+        return (user, token)
 
     def authenticate_header(self, request):
         """

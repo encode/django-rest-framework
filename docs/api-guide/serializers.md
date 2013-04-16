@@ -242,21 +242,21 @@ This allows you to write views that update or create multiple items when a `PUT`
     # True
     serialize.save()  # `.save()` will be called on each updated or newly created instance.
 
-Bulk updates will update any instances that already exist, and create new instances for data items that do not have a corresponding instance.
+By default bulk updates will be limited to updating instances that already exist in the provided queryset.
 
-When performing a bulk update you may want any items that are not present in the incoming data to be deleted.  To do so, pass `allow_add_remove=True` to the serializer.
+When performing a bulk update you may want to allow new items to be created, and missing items to be deleted.  To do so, pass `allow_add_remove=True` to the serializer.
 
     serializer = BookSerializer(queryset, data=data, many=True, allow_add_remove=True)
     serializer.is_valid()
     # True
-    serializer.save()  # `.save()` will be called on each updated or newly created instance.
+    serializer.save()  # `.save()` will be called on updated or newly created instances.
                        # `.delete()` will be called on any other items in the `queryset`.
 
-Passing `allow_add_remove=True` ensures that any update operations will completely overwrite the existing queryset, rather than simply updating any objects found in the incoming data. 
+Passing `allow_add_remove=True` ensures that any update operations will completely overwrite the existing queryset, rather than simply updating existing objects.
 
 #### How identity is determined when performing bulk updates
 
-Performing a bulk update is slightly more complicated than performing a bulk creation, because the serializer needs a way of determining how the items in the incoming data should be matched against the existing object instances.
+Performing a bulk update is slightly more complicated than performing a bulk creation, because the serializer needs a way to determine how the items in the incoming data should be matched against the existing object instances.
 
 By default the serializer class will use the `id` key on the incoming data to determine the canonical identity of an object.  If you need to change this behavior you should override the `get_identity` method on the `Serializer` class.  For example:
 
@@ -353,7 +353,7 @@ The `depth` option should be set to an integer value that indicates the depth of
 
 ## Specifying which fields should be read-only 
 
-You may wish to specify multiple fields as read-only. Instead of adding each field explicitely with the `read_only=True` attribute, you may use the `read_only_fields` Meta option, like so:
+You may wish to specify multiple fields as read-only. Instead of adding each field explicitly with the `read_only=True` attribute, you may use the `read_only_fields` Meta option, like so:
 
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
