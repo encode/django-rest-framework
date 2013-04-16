@@ -200,7 +200,7 @@ Should be mixed in with any [GenericAPIView].
 
 Provides a `.retrieve(request, *args, **kwargs)` method, that implements returning an existing model instance in a response.
 
-If an object can be retrieve this returns a `200 OK` response, with a serialized representation of the object as the body of the response.  Otherwise it will return a `404 Not Found`.
+If an object can be retrieved this returns a `200 OK` response, with a serialized representation of the object as the body of the response.  Otherwise it will return a `404 Not Found`.
 
 Should be mixed in with [SingleObjectAPIView].
 

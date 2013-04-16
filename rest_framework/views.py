@@ -3,7 +3,7 @@ Provides an APIView class that is used as the base of all class-based views.
 """
 from __future__ import unicode_literals
 from django.core.exceptions import PermissionDenied
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
@@ -327,6 +327,12 @@ class APIView(View):
         """
         Returns the final response object.
         """
+        # Make the error obvious if a proper response is not returned
+        assert isinstance(response, HttpResponse), (
+            'Expected a `Response` to be returned from the view, '
+            'but received a `%s`' % type(response)
+        )
+
         if isinstance(response, Response):
             if not getattr(request, 'accepted_renderer', None):
                 neg = self.perform_content_negotiation(request, force=True)

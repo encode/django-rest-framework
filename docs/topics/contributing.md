@@ -18,7 +18,7 @@ When answering questions make sure to help future contributors find their way ar
 
 # Issues
 
-Usage questions should be directed to the [discussion group][google-group].  Feature requests, bug reports and other issues should be raised on the GitHub [issue tracker][issues].
+It's really helpful if you make sure you address issues to the correct channel.  Usage questions should be directed to the [discussion group][google-group].  Feature requests, bug reports and other issues should be raised on the GitHub [issue tracker][issues].
 
 Some tips on good issue reporting:
 
