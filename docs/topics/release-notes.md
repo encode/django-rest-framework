@@ -40,7 +40,9 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.2.x series
 
-### Master
+### 2.2.7
+
+**Date**: 17th April 2013
 
 * Loud failure when view does not return a `Response` or `HttpResponse`.
 * Bugfix: Fix for Django 1.3 compatiblity.
