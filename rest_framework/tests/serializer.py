@@ -738,6 +738,43 @@ class ManyRelatedTests(TestCase):
 
         self.assertEqual(serializer.data, expected)
 
+    def test_include_reverse_relations(self):
+        post = BlogPost.objects.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogPost
+                fields = ('id', 'title', 'blogpostcomment_set')
+
+        serializer = BlogPostSerializer(instance=post)
+        expected = {
+            'id': 1, 'title': 'Test blog post', 'blogpostcomment_set': [1, 2]
+        }
+        self.assertEqual(serializer.data, expected)
+
+    def test_depth_include_reverse_relations(self):
+        post = BlogPost.objects.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogPost
+                fields = ('id', 'title', 'blogpostcomment_set')
+                depth = 1
+
+        serializer = BlogPostSerializer(instance=post)
+        expected = {
+            'id': 1, 'title': 'Test blog post',
+            'blogpostcomment_set': [
+                {'id': 1, 'text': 'I hate this blog post', 'blog_post': 1},
+                {'id': 2, 'text': 'I love this blog post', 'blog_post': 1}
+            ]
+        }
+        self.assertEqual(serializer.data, expected)
+
     def test_callable_source(self):
         post = BlogPost.objects.create(title="Test blog post")
         post.blogpostcomment_set.create(text="I love this blog post")
