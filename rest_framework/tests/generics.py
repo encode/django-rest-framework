@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
+from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from rest_framework import generics, serializers, status
 from rest_framework.tests.utils import RequestFactory
@@ -22,28 +23,6 @@ class InstanceView(generics.RetrieveUpdateDestroyAPIView):
     Example description for OPTIONS.
     """
     model = BasicModel
-
-
-class InstanceDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Example detail view for override of get_object().
-    """
-
-    # we have to implement this too, otherwise we can't be sure that get_object
-    # will be called
-    def get_serializer(self, instance=None, data=None, files=None, partial=None):
-        class InstanceDetailSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = BasicModel
-        return InstanceDetailSerializer(instance=instance, data=data, files=files, partial=partial)
-    
-    def get_object(self):
-        try:
-            pk = int(self.kwargs['pk'])
-            self.object = BasicModel.objects.get(id=pk)
-            return self.object
-        except BasicModel.DoesNotExist:
-            return self.permission_denied(self.request)
 
 
 class SlugSerializer(serializers.ModelSerializer):
@@ -323,7 +302,8 @@ class TestInstanceView(TestCase):
         new_obj = SlugBasedModel.objects.get(slug='test_slug')
         self.assertEqual(new_obj.text, 'foobar')
 
-class TestInstanceDetailView(TestCase):
+
+class TestOverriddenGetObject(TestCase):
     """
     Test cases for a RetrieveUpdateDestroyAPIView that does NOT use the
     queryset/model mechanism but instead overrides get_object()
@@ -340,10 +320,20 @@ class TestInstanceDetailView(TestCase):
             {'id': obj.id, 'text': obj.text}
             for obj in self.objects.all()
         ]
-        self.view_class = InstanceDetailView
-        self.view = InstanceDetailView.as_view()
 
-    def test_get_instance_view(self):
+        class OverriddenGetObjectView(generics.RetrieveUpdateDestroyAPIView):
+            """
+            Example detail view for override of get_object().
+            """
+            model = BasicModel
+
+            def get_object(self):
+                pk = int(self.kwargs['pk'])
+                return get_object_or_404(BasicModel.objects.all(), id=pk)
+
+        self.view = OverriddenGetObjectView.as_view()
+
+    def test_overridden_get_object_view(self):
         """
         GET requests to RetrieveUpdateDestroyAPIView should return a single object.
         """
@@ -351,128 +341,7 @@ class TestInstanceDetailView(TestCase):
         with self.assertNumQueries(1):
             response = self.view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, self.data[0])    
-
-    def test_post_instance_view(self):
-        """
-        POST requests to RetrieveUpdateDestroyAPIView should not be allowed
-        """
-        content = {'text': 'foobar'}
-        request = factory.post('/', json.dumps(content),
-                               content_type='application/json')
-        with self.assertNumQueries(0):
-            response = self.view(request).render()
-        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
-        self.assertEqual(response.data, {"detail": "Method 'POST' not allowed."})
-
-    def test_put_instance_view(self):
-        """
-        PUT requests to RetrieveUpdateDestroyAPIView should update an object.
-        """
-        content = {'text': 'foobar'}
-        request = factory.put('/1', json.dumps(content),
-                              content_type='application/json')
-        with self.assertNumQueries(2):
-            response = self.view(request, pk='1').render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
-        updated = self.objects.get(id=1)
-        self.assertEqual(updated.text, 'foobar')
-
-    def test_patch_instance_view(self):
-        """
-        PATCH requests to RetrieveUpdateDestroyAPIView should update an object.
-        """
-        content = {'text': 'foobar'}
-        request = factory.patch('/1', json.dumps(content),
-                              content_type='application/json')
-
-        with self.assertNumQueries(2):
-            response = self.view(request, pk=1).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
-        updated = self.objects.get(id=1)
-        self.assertEqual(updated.text, 'foobar')
-
-    def test_delete_instance_view(self):
-        """
-        DELETE requests to RetrieveUpdateDestroyAPIView should delete an object.
-        """
-        request = factory.delete('/1')
-        with self.assertNumQueries(2):
-            response = self.view(request, pk=1).render()
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(response.content, six.b(''))
-        ids = [obj.id for obj in self.objects.all()]
-        self.assertEqual(ids, [2, 3])
-
-    def test_options_instance_view(self):
-        """
-        OPTIONS requests to RetrieveUpdateDestroyAPIView should return metadata
-        """
-        request = factory.options('/')
-        with self.assertNumQueries(0):
-            response = self.view(request).render()
-        expected = {
-            'parses': [
-                'application/json',
-                'application/x-www-form-urlencoded',
-                'multipart/form-data'
-            ],
-            'renders': [
-                'application/json',
-                'text/html'
-            ],
-            'name': 'Instance Detail',
-            'description': 'Example detail view for override of get_object().'
-        }
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, expected)
-
-    def test_put_cannot_set_id(self):
-        """
-        PUT requests to create a new object should not be able to set the id.
-        """
-        content = {'id': 999, 'text': 'foobar'}
-        request = factory.put('/1', json.dumps(content),
-                              content_type='application/json')
-        with self.assertNumQueries(2):
-            response = self.view(request, pk=1).render()
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
-        updated = self.objects.get(id=1)
-        self.assertEqual(updated.text, 'foobar')
-
-    def test_put_to_deleted_instance(self):
-        """
-        PUT requests to RetrieveUpdateDestroyAPIView should create an object
-        if it does not currently exist. In our DetailView, however,
-        we cannot access any other id's than those that already exist.
-        See the InstanceView for the normal behaviour.
-        """
-        self.objects.get(id=1).delete()
-        content = {'text': 'foobar'}
-        request = factory.put('/1', json.dumps(content),
-                              content_type='application/json')
-        with self.assertNumQueries(1):
-            response = self.view(request, pk=5).render()
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_put_as_create_on_id_based_url(self):
-        """
-        PUT requests to RetrieveUpdateDestroyAPIView should create an object
-        at the requested url if it doesn't exist. In our DetailView, however,
-        we cannot access any other id's than those that already exist.
-        See the InstanceView for the normal behaviour.
-        """
-        content = {'text': 'foobar'}
-        # pk fields can not be created on demand, only the database can set the pk for a new object
-        request = factory.put('/5', json.dumps(content),
-                              content_type='application/json')
-        with self.assertNumQueries(1):
-            response = self.view(request, pk=5).render()
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
+        self.assertEqual(response.data, self.data[0])
 
 
 # Regression test for #285

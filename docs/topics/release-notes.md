@@ -40,6 +40,12 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.2.x series
 
+### Master
+
+* Loud failure when view does not return a `Response` or `HttpResponse`.
+* Bugfix: Fix for Django 1.3 compatiblity.
+* Bugfix: Allow overridden `get_object()` to work correctly.
+
 ### 2.2.6
 
 **Date**: 4th April 2013
