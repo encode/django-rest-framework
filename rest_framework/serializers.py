@@ -20,6 +20,9 @@ from rest_framework.relations import *
 from rest_framework.fields import *
 
 
+class RelationsList(list):
+    _deleted = []
+
 class NestedValidationError(ValidationError):
     """
     The default ValidationError behavior is to stringify each item in the list
@@ -149,7 +152,6 @@ class BaseSerializer(WritableField):
         self._data = None
         self._files = None
         self._errors = None
-        self._deleted = None
 
         if many and instance is not None and not hasattr(instance, '__iter__'):
             raise ValueError('instance should be a queryset or other iterable with many=True')
@@ -288,15 +290,8 @@ class BaseSerializer(WritableField):
         You should override this method to control how deserialized objects
         are instantiated.
         """
-        removed_relations = []
-
-        # Deleted related objects
-        if self._deleted:
-            removed_relations = list(self._deleted)
-
         if instance is not None:
             instance.update(attrs)
-            instance._removed_relations = removed_relations
             return instance
         return attrs
 
@@ -438,7 +433,7 @@ class BaseSerializer(WritableField):
                                   PendingDeprecationWarning, stacklevel=3)
 
             if many:
-                ret = []
+                ret = RelationsList()
                 errors = []
                 update = self.object is not None
 
@@ -466,7 +461,7 @@ class BaseSerializer(WritableField):
                         errors.append(self._errors)
 
                     if update:
-                        self._deleted = identity_to_objects.values()
+                        ret._deleted = identity_to_objects.values()
 
                     self._errors = any(errors) and errors or []
                 else:
@@ -509,9 +504,6 @@ class BaseSerializer(WritableField):
     def save_object(self, obj, **kwargs):
         obj.save(**kwargs)
 
-        if self.allow_add_remove and hasattr(obj, '_removed_relations'):
-            [self.delete_object(item) for item in obj._removed_relations]
-
     def delete_object(self, obj):
         obj.delete()
 
@@ -521,11 +513,11 @@ class BaseSerializer(WritableField):
         """
         if isinstance(self.object, list):
             [self.save_object(item, **kwargs) for item in self.object]
-        else:
-            self.save_object(self.object, **kwargs)
 
-        if self.allow_add_remove and self._deleted:
-            [self.delete_object(item) for item in self._deleted]
+            if self.allow_add_remove and self.object._deleted:
+                [self.delete_object(item) for item in self.object._deleted]
+        else:
+            self.save_object(self.object, **kwargs)        
 
         return self.object
 
@@ -715,7 +707,6 @@ class ModelSerializer(Serializer):
         m2m_data = {}
         related_data = {}
         nested_forward_relations = {}
-        removed_relations = []
         meta = self.opts.model._meta
 
         # Reverse fk or one-to-one relations
@@ -741,10 +732,6 @@ class ModelSerializer(Serializer):
             if isinstance(self.fields.get(field_name, None), Serializer):
                 nested_forward_relations[field_name] = attrs[field_name]
 
-        # Deleted related objects
-        if self._deleted:
-            removed_relations = list(self._deleted)
-
         # Update an existing instance...
         if instance is not None:
             for key, val in attrs.items():
@@ -761,7 +748,6 @@ class ModelSerializer(Serializer):
         instance._related_data = related_data
         instance._m2m_data = m2m_data
         instance._nested_forward_relations = nested_forward_relations
-        instance._removed_relations = removed_relations
 
         return instance
 
@@ -786,9 +772,6 @@ class ModelSerializer(Serializer):
 
         obj.save(**kwargs)
 
-        if self.allow_add_remove and hasattr(obj, '_removed_relations'):
-            [self.delete_object(item) for item in obj._removed_relations]
-
         if getattr(obj, '_m2m_data', None):
             for accessor_name, object_list in obj._m2m_data.items():
                 setattr(obj, accessor_name, object_list)
@@ -804,6 +787,11 @@ class ModelSerializer(Serializer):
                             fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
                             setattr(related_item, fk_field, obj)
                             self.save_object(related_item)
+
+                        # Delete any removed objects
+                        if field.allow_add_remove and related._deleted:
+                            [self.delete_object(item) for item in related._deleted]
+
                     else:
                         # Nested reverse one-one relationship
                         fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
