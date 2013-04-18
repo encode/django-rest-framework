@@ -162,7 +162,10 @@ class RelatedField(WritableField):
         elif value in (None, ''):
             into[(self.source or field_name)] = None
         elif self.many:
-            into[(self.source or field_name)] = [self.from_native(item) for item in value]
+            if isinstance(value, basestring):
+                into[(self.source or field_name)] = self.from_native(value)
+            else:
+                into[(self.source or field_name)] = [self.from_native(item) for item in value]
         else:
             into[(self.source or field_name)] = self.from_native(value)
 
