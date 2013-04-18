@@ -43,6 +43,7 @@ You can determine your currently installed version using `pip freeze`:
 ### Master
 
 * Made Login template more easy to restyle.
+* Bugfix: Fix single pks/slugs are not serialized to list when sent to many relation
 
 ### 2.2.7
 
