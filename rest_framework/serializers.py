@@ -460,7 +460,7 @@ class BaseSerializer(WritableField):
                         ret.append(self.from_native(item, None))
                         errors.append(self._errors)
 
-                    if update:
+                    if update and self.allow_add_remove:
                         ret._deleted = identity_to_objects.values()
 
                     self._errors = any(errors) and errors or []
@@ -514,7 +514,7 @@ class BaseSerializer(WritableField):
         if isinstance(self.object, list):
             [self.save_object(item, **kwargs) for item in self.object]
 
-            if self.allow_add_remove and self.object._deleted:
+            if self.object._deleted:
                 [self.delete_object(item) for item in self.object._deleted]
         else:
             self.save_object(self.object, **kwargs)        
@@ -779,24 +779,22 @@ class ModelSerializer(Serializer):
 
         if getattr(obj, '_related_data', None):
             for accessor_name, related in obj._related_data.items():
-                field = self.fields.get(accessor_name, None)
-                if isinstance(field, Serializer):
-                    if field.many:
-                        # Nested reverse fk relationship
-                        for related_item in related:
-                            fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
-                            setattr(related_item, fk_field, obj)
-                            self.save_object(related_item)
-
-                        # Delete any removed objects
-                        if field.allow_add_remove and related._deleted:
-                            [self.delete_object(item) for item in related._deleted]
-
-                    else:
-                        # Nested reverse one-one relationship
+                if isinstance(related, RelationsList):
+                    # Nested reverse fk relationship
+                    for related_item in related:
                         fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
-                        setattr(related, fk_field, obj)
-                        self.save_object(related)
+                        setattr(related_item, fk_field, obj)
+                        self.save_object(related_item)
+
+                    # Delete any removed objects
+                    if related._deleted:
+                        [self.delete_object(item) for item in related._deleted]
+
+                elif isinstance(related, models.Model):
+                    # Nested reverse one-one relationship
+                    fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
+                    setattr(related, fk_field, obj)
+                    self.save_object(related)
                 else:
                     # Reverse FK or reverse one-one
                     setattr(obj, accessor_name, related)
