@@ -287,3 +287,22 @@ class ReverseNestedOneToManyTests(TestCase):
 
         ]
         self.assertEqual(serializer.data, expected)
+
+    def test_one_to_many_delete(self):
+        data = {'id': 1, 'name': 'target-1', 'sources': [{'id': 1, 'name': 'source-1'},
+                                                         {'id': 3, 'name': 'source-3'}]}
+        instance = OneToManyTarget.objects.get(pk=1)
+        serializer = self.Serializer(instance, data=data)
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+
+        # Ensure source 2 is deleted, and everything else is as
+        # expected.
+        queryset = OneToManyTarget.objects.all()
+        serializer = self.Serializer(queryset)
+        expected = [
+            {'id': 1, 'name': 'target-1', 'sources': [{'id': 1, 'name': 'source-1'},
+                                                      {'id': 3, 'name': 'source-3'}]}
+
+        ]
+        self.assertEqual(serializer.data, expected)
