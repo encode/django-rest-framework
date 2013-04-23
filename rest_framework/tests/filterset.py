@@ -61,7 +61,7 @@ if django_filters:
 class CommonFilteringTestCase(TestCase):
     def _serialize_object(self, obj):
         return {'id': obj.id, 'text': obj.text, 'decimal': obj.decimal, 'date': obj.date}
-    
+
     def setUp(self):
         """
         Create 10 FilterableItem instances.
@@ -190,7 +190,7 @@ class IntegrationTestDetailFiltering(CommonFilteringTestCase):
     Integration tests for filtered detail views.
     """
     urls = 'rest_framework.tests.filterset'
-    
+
     def _get_url(self, item):
         return reverse('detail-view', kwargs=dict(pk=item.pk))
 
@@ -221,7 +221,7 @@ class IntegrationTestDetailFiltering(CommonFilteringTestCase):
         response = self.client.get('{url}?decimal={param}'.format(url=self._get_url(low_item), param=search_decimal))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, low_item_data)
-        
+
         # Tests that multiple filters works.
         search_decimal = Decimal('5.25')
         search_date = datetime.date(2012, 10, 2)

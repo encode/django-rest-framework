@@ -67,20 +67,18 @@ class ListModelMixin(object):
     empty_error = "Empty list and '%(class_name)s.allow_empty' is False."
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        self.object_list = self.filter_queryset(queryset)
+        self.object_list = self.filter_queryset(self.get_queryset())
 
         # Default is to allow empty querysets.  This can be altered by setting
         # `.allow_empty = False`, to raise 404 errors on empty querysets.
-        allow_empty = self.get_allow_empty()
-        if not allow_empty and not self.object_list:
+        if not self.allow_empty and not self.object_list:
             class_name = self.__class__.__name__
             error_msg = self.empty_error % {'class_name': class_name}
             raise Http404(error_msg)
 
         # Pagination size is set by the `.paginate_by` attribute,
         # which may be `None` to disable pagination.
-        page_size = self.get_paginate_by(self.object_list)
+        page_size = self.get_paginate_by()
         if page_size:
             packed = self.paginate_queryset(self.object_list, page_size)
             paginator, page, queryset, is_paginated = packed
@@ -135,6 +133,10 @@ class UpdateModelMixin(object):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
+
     def pre_save(self, obj):
         """
         Set any attributes on the object that are implicit in the request.
@@ -142,7 +144,7 @@ class UpdateModelMixin(object):
         # pk and/or slug attributes are implicit in the URL.
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         slug = self.kwargs.get(self.slug_url_kwarg, None)
-        slug_field = slug and self.get_slug_field() or None
+        slug_field = slug and self.slug_field or None
 
         if pk:
             setattr(obj, 'pk', pk)

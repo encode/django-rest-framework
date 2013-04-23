@@ -4,51 +4,13 @@ Provides an APIView class that is used as the base of all class-based views.
 from __future__ import unicode_literals
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponse
-from django.utils.html import escape
-from django.utils.safestring import mark_safe
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
-from rest_framework.compat import View, apply_markdown
+from rest_framework.compat import View
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
-import re
-
-
-def _remove_trailing_string(content, trailing):
-    """
-    Strip trailing component `trailing` from `content` if it exists.
-    Used when generating names from view classes.
-    """
-    if content.endswith(trailing) and content != trailing:
-        return content[:-len(trailing)]
-    return content
-
-
-def _remove_leading_indent(content):
-    """
-    Remove leading indent from a block of text.
-    Used when generating descriptions from docstrings.
-    """
-    whitespace_counts = [len(line) - len(line.lstrip(' '))
-                         for line in content.splitlines()[1:] if line.lstrip()]
-
-    # unindent the content if needed
-    if whitespace_counts:
-        whitespace_pattern = '^' + (' ' * min(whitespace_counts))
-        content = re.sub(re.compile(whitespace_pattern, re.MULTILINE), '', content)
-    content = content.strip('\n')
-    return content
-
-
-def _camelcase_to_spaces(content):
-    """
-    Translate 'CamelCaseNames' to 'Camel Case Names'.
-    Used when generating names from view classes.
-    """
-    camelcase_boundry = '(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))'
-    content = re.sub(camelcase_boundry, ' \\1', content).strip()
-    return ' '.join(content.split('_')).title()
+from rest_framework.utils.formatting import get_view_name, get_view_description
 
 
 class APIView(View):
@@ -64,22 +26,21 @@ class APIView(View):
     @classmethod
     def as_view(cls, **initkwargs):
         """
-        Override the default :meth:`as_view` to store an instance of the view
-        as an attribute on the callable function.  This allows us to discover
-        information about the view when we do URL reverse lookups.
+        Store the original class on the view function.
+
+        This allows us to discover information about the view when we do URL
+        reverse lookups.  Used for breadcrumb generation.
         """
-        # TODO: deprecate?
         view = super(APIView, cls).as_view(**initkwargs)
-        view.cls_instance = cls(**initkwargs)
+        view.cls = cls
         return view
 
     @property
     def allowed_methods(self):
         """
-        Return the list of allowed HTTP methods, uppercased.
+        Wrap Django's private `_allowed_methods` interface in a public property.
         """
-        return [method.upper() for method in self.http_method_names
-                if hasattr(self, method)]
+        return self._allowed_methods()
 
     @property
     def default_response_headers(self):
@@ -90,43 +51,10 @@ class APIView(View):
             'Vary': 'Accept'
         }
 
-    def get_name(self):
-        """
-        Return the resource or view class name for use as this view's name.
-        Override to customize.
-        """
-        # TODO: deprecate?
-        name = self.__class__.__name__
-        name = _remove_trailing_string(name, 'View')
-        return _camelcase_to_spaces(name)
-
-    def get_description(self, html=False):
-        """
-        Return the resource or view docstring for use as this view's description.
-        Override to customize.
-        """
-        # TODO: deprecate?
-        description = self.__doc__ or ''
-        description = _remove_leading_indent(description)
-        if html:
-            return self.markup_description(description)
-        return description
-
-    def markup_description(self, description):
-        """
-        Apply HTML markup to the description of this view.
-        """
-        # TODO: deprecate?
-        if apply_markdown:
-            description = apply_markdown(description)
-        else:
-            description = escape(description).replace('\n', '<br />')
-        return mark_safe(description)
-
     def metadata(self, request):
         return {
-            'name': self.get_name(),
-            'description': self.get_description(),
+            'name': get_view_name(self.__class__),
+            'description': get_view_description(self.__class__),
             'renders': [renderer.media_type for renderer in self.renderer_classes],
             'parses': [parser.media_type for parser in self.parser_classes],
         }
@@ -140,7 +68,8 @@ class APIView(View):
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
-        Called if `request.method` does not correspond to a handler method.
+        If `request.method` does not correspond to a handler method,
+        determine what kind of exception to raise.
         """
         raise exceptions.MethodNotAllowed(request.method)
 
