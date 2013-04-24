@@ -111,26 +111,25 @@ Again, as with `ModelViewSet`, you can use any of the standard attributes and me
 
 Any standard `View` class can be turned into a `ViewSet` class by mixing in `ViewSetMixin`.  You can use this to define your own base classes.
 
-For example, the definition of `ModelViewSet` looks like this:
+## Example
 
-    class ModelViewSet(mixins.CreateModelMixin,
-                       mixins.RetrieveModelMixin,
-                       mixins.UpdateModelMixin,
-                       mixins.DestroyModelMixin,
-                       mixins.ListModelMixin,
-                       viewsets.ViewSetMixin,
-                       generics.GenericAPIView):
+For example, we can create a base viewset class that provides `retrieve`, `update` and `list` operations:
+
+    class RetrieveUpdateListViewSet(mixins.RetrieveModelMixin,
+                                    mixins.UpdateModelMixin,
+                                    mixins.ListModelMixin,
+                                    viewsets.ViewSetMixin,
+                                    generics.GenericAPIView):
         """
-        A viewset that provides actions for `create`, `retrieve`,
-        `update`, `destroy` and `list` actions.
+        A viewset that provides `retrieve`, `update`, and `list` actions.
         
-        To use it, override the class and set the `.queryset`
-        and `.serializer_class` attributes.
+        To use it, override the class and set the `.queryset` and
+        `.serializer_class` attributes.
         """
         pass
 
 By creating your own base `ViewSet` classes, you can provide common behavior that can be reused in multiple views across your API.
 
-For advanced usage, it's worth noting the that `ViewSetMixin` class can also be applied to the standard Django `View` class.  Doing so allows you to use REST framework's automatic routing, but don't want to use it's permissions, authentication and other API policies.
+For advanced usage, it's worth noting the that `ViewSetMixin` class can also be applied to the standard Django `View` class.  Doing so allows you to use REST framework's automatic routing with regular Django views.
 
 [cite]: http://guides.rubyonrails.org/routing.html

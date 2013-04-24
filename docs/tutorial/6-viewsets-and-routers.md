@@ -1,6 +1,6 @@
 # Tutorial 6 - ViewSets & Routers
 
-REST framework includes an abstraction for dealing with `ViewSets`, that allows the developer to concentrate on modelling the state and interactions of the API, and leave the URL construction to be handled automatically, based on common conventions.
+REST framework includes an abstraction for dealing with `ViewSets`, that allows the developer to concentrate on modeling the state and interactions of the API, and leave the URL construction to be handled automatically, based on common conventions.
 
 `ViewSet` classes are almost the same thing as `View` classes, except that they provide operations such as `read`, or `update`, and not method handlers such as `get` or `put`.
 
@@ -19,7 +19,7 @@ First of all let's refactor our `UserListView` and `UserDetailView` views into a
         queryset = User.objects.all()
         serializer_class = UserSerializer
 
-Here we've used `ReadOnlyModelViewSet` class to automatically provide the default 'read-only' operations.  We're still setting the `queryset` and `serializer_class` attributes exactly as we did when we were using regular views, but we no longer need to provide the same information to two seperate classes.
+Here we've used `ReadOnlyModelViewSet` class to automatically provide the default 'read-only' operations.  We're still setting the `queryset` and `serializer_class` attributes exactly as we did when we were using regular views, but we no longer need to provide the same information to two separate classes.
 
 Next we're going to replace the `SnippetList`, `SnippetDetail` and `SnippetHighlight` view classes.  We can remove the three views, and again replace them with a single class.
 
@@ -103,21 +103,49 @@ Here's our re-wired `urls.py` file.
     from snippets import views
     from rest_framework.routers import DefaultRouter
 
-    # Create a router and register our views and view sets with it.
+    # Create a router and register our viewsets with it.
     router = DefaultRouter()
-    router.register(r'^/$', views.api_root)
-    router.register(r'^snippets/', views.SnippetViewSet, 'snippet')
-    router.register(r'^users/', views.UserViewSet, 'user')
+    router.register(r'snippets', views.SnippetViewSet, 'snippet')
+    router.register(r'users', views.UserViewSet, 'user')
     
-    # The urlconf is determined automatically by the router.
-    urlpatterns = router.urlpatterns
-    
-    # We can still add format suffixes to all our URL patterns.
-    urlpatterns = format_suffix_patterns(urlpatterns)
+    # The API URLs are now determined automatically by the router.
+    # Additionally, we include the login URLs for the browseable API.
+    urlpatterns = patterns('',
+        url(r'^', include(router.urls)),
+        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    )
+
+Registering the viewsets with the router is similar to providing a urlpattern.  We include three arguments - the URL prefix for the views, the viewset itself, and the base name that should be used for constructing the URL names, such as `snippet-list`.
+
+The `DefaultRouter` class we're using also automatically creates the API root view for us, so we can now delete the `api_root` method from our `views` module.
 
 ## Trade-offs between views vs viewsets.
 
-Using view sets can be a really useful abstraction.  It helps ensure that URL conventions will be consistent across your API, minimises the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.
+Using viewsets can be a really useful abstraction.  It helps ensure that URL conventions will be consistent across your API, minimizes the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.
 
 That doesn't mean it's always the right approach to take.  There's a similar set of trade-offs to consider as when using class-based views instead of function based views.  Using view sets is less explicit than building your views individually.
 
+## Reviewing our work
+
+With an incredibly small amount of code, we've now got a complete pastebin Web API, which is fully web browseable, and comes complete with authentication, per-object permissions, and multiple renderer formats.
+
+We've walked through each step of the design process, and seen how if we need to customize anything we can gradually work our way down to simply using regular Django views.
+
+You can review the final [tutorial code][repo] on GitHub, or try out a live example in [the sandbox][sandbox]. 
+
+## Onwards and upwards
+
+We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here's a few places you can start:
+
+* Contribute on [GitHub][github] by reviewing and submitting issues, and making pull requests.
+* Join the [REST framework discussion group][group], and help build the community.
+* Follow [the author][twitter] on Twitter and say hi.
+
+**Now go build awesome things.**
+
+
+[repo]: https://github.com/tomchristie/rest-framework-tutorial
+[sandbox]: http://restframework.herokuapp.com/
+[github]: https://github.com/tomchristie/django-rest-framework
+[group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
+[twitter]: https://twitter.com/_tomchristie

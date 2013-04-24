@@ -18,20 +18,34 @@ class GenericAPIView(views.APIView):
     Base class for all other generic views.
     """
 
+    # You'll need to either set these attributes,
+    # or override `get_queryset`/`get_serializer_class`.
     queryset = None
     serializer_class = None
 
-    # Shortcut which may be used in place of `queryset`/`serializer_class`
-    model = None
+    # If you want to use object lookups other than pk, set this attribute.
+    lookup_field = 'pk'
 
-    filter_backend = api_settings.FILTER_BACKEND
+    # Pagination settings
     paginate_by = api_settings.PAGINATE_BY
     paginate_by_param = api_settings.PAGINATE_BY_PARAM
     pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
-    model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
     page_kwarg = 'page'
-    lookup_field = 'pk'
+
+    # The filter backend class to use for queryset filtering
+    filter_backend = api_settings.FILTER_BACKEND
+
+    # Determines if the view will return 200 or 404 responses for empty lists.
     allow_empty = True
+
+    # This shortcut may be used instead of setting either (or both)
+    # of the `queryset`/`serializer_class` attributes, although using
+    # the explicit style is generally preferred.
+    model = None
+
+    # If the `model` shortcut is used instead of `serializer_class`, then the
+    # serializer class will be constructed using this class as the base.
+    model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
 
     ######################################
     # These are pending deprecation...
@@ -61,7 +75,7 @@ class GenericAPIView(views.APIView):
         return serializer_class(instance, data=data, files=files,
                                 many=many, partial=partial, context=context)
 
-    def get_pagination_serializer(self, page=None):
+    def get_pagination_serializer(self, page):
         """
         Return a serializer instance to use with paginated data.
         """
@@ -73,32 +87,15 @@ class GenericAPIView(views.APIView):
         context = self.get_serializer_context()
         return pagination_serializer_class(instance=page, context=context)
 
-    def get_paginate_by(self, queryset=None):
-        """
-        Return the size of pages to use with pagination.
-
-        If `PAGINATE_BY_PARAM` is set it will attempt to get the page size
-        from a named query parameter in the url, eg. ?page_size=100
-
-        Otherwise defaults to using `self.paginate_by`.
-        """
-        if self.paginate_by_param:
-            query_params = self.request.QUERY_PARAMS
-            try:
-                return int(query_params[self.paginate_by_param])
-            except (KeyError, ValueError):
-                pass
-
-        return self.paginate_by
-
     def paginate_queryset(self, queryset, page_size, paginator_class=Paginator):
         """
         Paginate a queryset.
         """
         paginator = paginator_class(queryset, page_size,
                                     allow_empty_first_page=self.allow_empty)
-        page_kwarg = self.page_kwarg
-        page = self.kwargs.get(page_kwarg) or self.request.GET.get(page_kwarg) or 1
+        page_kwarg = self.kwargs.get(self.page_kwarg)
+        page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
+        page = page_kwarg or page_query_param or 1
         try:
             page_number = int(page)
         except ValueError:
@@ -132,6 +129,27 @@ class GenericAPIView(views.APIView):
     ########################
     ### The following methods provide default implementations
     ### that you may want to override for more complex cases.
+
+    def get_paginate_by(self, queryset=None):
+        """
+        Return the size of pages to use with pagination.
+
+        If `PAGINATE_BY_PARAM` is set it will attempt to get the page size
+        from a named query parameter in the url, eg. ?page_size=100
+
+        Otherwise defaults to using `self.paginate_by`.
+        """
+        if queryset is not None:
+            pass  # TODO: Deprecation warning
+
+        if self.paginate_by_param:
+            query_params = self.request.QUERY_PARAMS
+            try:
+                return int(query_params[self.paginate_by_param])
+            except (KeyError, ValueError):
+                pass
+
+        return self.paginate_by
 
     def get_serializer_class(self):
         """
@@ -202,6 +220,7 @@ class GenericAPIView(views.APIView):
             # TODO: Deprecation warning
             filter_kwargs = {self.slug_field: slug}
         else:
+            # TODO: Fix error message
             raise AttributeError("Generic detail view %s must be called with "
                                  "either an object pk or a slug."
                                  % self.__class__.__name__)
@@ -216,6 +235,9 @@ class GenericAPIView(views.APIView):
     ########################
     ### The following are placeholder methods,
     ### and are intended to be overridden.
+    ###
+    ### The are not called by GenericAPIView directly,
+    ### but are used by the mixin methods.
 
     def pre_save(self, obj):
         """

@@ -34,8 +34,8 @@ Instead of using a concrete generic view, we'll use the base class for represent
     from rest_framework import renderers
     from rest_framework.response import Response
 
-    class SnippetHighlight(generics.SingleObjectAPIView):
-        model = Snippet
+    class SnippetHighlight(generics.GenericAPIView):
+        queryset = Snippet.objects.all()
         renderer_classes = (renderers.StaticHTMLRenderer,)
     
         def get(self, request, *args, **kwargs):
@@ -143,34 +143,16 @@ We can change the default list style to use pagination, by modifying our `settin
         'PAGINATE_BY': 10
     }
 
-Note that settings in REST framework are all namespaced into a single dictionary setting, named 'REST_FRAMEWORK', which helps keep them well seperated from your other project settings.
+Note that settings in REST framework are all namespaced into a single dictionary setting, named 'REST_FRAMEWORK', which helps keep them well separated from your other project settings.
 
 We could also customize the pagination style if we needed too, but in this case we'll just stick with the default.
 
-## Reviewing our work
+## Browsing the API
 
 If we open a browser and navigate to the browseable API, you'll find that you can now work your way around the API simply by following links.
 
 You'll also be able to see the 'highlight' links on the snippet instances, that will take you to the highlighted code HTML representations.
 
-We've now got a complete pastebin Web API, which is fully web browseable, and comes complete with authentication, per-object permissions, and multiple renderer formats.
+In [part 6][tut-6] of the tutorial we'll look at how we can use ViewSets and Routers to reduce the amount of code we need to build our API.
 
-We've walked through each step of the design process, and seen how if we need to customize anything we can gradually work our way down to simply using regular Django views.
-
-You can review the final [tutorial code][repo] on GitHub, or try out a live example in [the sandbox][sandbox]. 
-
-## Onwards and upwards
-
-We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here's a few places you can start:
-
-* Contribute on [GitHub][github] by reviewing and submitting issues, and making pull requests.
-* Join the [REST framework discussion group][group], and help build the community.
-* Follow [the author][twitter] on Twitter and say hi.
-
-**Now go build awesome things.**
-
-[repo]: https://github.com/tomchristie/rest-framework-tutorial
-[sandbox]: http://restframework.herokuapp.com/
-[github]: https://github.com/tomchristie/django-rest-framework
-[group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
-[twitter]: https://twitter.com/_tomchristie
+[tut-6]: 6-viewsets-and-routers.md

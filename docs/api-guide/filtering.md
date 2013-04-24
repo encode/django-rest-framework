@@ -8,7 +8,7 @@
 
 The default behavior of REST framework's generic list views is to return the entire queryset for a model manager.  Often you will want your API to restrict the items that are returned by the queryset.
 
-The simplest way to filter the queryset of any view that subclasses `MultipleObjectAPIView` is to override the `.get_queryset()` method.
+The simplest way to filter the queryset of any view that subclasses `GenericAPIView` is to override the `.get_queryset()` method.
 
 Overriding this method allows you to customize the queryset returned by the view in a number of different ways.
 
@@ -21,7 +21,6 @@ You can do so by filtering based on the value of `request.user`.
 For example:
 
     class PurchaseList(generics.ListAPIView)
-        model = Purchase
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -44,7 +43,6 @@ For example if your URL config contained an entry like this:
 You could then write a view that returned a purchase queryset filtered by the username portion of the URL:
 
     class PurchaseList(generics.ListAPIView)
-        model = Purchase
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -62,7 +60,6 @@ A final example of filtering the initial queryset would be to determine the init
 We can override `.get_queryset()` to deal with URLs such as `http://example.com/api/purchases?username=denvercoder9`, and filter the queryset only if the `username` parameter is included in the URL:
 
     class PurchaseList(generics.ListAPIView)
-        model = Purchase
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -100,7 +97,7 @@ You must also set the filter backend to `DjangoFilterBackend` in your settings:
 If all you need is simple equality-based filtering, you can set a `filter_fields` attribute on the view, listing the set of fields you wish to filter against.
 
     class ProductList(generics.ListAPIView):
-        model = Product
+        queryset = Product.objects.all()
         serializer_class = ProductSerializer
         filter_fields = ('category', 'in_stock')
 
@@ -120,7 +117,7 @@ For more advanced filtering requirements you can specify a `FilterSet` class tha
             fields = ['category', 'in_stock', 'min_price', 'max_price']
 
     class ProductList(generics.ListAPIView):
-        model = Product
+        queryset = Product.objects.all()
         serializer_class = ProductSerializer
         filter_class = ProductFilter
 

@@ -127,7 +127,7 @@ An example of a view that uses `TemplateHTMLRenderer`:
         """
         A view that returns a templated HTML representations of a given user.
         """
-        model = Users
+        queryset = User.objects.all()
         renderer_classes = (TemplateHTMLRenderer,)
 
         def get(self, request, *args, **kwargs)
