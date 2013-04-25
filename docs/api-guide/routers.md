@@ -14,14 +14,44 @@ REST framework adds support for automatic URL routing to Django, and provides yo
 
 Here's an example of a simple URL conf, that uses `DefaultRouter`.
 
-    router = routers.DefaultRouter()
+    router = routers.SimpleRouter()
     router.register(r'users', UserViewSet, 'user')
     router.register(r'accounts', AccountViewSet, 'account')
     urlpatterns = router.urls
 
+There are three arguments to the `register()` method:
+
+* `prefix` - The URL prefix to use for this set of routes.
+* `viewset` - The viewset class.
+* `basename` - The base to use for the URL names that are created.
+
+The example above would generate the following URL patterns:
+
+* URL pattern: `^users/$`  Name: `'user-list'`
+* URL pattern: `^users/{pk}/$`  Name: `'user-detail'`
+* URL pattern: `^accounts/$`  Name: `'account-list'`
+* URL pattern: `^accounts/{pk}/$`  Name: `'account-detail'`
+
+### Extra link and actions
+
+Any `@link` or `@action` methods on the viewsets will also be routed.
+For example, a given method like this on the `UserViewSet` class:
+
+    @action(permission_classes=[IsAdminOrIsSelf])
+    def set_password(self, request, pk=None):
+        ...
+
+The following URL pattern would additionally be generated:
+
+* URL pattern: `^users/{pk}/set_password/$`  Name: `'user-set-password'`
+
+
+
 # API Guide
 
 ## SimpleRouter
+
+This router includes routes for the standard set of `list`, `create`, `retrieve`, `update`, `partial_update` and `destroy` actions.  The viewset can also mark additional methods to be routed, using the `@link` or `@action` decorators.
 
 <table border=1>
     <tr><th>URL Style</th><th>HTTP Method</th><th>Action</th><th>URL Name</th></tr>
@@ -36,6 +66,8 @@ Here's an example of a simple URL conf, that uses `DefaultRouter`.
 </table>
 
 ## DefaultRouter
+
+This router is similar to `SimpleRouter` as above, but additionally includes a default API root view, that returns a response containing hyperlinks to all the list views.  It also generates routes for optional `.json` style format suffixes.
 
 <table border=1>
     <tr><th>URL Style</th><th>HTTP Method</th><th>Action</th><th>URL Name</th></tr>

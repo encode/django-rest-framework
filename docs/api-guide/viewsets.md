@@ -52,6 +52,67 @@ There are two main advantages of using a `ViewSet` class over using a `View` cla
 
 Both of these come with a trade-off.  Using regular views and URL confs is more explicit and gives you more control.  ViewSets are helpful if you want to get up and running quickly, or when you have a large API and you want to enforce a consistent URL configuration throughout.
 
+## Marking extra methods for routing
+
+The default routers included with REST framework will provide routes for a standard set of create/retrieve/update/destroy style operations, as shown below:
+
+    class UserViewSet(viewsets.VietSet):
+        """
+        Example empty viewset demonstrating the standard
+        actions that will be handled by a router class.
+        """
+
+        def list(self, request):
+            pass
+
+        def create(self, request):
+            pass
+
+        def retrieve(self, request, pk=None):
+            pass
+
+        def update(self, request, pk=None):
+            pass
+
+        def partial_update(self, request, pk=None):
+            pass
+
+        def destroy(self, request, pk=None):
+            pass
+
+If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@link` or `@action` decorators.  The `@link` decorator will route `GET` requests, and the `@action` decroator will route `POST` requests.
+
+For example:
+
+    from django.contrib.auth.models import User
+    from rest_framework import viewsets
+    from rest_framework.decorators import action
+    from myapp.serializers import UserSerializer
+
+    class UserViewSet(viewsets.ModelViewSet):
+        """
+        A viewset that provides the standard actions 
+        """
+        queryset = User.objects.all()
+        serializer_class = UserSerializer
+        
+        @action
+        def set_password(self, request, pk=None):
+            user = self.get_object()
+            serializer = PasswordSerializer(data=request.DATA)
+            if serializer.is_valid():
+                user.set_password(serializer.data['password'])
+                user.save()
+                return Response({'status': 'password set'})
+            else:
+                return Response(serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST)
+
+The `@action` and `@link` decorators can additionally take extra arguments that will be set for the routed view only.  For example...
+
+        @action(permission_classes=[IsAdminOrIsSelf])
+        def set_password(self, request, pk=None):
+           ...
 
 # API Reference
 
@@ -133,7 +194,5 @@ For example, we can create a base viewset class that provides `retrieve`, `updat
         pass
 
 By creating your own base `ViewSet` classes, you can provide common behavior that can be reused in multiple views across your API.
-
-For advanced usage, it's worth noting the that `ViewSetMixin` class can also be applied to the standard Django `View` class.  Doing so allows you to use REST framework's automatic routing with regular Django views.
 
 [cite]: http://guides.rubyonrails.org/routing.html
