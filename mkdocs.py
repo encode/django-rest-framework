@@ -77,6 +77,7 @@ path_list = [
     'topics/contributing.md',
     'topics/rest-framework-2-announcement.md',
     'topics/2.2-announcement.md',
+    'topics/2.3-announcement.md',
     'topics/release-notes.md',
     'topics/credits.md',
 ]

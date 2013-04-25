@@ -288,3 +288,13 @@ footer a:hover {
 @media (max-width: 650px) {
   .repo-link.btn-inverse {display: none;}
 }
+
+td, th {
+  padding: 0.25em;
+  background-color: #f7f7f9;
+  border-color: #e1e1e8;
+}
+
+table {
+  border-color: white;
+}

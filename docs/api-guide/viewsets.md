@@ -114,6 +114,8 @@ The `@action` and `@link` decorators can additionally take extra arguments that 
         def set_password(self, request, pk=None):
            ...
 
+---
+
 # API Reference
 
 ## ViewSet

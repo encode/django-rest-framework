@@ -34,7 +34,7 @@ The example above would generate the following URL patterns:
 
 ### Extra link and actions
 
-Any `@link` or `@action` methods on the viewsets will also be routed.
+Any methods on the viewset decorated with `@link` or `@action` will also be routed.
 For example, a given method like this on the `UserViewSet` class:
 
     @action(permission_classes=[IsAdminOrIsSelf])
@@ -44,8 +44,6 @@ For example, a given method like this on the `UserViewSet` class:
 The following URL pattern would additionally be generated:
 
 * URL pattern: `^users/{pk}/set_password/$`  Name: `'user-set-password'`
-
-
 
 # API Guide
 
@@ -82,7 +80,43 @@ This router is similar to `SimpleRouter` as above, but additionally includes a d
     <tr><td>POST</td><td>@action decorated method</td></tr>
 </table>
 
+## AutoRouter
+
+The AutoRouter class is similar to the `DefaultRouter` class, except that it doesn't require you to register any viewsets, but instead automatically creates routes for all installed models.
+
+It can be useful for prototyping, although for anything more advanced you'll want to drop down to using one of the other router classes, and registering viewsets explicitly.
+
+The following code shows how you can automatically include a complete API for your application with just a few lines of code, using the `AutoRouter` class:
+
+    from django.conf.urls import patterns, url, include
+    from rest_framework.routers import AutoRouter
+    
+    urlpatterns = patterns('',
+        url(r'^api/', include(AutoRouter().urls)),
+        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    )
+
 # Custom Routers
 
+Implementing a custom router isn't something you'd need to do very often, but it can be useful if you have specfic requirements about how the your URLs for your API are strutured.  Doing so allows you to encapsulate the URL structure in a reusable way that ensures you don't have to write your URL patterns explicitly for each new view.
+
+The simplest way to implement a custom router is to subclass one of the existing router classes.  The `.routes` attribute is used to template the URL patterns that will be mapped to each viewset. 
+
+## Example
+
+The following example will only route to the `list` and `retrieve` actions, and unlike the routers included by REST framework, it does not use the trailing slash convention.
+
+    class ReadOnlyRouter(SimpleRouter):
+        """
+        A router for read-only APIs, which doesn't use trailing suffixes.
+        """
+        routes = [
+            (r'^{prefix}$', {'get': 'list'}, '{basename}-list'),
+            (r'^{prefix}/{lookup}$', {'get': 'retrieve'}, '{basename}-detail')
+        ]
+
+## Advanced custom routers
+
+If you want to provide totally custom behavior, you can override `BaseRouter` and override the `get_urls()` method.  The method should insect the registered viewsets and return a list of URL patterns.  The registered prefix, viewset and basename tuples may be inspected by accessing the `self.registry` attribute.  
 
 [cite]: http://guides.rubyonrails.org/routing.html
