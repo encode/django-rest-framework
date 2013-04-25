@@ -130,7 +130,8 @@ class SingleObjectAPIView(SingleObjectMixin, GenericAPIView):
         """
         Override default to add support for object-level permissions.
         """
-        queryset = self.filter_queryset(self.get_queryset())
+        if queryset is None:
+            queryset = self.filter_queryset(self.get_queryset())
         obj = super(SingleObjectAPIView, self).get_object(queryset)
         self.check_object_permissions(self.request, obj)
         return obj
