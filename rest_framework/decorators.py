@@ -1,3 +1,11 @@
+"""
+The most imporant decorator in this module is `@api_view`, which is used
+for writing function-based views with REST framework.
+
+There are also various decorators for setting the API policies on function
+based views, as well as the `@action` and `@link` decorators, which are
+used to annotate methods on viewsets that should be included by routers.
+"""
 from __future__ import unicode_literals
 from rest_framework.compat import six
 from rest_framework.views import APIView

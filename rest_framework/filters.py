@@ -1,3 +1,7 @@
+"""
+Provides generic filtering backends that can be used to filter the results
+returned by list views.
+"""
 from __future__ import unicode_literals
 from rest_framework.compat import django_filters
 

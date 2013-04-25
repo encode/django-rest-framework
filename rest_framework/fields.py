@@ -1,3 +1,8 @@
+"""
+Serializer fields perform validation on incoming data.
+
+They are very similar to Django's form fields.
+"""
 from __future__ import unicode_literals
 
 import copy

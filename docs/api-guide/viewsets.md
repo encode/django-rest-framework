@@ -41,6 +41,10 @@ If we need to, we can bind this viewset into two seperate views, like so:
 
 Typically we wouldn't do this, but would instead register the viewset with a router, and allow the urlconf to be automatically generated.
 
+    router = DefaultRouter()
+    router.register(r'users', UserViewSet, 'user')
+    urlpatterns = router.urls
+
 There are two main advantages of using a `ViewSet` class over using a `View` class.
 
 * Repeated logic can be combined into a single class.  In the above example, we only need to specify the `queryset` once, and it'll be used across multiple views.

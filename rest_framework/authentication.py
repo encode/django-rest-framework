@@ -1,5 +1,5 @@
 """
-Provides a set of pluggable authentication policies.
+Provides various authentication policies.
 """
 from __future__ import unicode_literals
 import base64

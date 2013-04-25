@@ -1,3 +1,9 @@
+"""
+Serializer fields that deal with relationships.
+
+These fields allow you to specify the style that should be used to represent
+model relationships, including hyperlinks, primary keys, or slugs.
+"""
 from __future__ import unicode_literals
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch

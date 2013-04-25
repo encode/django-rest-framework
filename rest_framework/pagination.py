@@ -1,8 +1,10 @@
+"""
+Pagination serializers determine the structure of the output that should
+be used for paginated responses.
+"""
 from __future__ import unicode_literals
 from rest_framework import serializers
 from rest_framework.templatetags.rest_framework import replace_query_param
-
-# TODO: Support URLconf kwarg-style paging
 
 
 class NextPageField(serializers.Field):

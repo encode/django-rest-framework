@@ -1,3 +1,15 @@
+"""
+Serializers and ModelSerializers are similar to Forms and ModelForms.
+Unlike forms, they are not constrained to dealing with HTML output, and
+form encoded input.
+
+Serialization in REST framework is a two-phase process:
+
+1. Serializers marshal between complex types like model instances, and
+python primatives.
+2. The process of marshalling between python primatives and request and
+response content is handled by parsers and renderers.
+"""
 from __future__ import unicode_literals
 import copy
 import datetime
