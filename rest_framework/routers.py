@@ -14,10 +14,24 @@ For example, you might have a `urls.py` that looks something like this:
     urlpatterns = router.urls
 """
 from django.conf.urls import url, patterns
+from django.db import models
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.urlpatterns import format_suffix_patterns
+
+
+def replace_methodname(format_string, methodname):
+    """
+    Partially format a format_string, swapping out any
+    '{methodname}'' or '{methodnamehyphen}'' components.
+    """
+    methodnamehyphen = methodname.replace('_', '-')
+    ret = format_string
+    ret = ret.replace('{methodname}', methodname)
+    ret = ret.replace('{methodnamehyphen}', methodnamehyphen)
+    return ret
 
 
 class BaseRouter(object):
@@ -66,7 +80,7 @@ class SimpleRouter(BaseRouter):
             {
                 '{httpmethod}': '{methodname}',
             },
-            '{basename}-{methodname}'
+            '{basename}-{methodnamehyphen}'
         ),
     ]
 
@@ -89,13 +103,13 @@ class SimpleRouter(BaseRouter):
         ret = []
         for url_format, method_map, name_format in self.routes:
             if method_map == {'{httpmethod}': '{methodname}'}:
-                # Dynamic routes
+                # Dynamic routes (@link or @action decorator)
                 for httpmethod, methodname in dynamic_routes.items():
                     extra_kwargs = getattr(viewset, methodname).kwargs
                     ret.append((
-                        url_format.replace('{methodname}', methodname),
+                        replace_methodname(url_format, methodname),
                         {httpmethod: methodname},
-                        name_format.replace('{methodname}', methodname),
+                        replace_methodname(name_format, methodname),
                         extra_kwargs
                     ))
             else:
@@ -196,3 +210,27 @@ class DefaultRouter(SimpleRouter):
             urls = format_suffix_patterns(urls)
 
         return urls
+
+
+class AutoRouter(DefaultRouter):
+    """
+    A router class that doesn't require you to register any viewsets,
+    but instead automatically creates routes for all installed models.
+
+    Useful for quick and dirty prototyping.
+    """
+    def __init__(self):
+        super(AutoRouter, self).__init__()
+        for model in models.get_models():
+            prefix = model._meta.verbose_name_plural.replace(' ', '_')
+            basename = model._meta.object_name.lower()
+            classname = model.__name__
+
+            DynamicViewSet = type(
+                classname,
+                (ModelViewSet,),
+                {}
+            )
+            DynamicViewSet.model = model
+
+            self.register(prefix, DynamicViewSet, basename)
