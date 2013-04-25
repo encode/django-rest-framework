@@ -45,6 +45,8 @@ class GenericAPIView(views.APIView):
     # serializer class will be constructed using this class as the base.
     model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
 
+    _paginator_class = Paginator
+
     ######################################
     # These are pending deprecation...
 
@@ -85,12 +87,24 @@ class GenericAPIView(views.APIView):
         context = self.get_serializer_context()
         return pagination_serializer_class(instance=page, context=context)
 
-    def paginate_queryset(self, queryset, page_size, paginator_class=Paginator):
+    def paginate_queryset(self, queryset, page_size=None):
         """
-        Paginate a queryset.
+        Paginate a queryset if required, either returning a page object,
+        or `None` if pagination is not configured for this view.
         """
-        paginator = paginator_class(queryset, page_size,
-                                    allow_empty_first_page=self.allow_empty)
+        deprecated_style = False
+        if page_size is not None:
+            # TODO: Deperecation warning
+            deprecated_style = True
+        else:
+            # Determine the required page size.
+            # If pagination is not configured, simply return None.
+            page_size = self.get_paginate_by()
+            if not page_size:
+                return None
+
+        paginator = self._paginator_class(queryset, page_size,
+                                          allow_empty_first_page=self.allow_empty)
         page_kwarg = self.kwargs.get(self.page_kwarg)
         page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
         page = page_kwarg or page_query_param or 1
@@ -103,12 +117,15 @@ class GenericAPIView(views.APIView):
                 raise Http404(_("Page is not 'last', nor can it be converted to an int."))
         try:
             page = paginator.page(page_number)
-            return (paginator, page, page.object_list, page.has_other_pages())
         except InvalidPage as e:
             raise Http404(_('Invalid page (%(page_number)s): %(message)s') % {
                                 'page_number': page_number,
                                 'message': str(e)
             })
+
+        if deprecated_style:
+            return (paginator, page, page.object_list, page.has_other_pages())
+        return page
 
     def filter_queryset(self, queryset):
         """
@@ -163,7 +180,6 @@ class GenericAPIView(views.APIView):
         if serializer_class is not None:
             return serializer_class
 
-        # TODO: Deprecation warning
         class DefaultSerializer(self.model_serializer_class):
             class Meta:
                 model = self.model
@@ -184,7 +200,6 @@ class GenericAPIView(views.APIView):
             return self.queryset._clone()
 
         if self.model is not None:
-            # TODO: Deprecation warning
             return self.model._default_manager.all()
 
         raise ImproperlyConfigured("'%s' must define 'queryset' or 'model'"
