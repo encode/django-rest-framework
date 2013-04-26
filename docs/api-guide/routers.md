@@ -15,15 +15,15 @@ REST framework adds support for automatic URL routing to Django, and provides yo
 Here's an example of a simple URL conf, that uses `DefaultRouter`.
 
     router = routers.SimpleRouter()
-    router.register(r'users', UserViewSet, 'user')
-    router.register(r'accounts', AccountViewSet, 'account')
+    router.register(r'users', UserViewSet, name='user')
+    router.register(r'accounts', AccountViewSet, name='account')
     urlpatterns = router.urls
 
 There are three arguments to the `register()` method:
 
 * `prefix` - The URL prefix to use for this set of routes.
 * `viewset` - The viewset class.
-* `basename` - The base to use for the URL names that are created.
+* `name` - The base to use for the URL names that are created.
 
 The example above would generate the following URL patterns:
 

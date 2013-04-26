@@ -45,14 +45,17 @@ def _camelcase_to_spaces(content):
     return ' '.join(content.split('_')).title()
 
 
-def get_view_name(cls):
+def get_view_name(cls, suffix=None):
     """
     Return a formatted name for an `APIView` class or `@api_view` function.
     """
     name = cls.__name__
     name = _remove_trailing_string(name, 'View')
     name = _remove_trailing_string(name, 'ViewSet')
-    return _camelcase_to_spaces(name)
+    name = _camelcase_to_spaces(name)
+    if suffix:
+        name += ' ' + suffix
+    return name
 
 
 def get_view_description(cls, html=False):

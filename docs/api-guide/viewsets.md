@@ -42,7 +42,7 @@ If we need to, we can bind this viewset into two seperate views, like so:
 Typically we wouldn't do this, but would instead register the viewset with a router, and allow the urlconf to be automatically generated.
 
     router = DefaultRouter()
-    router.register(r'users', UserViewSet, 'user')
+    router.register(r'users', UserViewSet, name='user')
     urlpatterns = router.urls
 
 Rather than writing your own viewsets, you'll often want to use the existing base classes that provide a default set of behavior.  For example:

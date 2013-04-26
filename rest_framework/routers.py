@@ -13,6 +13,7 @@ For example, you might have a `urls.py` that looks something like this:
 
     urlpatterns = router.urls
 """
+from collections import namedtuple
 from django.conf.urls import url, patterns
 from django.db import models
 from rest_framework.decorators import api_view
@@ -20,6 +21,9 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.urlpatterns import format_suffix_patterns
+
+
+Route = namedtuple('Route', ['url', 'mapping', 'name', 'initkwargs'])
 
 
 def replace_methodname(format_string, methodname):
@@ -38,8 +42,8 @@ class BaseRouter(object):
     def __init__(self):
         self.registry = []
 
-    def register(self, prefix, viewset, basename):
-        self.registry.append((prefix, viewset, basename))
+    def register(self, prefix, viewset, name):
+        self.registry.append((prefix, viewset, name))
 
     def get_urls(self):
         raise NotImplemented('get_urls must be overridden')
@@ -54,33 +58,36 @@ class BaseRouter(object):
 class SimpleRouter(BaseRouter):
     routes = [
         # List route.
-        (
-            r'^{prefix}/$',
-            {
+        Route(
+            url=r'^{prefix}/$',
+            mapping={
                 'get': 'list',
                 'post': 'create'
             },
-            '{basename}-list'
+            name='{basename}-list',
+            initkwargs={'suffix': 'List'}
         ),
         # Detail route.
-        (
-            r'^{prefix}/{lookup}/$',
-            {
+        Route(
+            url=r'^{prefix}/{lookup}/$',
+            mapping={
                 'get': 'retrieve',
                 'put': 'update',
                 'patch': 'partial_update',
                 'delete': 'destroy'
             },
-            '{basename}-detail'
+            name='{basename}-detail',
+            initkwargs={'suffix': 'Instance'}
         ),
         # Dynamically generated routes.
         # Generated using @action or @link decorators on methods of the viewset.
-        (
-            r'^{prefix}/{lookup}/{methodname}/$',
-            {
+        Route(
+            url=r'^{prefix}/{lookup}/{methodname}/$',
+            mapping={
                 '{httpmethod}': '{methodname}',
             },
-            '{basename}-{methodnamehyphen}'
+            name='{basename}-{methodnamehyphen}',
+            initkwargs={}
         ),
     ]
 
@@ -88,8 +95,7 @@ class SimpleRouter(BaseRouter):
         """
         Augment `self.routes` with any dynamically generated routes.
 
-        Returns a list of 4-tuples, of the form:
-        `(url_format, method_map, name_format, extra_kwargs)`
+        Returns a list of the Route namedtuple.
         """
 
         # Determine any `@action` or `@link` decorated methods on the viewset
@@ -101,21 +107,21 @@ class SimpleRouter(BaseRouter):
                 dynamic_routes[httpmethod] = methodname
 
         ret = []
-        for url_format, method_map, name_format in self.routes:
-            if method_map == {'{httpmethod}': '{methodname}'}:
+        for route in self.routes:
+            if route.mapping == {'{httpmethod}': '{methodname}'}:
                 # Dynamic routes (@link or @action decorator)
                 for httpmethod, methodname in dynamic_routes.items():
-                    extra_kwargs = getattr(viewset, methodname).kwargs
-                    ret.append((
-                        replace_methodname(url_format, methodname),
-                        {httpmethod: methodname},
-                        replace_methodname(name_format, methodname),
-                        extra_kwargs
+                    initkwargs = route.initkwargs.copy()
+                    initkwargs.update(getattr(viewset, methodname).kwargs)
+                    ret.append(Route(
+                        url=replace_methodname(route.url, methodname),
+                        mapping={httpmethod: methodname},
+                        name=replace_methodname(route.name, methodname),
+                        initkwargs=initkwargs,
                     ))
             else:
                 # Standard route
-                extra_kwargs = {}
-                ret.append((url_format, method_map, name_format, extra_kwargs))
+                ret.append(route)
 
         return ret
 
@@ -150,17 +156,17 @@ class SimpleRouter(BaseRouter):
             lookup = self.get_lookup_regex(viewset)
             routes = self.get_routes(viewset)
 
-            for url_format, method_map, name_format, extra_kwargs in routes:
+            for route in routes:
 
                 # Only actions which actually exist on the viewset will be bound
-                method_map = self.get_method_map(viewset, method_map)
-                if not method_map:
+                mapping = self.get_method_map(viewset, route.mapping)
+                if not mapping:
                     continue
 
                 # Build the url pattern
-                regex = url_format.format(prefix=prefix, lookup=lookup)
-                view = viewset.as_view(method_map, **extra_kwargs)
-                name = name_format.format(basename=basename)
+                regex = route.url.format(prefix=prefix, lookup=lookup)
+                view = viewset.as_view(mapping, **route.initkwargs)
+                name = route.name.format(basename=basename)
                 ret.append(url(regex, view, name=name))
 
         return ret
@@ -179,7 +185,7 @@ class DefaultRouter(SimpleRouter):
         Return a view to use as the API root.
         """
         api_root_dict = {}
-        list_name = self.routes[0][-1]
+        list_name = self.routes[0].name
         for prefix, viewset, basename in self.registry:
             api_root_dict[prefix] = list_name.format(basename=basename)
 

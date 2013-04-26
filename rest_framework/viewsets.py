@@ -35,12 +35,16 @@ class ViewSetMixin(object):
     """
 
     @classonlymethod
-    def as_view(cls, actions=None, name_suffix=None, **initkwargs):
+    def as_view(cls, actions=None, **initkwargs):
         """
         Because of the way class based views create a closure around the
         instantiated view, we need to totally reimplement `.as_view`,
         and slightly modify the view function that is created and returned.
         """
+        # The suffix initkwarg is reserved for identifing the viewset type
+        # eg. 'List' or 'Instance'.
+        cls.suffix = None
+
         # sanitize keyword arguments
         for key in initkwargs:
             if key in cls.http_method_names:
@@ -74,7 +78,11 @@ class ViewSetMixin(object):
         # like csrf_exempt from dispatch
         update_wrapper(view, cls.dispatch, assigned=())
 
+        # We need to set these on the view function, so that breadcrumb
+        # generation can pick out these bits of information from a
+        # resolved URL.
         view.cls = cls
+        view.suffix = initkwargs.get('suffix', None)
         return view
 
 

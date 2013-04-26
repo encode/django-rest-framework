@@ -105,8 +105,8 @@ Here's our re-wired `urls.py` file.
 
     # Create a router and register our viewsets with it.
     router = DefaultRouter()
-    router.register(r'snippets', views.SnippetViewSet, 'snippet')
-    router.register(r'users', views.UserViewSet, 'user')
+    router.register(r'snippets', views.SnippetViewSet, name='snippet')
+    router.register(r'users', views.UserViewSet, name='user')
     
     # The API URLs are now determined automatically by the router.
     # Additionally, we include the login URLs for the browseable API.

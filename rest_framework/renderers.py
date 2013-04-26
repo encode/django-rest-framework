@@ -439,7 +439,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         return GenericContentForm()
 
     def get_name(self, view):
-        return get_view_name(view.__class__)
+        return get_view_name(view.__class__, getattr(view, 'suffix', None))
 
     def get_description(self, view):
         return get_view_description(view.__class__, html=True)

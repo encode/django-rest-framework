@@ -21,7 +21,8 @@ def get_breadcrumbs(url):
                 # Don't list the same view twice in a row.
                 # Probably an optional trailing slash.
                 if not seen or seen[-1] != view:
-                    breadcrumbs_list.insert(0, (get_view_name(view.cls), prefix + url))
+                    suffix = getattr(view, 'suffix', None)
+                    breadcrumbs_list.insert(0, (get_view_name(view.cls, suffix), prefix + url))
                     seen.append(view)
 
         if url == '':
