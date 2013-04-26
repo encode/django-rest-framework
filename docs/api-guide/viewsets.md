@@ -23,14 +23,14 @@ Let's define a simple viewset that can be used to listing or retrieving all the 
         """
         A simple ViewSet that for listing or retrieving users.
         """
-        queryset = User.objects.all()
-
         def list(self, request):
-            serializer = UserSerializer(self.queryset, many=True)
+            queryset = User.objects.all()
+            serializer = UserSerializer(queryset, many=True)
             return Response(serializer.data)
             
         def retrieve(self, request, pk=None):
-            user = get_object_or_404(self.queryset, pk=pk)
+            queryset = User.objects.all()
+            user = get_object_or_404(queryset, pk=pk)
             serializer = UserSerializer(user)
             return Response(serializer.data)
 
