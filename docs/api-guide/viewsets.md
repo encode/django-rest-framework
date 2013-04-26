@@ -19,7 +19,7 @@ Typically, rather than exlicitly registering the views in a viewset in the urlco
 
 Let's define a simple viewset that can be used to listing or retrieving all the users in the system.
 
-    class UserViewSet(ViewSet):
+    class UserViewSet(viewsets.ViewSet):
         """
         A simple ViewSet that for listing or retrieving users.
         """
@@ -45,6 +45,15 @@ Typically we wouldn't do this, but would instead register the viewset with a rou
     router.register(r'users', UserViewSet, 'user')
     urlpatterns = router.urls
 
+Rather than writing your own viewsets, you'll often want to use the existing base classes that provide a default set of behavior.  For example:
+
+    class UserViewSet(viewsets.ModelViewSet):
+        """
+        A viewset for viewing and editing user instances.
+        """
+        serializer_class = UserSerializer
+        queryset = User.objects.all()
+
 There are two main advantages of using a `ViewSet` class over using a `View` class.
 
 * Repeated logic can be combined into a single class.  In the above example, we only need to specify the `queryset` once, and it'll be used across multiple views.
@@ -60,6 +69,9 @@ The default routers included with REST framework will provide routes for a stand
         """
         Example empty viewset demonstrating the standard
         actions that will be handled by a router class.
+        
+        If you're using format suffixes, make sure to also include
+        the `format=None` keyword argument for each action.
         """
 
         def list(self, request):
