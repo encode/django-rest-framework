@@ -560,6 +560,7 @@ class ModelSerializer(Serializer):
         models.DateTimeField: DateTimeField,
         models.DateField: DateField,
         models.TimeField: TimeField,
+        models.DecimalField: DecimalField,
         models.EmailField: EmailField,
         models.CharField: CharField,
         models.URLField: URLField,
