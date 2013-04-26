@@ -29,7 +29,7 @@ Route = namedtuple('Route', ['url', 'mapping', 'name', 'initkwargs'])
 def replace_methodname(format_string, methodname):
     """
     Partially format a format_string, swapping out any
-    '{methodname}'' or '{methodnamehyphen}'' components.
+    '{methodname}' or '{methodnamehyphen}' components.
     """
     methodnamehyphen = methodname.replace('_', '-')
     ret = format_string
