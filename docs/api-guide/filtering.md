@@ -94,7 +94,8 @@ You must also set the filter backend to `DjangoFilterBackend` in your settings:
 
 ## Specifying filter fields
 
-If all you need is simple equality-based filtering, you can set a `filter_fields` attribute on the view, listing the set of fields you wish to filter against.
+If all you need is simple equality-based filtering, you can set a `filter_fields` attribute on the view, or viewset,
+listing the set of fields you wish to filter against.
 
     class ProductList(generics.ListAPIView):
         queryset = Product.objects.all()

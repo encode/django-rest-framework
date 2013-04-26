@@ -39,7 +39,8 @@ If not specified, this setting defaults to allowing unrestricted access:
        'rest_framework.permissions.AllowAny',
     )
 
-You can also set the authentication policy on a per-view basis, using the `APIView` class based views.
+You can also set the authentication policy on a per-view, or per-viewset basis,
+using the `APIView` class based views.
 
     class ExampleView(APIView):
         permission_classes = (IsAuthenticated,)

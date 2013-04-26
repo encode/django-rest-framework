@@ -27,7 +27,8 @@ The default set of renderers may be set globally, using the `DEFAULT_RENDERER_CL
         )
     }
 
-You can also set the renderers used for an individual view, using the `APIView` class based views.
+You can also set the renderers used for an individual view, or viewset,
+using the `APIView` class based views.
 
     class UserCountView(APIView):
         """
