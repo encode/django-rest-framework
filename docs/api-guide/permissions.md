@@ -21,7 +21,12 @@ If any permission check fails an `exceptions.PermissionDenied` exception will be
 
 REST framework permissions also support object-level permissioning.  Object level permissions are used to determine if a user should be allowed to act on a particular object, which will typically be a model instance.
 
-Object level permissions are run by REST framework's generic views when `.get_object()` is called.  As with view level permissions, an `exceptions.PermissionDenied` exception will be raised if the user is not allowed to act on the given object.
+Object level permissions are run by REST framework's generic views when `.get_object()` is called.
+As with view level permissions, an `exceptions.PermissionDenied` exception will be raised if the user is not allowed to act on the given object.
+
+If you're writing your own views and want to enforce object level permissions,
+you'll need to explicitly call the `.check_object_permissions(request, obj)` method on the view at the point at which you've retrieved the object.
+This will either raise a `PermissionDenied` or `NotAuthenticated` exception, or simply return if the view has the appropraite permissions.
 
 ## Setting the permission policy
 
