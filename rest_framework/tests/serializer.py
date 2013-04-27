@@ -3,7 +3,7 @@ from django.utils.datastructures import MultiValueDict
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
-    BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
+    BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
 import datetime
 import pickle
@@ -767,8 +767,6 @@ class RelatedTraversalTest(TestCase):
         post = BlogPost.objects.create(title="Test blog post", writer=user)
         post.blogpostcomment_set.create(text="I love this blog post")
 
-        from rest_framework.tests.models import BlogPostComment
-
         class PersonSerializer(serializers.ModelSerializer):
             class Meta:
                 model = Person
@@ -968,23 +966,26 @@ class SerializerPickleTests(TestCase):
 
 class DepthTest(TestCase):
     def test_implicit_nesting(self):
+
         writer = Person.objects.create(name="django", age=1)
         post = BlogPost.objects.create(title="Test blog post", writer=writer)
+        comment = BlogPostComment.objects.create(text="Test blog post comment", blog_post=post)
 
-        class BlogPostSerializer(serializers.ModelSerializer):
+        class BlogPostCommentSerializer(serializers.ModelSerializer):
             class Meta:
-                model = BlogPost
-                depth = 1
+                model = BlogPostComment
+                depth = 2
 
-        serializer = BlogPostSerializer(instance=post)
-        expected = {'id': 1, 'title': 'Test blog post',
-                    'writer': {'id': 1, 'name': 'django', 'age': 1}}
+        serializer = BlogPostCommentSerializer(instance=comment)
+        expected = {'id': 1, 'text': 'Test blog post comment', 'blog_post': {'id': 1, 'title': 'Test blog post',
+                    'writer': {'id': 1, 'name': 'django', 'age': 1}}}
 
         self.assertEqual(serializer.data, expected)
 
     def test_explicit_nesting(self):
         writer = Person.objects.create(name="django", age=1)
         post = BlogPost.objects.create(title="Test blog post", writer=writer)
+        comment = BlogPostComment.objects.create(text="Test blog post comment", blog_post=post)
 
         class PersonSerializer(serializers.ModelSerializer):
             class Meta:
@@ -996,9 +997,15 @@ class DepthTest(TestCase):
             class Meta:
                 model = BlogPost
 
-        serializer = BlogPostSerializer(instance=post)
-        expected = {'id': 1, 'title': 'Test blog post',
-                    'writer': {'id': 1, 'name': 'django', 'age': 1}}
+        class BlogPostCommentSerializer(serializers.ModelSerializer):
+            blog_post = BlogPostSerializer()
+
+            class Meta:
+                model = BlogPostComment
+
+        serializer = BlogPostCommentSerializer(instance=comment)
+        expected = {'id': 1, 'text': 'Test blog post comment', 'blog_post': {'id': 1, 'title': 'Test blog post',
+                    'writer': {'id': 1, 'name': 'django', 'age': 1}}}
 
         self.assertEqual(serializer.data, expected)
 
