@@ -206,18 +206,6 @@ class BaseSerializer(WritableField):
         return ret
 
     #####
-    # Field methods - used when the serializer class is itself used as a field.
-
-    def initialize(self, parent, field_name):
-        """
-        Same behaviour as usual Field, except that we need to keep track
-        of state so that we can deal with handling maximum depth.
-        """
-        super(BaseSerializer, self).initialize(parent, field_name)
-        if parent.opts.depth:
-            self.opts.depth = parent.opts.depth - 1
-
-    #####
     # Methods to convert or revert from objects <--> primitive representations.
 
     def get_field_key(self, field_name):
@@ -619,6 +607,8 @@ class ModelSerializer(Serializer):
         class NestedModelSerializer(ModelSerializer):
             class Meta:
                 model = model_field.rel.to
+                depth = self.opts.depth - 1
+
         return NestedModelSerializer()
 
     def get_related_field(self, model_field, to_many=False):
