@@ -26,7 +26,7 @@ As with view level permissions, an `exceptions.PermissionDenied` exception will 
 
 If you're writing your own views and want to enforce object level permissions,
 you'll need to explicitly call the `.check_object_permissions(request, obj)` method on the view at the point at which you've retrieved the object.
-This will either raise a `PermissionDenied` or `NotAuthenticated` exception, or simply return if the view has the appropraite permissions.
+This will either raise a `PermissionDenied` or `NotAuthenticated` exception, or simply return if the view has the appropriate permissions.
 
 ## Setting the permission policy
 
