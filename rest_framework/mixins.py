@@ -10,6 +10,8 @@ from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.request import clone_request
+from rest_framework.relations import Relationship
+from rest_framework.compat import get_concrete_model
 
 
 def _get_validation_exclusions(obj, pk=None, slug_field=None):
@@ -166,3 +168,37 @@ class DestroyModelMixin(object):
         obj = self.get_object()
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class RetrieveRelationshipMixin(object):
+    """
+    Retrieve relationships
+    """
+    def retrieve(self, request, *args, **kwargs):
+        relationship = self.get_related_field_from_relationship()
+        self.object = self.get_object()
+
+        self.related_object_or_list = getattr(self.object, relationship.field_name)
+        if relationship.to_many:
+            self.related_object_or_list = self.related_object_or_list.all()
+
+        serializer = self.get_serializer(self.related_object_or_list, many=relationship.to_many)
+        return Response(serializer.data)
+
+    def get_related_field_from_relationship(self):
+        """
+        Return a `Relationship` instance for the related field specified in the request arguments
+        """
+        relationship = self.kwargs.get('relationship', None)
+        relation = None
+        if relationship:
+            opts = get_concrete_model(self.model)._meta
+            fields = opts.get_all_field_names()
+            if relationship in fields:
+                field, model, direct, m2m = opts.get_field_by_name(relationship)
+                relation = Relationship(field)
+
+        if not relation:
+            raise Exception("No relationship found for '%s'" % relationship)
+
+        return relation
