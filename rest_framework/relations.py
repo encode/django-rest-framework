@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from collections import Iterable
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch
 from django import forms
@@ -162,7 +163,10 @@ class RelatedField(WritableField):
         elif value in (None, ''):
             into[(self.source or field_name)] = None
         elif self.many:
-            into[(self.source or field_name)] = [self.from_native(item) for item in value]
+            if isinstance(value, basestring) or not isinstance(value, Iterable):
+                into[(self.source or field_name)] = [self.from_native(value)]
+            else:
+                into[(self.source or field_name)] = [self.from_native(item) for item in value]
         else:
             into[(self.source or field_name)] = self.from_native(value)
 
