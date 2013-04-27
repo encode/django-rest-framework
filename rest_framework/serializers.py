@@ -768,6 +768,7 @@ class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
     def __init__(self, meta):
         super(HyperlinkedModelSerializerOptions, self).__init__(meta)
         self.view_name = getattr(meta, 'view_name', None)
+        self.include_pk = getattr(meta, 'include_pk', False)
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
@@ -795,9 +796,10 @@ class HyperlinkedModelSerializer(ModelSerializer):
             'model_name': model_meta.object_name.lower()
         }
         return self._default_view_name % format_kwargs
-
+        
     def get_pk_field(self, model_field):
-        return None
+        if self.opts.include_pk:
+            return super(HyperlinkedModelSerializer, self).get_pk_field(model_field)
 
     def get_related_field(self, model_field, to_many):
         """
