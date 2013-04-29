@@ -344,6 +344,30 @@ class TestOverriddenGetObject(TestCase):
         self.assertEqual(response.data, self.data[0])
 
 
+class TestFieldsShortcut(TestCase):
+    """
+    Test cases for setting the `fields` attribute on a view.
+    """
+    def setUp(self):
+        class OverriddenFieldsView(generics.RetrieveUpdateDestroyAPIView):
+            model = BasicModel
+            fields = ('text',)
+
+        class RegularView(generics.RetrieveUpdateDestroyAPIView):
+            model = BasicModel
+
+        self.overridden_fields_view = OverriddenFieldsView()
+        self.regular_view = RegularView()
+
+    def test_overridden_fields_view(self):
+        Serializer = self.overridden_fields_view.get_serializer_class()
+        self.assertEqual(Serializer().fields.keys(), ['text'])
+
+    def test_not_overridden_fields_view(self):
+        Serializer = self.regular_view.get_serializer_class()
+        self.assertEqual(Serializer().fields.keys(), ['id', 'text'])
+
+
 # Regression test for #285
 
 class CommentSerializer(serializers.ModelSerializer):

@@ -79,42 +79,35 @@ Let's take a look at a quick example of using REST framework to build a simple m
 
 We'll create a read-write API for accessing users and groups.
 
+Here's our `views.py` module:
+
     from django.conf.urls.defaults import url, patterns, include
     from django.contrib.auth.models import User, Group
-    from rest_framework import serializers, viewsets, routers
-
-
-    # Serializers control the representations your API exposes.
-    class UserSerializer(serializers.HyperlinkedModelSerializer):
-        class Meta:
-            model = User
-            fields = ('url', 'email', 'is_staff', 'groups')
-
-
-    class GroupSerializer(serializers.HyperlinkedModelSerializer):
-        class Meta:
-            model = Group
-            fields = ('url', 'name')
+    from rest_framework import viewsets, routers
 
 
     # ViewSets define the view behavior.
     class UserViewSet(viewsets.ModelViewSet):
         queryset = User.objects.all()
-        serializer_class = UserSerializer
+        fields = ('url', 'email', 'is_staff', 'groups')
 
 
     class GroupViewSet(viewsets.ModelViewSet):
         queryset = Group.objects.all()
-        serializer_class = GroupSerializer
+        fields = ('url', 'name')
+
+And our `urls.py` setup:
+
+    from django.conf.urls.defaults import url, patterns, include
+    from myapp import views
+    from rest_framework import routers
 
 
-    # Routers provide a convienient way of automatically managing your URLs.
     router = routers.DefaultRouter()
-    router.register(r'users', UserViewSet, 'user')
-    router.register(r'groups', GroupViewSet, 'group')
+    router.register(r'users', views.UserViewSet, name='user')
+    router.register(r'groups', views.GroupViewSet, name='group')
 
-
-    # Wire up our API URLs, letting the router do the hard work.
+    # Wire up our API using automatic URL routing.
     # Additionally, we include login URLs for the browseable API.
     urlpatterns = patterns('',
         url(r'^', include(router.urls)),

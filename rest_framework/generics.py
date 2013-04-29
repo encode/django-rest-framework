@@ -44,6 +44,10 @@ class GenericAPIView(views.APIView):
     # the explicit style is generally preferred.
     model = None
 
+    # This shortcut may be used instead of setting the `serializer_class`
+    # attribute, although using the explicit style is generally preferred.
+    fields = None
+
     # If the `model` shortcut is used instead of `serializer_class`, then the
     # serializer class will be constructed using this class as the base.
     model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
@@ -193,6 +197,7 @@ class GenericAPIView(views.APIView):
         class DefaultSerializer(self.model_serializer_class):
             class Meta:
                 model = self.model
+                fields = self.fields
         return DefaultSerializer
 
     def get_queryset(self):

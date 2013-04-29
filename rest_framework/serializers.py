@@ -645,7 +645,7 @@ class ModelSerializer(Serializer):
 
         for relation in reverse_rels:
             accessor_name = relation.get_accessor_name()
-            if accessor_name not in self.opts.fields:
+            if not self.opts.fields or accessor_name not in self.opts.fields:
                 continue
             related_model = relation.model
             to_many = relation.field.rel.multiple
