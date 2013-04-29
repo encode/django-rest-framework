@@ -350,11 +350,11 @@ class TestFieldsShortcut(TestCase):
     """
     def setUp(self):
         class OverriddenFieldsView(generics.RetrieveUpdateDestroyAPIView):
-            model = BasicModel
+            queryset = BasicModel.objects.all()
             fields = ('text',)
 
         class RegularView(generics.RetrieveUpdateDestroyAPIView):
-            model = BasicModel
+            queryset = BasicModel.objects.all()
 
         self.overridden_fields_view = OverriddenFieldsView()
         self.regular_view = RegularView()
@@ -362,10 +362,12 @@ class TestFieldsShortcut(TestCase):
     def test_overridden_fields_view(self):
         Serializer = self.overridden_fields_view.get_serializer_class()
         self.assertEqual(Serializer().fields.keys(), ['text'])
+        self.assertEqual(Serializer().opts.model, BasicModel)
 
     def test_not_overridden_fields_view(self):
         Serializer = self.regular_view.get_serializer_class()
         self.assertEqual(Serializer().fields.keys(), ['id', 'text'])
+        self.assertEqual(Serializer().opts.model, BasicModel)
 
 
 # Regression test for #285

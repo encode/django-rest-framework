@@ -48,11 +48,10 @@ class GenericAPIView(views.APIView):
     # attribute, although using the explicit style is generally preferred.
     fields = None
 
-    # If the `model` shortcut is used instead of `serializer_class`, then the
-    # serializer class will be constructed using this class as the base.
+    # The following attributes may be subject to change,
+    # and should be considered private API.
     model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
-
-    _paginator_class = Paginator
+    paginator_class = Paginator
 
     ######################################
     # These are pending deprecation...
@@ -115,8 +114,8 @@ class GenericAPIView(views.APIView):
             if not page_size:
                 return None
 
-        paginator = self._paginator_class(queryset, page_size,
-                                          allow_empty_first_page=self.allow_empty)
+        paginator = self.paginator_class(queryset, page_size,
+                                         allow_empty_first_page=self.allow_empty)
         page_kwarg = self.kwargs.get(self.page_kwarg)
         page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
         page = page_kwarg or page_query_param or 1
@@ -194,9 +193,15 @@ class GenericAPIView(views.APIView):
         if serializer_class is not None:
             return serializer_class
 
+        assert self.model is not None or self.queryset is not None, \
+            "'%s' should either include a 'serializer_class' attribute, " \
+            "or use the 'queryset' or 'model' attribute as a shortcut for " \
+            "automatically generating a serializer class." \
+            % self.__class__.__name__
+
         class DefaultSerializer(self.model_serializer_class):
             class Meta:
-                model = self.model
+                model = self.model or self.queryset.model
                 fields = self.fields
         return DefaultSerializer
 
