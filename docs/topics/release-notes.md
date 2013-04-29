@@ -47,6 +47,7 @@ You can determine your currently installed version using `pip freeze`:
 * HyperLinkedModelSerializers support 'id' field in 'fields' option.
 * Cleaner generic views.
 * DecimalField support.
+* Bugfix: Fix issue with depth>1 on ModelSerializer.
 
 **Note**: See the [2.3 announcement][2.3-announcement] for full details.
 
