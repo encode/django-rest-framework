@@ -13,6 +13,8 @@ For example, you might have a `urls.py` that looks something like this:
 
     urlpatterns = router.urls
 """
+from __future__ import unicode_literals
+
 from collections import namedtuple
 from django.conf.urls import url, patterns
 from django.db import models

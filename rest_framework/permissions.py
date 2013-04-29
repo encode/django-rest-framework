@@ -26,9 +26,11 @@ class BasePermission(object):
         Return `True` if permission is granted, `False` otherwise.
         """
         if len(inspect.getargspec(self.has_permission).args) == 4:
-            warnings.warn('The `obj` argument in `has_permission` is due to be deprecated. '
-                      'Use `has_object_permission()` instead for object permissions.',
-                       PendingDeprecationWarning, stacklevel=2)
+            warnings.warn(
+                'The `obj` argument in `has_permission` is deprecated. '
+                'Use `has_object_permission()` instead for object permissions.',
+                DeprecationWarning, stacklevel=2
+            )
             return self.has_permission(request, view, obj)
         return True
 

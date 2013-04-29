@@ -200,9 +200,9 @@ class WritableField(Field):
 
         # 'blank' is to be deprecated in favor of 'required'
         if blank is not None:
-            warnings.warn('The `blank` keyword argument is due to deprecated. '
+            warnings.warn('The `blank` keyword argument is deprecated. '
                           'Use the `required` keyword argument instead.',
-                          PendingDeprecationWarning, stacklevel=2)
+                          DeprecationWarning, stacklevel=2)
             required = not(blank)
 
         super(WritableField, self).__init__(source=source)

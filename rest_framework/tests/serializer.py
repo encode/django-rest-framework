@@ -357,7 +357,6 @@ class CustomValidationTests(TestCase):
 
         def validate_email(self, attrs, source):
             value = attrs[source]
-
             return attrs
 
         def validate_content(self, attrs, source):
@@ -1103,7 +1102,7 @@ class DeserializeListTestCase(TestCase):
 
     def test_no_errors(self):
         data = [self.data.copy() for x in range(0, 3)]
-        serializer = CommentSerializer(data=data)
+        serializer = CommentSerializer(data=data, many=True)
         self.assertTrue(serializer.is_valid())
         self.assertTrue(isinstance(serializer.object, list))
         self.assertTrue(
@@ -1115,7 +1114,7 @@ class DeserializeListTestCase(TestCase):
         invalid_item['email'] = ''
         data = [self.data.copy(), invalid_item, self.data.copy()]
 
-        serializer = CommentSerializer(data=data)
+        serializer = CommentSerializer(data=data, many=True)
         self.assertFalse(serializer.is_valid())
         expected = [{}, {'email': ['This field is required.']}, {}]
         self.assertEqual(serializer.errors, expected)

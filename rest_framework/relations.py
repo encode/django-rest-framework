@@ -42,9 +42,9 @@ class RelatedField(WritableField):
 
         # 'null' is to be deprecated in favor of 'required'
         if 'null' in kwargs:
-            warnings.warn('The `null` keyword argument is due to be deprecated. '
+            warnings.warn('The `null` keyword argument is deprecated. '
                           'Use the `required` keyword argument instead.',
-                          PendingDeprecationWarning, stacklevel=2)
+                          DeprecationWarning, stacklevel=2)
             kwargs['required'] = not kwargs.pop('null')
 
         self.queryset = kwargs.pop('queryset', None)
@@ -328,9 +328,9 @@ class HyperlinkedRelatedField(RelatedField):
 
         if request is None:
             warnings.warn("Using `HyperlinkedRelatedField` without including the "
-                          "request in the serializer context is due to be deprecated. "
+                          "request in the serializer context is deprecated. "
                           "Add `context={'request': request}` when instantiating the serializer.",
-                          PendingDeprecationWarning, stacklevel=4)
+                          DeprecationWarning, stacklevel=4)
 
         pk = getattr(obj, 'pk', None)
         if pk is None:
@@ -443,9 +443,9 @@ class HyperlinkedIdentityField(Field):
 
         if request is None:
             warnings.warn("Using `HyperlinkedIdentityField` without including the "
-                          "request in the serializer context is due to be deprecated. "
+                          "request in the serializer context is deprecated. "
                           "Add `context={'request': request}` when instantiating the serializer.",
-                          PendingDeprecationWarning, stacklevel=4)
+                          DeprecationWarning, stacklevel=4)
 
         # By default use whatever format is given for the current context
         # unless the target is a different type to the source.
@@ -488,35 +488,35 @@ class HyperlinkedIdentityField(Field):
 
 class ManyRelatedField(RelatedField):
     def __init__(self, *args, **kwargs):
-        warnings.warn('`ManyRelatedField()` is due to be deprecated. '
+        warnings.warn('`ManyRelatedField()` is deprecated. '
                       'Use `RelatedField(many=True)` instead.',
-                       PendingDeprecationWarning, stacklevel=2)
+                       DeprecationWarning, stacklevel=2)
         kwargs['many'] = True
         super(ManyRelatedField, self).__init__(*args, **kwargs)
 
 
 class ManyPrimaryKeyRelatedField(PrimaryKeyRelatedField):
     def __init__(self, *args, **kwargs):
-        warnings.warn('`ManyPrimaryKeyRelatedField()` is due to be deprecated. '
+        warnings.warn('`ManyPrimaryKeyRelatedField()` is deprecated. '
                       'Use `PrimaryKeyRelatedField(many=True)` instead.',
-                       PendingDeprecationWarning, stacklevel=2)
+                       DeprecationWarning, stacklevel=2)
         kwargs['many'] = True
         super(ManyPrimaryKeyRelatedField, self).__init__(*args, **kwargs)
 
 
 class ManySlugRelatedField(SlugRelatedField):
     def __init__(self, *args, **kwargs):
-        warnings.warn('`ManySlugRelatedField()` is due to be deprecated. '
+        warnings.warn('`ManySlugRelatedField()` is deprecated. '
                       'Use `SlugRelatedField(many=True)` instead.',
-                       PendingDeprecationWarning, stacklevel=2)
+                       DeprecationWarning, stacklevel=2)
         kwargs['many'] = True
         super(ManySlugRelatedField, self).__init__(*args, **kwargs)
 
 
 class ManyHyperlinkedRelatedField(HyperlinkedRelatedField):
     def __init__(self, *args, **kwargs):
-        warnings.warn('`ManyHyperlinkedRelatedField()` is due to be deprecated. '
+        warnings.warn('`ManyHyperlinkedRelatedField()` is deprecated. '
                       'Use `HyperlinkedRelatedField(many=True)` instead.',
-                       PendingDeprecationWarning, stacklevel=2)
+                       DeprecationWarning, stacklevel=2)
         kwargs['many'] = True
         super(ManyHyperlinkedRelatedField, self).__init__(*args, **kwargs)

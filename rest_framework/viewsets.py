@@ -16,6 +16,8 @@ automatically.
     router.register(r'users', UserViewSet, 'user')
     urlpatterns = router.urls
 """
+from __future__ import unicode_literals
+
 from functools import update_wrapper
 from django.utils.decorators import classonlymethod
 from rest_framework import views, generics, mixins

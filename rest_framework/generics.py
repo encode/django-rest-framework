@@ -2,13 +2,16 @@
 Generic views that provide commonly needed behaviour.
 """
 from __future__ import unicode_literals
-from rest_framework import views, mixins
-from rest_framework.settings import api_settings
+
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
+from rest_framework import views, mixins
+from rest_framework.exceptions import ConfigurationError
+from rest_framework.settings import api_settings
+import warnings
 
 
 class GenericAPIView(views.APIView):
@@ -94,7 +97,12 @@ class GenericAPIView(views.APIView):
         """
         deprecated_style = False
         if page_size is not None:
-            # TODO: Deperecation warning
+            warnings.warn('The `page_size` parameter to `paginate_queryset()` '
+                          'is due to be deprecated. '
+                          'Note that the return style of this method is also '
+                          'changed, and will simply return a page object '
+                          'when called without a `page_size` argument.',
+                          PendingDeprecationWarning, stacklevel=2)
             deprecated_style = True
         else:
             # Determine the required page size.
@@ -155,7 +163,9 @@ class GenericAPIView(views.APIView):
         Otherwise defaults to using `self.paginate_by`.
         """
         if queryset is not None:
-            pass  # TODO: Deprecation warning
+            warnings.warn('The `queryset` parameter to `get_paginate_by()` '
+                          'is due to be deprecated.',
+                          PendingDeprecationWarning, stacklevel=2)
 
         if self.paginate_by_param:
             query_params = self.request.QUERY_PARAMS
@@ -226,17 +236,27 @@ class GenericAPIView(views.APIView):
 
         if lookup is not None:
             filter_kwargs = {self.lookup_field: lookup}
-        elif pk is not None:
-            # TODO: Deprecation warning
+        elif pk is not None and self.lookup_field == 'pk':
+            warnings.warn(
+                'The `pk_url_kwarg` attribute is due to be deprecated. '
+                'Use the `lookup_field` attribute instead',
+                PendingDeprecationWarning
+            )
             filter_kwargs = {'pk': pk}
-        elif slug is not None:
-            # TODO: Deprecation warning
+        elif slug is not None and self.lookup_field == 'pk':
+            warnings.warn(
+                'The `slug_url_kwarg` attribute is due to be deprecated. '
+                'Use the `lookup_field` attribute instead',
+                PendingDeprecationWarning
+            )
             filter_kwargs = {self.slug_field: slug}
         else:
-            # TODO: Fix error message
-            raise AttributeError("Generic detail view %s must be called with "
-                                 "either an object pk or a slug."
-                                 % self.__class__.__name__)
+            raise ConfigurationError(
+                'Expected view %s to be called with a URL keyword argument '
+                'named "%s". Fix your URL conf, or set the `.lookup_field` '
+                'attribute on the view correctly.' %
+                (self.__class__.__name__, self.lookup_field)
+            )
 
         obj = get_object_or_404(queryset, **filter_kwargs)
 
@@ -391,8 +411,20 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
 ##########################
 
 class MultipleObjectAPIView(GenericAPIView):
-    pass
+    def __init__(self, *args, **kwargs):
+        warnings.warn(
+            'Subclassing `MultipleObjectAPIView` is due to be deprecated. '
+            'You should simply subclass `GenericAPIView` instead.',
+            PendingDeprecationWarning, stacklevel=2
+        )
+        super(MultipleObjectAPIView, self).__init__(*args, **kwargs)
 
 
 class SingleObjectAPIView(GenericAPIView):
-    pass
+    def __init__(self, *args, **kwargs):
+        warnings.warn(
+            'Subclassing `SingleObjectAPIView` is due to be deprecated. '
+            'You should simply subclass `GenericAPIView` instead.',
+            PendingDeprecationWarning, stacklevel=2
+        )
+        super(SingleObjectAPIView, self).__init__(*args, **kwargs)

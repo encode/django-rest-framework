@@ -436,9 +436,9 @@ class BaseSerializer(WritableField):
             else:
                 many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict, six.text_type))
                 if many:
-                    warnings.warn('Implict list/queryset serialization is due to be deprecated. '
+                    warnings.warn('Implict list/queryset serialization is deprecated. '
                                   'Use the `many=True` flag when instantiating the serializer.',
-                                  PendingDeprecationWarning, stacklevel=3)
+                                  DeprecationWarning, stacklevel=3)
 
             if many:
                 ret = []
@@ -498,9 +498,9 @@ class BaseSerializer(WritableField):
             else:
                 many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict))
                 if many:
-                    warnings.warn('Implict list/queryset serialization is due to be deprecated. '
+                    warnings.warn('Implict list/queryset serialization is deprecated. '
                                   'Use the `many=True` flag when instantiating the serializer.',
-                                  PendingDeprecationWarning, stacklevel=2)
+                                  DeprecationWarning, stacklevel=2)
 
             if many:
                 self._data = [self.to_native(item) for item in obj]
@@ -606,13 +606,25 @@ class ModelSerializer(Serializer):
 
             if model_field.rel and nested:
                 if len(inspect.getargspec(self.get_nested_field).args) == 2:
-                    # TODO: deprecation warning
+                    warnings.warn(
+                        'The `get_nested_field(model_field)` call signature '
+                        'is due to be deprecated. '
+                        'Use `get_nested_field(model_field, related_model, '
+                        'to_many) instead',
+                        PendingDeprecationWarning
+                    )
                     field = self.get_nested_field(model_field)
                 else:
                     field = self.get_nested_field(model_field, related_model, to_many)
             elif model_field.rel:
                 if len(inspect.getargspec(self.get_nested_field).args) == 3:
-                    # TODO: deprecation warning
+                    warnings.warn(
+                        'The `get_related_field(model_field, to_many)` call '
+                        'signature is due to be deprecated. '
+                        'Use `get_related_field(model_field, related_model, '
+                        'to_many) instead',
+                        PendingDeprecationWarning
+                    )
                     field = self.get_related_field(model_field, to_many=to_many)
                 else:
                     field = self.get_related_field(model_field, related_model, to_many)
