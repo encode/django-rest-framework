@@ -17,11 +17,9 @@ from __future__ import unicode_literals
 
 from collections import namedtuple
 from django.conf.urls import url, patterns
-from django.db import models
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.viewsets import ModelViewSet
 from rest_framework.urlpatterns import format_suffix_patterns
 
 
@@ -218,27 +216,3 @@ class DefaultRouter(SimpleRouter):
             urls = format_suffix_patterns(urls)
 
         return urls
-
-
-class AutoRouter(DefaultRouter):
-    """
-    A router class that doesn't require you to register any viewsets,
-    but instead automatically creates routes for all installed models.
-
-    Useful for quick and dirty prototyping.
-    """
-    def __init__(self):
-        super(AutoRouter, self).__init__()
-        for model in models.get_models():
-            prefix = model._meta.verbose_name_plural.replace(' ', '_')
-            basename = model._meta.object_name.lower()
-            classname = model.__name__
-
-            DynamicViewSet = type(
-                classname,
-                (ModelViewSet,),
-                {}
-            )
-            DynamicViewSet.model = model
-
-            self.register(prefix, DynamicViewSet, basename)

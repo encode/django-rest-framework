@@ -80,22 +80,6 @@ This router is similar to `SimpleRouter` as above, but additionally includes a d
     <tr><td>POST</td><td>@action decorated method</td></tr>
 </table>
 
-## AutoRouter
-
-The AutoRouter class is similar to the `DefaultRouter` class, except that it doesn't require you to register any viewsets, but instead automatically creates routes for all installed models.
-
-It can be useful for prototyping, although for anything more advanced you'll want to drop down to using one of the other router classes, and registering viewsets explicitly.
-
-The following code shows how you can automatically include a complete API for your application with just a few lines of code, using the `AutoRouter` class:
-
-    from django.conf.urls import patterns, url, include
-    from rest_framework.routers import AutoRouter
-    
-    urlpatterns = patterns('',
-        url(r'^api/', include(AutoRouter().urls)),
-        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-    )
-
 # Custom Routers
 
 Implementing a custom router isn't something you'd need to do very often, but it can be useful if you have specfic requirements about how the your URLs for your API are strutured.  Doing so allows you to encapsulate the URL structure in a reusable way that ensures you don't have to write your URL patterns explicitly for each new view.
