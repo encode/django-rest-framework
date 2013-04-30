@@ -1,6 +1,6 @@
 # Django REST framework
 
-**A toolkit for building well-connected, self-describing web APIs.**
+**Awesome web-browseable Web APIs.**
 
 [![build-status-image]][travis]
 
