@@ -20,11 +20,17 @@ class GenericAPIView(views.APIView):
     """
 
     # You'll need to either set these attributes,
-    # or override `get_queryset`/`get_serializer_class`.
+    # or override `get_queryset()`/`get_serializer_class()`.
     queryset = None
     serializer_class = None
 
+    # This shortcut may be used instead of setting either or both
+    # of the `queryset`/`serializer_class` attributes, although using
+    # the explicit style is generally preferred.
+    model = None
+
     # If you want to use object lookups other than pk, set this attribute.
+    # For more complex lookup requirements override `get_object()`.
     lookup_field = 'pk'
 
     # Pagination settings
@@ -38,15 +44,6 @@ class GenericAPIView(views.APIView):
 
     # Determines if the view will return 200 or 404 responses for empty lists.
     allow_empty = True
-
-    # This shortcut may be used instead of setting either (or both)
-    # of the `queryset`/`serializer_class` attributes, although using
-    # the explicit style is generally preferred.
-    model = None
-
-    # This shortcut may be used instead of setting the `serializer_class`
-    # attribute, although using the explicit style is generally preferred.
-    fields = None
 
     # The following attributes may be subject to change,
     # and should be considered private API.
@@ -193,16 +190,15 @@ class GenericAPIView(views.APIView):
         if serializer_class is not None:
             return serializer_class
 
-        assert self.model is not None or self.queryset is not None, \
+        assert self.model is not None, \
             "'%s' should either include a 'serializer_class' attribute, " \
-            "or use the 'queryset' or 'model' attribute as a shortcut for " \
+            "or use the 'model' attribute as a shortcut for " \
             "automatically generating a serializer class." \
             % self.__class__.__name__
 
         class DefaultSerializer(self.model_serializer_class):
             class Meta:
-                model = self.model or self.queryset.model
-                fields = self.fields
+                model = self.model
         return DefaultSerializer
 
     def get_queryset(self):

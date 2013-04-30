@@ -79,33 +79,25 @@ Let's take a look at a quick example of using REST framework to build a simple m
 
 We'll create a read-write API for accessing users and groups.
 
-Here's our `views.py` module:
+Here's our project's root `urls.py` module:
 
     from django.conf.urls.defaults import url, patterns, include
     from django.contrib.auth.models import User, Group
     from rest_framework import viewsets, routers
 
-
     # ViewSets define the view behavior.
     class UserViewSet(viewsets.ModelViewSet):
-        queryset = User.objects.all()
-        fields = ('url', 'email', 'is_staff', 'groups')
-
+        model = User
 
     class GroupViewSet(viewsets.ModelViewSet):
-        queryset = Group.objects.all()
-        fields = ('url', 'name')
+        model = Group
 
-And our `urls.py` setup:
-
-    from django.conf.urls.defaults import url, patterns, include
-    from myapp import views
-    from rest_framework import routers
-
-
+    
+    # Routers provide an easy way of automatically determining the URL conf
     router = routers.DefaultRouter()
     router.register(r'users', views.UserViewSet, name='user')
     router.register(r'groups', views.GroupViewSet, name='group')
+
 
     # Wire up our API using automatic URL routing.
     # Additionally, we include login URLs for the browseable API.

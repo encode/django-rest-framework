@@ -374,15 +374,19 @@ Returns the field instance that should be used to represent the pk field.
 
 ### get_nested_field
 
-**Signature**: `.get_nested_field(self, model_field)`
+**Signature**: `.get_nested_field(self, model_field, related_model, to_many)`
 
 Returns the field instance that should be used to represent a related field when `depth` is specified as being non-zero.
 
+Note that the `model_field` argument will be `None` for reverse relationships.  The `related_model` argument will be the model class for the target of the field.  The `to_many` argument will be a boolean indicating if this is a to-one or to-many relationship.
+
 ### get_related_field
 
-**Signature**: `.get_related_field(self, model_field, to_many=False)`
+**Signature**: `.get_related_field(self, model_field, related_model, to_many)`
 
 Returns the field instance that should be used to represent a related field when `depth` is not specified, or when nested representations are being used and the depth reaches zero.
+
+Note that the `model_field` argument will be `None` for reverse relationships.  The `related_model` argument will be the model class for the target of the field.  The `to_many` argument will be a boolean indicating if this is a to-one or to-many relationship.
 
 ### get_field
 

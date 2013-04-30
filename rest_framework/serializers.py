@@ -677,6 +677,8 @@ class ModelSerializer(Serializer):
     def get_nested_field(self, model_field, related_model, to_many):
         """
         Creates a default instance of a nested relational field.
+
+        Note that model_field will be `None` for reverse relationships.
         """
         class NestedModelSerializer(ModelSerializer):
             class Meta:
@@ -686,6 +688,8 @@ class ModelSerializer(Serializer):
     def get_related_field(self, model_field, related_model, to_many):
         """
         Creates a default instance of a flat relational field.
+
+        Note that model_field will be `None` for reverse relationships.
         """
         # TODO: filter queryset using:
         # .using(db).complex_filter(self.rel.limit_choices_to)
