@@ -15,7 +15,7 @@ Some reasons you might want to use REST framework:
 * The Web browseable API is a huge useability win for your developers.
 * Authentication policies including OAuth1a and OAuth2 out of the box.
 * Serialization that supports both ORM and non-ORM data sources.
-* Customizable all the way down.  Just use regular function-based views if you don't need the more powerful features.
+* Customizable all the way down - just use regular function-based views if you don't need the more powerful features.
 * Extensive documentation, and great community support.
 
 There is a live example API for testing purposes, [available here][sandbox].
@@ -57,6 +57,24 @@ Let's take a look at a quick example of using REST framework to build a simple m
 
 We'll create a read-write API for accessing users and groups.
 
+Any global settings for a REST framework API are kept in a single configuration dictionary named `REST_FRAMEWORK`.  Start off by adding the following to your `settings.py` module:
+
+    REST_FRAMEWORK = {
+        # Use hyperlinked styles by default.
+        # Only used if the `serializer_class` attribute is not set on a view.
+        'DEFAULT_MODEL_SERIALIZER_CLASS':
+            'rest_framework.serializers.HyperlinkedModelSerializer',
+
+        # Use Django's standard `django.contrib.auth` permissions,
+        # or allow read-only access for unauthenticated users.
+        'DEFAULT_PERMISSION_CLASSES': [
+            'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        ]
+    }
+
+Don't forget to make sure you've also added `rest_framework` to your `INSTALLED_APPS`.
+
+We're ready to create our API now. 
 Here's our project's root `urls.py` module:
 
     from django.conf.urls.defaults import url, patterns, include
