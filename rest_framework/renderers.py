@@ -444,6 +444,9 @@ class BrowsableAPIRenderer(BaseRenderer):
     def get_description(self, view):
         return get_view_description(view.__class__, html=True)
 
+    def get_breadcrumbs(self, request):
+        return get_breadcrumbs(request.path)
+
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Renders *obj* using the :attr:`template` set on the class.
@@ -475,7 +478,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         name = self.get_name(view)
         description = self.get_description(view)
-        breadcrumb_list = get_breadcrumbs(request.path)
+        breadcrumb_list = self.get_breadcrumbs(request)
 
         template = loader.get_template(self.template)
         context = RequestContext(request, {
