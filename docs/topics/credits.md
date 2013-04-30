@@ -116,6 +116,8 @@ The following people have helped make REST framework great.
 * Victor Shih - [vshih]
 * Atle Frenvik Sveen - [atlefren]
 * J. Paul Reed - [preed]
+* Matt Majewski - [forgingdestiny]
+* Jerome Chen - [chenjyw]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -266,3 +268,5 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [vshih]: https://github.com/vshih
 [atlefren]: https://github.com/atlefren
 [preed]: https://github.com/preed
+[forgingdestiny]: https://github.com/forgingdestiny
+[chenjyw]: https://github.com/chenjyw

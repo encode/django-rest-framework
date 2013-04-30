@@ -60,6 +60,17 @@ All of the [Bootstrap components][bcomponents] are available.
 
 The browsable API makes use of the Bootstrap tooltips component. Any element with the `js-tooltip` class and a `title` attribute has that title content displayed in a tooltip on hover after a 1000ms delay.
 
+### Login Template
+
+To add branding and customize the look-and-feel of the auth login template, create a template called `login.html` and add it to your project, eg: `templates/rest_framework/login.html`, that extends the `rest_framework/base_login.html` template.
+
+You can add your site name or branding by including the branding block:
+
+    {% block branding %}
+        <h3 style="margin: 0 0 20px;">My Site Name</h3>
+    {% endblock %}
+    
+You can also customize the style by adding the `bootstrap_theme` or `style` block similar to `api.html`.
 
 ### Advanced Customization
 

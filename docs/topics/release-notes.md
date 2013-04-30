@@ -55,6 +55,10 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.2.x series
 
+### Master
+
+* Made Login template more easy to restyle.
+
 ### 2.2.7
 
 **Date**: 17th April 2013
