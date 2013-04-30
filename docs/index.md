@@ -11,7 +11,7 @@
 
 **Awesome web-browseable Web APIs.**
 
-Django REST framework is a flexible, powerful Web API toolkit.  It is designed as a modular and easy to customize architecture, based on Django's class based views.
+Django REST framework is a flexible and powerful Web API toolkit.  It is designed as a modular and easy to customize architecture, based on Django's class based views.
 
 APIs built using REST framework are fully self-describing and web browseable - a huge useability win for your developers.  It also supports a wide range of media types, authentication and permission policies out of the box.
 
@@ -46,8 +46,7 @@ The following packages are optional:
 Install using `pip`, including any optional packages you want...
 
     pip install djangorestframework
-    pip install markdown  # Markdown support for the browseable API.
-    pip install pyyaml    # YAML content-type support.
+    pip install markdown       # Markdown support for the browseable API.
     pip install django-filter  # Filtering support
 
 ...or clone the project from github.

@@ -24,34 +24,20 @@ If you are considering using REST framework for your API, we recommend reading t
 
 There is also a sandbox API you can use for testing purposes, [available here][sandbox].
 
+**Below**: *Screenshot from the browseable API*
+
+![Screenshot][image]
+
 # Requirements
 
 * Python (2.6.5+, 2.7, 3.2, 3.3)
 * Django (1.3, 1.4, 1.5)
 
-**Optional:**
-
-* [Markdown][markdown] - Markdown support for the self describing API.
-* [PyYAML][pyyaml] - YAML content type support.
-* [defusedxml][defusedxml] - XML content-type support.
-* [django-filter][django-filter] - Filtering support.
-
 # Installation
 
-Install using `pip`, including any optional packages you want...
+Install using `pip`...
 
     pip install djangorestframework
-    pip install markdown  # Markdown support for the browseable API.
-    pip install pyyaml    # YAML content-type support.
-    pip install defusedxml  # XML content-type support.
-    pip install django-filter  # Filtering support
-
-...or clone the project from github.
-
-    git clone git@github.com:tomchristie/django-rest-framework.git
-    cd django-rest-framework
-    pip install -r requirements.txt
-    pip install -r optionals.txt
 
 Add `'rest_framework'` to your `INSTALLED_APPS` setting.
 
@@ -69,20 +55,42 @@ If you're intending to use the browseable API you'll probably also want to add R
 
 Note that the URL path can be whatever you want, but you must include `'rest_framework.urls'` with the `'rest_framework'` namespace.
 
-# Development
+# Example
 
-To build the docs.
+Let's take a look at a quick example of using REST framework to build a simple model-backed API.
 
-    ./mkdocs.py
+We'll create a read-write API for accessing users and groups.
 
-To run the tests.
+Here's our project's root `urls.py` module:
 
-    ./rest_framework/runtests/runtests.py
+    from django.conf.urls.defaults import url, patterns, include
+    from django.contrib.auth.models import User, Group
+    from rest_framework import viewsets, routers
 
-To run the tests against all supported configurations, first install [the tox testing tool][tox] globally, using `pip install tox`, then simply run `tox`: 
+    # ViewSets define the view behavior.
+    class UserViewSet(viewsets.ModelViewSet):
+        model = User
 
-    tox
+    class GroupViewSet(viewsets.ModelViewSet):
+        model = Group
 
+    
+    # Routers provide an easy way of automatically determining the URL conf
+    router = routers.DefaultRouter()
+    router.register(r'users', views.UserViewSet, name='user')
+    router.register(r'groups', views.GroupViewSet, name='group')
+
+
+    # Wire up our API using automatic URL routing.
+    # Additionally, we include login URLs for the browseable API.
+    urlpatterns = patterns('',
+        url(r'^', include(router.urls)),
+        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    )
+
+# Documentation
+
+The full documentation for the project is available at [http://django-rest-framework.org][docs].
 # License
 
 Copyright (c) 2011-2013, Tom Christie
@@ -116,6 +124,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [sandbox]: http://restframework.herokuapp.com/
 [rest-framework-2-announcement]: http://django-rest-framework.org/topics/rest-framework-2-announcement.html
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
+[image]: http://django-rest-framework.org/img/quickstart.png
 
 [tox]: http://testrun.org/tox/latest/
 
