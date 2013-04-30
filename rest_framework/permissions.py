@@ -89,8 +89,8 @@ class DjangoModelPermissions(BasePermission):
     It ensures that the user is authenticated, and has the appropriate
     `add`/`change`/`delete` permissions on the model.
 
-    This permission will only be applied against view classes that
-    provide a `.model` attribute, such as the generic class-based views.
+    This permission can only be applied against view classes that
+    provide a `.model` or `.queryset` attribute.
     """
 
     # Map methods into required permission codes.
@@ -136,6 +136,14 @@ class DjangoModelPermissions(BasePermission):
             request.user.has_perms(perms)):
             return True
         return False
+
+
+class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
+    """
+    Similar to DjangoModelPermissions, except that anonymous users are
+    allowed read-only access.
+    """
+    authenticated_users_only = False
 
 
 class TokenHasReadWriteScope(BasePermission):

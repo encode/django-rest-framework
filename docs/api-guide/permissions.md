@@ -96,15 +96,14 @@ This permission class ties into Django's standard `django.contrib.auth` [model p
 * `POST` requests require the user to have the `add` permission on the model.
 * `PUT` and `PATCH` requests require the user to have the `change` permission on the model.
 * `DELETE` requests require the user to have the `delete` permission on the model.
- 
-If you want to use `DjangoModelPermissions` but also allow unauthenticated users to have read permission, override the class and set the `authenticated_users_only` property to `False`.  For example:
-
-    class HasModelPermissionsOrReadOnly(DjangoModelPermissions):
-        authenticated_users_only = False
 
 The default behaviour can also be overridden to support custom model permissions.  For example, you might want to include a `view` model permission for `GET` requests.
 
 To use custom model permissions, override `DjangoModelPermissions` and set the `.perms_map` property.  Refer to the source code for details.
+
+## DjangoModelPermissionsOrAnonReadOnly
+
+Similar to `DjangoModelPermissions`, but also allows unauthenticated users to have  read-only access to the API.
 
 ## TokenHasReadWriteScope
 
