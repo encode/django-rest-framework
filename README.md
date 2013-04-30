@@ -2,10 +2,6 @@
 
 **A toolkit for building well-connected, self-describing web APIs.**
 
-**Author:** Tom Christie.  [Follow me on Twitter][twitter].
-
-**Support:** [REST framework group][group], or `#restframework` on freenode IRC.
-
 [![build-status-image]][travis]
 
 ---
@@ -88,9 +84,14 @@ Here's our project's root `urls.py` module:
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     )
 
-# Documentation
+# Documentation & Support
 
 The full documentation for the project is available at [http://django-rest-framework.org][docs].
+
+For questions and support, use the [REST framework discussion group][group], or `#restframework` on freenode IRC.
+
+You may also want to [follow the author on Twitter][twitter] .
+
 # License
 
 Copyright (c) 2011-2013, Tom Christie
