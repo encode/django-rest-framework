@@ -4,21 +4,23 @@
 
 [![build-status-image]][travis]
 
----
-
-**Full documentation for REST framework is available on [http://django-rest-framework.org][docs].**
-
----
+**Note**: Full documentation for the project is available at [http://django-rest-framework.org][docs].
 
 # Overview
 
 Django REST framework is a powerful and flexible toolkit that makes it easy to build Web APIs.
 
-Web APIs built using REST framework are fully self-describing and web browseable - a huge useability win for your developers.  It also supports a wide range of media types, authentication and permission policies out of the box.
+Some reasons you might want to use REST framework:
 
-If you are considering using REST framework for your API, we recommend reading the [REST framework 2 announcment][rest-framework-2-announcement] which gives a good overview of the framework and it's capabilities.
+* Modular and decoupled architecture that stays close to Django idioms throughout.
+* The Web browseable API is a huge useability win for your developers.
+* Authentication policies including OAuth1a and OAuth2 out of the box.
+* Permission policies including support for the Django contrib permissions.
+* Serialization that supports both ORM and non-ORM data sources.
+* Customizable all the way down.  You can just use regular function based views if you don't need the more powerful features.
+* Extensive documentation, and great community support.
 
-There is also a sandbox API you can use for testing purposes, [available here][sandbox].
+There is a live example API for testing purposes, [available here][sandbox].
 
 **Below**: *Screenshot from the browseable API*
 
@@ -86,11 +88,11 @@ Here's our project's root `urls.py` module:
 
 # Documentation & Support
 
-The full documentation for the project is available at [http://django-rest-framework.org][docs].
+Full documentation for the project is available at [http://django-rest-framework.org][docs].
 
 For questions and support, use the [REST framework discussion group][group], or `#restframework` on freenode IRC.
 
-You may also want to [follow the author on Twitter][twitter] .
+You may also want to [follow the author on Twitter][twitter].
 
 # License
 
@@ -128,6 +130,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [image]: http://django-rest-framework.org/img/quickstart.png
 
 [tox]: http://testrun.org/tox/latest/
+
+[tehjones]: https://twitter.com/tehjones/status/294986071979196416
+[wlonk]: https://twitter.com/wlonk/status/261689665952833536
+[laserllama]: https://twitter.com/laserllama/status/328688333750407168
 
 [docs]: http://django-rest-framework.org/
 [urlobject]: https://github.com/zacharyvoase/urlobject
