@@ -11,13 +11,17 @@
 
 **Awesome web-browseable Web APIs.**
 
-Django REST framework is a flexible and powerful Web API toolkit.  It is designed as a modular and easy to customize architecture, based on Django's class based views.
+Django REST framework is a powerful and flexible toolkit that makes it easy to build Web APIs.
 
-APIs built using REST framework are fully self-describing and web browseable - a huge useability win for your developers.  It also supports a wide range of media types, authentication and permission policies out of the box.
+Some reasons you might want to use REST framework:
 
-If you are considering using REST framework for your API, we recommend reading the [REST framework 2 announcement][rest-framework-2-announcement] which gives a good overview of the framework and it's capabilities.
+* The Web browseable API is a huge useability win for your developers.
+* Authentication policies including OAuth1a and OAuth2 out of the box.
+* Serialization that supports both ORM and non-ORM data sources.
+* Customizable all the way down.  Just use regular function-based views if you don't need the more powerful features.
+* Extensive documentation, and great community support.
 
-There is also a sandbox API you can use for testing purposes, [available here][sandbox].
+There is a live example API for testing purposes, [available here][sandbox].
 
 **Below**: *Screenshot from the browseable API*
 
@@ -52,9 +56,6 @@ Install using `pip`, including any optional packages you want...
 ...or clone the project from github.
 
     git clone git@github.com:tomchristie/django-rest-framework.git
-    cd django-rest-framework
-    pip install -r requirements.txt
-    pip install -r optionals.txt
 
 Add `'rest_framework'` to your `INSTALLED_APPS` setting.
 

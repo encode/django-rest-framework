@@ -12,12 +12,10 @@ Django REST framework is a powerful and flexible toolkit that makes it easy to b
 
 Some reasons you might want to use REST framework:
 
-* Modular and decoupled architecture that stays close to Django idioms throughout.
 * The Web browseable API is a huge useability win for your developers.
 * Authentication policies including OAuth1a and OAuth2 out of the box.
-* Permission policies including support for the Django contrib permissions.
 * Serialization that supports both ORM and non-ORM data sources.
-* Customizable all the way down.  You can just use regular function based views if you don't need the more powerful features.
+* Customizable all the way down.  Just use regular function-based views if you don't need the more powerful features.
 * Extensive documentation, and great community support.
 
 There is a live example API for testing purposes, [available here][sandbox].
