@@ -836,6 +836,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
     """
     _options_class = HyperlinkedModelSerializerOptions
     _default_view_name = '%(model_name)s-detail'
+    _hyperlink_field_class = HyperlinkedRelatedField
 
     url = HyperlinkedIdentityField()
 
@@ -874,7 +875,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
         if model_field:
             kwargs['required'] = not(model_field.null or model_field.blank)
 
-        return HyperlinkedRelatedField(**kwargs)
+        return self._hyperlink_field_class(**kwargs)
 
     def get_identity(self, data):
         """
