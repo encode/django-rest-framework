@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from rest_framework import generics, status, serializers
 from rest_framework.compat import patterns, url
-from rest_framework.tests.models import Anchor, BasicModel, ManyToManyModel, BlogPost, BlogPostComment, Album, Photo, OptionalRelationModel
+from rest_framework.tests.models import Anchor, BasicModel, ManyToManyModel, BlogPost, BlogPostComment, Album, Photo, OptionalRelationModel, ExtraKwargModel
 
 factory = RequestFactory()
 
@@ -80,6 +80,14 @@ class OptionalRelationDetail(generics.RetrieveUpdateDestroyAPIView):
     model_serializer_class = serializers.HyperlinkedModelSerializer
 
 
+class ExtraKwargDetailSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ExtraKwargModel
+
+class ExtraKwargDetail(generics.RetrieveUpdateDestroyAPIView):
+    model = ExtraKwargModel
+    serializer_class = ExtraKwargDetailSerializer
+
 urlpatterns = patterns('',
     url(r'^basic/$', BasicList.as_view(), name='basicmodel-list'),
     url(r'^basic/(?P<pk>\d+)/$', BasicDetail.as_view(), name='basicmodel-detail'),
@@ -92,6 +100,7 @@ urlpatterns = patterns('',
     url(r'^albums/(?P<title>\w[\w-]*)/$', AlbumDetail.as_view(), name='album-detail'),
     url(r'^photos/$', PhotoListCreate.as_view(), name='photo-list'),
     url(r'^optionalrelation/(?P<pk>\d+)/$', OptionalRelationDetail.as_view(), name='optionalrelationmodel-detail'),
+    url(r'^root/(?P<extra_kwarg>\d+)/extrakwarg/(?P<pk>\d+)/$', ExtraKwargDetail.as_view(), name='extrakwargmodel-detail'),
 )
 
 
@@ -260,4 +269,24 @@ class TestOptionalRelationHyperlinkedView(TestCase):
         response = self.client.put('/optionalrelation/1/',
                                    data=json.dumps(self.data),
                                    content_type='application/json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class TestNestedRelationHyperlinkedView(TestCase):
+    urls = 'rest_framework.tests.hyperlinkedserializers'
+
+    def setUp(self):
+        """
+        Create 1 ExtraKwargModel instance.
+        """
+        self.basic = BasicModel.objects.create()
+        self.model = ExtraKwargModel.objects.create(basic=self.basic)
+        self.objects = ExtraKwargModel.objects
+        self.detail_view = ExtraKwargDetail.as_view()
+
+    def test_get_detail_view(self):
+        """
+        GET requests to a detail url with more than one kwarg should still resolve using reverse
+        """
+        response = self.client.get('/root/2/extrakwarg/1/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
