@@ -149,11 +149,11 @@ We could also customize the pagination style if we needed too, but in this case 
 
 ## Reviewing our work
 
-If we open a browser and navigate to the browseable API, you'll find that you can now work your way around the API simply by following links.
+If we open a browser and navigate to the browsable API, you'll find that you can now work your way around the API simply by following links.
 
 You'll also be able to see the 'highlight' links on the snippet instances, that will take you to the highlighted code HTML representations.
 
-We've now got a complete pastebin Web API, which is fully web browseable, and comes complete with authentication, per-object permissions, and multiple renderer formats.
+We've now got a complete pastebin Web API, which is fully web browsable, and comes complete with authentication, per-object permissions, and multiple renderer formats.
 
 We've walked through each step of the design process, and seen how if we need to customize anything we can gradually work our way down to simply using regular Django views.
 

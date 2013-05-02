@@ -121,7 +121,7 @@ Firstly the names `user-detail` and `group-detail` are important.  We're using t
 
 Secondly, we're modifying the urlpatterns using `format_suffix_patterns`, to append optional `.json` style suffixes to our URLs.
 
-Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browseable API.
+Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.
 
 ## Settings
 

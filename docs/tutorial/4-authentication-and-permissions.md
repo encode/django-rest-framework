@@ -118,17 +118,17 @@ Then, add the following property to **both** the `SnippetList` and `SnippetDetai
 
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
-## Adding login to the Browseable API
+## Adding login to the Browsable API
 
-If you open a browser and navigate to the browseable API at the moment, you'll find that you're no longer able to create new code snippets. In order to do so we'd need to be able to login as a user.
+If you open a browser and navigate to the browsable API at the moment, you'll find that you're no longer able to create new code snippets. In order to do so we'd need to be able to login as a user.
 
-We can add a login view for use with the browseable API, by editing our URLconf once more.
+We can add a login view for use with the browsable API, by editing our URLconf once more.
 
 Add the following import at the top of the file:
 
     from django.conf.urls import include
 
-And, at the end of the file, add a pattern to include the login and logout views for the browseable API.
+And, at the end of the file, add a pattern to include the login and logout views for the browsable API.
 
     urlpatterns += patterns('',
         url(r'^api-auth/', include('rest_framework.urls',
