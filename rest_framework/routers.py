@@ -42,10 +42,22 @@ class BaseRouter(object):
     def __init__(self):
         self.registry = []
 
-    def register(self, prefix, viewset, name):
-        self.registry.append((prefix, viewset, name))
+    def register(self, prefix, viewset, base_name=None):
+        if base_name is None:
+            base_name = self.get_default_base_name(viewset)
+        self.registry.append((prefix, viewset, base_name))
+
+    def get_default_base_name(self, viewset):
+        """
+        If `base_name` is not specified, attempt to automatically determine
+        it from the viewset.
+        """
+        raise NotImplemented('get_default_base_name must be overridden')
 
     def get_urls(self):
+        """
+        Return a list of URL patterns, given the registered viewsets.
+        """
         raise NotImplemented('get_urls must be overridden')
 
     @property
@@ -90,6 +102,22 @@ class SimpleRouter(BaseRouter):
             initkwargs={}
         ),
     ]
+
+    def get_default_base_name(self, viewset):
+        """
+        If `base_name` is not specified, attempt to automatically determine
+        it from the viewset.
+        """
+        model_cls = getattr(viewset, 'model', None)
+        queryset = getattr(viewset, 'queryset', None)
+        if model_cls is None and queryset is not None:
+            model_cls = queryset.model
+
+        assert model_cls, '`name` not argument not specified, and could ' \
+            'not automatically determine the name from the viewset, as ' \
+            'it does not have a `.model` or `.queryset` attribute.'
+
+        return model_cls._meta.object_name.lower()
 
     def get_routes(self, viewset):
         """
