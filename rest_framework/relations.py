@@ -314,6 +314,16 @@ class HyperlinkedRelatedField(RelatedField):
         self.format = kwargs.pop('format', None)
 
         # These are pending deprecation
+        if 'pk_url_kwarg' in kwargs:
+            msg = 'pk_url_kwarg is pending deprecation. Use lookup_field instead.'
+            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+        if 'slug_url_kwarg' in kwargs:
+            msg = 'slug_url_kwarg is pending deprecation. Use lookup_field instead.'
+            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+        if 'slug_field' in kwargs:
+            msg = 'slug_field is pending deprecation. Use lookup_field instead.'
+            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+
         self.pk_url_kwarg = kwargs.pop('pk_url_kwarg', self.pk_url_kwarg)
         self.slug_field = kwargs.pop('slug_field', self.slug_field)
         default_slug_kwarg = self.slug_url_kwarg or self.slug_field

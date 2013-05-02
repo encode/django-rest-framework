@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.request import clone_request
 
 
-def _get_validation_exclusions(obj, pk=None, slug_field=None):
+def _get_validation_exclusions(obj, pk=None, slug_field=None, lookup_field=None):
     """
     Given a model instance, and an optional pk and slug field,
     return the full list of all other field names on that model.
@@ -23,13 +23,18 @@ def _get_validation_exclusions(obj, pk=None, slug_field=None):
     include = []
 
     if pk:
+        # Pending deprecation
         pk_field = obj._meta.pk
         while pk_field.rel:
             pk_field = pk_field.rel.to._meta.pk
         include.append(pk_field.name)
 
     if slug_field:
+        # Pending deprecation
         include.append(slug_field)
+
+    if lookup_field and lookup_field != 'pk':
+        include.append(lookup_field)
 
     return [field.name for field in obj._meta.fields if field.name not in include]
 
@@ -139,9 +144,13 @@ class UpdateModelMixin(object):
         Set any attributes on the object that are implicit in the request.
         """
         # pk and/or slug attributes are implicit in the URL.
+        lookup = self.kwargs.get(self.lookup_field, None)
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         slug = self.kwargs.get(self.slug_url_kwarg, None)
         slug_field = slug and self.slug_field or None
+
+        if lookup:
+            setattr(obj, self.lookup_field, lookup)
 
         if pk:
             setattr(obj, 'pk', pk)
@@ -152,7 +161,7 @@ class UpdateModelMixin(object):
         # Ensure we clean the attributes so that we don't eg return integer
         # pk using a string representation, as provided by the url conf kwarg.
         if hasattr(obj, 'full_clean'):
-            exclude = _get_validation_exclusions(obj, pk, slug_field)
+            exclude = _get_validation_exclusions(obj, pk, slug_field, self.lookup_field)
             obj.full_clean(exclude)
 
 
