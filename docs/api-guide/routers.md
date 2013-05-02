@@ -15,15 +15,18 @@ REST framework adds support for automatic URL routing to Django, and provides yo
 Here's an example of a simple URL conf, that uses `DefaultRouter`.
 
     router = routers.SimpleRouter()
-    router.register(r'users', UserViewSet, name='user')
-    router.register(r'accounts', AccountViewSet, name='account')
+    router.register(r'users', UserViewSet)
+    router.register(r'accounts', AccountViewSet)
     urlpatterns = router.urls
 
-There are three arguments to the `register()` method:
+There are two mandatory arguments to the `register()` method:
 
 * `prefix` - The URL prefix to use for this set of routes.
 * `viewset` - The viewset class.
-* `name` - The base to use for the URL names that are created.
+
+Optionally, you may also specify an additional argument:
+
+* `base_name` - The base to use for the URL names that are created.  If unset the basename will be automatically generated based on the `model` or `queryset` attribute on the viewset, if it has one.
 
 The example above would generate the following URL patterns:
 
@@ -101,6 +104,8 @@ The following example will only route to the `list` and `retrieve` actions, and 
 
 ## Advanced custom routers
 
-If you want to provide totally custom behavior, you can override `BaseRouter` and override the `get_urls()` method.  The method should insect the registered viewsets and return a list of URL patterns.  The registered prefix, viewset and basename tuples may be inspected by accessing the `self.registry` attribute.  
+If you want to provide totally custom behavior, you can override `BaseRouter` and override the `get_urls(self)` method.  The method should insect the registered viewsets and return a list of URL patterns.  The registered prefix, viewset and basename tuples may be inspected by accessing the `self.registry` attribute.  
+
+You may also want to override the `get_default_base_name(self, viewset)` method, or else always explicitly set the `base_name` argument when registering your viewsets with the router.
 
 [cite]: http://guides.rubyonrails.org/routing.html

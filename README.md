@@ -42,39 +42,10 @@ Add `'rest_framework'` to your `INSTALLED_APPS` setting.
         'rest_framework',        
     )
 
-If you're intending to use the browseable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
-
-    urlpatterns = patterns('',
-        ...
-        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-    )
-
-Note that the URL path can be whatever you want, but you must include `'rest_framework.urls'` with the `'rest_framework'` namespace.
-
 # Example
 
-Let's take a look at a quick example of using REST framework to build a simple model-backed API.
+Let's take a look at a quick example of using REST framework to build a simple model-backed API for accessing users and groups.
 
-We'll create a read-write API for accessing users and groups.
-
-Any global settings for a REST framework API are kept in a single configuration dictionary named `REST_FRAMEWORK`.  Start off by adding the following to your `settings.py` module:
-
-    REST_FRAMEWORK = {
-        # Use hyperlinked styles by default.
-        # Only used if the `serializer_class` attribute is not set on a view.
-        'DEFAULT_MODEL_SERIALIZER_CLASS':
-            'rest_framework.serializers.HyperlinkedModelSerializer',
-
-        # Use Django's standard `django.contrib.auth` permissions,
-        # or allow read-only access for unauthenticated users.
-        'DEFAULT_PERMISSION_CLASSES': [
-            'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-        ]
-    }
-
-Don't forget to make sure you've also added `rest_framework` to your `INSTALLED_APPS`.
-
-We're ready to create our API now. 
 Here's our project's root `urls.py` module:
 
     from django.conf.urls.defaults import url, patterns, include
@@ -91,8 +62,8 @@ Here's our project's root `urls.py` module:
     
     # Routers provide an easy way of automatically determining the URL conf
     router = routers.DefaultRouter()
-    router.register(r'users', views.UserViewSet, name='user')
-    router.register(r'groups', views.GroupViewSet, name='group')
+    router.register(r'users', views.UserViewSet)
+    router.register(r'groups', views.GroupViewSet)
 
 
     # Wire up our API using automatic URL routing.
@@ -101,6 +72,27 @@ Here's our project's root `urls.py` module:
         url(r'^', include(router.urls)),
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     )
+
+We'd also like to configure a couple of settings for our API.
+
+Add the following to your `settings.py` module:
+
+    REST_FRAMEWORK = {
+        # Use hyperlinked styles by default.
+        # Only used if the `serializer_class` attribute is not set on a view.
+        'DEFAULT_MODEL_SERIALIZER_CLASS':
+            'rest_framework.serializers.HyperlinkedModelSerializer',
+
+        # Use Django's standard `django.contrib.auth` permissions,
+        # or allow read-only access for unauthenticated users.
+        'DEFAULT_PERMISSION_CLASSES': [
+            'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        ]
+    }
+
+Don't forget to make sure you've also added `rest_framework` to your `INSTALLED_APPS` setting.
+
+That's it, we're done!
 
 # Documentation & Support
 

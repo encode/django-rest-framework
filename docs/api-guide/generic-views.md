@@ -62,6 +62,10 @@ The following attributes control the basic view behavior.
 * `serializer_class` - The serializer class that should be used for validating and deserializing input, and for serializing output.  Typically, you must either set this attribute, or override the `get_serializer_class()` method.
 * `lookup_field` - The field that should be used to lookup individual model instances.  Defaults to `'pk'`.  The URL conf should include a keyword argument corresponding to this value.  More complex lookup styles can be supported by overriding the `get_object()` method.
 
+**Shortcuts**:
+
+* `model` - This shortcut may be used instead of setting either (or both) of the `queryset`/`serializer_class` attributes, although using the explicit style is generally preferred.  If used instead of `serializer_class`, then then `DEFAULT_MODEL_SERIALIZER_CLASS` setting will determine the base serializer class.
+
 **Pagination**:
 
 The following attibutes are used to control pagination when used with list views.
@@ -75,7 +79,6 @@ The following attibutes are used to control pagination when used with list views
 
 * `filter_backend` - The filter backend class that should be used for filtering the queryset.  Defaults to the same value as the `FILTER_BACKEND` setting.
 * `allow_empty` - Determines if an empty list should successfully display zero results, or return a 404 response.  Defaults to `True`, meaning empty lists will return sucessful `200 OK` responses, with zero results.
-* `model` - This shortcut may be used instead of setting either (or both) of the `queryset`/`serializer_class` attributes, although using the explicit style is generally preferred.  If used instead of `serializer_class`, then then `DEFAULT_MODEL_SERIALIZER_CLASS` setting will determine the base serializer class.
 
 ### Methods
 
@@ -160,7 +163,7 @@ The following classes are the concrete generic views.  If you're using generic v
 
 Used for **create-only** endpoints.
 
-Provides `post` method handlers.
+Provides a `post` method handler.
 
 Extends: [GenericAPIView], [CreateModelMixin]
 

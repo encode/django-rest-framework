@@ -105,8 +105,8 @@ Here's our re-wired `urls.py` file.
 
     # Create a router and register our viewsets with it.
     router = DefaultRouter()
-    router.register(r'snippets', views.SnippetViewSet, name='snippet')
-    router.register(r'users', views.UserViewSet, name='user')
+    router.register(r'snippets', views.SnippetViewSet)
+    router.register(r'users', views.UserViewSet)
     
     # The API URLs are now determined automatically by the router.
     # Additionally, we include the login URLs for the browseable API.
@@ -115,7 +115,7 @@ Here's our re-wired `urls.py` file.
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     )
 
-Registering the viewsets with the router is similar to providing a urlpattern.  We include three arguments - the URL prefix for the views, the viewset itself, and the base name that should be used for constructing the URL names, such as `snippet-list`.
+Registering the viewsets with the router is similar to providing a urlpattern.  We include two arguments - the URL prefix for the views, and the viewset itself.
 
 The `DefaultRouter` class we're using also automatically creates the API root view for us, so we can now delete the `api_root` method from our `views` module.
 
@@ -123,7 +123,7 @@ The `DefaultRouter` class we're using also automatically creates the API root vi
 
 Using viewsets can be a really useful abstraction.  It helps ensure that URL conventions will be consistent across your API, minimizes the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.
 
-That doesn't mean it's always the right approach to take.  There's a similar set of trade-offs to consider as when using class-based views instead of function based views.  Using view sets is less explicit than building your views individually.
+That doesn't mean it's always the right approach to take.  There's a similar set of trade-offs to consider as when using class-based views instead of function based views.  Using viewsets is less explicit than building your views individually.
 
 ## Reviewing our work
 
