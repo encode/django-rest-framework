@@ -6,9 +6,10 @@ on the request, such as form content or json encoded data.
 """
 from __future__ import unicode_literals
 from django.conf import settings
+from django.core.files.uploadhandler import StopFutureHandlers
 from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
-from django.http.multipartparser import MultiPartParserError
+from django.http.multipartparser import MultiPartParserError, parse_header, ChunkIter
 from rest_framework.compat import yaml, etree
 from rest_framework.exceptions import ParseError
 from rest_framework.compat import six
@@ -205,3 +206,63 @@ class XMLParser(BaseParser):
             pass
 
         return value
+
+
+class FileUploadParser(BaseParser):
+    """
+    Parser for file upload data.
+    """
+    media_type = '*/*'
+
+    def parse(self, stream, media_type=None, parser_context=None):
+        parser_context = parser_context or {}
+        request = parser_context['request']
+        encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+        meta = request.META
+
+        try:
+            disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'])
+            filename = disposition[1]['filename']
+        except KeyError:
+            filename = None
+
+        content_type = meta.get('HTTP_CONTENT_TYPE', meta.get('CONTENT_TYPE', ''))
+        try:
+            content_length = int(meta.get('HTTP_CONTENT_LENGTH', meta.get('CONTENT_LENGTH', 0)))
+        except (ValueError, TypeError):
+            content_length = None
+
+        # See if the handler will want to take care of the parsing.
+        for handler in request.upload_handlers:
+            result = handler.handle_raw_input(None,
+                                              meta,
+                                              content_length,
+                                              None,
+                                              encoding)
+            if result is not None:
+                return DataAndFiles(result[0], {'file': result[1]})
+
+        possible_sizes = [x.chunk_size for x in request.upload_handlers if x.chunk_size]
+        chunk_size = min([2**31-4] + possible_sizes)
+        chunks = ChunkIter(stream, chunk_size)
+        counters = [0] * len(request.upload_handlers)
+
+        for handler in request.upload_handlers:
+            try:
+                handler.new_file(None, filename, content_type, content_length, encoding)
+            except StopFutureHandlers:
+                break
+
+        for chunk in chunks:
+            for i, handler in enumerate(request.upload_handlers):
+                chunk_length = len(chunk)
+                chunk = handler.receive_data_chunk(chunk, counters[i])
+                counters[i] += chunk_length
+                if chunk is None:
+                    # If the chunk received by the handler is None, then don't continue.
+                    break
+
+        for i, handler in enumerate(request.upload_handlers):
+            file_obj = handler.file_complete(counters[i])
+            if file_obj:
+                return DataAndFiles(None, {'file': file_obj})
