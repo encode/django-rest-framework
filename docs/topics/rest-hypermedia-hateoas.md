@@ -26,7 +26,7 @@ REST framework is an agnostic Web API toolkit.  It does help guide you towards b
 
 ## What REST framework provides.
 
-It is self evident that REST framework makes it possible to build Hypermedia APIs.  The browseable API that it offers is built on HTML - the hypermedia language of the web.
+It is self evident that REST framework makes it possible to build Hypermedia APIs.  The browsable API that it offers is built on HTML - the hypermedia language of the web.
 
 REST framework also includes [serialization] and [parser]/[renderer] components that make it easy to build appropriate media types, [hyperlinked relations][fields] for building well-connected systems, and great support for [content negotiation][conneg].
 
