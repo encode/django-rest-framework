@@ -269,6 +269,7 @@ class FileUploadParser(BaseParser):
             file_obj = handler.file_complete(counters[i])
             if file_obj:
                 return DataAndFiles(None, {'file': file_obj})
+        raise ParseError("FileUpload parse error - none of upload handlers can handle the stream")
 
     def get_filename(self, stream, media_type, parser_context):
         """
