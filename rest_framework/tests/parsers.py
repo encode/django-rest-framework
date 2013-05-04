@@ -99,11 +99,17 @@ class TestFileUploadParser(TestCase):
             'HTTP_CONTENT_DISPOSITION': 'Content-Disposition: inline; filename=file.txt'.encode('utf-8'),
             'HTTP_CONTENT_LENGTH': 14,
         }
-        self.parser_context = {'request': request}
+        self.parser_context = {'request': request, 'kwargs': {}}
 
     def test_parse(self):
         """ Make sure the `QueryDict` works OK """
         parser = FileUploadParser()
-        data_and_files = parser.parse(self.stream, parser_context=self.parser_context)
+        self.stream.seek(0)
+        data_and_files = parser.parse(self.stream, None, self.parser_context)
         file_obj = data_and_files.files['file']
         self.assertEqual(file_obj._size, 14)
+
+    def test_get_filename(self):
+        parser = FileUploadParser()
+        filename = parser.get_filename(self.stream, None, self.parser_context)
+        self.assertEqual(filename, 'file.txt'.encode('utf-8'))

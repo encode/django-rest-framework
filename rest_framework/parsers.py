@@ -215,16 +215,19 @@ class FileUploadParser(BaseParser):
     media_type = '*/*'
 
     def parse(self, stream, media_type=None, parser_context=None):
+        """
+        Returns a DataAndFiles object.
+
+        `.data` will be None (we expect request body to be a file content).
+        `.files` will be a `QueryDict` containing one 'file' elemnt - a parsed file.
+        """
+
         parser_context = parser_context or {}
         request = parser_context['request']
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
         meta = request.META
-
-        try:
-            disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'])
-            filename = disposition[1]['filename']
-        except KeyError:
-            filename = None
+        upload_handlers = request.upload_handlers
+        filename = self.get_filename(stream, media_type, parser_context)
 
         content_type = meta.get('HTTP_CONTENT_TYPE', meta.get('CONTENT_TYPE', ''))
         try:
@@ -233,28 +236,28 @@ class FileUploadParser(BaseParser):
             content_length = None
 
         # See if the handler will want to take care of the parsing.
-        for handler in request.upload_handlers:
+        for handler in upload_handlers:
             result = handler.handle_raw_input(None,
                                               meta,
                                               content_length,
                                               None,
                                               encoding)
             if result is not None:
-                return DataAndFiles(result[0], {'file': result[1]})
+                return DataAndFiles(None, {'file': result[1]})
 
-        possible_sizes = [x.chunk_size for x in request.upload_handlers if x.chunk_size]
+        possible_sizes = [x.chunk_size for x in upload_handlers if x.chunk_size]
         chunk_size = min([2**31-4] + possible_sizes)
         chunks = ChunkIter(stream, chunk_size)
-        counters = [0] * len(request.upload_handlers)
+        counters = [0] * len(upload_handlers)
 
-        for handler in request.upload_handlers:
+        for handler in upload_handlers:
             try:
                 handler.new_file(None, filename, content_type, content_length, encoding)
             except StopFutureHandlers:
                 break
 
         for chunk in chunks:
-            for i, handler in enumerate(request.upload_handlers):
+            for i, handler in enumerate(upload_handlers):
                 chunk_length = len(chunk)
                 chunk = handler.receive_data_chunk(chunk, counters[i])
                 counters[i] += chunk_length
@@ -262,7 +265,23 @@ class FileUploadParser(BaseParser):
                     # If the chunk received by the handler is None, then don't continue.
                     break
 
-        for i, handler in enumerate(request.upload_handlers):
+        for i, handler in enumerate(upload_handlers):
             file_obj = handler.file_complete(counters[i])
             if file_obj:
                 return DataAndFiles(None, {'file': file_obj})
+
+    def get_filename(self, stream, media_type, parser_context):
+        """
+        Detects the uploaded file name. First searches a 'filename' url kwarg.
+        Then tries to parse Content-Disposition header.
+        """
+        try:
+            return parser_context['kwargs']['filename']
+        except KeyError:
+            pass
+        try:
+            meta = parser_context['request'].META
+            disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'])
+            return disposition[1]['filename']
+        except (AttributeError, KeyError):
+            pass
