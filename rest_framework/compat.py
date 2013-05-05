@@ -6,6 +6,7 @@ versions of django/python, and compatibility wrappers around optional packages.
 from __future__ import unicode_literals
 
 import django
+from django.core.exceptions import ImproperlyConfigured
 
 # Try to import six from Django, fallback to included `six`.
 try:
@@ -477,7 +478,7 @@ except ImportError:
 try:
     import oauth_provider
     from oauth_provider.store import store as oauth_provider_store
-except ImportError:
+except (ImportError, ImproperlyConfigured):
     oauth_provider = None
     oauth_provider_store = None
 
