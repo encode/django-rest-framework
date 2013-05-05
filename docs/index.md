@@ -9,7 +9,7 @@
 
 # Django REST framework
 
-**Awesome web-browseable Web APIs.**
+**Awesome web-browsable Web APIs.**
 
 Django REST framework is a powerful and flexible toolkit that makes it easy to build Web APIs.
 
@@ -23,7 +23,7 @@ Some reasons you might want to use REST framework:
 
 There is a live example API for testing purposes, [available here][sandbox].
 
-**Below**: *Screenshot from the browseable API*
+**Below**: *Screenshot from the browsable API*
 
 ![Screenshot][image]
 
@@ -36,7 +36,7 @@ REST framework requires the following:
 
 The following packages are optional:
 
-* [Markdown][markdown] (2.1.0+) - Markdown support for the browseable API.
+* [Markdown][markdown] (2.1.0+) - Markdown support for the browsable API.
 * [PyYAML][yaml] (3.10+) - YAML content-type support.
 * [defusedxml][defusedxml] (0.3+) - XML content-type support.
 * [django-filter][django-filter] (0.5.4+) - Filtering support.
@@ -50,7 +50,7 @@ The following packages are optional:
 Install using `pip`, including any optional packages you want...
 
     pip install djangorestframework
-    pip install markdown       # Markdown support for the browseable API.
+    pip install markdown       # Markdown support for the browsable API.
     pip install django-filter  # Filtering support
 
 ...or clone the project from github.
@@ -64,7 +64,7 @@ Add `'rest_framework'` to your `INSTALLED_APPS` setting.
         'rest_framework',        
     )
 
-If you're intending to use the browseable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
+If you're intending to use the browsable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
 
     urlpatterns = patterns('',
         ...

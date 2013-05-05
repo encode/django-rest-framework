@@ -57,7 +57,7 @@ Or, if you're using the `@api_view` decorator with function based views.
 
 It's important when specifying the renderer classes for your API to think about what priority you want to assign to each media type.  If a client underspecifies the representations it can accept, such as sending an `Accept: */*` header, or not including an `Accept` header at all, then REST framework will select the first renderer in the list to use for the response.
 
-For example if your API serves JSON responses and the HTML browseable API, you might want to make `JSONRenderer` your default renderer, in order to send `JSON` responses to clients that do not specify an `Accept` header.
+For example if your API serves JSON responses and the HTML browsable API, you might want to make `JSONRenderer` your default renderer, in order to send `JSON` responses to clients that do not specify an `Accept` header.
 
 If your API includes views that can serve both regular webpages and API responses depending on the request, then you might consider making `TemplateHTMLRenderer` your default renderer, in order to play nicely with older browsers that send [broken accept headers][browser-accept-headers].
 
@@ -167,7 +167,7 @@ See also: `TemplateHTMLRenderer`
 
 ## BrowsableAPIRenderer
 
-Renders data into HTML for the Browseable API.  This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.
+Renders data into HTML for the Browsable API.  This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.
 
 **.media_type**: `text/html`
 
