@@ -360,7 +360,15 @@ class HyperlinkedRelatedField(RelatedField):
             # Only try slug if it corresponds to an attribute on the object.
             kwargs = {self.slug_url_kwarg: slug}
             try:
-                return reverse(view_name, kwargs=kwargs, request=request, format=format)
+                ret = reverse(view_name, kwargs=kwargs, request=request, format=format)
+                if self.slug_field == 'slug' and self.slug_url_kwarg == 'slug':
+                    # If the lookup succeeds using the default slug params,
+                    # then `slug_field` is being used implicitly, and we
+                    # we need to warn about the pending deprecation.
+                    msg = 'Implicit slug field hyperlinked fields are pending deprecation.' \
+                          'You should set `lookup_field=slug` on the HyperlinkedRelatedField.'
+                    warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+                return ret
             except NoReverseMatch:
                 pass
 

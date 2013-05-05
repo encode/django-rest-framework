@@ -827,6 +827,7 @@ class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
     def __init__(self, meta):
         super(HyperlinkedModelSerializerOptions, self).__init__(meta)
         self.view_name = getattr(meta, 'view_name', None)
+        self.lookup_field = getattr(meta, 'slug_field', None)
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
@@ -874,6 +875,9 @@ class HyperlinkedModelSerializer(ModelSerializer):
 
         if model_field:
             kwargs['required'] = not(model_field.null or model_field.blank)
+
+        if self.opts.lookup_field:
+            kwargs['lookup_field'] = self.opts.lookup_field
 
         return self._hyperlink_field_class(**kwargs)
 
