@@ -294,7 +294,7 @@ The context dictionary can be used within any serializer field logic, such as a 
 
 ---
 
-# ModelSerializers
+# ModelSerializer
 
 Often you'll want serializer classes that map closely to model definitions.
 The `ModelSerializer` class lets you automatically create a Serializer class with fields that correspond to the Model fields.
@@ -305,7 +305,42 @@ The `ModelSerializer` class lets you automatically create a Serializer class wit
 
 By default, all the model fields on the class will be mapped to corresponding serializer fields.
 
-Any foreign keys on the model will be mapped to `PrimaryKeyRelatedField` if you're using a `ModelSerializer`, or `HyperlinkedRelatedField` if you're using a `HyperlinkedModelSerializer`.
+Any relationships such as foreign keys on the model will be mapped to `PrimaryKeyRelatedField`.  Other models fields will be mapped to a corresponding serializer field.
+
+## Specifying which fields should be included
+
+If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.
+
+For example:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            fields = ('id', 'account_name', 'users', 'created')
+
+## Specifying nested serialization
+
+The default `ModelSerializer` uses primary keys for relationships, but you can also easily generate nested representations using the `depth` option:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            fields = ('id', 'account_name', 'users', 'created')
+            depth = 1
+
+The `depth` option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.
+
+## Specifying which fields should be read-only 
+
+You may wish to specify multiple fields as read-only. Instead of adding each field explicitly with the `read_only=True` attribute, you may use the `read_only_fields` Meta option, like so:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            fields = ('id', 'account_name', 'users', 'created')
+            read_only_fields = ('account_name',)
+
+Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option. 
 
 ## Specifying fields explicitly 
 
@@ -328,43 +363,68 @@ Alternative representations include serializing using hyperlinks, serializing co
 
 For full details see the [serializer relations][relations] documentation.
 
-## Specifying which fields should be included
+---
 
-If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.
+# HyperlinkedModelSerializer
 
-For example:
+The `HyperlinkedModelSerializer` class is similar to the `ModelSerializer` class except that it uses hyperlinks to represent relationships, rather than primary keys.
 
-    class AccountSerializer(serializers.ModelSerializer):
+By default the serializer will include a `url` field instead of a primary key field.
+
+The url field will be represented using a `HyperlinkedIdentityField` serializer field, and any relationships on the model will be represented using a `HyperlinkedRelatedField` serializer field.
+
+You can explicitly include the primary key by adding it to the `fields` option, for example:
+
+    class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
-            exclude = ('id',)
+            fields = ('url', 'id', 'account_name', 'users', 'created')
 
-## Specifiying nested serialization
+## How hyperlinked views are determined
 
-The default `ModelSerializer` uses primary keys for relationships, but you can also easily generate nested representations using the `depth` option:
+There needs to be a way of determining which views should be used for hyperlinking to model instances.
 
-    class AccountSerializer(serializers.ModelSerializer):
+By default hyperlinks are expected to correspond to a view name that matches the style `'{model_name}-detail'`, and looks up the instance by a `pk` keyword argument.
+
+You can change the field that is used for object lookups by setting the `lookup_field` option.  The value of this option should correspond both with a kwarg in the URL conf, and with an field on the model.  For example:
+
+    class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
-            exclude = ('id',)
-            depth = 1
+            fields = ('url', 'account_name', 'users', 'created')
+            lookup_field = 'slug'
 
-The `depth` option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.
+For more specfic requirements such as specifying a different lookup for each field, you'll want to set the fields on the serializer explicitly.  For example:
 
-## Specifying which fields should be read-only 
+    class AccountSerializer(serializers.HyperlinkedModelSerializer):
+        url = serializers.HyperlinkedIdentityField(
+            view_name='account_detail',
+            lookup_field='account_name'
+        )
+        users = serializers.HyperlinkedRelatedField(
+            view_name='user-detail',
+            lookup_field='username',
+            many=True,
+            read_only=True
+        )
 
-You may wish to specify multiple fields as read-only. Instead of adding each field explicitly with the `read_only=True` attribute, you may use the `read_only_fields` Meta option, like so:
-
-    class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            read_only_fields = ('created', 'modified')
+            fields = ('url', 'account_name', 'users', 'created')
+
+---
+
+# Advanced serializer usage
+
+You can create customized subclasses of `ModelSerializer` or `HyperlinkedModelSerializer` that use a different set of default fields.
+
+Doing so should be considered advanced usage, and will only be needed if you have some particular serializer requirements that you often need to repeat.
 
 ## Customising the default fields
 
-You can create customized subclasses of `ModelSerializer` that use a different set of default fields for the representation, by overriding various `get_<field_type>_field` methods.
+The `field_mapping` attribute is a dictionary that maps model classes to serializer classes.  Overriding the attribute will let you set a different set of default serializer classes. 
 
-Each of these methods may either return a field or serializer instance, or `None`.
+For more advanced customization than simply changing the default serializer class you can override various `get_<field_type>_field` methods.  Doing so will allow you to customize the arguments that each serializer field is initialized with. Each of these methods may either return a field or serializer instance, or `None`.
 
 ### get_pk_field
 
@@ -394,7 +454,7 @@ Note that the `model_field` argument will be `None` for reverse relationships.  
 
 Returns the field instance that should be used for non-relational, non-pk fields.
 
-### Example:
+## Example
 
 The following custom model serializer could be used as a base class for model serializers that should always exclude the pk by default.
 

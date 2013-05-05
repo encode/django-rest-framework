@@ -125,7 +125,7 @@ For example:
 
 #### `get_paginate_by(self)`
 
-Returna the page size to use with pagination.  By default this uses the `paginate_by` attribute, and may be overridden by the cient if the `paginate_by_param` attribute is set.
+Returns the page size to use with pagination.  By default this uses the `paginate_by` attribute, and may be overridden by the cient if the `paginate_by_param` attribute is set.
 
 You may want to override this method to provide more complex behavior such as modifying page sizes based on the media type of the response.
 
@@ -142,6 +142,16 @@ The following methods are provided as placeholder interfaces.  They contain empt
 
 * `pre_save(self, obj)` - A hook that is called before saving an object.
 * `post_save(self, obj, created=False)` - A hook that is called after saving an object.
+
+The `pre_save` method in particular is a useful hook for setting attributes that are implicit in the request, but are not part of the request data.  For instance, you might set an attribute on the object based on the request user, or based on a URL keyword argument.
+
+    def pre_save(self, obj):
+        """
+        Set the object's owner, based on the incoming request.
+        """
+        obj.owner = self.request.user
+
+Remember that the `pre_save()` method is not called by `GenericAPIView` itself, but it is called by `create()` and `update()` methods on the `CreateModelMixin` and `UpdateModelMixin` classes.
 
 **Other methods**:
 
