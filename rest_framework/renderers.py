@@ -57,7 +57,7 @@ class JSONRenderer(BaseRenderer):
             return ''
 
         # If 'indent' is provided in the context, then pretty print the result.
-        # E.g. If we're being called by the BrowseableAPIRenderer.
+        # E.g. If we're being called by the BrowsableAPIRenderer.
         renderer_context = renderer_context or {}
         indent = renderer_context.get('indent', None)
 

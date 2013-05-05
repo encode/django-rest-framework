@@ -377,7 +377,7 @@ class TestCreateModelWithAutoNowAddField(TestCase):
         self.assertEqual(created.content, 'foobar')
 
 
-# Test for particularly ugly regression with m2m in browseable API
+# Test for particularly ugly regression with m2m in browsable API
 class ClassB(models.Model):
     name = models.CharField(max_length=255)
 
@@ -402,7 +402,7 @@ class ExampleView(generics.ListCreateAPIView):
 class TestM2MBrowseableAPI(TestCase):
     def test_m2m_in_browseable_api(self):
         """
-        Test for particularly ugly regression with m2m in browseable API
+        Test for particularly ugly regression with m2m in browsable API
         """
         request = factory.get('/', HTTP_ACCEPT='text/html')
         view = ExampleView().as_view()

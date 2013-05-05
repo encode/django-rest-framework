@@ -59,14 +59,15 @@ We can now use `CommentSerializer` to serialize a comment, or list of comments. 
 
 At this point we've translated the model instance into python native datatypes.  To finalise the serialization process we render the data into `json`.
 
-    stream = JSONRenderer().render(data)
-    stream
+    json = JSONRenderer().render(serializer.data)
+    json
     # '{"email": "leila@example.com", "content": "foo bar", "created": "2012-08-22T16:20:09.822"}'
 
 ## Deserializing objects
         
 Deserialization is similar.  First we parse a stream into python native datatypes... 
 
+    stream = StringIO(json)
     data = JSONParser().parse(stream)
 
 ...then we restore those native datatypes into a fully populated object instance.

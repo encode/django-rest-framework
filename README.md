@@ -18,9 +18,9 @@
 
 Django REST framework is a lightweight library that makes it easy to build Web APIs.  It is designed as a modular and easy to customize architecture, based on Django's class based views.
 
-Web APIs built using REST framework are fully self-describing and web browseable - a huge useability win for your developers.  It also supports a wide range of media types, authentication and permission policies out of the box.
+Web APIs built using REST framework are fully self-describing and web browsable - a huge useability win for your developers.  It also supports a wide range of media types, authentication and permission policies out of the box.
 
-If you are considering using REST framework for your API, we recommend reading the [REST framework 2 announcment][rest-framework-2-announcement] which gives a good overview of the framework and it's capabilities.
+If you are considering using REST framework for your API, we recommend reading the [REST framework 2 announcement][rest-framework-2-announcement] which gives a good overview of the framework and it's capabilities.
 
 There is also a sandbox API you can use for testing purposes, [available here][sandbox].
 
@@ -41,7 +41,7 @@ There is also a sandbox API you can use for testing purposes, [available here][s
 Install using `pip`, including any optional packages you want...
 
     pip install djangorestframework
-    pip install markdown  # Markdown support for the browseable API.
+    pip install markdown  # Markdown support for the browsable API.
     pip install pyyaml    # YAML content-type support.
     pip install defusedxml  # XML content-type support.
     pip install django-filter  # Filtering support
@@ -60,7 +60,7 @@ Add `'rest_framework'` to your `INSTALLED_APPS` setting.
         'rest_framework',        
     )
 
-If you're intending to use the browseable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
+If you're intending to use the browsable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
 
     urlpatterns = patterns('',
         ...

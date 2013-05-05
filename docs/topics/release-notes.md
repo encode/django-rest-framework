@@ -57,7 +57,7 @@ You can determine your currently installed version using `pip freeze`:
 **Date**: 4th April 2013
 
 * OAuth2 authentication no longer requires unneccessary URL parameters in addition to the token.
-* URL hyperlinking in browseable API now handles more cases correctly.
+* URL hyperlinking in browsable API now handles more cases correctly.
 * Long HTTP headers in browsable API are broken in multiple lines when possible.
 * Bugfix: Fix regression with DjangoFilterBackend not worthing correctly with single object views.
 * Bugfix: OAuth should fail hard when invalid token used.
@@ -107,10 +107,10 @@ You can determine your currently installed version using `pip freeze`:
 **Date**: 22nd Feb 2013
 
 * Security fix: Use `defusedxml` package to address XML parsing vulnerabilities.
-* Raw data tab added to browseable API.  (Eg. Allow for JSON input.)
+* Raw data tab added to browsable API.  (Eg. Allow for JSON input.)
 * Added TimeField.
 * Serializer fields can be mapped to any method that takes no args, or only takes kwargs which have defaults.
-* Unicode support for view names/descriptions in browseable API.
+* Unicode support for view names/descriptions in browsable API.
 * Bugfix: request.DATA should return an empty `QueryDict` with no data, not `None`.
 * Bugfix: Remove unneeded field validation, which caused extra queries.
 
@@ -207,14 +207,14 @@ This change will not affect user code, so long as it's following the recommended
 **Date**: 21st Dec 2012
 
 * Bugfix: Fix bug that could occur using ChoiceField.
-* Bugfix: Fix exception in browseable API on DELETE.
+* Bugfix: Fix exception in browsable API on DELETE.
 * Bugfix: Fix issue where pk was was being set to a string if set by URL kwarg.
 
 ### 2.1.11
 
 **Date**: 17th Dec 2012
 
-* Bugfix: Fix issue with M2M fields in browseable API.
+* Bugfix: Fix issue with M2M fields in browsable API.
 
 ### 2.1.10
 
@@ -310,7 +310,7 @@ This change will not affect user code, so long as it's following the recommended
 * Hyperlinked related fields optionally take `slug_field` and `slug_url_kwarg` arguments.
 * Support Django's cache framework.
 * Minor field improvements. (Don't stringify dicts, more robust many-pk fields.)
-* Bugfix: Support choice field in Browseable API.
+* Bugfix: Support choice field in Browsable API.
 * Bugfix: Related fields with `read_only=True` do not require a `queryset` argument.
 
 **API-incompatible changes**: Please read [this thread][2.1.0-notes] regarding the `instance` and `data` keyword args before updating to 2.1.0.
