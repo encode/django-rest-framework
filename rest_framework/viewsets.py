@@ -59,6 +59,10 @@ class ViewSetMixin(object):
 
         def view(request, *args, **kwargs):
             self = cls(**initkwargs)
+            # We also store the mapping of request methods to actions,
+            # so that we can later set the action attribute.
+            # eg. `self.action = 'list'` on an incoming GET request.
+            self.action_map = actions
 
             # Bind methods to actions
             # This is the bit that's different to a standard view
@@ -86,6 +90,15 @@ class ViewSetMixin(object):
         view.cls = cls
         view.suffix = initkwargs.get('suffix', None)
         return view
+
+    def initialize_request(self, request, *args, **kargs):
+        """
+        Set the `.action` attribute on the view,
+        depending on the request method.
+        """
+        request = super(ViewSetMixin, self).initialize_request(request, *args, **kargs)
+        self.action = self.action_map.get(request.method.lower())
+        return request
 
 
 class ViewSet(ViewSetMixin, views.APIView):
