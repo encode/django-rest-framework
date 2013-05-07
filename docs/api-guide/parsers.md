@@ -102,6 +102,28 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 **.media_type**: `multipart/form-data`
 
+## FileUploadParser
+
+Parses raw file upload content. Returns a `DataAndFiles` object. Since we expect the whole request body to be a file content `request.DATA` will be None, and `request.FILES` will contain the only one key `'file'` matching the uploaded file.
+
+The `filename` property of uploaded file would be set to the result of `.get_filename()` method. By default it tries first to take it's value from the `filename` URL kwarg, and then from `Content-Disposition` HTTP header. You can implement other behaviour be overriding this method.
+
+Note that since this parser's `media_type` matches every HTTP request it imposes restrictions on usage in combination with other parsers for the same API view.
+
+Basic usage expamle:
+
+    class FileUploadView(views.APIView):
+        parser_classes = (FileUploadParser,)
+
+        def put(self, request, filename, format=None):
+            file_obj = request.FILES['file']
+            # ...
+            # do some staff with uploaded file
+            # ...
+            return Response(status=204)
+
+**.media_type**: `*/*`
+
 ---
 
 # Custom parsers
@@ -144,35 +166,6 @@ The following is an example plaintext parser that will populate the `request.DAT
         Simply return a string representing the body of the request.
         """
         return stream.read()
-
-## Uploading file content
-
-If your custom parser needs to support file uploads, you may return a `DataAndFiles` object from the `.parse()` method.  `DataAndFiles` should be instantiated with two arguments.  The first argument will be used to populate the `request.DATA` property, and the second argument will be used to populate the `request.FILES` property.
-
-For example:
-
-    class SimpleFileUploadParser(BaseParser):
-        """
-        A naive raw file upload parser.
-        """
-        media_type = '*/*'  # Accept anything
-
-        def parse(self, stream, media_type=None, parser_context=None):
-            content = stream.read()
-            name = 'example.dat'
-            content_type = 'application/octet-stream'
-            size = len(content)
-            charset = 'utf-8'
-
-            # Write a temporary file based on the request content
-            temp = tempfile.NamedTemporaryFile(delete=False)
-            temp.write(content)
-            uploaded = UploadedFile(temp, name, content_type, size, charset)
-
-            # Return the uploaded file
-            data = {}
-            files = {name: uploaded}
-            return DataAndFiles(data, files)
 
 ---
 
