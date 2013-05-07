@@ -75,10 +75,9 @@ The following attibutes are used to control pagination when used with list views
 * `pagination_serializer_class` - The pagination serializer class to use when determining the style of paginated responses.  Defaults to the same value as the `DEFAULT_PAGINATION_SERIALIZER_CLASS` setting.
 * `page_kwarg` - The name of a URL kwarg or URL query parameter which can be used by the client to control which page is requested.  Defaults to `'page'`.
 
-**Other**:
+**Filtering**:
 
 * `filter_backend` - The filter backend class that should be used for filtering the queryset.  Defaults to the same value as the `FILTER_BACKEND` setting.
-* `allow_empty` - Determines if an empty list should successfully display zero results, or return a 404 response.  Defaults to `True`, meaning empty lists will return sucessful `200 OK` responses, with zero results.
 
 ### Methods
 

@@ -42,9 +42,6 @@ class GenericAPIView(views.APIView):
     # The filter backend class to use for queryset filtering
     filter_backend = api_settings.FILTER_BACKEND
 
-    # Determines if the view will return 200 or 404 responses for empty lists.
-    allow_empty = True
-
     # The following attributes may be subject to change,
     # and should be considered private API.
     model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
@@ -56,6 +53,7 @@ class GenericAPIView(views.APIView):
     pk_url_kwarg = 'pk'
     slug_url_kwarg = 'slug'
     slug_field = 'slug'
+    allow_empty = True
 
     def get_serializer_context(self):
         """
@@ -110,6 +108,14 @@ class GenericAPIView(views.APIView):
             page_size = self.get_paginate_by()
             if not page_size:
                 return None
+
+        if not self.allow_empty:
+            warnings.warn(
+                'The `allow_empty` parameter is due to be deprecated. '
+                'To use `allow_empty=False` style behavior, You should override '
+                '`get_queryset()` and explicitly raise a 404 on empty querysets.',
+                PendingDeprecationWarning, stacklevel=2
+            )
 
         paginator = self.paginator_class(queryset, page_size,
                                          allow_empty_first_page=self.allow_empty)
