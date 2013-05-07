@@ -46,6 +46,7 @@ You can determine your currently installed version using `pip freeze`:
 * ModelSerializers support reverse relations in 'fields' option.
 * HyperLinkedModelSerializers support 'id' field in 'fields' option.
 * Cleaner generic views.
+* Support for multiple filter classes.
 * DecimalField support.
 * Bugfix: Fix issue with depth>1 on ModelSerializer.
 

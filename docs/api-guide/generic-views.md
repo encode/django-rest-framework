@@ -77,7 +77,7 @@ The following attibutes are used to control pagination when used with list views
 
 **Filtering**:
 
-* `filter_backend` - The filter backend class that should be used for filtering the queryset.  Defaults to the same value as the `FILTER_BACKEND` setting.
+* `filter_backends` - A list of filter backend classes that should be used for filtering the queryset.  Defaults to the same value as the `DEFAULT_FILTER_BACKENDS` setting.
 
 ### Methods
 

@@ -39,8 +39,8 @@ class GenericAPIView(views.APIView):
     pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
     page_kwarg = 'page'
 
-    # The filter backend class to use for queryset filtering
-    filter_backend = api_settings.FILTER_BACKEND
+    # The filter backend classes to use for queryset filtering
+    filter_backends = api_settings.DEFAULT_FILTER_BACKENDS
 
     # The following attributes may be subject to change,
     # and should be considered private API.
@@ -54,6 +54,7 @@ class GenericAPIView(views.APIView):
     slug_url_kwarg = 'slug'
     slug_field = 'slug'
     allow_empty = True
+    filter_backend = api_settings.FILTER_BACKEND
 
     def get_serializer_context(self):
         """
@@ -150,10 +151,20 @@ class GenericAPIView(views.APIView):
         method if you want to apply the configured filtering backend to the
         default queryset.
         """
-        if not self.filter_backend:
-            return queryset
-        backend = self.filter_backend()
-        return backend.filter_queryset(self.request, queryset, self)
+        filter_backends = self.filter_backends or []
+        if not filter_backends and self.filter_backend:
+            warnings.warn(
+                'The `filter_backend` attribute and `FILTER_BACKEND` setting '
+                'are due to be deprecated in favor of a `filter_backends` '
+                'attribute and `DEFAULT_FILTER_BACKENDS` setting, that take '
+                'a *list* of filter backend classes.',
+                PendingDeprecationWarning, stacklevel=2
+            )
+            filter_backends = [self.filter_backend]
+
+        for backend in filter_backends:
+            queryset = backend().filter_queryset(self.request, queryset, self)
+        return queryset
 
     ########################
     ### The following methods provide default implementations
