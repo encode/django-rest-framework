@@ -115,9 +115,10 @@ The following people have helped make REST framework great.
 * Sitong Peng - [stoneg]
 * Victor Shih - [vshih]
 * Atle Frenvik Sveen - [atlefren]
-* J. Paul Reed - [preed]
+* J Paul Reed - [preed]
 * Matt Majewski - [forgingdestiny]
 * Jerome Chen - [chenjyw]
+* Andrew Hughes - [eyepulp]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -270,3 +271,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [preed]: https://github.com/preed
 [forgingdestiny]: https://github.com/forgingdestiny
 [chenjyw]: https://github.com/chenjyw
+[eyepulp]: https://github.com/eyepulp
