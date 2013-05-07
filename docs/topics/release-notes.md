@@ -42,6 +42,8 @@ You can determine your currently installed version using `pip freeze`:
 
 ### 2.3.0
 
+**Date**: 7th May 2013
+
 * ViewSets and Routers.
 * ModelSerializers support reverse relations in 'fields' option.
 * HyperLinkedModelSerializers support 'id' field in 'fields' option.
@@ -49,6 +51,7 @@ You can determine your currently installed version using `pip freeze`:
 * Support for multiple filter classes.
 * FileUploadParser support for raw file uploads.
 * DecimalField support.
+* Made Login template easier to restyle.
 * Bugfix: Fix issue with depth>1 on ModelSerializer.
 
 **Note**: See the [2.3 announcement][2.3-announcement] for full details.
@@ -56,10 +59,6 @@ You can determine your currently installed version using `pip freeze`:
 ---
 
 ## 2.2.x series
-
-### Master
-
-* Made Login template more easy to restyle.
 
 ### 2.2.7
 
