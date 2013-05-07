@@ -43,7 +43,8 @@ The default authentication schemes may be set globally, using the `DEFAULT_AUTHE
         )
     }
 
-You can also set the authentication scheme on a per-view basis, using the `APIView` class based views.
+You can also set the authentication scheme on a per-view or per-viewset basis,
+using the `APIView` class based views.
 
     class ExampleView(APIView):
         authentication_classes = (SessionAuthentication, BasicAuthentication)

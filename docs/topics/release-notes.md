@@ -38,6 +38,22 @@ You can determine your currently installed version using `pip freeze`:
 
 ---
 
+## 2.3.x series
+
+### 2.3.0
+
+* ViewSets and Routers.
+* ModelSerializers support reverse relations in 'fields' option.
+* HyperLinkedModelSerializers support 'id' field in 'fields' option.
+* Cleaner generic views.
+* Support for multiple filter classes.
+* DecimalField support.
+* Bugfix: Fix issue with depth>1 on ModelSerializer.
+
+**Note**: See the [2.3 announcement][2.3-announcement] for full details.
+
+---
+
 ## 2.2.x series
 
 ### Master
@@ -462,6 +478,7 @@ This change will not affect user code, so long as it's following the recommended
 [django-deprecation-policy]: https://docs.djangoproject.com/en/dev/internals/release-process/#internal-release-deprecation-policy
 [defusedxml-announce]: http://blog.python.org/2013/02/announcing-defusedxml-fixes-for-xml.html
 [2.2-announcement]: 2.2-announcement.md
+[2.3-announcement]: 2.3-announcement.md
 [743]: https://github.com/tomchristie/django-rest-framework/pull/743
 [staticfiles14]: https://docs.djangoproject.com/en/1.4/howto/static-files/#with-a-template-tag
 [staticfiles13]: https://docs.djangoproject.com/en/1.3/howto/static-files/#with-a-template-tag

@@ -1,3 +1,6 @@
+"""
+Provides various throttling policies.
+"""
 from __future__ import unicode_literals
 from django.core.cache import cache
 from rest_framework import exceptions
@@ -28,9 +31,8 @@ class SimpleRateThrottle(BaseThrottle):
     A simple cache implementation, that only requires `.get_cache_key()`
     to be overridden.
 
-    The rate (requests / seconds) is set by a :attr:`throttle` attribute
-    on the :class:`.View` class.  The attribute is a string of the form 'number of
-    requests/period'.
+    The rate (requests / seconds) is set by a `throttle` attribute on the View
+    class.  The attribute is a string of the form 'number_of_requests/period'.
 
     Period should be one of: ('s', 'sec', 'm', 'min', 'h', 'hour', 'd', 'day')
 

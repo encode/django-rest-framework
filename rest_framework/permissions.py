@@ -25,10 +25,12 @@ class BasePermission(object):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
-        if len(inspect.getargspec(self.has_permission)[0]) == 4:
-            warnings.warn('The `obj` argument in `has_permission` is due to be deprecated. '
-                      'Use `has_object_permission()` instead for object permissions.',
-                       PendingDeprecationWarning, stacklevel=2)
+        if len(inspect.getargspec(self.has_permission).args) == 4:
+            warnings.warn(
+                'The `obj` argument in `has_permission` is deprecated. '
+                'Use `has_object_permission()` instead for object permissions.',
+                DeprecationWarning, stacklevel=2
+            )
             return self.has_permission(request, view, obj)
         return True
 
@@ -87,8 +89,8 @@ class DjangoModelPermissions(BasePermission):
     It ensures that the user is authenticated, and has the appropriate
     `add`/`change`/`delete` permissions on the model.
 
-    This permission will only be applied against view classes that
-    provide a `.model` attribute, such as the generic class-based views.
+    This permission can only be applied against view classes that
+    provide a `.model` or `.queryset` attribute.
     """
 
     # Map methods into required permission codes.
@@ -134,6 +136,14 @@ class DjangoModelPermissions(BasePermission):
             request.user.has_perms(perms)):
             return True
         return False
+
+
+class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
+    """
+    Similar to DjangoModelPermissions, except that anonymous users are
+    allowed read-only access.
+    """
+    authenticated_users_only = False
 
 
 class TokenHasReadWriteScope(BasePermission):

@@ -93,7 +93,8 @@ The default pagination style may be set globally, using the `DEFAULT_PAGINATION_
 You can also set the pagination style on a per-view basis, using the `ListAPIView` generic class-based view.
 
     class PaginatedListView(ListAPIView):
-        model = ExampleModel
+        queryset = ExampleModel.objects.all()
+        serializer_class = ExampleModelSerializer
         paginate_by = 10
         paginate_by_param = 'page_size'
 
