@@ -76,11 +76,7 @@ Because we're using viewsets instead of views, we can automatically generate the
 
 Again, if we need more control over the API URLs we can simply drop down to using regular class based views, and writing the URL conf explicitly.
 
-<<<<<<< HEAD
-Note that we're also including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browseable API.
-=======
 Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.
->>>>>>> master
 
 ## Settings
 
