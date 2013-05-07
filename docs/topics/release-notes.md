@@ -40,6 +40,12 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
+### 2.3.1
+
+**Date**: 7th May 2013
+
+* Bugfix: Fix breadcrumb rendering issue.
+
 ### 2.3.0
 
 **Date**: 7th May 2013

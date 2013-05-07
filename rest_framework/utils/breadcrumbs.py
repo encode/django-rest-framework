@@ -24,7 +24,8 @@ def get_breadcrumbs(url):
         else:
             # Check if this is a REST framework view,
             # and if so add it to the breadcrumbs
-            if issubclass(getattr(view, 'cls', None), APIView):
+            cls = getattr(view, 'cls', None)
+            if cls is not None and issubclass(cls, APIView):
                 # Don't list the same view twice in a row.
                 # Probably an optional trailing slash.
                 if not seen or seen[-1] != view:
