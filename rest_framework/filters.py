@@ -1,5 +1,12 @@
+"""
+Provides generic filtering backends that can be used to filter the results
+returned by list views.
+"""
 from __future__ import unicode_literals
+
+from django.db import models
 from rest_framework.compat import django_filters
+import operator
 
 FilterSet = django_filters and django_filters.FilterSet or None
 
@@ -57,4 +64,30 @@ class DjangoFilterBackend(BaseFilterBackend):
         if filter_class:
             return filter_class(request.QUERY_PARAMS, queryset=queryset).qs
 
+        return queryset
+
+
+class SearchFilter(BaseFilterBackend):
+    def construct_search(self, field_name):
+        if field_name.startswith('^'):
+            return "%s__istartswith" % field_name[1:]
+        elif field_name.startswith('='):
+            return "%s__iexact" % field_name[1:]
+        elif field_name.startswith('@'):
+            return "%s__search" % field_name[1:]
+        else:
+            return "%s__icontains" % field_name
+
+    def filter_queryset(self, request, queryset, view):
+        search_fields = getattr(view, 'search_fields', None)
+
+        if not search_fields:
+            return None
+
+        orm_lookups = [self.construct_search(str(search_field))
+                       for search_field in self.search_fields]
+        for bit in self.query.split():
+            or_queries = [models.Q(**{orm_lookup: bit})
+                          for orm_lookup in orm_lookups]
+            queryset = queryset.filter(reduce(operator.or_, or_queries))
         return queryset

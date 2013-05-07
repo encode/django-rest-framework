@@ -1,11 +1,10 @@
 """
-The :mod:`request` module provides a :class:`Request` class used to wrap the standard `request`
-object received in all the views.
+The Request class is used as a wrapper around the standard request object.
 
 The wrapped request then offers a richer API, in particular :
 
     - content automatically parsed according to `Content-Type` header,
-      and available as :meth:`.DATA<Request.DATA>`
+      and available as `request.DATA`
     - full support of PUT method, including support for file uploads
     - form overloading of HTTP method, content type and content
 """

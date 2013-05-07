@@ -8,7 +8,7 @@ Create a new Django project, and start a new app called `quickstart`.  Once you'
 
 First up we're going to define some serializers in `quickstart/serializers.py` that we'll use for our data representations.
 
-    from django.contrib.auth.models import User, Group, Permission
+    from django.contrib.auth.models import User, Group
     from rest_framework import serializers
     
     
@@ -19,109 +19,68 @@ First up we're going to define some serializers in `quickstart/serializers.py` t
     
     
     class GroupSerializer(serializers.HyperlinkedModelSerializer):
-        permissions = serializers.ManySlugRelatedField(
-            slug_field='codename',
-            queryset=Permission.objects.all()
-        )
-
         class Meta:
             model = Group
-            fields = ('url', 'name', 'permissions')
+            fields = ('url', 'name')
 
 Notice that we're using hyperlinked relations in this case, with `HyperlinkedModelSerializer`.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.
-
-We've also overridden the `permission` field on the `GroupSerializer`.  In this case we don't want to use a hyperlinked representation, but instead use the list of permission codenames associated with the group, so we've used a `ManySlugRelatedField`, using the `codename` field for the representation.
 
 ## Views
 
 Right, we'd better write some views then.  Open `quickstart/views.py` and get typing.
 
     from django.contrib.auth.models import User, Group
-    from rest_framework import generics
-    from rest_framework.decorators import api_view
-    from rest_framework.reverse import reverse
-    from rest_framework.response import Response
+    from rest_framework import viewsets
     from quickstart.serializers import UserSerializer, GroupSerializer
     
     
-    @api_view(['GET'])
-    def api_root(request, format=None):
+    class UserViewSet(viewsets.ModelViewSet):
         """
-        The entry endpoint of our API.
+        API endpoint that allows users to be viewed or edited.
         """
-        return Response({
-            'users': reverse('user-list', request=request),
-            'groups': reverse('group-list', request=request),
-        })
-    
-    
-    class UserList(generics.ListCreateAPIView):
-        """
-        API endpoint that represents a list of users.
-        """
-        model = User
+        queryset = User.objects.all()
         serializer_class = UserSerializer
     
     
-    class UserDetail(generics.RetrieveUpdateDestroyAPIView):
+    class GroupViewSet(viewsets.ModelViewSet):
         """
-        API endpoint that represents a single user.
+        API endpoint that allows groups to be viewed or edited.
         """
-        model = User
-        serializer_class = UserSerializer
-    
-    
-    class GroupList(generics.ListCreateAPIView):
-        """
-        API endpoint that represents a list of groups.
-        """
-        model = Group
-        serializer_class = GroupSerializer
-    
-    
-    class GroupDetail(generics.RetrieveUpdateDestroyAPIView):
-        """
-        API endpoint that represents a single group.
-        """
-        model = Group
+        queryset = Group.objects.all()
         serializer_class = GroupSerializer
 
-Let's take a moment to look at what we've done here before we move on.  We have one function-based view representing the root of the API, and four class-based views which map to our database models, and specify which serializers should be used for representing that data.  Pretty simple stuff.
+Rather that write multiple views we're grouping together all the common behavior into classes called `ViewSets`.
+
+We can easily break these down into individual views if we need to, but using viewsets keeps the view logic nicely organized as well as being very concise.
 
 ## URLs
 
-Okay, let's wire this baby up.  On to `quickstart/urls.py`...
+Okay, now let's wire up the API URLs.  On to `quickstart/urls.py`...
 
     from django.conf.urls import patterns, url, include
-    from rest_framework.urlpatterns import format_suffix_patterns
-    from quickstart.views import UserList, UserDetail, GroupList, GroupDetail
-    
+    from rest_framework import routers
+    from quickstart import views
 
-    urlpatterns = patterns('quickstart.views',
-        url(r'^$', 'api_root'),
-        url(r'^users/$', UserList.as_view(), name='user-list'),
-        url(r'^users/(?P<pk>\d+)/$', UserDetail.as_view(), name='user-detail'),
-        url(r'^groups/$', GroupList.as_view(), name='group-list'),
-        url(r'^groups/(?P<pk>\d+)/$', GroupDetail.as_view(), name='group-detail'),
-    )
+    router = routers.DefaultRouter()
+    router.register(r'users', views.UserViewSet)
+    router.register(r'groups', views.GroupViewSet)
 
-    
-    # Format suffixes
-    urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'api'])
-
-
-    # Default login/logout views
-    urlpatterns += patterns('',
+    # Wire up our API using automatic URL routing.
+    # Additionally, we include login URLs for the browseable API.
+    urlpatterns = patterns('',
+        url(r'^', include(router.urls)),
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     )
 
-There's a few things worth noting here.
+Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.
 
-Firstly the names `user-detail` and `group-detail` are important.  We're using the default hyperlinked relationships without explicitly specifying the view names, so we need to use names of the style `{modelname}-detail` to represent the model instance views.
+Again, if we need more control over the API URLs we can simply drop down to using regular class based views, and writing the URL conf explicitly.
 
-Secondly, we're modifying the urlpatterns using `format_suffix_patterns`, to append optional `.json` style suffixes to our URLs.
-
+<<<<<<< HEAD
+Note that we're also including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browseable API.
+=======
 Finally, we're including default login and logout views for use with the browsable API.  That's optional, but useful if your API requires authentication and you want to use the browsable API.
+>>>>>>> master
 
 ## Settings
 

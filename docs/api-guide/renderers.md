@@ -27,7 +27,8 @@ The default set of renderers may be set globally, using the `DEFAULT_RENDERER_CL
         )
     }
 
-You can also set the renderers used for an individual view, using the `APIView` class based views.
+You can also set the renderers used for an individual view, or viewset,
+using the `APIView` class based views.
 
     class UserCountView(APIView):
         """
@@ -127,7 +128,7 @@ An example of a view that uses `TemplateHTMLRenderer`:
         """
         A view that returns a templated HTML representations of a given user.
         """
-        model = Users
+        queryset = User.objects.all()
         renderer_classes = (TemplateHTMLRenderer,)
 
         def get(self, request, *args, **kwargs)

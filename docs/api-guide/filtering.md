@@ -8,7 +8,7 @@
 
 The default behavior of REST framework's generic list views is to return the entire queryset for a model manager.  Often you will want your API to restrict the items that are returned by the queryset.
 
-The simplest way to filter the queryset of any view that subclasses `MultipleObjectAPIView` is to override the `.get_queryset()` method.
+The simplest way to filter the queryset of any view that subclasses `GenericAPIView` is to override the `.get_queryset()` method.
 
 Overriding this method allows you to customize the queryset returned by the view in a number of different ways.
 
@@ -21,7 +21,6 @@ You can do so by filtering based on the value of `request.user`.
 For example:
 
     class PurchaseList(generics.ListAPIView)
-        model = Purchase
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -44,7 +43,6 @@ For example if your URL config contained an entry like this:
 You could then write a view that returned a purchase queryset filtered by the username portion of the URL:
 
     class PurchaseList(generics.ListAPIView)
-        model = Purchase
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -62,7 +60,6 @@ A final example of filtering the initial queryset would be to determine the init
 We can override `.get_queryset()` to deal with URLs such as `http://example.com/api/purchases?username=denvercoder9`, and filter the queryset only if the `username` parameter is included in the URL:
 
     class PurchaseList(generics.ListAPIView)
-        model = Purchase
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -82,25 +79,25 @@ We can override `.get_queryset()` to deal with URLs such as `http://example.com/
 
 As well as being able to override the default queryset, REST framework also includes support for generic filtering backends that allow you to easily construct complex filters that can be specified by the client using query parameters.
 
-REST framework supports pluggable backends to implement filtering, and provides an implementation which uses the [django-filter] package.
+## DjangoFilterBackend
 
-To use REST framework's filtering backend, first install `django-filter`.
+To use REST framework's `DjangoFilterBackend`, first install `django-filter`.
 
     pip install django-filter
 
 You must also set the filter backend to `DjangoFilterBackend` in your settings:
 
     REST_FRAMEWORK = {
-        'FILTER_BACKEND': 'rest_framework.filters.DjangoFilterBackend'
+        'DEFAULT_FILTER_BACKENDS': ['rest_framework.filters.DjangoFilterBackend']
     }
 
 
-## Specifying filter fields
+#### Specifying filter fields
 
-If all you need is simple equality-based filtering, you can set a `filter_fields` attribute on the view, listing the set of fields you wish to filter against.
+If all you need is simple equality-based filtering, you can set a `filter_fields` attribute on the view, or viewset, listing the set of fields you wish to filter against.
 
     class ProductList(generics.ListAPIView):
-        model = Product
+        queryset = Product.objects.all()
         serializer_class = ProductSerializer
         filter_fields = ('category', 'in_stock')
 
@@ -108,7 +105,7 @@ This will automatically create a `FilterSet` class for the given fields, and wil
 
     http://example.com/api/products?category=clothing&in_stock=True
 
-## Specifying a FilterSet
+#### Specifying a FilterSet
 
 For more advanced filtering requirements you can specify a `FilterSet` class that should be used by the view.  For example:
 
@@ -120,7 +117,7 @@ For more advanced filtering requirements you can specify a `FilterSet` class tha
             fields = ['category', 'in_stock', 'min_price', 'max_price']
 
     class ProductList(generics.ListAPIView):
-        model = Product
+        queryset = Product.objects.all()
         serializer_class = ProductSerializer
         filter_class = ProductFilter
 
@@ -134,13 +131,13 @@ For more details on using filter sets see the [django-filter documentation][djan
 
 **Hints & Tips**
 
-* By default filtering is not enabled.  If you want to use `DjangoFilterBackend` remember to make sure it is installed by using the `'FILTER_BACKEND'` setting.
+* By default filtering is not enabled.  If you want to use `DjangoFilterBackend` remember to make sure it is installed by using the `'DEFAULT_FILTER_BACKENDS'` setting.
 * When using boolean fields, you should use the values `True` and `False` in the URL query parameters, rather than `0`, `1`, `true` or `false`.  (The allowed boolean values are currently hardwired in Django's [NullBooleanSelect implementation][nullbooleanselect].) 
 * `django-filter` supports filtering across relationships, using Django's double-underscore syntax.
 
 ---
 
-### Filtering and object lookups
+## Filtering and object lookups
 
 Note that if a filter backend is configured for a view, then as well as being used to filter list views, it will also be used to filter the querysets used for returning a single object.
 
@@ -172,12 +169,12 @@ You can also provide your own generic filtering backend, or write an installable
 
 To do so override `BaseFilterBackend`, and override the `.filter_queryset(self, request, queryset, view)` method.  The method should return a new, filtered queryset.
 
-To install the filter backend, set the `'FILTER_BACKEND'` key in your `'REST_FRAMEWORK'` setting, using the dotted import path of the filter backend class.
+To install the filter backend, set the `'DEFAULT_FILTER_BACKENDS'` key in your `'REST_FRAMEWORK'` setting, using the dotted import path of the filter backend class.
 
 For example:
 
     REST_FRAMEWORK = {
-        'FILTER_BACKEND': 'custom_filters.CustomFilterBackend'
+        'DEFAULT_FILTER_BACKENDS': ['custom_filters.CustomFilterBackend']
     }
 
 [cite]: https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters

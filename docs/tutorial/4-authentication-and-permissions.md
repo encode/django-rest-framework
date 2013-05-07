@@ -68,12 +68,12 @@ Because `'snippets'` is a *reverse* relationship on the User model, it will not 
 We'll also add a couple of views.  We'd like to just use read-only views for the user representations, so we'll use the `ListAPIView` and `RetrieveAPIView` generic class based views.
 
     class UserList(generics.ListAPIView):
-        model = User
+        queryset = User.objects.all()
         serializer_class = UserSerializer
     
     
     class UserDetail(generics.RetrieveAPIView):
-        model = User
+        queryset = User.objects.all()
         serializer_class = UserSerializer
 
 Finally we need to add those views into the API, by referencing them from the URL conf.

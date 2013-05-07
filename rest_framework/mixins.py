@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.request import clone_request
 
 
-def _get_validation_exclusions(obj, pk=None, slug_field=None):
+def _get_validation_exclusions(obj, pk=None, slug_field=None, lookup_field=None):
     """
     Given a model instance, and an optional pk and slug field,
     return the full list of all other field names on that model.
@@ -23,13 +23,18 @@ def _get_validation_exclusions(obj, pk=None, slug_field=None):
     include = []
 
     if pk:
+        # Pending deprecation
         pk_field = obj._meta.pk
         while pk_field.rel:
             pk_field = pk_field.rel.to._meta.pk
         include.append(pk_field.name)
 
     if slug_field:
+        # Pending deprecation
         include.append(slug_field)
+
+    if lookup_field and lookup_field != 'pk':
+        include.append(lookup_field)
 
     return [field.name for field in obj._meta.fields if field.name not in include]
 
@@ -67,23 +72,18 @@ class ListModelMixin(object):
     empty_error = "Empty list and '%(class_name)s.allow_empty' is False."
 
     def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        self.object_list = self.filter_queryset(queryset)
+        self.object_list = self.filter_queryset(self.get_queryset())
 
         # Default is to allow empty querysets.  This can be altered by setting
         # `.allow_empty = False`, to raise 404 errors on empty querysets.
-        allow_empty = self.get_allow_empty()
-        if not allow_empty and not self.object_list:
+        if not self.allow_empty and not self.object_list:
             class_name = self.__class__.__name__
             error_msg = self.empty_error % {'class_name': class_name}
             raise Http404(error_msg)
 
-        # Pagination size is set by the `.paginate_by` attribute,
-        # which may be `None` to disable pagination.
-        page_size = self.get_paginate_by(self.object_list)
-        if page_size:
-            packed = self.paginate_queryset(self.object_list, page_size)
-            paginator, page, queryset, is_paginated = packed
+        # Switch between paginated or standard style responses
+        page = self.paginate_queryset(self.object_list)
+        if page is not None:
             serializer = self.get_pagination_serializer(page)
         else:
             serializer = self.get_serializer(self.object_list, many=True)
@@ -135,14 +135,22 @@ class UpdateModelMixin(object):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def partial_update(self, request, *args, **kwargs):
+        kwargs['partial'] = True
+        return self.update(request, *args, **kwargs)
+
     def pre_save(self, obj):
         """
         Set any attributes on the object that are implicit in the request.
         """
         # pk and/or slug attributes are implicit in the URL.
+        lookup = self.kwargs.get(self.lookup_field, None)
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         slug = self.kwargs.get(self.slug_url_kwarg, None)
-        slug_field = slug and self.get_slug_field() or None
+        slug_field = slug and self.slug_field or None
+
+        if lookup:
+            setattr(obj, self.lookup_field, lookup)
 
         if pk:
             setattr(obj, 'pk', pk)
@@ -153,7 +161,7 @@ class UpdateModelMixin(object):
         # Ensure we clean the attributes so that we don't eg return integer
         # pk using a string representation, as provided by the url conf kwarg.
         if hasattr(obj, 'full_clean'):
-            exclude = _get_validation_exclusions(obj, pk, slug_field)
+            exclude = _get_validation_exclusions(obj, pk, slug_field, self.lookup_field)
             obj.full_clean(exclude)
 
 

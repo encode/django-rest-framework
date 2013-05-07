@@ -357,7 +357,6 @@ class CustomValidationTests(TestCase):
 
         def validate_email(self, attrs, source):
             value = attrs[source]
-
             return attrs
 
         def validate_content(self, attrs, source):
@@ -738,6 +737,43 @@ class ManyRelatedTests(TestCase):
 
         self.assertEqual(serializer.data, expected)
 
+    def test_include_reverse_relations(self):
+        post = BlogPost.objects.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogPost
+                fields = ('id', 'title', 'blogpostcomment_set')
+
+        serializer = BlogPostSerializer(instance=post)
+        expected = {
+            'id': 1, 'title': 'Test blog post', 'blogpostcomment_set': [1, 2]
+        }
+        self.assertEqual(serializer.data, expected)
+
+    def test_depth_include_reverse_relations(self):
+        post = BlogPost.objects.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogPost
+                fields = ('id', 'title', 'blogpostcomment_set')
+                depth = 1
+
+        serializer = BlogPostSerializer(instance=post)
+        expected = {
+            'id': 1, 'title': 'Test blog post',
+            'blogpostcomment_set': [
+                {'id': 1, 'text': 'I hate this blog post', 'blog_post': 1},
+                {'id': 2, 'text': 'I love this blog post', 'blog_post': 1}
+            ]
+        }
+        self.assertEqual(serializer.data, expected)
+
     def test_callable_source(self):
         post = BlogPost.objects.create(title="Test blog post")
         post.blogpostcomment_set.create(text="I love this blog post")
@@ -1073,7 +1109,7 @@ class DeserializeListTestCase(TestCase):
 
     def test_no_errors(self):
         data = [self.data.copy() for x in range(0, 3)]
-        serializer = CommentSerializer(data=data)
+        serializer = CommentSerializer(data=data, many=True)
         self.assertTrue(serializer.is_valid())
         self.assertTrue(isinstance(serializer.object, list))
         self.assertTrue(
@@ -1085,7 +1121,7 @@ class DeserializeListTestCase(TestCase):
         invalid_item['email'] = ''
         data = [self.data.copy(), invalid_item, self.data.copy()]
 
-        serializer = CommentSerializer(data=data)
+        serializer = CommentSerializer(data=data, many=True)
         self.assertFalse(serializer.is_valid())
         expected = [{}, {'email': ['This field is required.']}, {}]
         self.assertEqual(serializer.errors, expected)

@@ -34,7 +34,8 @@ The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSE
         )
     }
 
-You can also set the renderers used for an individual view, using the `APIView` class based views.
+You can also set the renderers used for an individual view, or viewset,
+using the `APIView` class based views.
 
     class ExampleView(APIView):
         """
