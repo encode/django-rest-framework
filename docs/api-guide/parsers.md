@@ -104,13 +104,18 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 ## FileUploadParser
 
-Parses raw file upload content. Returns a `DataAndFiles` object. Since we expect the whole request body to be a file content `request.DATA` will be None, and `request.FILES` will contain the only one key `'file'` matching the uploaded file.
+Parses raw file upload content.  The `request.DATA` property will be an empty `QueryDict`, and `request.FILES` will be a dictionary with a single key `'file'` containing the uploaded file.
 
-The `filename` property of uploaded file would be set to the result of `.get_filename()` method. By default it tries first to take it's value from the `filename` URL kwarg, and then from `Content-Disposition` HTTP header. You can implement other behaviour be overriding this method.
+If the view used with `FileUploadParser` is called with a `filename` URL keyword argument, then that argument will be used as the filename.  If it is called without a `filename` URL keyword argument, then the client must set the filename in the `Content-Disposition` HTTP header.  For example `Content-Disposition: attachment; filename=upload.jpg`.
 
-Note that since this parser's `media_type` matches every HTTP request it imposes restrictions on usage in combination with other parsers for the same API view.
+**.media_type**: `*/*`
 
-Basic usage expamle:
+##### Notes:
+
+* The `FileUploadParser` is for usage with native clients that can upload the file as a raw data request.  For web-based uploads, or for native clients with multipart upload support, you should use the `MultiPartParser` parser instead.
+* Since this parser's `media_type` matches any content type, `FileUploadParser` should generally be the only parser set on an API view.
+
+##### Basic usage example:
 
     class FileUploadView(views.APIView):
         parser_classes = (FileUploadParser,)
@@ -122,7 +127,6 @@ Basic usage expamle:
             # ...
             return Response(status=204)
 
-**.media_type**: `*/*`
 
 ---
 

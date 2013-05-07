@@ -246,7 +246,7 @@ class FileUploadParser(BaseParser):
                 return DataAndFiles(None, {'file': result[1]})
 
         possible_sizes = [x.chunk_size for x in upload_handlers if x.chunk_size]
-        chunk_size = min([2**31-4] + possible_sizes)
+        chunk_size = min([2 ** 31 - 4] + possible_sizes)
         chunks = ChunkIter(stream, chunk_size)
         counters = [0] * len(upload_handlers)
 
@@ -280,9 +280,10 @@ class FileUploadParser(BaseParser):
             return parser_context['kwargs']['filename']
         except KeyError:
             pass
+
         try:
             meta = parser_context['request'].META
             disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'])
             return disposition[1]['filename']
         except (AttributeError, KeyError):
-            pass
+            raise ParseError("Filename must be set in Content-Disposition header.")

@@ -47,6 +47,7 @@ You can determine your currently installed version using `pip freeze`:
 * HyperLinkedModelSerializers support 'id' field in 'fields' option.
 * Cleaner generic views.
 * Support for multiple filter classes.
+* FileUploadParser support for raw file uploads.
 * DecimalField support.
 * Bugfix: Fix issue with depth>1 on ModelSerializer.
 
