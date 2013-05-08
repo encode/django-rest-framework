@@ -219,7 +219,7 @@ class FileUploadParser(BaseParser):
         Returns a DataAndFiles object.
 
         `.data` will be None (we expect request body to be a file content).
-        `.files` will be a `QueryDict` containing one 'file' elemnt - a parsed file.
+        `.files` will be a `QueryDict` containing one 'file' element.
         """
 
         parser_context = parser_context or {}
@@ -229,9 +229,13 @@ class FileUploadParser(BaseParser):
         upload_handlers = request.upload_handlers
         filename = self.get_filename(stream, media_type, parser_context)
 
-        content_type = meta.get('HTTP_CONTENT_TYPE', meta.get('CONTENT_TYPE', ''))
+        # Note that this code is extracted from Django's handling of
+        # file uploads in MultiPartParser.
+        content_type = meta.get('HTTP_CONTENT_TYPE',
+                                meta.get('CONTENT_TYPE', ''))
         try:
-            content_length = int(meta.get('HTTP_CONTENT_LENGTH', meta.get('CONTENT_LENGTH', 0)))
+            content_length = int(meta.get('HTTP_CONTENT_LENGTH',
+                                          meta.get('CONTENT_LENGTH', 0)))
         except (ValueError, TypeError):
             content_length = None
 
@@ -245,6 +249,7 @@ class FileUploadParser(BaseParser):
             if result is not None:
                 return DataAndFiles(None, {'file': result[1]})
 
+        # This is the standard case.
         possible_sizes = [x.chunk_size for x in upload_handlers if x.chunk_size]
         chunk_size = min([2 ** 31 - 4] + possible_sizes)
         chunks = ChunkIter(stream, chunk_size)
@@ -252,7 +257,8 @@ class FileUploadParser(BaseParser):
 
         for handler in upload_handlers:
             try:
-                handler.new_file(None, filename, content_type, content_length, encoding)
+                handler.new_file(None, filename, content_type,
+                                 content_length, encoding)
             except StopFutureHandlers:
                 break
 
@@ -262,14 +268,14 @@ class FileUploadParser(BaseParser):
                 chunk = handler.receive_data_chunk(chunk, counters[i])
                 counters[i] += chunk_length
                 if chunk is None:
-                    # If the chunk received by the handler is None, then don't continue.
                     break
 
         for i, handler in enumerate(upload_handlers):
             file_obj = handler.file_complete(counters[i])
             if file_obj:
                 return DataAndFiles(None, {'file': file_obj})
-        raise ParseError("FileUpload parse error - none of upload handlers can handle the stream")
+        raise ParseError("FileUpload parse error - "
+                         "none of upload handlers can handle the stream")
 
     def get_filename(self, stream, media_type, parser_context):
         """
@@ -286,4 +292,4 @@ class FileUploadParser(BaseParser):
             disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'])
             return disposition[1]['filename']
         except (AttributeError, KeyError):
-            raise ParseError("Filename must be set in Content-Disposition header.")
+            pass

@@ -114,6 +114,7 @@ If the view used with `FileUploadParser` is called with a `filename` URL keyword
 
 * The `FileUploadParser` is for usage with native clients that can upload the file as a raw data request.  For web-based uploads, or for native clients with multipart upload support, you should use the `MultiPartParser` parser instead.
 * Since this parser's `media_type` matches any content type, `FileUploadParser` should generally be the only parser set on an API view.
+* `FileUploadParser` respects Django's standard `FILE_UPLOAD_HANDLERS` setting, and the `request.upload_handlers` attribute.  See the [Django documentation][upload-handlers] for more details.
 
 ##### Basic usage example:
 
@@ -183,6 +184,7 @@ The following third party packages are also available.
 
 [jquery-ajax]: http://api.jquery.com/jQuery.ajax/
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion
+[upload-handlers]: https://docs.djangoproject.com/en/dev/topics/http/file-uploads/#upload-handlers
 [messagepack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [juanriaza]: https://github.com/juanriaza
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
