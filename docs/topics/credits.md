@@ -119,6 +119,7 @@ The following people have helped make REST framework great.
 * Matt Majewski - [forgingdestiny]
 * Jerome Chen - [chenjyw]
 * Andrew Hughes - [eyepulp]
+* Daniel Hepper - [dhepper]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -272,3 +273,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [forgingdestiny]: https://github.com/forgingdestiny
 [chenjyw]: https://github.com/chenjyw
 [eyepulp]: https://github.com/eyepulp
+[dhepper]: https://github.com/dhepper
