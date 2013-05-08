@@ -160,7 +160,7 @@ You won't typically need to override the following methods, although you might n
 * `get_serializer(self, instance=None, data=None, files=None, many=False, partial=False)` - Returns a serializer instance.
 * `get_pagination_serializer(self, page)` - Returns a serializer instance to use with paginated data.
 * `paginate_queryset(self, queryset)` - Paginate a queryset if required, either returning a page object, or `None` if pagination is not configured for this view.
-* `filter_queryset(self, queryset)` - Given a queryset, filter it with whichever filter backend is in use, returning a new queryset.
+* `filter_queryset(self, queryset)` - Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.
 
 ---
 
