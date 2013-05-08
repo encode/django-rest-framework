@@ -86,17 +86,17 @@ DEFAULTS = {
     'DATE_INPUT_FORMATS': (
         ISO_8601,
     ),
-    'DATE_FORMAT': ISO_8601,
+    'DATE_FORMAT': None,
 
     'DATETIME_INPUT_FORMATS': (
         ISO_8601,
     ),
-    'DATETIME_FORMAT': ISO_8601,
+    'DATETIME_FORMAT': None,
 
     'TIME_INPUT_FORMATS': (
         ISO_8601,
     ),
-    'TIME_FORMAT': ISO_8601,
+    'TIME_FORMAT': None,
 
     # Pending deprecation
     'FILTER_BACKEND': None,

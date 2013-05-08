@@ -203,7 +203,7 @@ A format string that should be used by default for rendering the output of `Date
 
 May be any of `None`, `'iso-8601'` or a python [strftime format][strftime] string.
 
-Default: `None'`
+Default: `None`
 
 #### DATETIME_INPUT_FORMATS
 
