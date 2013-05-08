@@ -40,6 +40,13 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
+### 2.3.2
+
+**Date**: 8th May 2013
+
+* Bugfix: Fix `TIME_FORMAT`, `DATETIME_FORMAT` and `DATE_FORMAT` settings.
+* Bugfix: Fix `DjangoFilterBackend` issue, failing when used on view with queryset attribute.
+
 ### 2.3.1
 
 **Date**: 7th May 2013
