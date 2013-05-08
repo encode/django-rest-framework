@@ -38,21 +38,27 @@ class DjangoFilterBackend(BaseFilterBackend):
         """
         filter_class = getattr(view, 'filter_class', None)
         filter_fields = getattr(view, 'filter_fields', None)
-        view_model = getattr(view, 'model', None)
+        model_cls = getattr(view, 'model', None)
+        queryset = getattr(view, 'queryset', None)
+        if model_cls is None and queryset is not None:
+            model_cls = queryset.model
 
         if filter_class:
             filter_model = filter_class.Meta.model
 
-            assert issubclass(filter_model, view_model), \
+            assert issubclass(filter_model, model_cls), \
                 'FilterSet model %s does not match view model %s' % \
-                (filter_model, view_model)
+                (filter_model, model_cls)
 
             return filter_class
 
         if filter_fields:
+            assert model_cls is not None, 'Cannot use DjangoFilterBackend ' \
+                'on a view which does not have a .model or .queryset attribute.'
+
             class AutoFilterSet(self.default_filter_set):
                 class Meta:
-                    model = view_model
+                    model = model_cls
                     fields = filter_fields
             return AutoFilterSet
 
