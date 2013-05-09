@@ -164,6 +164,52 @@ You won't typically need to override the following methods, although you might n
 
 ---
 
+# Mixins
+
+The mixin classes provide the actions that are used to provide the basic view behavior.  Note that the mixin classes provide action methods rather than defining the handler methods such as `.get()` and `.post()` directly.  This allows for more flexible composition of behavior.
+
+## ListModelMixin
+
+Provides a `.list(request, *args, **kwargs)` method, that implements listing a queryset.
+
+If the queryset is populated, this returns a `200 OK` response, with a serialized representation of the queryset as the body of the response.  The response data may optionally be paginated.
+
+If the queryset is empty this returns a `200 OK` response, unless the `.allow_empty` attribute on the view is set to `False`, in which case it will return a `404 Not Found`.
+
+## CreateModelMixin
+
+Provides a `.create(request, *args, **kwargs)` method, that implements creating and saving a new model instance.
+
+If an object is created this returns a `201 Created` response, with a serialized representation of the object as the body of the response.  If the representation contains a key named `url`, then the `Location` header of the response will be populated with that value.
+
+If the request data provided for creating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
+
+## RetrieveModelMixin
+
+Provides a `.retrieve(request, *args, **kwargs)` method, that implements returning an existing model instance in a response.
+
+If an object can be retrieved this returns a `200 OK` response, with a serialized representation of the object as the body of the response.  Otherwise it will return a `404 Not Found`.
+
+## UpdateModelMixin
+
+Provides a `.update(request, *args, **kwargs)` method, that implements updating and saving an existing model instance.
+
+Also provides a `.partial_update(request, *args, **kwargs)` method, which is similar to the `update` method, except that all fields for the update will be optional.  This allows support for HTTP `PATCH` requests.
+
+If an object is updated this returns a `200 OK` response, with a serialized representation of the object as the body of the response.
+
+If an object is created, for example when making a `DELETE` request followed by a `PUT` request to the same URL, this returns a `201 Created` response, with a serialized representation of the object as the body of the response.
+
+If the request data provided for updating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
+
+## DestroyModelMixin
+
+Provides a `.destroy(request, *args, **kwargs)` method, that implements deletion of an existing model instance.
+
+If an object is deleted this returns a `204 No Content` response, otherwise it will return a `404 Not Found`.
+
+---
+
 # Concrete View Classes
 
 The following classes are the concrete generic views.  If you're using generic views this is normally the level you'll be working at unless you need heavily customized behavior.
@@ -242,59 +288,49 @@ Extends: [GenericAPIView], [RetrieveModelMixin], [UpdateModelMixin], [DestroyMod
 
 ---
 
-# Mixins
+# Customizing the generic views
 
-The mixin classes provide the actions that are used to provide the basic view behavior.  Note that the mixin classes provide action methods rather than defining the handler methods such as `.get()` and `.post()` directly.  This allows for more flexible composition of behavior.
+Often you'll want to use the existing generic views, but use some slightly customized behavior.  If you find yourself reusing some bit of customized behavior in multiple places, you might want to refactor the behavior into a mixin class that you can then just apply to any view or viewset as needed.
 
-## ListModelMixin
+## Creating custom mixins
 
-Provides a `.list(request, *args, **kwargs)` method, that implements listing a queryset.
+For example, if you need to lookup objects based on multiple fields in the URL conf, you could create a mixin class like the following:
 
-If the queryset is populated, this returns a `200 OK` response, with a serialized representation of the queryset as the body of the response.  The response data may optionally be paginated.
+    class MultipleFieldLookupMixin(object):
+        """
+        Apply this mixin to any view or viewset to get multiple field filtering
+        based on a `lookup_fields` attribute, instead of the default single field filtering.
+        """
+        def get_object(self):
+            queryset = self.get_queryset()             # Get the base queryset
+            queryset = self.filter_queryset(queryset)  # Apply any filter backends
+            filter = {}
+            for field in self.lookup_fields:
+                filter[field] = self.kwargs[field]
+            return get_object_or_404(queryset, **filter)  # Lookup the object
 
-If the queryset is empty this returns a `200 OK` response, unless the `.allow_empty` attribute on the view is set to `False`, in which case it will return a `404 Not Found`.
+You can then simply apply this mixin to a view or viewset anytime you need to apply the custom behavior.
 
-Should be mixed in with [MultipleObjectAPIView].
+    class RetrieveUserView(MultipleFieldLookupMixin, generics.RetrieveAPIView):
+        queryset = User.objects.all()
+        serializer_class = UserSerializer
+        lookup_fields = ('account', 'username')
 
-## CreateModelMixin
+Using custom mixins is a good option if you have custom behavior that needs to be used 
 
-Provides a `.create(request, *args, **kwargs)` method, that implements creating and saving a new model instance.
+## Creating custom base classes
 
-If an object is created this returns a `201 Created` response, with a serialized representation of the object as the body of the response.  If the representation contains a key named `url`, then the `Location` header of the response will be populated with that value.
+If you are using a mixin across multiple views, you can take this a step further and create your own set of base views that can then be used throughout your project.  For example:
 
-If the request data provided for creating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
+    class BaseRetrieveView(MultipleFieldLookupMixin,
+                           generics.RetrieveAPIView):
+        pass
+    
+    class BaseRetrieveUpdateDestroyView(MultipleFieldLookupMixin,
+                                        generics.RetrieveUpdateDestroyAPIView):
+        pass
 
-Should be mixed in with any [GenericAPIView].
-
-## RetrieveModelMixin
-
-Provides a `.retrieve(request, *args, **kwargs)` method, that implements returning an existing model instance in a response.
-
-If an object can be retrieved this returns a `200 OK` response, with a serialized representation of the object as the body of the response.  Otherwise it will return a `404 Not Found`.
-
-Should be mixed in with [SingleObjectAPIView].
-
-## UpdateModelMixin
-
-Provides a `.update(request, *args, **kwargs)` method, that implements updating and saving an existing model instance.
-
-Also provides a `.partial_update(request, *args, **kwargs)` method, which is similar to the `update` method, except that all fields for the update will be optional.  This allows support for HTTP `PATCH` requests.
-
-If an object is updated this returns a `200 OK` response, with a serialized representation of the object as the body of the response.
-
-If an object is created, for example when making a `DELETE` request followed by a `PUT` request to the same URL, this returns a `201 Created` response, with a serialized representation of the object as the body of the response.
-
-If the request data provided for updating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
-
-Should be mixed in with [SingleObjectAPIView].
-
-## DestroyModelMixin
-
-Provides a `.destroy(request, *args, **kwargs)` method, that implements deletion of an existing model instance.
-
-If an object is deleted this returns a `204 No Content` response, otherwise it will return a `404 Not Found`.
-
-Should be mixed in with [SingleObjectAPIView].
+Using custom base classes is a good option if you have custom behavior that consistently needs to be repeated across a large number of views throughout your project.
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/class-based-views/#base-vs-generic-views
 
