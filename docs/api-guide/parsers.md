@@ -34,7 +34,8 @@ The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSE
         )
     }
 
-You can also set the renderers used for an individual view, using the `APIView` class based views.
+You can also set the renderers used for an individual view, or viewset,
+using the `APIView` class based views.
 
     class ExampleView(APIView):
         """
@@ -101,6 +102,33 @@ You will typically want to use both `FormParser` and `MultiPartParser` together 
 
 **.media_type**: `multipart/form-data`
 
+## FileUploadParser
+
+Parses raw file upload content.  The `request.DATA` property will be an empty `QueryDict`, and `request.FILES` will be a dictionary with a single key `'file'` containing the uploaded file.
+
+If the view used with `FileUploadParser` is called with a `filename` URL keyword argument, then that argument will be used as the filename.  If it is called without a `filename` URL keyword argument, then the client must set the filename in the `Content-Disposition` HTTP header.  For example `Content-Disposition: attachment; filename=upload.jpg`.
+
+**.media_type**: `*/*`
+
+##### Notes:
+
+* The `FileUploadParser` is for usage with native clients that can upload the file as a raw data request.  For web-based uploads, or for native clients with multipart upload support, you should use the `MultiPartParser` parser instead.
+* Since this parser's `media_type` matches any content type, `FileUploadParser` should generally be the only parser set on an API view.
+* `FileUploadParser` respects Django's standard `FILE_UPLOAD_HANDLERS` setting, and the `request.upload_handlers` attribute.  See the [Django documentation][upload-handlers] for more details.
+
+##### Basic usage example:
+
+    class FileUploadView(views.APIView):
+        parser_classes = (FileUploadParser,)
+
+        def put(self, request, filename, format=None):
+            file_obj = request.FILES['file']
+            # ...
+            # do some staff with uploaded file
+            # ...
+            return Response(status=204)
+
+
 ---
 
 # Custom parsers
@@ -144,35 +172,6 @@ The following is an example plaintext parser that will populate the `request.DAT
         """
         return stream.read()
 
-## Uploading file content
-
-If your custom parser needs to support file uploads, you may return a `DataAndFiles` object from the `.parse()` method.  `DataAndFiles` should be instantiated with two arguments.  The first argument will be used to populate the `request.DATA` property, and the second argument will be used to populate the `request.FILES` property.
-
-For example:
-
-    class SimpleFileUploadParser(BaseParser):
-        """
-        A naive raw file upload parser.
-        """
-        media_type = '*/*'  # Accept anything
-
-        def parse(self, stream, media_type=None, parser_context=None):
-            content = stream.read()
-            name = 'example.dat'
-            content_type = 'application/octet-stream'
-            size = len(content)
-            charset = 'utf-8'
-
-            # Write a temporary file based on the request content
-            temp = tempfile.NamedTemporaryFile(delete=False)
-            temp.write(content)
-            uploaded = UploadedFile(temp, name, content_type, size, charset)
-
-            # Return the uploaded file
-            data = {}
-            files = {name: uploaded}
-            return DataAndFiles(data, files)
-
 ---
 
 # Third party packages
@@ -185,6 +184,7 @@ The following third party packages are also available.
 
 [jquery-ajax]: http://api.jquery.com/jQuery.ajax/
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion
+[upload-handlers]: https://docs.djangoproject.com/en/dev/topics/http/file-uploads/#upload-handlers
 [messagepack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [juanriaza]: https://github.com/juanriaza
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack

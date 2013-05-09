@@ -1,57 +1,39 @@
 # Django REST framework
 
-**A toolkit for building well-connected, self-describing web APIs.**
-
-**Author:** Tom Christie.  [Follow me on Twitter][twitter].
-
-**Support:** [REST framework group][group], or `#restframework` on freenode IRC.
+**Awesome web-browseable Web APIs.**
 
 [![build-status-image]][travis]
 
----
-
-**Full documentation for REST framework is available on [http://django-rest-framework.org][docs].**
-
----
+**Note**: Full documentation for the project is available at [http://django-rest-framework.org][docs].
 
 # Overview
 
-Django REST framework is a lightweight library that makes it easy to build Web APIs.  It is designed as a modular and easy to customize architecture, based on Django's class based views.
+Django REST framework is a powerful and flexible toolkit that makes it easy to build Web APIs.
 
-Web APIs built using REST framework are fully self-describing and web browseable - a huge useability win for your developers.  It also supports a wide range of media types, authentication and permission policies out of the box.
+Some reasons you might want to use REST framework:
 
-If you are considering using REST framework for your API, we recommend reading the [REST framework 2 announcment][rest-framework-2-announcement] which gives a good overview of the framework and it's capabilities.
+* The Web browseable API is a huge useability win for your developers.
+* Authentication policies including OAuth1a and OAuth2 out of the box.
+* Serialization that supports both ORM and non-ORM data sources.
+* Customizable all the way down - just use regular function-based views if you don't need the more powerful features.
+* Extensive documentation, and great community support.
 
-There is also a sandbox API you can use for testing purposes, [available here][sandbox].
+There is a live example API for testing purposes, [available here][sandbox].
+
+**Below**: *Screenshot from the browseable API*
+
+![Screenshot][image]
 
 # Requirements
 
 * Python (2.6.5+, 2.7, 3.2, 3.3)
 * Django (1.3, 1.4, 1.5)
 
-**Optional:**
-
-* [Markdown][markdown] - Markdown support for the self describing API.
-* [PyYAML][pyyaml] - YAML content type support.
-* [defusedxml][defusedxml] - XML content-type support.
-* [django-filter][django-filter] - Filtering support.
-
 # Installation
 
-Install using `pip`, including any optional packages you want...
+Install using `pip`...
 
     pip install djangorestframework
-    pip install markdown  # Markdown support for the browseable API.
-    pip install pyyaml    # YAML content-type support.
-    pip install defusedxml  # XML content-type support.
-    pip install django-filter  # Filtering support
-
-...or clone the project from github.
-
-    git clone git@github.com:tomchristie/django-rest-framework.git
-    cd django-rest-framework
-    pip install -r requirements.txt
-    pip install -r optionals.txt
 
 Add `'rest_framework'` to your `INSTALLED_APPS` setting.
 
@@ -60,28 +42,65 @@ Add `'rest_framework'` to your `INSTALLED_APPS` setting.
         'rest_framework',        
     )
 
-If you're intending to use the browseable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root `urls.py` file.
+# Example
 
+Let's take a look at a quick example of using REST framework to build a simple model-backed API for accessing users and groups.
+
+Here's our project's root `urls.py` module:
+
+    from django.conf.urls.defaults import url, patterns, include
+    from django.contrib.auth.models import User, Group
+    from rest_framework import viewsets, routers
+
+    # ViewSets define the view behavior.
+    class UserViewSet(viewsets.ModelViewSet):
+        model = User
+
+    class GroupViewSet(viewsets.ModelViewSet):
+        model = Group
+
+    
+    # Routers provide an easy way of automatically determining the URL conf
+    router = routers.DefaultRouter()
+    router.register(r'users', UserViewSet)
+    router.register(r'groups', GroupViewSet)
+
+
+    # Wire up our API using automatic URL routing.
+    # Additionally, we include login URLs for the browseable API.
     urlpatterns = patterns('',
-        ...
+        url(r'^', include(router.urls)),
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     )
 
-Note that the URL path can be whatever you want, but you must include `'rest_framework.urls'` with the `'rest_framework'` namespace.
+We'd also like to configure a couple of settings for our API.
 
-# Development
+Add the following to your `settings.py` module:
 
-To build the docs.
+    REST_FRAMEWORK = {
+        # Use hyperlinked styles by default.
+        # Only used if the `serializer_class` attribute is not set on a view.
+        'DEFAULT_MODEL_SERIALIZER_CLASS':
+            'rest_framework.serializers.HyperlinkedModelSerializer',
 
-    ./mkdocs.py
+        # Use Django's standard `django.contrib.auth` permissions,
+        # or allow read-only access for unauthenticated users.
+        'DEFAULT_PERMISSION_CLASSES': [
+            'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        ]
+    }
 
-To run the tests.
+Don't forget to make sure you've also added `rest_framework` to your `INSTALLED_APPS` setting.
 
-    ./rest_framework/runtests/runtests.py
+That's it, we're done!
 
-To run the tests against all supported configurations, first install [the tox testing tool][tox] globally, using `pip install tox`, then simply run `tox`: 
+# Documentation & Support
 
-    tox
+Full documentation for the project is available at [http://django-rest-framework.org][docs].
+
+For questions and support, use the [REST framework discussion group][group], or `#restframework` on freenode IRC.
+
+You may also want to [follow the author on Twitter][twitter].
 
 # License
 
@@ -116,8 +135,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [sandbox]: http://restframework.herokuapp.com/
 [rest-framework-2-announcement]: http://django-rest-framework.org/topics/rest-framework-2-announcement.html
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
+[image]: http://django-rest-framework.org/img/quickstart.png
 
 [tox]: http://testrun.org/tox/latest/
+
+[tehjones]: https://twitter.com/tehjones/status/294986071979196416
+[wlonk]: https://twitter.com/wlonk/status/261689665952833536
+[laserllama]: https://twitter.com/laserllama/status/328688333750407168
 
 [docs]: http://django-rest-framework.org/
 [urlobject]: https://github.com/zacharyvoase/urlobject

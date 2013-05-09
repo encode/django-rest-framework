@@ -46,7 +46,7 @@ class ReverseNestedOneToOneTests(TestCase):
 
     def test_one_to_one_retrieve(self):
         queryset = OneToOneTarget.objects.all()
-        serializer = self.Serializer(queryset)
+        serializer = self.Serializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'source': {'id': 1, 'name': 'source-1'}},
             {'id': 2, 'name': 'target-2', 'source': {'id': 2, 'name': 'source-2'}},
@@ -65,7 +65,7 @@ class ReverseNestedOneToOneTests(TestCase):
         # Ensure (target 4, target_source 4, source 4) are added, and
         # everything else is as expected.
         queryset = OneToOneTarget.objects.all()
-        serializer = self.Serializer(queryset)
+        serializer = self.Serializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'source': {'id': 1, 'name': 'source-1'}},
             {'id': 2, 'name': 'target-2', 'source': {'id': 2, 'name': 'source-2'}},
@@ -92,7 +92,7 @@ class ReverseNestedOneToOneTests(TestCase):
         # Ensure (target 3, target_source 3, source 3) are updated,
         # and everything else is as expected.
         queryset = OneToOneTarget.objects.all()
-        serializer = self.Serializer(queryset)
+        serializer = self.Serializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'source': {'id': 1, 'name': 'source-1'}},
             {'id': 2, 'name': 'target-2', 'source': {'id': 2, 'name': 'source-2'}},
@@ -125,7 +125,7 @@ class ForwardNestedOneToOneTests(TestCase):
 
     def test_one_to_one_retrieve(self):
         queryset = OneToOneSource.objects.all()
-        serializer = self.Serializer(queryset)
+        serializer = self.Serializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': {'id': 1, 'name': 'target-1'}},
             {'id': 2, 'name': 'source-2', 'target': {'id': 2, 'name': 'target-2'}},
@@ -144,7 +144,7 @@ class ForwardNestedOneToOneTests(TestCase):
         # Ensure (target 4, target_source 4, source 4) are added, and
         # everything else is as expected.
         queryset = OneToOneSource.objects.all()
-        serializer = self.Serializer(queryset)
+        serializer = self.Serializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': {'id': 1, 'name': 'target-1'}},
             {'id': 2, 'name': 'source-2', 'target': {'id': 2, 'name': 'target-2'}},
@@ -171,7 +171,7 @@ class ForwardNestedOneToOneTests(TestCase):
         # Ensure (target 3, target_source 3, source 3) are updated,
         # and everything else is as expected.
         queryset = OneToOneSource.objects.all()
-        serializer = self.Serializer(queryset)
+        serializer = self.Serializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'source-1', 'target': {'id': 1, 'name': 'target-1'}},
             {'id': 2, 'name': 'source-2', 'target': {'id': 2, 'name': 'target-2'}},
@@ -224,7 +224,7 @@ class ReverseNestedOneToManyTests(TestCase):
 
     def test_one_to_many_retrieve(self):
         queryset = OneToManyTarget.objects.all()
-        serializer = self.Serializer(queryset)
+        serializer = self.Serializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'sources': [{'id': 1, 'name': 'source-1'},
                                                       {'id': 2, 'name': 'source-2'},
@@ -247,7 +247,7 @@ class ReverseNestedOneToManyTests(TestCase):
         # Ensure source 4 is added, and everything else is as
         # expected.
         queryset = OneToManyTarget.objects.all()
-        serializer = self.Serializer(queryset)
+        serializer = self.Serializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'sources': [{'id': 1, 'name': 'source-1'},
                                                       {'id': 2, 'name': 'source-2'},
@@ -279,7 +279,7 @@ class ReverseNestedOneToManyTests(TestCase):
         # Ensure (target 1, source 1) are updated,
         # and everything else is as expected.
         queryset = OneToManyTarget.objects.all()
-        serializer = self.Serializer(queryset)
+        serializer = self.Serializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1-updated', 'sources': [{'id': 1, 'name': 'source-1-updated'},
                                                               {'id': 2, 'name': 'source-2'},
@@ -299,7 +299,7 @@ class ReverseNestedOneToManyTests(TestCase):
         # Ensure source 2 is deleted, and everything else is as
         # expected.
         queryset = OneToManyTarget.objects.all()
-        serializer = self.Serializer(queryset)
+        serializer = self.Serializer(queryset, many=True)
         expected = [
             {'id': 1, 'name': 'target-1', 'sources': [{'id': 1, 'name': 'source-1'},
                                                       {'id': 3, 'name': 'source-3'}]}
