@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from django.db import models
+from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from rest_framework import generics, serializers, status
 from rest_framework.tests.utils import RequestFactory
@@ -302,6 +303,47 @@ class TestInstanceView(TestCase):
         self.assertEqual(new_obj.text, 'foobar')
 
 
+class TestOverriddenGetObject(TestCase):
+    """
+    Test cases for a RetrieveUpdateDestroyAPIView that does NOT use the
+    queryset/model mechanism but instead overrides get_object()
+    """
+    def setUp(self):
+        """
+        Create 3 BasicModel intances.
+        """
+        items = ['foo', 'bar', 'baz']
+        for item in items:
+            BasicModel(text=item).save()
+        self.objects = BasicModel.objects
+        self.data = [
+            {'id': obj.id, 'text': obj.text}
+            for obj in self.objects.all()
+        ]
+
+        class OverriddenGetObjectView(generics.RetrieveUpdateDestroyAPIView):
+            """
+            Example detail view for override of get_object().
+            """
+            model = BasicModel
+
+            def get_object(self):
+                pk = int(self.kwargs['pk'])
+                return get_object_or_404(BasicModel.objects.all(), id=pk)
+
+        self.view = OverriddenGetObjectView.as_view()
+
+    def test_overridden_get_object_view(self):
+        """
+        GET requests to RetrieveUpdateDestroyAPIView should return a single object.
+        """
+        request = factory.get('/1')
+        with self.assertNumQueries(1):
+            response = self.view(request, pk=1).render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, self.data[0])
+
+
 # Regression test for #285
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -335,7 +377,7 @@ class TestCreateModelWithAutoNowAddField(TestCase):
         self.assertEqual(created.content, 'foobar')
 
 
-# Test for particularly ugly regression with m2m in browseable API
+# Test for particularly ugly regression with m2m in browsable API
 class ClassB(models.Model):
     name = models.CharField(max_length=255)
 
@@ -360,7 +402,7 @@ class ExampleView(generics.ListCreateAPIView):
 class TestM2MBrowseableAPI(TestCase):
     def test_m2m_in_browseable_api(self):
         """
-        Test for particularly ugly regression with m2m in browseable API
+        Test for particularly ugly regression with m2m in browsable API
         """
         request = factory.get('/', HTTP_ACCEPT='text/html')
         view = ExampleView().as_view()

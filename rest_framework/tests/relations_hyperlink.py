@@ -26,42 +26,44 @@ urlpatterns = patterns('',
 )
 
 
+# ManyToMany
 class ManyToManyTargetSerializer(serializers.HyperlinkedModelSerializer):
-    sources = serializers.HyperlinkedRelatedField(many=True, view_name='manytomanysource-detail')
-
     class Meta:
         model = ManyToManyTarget
+        fields = ('url', 'name', 'sources')
 
 
 class ManyToManySourceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ManyToManySource
+        fields = ('url', 'name', 'targets')
 
 
+# ForeignKey
 class ForeignKeyTargetSerializer(serializers.HyperlinkedModelSerializer):
-    sources = serializers.HyperlinkedRelatedField(many=True, view_name='foreignkeysource-detail')
-
     class Meta:
         model = ForeignKeyTarget
+        fields = ('url', 'name', 'sources')
 
 
 class ForeignKeySourceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = ForeignKeySource
+        fields = ('url', 'name', 'target')
 
 
 # Nullable ForeignKey
 class NullableForeignKeySourceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = NullableForeignKeySource
+        fields = ('url', 'name', 'target')
 
 
-# OneToOne
+# Nullable OneToOne
 class NullableOneToOneTargetSerializer(serializers.HyperlinkedModelSerializer):
-    nullable_source = serializers.HyperlinkedRelatedField(view_name='nullableonetoonesource-detail')
-
     class Meta:
         model = OneToOneTarget
+        fields = ('url', 'name', 'nullable_source')
 
 
 # TODO: Add test that .data cannot be accessed prior to .is_valid

@@ -5,41 +5,44 @@ from rest_framework.tests.models import ManyToManyTarget, ManyToManySource, Fore
 from rest_framework.compat import six
 
 
+# ManyToMany
 class ManyToManyTargetSerializer(serializers.ModelSerializer):
-    sources = serializers.PrimaryKeyRelatedField(many=True)
-
     class Meta:
         model = ManyToManyTarget
+        fields = ('id', 'name', 'sources')
 
 
 class ManyToManySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ManyToManySource
+        fields = ('id', 'name', 'targets')
 
 
+# ForeignKey
 class ForeignKeyTargetSerializer(serializers.ModelSerializer):
-    sources = serializers.PrimaryKeyRelatedField(many=True)
-
     class Meta:
         model = ForeignKeyTarget
+        fields = ('id', 'name', 'sources')
 
 
 class ForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForeignKeySource
+        fields = ('id', 'name', 'target')
 
 
+# Nullable ForeignKey
 class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = NullableForeignKeySource
+        fields = ('id', 'name', 'target')
 
 
-# OneToOne
+# Nullable OneToOne
 class NullableOneToOneTargetSerializer(serializers.ModelSerializer):
-    nullable_source = serializers.PrimaryKeyRelatedField()
-
     class Meta:
         model = OneToOneTarget
+        fields = ('id', 'name', 'nullable_source')
 
 
 # TODO: Add test that .data cannot be accessed prior to .is_valid

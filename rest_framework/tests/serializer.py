@@ -3,7 +3,7 @@ from django.utils.datastructures import MultiValueDict
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
-    BlankFieldModel, BlogPost, Book, CallableDefaultValueModel, DefaultValueModel,
+    BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
 import datetime
 import pickle
@@ -357,7 +357,6 @@ class CustomValidationTests(TestCase):
 
         def validate_email(self, attrs, source):
             value = attrs[source]
-
             return attrs
 
         def validate_content(self, attrs, source):
@@ -738,6 +737,43 @@ class ManyRelatedTests(TestCase):
 
         self.assertEqual(serializer.data, expected)
 
+    def test_include_reverse_relations(self):
+        post = BlogPost.objects.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogPost
+                fields = ('id', 'title', 'blogpostcomment_set')
+
+        serializer = BlogPostSerializer(instance=post)
+        expected = {
+            'id': 1, 'title': 'Test blog post', 'blogpostcomment_set': [1, 2]
+        }
+        self.assertEqual(serializer.data, expected)
+
+    def test_depth_include_reverse_relations(self):
+        post = BlogPost.objects.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = BlogPost
+                fields = ('id', 'title', 'blogpostcomment_set')
+                depth = 1
+
+        serializer = BlogPostSerializer(instance=post)
+        expected = {
+            'id': 1, 'title': 'Test blog post',
+            'blogpostcomment_set': [
+                {'id': 1, 'text': 'I hate this blog post', 'blog_post': 1},
+                {'id': 2, 'text': 'I love this blog post', 'blog_post': 1}
+            ]
+        }
+        self.assertEqual(serializer.data, expected)
+
     def test_callable_source(self):
         post = BlogPost.objects.create(title="Test blog post")
         post.blogpostcomment_set.create(text="I love this blog post")
@@ -766,8 +802,6 @@ class RelatedTraversalTest(TestCase):
         user = Person.objects.create(name="django")
         post = BlogPost.objects.create(title="Test blog post", writer=user)
         post.blogpostcomment_set.create(text="I love this blog post")
-
-        from rest_framework.tests.models import BlogPostComment
 
         class PersonSerializer(serializers.ModelSerializer):
             class Meta:
@@ -968,23 +1002,26 @@ class SerializerPickleTests(TestCase):
 
 class DepthTest(TestCase):
     def test_implicit_nesting(self):
+
         writer = Person.objects.create(name="django", age=1)
         post = BlogPost.objects.create(title="Test blog post", writer=writer)
+        comment = BlogPostComment.objects.create(text="Test blog post comment", blog_post=post)
 
-        class BlogPostSerializer(serializers.ModelSerializer):
+        class BlogPostCommentSerializer(serializers.ModelSerializer):
             class Meta:
-                model = BlogPost
-                depth = 1
+                model = BlogPostComment
+                depth = 2
 
-        serializer = BlogPostSerializer(instance=post)
-        expected = {'id': 1, 'title': 'Test blog post',
-                    'writer': {'id': 1, 'name': 'django', 'age': 1}}
+        serializer = BlogPostCommentSerializer(instance=comment)
+        expected = {'id': 1, 'text': 'Test blog post comment', 'blog_post': {'id': 1, 'title': 'Test blog post',
+                    'writer': {'id': 1, 'name': 'django', 'age': 1}}}
 
         self.assertEqual(serializer.data, expected)
 
     def test_explicit_nesting(self):
         writer = Person.objects.create(name="django", age=1)
         post = BlogPost.objects.create(title="Test blog post", writer=writer)
+        comment = BlogPostComment.objects.create(text="Test blog post comment", blog_post=post)
 
         class PersonSerializer(serializers.ModelSerializer):
             class Meta:
@@ -996,9 +1033,15 @@ class DepthTest(TestCase):
             class Meta:
                 model = BlogPost
 
-        serializer = BlogPostSerializer(instance=post)
-        expected = {'id': 1, 'title': 'Test blog post',
-                    'writer': {'id': 1, 'name': 'django', 'age': 1}}
+        class BlogPostCommentSerializer(serializers.ModelSerializer):
+            blog_post = BlogPostSerializer()
+
+            class Meta:
+                model = BlogPostComment
+
+        serializer = BlogPostCommentSerializer(instance=comment)
+        expected = {'id': 1, 'text': 'Test blog post comment', 'blog_post': {'id': 1, 'title': 'Test blog post',
+                    'writer': {'id': 1, 'name': 'django', 'age': 1}}}
 
         self.assertEqual(serializer.data, expected)
 
@@ -1066,7 +1109,7 @@ class DeserializeListTestCase(TestCase):
 
     def test_no_errors(self):
         data = [self.data.copy() for x in range(0, 3)]
-        serializer = CommentSerializer(data=data)
+        serializer = CommentSerializer(data=data, many=True)
         self.assertTrue(serializer.is_valid())
         self.assertTrue(isinstance(serializer.object, list))
         self.assertTrue(
@@ -1078,7 +1121,7 @@ class DeserializeListTestCase(TestCase):
         invalid_item['email'] = ''
         data = [self.data.copy(), invalid_item, self.data.copy()]
 
-        serializer = CommentSerializer(data=data)
+        serializer = CommentSerializer(data=data, many=True)
         self.assertFalse(serializer.is_valid())
         expected = [{}, {'email': ['This field is required.']}, {}]
         self.assertEqual(serializer.errors, expected)

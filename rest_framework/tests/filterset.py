@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import unittest
-from rest_framework import generics, status, filters
+from rest_framework import generics, serializers, status, filters
 from rest_framework.compat import django_filters, patterns, url
 from rest_framework.tests.models import FilterableItem, BasicModel
 
@@ -52,6 +52,17 @@ if django_filters:
         filter_class = SeveralFieldsFilter
         filter_backend = filters.DjangoFilterBackend
 
+    # Regression test for #814
+    class FilterableItemSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = FilterableItem
+
+    class FilterFieldsQuerysetView(generics.ListCreateAPIView):
+        queryset = FilterableItem.objects.all()
+        serializer_class = FilterableItemSerializer
+        filter_fields = ['decimal', 'date']
+        filter_backend = filters.DjangoFilterBackend
+
     urlpatterns = patterns('',
         url(r'^(?P<pk>\d+)/$', FilterClassDetailView.as_view(), name='detail-view'),
         url(r'^$', FilterClassRootView.as_view(), name='root-view'),
@@ -61,7 +72,7 @@ if django_filters:
 class CommonFilteringTestCase(TestCase):
     def _serialize_object(self, obj):
         return {'id': obj.id, 'text': obj.text, 'decimal': obj.decimal, 'date': obj.date}
-    
+
     def setUp(self):
         """
         Create 10 FilterableItem instances.
@@ -112,6 +123,21 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected_data = [f for f in self.data if f['date'] == search_date]
+        self.assertEqual(response.data, expected_data)
+
+    @unittest.skipUnless(django_filters, 'django-filters not installed')
+    def test_filter_with_queryset(self):
+        """
+        Regression test for #814.
+        """
+        view = FilterFieldsQuerysetView.as_view()
+
+        # Tests that the decimal filter works.
+        search_decimal = Decimal('2.25')
+        request = factory.get('/?decimal=%s' % search_decimal)
+        response = view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected_data = [f for f in self.data if f['decimal'] == search_decimal]
         self.assertEqual(response.data, expected_data)
 
     @unittest.skipUnless(django_filters, 'django-filters not installed')
@@ -190,7 +216,7 @@ class IntegrationTestDetailFiltering(CommonFilteringTestCase):
     Integration tests for filtered detail views.
     """
     urls = 'rest_framework.tests.filterset'
-    
+
     def _get_url(self, item):
         return reverse('detail-view', kwargs=dict(pk=item.pk))
 
@@ -221,7 +247,7 @@ class IntegrationTestDetailFiltering(CommonFilteringTestCase):
         response = self.client.get('{url}?decimal={param}'.format(url=self._get_url(low_item), param=search_decimal))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, low_item_data)
-        
+
         # Tests that multiple filters works.
         search_decimal = Decimal('5.25')
         search_date = datetime.date(2012, 10, 2)

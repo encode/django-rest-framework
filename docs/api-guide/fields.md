@@ -248,6 +248,12 @@ A floating point representation.
 
 Corresponds to `django.db.models.fields.FloatField`.
 
+## DecimalField
+
+A decimal representation.
+
+Corresponds to `django.db.models.fields.DecimalField`.
+
 ## FileField
 
 A file representation. Performs Django's standard FileField validation. 

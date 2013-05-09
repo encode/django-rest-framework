@@ -68,12 +68,12 @@ Because `'snippets'` is a *reverse* relationship on the User model, it will not 
 We'll also add a couple of views.  We'd like to just use read-only views for the user representations, so we'll use the `ListAPIView` and `RetrieveAPIView` generic class based views.
 
     class UserList(generics.ListAPIView):
-        model = User
+        queryset = User.objects.all()
         serializer_class = UserSerializer
     
     
     class UserDetail(generics.RetrieveAPIView):
-        model = User
+        queryset = User.objects.all()
         serializer_class = UserSerializer
 
 Finally we need to add those views into the API, by referencing them from the URL conf.
@@ -118,17 +118,17 @@ Then, add the following property to **both** the `SnippetList` and `SnippetDetai
 
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
-## Adding login to the Browseable API
+## Adding login to the Browsable API
 
-If you open a browser and navigate to the browseable API at the moment, you'll find that you're no longer able to create new code snippets. In order to do so we'd need to be able to login as a user.
+If you open a browser and navigate to the browsable API at the moment, you'll find that you're no longer able to create new code snippets. In order to do so we'd need to be able to login as a user.
 
-We can add a login view for use with the browseable API, by editing our URLconf once more.
+We can add a login view for use with the browsable API, by editing our URLconf once more.
 
 Add the following import at the top of the file:
 
     from django.conf.urls import include
 
-And, at the end of the file, add a pattern to include the login and logout views for the browseable API.
+And, at the end of the file, add a pattern to include the login and logout views for the browsable API.
 
     urlpatterns += patterns('',
         url(r'^api-auth/', include('rest_framework.urls',
@@ -143,7 +143,7 @@ Once you've created a few code snippets, navigate to the '/users/' endpoint, and
 
 ## Object level permissions
 
-Really we'd like all code snippets to be visible to anyone, but also make sure that only the user that created a code snippet is able update or delete it.
+Really we'd like all code snippets to be visible to anyone, but also make sure that only the user that created a code snippet is able to update or delete it.
 
 To do that we're going to need to create a custom permission.
 

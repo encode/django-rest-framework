@@ -109,7 +109,7 @@ class WritableNestedSerializerBasicTests(TestCase):
             }
         ]
 
-        serializer = self.AlbumSerializer(data=data)
+        serializer = self.AlbumSerializer(data=data, many=True)
         self.assertEqual(serializer.is_valid(), False)
         self.assertEqual(serializer.errors, expected_errors)
 
@@ -241,6 +241,6 @@ class WritableNestedSerializerObjectTests(TestCase):
             )
         ]
 
-        serializer = self.AlbumSerializer(data=data)
+        serializer = self.AlbumSerializer(data=data, many=True)
         self.assertEqual(serializer.is_valid(), True)
         self.assertEqual(serializer.object, expected_object)

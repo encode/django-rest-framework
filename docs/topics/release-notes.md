@@ -38,14 +38,55 @@ You can determine your currently installed version using `pip freeze`:
 
 ---
 
+## 2.3.x series
+
+### 2.3.2
+
+**Date**: 8th May 2013
+
+* Bugfix: Fix `TIME_FORMAT`, `DATETIME_FORMAT` and `DATE_FORMAT` settings.
+* Bugfix: Fix `DjangoFilterBackend` issue, failing when used on view with queryset attribute.
+
+### 2.3.1
+
+**Date**: 7th May 2013
+
+* Bugfix: Fix breadcrumb rendering issue.
+
+### 2.3.0
+
+**Date**: 7th May 2013
+
+* ViewSets and Routers.
+* ModelSerializers support reverse relations in 'fields' option.
+* HyperLinkedModelSerializers support 'id' field in 'fields' option.
+* Cleaner generic views.
+* Support for multiple filter classes.
+* FileUploadParser support for raw file uploads.
+* DecimalField support.
+* Made Login template easier to restyle.
+* Bugfix: Fix issue with depth>1 on ModelSerializer.
+
+**Note**: See the [2.3 announcement][2.3-announcement] for full details.
+
+---
+
 ## 2.2.x series
+
+### 2.2.7
+
+**Date**: 17th April 2013
+
+* Loud failure when view does not return a `Response` or `HttpResponse`.
+* Bugfix: Fix for Django 1.3 compatiblity.
+* Bugfix: Allow overridden `get_object()` to work correctly.
 
 ### 2.2.6
 
 **Date**: 4th April 2013
 
 * OAuth2 authentication no longer requires unneccessary URL parameters in addition to the token.
-* URL hyperlinking in browseable API now handles more cases correctly.
+* URL hyperlinking in browsable API now handles more cases correctly.
 * Long HTTP headers in browsable API are broken in multiple lines when possible.
 * Bugfix: Fix regression with DjangoFilterBackend not worthing correctly with single object views.
 * Bugfix: OAuth should fail hard when invalid token used.
@@ -95,10 +136,10 @@ You can determine your currently installed version using `pip freeze`:
 **Date**: 22nd Feb 2013
 
 * Security fix: Use `defusedxml` package to address XML parsing vulnerabilities.
-* Raw data tab added to browseable API.  (Eg. Allow for JSON input.)
+* Raw data tab added to browsable API.  (Eg. Allow for JSON input.)
 * Added TimeField.
 * Serializer fields can be mapped to any method that takes no args, or only takes kwargs which have defaults.
-* Unicode support for view names/descriptions in browseable API.
+* Unicode support for view names/descriptions in browsable API.
 * Bugfix: request.DATA should return an empty `QueryDict` with no data, not `None`.
 * Bugfix: Remove unneeded field validation, which caused extra queries.
 
@@ -195,14 +236,14 @@ This change will not affect user code, so long as it's following the recommended
 **Date**: 21st Dec 2012
 
 * Bugfix: Fix bug that could occur using ChoiceField.
-* Bugfix: Fix exception in browseable API on DELETE.
+* Bugfix: Fix exception in browsable API on DELETE.
 * Bugfix: Fix issue where pk was was being set to a string if set by URL kwarg.
 
 ### 2.1.11
 
 **Date**: 17th Dec 2012
 
-* Bugfix: Fix issue with M2M fields in browseable API.
+* Bugfix: Fix issue with M2M fields in browsable API.
 
 ### 2.1.10
 
@@ -298,7 +339,7 @@ This change will not affect user code, so long as it's following the recommended
 * Hyperlinked related fields optionally take `slug_field` and `slug_url_kwarg` arguments.
 * Support Django's cache framework.
 * Minor field improvements. (Don't stringify dicts, more robust many-pk fields.)
-* Bugfix: Support choice field in Browseable API.
+* Bugfix: Support choice field in Browsable API.
 * Bugfix: Related fields with `read_only=True` do not require a `queryset` argument.
 
 **API-incompatible changes**: Please read [this thread][2.1.0-notes] regarding the `instance` and `data` keyword args before updating to 2.1.0.
@@ -450,6 +491,7 @@ This change will not affect user code, so long as it's following the recommended
 [django-deprecation-policy]: https://docs.djangoproject.com/en/dev/internals/release-process/#internal-release-deprecation-policy
 [defusedxml-announce]: http://blog.python.org/2013/02/announcing-defusedxml-fixes-for-xml.html
 [2.2-announcement]: 2.2-announcement.md
+[2.3-announcement]: 2.3-announcement.md
 [743]: https://github.com/tomchristie/django-rest-framework/pull/743
 [staticfiles14]: https://docs.djangoproject.com/en/1.4/howto/static-files/#with-a-template-tag
 [staticfiles13]: https://docs.djangoproject.com/en/1.3/howto/static-files/#with-a-template-tag
