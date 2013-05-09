@@ -136,9 +136,15 @@ The `ViewSet` class inherits from `APIView`.  You can use any of the standard at
 
 The `ViewSet` class does not provide any implementations of actions.  In order to use a `ViewSet` class you'll override the class and define the action implementations explicitly.
 
+## GenericViewSet
+
+The `GenericViewSet` class inherits from `GenericAPIView`, and provides the default set of `get_object`, `get_queryset` methods and other generic view base behavior, but does not include any actions by default.
+
+In order to use a `GenericViewSet` class you'll override the class and either mixin the required mixin classes, or define the action implementations explicitly.
+
 ## ModelViewSet
 
-The `ModelViewSet` class inherits from `GenericAPIView` and includes implementations for various actions, by mixing in the behavior of the
+The `ModelViewSet` class inherits from `GenericAPIView` and includes implementations for various actions, by mixing in the behavior of the various mixin classes.
 
 The actions provided by the `ModelViewSet` class are `.list()`, `.retrieve()`,  `.create()`, `.update()`, and `.destroy()`.
 
@@ -188,17 +194,18 @@ Again, as with `ModelViewSet`, you can use any of the standard attributes and me
 
 # Custom ViewSet base classes 
 
-Any standard `View` class can be turned into a `ViewSet` class by mixing in `ViewSetMixin`.  You can use this to define your own base classes.
+You may need to provide custom `ViewSet` classes that do not have the full set of `ModelViewSet` actions, or that customize the behavior in some other way.
 
 ## Example
 
-For example, we can create a base viewset class that provides `retrieve`, `update` and `list` operations:
+To create a base viewset class that provides `create`, `list` and `retrieve` operations, inherit from `GenericViewSet`, and mixin the required actions:
 
-    class RetrieveUpdateListViewSet(mixins.RetrieveModelMixin,
-                                    mixins.UpdateModelMixin,
-                                    mixins.ListModelMixin,
-                                    viewsets.ViewSetMixin,
-                                    generics.GenericAPIView):
+    class CreateListRetrieveViewSet(mixins.CreateMixin,
+                                    mixins.ListMixin,
+                                    mixins.RetrieveMixin,
+                                    viewsets.GenericViewSet):
+        pass
+
         """
         A viewset that provides `retrieve`, `update`, and `list` actions.
         
@@ -207,6 +214,6 @@ For example, we can create a base viewset class that provides `retrieve`, `updat
         """
         pass
 
-By creating your own base `ViewSet` classes, you can provide common behavior that can be reused in multiple views across your API.
+By creating your own base `ViewSet` classes, you can provide common behavior that can be reused in multiple viewsets across your API.
 
 [cite]: http://guides.rubyonrails.org/routing.html
