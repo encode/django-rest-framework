@@ -290,7 +290,7 @@ Extends: [GenericAPIView], [RetrieveModelMixin], [UpdateModelMixin], [DestroyMod
 
 # Customizing the generic views
 
-Often you'll want to use the existing generic views, but use some slightly customized behavior.  If you find yourself reusing some bit of customized behavior in multiple places, you might want to refactor the behavior into a mixin class that you can then just apply to any view or viewset as needed.
+Often you'll want to use the existing generic views, but use some slightly customized behavior.  If you find yourself reusing some bit of customized behavior in multiple places, you might want to refactor the behavior into a common class that you can then just apply to any view or viewset as needed.
 
 ## Creating custom mixins
 
