@@ -827,7 +827,7 @@ class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
     def __init__(self, meta):
         super(HyperlinkedModelSerializerOptions, self).__init__(meta)
         self.view_name = getattr(meta, 'view_name', None)
-        self.lookup_field = getattr(meta, 'slug_field', None)
+        self.lookup_field = getattr(meta, 'lookup_field', None)
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
