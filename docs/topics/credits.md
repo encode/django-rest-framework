@@ -115,7 +115,11 @@ The following people have helped make REST framework great.
 * Sitong Peng - [stoneg]
 * Victor Shih - [vshih]
 * Atle Frenvik Sveen - [atlefren]
-* J. Paul Reed - [preed]
+* J Paul Reed - [preed]
+* Matt Majewski - [forgingdestiny]
+* Jerome Chen - [chenjyw]
+* Andrew Hughes - [eyepulp]
+* Daniel Hepper - [dhepper]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -129,7 +133,7 @@ Continuous integration testing is managed with [Travis CI][travis-ci].
 
 The [live sandbox][sandbox] is hosted on [Heroku].
 
-Various inspiration taken from the [Piston], [Tastypie] and [Dagny] projects.
+Various inspiration taken from the [Rails], [Piston], [Tastypie] and [Dagny] projects.
 
 Development of REST framework 2.0 was sponsored by [DabApps].
 
@@ -144,6 +148,7 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [markdown]: http://daringfireball.net/projects/markdown/
 [github]: https://github.com/tomchristie/django-rest-framework
 [travis-ci]: https://secure.travis-ci.org/tomchristie/django-rest-framework
+[rails]: http://rubyonrails.org/
 [piston]: https://bitbucket.org/jespern/django-piston
 [tastypie]: https://github.com/toastdriven/django-tastypie
 [dagny]: https://github.com/zacharyvoase/dagny
@@ -266,3 +271,7 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [vshih]: https://github.com/vshih
 [atlefren]: https://github.com/atlefren
 [preed]: https://github.com/preed
+[forgingdestiny]: https://github.com/forgingdestiny
+[chenjyw]: https://github.com/chenjyw
+[eyepulp]: https://github.com/eyepulp
+[dhepper]: https://github.com/dhepper

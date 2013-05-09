@@ -1,0 +1,55 @@
+{% load url from future %}
+{% load rest_framework %}
+<html>
+
+    <head>
+        {% block style %}
+        {% block bootstrap_theme %}<link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap.min.css" %}"/>{% endblock %}
+        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap-tweaks.css" %}"/>
+        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
+        {% endblock %}
+    </head>
+
+    <body class="container">
+
+<div class="container-fluid" style="margin-top: 30px">
+        <div class="row-fluid">
+         
+        <div class="well" style="width: 320px; margin-left: auto; margin-right: auto">
+            <div class="row-fluid">
+                <div>
+                    {% block branding %}<h3 style="margin: 0 0 20px;">Django REST framework</h3>{% endblock %}
+                </div>
+            </div><!-- /row fluid -->
+
+            <div class="row-fluid">
+                <div>
+                    <form action="{% url 'rest_framework:login' %}" class=" form-inline" method="post">
+                        {% csrf_token %}
+                        <div id="div_id_username" class="clearfix control-group">
+                            <div class="controls">
+                                <Label class="span4">Username:</label>
+                                <input style="height: 25px" type="text" name="username" maxlength="100" autocapitalize="off" autocorrect="off" class="textinput textInput" id="id_username">
+                            </div>
+                        </div>
+                        <div id="div_id_password" class="clearfix control-group">
+                            <div class="controls">
+                                <Label class="span4">Password:</label>
+                                <input style="height: 25px" type="password" name="password" maxlength="100" autocapitalize="off" autocorrect="off" class="textinput textInput" id="id_password">
+                            </div>
+                        </div>
+                        <input type="hidden" name="next" value="{{ next }}" />
+                        <div class="form-actions-no-box">
+                            <input type="submit" name="submit" value="Log in" class="btn btn-primary" id="submit-id-submit">
+                        </div>
+                    </form>
+                </div>
+            </div><!-- /row fluid -->
+        </div><!--/span-->
+
+        </div><!-- /.row-fluid -->
+    </div>
+
+        </div>
+    </body>
+</html>

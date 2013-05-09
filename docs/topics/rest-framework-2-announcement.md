@@ -62,19 +62,19 @@ REST framework 2 also allows you to work with both function-based and class-base
 
 Pretty much every aspect of REST framework has been reworked, with the aim of ironing out some of the design flaws of the previous versions.  Each of the components of REST framework are cleanly decoupled, and can be used independantly of each-other, and there are no monolithic resource classes, overcomplicated mixin combinations, or opinionated serialization or URL routing decisions.
 
-## The Browseable API
+## The Browsable API
 
 Django REST framework's most unique feature is the way it is able to serve up both machine-readable representations, and a fully browsable HTML representation to the same endpoints.
 
-Browseable Web APIs are easier to work with, visualize and debug, and generally makes it easier and more frictionless to inspect and work with.
+Browsable Web APIs are easier to work with, visualize and debug, and generally makes it easier and more frictionless to inspect and work with.
 
-With REST framework 2, the browseable API gets a snazzy new bootstrap-based theme that looks great and is even nicer to work with.
+With REST framework 2, the browsable API gets a snazzy new bootstrap-based theme that looks great and is even nicer to work with.
 
 There are also some functionality improvments - actions such as as `POST` and `DELETE` will only display if the user has the appropriate permissions.
 
-![Browseable API][image]
+![Browsable API][image]
 
-**Image above**: An example of the browseable API in REST framework 2
+**Image above**: An example of the browsable API in REST framework 2
 
 ## Documentation
 

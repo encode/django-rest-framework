@@ -1,3 +1,7 @@
+"""
+Content negotiation deals with selecting an appropriate renderer given the
+incoming request.  Typically this will be based on the request's Accept header.
+"""
 from __future__ import unicode_literals
 from django.http import Http404
 from rest_framework import exceptions

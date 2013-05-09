@@ -92,8 +92,8 @@ Let's take a look at how we can compose our views by using the mixin classes.
 
     class SnippetList(mixins.ListModelMixin,
                       mixins.CreateModelMixin,
-                      generics.MultipleObjectAPIView):
-        model = Snippet
+                      generics.GenericAPIView):
+        queryset = Snippet.objects.all()
         serializer_class = SnippetSerializer
 
         def get(self, request, *args, **kwargs):
@@ -102,15 +102,15 @@ Let's take a look at how we can compose our views by using the mixin classes.
         def post(self, request, *args, **kwargs):
             return self.create(request, *args, **kwargs)
 
-We'll take a moment to examine exactly what's happening here. We're building our view using `MultipleObjectAPIView`, and adding in `ListModelMixin` and `CreateModelMixin`.
+We'll take a moment to examine exactly what's happening here. We're building our view using `GenericAPIView`, and adding in `ListModelMixin` and `CreateModelMixin`.
 
 The base class provides the core functionality, and the mixin classes provide the `.list()` and `.create()` actions.  We're then explicitly binding the `get` and `post` methods to the appropriate actions.  Simple enough stuff so far.
 
     class SnippetDetail(mixins.RetrieveModelMixin,
                         mixins.UpdateModelMixin,
                         mixins.DestroyModelMixin,
-                        generics.SingleObjectAPIView):
-        model = Snippet
+                        generics.GenericAPIView):
+        queryset = Snippet.objects.all()
         serializer_class = SnippetSerializer
 
         def get(self, request, *args, **kwargs):
@@ -122,7 +122,7 @@ The base class provides the core functionality, and the mixin classes provide th
         def delete(self, request, *args, **kwargs):
             return self.destroy(request, *args, **kwargs)
 
-Pretty similar.  This time we're using the `SingleObjectAPIView` class to provide the core functionality, and adding in mixins to provide the `.retrieve()`, `.update()` and `.destroy()` actions.
+Pretty similar.  Again we're using the `GenericAPIView` class to provide the core functionality, and adding in mixins to provide the `.retrieve()`, `.update()` and `.destroy()` actions.
 
 ## Using generic class based views
 
@@ -134,12 +134,12 @@ Using the mixin classes we've rewritten the views to use slightly less code than
 
 
     class SnippetList(generics.ListCreateAPIView):
-        model = Snippet
+        queryset = Snippet.objects.all()
         serializer_class = SnippetSerializer
 
 
     class SnippetDetail(generics.RetrieveUpdateDestroyAPIView):
-        model = Snippet
+        queryset = Snippet.objects.all()
         serializer_class = SnippetSerializer
 
 Wow, that's pretty concise.  We've gotten a huge amount for free, and our code looks like good, clean, idiomatic Django.

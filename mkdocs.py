@@ -47,10 +47,13 @@ path_list = [
     'tutorial/3-class-based-views.md',
     'tutorial/4-authentication-and-permissions.md',
     'tutorial/5-relationships-and-hyperlinked-apis.md',
+    'tutorial/6-viewsets-and-routers.md',
     'api-guide/requests.md',
     'api-guide/responses.md',
     'api-guide/views.md',
     'api-guide/generic-views.md',
+    'api-guide/viewsets.md',
+    'api-guide/routers.md',
     'api-guide/parsers.md',
     'api-guide/renderers.md',
     'api-guide/serializers.md',
@@ -74,6 +77,7 @@ path_list = [
     'topics/contributing.md',
     'topics/rest-framework-2-announcement.md',
     'topics/2.2-announcement.md',
+    'topics/2.3-announcement.md',
     'topics/release-notes.md',
     'topics/credits.md',
 ]
@@ -133,7 +137,7 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
             toc += template + '\n'
 
         if filename == 'index.md':
-            main_title = 'Django REST framework - Web Browseable APIs'
+            main_title = 'Django REST framework - APIs made easy'
         else:
             main_title = 'Django REST framework - ' + main_title
 
