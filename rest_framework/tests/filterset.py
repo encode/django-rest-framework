@@ -299,8 +299,8 @@ class SearchFilterTests(TestCase):
         self.assertEqual(
             response.data,
             [
-                {u'id': 1, 'title': u'z', 'text': u'abc'},
-                {u'id': 2, 'title': u'zz', 'text': u'bcd'}
+                {'id': 1, 'title': 'z', 'text': 'abc'},
+                {'id': 2, 'title': 'zz', 'text': 'bcd'}
             ]
         )
 
@@ -316,7 +316,7 @@ class SearchFilterTests(TestCase):
         self.assertEqual(
             response.data,
             [
-                {u'id': 3, 'title': u'zzz', 'text': u'cde'}
+                {'id': 3, 'title': 'zzz', 'text': 'cde'}
             ]
         )
 
@@ -332,6 +332,6 @@ class SearchFilterTests(TestCase):
         self.assertEqual(
             response.data,
             [
-                {u'id': 2, 'title': u'zz', 'text': u'bcd'}
+                {'id': 2, 'title': 'zz', 'text': 'bcd'}
             ]
         )
