@@ -34,7 +34,7 @@ For more complex cases you might also want to override various methods on the vi
             """
             Use smaller pagination for HTML representations.
             """
-            self.request.accepted_renderer.format == 'html':
+            if self.request.accepted_renderer.format == 'html':
                 return 20
             return 100
 
