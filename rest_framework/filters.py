@@ -74,7 +74,8 @@ class DjangoFilterBackend(BaseFilterBackend):
 
 
 class SearchFilter(BaseFilterBackend):
-    search_param = 'search'
+    search_param = 'search'  # The URL query parameter used for the search.
+    delimiter = None  # For example, set to ',' for comma delimited searchs.
 
     def construct_search(self, field_name):
         if field_name.startswith('^'):
@@ -96,8 +97,8 @@ class SearchFilter(BaseFilterBackend):
         orm_lookups = [self.construct_search(str(search_field))
                        for search_field in search_fields]
 
-        for bit in search_terms.split():
-            or_queries = [models.Q(**{orm_lookup: bit})
+        for search_term in search_terms.split(self.delimiter):
+            or_queries = [models.Q(**{orm_lookup: search_term})
                           for orm_lookup in orm_lookups]
             queryset = queryset.filter(reduce(operator.or_, or_queries))
 

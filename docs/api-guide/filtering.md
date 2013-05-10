@@ -77,19 +77,60 @@ We can override `.get_queryset()` to deal with URLs such as `http://example.com/
 
 # Generic Filtering
 
-As well as being able to override the default queryset, REST framework also includes support for generic filtering backends that allow you to easily construct complex filters that can be specified by the client using query parameters.
+As well as being able to override the default queryset, REST framework also includes support for generic filtering backends that allow you to easily construct complex searches and filters.
+
+## Setting filter backends
+
+The default filter backends may be set globally, using the `DEFAULT_FILTER_BACKENDS` setting.  For example.
+
+    REST_FRAMEWORK = {
+        'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
+    }
+
+You can also set the authentication policy on a per-view, or per-viewset basis,
+using the `GenericAPIView` class based views.
+
+    class UserListView(generics.ListAPIView):
+        queryset = User.objects.all()
+        serializer = UserSerializer
+        filter_backends = (filters.DjangoFilterBackend,)
+
+## Filtering and object lookups
+
+Note that if a filter backend is configured for a view, then as well as being used to filter list views, it will also be used to filter the querysets used for returning a single object.
+
+For instance, given the previous example, and a product with an id of `4675`, the following URL would either return the corresponding object, or return a 404 response, depending on if the filtering conditions were met by the given product instance:
+
+    http://example.com/api/products/4675/?category=clothing&max_price=10.00
+
+## Overriding the initial queryset
+ 
+Note that you can use both an overridden `.get_queryset()` and generic filtering together, and everything will work as expected.  For example, if `Product` had a many-to-many relationship with `User`, named `purchase`, you might want to write a view like this:
+
+    class PurchasedProductsList(generics.ListAPIView):
+        """
+        Return a list of all the products that the authenticated
+        user has ever purchased, with optional filtering.
+        """
+        model = Product
+        serializer_class = ProductSerializer
+        filter_class = ProductFilter
+        
+        def get_queryset(self):
+            user = self.request.user
+            return user.purchase_set.all()
+
+---
+
+# API Guide
 
 ## DjangoFilterBackend
+
+The `DjangoFilterBackend` class supports highly customizable field filtering, using the [django-filter package][django-filter].  
 
 To use REST framework's `DjangoFilterBackend`, first install `django-filter`.
 
     pip install django-filter
-
-You must also set the filter backend to `DjangoFilterBackend` in your settings:
-
-    REST_FRAMEWORK = {
-        'DEFAULT_FILTER_BACKENDS': ['rest_framework.filters.DjangoFilterBackend']
-    }
 
 
 #### Specifying filter fields
@@ -137,30 +178,30 @@ For more details on using filter sets see the [django-filter documentation][djan
 
 ---
 
-## Filtering and object lookups
+## SearchFilter
 
-Note that if a filter backend is configured for a view, then as well as being used to filter list views, it will also be used to filter the querysets used for returning a single object.
+The `SearchFilter` class supports simple single query parameter based searching, and is based on the [Django admin's search functionality][search-django-admin].
 
-For instance, given the previous example, and a product with an id of `4675`, the following URL would either return the corresponding object, or return a 404 response, depending on if the filtering conditions were met by the given product instance:
+The `SearchFilter` class will only be applied if the view has a `search_fields` attribute set.  The `search_fields` attribute should be a list of names of text fields on the model.
 
-    http://example.com/api/products/4675/?category=clothing&max_price=10.00
+    class UserListView(generics.ListAPIView):
+        queryset = User.objects.all()
+        serializer = UserSerializer
+        filter_backends = (filters.SearchFilter,)
+        search_fields = ('username', 'email')
 
-## Overriding the initial queryset
- 
-Note that you can use both an overridden `.get_queryset()` and generic filtering together, and everything will work as expected.  For example, if `Product` had a many-to-many relationship with `User`, named `purchase`, you might want to write a view like this:
+This will allow the client to filter the itemss in the list by making queries such as:
 
-    class PurchasedProductsList(generics.ListAPIView):
-        """
-        Return a list of all the products that the authenticated
-        user has ever purchased, with optional filtering.
-        """
-        model = Product
-        serializer_class = ProductSerializer
-        filter_class = ProductFilter
-        
-        def get_queryset(self):
-            user = self.request.user
-            return user.purchase_set.all()
+    http://example.com/api/users?search=russell
+
+You can also perform a related lookup on a ForeignKey or ManyToManyField with the lookup API double-underscore notation:
+
+    search_fields = ('username', 'email', 'profile__profession')
+
+By default, searches will use case-insensitive partial matches.  If the search parameter contains multiple whitespace seperated words, then objects will be returned in the list only if all the provided words are matched.
+
+For more details, see the [Django documentation][search-django-admin].
+
 ---
 
 # Custom generic filtering
@@ -181,3 +222,4 @@ For example:
 [django-filter]: https://github.com/alex/django-filter
 [django-filter-docs]: https://django-filter.readthedocs.org/en/latest/index.html
 [nullbooleanselect]: https://github.com/django/django/blob/master/django/forms/widgets.py
+[search-django-admin]: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
