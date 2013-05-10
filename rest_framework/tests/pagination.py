@@ -1,16 +1,22 @@
 from __future__ import unicode_literals
 import datetime
 from decimal import Decimal
-import django
+from django.db import models
 from django.core.paginator import Paginator
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import unittest
 from rest_framework import generics, status, pagination, filters, serializers
 from rest_framework.compat import django_filters
-from rest_framework.tests.models import BasicModel, FilterableItem
+from rest_framework.tests.models import BasicModel
 
 factory = RequestFactory()
+
+
+class FilterableItem(models.Model):
+    text = models.CharField(max_length=100)
+    decimal = models.DecimalField(max_digits=4, decimal_places=2)
+    date = models.DateField()
 
 
 class RootView(generics.ListCreateAPIView):
