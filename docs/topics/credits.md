@@ -120,6 +120,7 @@ The following people have helped make REST framework great.
 * Jerome Chen - [chenjyw]
 * Andrew Hughes - [eyepulp]
 * Daniel Hepper - [dhepper]
+* Hamish Campbell - [hamishcampbell]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -275,3 +276,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [chenjyw]: https://github.com/chenjyw
 [eyepulp]: https://github.com/eyepulp
 [dhepper]: https://github.com/dhepper
+[hamishcampbell]: https://github.com/hamishcampbell
