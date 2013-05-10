@@ -180,9 +180,9 @@ For more details on using filter sets see the [django-filter documentation][djan
 
 ## SearchFilter
 
-The `SearchFilter` class supports simple single query parameter based searching, and is based on the [Django admin's search functionality][search-django-admin].
+The `SearchFilterBackend` class supports simple single query parameter based searching, and is based on the [Django admin's search functionality][search-django-admin].
 
-The `SearchFilter` class will only be applied if the view has a `search_fields` attribute set.  The `search_fields` attribute should be a list of names of text fields on the model.
+The `SearchFilterBackend` class will only be applied if the view has a `search_fields` attribute set.  The `search_fields` attribute should be a list of names of text fields on the model.
 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
@@ -210,13 +210,20 @@ You can also provide your own generic filtering backend, or write an installable
 
 To do so override `BaseFilterBackend`, and override the `.filter_queryset(self, request, queryset, view)` method.  The method should return a new, filtered queryset.
 
-To install the filter backend, set the `'DEFAULT_FILTER_BACKENDS'` key in your `'REST_FRAMEWORK'` setting, using the dotted import path of the filter backend class.
+As well as allowing clients to perform searches and filtering, generic filter backends can be useful for restricting which objects should be visible to any given request or user.
 
-For example:
+## Example
 
-    REST_FRAMEWORK = {
-        'DEFAULT_FILTER_BACKENDS': ['custom_filters.CustomFilterBackend']
-    }
+For example, you might need to restrict users to only being able to see objects they created.
+
+    class IsOwnerFilterBackend(filters.BaseFilterBackend):
+        """
+        Filter that only allows users to see their own objects.
+        """
+        def filter_queryset(self, request, queryset, view):
+            return queryset.filter(owner=request.user)
+
+We could do the same thing by overriding `get_queryset` on the views, but using a filter backend allows you to more easily add this restriction to multiple views, or to apply it across the entire API.
 
 [cite]: https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter
