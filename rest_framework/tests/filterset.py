@@ -1,15 +1,22 @@
 from __future__ import unicode_literals
 import datetime
 from decimal import Decimal
+from django.db import models
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import unittest
 from rest_framework import generics, serializers, status, filters
 from rest_framework.compat import django_filters, patterns, url
-from rest_framework.tests.models import FilterableItem, BasicModel
+from rest_framework.tests.models import BasicModel
 
 factory = RequestFactory()
+
+
+class FilterableItem(models.Model):
+    text = models.CharField(max_length=100)
+    decimal = models.DecimalField(max_digits=4, decimal_places=2)
+    date = models.DateField()
 
 
 if django_filters:
@@ -256,3 +263,75 @@ class IntegrationTestDetailFiltering(CommonFilteringTestCase):
         response = self.client.get('{url}?decimal={decimal}&date={date}'.format(url=self._get_url(valid_item), decimal=search_decimal, date=search_date))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, valid_item_data)
+
+
+class SearchFilterModel(models.Model):
+    title = models.CharField(max_length=20)
+    text = models.CharField(max_length=100)
+
+
+class SearchFilterTests(TestCase):
+    def setUp(self):
+        # Sequence of title/text is:
+        #
+        # z   abc
+        # zz  bcd
+        # zzz cde
+        # ...
+        for idx in range(10):
+            title = 'z' * (idx + 1)
+            text = (
+                chr(idx + ord('a')) +
+                chr(idx + ord('b')) +
+                chr(idx + ord('c'))
+            )
+            SearchFilterModel(title=title, text=text).save()
+
+    def test_search(self):
+        class SearchListView(generics.ListAPIView):
+            model = SearchFilterModel
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('title', 'text')
+
+        view = SearchListView.as_view()
+        request = factory.get('?search=b')
+        response = view(request)
+        self.assertEqual(
+            response.data,
+            [
+                {u'id': 1, 'title': u'z', 'text': u'abc'},
+                {u'id': 2, 'title': u'zz', 'text': u'bcd'}
+            ]
+        )
+
+    def test_exact_search(self):
+        class SearchListView(generics.ListAPIView):
+            model = SearchFilterModel
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('=title', 'text')
+
+        view = SearchListView.as_view()
+        request = factory.get('?search=zzz')
+        response = view(request)
+        self.assertEqual(
+            response.data,
+            [
+                {u'id': 3, 'title': u'zzz', 'text': u'cde'}
+            ]
+        )
+
+    def test_startswith_search(self):
+        class SearchListView(generics.ListAPIView):
+            model = SearchFilterModel
+            filter_backends = (filters.SearchFilter,)
+            search_fields = ('title', '^text')
+
+        view = SearchListView.as_view()
+        request = factory.get('?search=b')
+        response = view(request)
+        self.assertEqual(
+            response.data,
+            [
+                {u'id': 2, 'title': u'zz', 'text': u'bcd'}
+            ]
+        )

@@ -74,6 +74,8 @@ class DjangoFilterBackend(BaseFilterBackend):
 
 
 class SearchFilter(BaseFilterBackend):
+    search_param = 'search'
+
     def construct_search(self, field_name):
         if field_name.startswith('^'):
             return "%s__istartswith" % field_name[1:]
@@ -90,10 +92,13 @@ class SearchFilter(BaseFilterBackend):
         if not search_fields:
             return None
 
+        search_terms = request.QUERY_PARAMS.get(self.search_param)
         orm_lookups = [self.construct_search(str(search_field))
-                       for search_field in self.search_fields]
-        for bit in self.query.split():
+                       for search_field in search_fields]
+
+        for bit in search_terms.split():
             or_queries = [models.Q(**{orm_lookup: bit})
                           for orm_lookup in orm_lookups]
             queryset = queryset.filter(reduce(operator.or_, or_queries))
+
         return queryset
