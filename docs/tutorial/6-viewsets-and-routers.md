@@ -119,7 +119,7 @@ Registering the viewsets with the router is similar to providing a urlpattern.  
 
 The `DefaultRouter` class we're using also automatically creates the API root view for us, so we can now delete the `api_root` method from our `views` module.
 
-## Trade-offs between views vs viewsets.
+## Trade-offs between views vs viewsets
 
 Using viewsets can be a really useful abstraction.  It helps ensure that URL conventions will be consistent across your API, minimizes the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.
 
