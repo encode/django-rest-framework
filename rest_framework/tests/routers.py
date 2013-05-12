@@ -38,9 +38,18 @@ class TestSimpleRouter(TestCase):
 
     def test_link_and_action_decorator(self):
         routes = self.router.get_routes(BasicViewSet)
-        # Should be 2 by default, and then four from the @action and @link combined
-        #self.assertEqual(len(routes), 6)
-        #
         decorator_routes = routes[2:]
-        for i, method in enumerate(['action1', 'action2', 'link1', 'link2']):
-            self.assertEqual(decorator_routes[i].mapping.values()[0], method)
+        # Make sure all these endpoints exist and none have been clobbered
+        for i, endpoint in enumerate(['action1', 'action2', 'link1', 'link2']):
+            route = decorator_routes[i]
+            # check url listing
+            self.assertEqual(route.url,
+                             '^{{prefix}}/{{lookup}}/{0}/$'.format(endpoint))
+            # check method to function mapping
+            if endpoint.startswith('action'):
+                method_map = 'post'
+            else:
+                method_map = 'get'
+            self.assertEqual(route.mapping[method_map], endpoint)
+
+
