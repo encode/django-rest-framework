@@ -336,7 +336,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             return  # Cannot use form overloading
 
         try:
-            view.check_permissions(clone_request(request, method))
+            view.check_permissions(request)
         except exceptions.APIException:
             return False  # Doesn't have permissions
         return True
@@ -379,7 +379,9 @@ class BrowsableAPIRenderer(BaseRenderer):
         provide a form that can be used to submit arbitrary content.
         """
         obj = getattr(view, 'object', None)
-        if not self.show_form_for_method(view, method, request, obj):
+        cloned_request = clone_request(request, method)
+
+        if not self.show_form_for_method(view, method, cloned_request, obj):
             return
 
         if method in ('DELETE', 'OPTIONS'):
@@ -413,7 +415,8 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         # Check permissions
         obj = getattr(view, 'object', None)
-        if not self.show_form_for_method(view, method, request, obj):
+        cloned_request = clone_request(request, method)
+        if not self.show_form_for_method(view, method, cloned_request, obj):
             return
 
         content_type_field = api_settings.FORM_CONTENTTYPE_OVERRIDE
