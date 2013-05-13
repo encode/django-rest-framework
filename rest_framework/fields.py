@@ -50,7 +50,7 @@ def get_component(obj, attr_name):
     return that attribute on the object.
     """
     if isinstance(obj, dict):
-        val = obj[attr_name]
+        val = obj.get(attr_name)
     else:
         val = getattr(obj, attr_name)
 
