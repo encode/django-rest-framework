@@ -78,8 +78,8 @@ We'll also add a couple of views.  We'd like to just use read-only views for the
 
 Finally we need to add those views into the API, by referencing them from the URL conf.
 
-    url(r'^users/$', views.UserList.as_view()),
-    url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
+    url(r'^users/$', views.UserList.as_view(), name='user-list'),
+    url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view(), name='user-detail'),
 
 ## Associating Snippets with Users
 
