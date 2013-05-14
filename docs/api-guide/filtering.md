@@ -198,7 +198,17 @@ You can also perform a related lookup on a ForeignKey or ManyToManyField with th
 
     search_fields = ('username', 'email', 'profile__profession')
 
-By default, searches will use case-insensitive partial matches.  If the search parameter contains multiple whitespace seperated words, then objects will be returned in the list only if all the provided words are matched.
+By default, searches will use case-insensitive partial matches.  The search parameter may contain multiple search terms, which should be whitespace and/or comma seperated.  If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched.
+
+The search behavior may be restricted by prepending various characters to the `search_fields`.
+
+* '^' Starts-with search.
+* '=' Exact matches.
+* '@' Full-text search.  (Currently only supported Django's MySQL backend.)
+
+For example:
+
+    search_fields = ('=username', '=email')
 
 For more details, see the [Django documentation][search-django-admin].
 
