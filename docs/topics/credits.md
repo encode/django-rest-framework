@@ -121,6 +121,7 @@ The following people have helped make REST framework great.
 * Andrew Hughes - [eyepulp]
 * Daniel Hepper - [dhepper]
 * Hamish Campbell - [hamishcampbell]
+* Marlon Bailey - [avinash240]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -277,3 +278,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [eyepulp]: https://github.com/eyepulp
 [dhepper]: https://github.com/dhepper
 [hamishcampbell]: https://github.com/hamishcampbell
+[avinash240]: https://github.com/avinash240
