@@ -127,18 +127,18 @@ class SimpleRouter(BaseRouter):
         """
 
         # Determine any `@action` or `@link` decorated methods on the viewset
-        dynamic_routes = {}
+        dynamic_routes = []
         for methodname in dir(viewset):
             attr = getattr(viewset, methodname)
             httpmethod = getattr(attr, 'bind_to_method', None)
             if httpmethod:
-                dynamic_routes[httpmethod] = methodname
+                dynamic_routes.append((httpmethod, methodname))
 
         ret = []
         for route in self.routes:
             if route.mapping == {'{httpmethod}': '{methodname}'}:
                 # Dynamic routes (@link or @action decorator)
-                for httpmethod, methodname in dynamic_routes.items():
+                for httpmethod, methodname in dynamic_routes:
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
                     ret.append(Route(
