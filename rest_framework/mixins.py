@@ -45,7 +45,10 @@ class CreateModelMixin(object):
     Should be mixed in with any `GenericAPIView`.
     """
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        if  isinstance(request.DATA, dict):
+            serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        else:
+            serializer = self.get_serializer(data=request.DATA, files=request.FILES, many=True)
 
         if serializer.is_valid():
             self.pre_save(serializer.object)
