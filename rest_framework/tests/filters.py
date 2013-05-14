@@ -369,7 +369,7 @@ class OrderingFilterTests(TestCase):
             ordering = ('title',)
 
         view = OrderingListView.as_view()
-        request = factory.get('?order=text')
+        request = factory.get('?ordering=text')
         response = view(request)
         self.assertEqual(
             response.data,
@@ -387,7 +387,7 @@ class OrderingFilterTests(TestCase):
             ordering = ('title',)
 
         view = OrderingListView.as_view()
-        request = factory.get('?order=-text')
+        request = factory.get('?ordering=-text')
         response = view(request)
         self.assertEqual(
             response.data,
@@ -405,7 +405,7 @@ class OrderingFilterTests(TestCase):
             ordering = ('title',)
 
         view = OrderingListView.as_view()
-        request = factory.get('?order=foobar')
+        request = factory.get('?ordering=foobar')
         response = view(request)
         self.assertEqual(
             response.data,

@@ -112,7 +112,7 @@ class SearchFilter(BaseFilterBackend):
 
 
 class OrderingFilter(BaseFilterBackend):
-    ordering_param = 'order'  # The URL query parameter used for the ordering.
+    ordering_param = 'ordering'  # The URL query parameter used for the ordering.
 
     def get_ordering(self, request):
         """
