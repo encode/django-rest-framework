@@ -200,7 +200,7 @@ class BaseSerializer(WritableField):
 
         # If 'fields' is specified, use those fields, in that order.
         if self.opts.fields:
-            assert isinstance(self.opts.fields, (list, tuple)), '`include` must be a list or tuple'
+            assert isinstance(self.opts.fields, (list, tuple)), '`fields` must be a list or tuple'
             new = SortedDict()
             for key in self.opts.fields:
                 new[key] = ret[key]
@@ -208,7 +208,7 @@ class BaseSerializer(WritableField):
 
         # Remove anything in 'exclude'
         if self.opts.exclude:
-            assert isinstance(self.opts.fields, (list, tuple)), '`exclude` must be a list or tuple'
+            assert isinstance(self.opts.exclude, (list, tuple)), '`exclude` must be a list or tuple'
             for key in self.opts.exclude:
                 ret.pop(key, None)
 
