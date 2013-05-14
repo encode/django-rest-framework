@@ -38,10 +38,8 @@ class DjangoFilterBackend(BaseFilterBackend):
         """
         filter_class = getattr(view, 'filter_class', None)
         filter_fields = getattr(view, 'filter_fields', None)
-        model_cls = getattr(view, 'model', None)
-        queryset = getattr(view, 'queryset', None)
-        if model_cls is None and queryset is not None:
-            model_cls = queryset.model
+        queryset = view.get_queryset()
+        model_cls = queryset.model
 
         if filter_class:
             filter_model = filter_class.Meta.model
