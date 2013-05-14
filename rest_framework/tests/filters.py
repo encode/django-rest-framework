@@ -335,3 +335,119 @@ class SearchFilterTests(TestCase):
                 {'id': 2, 'title': 'zz', 'text': 'bcd'}
             ]
         )
+
+
+class OrdringFilterModel(models.Model):
+    title = models.CharField(max_length=20)
+    text = models.CharField(max_length=100)
+
+
+class OrderingFilterTests(TestCase):
+    def setUp(self):
+        # Sequence of title/text is:
+        #
+        # zyx abc
+        # yxw bcd
+        # xwv cde
+        for idx in range(3):
+            title = (
+                chr(ord('z') - idx) +
+                chr(ord('y') - idx) +
+                chr(ord('x') - idx)
+            )
+            text = (
+                chr(idx + ord('a')) +
+                chr(idx + ord('b')) +
+                chr(idx + ord('c'))
+            )
+            OrdringFilterModel(title=title, text=text).save()
+
+    def test_ordering(self):
+        class OrderingListView(generics.ListAPIView):
+            model = OrdringFilterModel
+            filter_backends = (filters.OrderingFilter,)
+            ordering = ('title',)
+
+        view = OrderingListView.as_view()
+        request = factory.get('?order=text')
+        response = view(request)
+        self.assertEqual(
+            response.data,
+            [
+                {'id': 1, 'title': 'zyx', 'text': 'abc'},
+                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+                {'id': 3, 'title': 'xwv', 'text': 'cde'},
+            ]
+        )
+
+    def test_reverse_ordering(self):
+        class OrderingListView(generics.ListAPIView):
+            model = OrdringFilterModel
+            filter_backends = (filters.OrderingFilter,)
+            ordering = ('title',)
+
+        view = OrderingListView.as_view()
+        request = factory.get('?order=-text')
+        response = view(request)
+        self.assertEqual(
+            response.data,
+            [
+                {'id': 3, 'title': 'xwv', 'text': 'cde'},
+                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+                {'id': 1, 'title': 'zyx', 'text': 'abc'},
+            ]
+        )
+
+    def test_incorrectfield_ordering(self):
+        class OrderingListView(generics.ListAPIView):
+            model = OrdringFilterModel
+            filter_backends = (filters.OrderingFilter,)
+            ordering = ('title',)
+
+        view = OrderingListView.as_view()
+        request = factory.get('?order=foobar')
+        response = view(request)
+        self.assertEqual(
+            response.data,
+            [
+                {'id': 3, 'title': 'xwv', 'text': 'cde'},
+                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+                {'id': 1, 'title': 'zyx', 'text': 'abc'},
+            ]
+        )
+
+    def test_default_ordering(self):
+        class OrderingListView(generics.ListAPIView):
+            model = OrdringFilterModel
+            filter_backends = (filters.OrderingFilter,)
+            ordering = ('title',)
+
+        view = OrderingListView.as_view()
+        request = factory.get('')
+        response = view(request)
+        self.assertEqual(
+            response.data,
+            [
+                {'id': 3, 'title': 'xwv', 'text': 'cde'},
+                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+                {'id': 1, 'title': 'zyx', 'text': 'abc'},
+            ]
+        )
+
+    def test_default_ordering_using_string(self):
+        class OrderingListView(generics.ListAPIView):
+            model = OrdringFilterModel
+            filter_backends = (filters.OrderingFilter,)
+            ordering = 'title'
+
+        view = OrderingListView.as_view()
+        request = factory.get('')
+        response = view(request)
+        self.assertEqual(
+            response.data,
+            [
+                {'id': 3, 'title': 'xwv', 'text': 'cde'},
+                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+                {'id': 1, 'title': 'zyx', 'text': 'abc'},
+            ]
+        )

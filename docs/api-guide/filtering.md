@@ -190,7 +190,7 @@ The `SearchFilterBackend` class will only be applied if the view has a `search_f
         filter_backends = (filters.SearchFilter,)
         search_fields = ('username', 'email')
 
-This will allow the client to filter the itemss in the list by making queries such as:
+This will allow the client to filter the items in the list by making queries such as:
 
     http://example.com/api/users?search=russell
 
@@ -198,7 +198,7 @@ You can also perform a related lookup on a ForeignKey or ManyToManyField with th
 
     search_fields = ('username', 'email', 'profile__profession')
 
-By default, searches will use case-insensitive partial matches.  The search parameter may contain multiple search terms, which should be whitespace and/or comma seperated.  If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched.
+By default, searches will use case-insensitive partial matches.  The search parameter may contain multiple search terms, which should be whitespace and/or comma separated.  If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched.
 
 The search behavior may be restricted by prepending various characters to the `search_fields`.
 
@@ -211,6 +211,34 @@ For example:
     search_fields = ('=username', '=email')
 
 For more details, see the [Django documentation][search-django-admin].
+
+---
+
+## OrderingFilter
+
+The `OrderingFilter` class supports simple query parameter controlled ordering of results.  For example:
+
+    http://example.com/api/users?ordering=username
+
+The client may also specify reverse orderings by prefixing the field name with '-', like so:
+
+    http://example.com/api/users?ordering=-username
+
+Multiple orderings may also be specified:
+
+    http://example.com/api/users?ordering=account,username
+
+If an `ordering` attribute is set on the view, this will be used as the default ordering.
+
+Typicaly you'd instead control this by setting `order_by` on the initial queryset, but using the `ordering` parameter on the view allows you to specify the ordering in a way that it can then be passed automatically as context to a rendered template.  This makes it possible to automatically render column headers differently if they are being used to order the results.
+
+    class UserListView(generics.ListAPIView):
+        queryset = User.objects.all()
+        serializer = UserSerializer
+        filter_backends = (filters.OrderingFilter,)
+        ordering = ('username',) 
+
+The `ordering` attribute may be either a string or a list/tuple of strings.
 
 ---
 

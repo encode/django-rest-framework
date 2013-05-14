@@ -4,7 +4,7 @@ returned by list views.
 """
 from __future__ import unicode_literals
 from django.db import models
-from rest_framework.compat import django_filters
+from rest_framework.compat import django_filters, six
 from functools import reduce
 import operator
 
@@ -107,5 +107,44 @@ class SearchFilter(BaseFilterBackend):
             or_queries = [models.Q(**{orm_lookup: search_term})
                           for orm_lookup in orm_lookups]
             queryset = queryset.filter(reduce(operator.or_, or_queries))
+
+        return queryset
+
+
+class OrderingFilter(BaseFilterBackend):
+    ordering_param = 'order'  # The URL query parameter used for the ordering.
+
+    def get_ordering(self, request):
+        """
+        Search terms are set by a ?search=... query parameter,
+        and may be comma and/or whitespace delimited.
+        """
+        params = request.QUERY_PARAMS.get(self.ordering_param)
+        if params:
+            return [param.strip() for param in params.split(',')]
+
+    def get_default_ordering(self, view):
+        ordering = getattr(view, 'ordering', None)
+        if isinstance(ordering, six.string_types):
+            return (ordering,)
+        return ordering
+
+    def remove_invalid_fields(self, queryset, ordering):
+        field_names = [field.name for field in queryset.model._meta.fields]
+        return [term for term in ordering if term.lstrip('-') in field_names]
+
+    def filter_queryset(self, request, queryset, view):
+        ordering = self.get_ordering(request)
+
+        if ordering:
+            # Skip any incorrect parameters
+            ordering = self.remove_invalid_fields(queryset, ordering)
+
+        if not ordering:
+            # Use 'ordering' attribtue by default
+            ordering = self.get_default_ordering(view)
+
+        if ordering:
+            return queryset.order_by(*ordering)
 
         return queryset
