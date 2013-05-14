@@ -390,7 +390,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         if not getattr(view, 'get_serializer', None) or not parsers.FormParser in view.parser_classes:
             return
 
-        serializer = view.get_serializer(instance=obj)
+        serializer = view.get_serializer(instance=obj, request=cloned_request)
         fields = self.serializer_to_form_fields(serializer)
 
         # Creating an on the fly form see:
