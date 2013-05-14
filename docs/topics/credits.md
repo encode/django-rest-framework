@@ -135,7 +135,7 @@ Continuous integration testing is managed with [Travis CI][travis-ci].
 
 The [live sandbox][sandbox] is hosted on [Heroku].
 
-Various inspiration taken from the [Rails], [Piston], [Tastypie] and [Dagny] projects.
+Various inspiration taken from the [Rails], [Piston], [Tastypie], [Dagny] and [django-viewsets] projects.
 
 Development of REST framework 2.0 was sponsored by [DabApps].
 
@@ -154,6 +154,7 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [piston]: https://bitbucket.org/jespern/django-piston
 [tastypie]: https://github.com/toastdriven/django-tastypie
 [dagny]: https://github.com/zacharyvoase/dagny
+[django-viewsets]: https://github.com/BertrandBordage/django-viewsets
 [dabapps]: http://lab.dabapps.com
 [sandbox]: http://restframework.herokuapp.com/
 [heroku]: http://www.heroku.com/
