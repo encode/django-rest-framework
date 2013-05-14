@@ -182,7 +182,7 @@ For more details on using filter sets see the [django-filter documentation][djan
 
 The `SearchFilterBackend` class supports simple single query parameter based searching, and is based on the [Django admin's search functionality][search-django-admin].
 
-The `SearchFilterBackend` class will only be applied if the view has a `search_fields` attribute set.  The `search_fields` attribute should be a list of names of text fields on the model.
+The `SearchFilterBackend` class will only be applied if the view has a `search_fields` attribute set.  The `search_fields` attribute should be a list of names of text type fields on the model, such as `CharField` or `TextField`.
 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
@@ -223,7 +223,7 @@ For example, you might need to restrict users to only being able to see objects 
         def filter_queryset(self, request, queryset, view):
             return queryset.filter(owner=request.user)
 
-We could do the same thing by overriding `get_queryset` on the views, but using a filter backend allows you to more easily add this restriction to multiple views, or to apply it across the entire API.
+We could achieve the same behavior by overriding `get_queryset()` on the views, but using a filter backend allows you to more easily add this restriction to multiple views, or to apply it across the entire API.
 
 [cite]: https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter

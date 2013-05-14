@@ -40,6 +40,11 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
+### Master
+
+* Added SearchFilter
+* Added GenericViewSet
+
 ### 2.3.2
 
 **Date**: 8th May 2013
