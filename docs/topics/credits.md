@@ -122,6 +122,7 @@ The following people have helped make REST framework great.
 * Daniel Hepper - [dhepper]
 * Hamish Campbell - [hamishcampbell]
 * Marlon Bailey - [avinash240]
+* James Summerfield - [jsummerfield]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -280,3 +281,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [dhepper]: https://github.com/dhepper
 [hamishcampbell]: https://github.com/hamishcampbell
 [avinash240]: https://github.com/avinash240
+[jsummerfield]: https://github.com/jsummerfield
