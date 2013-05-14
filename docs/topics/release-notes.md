@@ -43,7 +43,9 @@ You can determine your currently installed version using `pip freeze`:
 ### Master
 
 * Added SearchFilter
+* Added OrderingFilter
 * Added GenericViewSet
+* Bugfix: Multiple `@action` and `@link` methods now allowed on viewsets. 
 
 ### 2.3.2
 
