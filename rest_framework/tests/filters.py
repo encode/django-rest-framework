@@ -222,7 +222,7 @@ class IntegrationTestDetailFiltering(CommonFilteringTestCase):
     """
     Integration tests for filtered detail views.
     """
-    urls = 'rest_framework.tests.filterset'
+    urls = 'rest_framework.tests.filters'
 
     def _get_url(self, item):
         return reverse('detail-view', kwargs=dict(pk=item.pk))
