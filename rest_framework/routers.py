@@ -16,7 +16,7 @@ For example, you might have a `urls.py` that looks something like this:
 from __future__ import unicode_literals
 
 from collections import namedtuple
-from django.conf.urls import url, patterns
+from rest_framework.compat import patterns, url
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
