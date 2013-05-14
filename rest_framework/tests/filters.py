@@ -70,9 +70,19 @@ if django_filters:
         filter_fields = ['decimal', 'date']
         filter_backend = filters.DjangoFilterBackend
 
+    class GetQuerysetView(generics.ListCreateAPIView):
+        serializer_class = FilterableItemSerializer
+        filter_class = SeveralFieldsFilter
+        filter_backend = filters.DjangoFilterBackend
+
+        def get_queryset(self):
+            return FilterableItem.objects.all()
+
     urlpatterns = patterns('',
         url(r'^(?P<pk>\d+)/$', FilterClassDetailView.as_view(), name='detail-view'),
         url(r'^$', FilterClassRootView.as_view(), name='root-view'),
+        url(r'^get-queryset/$', GetQuerysetView.as_view(),
+            name='get-queryset-view'),
     )
 
 
@@ -146,6 +156,17 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         expected_data = [f for f in self.data if f['decimal'] == search_decimal]
         self.assertEqual(response.data, expected_data)
+
+    @unittest.skipUnless(django_filters, 'django-filters not installed')
+    def test_filter_with_get_queryset_only(self):
+        """
+        Regression test for #834.
+        """
+        view = GetQuerysetView.as_view()
+        request = factory.get('/get-queryset/')
+        view(request).render()
+        # Used to raise "issubclass() arg 2 must be a class or tuple of classes"
+        # here when neither `model' nor `queryset' was specified.
 
     @unittest.skipUnless(django_filters, 'django-filters not installed')
     def test_get_filtered_class_root_view(self):
