@@ -65,7 +65,7 @@ Both of these come with a trade-off.  Using regular views and URL confs is more 
 
 The default routers included with REST framework will provide routes for a standard set of create/retrieve/update/destroy style operations, as shown below:
 
-    class UserViewSet(viewsets.VietSet):
+    class UserViewSet(viewsets.ViewSet):
         """
         Example empty viewset demonstrating the standard
         actions that will be handled by a router class.
