@@ -74,7 +74,7 @@ class SearchFilter(BaseFilterBackend):
         Search terms are set by a ?search=... query parameter,
         and may be comma and/or whitespace delimited.
         """
-        params = request.QUERY_PARAMS.get(self.search_param)
+        params = request.QUERY_PARAMS.get(self.search_param, '')
         return params.replace(',', ' ').split()
 
     def construct_search(self, field_name):
@@ -91,7 +91,7 @@ class SearchFilter(BaseFilterBackend):
         search_fields = getattr(view, 'search_fields', None)
 
         if not search_fields:
-            return None
+            return queryset
 
         orm_lookups = [self.construct_search(str(search_field))
                        for search_field in search_fields]
