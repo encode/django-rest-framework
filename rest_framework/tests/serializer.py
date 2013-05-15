@@ -78,6 +78,18 @@ class PersonSerializer(serializers.ModelSerializer):
         read_only_fields = ('age',)
 
 
+class PersonSerializerInvalidReadOnly(serializers.ModelSerializer):
+    """
+    Testing for #652.
+    """
+    info = serializers.Field(source='info')
+
+    class Meta:
+        model = Person
+        fields = ('name', 'age', 'info')
+        read_only_fields = ('age', 'info')
+
+
 class AlbumsSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -188,6 +200,12 @@ class BasicTests(TestCase):
         self.assertEqual(serializer.errors, {})
         # Assert age is unchanged (35)
         self.assertEqual(instance.age, self.person_data['age'])
+
+    def test_invalid_read_only_fields(self):
+        """
+        Regression test for #652.
+        """
+        self.assertRaises(AssertionError, PersonSerializerInvalidReadOnly, [])
 
 
 class DictStyleSerializer(serializers.Serializer):

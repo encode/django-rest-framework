@@ -649,8 +649,14 @@ class ModelSerializer(Serializer):
         # Add the `read_only` flag to any fields that have bee specified
         # in the `read_only_fields` option
         for field_name in self.opts.read_only_fields:
+            assert field_name not in self.base_fields.keys(), \
+                "field '%s' on serializer '%s' specfied in " \
+                "`read_only_fields`, but also added " \
+                "as an explict field.  Remove it from `read_only_fields`." % \
+                (field_name, self.__class__.__name__)
             assert field_name in ret, \
-                "read_only_fields on '%s' included invalid item '%s'" % \
+                "Noexistant field '%s' specified in `read_only_fields` " \
+                "on serializer '%s'." % \
                 (self.__class__.__name__, field_name)
             ret[field_name].read_only = True
 
