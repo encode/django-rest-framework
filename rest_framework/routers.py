@@ -16,6 +16,7 @@ For example, you might have a `urls.py` that looks something like this:
 from __future__ import unicode_literals
 
 from collections import namedtuple
+from rest_framework import views
 from rest_framework.compat import patterns, url
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -217,14 +218,16 @@ class DefaultRouter(SimpleRouter):
         for prefix, viewset, basename in self.registry:
             api_root_dict[prefix] = list_name.format(basename=basename)
 
-        @api_view(('GET',))
-        def api_root(request, format=None):
-            ret = {}
-            for key, url_name in api_root_dict.items():
-                ret[key] = reverse(url_name, request=request, format=format)
-            return Response(ret)
+        class APIRoot(views.APIView):
+            _ignore_model_permissions = True
 
-        return api_root
+            def get(self, request, format=None):
+                ret = {}
+                for key, url_name in api_root_dict.items():
+                    ret[key] = reverse(url_name, request=request, format=format)
+                return Response(ret)
+
+        return APIRoot.as_view()
 
     def get_urls(self):
         """

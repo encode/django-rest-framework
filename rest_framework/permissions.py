@@ -126,6 +126,11 @@ class DjangoModelPermissions(BasePermission):
         if model_cls is None and queryset is not None:
             model_cls = queryset.model
 
+        # Workaround to ensure DjangoModelPermissions are not applied
+        # to the root view when using DefaultRouter.
+        if model_cls is None and getattr(view, '_ignore_model_permissions'):
+            return True
+
         assert model_cls, ('Cannot apply DjangoModelPermissions on a view that'
                            ' does not have `.model` or `.queryset` property.')
 
