@@ -196,15 +196,13 @@ Would serialize to a representation like this:
         'artist': 'Thom Yorke'
         'track_listing': 'http://www.example.com/api/track_list/12/',
     }
- 
+
 This field is always read-only.
 
 **Arguments**:
 
 * `view_name` - The view name that should be used as the target of the relationship.  **required**.
-* `slug_field` - The field on the target that should be used for the lookup. Default is `'slug'`.
-* `pk_url_kwarg` - The named url parameter for the pk field lookup. Default is `pk`.
-* `slug_url_kwarg` - The named url parameter for the slug field lookup. Default is to use the same value as given for `slug_field`.
+* `lookup_field` - The field on the target that should be used for the lookup.  Should correspond to a URL keyword argument on the referenced view. Default is `'pk'`.
 * `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
 
 ---
