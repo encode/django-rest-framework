@@ -465,10 +465,13 @@ class HyperlinkedIdentityField(Field):
     """
     Represents the instance, or a property on the instance, using hyperlinking.
     """
+    lookup_field = 'pk'
+    read_only = True
+
+    # These are all pending deprecation
     pk_url_kwarg = 'pk'
     slug_field = 'slug'
     slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
-    read_only = True
 
     def __init__(self, *args, **kwargs):
         # TODO: Make view_name mandatory, and have the
@@ -476,6 +479,19 @@ class HyperlinkedIdentityField(Field):
         self.view_name = kwargs.pop('view_name', None)
         # Optionally the format of the target hyperlink may be specified
         self.format = kwargs.pop('format', None)
+
+        self.lookup_field = kwargs.pop('lookup_field', self.lookup_field)
+
+        # These are pending deprecation
+        if 'pk_url_kwarg' in kwargs:
+            msg = 'pk_url_kwarg is pending deprecation. Use lookup_field instead.'
+            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+        if 'slug_url_kwarg' in kwargs:
+            msg = 'slug_url_kwarg is pending deprecation. Use lookup_field instead.'
+            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+        if 'slug_field' in kwargs:
+            msg = 'slug_field is pending deprecation. Use lookup_field instead.'
+            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
 
         self.slug_field = kwargs.pop('slug_field', self.slug_field)
         default_slug_kwarg = self.slug_url_kwarg or self.slug_field
@@ -488,7 +504,8 @@ class HyperlinkedIdentityField(Field):
         request = self.context.get('request', None)
         format = self.context.get('format', None)
         view_name = self.view_name or self.parent.opts.view_name
-        kwargs = {self.pk_url_kwarg: obj.pk}
+        lookup_field = getattr(obj, self.lookup_field)
+        kwargs = {self.lookup_field: lookup_field}
 
         if request is None:
             warnings.warn("Using `HyperlinkedIdentityField` without including the "
