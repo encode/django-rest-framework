@@ -40,6 +40,10 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
+### Master
+
+* Bugfix: HyperlinkedIdentityField now uses `lookup_field` kwarg.
+
 ### 2.3.2
 
 **Date**: 16th May 2013
