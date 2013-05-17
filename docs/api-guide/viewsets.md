@@ -13,11 +13,11 @@ A `ViewSet` class is simply **a type of class-based View, that does not provide 
 
 The method handlers for a `ViewSet` are only bound to the corresponding actions at the point of finalizing the view, using the `.as_view()` method.
 
-Typically, rather than exlicitly registering the views in a viewset in the urlconf, you'll register the viewset with a router class, that automatically determines the urlconf for you.
+Typically, rather than explicitly registering the views in a viewset in the urlconf, you'll register the viewset with a router class, that automatically determines the urlconf for you.
 
 ## Example
 
-Let's define a simple viewset that can be used to listing or retrieving all the users in the system.
+Let's define a simple viewset that can be used to list or retrieve all the users in the system.
 
     class UserViewSet(viewsets.ViewSet):
         """
