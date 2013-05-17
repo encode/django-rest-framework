@@ -24,7 +24,7 @@ if django_filters:
     class FilterFieldsRootView(generics.ListCreateAPIView):
         model = FilterableItem
         filter_fields = ['decimal', 'date']
-        filter_backend = filters.DjangoFilterBackend
+        filter_backends = (filters.DjangoFilterBackend,)
 
     # These class are used to test a filter class.
     class SeveralFieldsFilter(django_filters.FilterSet):
@@ -39,7 +39,7 @@ if django_filters:
     class FilterClassRootView(generics.ListCreateAPIView):
         model = FilterableItem
         filter_class = SeveralFieldsFilter
-        filter_backend = filters.DjangoFilterBackend
+        filter_backends = (filters.DjangoFilterBackend,)
 
     # These classes are used to test a misconfigured filter class.
     class MisconfiguredFilter(django_filters.FilterSet):
@@ -52,12 +52,12 @@ if django_filters:
     class IncorrectlyConfiguredRootView(generics.ListCreateAPIView):
         model = FilterableItem
         filter_class = MisconfiguredFilter
-        filter_backend = filters.DjangoFilterBackend
+        filter_backends = (filters.DjangoFilterBackend,)
 
     class FilterClassDetailView(generics.RetrieveAPIView):
         model = FilterableItem
         filter_class = SeveralFieldsFilter
-        filter_backend = filters.DjangoFilterBackend
+        filter_backends = (filters.DjangoFilterBackend,)
 
     # Regression test for #814
     class FilterableItemSerializer(serializers.ModelSerializer):
@@ -68,12 +68,12 @@ if django_filters:
         queryset = FilterableItem.objects.all()
         serializer_class = FilterableItemSerializer
         filter_fields = ['decimal', 'date']
-        filter_backend = filters.DjangoFilterBackend
+        filter_backends = (filters.DjangoFilterBackend,)
 
     class GetQuerysetView(generics.ListCreateAPIView):
         serializer_class = FilterableItemSerializer
         filter_class = SeveralFieldsFilter
-        filter_backend = filters.DjangoFilterBackend
+        filter_backends = (filters.DjangoFilterBackend,)
 
         def get_queryset(self):
             return FilterableItem.objects.all()

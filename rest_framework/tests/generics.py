@@ -39,6 +39,7 @@ class SlugBasedInstanceView(InstanceView):
     """
     model = SlugBasedModel
     serializer_class = SlugSerializer
+    lookup_field = 'slug'
 
 
 class TestRootView(TestCase):
@@ -434,22 +435,14 @@ class TestFilterBackendAppliedToViews(TestCase):
             {'id': obj.id, 'text': obj.text}
             for obj in self.objects.all()
         ]
-        self.root_view = RootView.as_view()
-        self.instance_view = InstanceView.as_view()
-        self.original_root_backend = getattr(RootView, 'filter_backend')
-        self.original_instance_backend = getattr(InstanceView, 'filter_backend')
-
-    def tearDown(self):
-        setattr(RootView, 'filter_backend', self.original_root_backend)
-        setattr(InstanceView, 'filter_backend', self.original_instance_backend)
 
     def test_get_root_view_filters_by_name_with_filter_backend(self):
         """
         GET requests to ListCreateAPIView should return filtered list.
         """
-        setattr(RootView, 'filter_backend', InclusiveFilterBackend)
+        root_view = RootView.as_view(filter_backends=(InclusiveFilterBackend,))
         request = factory.get('/')
-        response = self.root_view(request).render()
+        response = root_view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data, [{'id': 1, 'text': 'foo'}])
@@ -458,9 +451,9 @@ class TestFilterBackendAppliedToViews(TestCase):
         """
         GET requests to ListCreateAPIView should return empty list when all models are filtered out.
         """
-        setattr(RootView, 'filter_backend', ExclusiveFilterBackend)
+        root_view = RootView.as_view(filter_backends=(ExclusiveFilterBackend,))
         request = factory.get('/')
-        response = self.root_view(request).render()
+        response = root_view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, [])
 
@@ -468,9 +461,9 @@ class TestFilterBackendAppliedToViews(TestCase):
         """
         GET requests to RetrieveUpdateDestroyAPIView should raise 404 when model filtered out.
         """
-        setattr(InstanceView, 'filter_backend', ExclusiveFilterBackend)
+        instance_view = InstanceView.as_view(filter_backends=(ExclusiveFilterBackend,))
         request = factory.get('/1')
-        response = self.instance_view(request, pk=1).render()
+        response = instance_view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data, {'detail': 'Not found'})
 
@@ -478,8 +471,8 @@ class TestFilterBackendAppliedToViews(TestCase):
         """
         GET requests to RetrieveUpdateDestroyAPIView should return a single object when not excluded
         """
-        setattr(InstanceView, 'filter_backend', InclusiveFilterBackend)
+        instance_view = InstanceView.as_view(filter_backends=(InclusiveFilterBackend,))
         request = factory.get('/1')
-        response = self.instance_view(request, pk=1).render()
+        response = instance_view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foo'})

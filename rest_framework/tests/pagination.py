@@ -130,7 +130,7 @@ class IntegrationTestPaginationAndFiltering(TestCase):
             model = FilterableItem
             paginate_by = 10
             filter_class = DecimalFilter
-            filter_backend = filters.DjangoFilterBackend
+            filter_backends = (filters.DjangoFilterBackend,)
 
         view = FilterFieldsRootView.as_view()
 
@@ -177,7 +177,7 @@ class IntegrationTestPaginationAndFiltering(TestCase):
         class BasicFilterFieldsRootView(generics.ListCreateAPIView):
             model = FilterableItem
             paginate_by = 10
-            filter_backend = DecimalFilterBackend
+            filter_backends = (DecimalFilterBackend,)
 
         view = BasicFilterFieldsRootView.as_view()
 
