@@ -10,6 +10,7 @@ from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.request import clone_request
+import warnings
 
 
 def _get_validation_exclusions(obj, pk=None, slug_field=None, lookup_field=None):
@@ -77,6 +78,12 @@ class ListModelMixin(object):
         # Default is to allow empty querysets.  This can be altered by setting
         # `.allow_empty = False`, to raise 404 errors on empty querysets.
         if not self.allow_empty and not self.object_list:
+            warnings.warn(
+                'The `allow_empty` parameter is due to be deprecated. '
+                'To use `allow_empty=False` style behavior, You should override '
+                '`get_queryset()` and explicitly raise a 404 on empty querysets.',
+                PendingDeprecationWarning
+            )
             class_name = self.__class__.__name__
             error_msg = self.empty_error % {'class_name': class_name}
             raise Http404(error_msg)
