@@ -43,7 +43,6 @@ def _get_validation_exclusions(obj, pk=None, slug_field=None, lookup_field=None)
 class CreateModelMixin(object):
     """
     Create a model instance.
-    Should be mixed in with any `GenericAPIView`.
     """
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -68,7 +67,6 @@ class CreateModelMixin(object):
 class ListModelMixin(object):
     """
     List a queryset.
-    Should be mixed in with `MultipleObjectAPIView`.
     """
     empty_error = "Empty list and '%(class_name)s.allow_empty' is False."
 
@@ -101,7 +99,6 @@ class ListModelMixin(object):
 class RetrieveModelMixin(object):
     """
     Retrieve a model instance.
-    Should be mixed in with `SingleObjectAPIView`.
     """
     def retrieve(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -112,17 +109,22 @@ class RetrieveModelMixin(object):
 class UpdateModelMixin(object):
     """
     Update a model instance.
-    Should be mixed in with `SingleObjectAPIView`.
     """
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
-        self.object = None
+    def get_object_or_none(self):
         try:
-            self.object = self.get_object()
+            return self.get_object()
         except Http404:
             # If this is a PUT-as-create operation, we need to ensure that
             # we have relevant permissions, as if this was a POST request.
-            self.check_permissions(clone_request(request, 'POST'))
+            # This will either raise a PermissionDenied exception,
+            # or simply return None
+            self.check_permissions(clone_request(self.request, 'POST'))
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        self.object = self.get_object_or_none()
+
+        if self.object is None:
             created = True
             save_kwargs = {'force_insert': True}
             success_status_code = status.HTTP_201_CREATED
@@ -175,7 +177,6 @@ class UpdateModelMixin(object):
 class DestroyModelMixin(object):
     """
     Destroy a model instance.
-    Should be mixed in with `SingleObjectAPIView`.
     """
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
