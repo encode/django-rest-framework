@@ -183,9 +183,7 @@ class APIView(View):
             return conneg.select_renderer(request, renderers, self.format_kwarg)
         except Exception:
             if force:
-                charset = renderers[0].charset
-                charset = charset if charset is not None else api_settings.DEFAULT_CHARSET
-                return (renderers[0], renderers[0].media_type, renderers[0].charset)
+                return (renderers[0], renderers[0].media_type)
             raise
 
     def perform_authentication(self, request):
@@ -252,10 +250,7 @@ class APIView(View):
 
         # Perform content negotiation and store the accepted info on the request
         neg = self.perform_content_negotiation(request)
-        renderer, media_type, charset = neg
-        request.accepted_renderer = renderer
-        request.accepted_media_type = media_type
-        request.accepted_charset = charset
+        request.accepted_renderer, request.accepted_media_type = neg
 
     def finalize_response(self, request, response, *args, **kwargs):
         """
@@ -270,16 +265,11 @@ class APIView(View):
         if isinstance(response, Response):
             if not getattr(request, 'accepted_renderer', None):
                 neg = self.perform_content_negotiation(request, force=True)
-                renderer, media_type, charset = neg
-                request.accepted_renderer = renderer
-                request.accepted_media_type = media_type 
+                request.accepted_renderer, request.accepted_media_type = neg
 
             response.accepted_renderer = request.accepted_renderer
             response.accepted_media_type = request.accepted_media_type
             response.renderer_context = self.get_renderer_context()
-            charset = request.accepted_renderer.charset
-            charset = charset if charset else api_settings.DEFAULT_CHARSET
-            response.charset = charset
 
         for key, value in self.headers.items():
             response[key] = value

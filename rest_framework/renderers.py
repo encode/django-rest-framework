@@ -41,6 +41,7 @@ class BaseRenderer(object):
     def render(self, data, accepted_media_type=None, renderer_context=None):
         raise NotImplemented('Renderer class requires .render() to be implemented')
 
+
 class JSONRenderer(BaseRenderer):
     """
     Renderer which serializes to json.
@@ -115,6 +116,7 @@ class XMLRenderer(BaseRenderer):
 
     media_type = 'application/xml'
     format = 'xml'
+    charset = 'utf-8'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -164,6 +166,7 @@ class YAMLRenderer(BaseRenderer):
     media_type = 'application/yaml'
     format = 'yaml'
     encoder = encoders.SafeDumper
+    charset = 'utf-8'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -204,6 +207,7 @@ class TemplateHTMLRenderer(BaseRenderer):
         '%(status_code)s.html',
         'api_exception.html'
     ]
+    charset = 'utf-8'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -275,6 +279,7 @@ class StaticHTMLRenderer(TemplateHTMLRenderer):
     """
     media_type = 'text/html'
     format = 'html'
+    charset = 'utf-8'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         renderer_context = renderer_context or {}
@@ -296,6 +301,7 @@ class BrowsableAPIRenderer(BaseRenderer):
     media_type = 'text/html'
     format = 'api'
     template = 'rest_framework/api.html'
+    charset = 'utf-8'
 
     def get_default_renderer(self, view):
         """

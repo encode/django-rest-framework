@@ -58,17 +58,11 @@ class DefaultContentNegotiation(BaseContentNegotiation):
                             _MediaType(media_type).precedence):
                             # Eg client requests '*/*'
                             # Accepted media type is 'application/json'
-                            renderer_and_media_type = renderer, renderer.media_type
+                            return renderer, renderer.media_type
                         else:
                             # Eg client requests 'application/json; indent=8'
                             # Accepted media type is 'application/json; indent=8'
-                            renderer_and_media_type = renderer, media_type
-                        if renderer.charset:
-                            charset = renderer.charset
-                        else:
-                            charset = self.__class__.settings.DEFAULT_CHARSET
-                        retval = renderer_and_media_type + (charset,)
-                        return retval
+                            return renderer, media_type
 
         raise exceptions.NotAcceptable(available_renderers=renderers)
 
