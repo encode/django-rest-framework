@@ -1,11 +1,12 @@
 from __future__ import unicode_literals
+from django.db import models
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.utils.datastructures import MultiValueDict
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel, DefaultValueModel,
-    ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo, SeveralChoicesModel)
+    ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
 import datetime
 import pickle
 
@@ -1003,6 +1004,31 @@ class SerializerPickleTests(TestCase):
 
 
 # test for issue #725
+class SeveralChoicesModel(models.Model):
+    color = models.CharField(
+        max_length=10,
+        choices=[('red', 'Red'), ('green', 'Green'), ('blue', 'Blue')],
+        blank=False
+    )
+    drink = models.CharField(
+        max_length=10,
+        choices=[('beer', 'Beer'), ('wine', 'Wine'), ('cider', 'Cider')],
+        blank=False,
+        default='beer'
+    )
+    os = models.CharField(
+        max_length=10,
+        choices=[('linux', 'Linux'), ('osx', 'OSX'), ('windows', 'Windows')],
+        blank=True
+    )
+    music_genre = models.CharField(
+        max_length=10,
+        choices=[('rock', 'Rock'), ('metal', 'Metal'), ('grunge', 'Grunge')],
+        blank=True,
+        default='metal'
+    )
+
+
 class SerializerChoiceFields(TestCase):
 
     def setUp(self):
