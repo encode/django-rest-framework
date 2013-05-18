@@ -45,6 +45,17 @@ class CommentSerializer(serializers.Serializer):
         return instance
 
 
+class NamesSerializer(serializers.Serializer):
+    first = serializers.CharField()
+    last = serializers.CharField(required=False, default='')
+    initials = serializers.CharField(required=False, default='')
+
+
+class PersonIdentifierSerializer(serializers.Serializer):
+    ssn = serializers.CharField()
+    names = NamesSerializer(source='names', required=False)
+
+
 class BookSerializer(serializers.ModelSerializer):
     isbn = serializers.RegexField(regex=r'^[0-9]{13}$', error_messages={'invalid': 'isbn has to be exact 13 numbers'})
 
@@ -154,6 +165,42 @@ class BasicTests(TestCase):
         self.assertEqual(serializer.object, expected)
         self.assertFalse(serializer.object is expected)
         self.assertEqual(serializer.data['sub_comment'], 'And Merry Christmas!')
+
+    def test_create_nested(self):
+        """Test a serializer with nested data."""
+        names = {'first': 'John', 'last': 'Doe', 'initials': 'jd'}
+        data = {'ssn': '1234567890', 'names': names}
+        serializer = PersonIdentifierSerializer(data=data)
+
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, data)
+        self.assertFalse(serializer.object is data)
+        self.assertEqual(serializer.data['names'], names)
+
+    def test_create_partial_nested(self):
+        """Test a serializer with nested data which has missing fields."""
+        names = {'first': 'John'}
+        data = {'ssn': '1234567890', 'names': names}
+        serializer = PersonIdentifierSerializer(data=data)
+
+        expected_names = {'first': 'John', 'last': '', 'initials': ''}
+        data['names'] = expected_names
+
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, data)
+        self.assertFalse(serializer.object is expected_names)
+        self.assertEqual(serializer.data['names'], expected_names)
+
+    def test_null_nested(self):
+        """Test a serializer with a nonexistent nested field"""
+        data = {'ssn': '1234567890'}
+        serializer = PersonIdentifierSerializer(data=data)
+
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, data)
+        self.assertFalse(serializer.object is data)
+        expected = {'ssn': '1234567890', 'names': None}
+        self.assertEqual(serializer.data, expected)
 
     def test_update(self):
         serializer = CommentSerializer(self.comment, data=self.data)
