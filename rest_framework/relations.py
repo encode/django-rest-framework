@@ -448,7 +448,7 @@ class HyperlinkedRelatedField(RelatedField):
             raise Exception('Writable related fields must include a `queryset` argument')
 
         try:
-            http_prefix = value.startswith('http:') or value.startswith('https:')
+            http_prefix = value.startswith(('http:', 'https:'))
         except AttributeError:
             msg = self.error_messages['incorrect_type']
             raise ValidationError(msg % type(value).__name__)
