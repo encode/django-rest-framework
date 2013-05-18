@@ -108,13 +108,19 @@ class Field(object):
     use_files = False
     form_field_class = forms.CharField
 
-    def __init__(self, source=None):
+    def __init__(self, source=None, label=None, help_text=None):
         self.parent = None
 
         self.creation_counter = Field.creation_counter
         Field.creation_counter += 1
 
         self.source = source
+
+        if label is not None:
+            self.label = smart_unicode(label)
+
+        if help_text is not None:
+            self.help_text = smart_unicode(help_text)
 
     def initialize(self, parent, field_name):
         """
@@ -194,7 +200,8 @@ class WritableField(Field):
     widget = widgets.TextInput
     default = None
 
-    def __init__(self, source=None, read_only=False, required=None,
+    def __init__(self, source=None, label=None, help_text=None,
+                 read_only=False, required=None,
                  validators=[], error_messages=None, widget=None,
                  default=None, blank=None):
 
@@ -205,7 +212,7 @@ class WritableField(Field):
                           DeprecationWarning, stacklevel=2)
             required = not(blank)
 
-        super(WritableField, self).__init__(source=source)
+        super(WritableField, self).__init__(source=source, label=label, help_text=help_text)
 
         self.read_only = read_only
         if required is None:

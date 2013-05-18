@@ -724,6 +724,12 @@ class ModelSerializer(Serializer):
             kwargs['choices'] = model_field.flatchoices
             return ChoiceField(**kwargs)
 
+        if model_field.verbose_name is not None:
+            kwargs['label'] = model_field.verbose_name
+
+        if model_field.help_text is not None:
+            kwargs['help_text'] = model_field.help_text
+
         try:
             return self.field_mapping[model_field.__class__](**kwargs)
         except KeyError:
