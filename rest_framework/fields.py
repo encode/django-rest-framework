@@ -117,10 +117,10 @@ class Field(object):
         self.source = source
 
         if label is not None:
-            self.label = smart_unicode(label)
+            self.label = smart_text(label)
 
         if help_text is not None:
-            self.help_text = smart_unicode(help_text)
+            self.help_text = smart_text(help_text)
 
     def initialize(self, parent, field_name):
         """
