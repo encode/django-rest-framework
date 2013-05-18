@@ -6,38 +6,30 @@ from rest_framework.tests.models import ForeignKeyTarget, ForeignKeySource, Null
 
 class ForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
+        model = ForeignKeySource
+        fields = ('id', 'name', 'target')
         depth = 1
-        model = ForeignKeySource
-
-
-class FlatForeignKeySourceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ForeignKeySource
 
 
 class ForeignKeyTargetSerializer(serializers.ModelSerializer):
-    sources = FlatForeignKeySourceSerializer(many=True)
-
     class Meta:
         model = ForeignKeyTarget
+        fields = ('id', 'name', 'sources')
+        depth = 1
 
 
 class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
-        depth = 1
         model = NullableForeignKeySource
-
-
-class NullableOneToOneSourceSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = NullableOneToOneSource
+        fields = ('id', 'name', 'target')
+        depth = 1
 
 
 class NullableOneToOneTargetSerializer(serializers.ModelSerializer):
-    nullable_source = NullableOneToOneSourceSerializer()
-
     class Meta:
         model = OneToOneTarget
+        fields = ('id', 'name', 'nullable_source')
+        depth = 1
 
 
 class ReverseForeignKeyTests(TestCase):

@@ -115,7 +115,7 @@
             </div>
             <div class="response-info">
                 <pre class="prettyprint"><div class="meta nocode"><b>HTTP {{ response.status_code }} {{ response.status_text }}</b>{% autoescape off %}
-{% for key, val in response.items %}<b>{{ key }}:</b> <span class="lit">{{ val|urlize_quoted_links }}</span>
+{% for key, val in response.items %}<b>{{ key }}:</b> <span class="lit">{{ val|break_long_headers|urlize_quoted_links }}</span>
 {% endfor %}
 </div>{{ content|urlize_quoted_links }}</pre>{% endautoescape %}
             </div>

@@ -21,7 +21,12 @@ If any permission check fails an `exceptions.PermissionDenied` exception will be
 
 REST framework permissions also support object-level permissioning.  Object level permissions are used to determine if a user should be allowed to act on a particular object, which will typically be a model instance.
 
-Object level permissions are run by REST framework's generic views when `.get_object()` is called.  As with view level permissions, an `exceptions.PermissionDenied` exception will be raised if the user is not allowed to act on the given object.
+Object level permissions are run by REST framework's generic views when `.get_object()` is called.
+As with view level permissions, an `exceptions.PermissionDenied` exception will be raised if the user is not allowed to act on the given object.
+
+If you're writing your own views and want to enforce object level permissions,
+you'll need to explicitly call the `.check_object_permissions(request, obj)` method on the view at the point at which you've retrieved the object.
+This will either raise a `PermissionDenied` or `NotAuthenticated` exception, or simply return if the view has the appropriate permissions.
 
 ## Setting the permission policy
 
@@ -39,7 +44,8 @@ If not specified, this setting defaults to allowing unrestricted access:
        'rest_framework.permissions.AllowAny',
     )
 
-You can also set the authentication policy on a per-view basis, using the `APIView` class based views.
+You can also set the authentication policy on a per-view, or per-viewset basis,
+using the `APIView` class based views.
 
     class ExampleView(APIView):
         permission_classes = (IsAuthenticated,)
@@ -95,15 +101,14 @@ This permission class ties into Django's standard `django.contrib.auth` [model p
 * `POST` requests require the user to have the `add` permission on the model.
 * `PUT` and `PATCH` requests require the user to have the `change` permission on the model.
 * `DELETE` requests require the user to have the `delete` permission on the model.
- 
-If you want to use `DjangoModelPermissions` but also allow unauthenticated users to have read permission, override the class and set the `authenticated_users_only` property to `False`.  For example:
-
-    class HasModelPermissionsOrReadOnly(DjangoModelPermissions):
-        authenticated_users_only = False
 
 The default behaviour can also be overridden to support custom model permissions.  For example, you might want to include a `view` model permission for `GET` requests.
 
 To use custom model permissions, override `DjangoModelPermissions` and set the `.perms_map` property.  Refer to the source code for details.
+
+## DjangoModelPermissionsOrAnonReadOnly
+
+Similar to `DjangoModelPermissions`, but also allows unauthenticated users to have  read-only access to the API.
 
 ## TokenHasReadWriteScope
 

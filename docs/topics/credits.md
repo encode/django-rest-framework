@@ -112,6 +112,21 @@ The following people have helped make REST framework great.
 * Bouke Haarsma - [bouke]
 * Pierre Dulac - [dulaccc]
 * Dave Kuhn - [kuhnza]
+* Sitong Peng - [stoneg]
+* Victor Shih - [vshih]
+* Atle Frenvik Sveen - [atlefren]
+* J Paul Reed - [preed]
+* Matt Majewski - [forgingdestiny]
+* Jerome Chen - [chenjyw]
+* Andrew Hughes - [eyepulp]
+* Daniel Hepper - [dhepper]
+* Hamish Campbell - [hamishcampbell]
+* Marlon Bailey - [avinash240]
+* James Summerfield - [jsummerfield]
+* Andy Freeland - [rouge8]
+* Craig de Stigter - [craigds]
+* Pablo Recio - [pyriku]
+* Brian Zambrano - [brianz]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -125,7 +140,7 @@ Continuous integration testing is managed with [Travis CI][travis-ci].
 
 The [live sandbox][sandbox] is hosted on [Heroku].
 
-Various inspiration taken from the [Piston], [Tastypie] and [Dagny] projects.
+Various inspiration taken from the [Rails], [Piston], [Tastypie], [Dagny] and [django-viewsets] projects.
 
 Development of REST framework 2.0 was sponsored by [DabApps].
 
@@ -140,9 +155,11 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [markdown]: http://daringfireball.net/projects/markdown/
 [github]: https://github.com/tomchristie/django-rest-framework
 [travis-ci]: https://secure.travis-ci.org/tomchristie/django-rest-framework
+[rails]: http://rubyonrails.org/
 [piston]: https://bitbucket.org/jespern/django-piston
 [tastypie]: https://github.com/toastdriven/django-tastypie
 [dagny]: https://github.com/zacharyvoase/dagny
+[django-viewsets]: https://github.com/BertrandBordage/django-viewsets
 [dabapps]: http://lab.dabapps.com
 [sandbox]: http://restframework.herokuapp.com/
 [heroku]: http://www.heroku.com/
@@ -258,3 +275,18 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [bouke]: https://github.com/bouke
 [dulaccc]: https://github.com/dulaccc
 [kuhnza]: https://github.com/kuhnza
+[stoneg]: https://github.com/stoneg
+[vshih]: https://github.com/vshih
+[atlefren]: https://github.com/atlefren
+[preed]: https://github.com/preed
+[forgingdestiny]: https://github.com/forgingdestiny
+[chenjyw]: https://github.com/chenjyw
+[eyepulp]: https://github.com/eyepulp
+[dhepper]: https://github.com/dhepper
+[hamishcampbell]: https://github.com/hamishcampbell
+[avinash240]: https://github.com/avinash240
+[jsummerfield]: https://github.com/jsummerfield
+[rouge8]: https://github.com/rouge8
+[craigds]: https://github.com/craigds
+[pyriku]: https://github.com/pyriku
+[brianz]: https://github.com/brianz

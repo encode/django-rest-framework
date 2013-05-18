@@ -277,3 +277,24 @@ footer a {
 footer a:hover {
   color: gray;
 }
+
+.btn-inverse {
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#606060), to(#404040)) !important;
+  background-image: -webkit-linear-gradient(top, #606060, #404040) !important;
+}
+
+.modal-open .modal,.btn:focus{outline:none;}
+
+@media (max-width: 650px) {
+  .repo-link.btn-inverse {display: none;}
+}
+
+td, th {
+  padding: 0.25em;
+  background-color: #f7f7f9;
+  border-color: #e1e1e8;
+}
+
+table {
+  border-color: white;
+}

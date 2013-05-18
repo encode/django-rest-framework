@@ -8,7 +8,7 @@ Let's introduce a couple of essential building blocks.
 REST framework introduces a `Request` object that extends the regular `HttpRequest`, and provides more flexible request parsing.  The core functionality of the `Request` object is the `request.DATA` attribute, which is similar to `request.POST`, but more useful for working with Web APIs.
 
     request.POST  # Only handles form data.  Only works for 'POST' method.
-    request.DATA  # Handles arbitrary data.  Works any HTTP request with content.
+    request.DATA  # Handles arbitrary data.  Works for 'POST', 'PUT' and 'PATCH' methods.
 
 ## Response objects
 
@@ -140,7 +140,7 @@ We can control the format of the response that we get back, either by using the 
 Or by appending a format suffix:
 
     curl http://127.0.0.1:8000/snippets/.json  # JSON suffix
-    curl http://127.0.0.1:8000/snippets/.api   # Browseable API suffix
+    curl http://127.0.0.1:8000/snippets/.api   # Browsable API suffix
 
 Similarly, we can control the format of the request that we send, using the `Content-Type` header.
 
@@ -160,9 +160,9 @@ Now go and open the API in a web browser, by visiting [http://127.0.0.1:8000/sni
 
 Because the API chooses the content type of the response based on the client request, it will, by default, return an HTML-formatted representation of the resource when that resource is requested by a web browser. This allows for the API to return a fully web-browsable HTML representation.
 
-Having a web-browseable API is a huge usability win, and makes developing and using your API much easier.  It also dramatically lowers the barrier-to-entry for other developers wanting to inspect and work with your API.
+Having a web-browsable API is a huge usability win, and makes developing and using your API much easier.  It also dramatically lowers the barrier-to-entry for other developers wanting to inspect and work with your API.
 
-See the [browsable api][browseable-api] topic for more information about the browsable API feature and how to customize it.
+See the [browsable api][browsable-api] topic for more information about the browsable API feature and how to customize it.
 
 ## What's next?
 
@@ -170,6 +170,6 @@ In [tutorial part 3][tut-3], we'll start using class based views, and see how ge
 
 [json-url]: http://example.com/api/items/4.json
 [devserver]: http://127.0.0.1:8000/snippets/
-[browseable-api]: ../topics/browsable-api.md
+[browsable-api]: ../topics/browsable-api.md
 [tut-1]: 1-serialization.md
 [tut-3]: 3-class-based-views.md

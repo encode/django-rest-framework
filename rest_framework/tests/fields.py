@@ -2,13 +2,14 @@
 General serializer field tests.
 """
 from __future__ import unicode_literals
+from django.utils.datastructures import SortedDict
 import datetime
-
+from decimal import Decimal
 from django.db import models
 from django.test import TestCase
 from django.core import validators
-
 from rest_framework import serializers
+from rest_framework.serializers import Serializer
 
 
 class TimestampedModel(models.Model):
@@ -60,6 +61,20 @@ class BasicFieldTests(TestCase):
         """
         serializer = CharPrimaryKeyModelSerializer()
         self.assertEqual(serializer.fields['id'].read_only, False)
+
+    def test_dict_field_ordering(self):
+        """
+        Field should preserve dictionary ordering, if it exists.
+        See: https://github.com/tomchristie/django-rest-framework/issues/832
+        """
+        ret = SortedDict()
+        ret['c'] = 1
+        ret['b'] = 1
+        ret['a'] = 1
+        ret['z'] = 1
+        field = serializers.Field()
+        keys = list(field.to_native(ret).keys())
+        self.assertEqual(keys, ['c', 'b', 'a', 'z'])
 
 
 class DateFieldTest(TestCase):
@@ -481,3 +496,192 @@ class TimeFieldTest(TestCase):
         self.assertEqual('04 - 00 [000000]', result_1)
         self.assertEqual('04 - 59 [000000]', result_2)
         self.assertEqual('04 - 59 [000200]', result_3)
+
+
+class DecimalFieldTest(TestCase):
+    """
+    Tests for the DecimalField from_native() and to_native() behavior
+    """
+
+    def test_from_native_string(self):
+        """
+        Make sure from_native() accepts string values
+        """
+        f = serializers.DecimalField()
+        result_1 = f.from_native('9000')
+        result_2 = f.from_native('1.00000001')
+
+        self.assertEqual(Decimal('9000'), result_1)
+        self.assertEqual(Decimal('1.00000001'), result_2)
+
+    def test_from_native_invalid_string(self):
+        """
+        Make sure from_native() raises ValidationError on passing invalid string
+        """
+        f = serializers.DecimalField()
+
+        try:
+            f.from_native('123.45.6')
+        except validators.ValidationError as e:
+            self.assertEqual(e.messages, ["Enter a number."])
+        else:
+            self.fail("ValidationError was not properly raised")
+
+    def test_from_native_integer(self):
+        """
+        Make sure from_native() accepts integer values
+        """
+        f = serializers.DecimalField()
+        result = f.from_native(9000)
+
+        self.assertEqual(Decimal('9000'), result)
+
+    def test_from_native_float(self):
+        """
+        Make sure from_native() accepts float values
+        """
+        f = serializers.DecimalField()
+        result = f.from_native(1.00000001)
+
+        self.assertEqual(Decimal('1.00000001'), result)
+
+    def test_from_native_empty(self):
+        """
+        Make sure from_native() returns None on empty param.
+        """
+        f = serializers.DecimalField()
+        result = f.from_native('')
+
+        self.assertEqual(result, None)
+
+    def test_from_native_none(self):
+        """
+        Make sure from_native() returns None on None param.
+        """
+        f = serializers.DecimalField()
+        result = f.from_native(None)
+
+        self.assertEqual(result, None)
+
+    def test_to_native(self):
+        """
+        Make sure to_native() returns Decimal as string.
+        """
+        f = serializers.DecimalField()
+
+        result_1 = f.to_native(Decimal('9000'))
+        result_2 = f.to_native(Decimal('1.00000001'))
+
+        self.assertEqual(Decimal('9000'), result_1)
+        self.assertEqual(Decimal('1.00000001'), result_2)
+
+    def test_to_native_none(self):
+        """
+        Make sure from_native() returns None on None param.
+        """
+        f = serializers.DecimalField(required=False)
+        self.assertEqual(None, f.to_native(None))
+
+    def test_valid_serialization(self):
+        """
+        Make sure the serializer works correctly
+        """
+        class DecimalSerializer(Serializer):
+            decimal_field = serializers.DecimalField(max_value=9010,
+                                                     min_value=9000,
+                                                     max_digits=6,
+                                                     decimal_places=2)
+
+        self.assertTrue(DecimalSerializer(data={'decimal_field': '9001'}).is_valid())
+        self.assertTrue(DecimalSerializer(data={'decimal_field': '9001.2'}).is_valid())
+        self.assertTrue(DecimalSerializer(data={'decimal_field': '9001.23'}).is_valid())
+
+        self.assertFalse(DecimalSerializer(data={'decimal_field': '8000'}).is_valid())
+        self.assertFalse(DecimalSerializer(data={'decimal_field': '9900'}).is_valid())
+        self.assertFalse(DecimalSerializer(data={'decimal_field': '9001.234'}).is_valid())
+
+    def test_raise_max_value(self):
+        """
+        Make sure max_value violations raises ValidationError
+        """
+        class DecimalSerializer(Serializer):
+            decimal_field = serializers.DecimalField(max_value=100)
+
+        s = DecimalSerializer(data={'decimal_field': '123'})
+
+        self.assertFalse(s.is_valid())
+        self.assertEqual(s.errors,  {'decimal_field': ['Ensure this value is less than or equal to 100.']})
+
+    def test_raise_min_value(self):
+        """
+        Make sure min_value violations raises ValidationError
+        """
+        class DecimalSerializer(Serializer):
+            decimal_field = serializers.DecimalField(min_value=100)
+
+        s = DecimalSerializer(data={'decimal_field': '99'})
+
+        self.assertFalse(s.is_valid())
+        self.assertEqual(s.errors,  {'decimal_field': ['Ensure this value is greater than or equal to 100.']})
+
+    def test_raise_max_digits(self):
+        """
+        Make sure max_digits violations raises ValidationError
+        """
+        class DecimalSerializer(Serializer):
+            decimal_field = serializers.DecimalField(max_digits=5)
+
+        s = DecimalSerializer(data={'decimal_field': '123.456'})
+
+        self.assertFalse(s.is_valid())
+        self.assertEqual(s.errors,  {'decimal_field': ['Ensure that there are no more than 5 digits in total.']})
+
+    def test_raise_max_decimal_places(self):
+        """
+        Make sure max_decimal_places violations raises ValidationError
+        """
+        class DecimalSerializer(Serializer):
+            decimal_field = serializers.DecimalField(decimal_places=3)
+
+        s = DecimalSerializer(data={'decimal_field': '123.4567'})
+
+        self.assertFalse(s.is_valid())
+        self.assertEqual(s.errors,  {'decimal_field': ['Ensure that there are no more than 3 decimal places.']})
+
+    def test_raise_max_whole_digits(self):
+        """
+        Make sure max_whole_digits violations raises ValidationError
+        """
+        class DecimalSerializer(Serializer):
+            decimal_field = serializers.DecimalField(max_digits=4, decimal_places=3)
+
+        s = DecimalSerializer(data={'decimal_field': '12345.6'})
+
+        self.assertFalse(s.is_valid())
+        self.assertEqual(s.errors,  {'decimal_field': ['Ensure that there are no more than 4 digits in total.']})
+
+
+class ChoiceFieldTests(TestCase):
+    """
+    Tests for the ChoiceField options generator
+    """
+
+    SAMPLE_CHOICES = [
+        ('red', 'Red'),
+        ('green', 'Green'),
+        ('blue', 'Blue'),
+    ]
+
+    def test_choices_required(self):
+        """
+        Make sure proper choices are rendered if field is required
+        """
+        f = serializers.ChoiceField(required=True, choices=self.SAMPLE_CHOICES)
+        self.assertEqual(f.choices, self.SAMPLE_CHOICES)
+
+    def test_choices_not_required(self):
+        """
+        Make sure proper choices (plus blank) are rendered if the field isn't required
+        """
+        f = serializers.ChoiceField(required=False, choices=self.SAMPLE_CHOICES)
+        self.assertEqual(f.choices, models.fields.BLANK_CHOICE_DASH + self.SAMPLE_CHOICES)

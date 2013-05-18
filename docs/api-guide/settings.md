@@ -112,9 +112,10 @@ A class the determines the default serialization style for paginated responses.
 
 Default: `rest_framework.pagination.PaginationSerializer`
 
-#### FILTER_BACKEND
+#### DEFAULT_FILTER_BACKENDS
 
-The filter backend class that should be used for generic filtering.  If set to `None` then generic filtering is disabled.
+A list of filter backend classes that should be used for generic filtering.
+If set to `None` then generic filtering is disabled.
 
 #### PAGINATE_BY
 
@@ -202,7 +203,7 @@ A format string that should be used by default for rendering the output of `Date
 
 May be any of `None`, `'iso-8601'` or a python [strftime format][strftime] string.
 
-Default: `None'`
+Default: `None`
 
 #### DATETIME_INPUT_FORMATS
 

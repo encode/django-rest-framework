@@ -43,7 +43,8 @@ The default authentication schemes may be set globally, using the `DEFAULT_AUTHE
         )
     }
 
-You can also set the authentication scheme on a per-view basis, using the `APIView` class based views.
+You can also set the authentication scheme on a per-view or per-viewset basis,
+using the `APIView` class based views.
 
     class ExampleView(APIView):
         authentication_classes = (SessionAuthentication, BasicAuthentication)
@@ -107,7 +108,7 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
     WWW-Authenticate: Basic realm="api"
 
-**Note:** If you use `BasicAuthentication` in production you must ensure that your API is only available over `https` only.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.
+**Note:** If you use `BasicAuthentication` in production you must ensure that your API is only available over `https`.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.
 
 ## TokenAuthentication
 
@@ -119,6 +120,8 @@ To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in y
         ...
         'rest_framework.authtoken'
     )
+    
+Make sure to run `manage.py syncdb` after changing your settings.
 
 You'll also need to create tokens for your users.
 
@@ -140,9 +143,13 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
     WWW-Authenticate: Token
 
+The `curl` command line tool may be useful for testing token authenticated APIs.  For example:
+
+    curl -X GET http://127.0.0.1:8000/api/example/ -H 'Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b'
+
 ---
 
-**Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https` only.
+**Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https`.
 
 ---
 
@@ -253,7 +260,7 @@ Finally, sync your database.
 
 ---
 
-**Note:** If you use `OAuth2Authentication` in production you must ensure that your API is only available over `https` only.
+**Note:** If you use `OAuth2Authentication` in production you must ensure that your API is only available over `https`.
 
 ---
 
@@ -294,7 +301,7 @@ The only thing needed to make the `OAuth2Authentication` class work is to insert
 
 The command line to test the authentication looks like:
 
-    curl -H "Authorization: Bearer <your-access-token>" http://localhost:8000/api/?client_id=YOUR_CLIENT_ID\&client_secret=YOUR_CLIENT_SECRET
+    curl -H "Authorization: Bearer <your-access-token>" http://localhost:8000/api/
 
 ---
 

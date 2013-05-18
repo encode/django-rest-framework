@@ -1,7 +1,13 @@
+"""
+Serializer fields perform validation on incoming data.
+
+They are very similar to Django's form fields.
+"""
 from __future__ import unicode_literals
 
 import copy
 import datetime
+from decimal import Decimal, DecimalException
 import inspect
 import re
 import warnings
@@ -9,10 +15,12 @@ import warnings
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.conf import settings
+from django.db.models.fields import BLANK_CHOICE_DASH
 from django import forms
 from django.forms import widgets
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
+from django.utils.datastructures import SortedDict
 
 from rest_framework import ISO_8601
 from rest_framework.compat import timezone, parse_date, parse_datetime, parse_time
@@ -44,7 +52,7 @@ def get_component(obj, attr_name):
     return that attribute on the object.
     """
     if isinstance(obj, dict):
-        val = obj[attr_name]
+        val = obj.get(attr_name)
     else:
         val = getattr(obj, attr_name)
 
@@ -164,7 +172,11 @@ class Field(object):
         elif hasattr(value, '__iter__') and not isinstance(value, (dict, six.string_types)):
             return [self.to_native(item) for item in value]
         elif isinstance(value, dict):
-            return dict(map(self.to_native, (k, v)) for k, v in value.items())
+            # Make sure we preserve field ordering, if it exists
+            ret = SortedDict()
+            for key, val in value.items():
+                ret[key] = self.to_native(val)
+            return ret
         return force_text(value)
 
     def attributes(self):
@@ -194,9 +206,9 @@ class WritableField(Field):
 
         # 'blank' is to be deprecated in favor of 'required'
         if blank is not None:
-            warnings.warn('The `blank` keyword argument is due to deprecated. '
+            warnings.warn('The `blank` keyword argument is deprecated. '
                           'Use the `required` keyword argument instead.',
-                          PendingDeprecationWarning, stacklevel=2)
+                          DeprecationWarning, stacklevel=2)
             required = not(blank)
 
         super(WritableField, self).__init__(source=source)
@@ -396,6 +408,8 @@ class ChoiceField(WritableField):
     def __init__(self, choices=(), *args, **kwargs):
         super(ChoiceField, self).__init__(*args, **kwargs)
         self.choices = choices
+        if not self.required:
+            self.choices = BLANK_CHOICE_DASH + self.choices
 
     def _get_choices(self):
         return self._choices
@@ -494,7 +508,7 @@ class DateField(WritableField):
     }
     empty = None
     input_formats = api_settings.DATE_INPUT_FORMATS
-    format = None
+    format = api_settings.DATE_FORMAT
 
     def __init__(self, input_formats=None, format=None, *args, **kwargs):
         self.input_formats = input_formats if input_formats is not None else self.input_formats
@@ -557,7 +571,7 @@ class DateTimeField(WritableField):
     }
     empty = None
     input_formats = api_settings.DATETIME_INPUT_FORMATS
-    format = None
+    format = api_settings.DATETIME_FORMAT
 
     def __init__(self, input_formats=None, format=None, *args, **kwargs):
         self.input_formats = input_formats if input_formats is not None else self.input_formats
@@ -626,7 +640,7 @@ class TimeField(WritableField):
     }
     empty = None
     input_formats = api_settings.TIME_INPUT_FORMATS
-    format = None
+    format = api_settings.TIME_FORMAT
 
     def __init__(self, input_formats=None, format=None, *args, **kwargs):
         self.input_formats = input_formats if input_formats is not None else self.input_formats
@@ -719,6 +733,75 @@ class FloatField(WritableField):
         except (TypeError, ValueError):
             msg = self.error_messages['invalid'] % value
             raise ValidationError(msg)
+
+
+class DecimalField(WritableField):
+    type_name = 'DecimalField'
+    form_field_class = forms.DecimalField
+
+    default_error_messages = {
+        'invalid': _('Enter a number.'),
+        'max_value': _('Ensure this value is less than or equal to %(limit_value)s.'),
+        'min_value': _('Ensure this value is greater than or equal to %(limit_value)s.'),
+        'max_digits': _('Ensure that there are no more than %s digits in total.'),
+        'max_decimal_places': _('Ensure that there are no more than %s decimal places.'),
+        'max_whole_digits': _('Ensure that there are no more than %s digits before the decimal point.')
+    }
+
+    def __init__(self, max_value=None, min_value=None, max_digits=None, decimal_places=None, *args, **kwargs):
+        self.max_value, self.min_value = max_value, min_value
+        self.max_digits, self.decimal_places = max_digits, decimal_places
+        super(DecimalField, self).__init__(*args, **kwargs)
+
+        if max_value is not None:
+            self.validators.append(validators.MaxValueValidator(max_value))
+        if min_value is not None:
+            self.validators.append(validators.MinValueValidator(min_value))
+
+    def from_native(self, value):
+        """
+        Validates that the input is a decimal number. Returns a Decimal
+        instance. Returns None for empty values. Ensures that there are no more
+        than max_digits in the number, and no more than decimal_places digits
+        after the decimal point.
+        """
+        if value in validators.EMPTY_VALUES:
+            return None
+        value = smart_text(value).strip()
+        try:
+            value = Decimal(value)
+        except DecimalException:
+            raise ValidationError(self.error_messages['invalid'])
+        return value
+
+    def validate(self, value):
+        super(DecimalField, self).validate(value)
+        if value in validators.EMPTY_VALUES:
+            return
+        # Check for NaN, Inf and -Inf values. We can't compare directly for NaN,
+        # since it is never equal to itself. However, NaN is the only value that
+        # isn't equal to itself, so we can use this to identify NaN
+        if value != value or value == Decimal("Inf") or value == Decimal("-Inf"):
+            raise ValidationError(self.error_messages['invalid'])
+        sign, digittuple, exponent = value.as_tuple()
+        decimals = abs(exponent)
+        # digittuple doesn't include any leading zeros.
+        digits = len(digittuple)
+        if decimals > digits:
+            # We have leading zeros up to or past the decimal point.  Count
+            # everything past the decimal point as a digit.  We do not count
+            # 0 before the decimal point as a digit since that would mean
+            # we would not allow max_digits = decimal_places.
+            digits = decimals
+        whole_digits = digits - decimals
+
+        if self.max_digits is not None and digits > self.max_digits:
+            raise ValidationError(self.error_messages['max_digits'] % self.max_digits)
+        if self.decimal_places is not None and decimals > self.decimal_places:
+            raise ValidationError(self.error_messages['max_decimal_places'] % self.decimal_places)
+        if self.max_digits is not None and self.decimal_places is not None and whole_digits > (self.max_digits - self.decimal_places):
+            raise ValidationError(self.error_messages['max_whole_digits'] % (self.max_digits - self.decimal_places))
+        return value
 
 
 class FileField(WritableField):

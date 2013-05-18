@@ -8,7 +8,7 @@
 
 The default behavior of REST framework's generic list views is to return the entire queryset for a model manager.  Often you will want your API to restrict the items that are returned by the queryset.
 
-The simplest way to filter the queryset of any view that subclasses `MultipleObjectAPIView` is to override the `.get_queryset()` method.
+The simplest way to filter the queryset of any view that subclasses `GenericAPIView` is to override the `.get_queryset()` method.
 
 Overriding this method allows you to customize the queryset returned by the view in a number of different ways.
 
@@ -21,7 +21,6 @@ You can do so by filtering based on the value of `request.user`.
 For example:
 
     class PurchaseList(generics.ListAPIView)
-        model = Purchase
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -44,7 +43,6 @@ For example if your URL config contained an entry like this:
 You could then write a view that returned a purchase queryset filtered by the username portion of the URL:
 
     class PurchaseList(generics.ListAPIView)
-        model = Purchase
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -62,7 +60,6 @@ A final example of filtering the initial queryset would be to determine the init
 We can override `.get_queryset()` to deal with URLs such as `http://example.com/api/purchases?username=denvercoder9`, and filter the queryset only if the `username` parameter is included in the URL:
 
     class PurchaseList(generics.ListAPIView)
-        model = Purchase
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -80,67 +77,25 @@ We can override `.get_queryset()` to deal with URLs such as `http://example.com/
 
 # Generic Filtering
 
-As well as being able to override the default queryset, REST framework also includes support for generic filtering backends that allow you to easily construct complex filters that can be specified by the client using query parameters.
+As well as being able to override the default queryset, REST framework also includes support for generic filtering backends that allow you to easily construct complex searches and filters.
 
-REST framework supports pluggable backends to implement filtering, and provides an implementation which uses the [django-filter] package.
+## Setting filter backends
 
-To use REST framework's filtering backend, first install `django-filter`.
-
-    pip install django-filter
-
-You must also set the filter backend to `DjangoFilterBackend` in your settings:
+The default filter backends may be set globally, using the `DEFAULT_FILTER_BACKENDS` setting.  For example.
 
     REST_FRAMEWORK = {
-        'FILTER_BACKEND': 'rest_framework.filters.DjangoFilterBackend'
+        'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
     }
 
+You can also set the authentication policy on a per-view, or per-viewset basis,
+using the `GenericAPIView` class based views.
 
-## Specifying filter fields
+    class UserListView(generics.ListAPIView):
+        queryset = User.objects.all()
+        serializer = UserSerializer
+        filter_backends = (filters.DjangoFilterBackend,)
 
-If all you need is simple equality-based filtering, you can set a `filter_fields` attribute on the view, listing the set of fields you wish to filter against.
-
-    class ProductList(generics.ListAPIView):
-        model = Product
-        serializer_class = ProductSerializer
-        filter_fields = ('category', 'in_stock')
-
-This will automatically create a `FilterSet` class for the given fields, and will allow you to make requests such as:
-
-    http://example.com/api/products?category=clothing&in_stock=True
-
-## Specifying a FilterSet
-
-For more advanced filtering requirements you can specify a `FilterSet` class that should be used by the view.  For example:
-
-    class ProductFilter(django_filters.FilterSet):
-        min_price = django_filters.NumberFilter(lookup_type='gte')
-        max_price = django_filters.NumberFilter(lookup_type='lte')
-        class Meta:
-            model = Product
-            fields = ['category', 'in_stock', 'min_price', 'max_price']
-
-    class ProductList(generics.ListAPIView):
-        model = Product
-        serializer_class = ProductSerializer
-        filter_class = ProductFilter
-
-Which will allow you to make requests such as:
-
-    http://example.com/api/products?category=clothing&max_price=10.00
-
-For more details on using filter sets see the [django-filter documentation][django-filter-docs].
-
----
-
-**Hints & Tips**
-
-* By default filtering is not enabled.  If you want to use `DjangoFilterBackend` remember to make sure it is installed by using the `'FILTER_BACKEND'` setting.
-* When using boolean fields, you should use the values `True` and `False` in the URL query parameters, rather than `0`, `1`, `true` or `false`.  (The allowed boolean values are currently hardwired in Django's [NullBooleanSelect implementation][nullbooleanselect].) 
-* `django-filter` supports filtering across relationships, using Django's double-underscore syntax.
-
----
-
-### Filtering and object lookups
+## Filtering and object lookups
 
 Note that if a filter backend is configured for a view, then as well as being used to filter list views, it will also be used to filter the querysets used for returning a single object.
 
@@ -164,6 +119,127 @@ Note that you can use both an overridden `.get_queryset()` and generic filtering
         def get_queryset(self):
             user = self.request.user
             return user.purchase_set.all()
+
+---
+
+# API Guide
+
+## DjangoFilterBackend
+
+The `DjangoFilterBackend` class supports highly customizable field filtering, using the [django-filter package][django-filter].  
+
+To use REST framework's `DjangoFilterBackend`, first install `django-filter`.
+
+    pip install django-filter
+
+
+#### Specifying filter fields
+
+If all you need is simple equality-based filtering, you can set a `filter_fields` attribute on the view, or viewset, listing the set of fields you wish to filter against.
+
+    class ProductList(generics.ListAPIView):
+        queryset = Product.objects.all()
+        serializer_class = ProductSerializer
+        filter_fields = ('category', 'in_stock')
+
+This will automatically create a `FilterSet` class for the given fields, and will allow you to make requests such as:
+
+    http://example.com/api/products?category=clothing&in_stock=True
+
+#### Specifying a FilterSet
+
+For more advanced filtering requirements you can specify a `FilterSet` class that should be used by the view.  For example:
+
+    class ProductFilter(django_filters.FilterSet):
+        min_price = django_filters.NumberFilter(lookup_type='gte')
+        max_price = django_filters.NumberFilter(lookup_type='lte')
+        class Meta:
+            model = Product
+            fields = ['category', 'in_stock', 'min_price', 'max_price']
+
+    class ProductList(generics.ListAPIView):
+        queryset = Product.objects.all()
+        serializer_class = ProductSerializer
+        filter_class = ProductFilter
+
+Which will allow you to make requests such as:
+
+    http://example.com/api/products?category=clothing&max_price=10.00
+
+For more details on using filter sets see the [django-filter documentation][django-filter-docs].
+
+---
+
+**Hints & Tips**
+
+* By default filtering is not enabled.  If you want to use `DjangoFilterBackend` remember to make sure it is installed by using the `'DEFAULT_FILTER_BACKENDS'` setting.
+* When using boolean fields, you should use the values `True` and `False` in the URL query parameters, rather than `0`, `1`, `true` or `false`.  (The allowed boolean values are currently hardwired in Django's [NullBooleanSelect implementation][nullbooleanselect].) 
+* `django-filter` supports filtering across relationships, using Django's double-underscore syntax.
+
+---
+
+## SearchFilter
+
+The `SearchFilterBackend` class supports simple single query parameter based searching, and is based on the [Django admin's search functionality][search-django-admin].
+
+The `SearchFilterBackend` class will only be applied if the view has a `search_fields` attribute set.  The `search_fields` attribute should be a list of names of text type fields on the model, such as `CharField` or `TextField`.
+
+    class UserListView(generics.ListAPIView):
+        queryset = User.objects.all()
+        serializer = UserSerializer
+        filter_backends = (filters.SearchFilter,)
+        search_fields = ('username', 'email')
+
+This will allow the client to filter the items in the list by making queries such as:
+
+    http://example.com/api/users?search=russell
+
+You can also perform a related lookup on a ForeignKey or ManyToManyField with the lookup API double-underscore notation:
+
+    search_fields = ('username', 'email', 'profile__profession')
+
+By default, searches will use case-insensitive partial matches.  The search parameter may contain multiple search terms, which should be whitespace and/or comma separated.  If multiple search terms are used then objects will be returned in the list only if all the provided terms are matched.
+
+The search behavior may be restricted by prepending various characters to the `search_fields`.
+
+* '^' Starts-with search.
+* '=' Exact matches.
+* '@' Full-text search.  (Currently only supported Django's MySQL backend.)
+
+For example:
+
+    search_fields = ('=username', '=email')
+
+For more details, see the [Django documentation][search-django-admin].
+
+---
+
+## OrderingFilter
+
+The `OrderingFilter` class supports simple query parameter controlled ordering of results.  To specify the result order, set a query parameter named `'order'` to the required field name.  For example:
+
+    http://example.com/api/users?ordering=username
+
+The client may also specify reverse orderings by prefixing the field name with '-', like so:
+
+    http://example.com/api/users?ordering=-username
+
+Multiple orderings may also be specified:
+
+    http://example.com/api/users?ordering=account,username
+
+If an `ordering` attribute is set on the view, this will be used as the default ordering.
+
+Typicaly you'd instead control this by setting `order_by` on the initial queryset, but using the `ordering` parameter on the view allows you to specify the ordering in a way that it can then be passed automatically as context to a rendered template.  This makes it possible to automatically render column headers differently if they are being used to order the results.
+
+    class UserListView(generics.ListAPIView):
+        queryset = User.objects.all()
+        serializer = UserSerializer
+        filter_backends = (filters.OrderingFilter,)
+        ordering = ('username',) 
+
+The `ordering` attribute may be either a string or a list/tuple of strings.
+
 ---
 
 # Custom generic filtering
@@ -172,15 +248,23 @@ You can also provide your own generic filtering backend, or write an installable
 
 To do so override `BaseFilterBackend`, and override the `.filter_queryset(self, request, queryset, view)` method.  The method should return a new, filtered queryset.
 
-To install the filter backend, set the `'FILTER_BACKEND'` key in your `'REST_FRAMEWORK'` setting, using the dotted import path of the filter backend class.
+As well as allowing clients to perform searches and filtering, generic filter backends can be useful for restricting which objects should be visible to any given request or user.
 
-For example:
+## Example
 
-    REST_FRAMEWORK = {
-        'FILTER_BACKEND': 'custom_filters.CustomFilterBackend'
-    }
+For example, you might need to restrict users to only being able to see objects they created.
+
+    class IsOwnerFilterBackend(filters.BaseFilterBackend):
+        """
+        Filter that only allows users to see their own objects.
+        """
+        def filter_queryset(self, request, queryset, view):
+            return queryset.filter(owner=request.user)
+
+We could achieve the same behavior by overriding `get_queryset()` on the views, but using a filter backend allows you to more easily add this restriction to multiple views, or to apply it across the entire API.
 
 [cite]: https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter
 [django-filter-docs]: https://django-filter.readthedocs.org/en/latest/index.html
 [nullbooleanselect]: https://github.com/django/django/blob/master/django/forms/widgets.py
+[search-django-admin]: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields

@@ -24,6 +24,7 @@ from rest_framework.settings import api_settings
 from rest_framework.request import clone_request
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
+from rest_framework.utils.formatting import get_view_name, get_view_description
 from rest_framework import exceptions, parsers, status, VERSION
 
 
@@ -57,7 +58,7 @@ class JSONRenderer(BaseRenderer):
             return ''
 
         # If 'indent' is provided in the context, then pretty print the result.
-        # E.g. If we're being called by the BrowseableAPIRenderer.
+        # E.g. If we're being called by the BrowsableAPIRenderer.
         renderer_context = renderer_context or {}
         indent = renderer_context.get('indent', None)
 
@@ -335,7 +336,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             return  # Cannot use form overloading
 
         try:
-            view.check_permissions(clone_request(request, method))
+            view.check_permissions(request)
         except exceptions.APIException:
             return False  # Doesn't have permissions
         return True
@@ -370,6 +371,30 @@ class BrowsableAPIRenderer(BaseRenderer):
             fields[k] = v.form_field_class(**kwargs)
 
         return fields
+
+    def _get_form(self, view, method, request):
+        # We need to impersonate a request with the correct method,
+        # so that eg. any dynamic get_serializer_class methods return the
+        # correct form for each method.
+        restore = view.request
+        request = clone_request(request, method)
+        view.request = request
+        try:
+            return self.get_form(view, method, request)
+        finally:
+            view.request = restore
+
+    def _get_raw_data_form(self, view, method, request, media_types):
+        # We need to impersonate a request with the correct method,
+        # so that eg. any dynamic get_serializer_class methods return the
+        # correct form for each method.
+        restore = view.request
+        request = clone_request(request, method)
+        view.request = request
+        try:
+            return self.get_raw_data_form(view, method, request, media_types)
+        finally:
+            view.request = restore
 
     def get_form(self, view, method, request):
         """
@@ -438,16 +463,13 @@ class BrowsableAPIRenderer(BaseRenderer):
         return GenericContentForm()
 
     def get_name(self, view):
-        try:
-            return view.get_name()
-        except AttributeError:
-            return smart_text(view.__class__.__name__)
+        return get_view_name(view.__class__, getattr(view, 'suffix', None))
 
     def get_description(self, view):
-        try:
-            return view.get_description(html=True)
-        except AttributeError:
-            return smart_text(view.__doc__ or '')
+        return get_view_description(view.__class__, html=True)
+
+    def get_breadcrumbs(self, request):
+        return get_breadcrumbs(request.path)
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -467,20 +489,20 @@ class BrowsableAPIRenderer(BaseRenderer):
         renderer = self.get_default_renderer(view)
         content = self.get_content(renderer, data, accepted_media_type, renderer_context)
 
-        put_form = self.get_form(view, 'PUT', request)
-        post_form = self.get_form(view, 'POST', request)
-        patch_form = self.get_form(view, 'PATCH', request)
-        delete_form = self.get_form(view, 'DELETE', request)
-        options_form = self.get_form(view, 'OPTIONS', request)
+        put_form = self._get_form(view, 'PUT', request)
+        post_form = self._get_form(view, 'POST', request)
+        patch_form = self._get_form(view, 'PATCH', request)
+        delete_form = self._get_form(view, 'DELETE', request)
+        options_form = self._get_form(view, 'OPTIONS', request)
 
-        raw_data_put_form = self.get_raw_data_form(view, 'PUT', request, media_types)
-        raw_data_post_form = self.get_raw_data_form(view, 'POST', request, media_types)
-        raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request, media_types)
+        raw_data_put_form = self._get_raw_data_form(view, 'PUT', request, media_types)
+        raw_data_post_form = self._get_raw_data_form(view, 'POST', request, media_types)
+        raw_data_patch_form = self._get_raw_data_form(view, 'PATCH', request, media_types)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
         name = self.get_name(view)
         description = self.get_description(view)
-        breadcrumb_list = get_breadcrumbs(request.path)
+        breadcrumb_list = self.get_breadcrumbs(request)
 
         template = loader.get_template(self.template)
         context = RequestContext(request, {

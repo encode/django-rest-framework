@@ -59,14 +59,15 @@ We can now use `CommentSerializer` to serialize a comment, or list of comments. 
 
 At this point we've translated the model instance into python native datatypes.  To finalise the serialization process we render the data into `json`.
 
-    stream = JSONRenderer().render(data)
-    stream
+    json = JSONRenderer().render(serializer.data)
+    json
     # '{"email": "leila@example.com", "content": "foo bar", "created": "2012-08-22T16:20:09.822"}'
 
 ## Deserializing objects
         
 Deserialization is similar.  First we parse a stream into python native datatypes... 
 
+    stream = StringIO(json)
     data = JSONParser().parse(stream)
 
 ...then we restore those native datatypes into a fully populated object instance.
@@ -242,21 +243,21 @@ This allows you to write views that update or create multiple items when a `PUT`
     # True
     serialize.save()  # `.save()` will be called on each updated or newly created instance.
 
-Bulk updates will update any instances that already exist, and create new instances for data items that do not have a corresponding instance.
+By default bulk updates will be limited to updating instances that already exist in the provided queryset.
 
-When performing a bulk update you may want any items that are not present in the incoming data to be deleted.  To do so, pass `allow_delete=True` to the serializer.
+When performing a bulk update you may want to allow new items to be created, and missing items to be deleted.  To do so, pass `allow_add_remove=True` to the serializer.
 
-    serializer = BookSerializer(queryset, data=data, many=True, allow_delete=True)
+    serializer = BookSerializer(queryset, data=data, many=True, allow_add_remove=True)
     serializer.is_valid()
     # True
-    serializer.save()  # `.save()` will be called on each updated or newly created instance.
+    serializer.save()  # `.save()` will be called on updated or newly created instances.
                        # `.delete()` will be called on any other items in the `queryset`.
 
-Passing `allow_delete=True` ensures that any update operations will completely overwrite the existing queryset, rather than simply updating any objects found in the incoming data. 
+Passing `allow_add_remove=True` ensures that any update operations will completely overwrite the existing queryset, rather than simply updating existing objects. 
 
 #### How identity is determined when performing bulk updates
 
-Performing a bulk update is slightly more complicated than performing a bulk creation, because the serializer needs a way of determining how the items in the incoming data should be matched against the existing object instances.
+Performing a bulk update is slightly more complicated than performing a bulk creation, because the serializer needs a way to determine how the items in the incoming data should be matched against the existing object instances.
 
 By default the serializer class will use the `id` key on the incoming data to determine the canonical identity of an object.  If you need to change this behavior you should override the `get_identity` method on the `Serializer` class.  For example:
 
@@ -294,7 +295,7 @@ The context dictionary can be used within any serializer field logic, such as a 
 
 ---
 
-# ModelSerializers
+# ModelSerializer
 
 Often you'll want serializer classes that map closely to model definitions.
 The `ModelSerializer` class lets you automatically create a Serializer class with fields that correspond to the Model fields.
@@ -305,7 +306,42 @@ The `ModelSerializer` class lets you automatically create a Serializer class wit
 
 By default, all the model fields on the class will be mapped to corresponding serializer fields.
 
-Any foreign keys on the model will be mapped to `PrimaryKeyRelatedField` if you're using a `ModelSerializer`, or `HyperlinkedRelatedField` if you're using a `HyperlinkedModelSerializer`.
+Any relationships such as foreign keys on the model will be mapped to `PrimaryKeyRelatedField`.  Other models fields will be mapped to a corresponding serializer field.
+
+## Specifying which fields should be included
+
+If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.
+
+For example:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            fields = ('id', 'account_name', 'users', 'created')
+
+## Specifying nested serialization
+
+The default `ModelSerializer` uses primary keys for relationships, but you can also easily generate nested representations using the `depth` option:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            fields = ('id', 'account_name', 'users', 'created')
+            depth = 1
+
+The `depth` option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.
+
+## Specifying which fields should be read-only 
+
+You may wish to specify multiple fields as read-only. Instead of adding each field explicitly with the `read_only=True` attribute, you may use the `read_only_fields` Meta option, like so:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            fields = ('id', 'account_name', 'users', 'created')
+            read_only_fields = ('account_name',)
+
+Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option. 
 
 ## Specifying fields explicitly 
 
@@ -328,43 +364,68 @@ Alternative representations include serializing using hyperlinks, serializing co
 
 For full details see the [serializer relations][relations] documentation.
 
-## Specifying which fields should be included
+---
 
-If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.
+# HyperlinkedModelSerializer
 
-For example:
+The `HyperlinkedModelSerializer` class is similar to the `ModelSerializer` class except that it uses hyperlinks to represent relationships, rather than primary keys.
 
-    class AccountSerializer(serializers.ModelSerializer):
+By default the serializer will include a `url` field instead of a primary key field.
+
+The url field will be represented using a `HyperlinkedIdentityField` serializer field, and any relationships on the model will be represented using a `HyperlinkedRelatedField` serializer field.
+
+You can explicitly include the primary key by adding it to the `fields` option, for example:
+
+    class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
-            exclude = ('id',)
+            fields = ('url', 'id', 'account_name', 'users', 'created')
 
-## Specifiying nested serialization
+## How hyperlinked views are determined
 
-The default `ModelSerializer` uses primary keys for relationships, but you can also easily generate nested representations using the `depth` option:
+There needs to be a way of determining which views should be used for hyperlinking to model instances.
 
-    class AccountSerializer(serializers.ModelSerializer):
+By default hyperlinks are expected to correspond to a view name that matches the style `'{model_name}-detail'`, and looks up the instance by a `pk` keyword argument.
+
+You can change the field that is used for object lookups by setting the `lookup_field` option.  The value of this option should correspond both with a kwarg in the URL conf, and with an field on the model.  For example:
+
+    class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
-            exclude = ('id',)
-            depth = 1
+            fields = ('url', 'account_name', 'users', 'created')
+            lookup_field = 'slug'
 
-The `depth` option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.
+For more specfic requirements such as specifying a different lookup for each field, you'll want to set the fields on the serializer explicitly.  For example:
 
-## Specifying which fields should be read-only 
+    class AccountSerializer(serializers.HyperlinkedModelSerializer):
+        url = serializers.HyperlinkedIdentityField(
+            view_name='account_detail',
+            lookup_field='account_name'
+        )
+        users = serializers.HyperlinkedRelatedField(
+            view_name='user-detail',
+            lookup_field='username',
+            many=True,
+            read_only=True
+        )
 
-You may wish to specify multiple fields as read-only. Instead of adding each field explicitely with the `read_only=True` attribute, you may use the `read_only_fields` Meta option, like so:
-
-    class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            read_only_fields = ('created', 'modified')
+            fields = ('url', 'account_name', 'users', 'created')
+
+---
+
+# Advanced serializer usage
+
+You can create customized subclasses of `ModelSerializer` or `HyperlinkedModelSerializer` that use a different set of default fields.
+
+Doing so should be considered advanced usage, and will only be needed if you have some particular serializer requirements that you often need to repeat.
 
 ## Customising the default fields
 
-You can create customized subclasses of `ModelSerializer` that use a different set of default fields for the representation, by overriding various `get_<field_type>_field` methods.
+The `field_mapping` attribute is a dictionary that maps model classes to serializer classes.  Overriding the attribute will let you set a different set of default serializer classes. 
 
-Each of these methods may either return a field or serializer instance, or `None`.
+For more advanced customization than simply changing the default serializer class you can override various `get_<field_type>_field` methods.  Doing so will allow you to customize the arguments that each serializer field is initialized with. Each of these methods may either return a field or serializer instance, or `None`.
 
 ### get_pk_field
 
@@ -374,15 +435,19 @@ Returns the field instance that should be used to represent the pk field.
 
 ### get_nested_field
 
-**Signature**: `.get_nested_field(self, model_field)`
+**Signature**: `.get_nested_field(self, model_field, related_model, to_many)`
 
 Returns the field instance that should be used to represent a related field when `depth` is specified as being non-zero.
 
+Note that the `model_field` argument will be `None` for reverse relationships.  The `related_model` argument will be the model class for the target of the field.  The `to_many` argument will be a boolean indicating if this is a to-one or to-many relationship.
+
 ### get_related_field
 
-**Signature**: `.get_related_field(self, model_field, to_many=False)`
+**Signature**: `.get_related_field(self, model_field, related_model, to_many)`
 
 Returns the field instance that should be used to represent a related field when `depth` is not specified, or when nested representations are being used and the depth reaches zero.
+
+Note that the `model_field` argument will be `None` for reverse relationships.  The `related_model` argument will be the model class for the target of the field.  The `to_many` argument will be a boolean indicating if this is a to-one or to-many relationship.
 
 ### get_field
 
@@ -390,7 +455,7 @@ Returns the field instance that should be used to represent a related field when
 
 Returns the field instance that should be used for non-relational, non-pk fields.
 
-### Example:
+## Example
 
 The following custom model serializer could be used as a base class for model serializers that should always exclude the pk by default.
 
