@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch
 from django import forms
+from django.db.models.fields import BLANK_CHOICE_DASH
 from django.forms import widgets
 from django.forms.models import ModelChoiceIterator
 from django.utils.translation import ugettext_lazy as _
@@ -47,7 +48,7 @@ class RelatedField(WritableField):
                           DeprecationWarning, stacklevel=2)
             kwargs['required'] = not kwargs.pop('null')
 
-        self.queryset = kwargs.pop('queryset', None)
+        queryset = kwargs.pop('queryset', None)
         self.many = kwargs.pop('many', self.many)
         if self.many:
             self.widget = self.many_widget
@@ -55,6 +56,11 @@ class RelatedField(WritableField):
 
         kwargs['read_only'] = kwargs.pop('read_only', self.read_only)
         super(RelatedField, self).__init__(*args, **kwargs)
+
+        if not self.required:
+            self.empty_label = BLANK_CHOICE_DASH[0][1]
+
+        self.queryset = queryset
 
     def initialize(self, parent, field_name):
         super(RelatedField, self).initialize(parent, field_name)
@@ -221,12 +227,20 @@ class PrimaryKeyRelatedField(RelatedField):
     def field_to_native(self, obj, field_name):
         if self.many:
             # To-many relationship
-            try:
+
+            queryset = None
+            if not self.source:
                 # Prefer obj.serializable_value for performance reasons
-                queryset = obj.serializable_value(self.source or field_name)
-            except AttributeError:
+                try:
+                    queryset = obj.serializable_value(field_name)
+                except AttributeError:
+                    pass
+            if queryset is None:
                 # RelatedManager (reverse relationship)
-                queryset = getattr(obj, self.source or field_name)
+                source = self.source or field_name
+                queryset = obj
+                for component in source.split('.'):
+                    queryset = get_component(queryset, component)
 
             # Forward relationship
             return [self.to_native(item.pk) for item in queryset.all()]
@@ -434,7 +448,7 @@ class HyperlinkedRelatedField(RelatedField):
             raise Exception('Writable related fields must include a `queryset` argument')
 
         try:
-            http_prefix = value.startswith('http:') or value.startswith('https:')
+            http_prefix = value.startswith(('http:', 'https:'))
         except AttributeError:
             msg = self.error_messages['incorrect_type']
             raise ValidationError(msg % type(value).__name__)
