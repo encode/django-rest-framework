@@ -646,3 +646,29 @@ class DecimalFieldTest(TestCase):
 
         self.assertFalse(s.is_valid())
         self.assertEqual(s.errors,  {'decimal_field': ['Ensure that there are no more than 4 digits in total.']})
+
+
+class ChoiceFieldTests(TestCase):
+    """
+    Tests for the ChoiceField options generator
+    """
+
+    SAMPLE_CHOICES = [
+        ('red', 'Red'),
+        ('green', 'Green'),
+        ('blue', 'Blue'),
+    ]
+
+    def test_choices_required(self):
+        """
+        Make sure proper choices are rendered if field is required
+        """
+        f = serializers.ChoiceField(required=True, choices=self.SAMPLE_CHOICES)
+        self.assertEqual(f.choices, self.SAMPLE_CHOICES)
+
+    def test_choices_not_required(self):
+        """
+        Make sure proper choices (plus blank) are rendered if the field isn't required
+        """
+        f = serializers.ChoiceField(required=False, choices=self.SAMPLE_CHOICES)
+        self.assertEqual(f.choices, models.fields.BLANK_CHOICE_DASH + self.SAMPLE_CHOICES)

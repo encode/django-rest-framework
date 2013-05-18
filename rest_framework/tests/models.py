@@ -117,6 +117,32 @@ class OptionalRelationModel(RESTFrameworkModel):
     other = models.ForeignKey('OptionalRelationModel', blank=True, null=True)
 
 
+# Model for issue #725
+class SeveralChoicesModel(RESTFrameworkModel):
+    color = models.CharField(
+        max_length=10,
+        choices=[('red', 'Red'), ('green', 'Green'), ('blue', 'Blue')],
+        blank=False
+    )
+    drink = models.CharField(
+        max_length=10,
+        choices=[('beer', 'Beer'), ('wine', 'Wine'), ('cider', 'Cider')],
+        blank=False,
+        default='beer'
+    )
+    os = models.CharField(
+        max_length=10,
+        choices=[('linux', 'Linux'), ('osx', 'OSX'), ('windows', 'Windows')],
+        blank=True
+    )
+    music_genre = models.CharField(
+        max_length=10,
+        choices=[('rock', 'Rock'), ('metal', 'Metal'), ('grunge', 'Grunge')],
+        blank=True,
+        default='metal'
+    )
+
+
 # Model for RegexField
 class Book(RESTFrameworkModel):
     isbn = models.CharField(max_length=13)
