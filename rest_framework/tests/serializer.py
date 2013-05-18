@@ -78,6 +78,17 @@ class PersonSerializer(serializers.ModelSerializer):
         read_only_fields = ('age',)
 
 
+class NestedSerializer(serializers.Serializer):
+    info = serializers.Field()
+
+
+class ModelSerializerWithNestedSerializer(serializers.ModelSerializer):
+    nested = NestedSerializer(source='*')
+
+    class Meta:
+        model = Person
+
+
 class PersonSerializerInvalidReadOnly(serializers.ModelSerializer):
     """
     Testing for #652.
@@ -368,6 +379,17 @@ class ValidationTests(TestCase):
             self.assertEqual(e.args[0], "Serializer class 'BrokenModelSerializer' is missing 'model' Meta option")
         except:
             self.fail('Wrong exception type thrown.')
+
+    def test_writable_star_source_on_nested_serializer(self):
+        """
+        Assert that a nested serializer instantiated with source='*' correctly
+        expands the data into the outer serializer.
+        """
+        serializer = ModelSerializerWithNestedSerializer(data={
+            'name': 'marko',
+            'nested': {'info': 'hi'}},
+        )
+        self.assertEqual(serializer.is_valid(), True)
 
 
 class CustomValidationTests(TestCase):
