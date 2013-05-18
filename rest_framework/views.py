@@ -83,7 +83,10 @@ class APIView(View):
                         field_name_types[name] = field.__class__.__name__
 
                 actions[method] = field_name_types
-            except:
+            except exceptions.PermissionDenied:
+                # don't add this method
+                pass
+            except exceptions.NotAuthenticated:
                 # don't add this method
                 pass
 
