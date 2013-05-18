@@ -19,6 +19,7 @@ from django import forms
 from django.forms import widgets
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
+from django.utils.datastructures import SortedDict
 
 from rest_framework import ISO_8601
 from rest_framework.compat import timezone, parse_date, parse_datetime, parse_time
@@ -170,7 +171,11 @@ class Field(object):
         elif hasattr(value, '__iter__') and not isinstance(value, (dict, six.string_types)):
             return [self.to_native(item) for item in value]
         elif isinstance(value, dict):
-            return dict(map(self.to_native, (k, v)) for k, v in value.items())
+            # Make sure we preserve field ordering, if it exists
+            ret = SortedDict()
+            for key, val in value.items():
+                ret[key] = self.to_native(val)
+            return ret
         return smart_text(value)
 
     def attributes(self):

@@ -2,13 +2,12 @@
 General serializer field tests.
 """
 from __future__ import unicode_literals
+from django.utils.datastructures import SortedDict
 import datetime
 from decimal import Decimal
-
 from django.db import models
 from django.test import TestCase
 from django.core import validators
-
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 
@@ -62,6 +61,20 @@ class BasicFieldTests(TestCase):
         """
         serializer = CharPrimaryKeyModelSerializer()
         self.assertEqual(serializer.fields['id'].read_only, False)
+
+    def test_dict_field_ordering(self):
+        """
+        Field should preserve dictionary ordering, if it exists.
+        See: https://github.com/tomchristie/django-rest-framework/issues/832
+        """
+        ret = SortedDict()
+        ret['c'] = 1
+        ret['b'] = 1
+        ret['a'] = 1
+        ret['z'] = 1
+        field = serializers.Field()
+        keys = list(field.to_native(ret).keys())
+        self.assertEqual(keys, ['c', 'b', 'a', 'z'])
 
 
 class DateFieldTest(TestCase):
