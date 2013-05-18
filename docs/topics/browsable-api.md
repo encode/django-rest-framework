@@ -35,6 +35,17 @@ A suitable replacement theme can be generated using Bootstrap's [Customize Tool]
 
 You can also change the navbar variant, which by default is `navbar-inverse`, using the `bootstrap_navbar_variant` block. The empty `{% block bootstrap_navbar_variant %}{% endblock %}` will use the original Bootstrap navbar style.
 
+Full Example
+
+    {% extends "rest_framework/base.html" %}
+
+    {% block bootstrap_theme %}
+        <link rel="stylesheet" href="/path/to/yourtheme/bootstrap.min.css' type="text/css">
+    {% endblock %}
+
+    {% block bootstrap_navbar_variant %}{% endblock %}
+
+
 For more specific CSS tweaks, use the `style` block instead.
 
 
