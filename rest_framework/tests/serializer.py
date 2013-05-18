@@ -1158,7 +1158,7 @@ class FieldLabelTest(TestCase):
         serializer = self.serializer_class()
         text_field = serializer.fields['text']
 
-        self.assertEquals(u'Text', text_field.label)
+        self.assertEquals(u'Text comes here', text_field.label)
         self.assertEquals(u'Text description.', text_field.help_text)
 
     def test_field_ctor(self):
