@@ -1,4 +1,6 @@
 from __future__ import unicode_literals
+from django.db import models
+from django.db.models.fields import BLANK_CHOICE_DASH
 from django.utils.datastructures import MultiValueDict
 from django.test import TestCase
 from rest_framework import serializers
@@ -999,6 +1001,73 @@ class SerializerPickleTests(TestCase):
         """
         data = serializers.SortedDictWithMetadata({1: 1})
         repr(pickle.loads(pickle.dumps(data, 0)))
+
+
+# test for issue #725
+class SeveralChoicesModel(models.Model):
+    color = models.CharField(
+        max_length=10,
+        choices=[('red', 'Red'), ('green', 'Green'), ('blue', 'Blue')],
+        blank=False
+    )
+    drink = models.CharField(
+        max_length=10,
+        choices=[('beer', 'Beer'), ('wine', 'Wine'), ('cider', 'Cider')],
+        blank=False,
+        default='beer'
+    )
+    os = models.CharField(
+        max_length=10,
+        choices=[('linux', 'Linux'), ('osx', 'OSX'), ('windows', 'Windows')],
+        blank=True
+    )
+    music_genre = models.CharField(
+        max_length=10,
+        choices=[('rock', 'Rock'), ('metal', 'Metal'), ('grunge', 'Grunge')],
+        blank=True,
+        default='metal'
+    )
+
+
+class SerializerChoiceFields(TestCase):
+
+    def setUp(self):
+        super(SerializerChoiceFields, self).setUp()
+
+        class SeveralChoicesSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = SeveralChoicesModel
+                fields = ('color', 'drink', 'os', 'music_genre')
+
+        self.several_choices_serializer = SeveralChoicesSerializer
+
+    def test_choices_blank_false_not_default(self):
+        serializer = self.several_choices_serializer()
+        self.assertEqual(
+            serializer.fields['color'].choices,
+            [('red', 'Red'), ('green', 'Green'), ('blue', 'Blue')]
+        )
+
+    def test_choices_blank_false_with_default(self):
+        serializer = self.several_choices_serializer()
+        self.assertEqual(
+            serializer.fields['drink'].choices,
+            [('beer', 'Beer'), ('wine', 'Wine'), ('cider', 'Cider')]
+        )
+
+    def test_choices_blank_true_not_default(self):
+        serializer = self.several_choices_serializer()
+        self.assertEqual(
+            serializer.fields['os'].choices,
+            BLANK_CHOICE_DASH + [('linux', 'Linux'), ('osx', 'OSX'), ('windows', 'Windows')]
+        )
+
+    def test_choices_blank_true_with_default(self):
+        serializer = self.several_choices_serializer()
+        self.assertEqual(
+            serializer.fields['music_genre'].choices,
+            BLANK_CHOICE_DASH + [('rock', 'Rock'), ('metal', 'Metal'), ('grunge', 'Grunge')]
+        )
 
 
 class DepthTest(TestCase):
