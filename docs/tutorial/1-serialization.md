@@ -126,7 +126,11 @@ The first thing we need to get started on our Web API is provide a way of serial
     
         def restore_object(self, attrs, instance=None):
             """
-            Create or update a new snippet instance.
+            Create or update a new snippet instance, given a dictionary
+            of deserialized field values.
+            
+            Note that if we don't define this method, then deserializing
+            data will simply return a dictionary of items.
             """
             if instance:
                 # Update existing instance
@@ -200,7 +204,7 @@ We can also serialize querysets instead of model instances.  To do so we simply 
 
 ## Using ModelSerializers
 
-Our `SnippetSerializer` class is replicating a lot of information that's also contained in the `Snippet` model.  It would be nice if we could keep out code a bit  more concise.
+Our `SnippetSerializer` class is replicating a lot of information that's also contained in the `Snippet` model.  It would be nice if we could keep our code a bit  more concise.
 
 In the same way that Django provides both `Form` classes and `ModelForm` classes, REST framework includes both `Serializer` classes, and `ModelSerializer` classes.
 

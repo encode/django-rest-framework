@@ -1,11 +1,10 @@
 """
-The :mod:`request` module provides a :class:`Request` class used to wrap the standard `request`
-object received in all the views.
+The Request class is used as a wrapper around the standard request object.
 
 The wrapped request then offers a richer API, in particular :
 
     - content automatically parsed according to `Content-Type` header,
-      and available as :meth:`.DATA<Request.DATA>`
+      and available as `request.DATA`
     - full support of PUT method, including support for file uploads
     - form overloading of HTTP method, content type and content
 """
@@ -231,10 +230,16 @@ class Request(object):
         """
         self._content_type = self.META.get('HTTP_CONTENT_TYPE',
                                            self.META.get('CONTENT_TYPE', ''))
+
         self._perform_form_overloading()
-        # if the HTTP method was not overloaded, we take the raw HTTP method
+
         if not _hasattr(self, '_method'):
             self._method = self._request.method
+
+            if self._method == 'POST':
+                # Allow X-HTTP-METHOD-OVERRIDE header
+                self._method = self.META.get('HTTP_X_HTTP_METHOD_OVERRIDE',
+                                             self._method)
 
     def _load_stream(self):
         """

@@ -6,6 +6,7 @@ versions of django/python, and compatibility wrappers around optional packages.
 from __future__ import unicode_literals
 
 import django
+from django.core.exceptions import ImproperlyConfigured
 
 # Try to import six from Django, fallback to included `six`.
 try:
@@ -87,9 +88,7 @@ else:
         raise ImportError("User model is not to be found.")
 
 
-# First implementation of Django class-based views did not include head method
-# in base View class - https://code.djangoproject.com/ticket/15668
-if django.VERSION >= (1, 4):
+if django.VERSION >= (1, 5):
     from django.views.generic import View
 else:
     from django.views.generic import View as _View
@@ -97,6 +96,8 @@ else:
     from django.utils.functional import update_wrapper
 
     class View(_View):
+        # 1.3 does not include head method in base View class
+        # See: https://code.djangoproject.com/ticket/15668
         @classonlymethod
         def as_view(cls, **initkwargs):
             """
@@ -126,11 +127,15 @@ else:
             update_wrapper(view, cls.dispatch, assigned=())
             return view
 
-# Taken from @markotibold's attempt at supporting PATCH.
-# https://github.com/markotibold/django-rest-framework/tree/patch
-http_method_names = set(View.http_method_names)
-http_method_names.add('patch')
-View.http_method_names = list(http_method_names)  # PATCH method is not implemented by Django
+        # _allowed_methods only present from 1.5 onwards
+        def _allowed_methods(self):
+            return [m.upper() for m in self.http_method_names if hasattr(self, m)]
+
+
+# PATCH method is not implemented by Django
+if 'patch' not in View.http_method_names:
+    View.http_method_names = View.http_method_names + ['patch']
+
 
 # PUT, DELETE do not require CSRF until 1.4.  They should.  Make it better.
 if django.VERSION >= (1, 4):
@@ -395,6 +400,41 @@ except ImportError:
             kw = dict((k, int(v)) for k, v in kw.iteritems() if v is not None)
             return datetime.datetime(**kw)
 
+
+# smart_urlquote is new on Django 1.4
+try:
+    from django.utils.html import smart_urlquote
+except ImportError:
+    import re
+    from django.utils.encoding import smart_str
+    try:
+        from urllib.parse import quote, urlsplit, urlunsplit
+    except ImportError:     # Python 2
+        from urllib import quote
+        from urlparse import urlsplit, urlunsplit
+
+    unquoted_percents_re = re.compile(r'%(?![0-9A-Fa-f]{2})')
+
+    def smart_urlquote(url):
+        "Quotes a URL if it isn't already quoted."
+        # Handle IDN before quoting.
+        scheme, netloc, path, query, fragment = urlsplit(url)
+        try:
+            netloc = netloc.encode('idna').decode('ascii')  # IDN -> ACE
+        except UnicodeError:  # invalid domain part
+            pass
+        else:
+            url = urlunsplit((scheme, netloc, path, query, fragment))
+
+        # An URL is considered unquoted if it contains no % characters or
+        # contains a % not followed by two hexadecimal digits. See #9655.
+        if '%' not in url or unquoted_percents_re.search(url):
+            # See http://bugs.python.org/issue2637
+            url = quote(smart_str(url), safe=b'!*\'();:@&=+$,/?#[]~')
+
+        return force_text(url)
+
+
 # Markdown is optional
 try:
     import markdown
@@ -426,3 +466,32 @@ try:
     import defusedxml.ElementTree as etree
 except ImportError:
     etree = None
+
+# OAuth is optional
+try:
+    # Note: The `oauth2` package actually provides oauth1.0a support.  Urg.
+    import oauth2 as oauth
+except ImportError:
+    oauth = None
+
+# OAuth is optional
+try:
+    import oauth_provider
+    from oauth_provider.store import store as oauth_provider_store
+except (ImportError, ImproperlyConfigured):
+    oauth_provider = None
+    oauth_provider_store = None
+
+# OAuth 2 support is optional
+try:
+    import provider.oauth2 as oauth2_provider
+    from provider.oauth2 import models as oauth2_provider_models
+    from provider.oauth2 import forms as oauth2_provider_forms
+    from provider import scope as oauth2_provider_scope
+    from provider import constants as oauth2_constants
+except ImportError:
+    oauth2_provider = None
+    oauth2_provider_models = None
+    oauth2_provider_forms = None
+    oauth2_provider_scope = None
+    oauth2_constants = None

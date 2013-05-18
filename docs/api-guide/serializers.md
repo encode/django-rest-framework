@@ -25,6 +25,7 @@ Let's start by creating a simple object we can use for example purposes:
     comment = Comment(email='leila@example.com', content='foo bar')
 
 We'll declare a serializer that we can use to serialize and deserialize `Comment` objects.
+
 Declaring a serializer looks very similar to declaring a form:
 
     class CommentSerializer(serializers.Serializer):
@@ -33,14 +34,20 @@ Declaring a serializer looks very similar to declaring a form:
         created = serializers.DateTimeField()
 
         def restore_object(self, attrs, instance=None):
+            """
+            Given a dictionary of deserialized field values, either update
+            an existing model instance, or create a new model instance.
+            """
             if instance is not None:
-                instance.title = attrs['title']
-                instance.content = attrs['content']
-                instance.created = attrs['created']
+                instance.title = attrs.get('title', instance.title)
+                instance.content = attrs.get('content', instance.content)
+                instance.created = attrs.get('created', instance.created)
                 return instance
             return Comment(**attrs) 
 
-The first part of serializer class defines the fields that get serialized/deserialized.  The `restore_object` method defines how fully fledged instances get created when deserializing data.  The `restore_object` method is optional, and is only required if we want our serializer to support deserialization.
+The first part of serializer class defines the fields that get serialized/deserialized.  The `restore_object` method defines how fully fledged instances get created when deserializing data.
+
+The `restore_object` method is optional, and is only required if we want our serializer to support deserialization into fully fledged object instances.  If we don't define this method, then deserializing data will simply return a dictionary of items.
 
 ## Serializing objects
 
@@ -52,14 +59,15 @@ We can now use `CommentSerializer` to serialize a comment, or list of comments. 
 
 At this point we've translated the model instance into python native datatypes.  To finalise the serialization process we render the data into `json`.
 
-    stream = JSONRenderer().render(data)
-    stream
+    json = JSONRenderer().render(serializer.data)
+    json
     # '{"email": "leila@example.com", "content": "foo bar", "created": "2012-08-22T16:20:09.822"}'
 
 ## Deserializing objects
         
 Deserialization is similar.  First we parse a stream into python native datatypes... 
 
+    stream = StringIO(json)
     data = JSONParser().parse(stream)
 
 ...then we restore those native datatypes into a fully populated object instance.
@@ -80,20 +88,21 @@ By default, serializers must be passed values for all required fields or they wi
 
     serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)  # Update `instance` with partial data
 
-## Serializing querysets
-
-To serialize a queryset instead of an object instance, you should pass the `many=True` flag when instantiating the serializer.
-
-    queryset = Comment.objects.all()
-    serializer = CommentSerializer(queryset, many=True)
-    serializer.data
-    # [{'email': u'leila@example.com', 'content': u'foo bar', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774)}, {'email': u'jamie@example.com', 'content': u'baz', 'created': datetime.datetime(2013, 1, 12, 16, 12, 45, 104445)}]
-
 ## Validation
 
-When deserializing data, you always need to call `is_valid()` before attempting to access the deserialized object.  If any validation errors occur, the `.errors` and `.non_field_errors` properties will contain the resulting error messages.
+When deserializing data, you always need to call `is_valid()` before attempting to access the deserialized object.  If any validation errors occur, the `.errors` property will contain a dictionary representing the resulting error messages.  For example:
 
-### Field-level validation
+    serializer = CommentSerializer(data={'email': 'foobar', 'content': 'baz'})
+    serializer.is_valid()
+    # False
+    serializer.errors
+    # {'email': [u'Enter a valid e-mail address.'], 'created': [u'This field is required.']}
+
+Each key in the dictionary will be the field name, and the values will be lists of strings of any error messages corresponding to that field.  The `non_field_errors` key may also be present, and will list any general validation errors.
+
+When deserializing a list of items, errors will be returned as a list of dictionaries representing each of the deserialized items.
+
+#### Field-level validation
 
 You can specify custom field-level validation by adding `.validate_<fieldname>` methods to your `Serializer` subclass. These are analagous to `.clean_<fieldname>` methods on Django forms, but accept slightly different arguments.
 
@@ -116,7 +125,7 @@ Your `validate_<fieldname>` methods should either just return the `attrs` dictio
                 raise serializers.ValidationError("Blog post is not about Django")
             return attrs
 
-### Object-level validation
+#### Object-level validation
 
 To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass. This method takes a single argument, which is the `attrs` dictionary. It should raise a `ValidationError` if necessary, or just return `attrs`.  For example:
 
@@ -137,32 +146,140 @@ To do any other validation that requires access to multiple fields, add a method
 
 ## Saving object state
 
-Serializers also include a `.save()` method that you can override if you want to provide a method of persisting the state of a deserialized object.  The default behavior of the method is to simply call `.save()` on the deserialized object instance.
+To save the deserialized objects created by a serializer, call the `.save()` method:
+
+    if serializer.is_valid():
+        serializer.save()
+
+The default behavior of the method is to simply call `.save()` on the deserialized object instance.  You can override the default save behaviour by overriding the `.save_object(obj)` method on the serializer class.
 
 The generic views provided by REST framework call the `.save()` method when updating or creating entities.  
 
 ## Dealing with nested objects
 
-The previous example is fine for dealing with objects that only have simple datatypes, but sometimes we also need to be able to represent more complex objects,
-where some of the attributes of an object might not be simple datatypes such as strings, dates or integers.
+The previous examples are fine for dealing with objects that only have simple datatypes, but sometimes we also need to be able to represent more complex objects, where some of the attributes of an object might not be simple datatypes such as strings, dates or integers.
 
 The `Serializer` class is itself a type of `Field`, and can be used to represent relationships where one object type is nested inside another.
 
     class UserSerializer(serializers.Serializer):
-        email = serializers.Field()
-        username = serializers.Field()
+        email = serializers.EmailField()
+        username = serializers.CharField(max_length=100)
 
     class CommentSerializer(serializers.Serializer):
         user = UserSerializer()
-        title = serializers.Field()
-        content = serializers.Field()
-        created = serializers.Field()
+        content = serializers.CharField(max_length=200)
+        created = serializers.DateTimeField()
+
+If a nested representation may optionally accept the `None` value you should pass the `required=False` flag to the nested serializer.
+
+    class CommentSerializer(serializers.Serializer):
+        user = UserSerializer(required=False)  # May be an anonymous user.
+        content = serializers.CharField(max_length=200)
+        created = serializers.DateTimeField()
+
+Similarly if a nested representation should be a list of items, you should the `many=True` flag to the nested serialized.
+
+    class CommentSerializer(serializers.Serializer):
+        user = UserSerializer(required=False)
+        edits = EditItemSerializer(many=True)  # A nested list of 'edit' items.
+        content = serializers.CharField(max_length=200)
+        created = serializers.DateTimeField()
 
 ---
 
 **Note**: Nested serializers are only suitable for read-only representations, as there are cases where they would have ambiguous or non-obvious behavior if used when updating instances.  For read-write representations you should always use a flat representation, by using one of the `RelatedField` subclasses.
 
 ---
+
+## Dealing with multiple objects
+
+The `Serializer` class can also handle serializing or deserializing lists of objects.
+
+#### Serializing multiple objects
+
+To serialize a queryset or list of objects instead of a single object instance, you should pass the `many=True` flag when instantiating the serializer.  You can then pass a queryset or list of objects to be serialized.
+
+    queryset = Book.objects.all()
+    serializer = BookSerializer(queryset, many=True)
+    serializer.data
+    # [
+    #     {'id': 0, 'title': 'The electric kool-aid acid test', 'author': 'Tom Wolfe'},
+    #     {'id': 1, 'title': 'If this is a man', 'author': 'Primo Levi'},
+    #     {'id': 2, 'title': 'The wind-up bird chronicle', 'author': 'Haruki Murakami'}
+    # ]
+
+#### Deserializing multiple objects for creation
+
+To deserialize a list of object data, and create multiple object instances in a single pass, you should also set the `many=True` flag, and pass a list of data to be deserialized.
+
+This allows you to write views that create multiple items when a `POST` request is made.
+
+For example:
+
+    data = [
+        {'title': 'The bell jar', 'author': 'Sylvia Plath'},
+        {'title': 'For whom the bell tolls', 'author': 'Ernest Hemingway'}
+    ]
+    serializer = BookSerializer(data=data, many=True)
+    serializer.is_valid()
+    # True
+    serializer.save()  # `.save()` will be called on each deserialized instance
+
+#### Deserializing multiple objects for update
+
+You can also deserialize a list of objects as part of a bulk update of multiple existing items.
+In this case you need to supply both an existing list or queryset of items, as well as a list of data to update those items with.
+
+This allows you to write views that update or create multiple items when a `PUT` request is made.
+
+    # Capitalizing the titles of the books
+    queryset = Book.objects.all()
+    data = [
+        {'id': 3, 'title': 'The Bell Jar', 'author': 'Sylvia Plath'},
+        {'id': 4, 'title': 'For Whom the Bell Tolls', 'author': 'Ernest Hemingway'}
+    ]
+    serializer = BookSerializer(queryset, data=data, many=True)
+    serializer.is_valid()
+    # True
+    serialize.save()  # `.save()` will be called on each updated or newly created instance.
+
+By default bulk updates will be limited to updating instances that already exist in the provided queryset.
+
+When performing a bulk update you may want to allow new items to be created, and missing items to be deleted.  To do so, pass `allow_add_remove=True` to the serializer.
+
+    serializer = BookSerializer(queryset, data=data, many=True, allow_add_remove=True)
+    serializer.is_valid()
+    # True
+    serializer.save()  # `.save()` will be called on updated or newly created instances.
+                       # `.delete()` will be called on any other items in the `queryset`.
+
+Passing `allow_add_remove=True` ensures that any update operations will completely overwrite the existing queryset, rather than simply updating existing objects. 
+
+#### How identity is determined when performing bulk updates
+
+Performing a bulk update is slightly more complicated than performing a bulk creation, because the serializer needs a way to determine how the items in the incoming data should be matched against the existing object instances.
+
+By default the serializer class will use the `id` key on the incoming data to determine the canonical identity of an object.  If you need to change this behavior you should override the `get_identity` method on the `Serializer` class.  For example:
+
+    class AccountSerializer(serializers.Serializer):
+        slug = serializers.CharField(max_length=100)
+        created = serializers.DateTimeField()
+        ...  # Various other fields
+        
+        def get_identity(self, data):
+            """
+            This hook is required for bulk update.
+            We need to override the default, to use the slug as the identity.
+            
+            Note that the data has not yet been validated at this point,
+            so we need to deal gracefully with incorrect datatypes.
+            """
+            try:
+                return data.get('slug', None)
+            except AttributeError:
+                return None
+
+To map the incoming data items to their corresponding object instances, the `.get_identity()` method will be called both against the incoming data, and against the serialized representation of the existing objects.
 
 ## Including extra context
 
@@ -176,50 +293,9 @@ You can provide arbitrary additional context by passing a `context` argument whe
 
 The context dictionary can be used within any serializer field logic, such as a custom `.to_native()` method, by accessing the `self.context` attribute.
 
-## Creating custom fields
-
-If you want to create a custom field, you'll probably want to override either one or both of the `.to_native()` and `.from_native()` methods.  These two methods are used to convert between the intial datatype, and a primative, serializable datatype.  Primative datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primative objects.
-
-The `.to_native()` method is called to convert the initial datatype into a primative, serializable datatype.  The `from_native()` method is called to restore a primative datatype into it's initial representation.
-
-Let's look at an example of serializing a class that represents an RGB color value:
-
-    class Color(object):
-        """
-        A color represented in the RGB colorspace.
-        """
-        def __init__(self, red, green, blue):
-            assert(red >= 0 and green >= 0 and blue >= 0)
-            assert(red < 256 and green < 256 and blue < 256)
-            self.red, self.green, self.blue = red, green, blue
-
-    class ColourField(serializers.WritableField):
-        """
-        Color objects are serialized into "rgb(#, #, #)" notation.
-        """
-        def to_native(self, obj):
-            return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)
-      
-        def from_native(self, data):
-            data = data.strip('rgb(').rstrip(')')
-            red, green, blue = [int(col) for col in data.split(',')]
-            return Color(red, green, blue)
-            
-
-By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override `.field_to_native()` and/or `.field_from_native()`.
-
-As an example, let's create a field that can be used represent the class name of the object being serialized:
-
-    class ClassNameField(serializers.Field):
-        def field_to_native(self, obj, field_name):
-            """
-            Serialize the object's class name.
-            """
-            return obj.__class__
-
 ---
 
-# ModelSerializers
+# ModelSerializer
 
 Often you'll want serializer classes that map closely to model definitions.
 The `ModelSerializer` class lets you automatically create a Serializer class with fields that correspond to the Model fields.
@@ -230,7 +306,42 @@ The `ModelSerializer` class lets you automatically create a Serializer class wit
 
 By default, all the model fields on the class will be mapped to corresponding serializer fields.
 
-Any foreign keys on the model will be mapped to `PrimaryKeyRelatedField` if you're using a `ModelSerializer`, or `HyperlinkedRelatedField` if you're using a `HyperlinkedModelSerializer`.
+Any relationships such as foreign keys on the model will be mapped to `PrimaryKeyRelatedField`.  Other models fields will be mapped to a corresponding serializer field.
+
+## Specifying which fields should be included
+
+If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.
+
+For example:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            fields = ('id', 'account_name', 'users', 'created')
+
+## Specifying nested serialization
+
+The default `ModelSerializer` uses primary keys for relationships, but you can also easily generate nested representations using the `depth` option:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            fields = ('id', 'account_name', 'users', 'created')
+            depth = 1
+
+The `depth` option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.
+
+## Specifying which fields should be read-only 
+
+You may wish to specify multiple fields as read-only. Instead of adding each field explicitly with the `read_only=True` attribute, you may use the `read_only_fields` Meta option, like so:
+
+    class AccountSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Account
+            fields = ('id', 'account_name', 'users', 'created')
+            read_only_fields = ('account_name',)
+
+Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option. 
 
 ## Specifying fields explicitly 
 
@@ -253,43 +364,68 @@ Alternative representations include serializing using hyperlinks, serializing co
 
 For full details see the [serializer relations][relations] documentation.
 
-## Specifying which fields should be included
+---
 
-If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.
+# HyperlinkedModelSerializer
 
-For example:
+The `HyperlinkedModelSerializer` class is similar to the `ModelSerializer` class except that it uses hyperlinks to represent relationships, rather than primary keys.
 
-    class AccountSerializer(serializers.ModelSerializer):
+By default the serializer will include a `url` field instead of a primary key field.
+
+The url field will be represented using a `HyperlinkedIdentityField` serializer field, and any relationships on the model will be represented using a `HyperlinkedRelatedField` serializer field.
+
+You can explicitly include the primary key by adding it to the `fields` option, for example:
+
+    class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
-            exclude = ('id',)
+            fields = ('url', 'id', 'account_name', 'users', 'created')
 
-## Specifiying nested serialization
+## How hyperlinked views are determined
 
-The default `ModelSerializer` uses primary keys for relationships, but you can also easily generate nested representations using the `depth` option:
+There needs to be a way of determining which views should be used for hyperlinking to model instances.
 
-    class AccountSerializer(serializers.ModelSerializer):
+By default hyperlinks are expected to correspond to a view name that matches the style `'{model_name}-detail'`, and looks up the instance by a `pk` keyword argument.
+
+You can change the field that is used for object lookups by setting the `lookup_field` option.  The value of this option should correspond both with a kwarg in the URL conf, and with an field on the model.  For example:
+
+    class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
-            exclude = ('id',)
-            depth = 1
+            fields = ('url', 'account_name', 'users', 'created')
+            lookup_field = 'slug'
 
-The `depth` option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.
+For more specfic requirements such as specifying a different lookup for each field, you'll want to set the fields on the serializer explicitly.  For example:
 
-## Specifying which fields should be read-only 
+    class AccountSerializer(serializers.HyperlinkedModelSerializer):
+        url = serializers.HyperlinkedIdentityField(
+            view_name='account_detail',
+            lookup_field='account_name'
+        )
+        users = serializers.HyperlinkedRelatedField(
+            view_name='user-detail',
+            lookup_field='username',
+            many=True,
+            read_only=True
+        )
 
-You may wish to specify multiple fields as read-only. Instead of adding each field explicitely with the `read_only=True` attribute, you may use the `read_only_fields` Meta option, like so:
-
-    class AccountSerializer(serializers.ModelSerializer):
         class Meta:
             model = Account
-            read_only_fields = ('created', 'modified')
+            fields = ('url', 'account_name', 'users', 'created')
+
+---
+
+# Advanced serializer usage
+
+You can create customized subclasses of `ModelSerializer` or `HyperlinkedModelSerializer` that use a different set of default fields.
+
+Doing so should be considered advanced usage, and will only be needed if you have some particular serializer requirements that you often need to repeat.
 
 ## Customising the default fields
 
-You can create customized subclasses of `ModelSerializer` that use a different set of default fields for the representation, by overriding various `get_<field_type>_field` methods.
+The `field_mapping` attribute is a dictionary that maps model classes to serializer classes.  Overriding the attribute will let you set a different set of default serializer classes. 
 
-Each of these methods may either return a field or serializer instance, or `None`.
+For more advanced customization than simply changing the default serializer class you can override various `get_<field_type>_field` methods.  Doing so will allow you to customize the arguments that each serializer field is initialized with. Each of these methods may either return a field or serializer instance, or `None`.
 
 ### get_pk_field
 
@@ -299,15 +435,19 @@ Returns the field instance that should be used to represent the pk field.
 
 ### get_nested_field
 
-**Signature**: `.get_nested_field(self, model_field)`
+**Signature**: `.get_nested_field(self, model_field, related_model, to_many)`
 
 Returns the field instance that should be used to represent a related field when `depth` is specified as being non-zero.
 
+Note that the `model_field` argument will be `None` for reverse relationships.  The `related_model` argument will be the model class for the target of the field.  The `to_many` argument will be a boolean indicating if this is a to-one or to-many relationship.
+
 ### get_related_field
 
-**Signature**: `.get_related_field(self, model_field, to_many=False)`
+**Signature**: `.get_related_field(self, model_field, related_model, to_many)`
 
 Returns the field instance that should be used to represent a related field when `depth` is not specified, or when nested representations are being used and the depth reaches zero.
+
+Note that the `model_field` argument will be `None` for reverse relationships.  The `related_model` argument will be the model class for the target of the field.  The `to_many` argument will be a boolean indicating if this is a to-one or to-many relationship.
 
 ### get_field
 
@@ -315,7 +455,7 @@ Returns the field instance that should be used to represent a related field when
 
 Returns the field instance that should be used for non-relational, non-pk fields.
 
-### Example:
+## Example
 
 The following custom model serializer could be used as a base class for model serializers that should always exclude the pk by default.
 

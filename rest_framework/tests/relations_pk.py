@@ -5,41 +5,44 @@ from rest_framework.tests.models import ManyToManyTarget, ManyToManySource, Fore
 from rest_framework.compat import six
 
 
+# ManyToMany
 class ManyToManyTargetSerializer(serializers.ModelSerializer):
-    sources = serializers.PrimaryKeyRelatedField(many=True)
-
     class Meta:
         model = ManyToManyTarget
+        fields = ('id', 'name', 'sources')
 
 
 class ManyToManySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ManyToManySource
+        fields = ('id', 'name', 'targets')
 
 
+# ForeignKey
 class ForeignKeyTargetSerializer(serializers.ModelSerializer):
-    sources = serializers.PrimaryKeyRelatedField(many=True)
-
     class Meta:
         model = ForeignKeyTarget
+        fields = ('id', 'name', 'sources')
 
 
 class ForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = ForeignKeySource
+        fields = ('id', 'name', 'target')
 
 
+# Nullable ForeignKey
 class NullableForeignKeySourceSerializer(serializers.ModelSerializer):
     class Meta:
         model = NullableForeignKeySource
+        fields = ('id', 'name', 'target')
 
 
-# OneToOne
+# Nullable OneToOne
 class NullableOneToOneTargetSerializer(serializers.ModelSerializer):
-    nullable_source = serializers.PrimaryKeyRelatedField()
-
     class Meta:
         model = OneToOneTarget
+        fields = ('id', 'name', 'nullable_source')
 
 
 # TODO: Add test that .data cannot be accessed prior to .is_valid
@@ -407,14 +410,14 @@ class PKNullableOneToOneTests(TestCase):
         target.save()
         new_target = OneToOneTarget(name='target-2')
         new_target.save()
-        source = NullableOneToOneSource(name='source-1', target=target)
+        source = NullableOneToOneSource(name='source-1', target=new_target)
         source.save()
 
     def test_reverse_foreign_key_retrieve_with_null(self):
         queryset = OneToOneTarget.objects.all()
         serializer = NullableOneToOneTargetSerializer(queryset, many=True)
         expected = [
-            {'id': 1, 'name': 'target-1', 'nullable_source': 1},
-            {'id': 2, 'name': 'target-2', 'nullable_source': None},
+            {'id': 1, 'name': 'target-1', 'nullable_source': None},
+            {'id': 2, 'name': 'target-2', 'nullable_source': 1},
         ]
         self.assertEqual(serializer.data, expected)

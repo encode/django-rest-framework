@@ -18,14 +18,18 @@ REST framework settings, checking for user settings first, then falling
 back to the defaults.
 """
 from __future__ import unicode_literals
+
 from django.conf import settings
 from django.utils import importlib
+
+from rest_framework import ISO_8601
 from rest_framework.compat import six
 
 
 USER_SETTINGS = getattr(settings, 'REST_FRAMEWORK', None)
 
 DEFAULTS = {
+    # Base API policies
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
@@ -47,11 +51,15 @@ DEFAULTS = {
 
     'DEFAULT_CONTENT_NEGOTIATION_CLASS':
         'rest_framework.negotiation.DefaultContentNegotiation',
+
+    # Genric view behavior
     'DEFAULT_MODEL_SERIALIZER_CLASS':
         'rest_framework.serializers.ModelSerializer',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS':
         'rest_framework.pagination.PaginationSerializer',
+    'DEFAULT_FILTER_BACKENDS': (),
 
+    # Throttling
     'DEFAULT_THROTTLE_RATES': {
         'user': None,
         'anon': None,
@@ -60,9 +68,6 @@ DEFAULTS = {
     # Pagination
     'PAGINATE_BY': None,
     'PAGINATE_BY_PARAM': None,
-
-    # Filtering
-    'FILTER_BACKEND': None,
 
     # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
@@ -76,6 +81,25 @@ DEFAULTS = {
     'URL_FORMAT_OVERRIDE': 'format',
 
     'FORMAT_SUFFIX_KWARG': 'format',
+
+    # Input and output formats
+    'DATE_INPUT_FORMATS': (
+        ISO_8601,
+    ),
+    'DATE_FORMAT': None,
+
+    'DATETIME_INPUT_FORMATS': (
+        ISO_8601,
+    ),
+    'DATETIME_FORMAT': None,
+
+    'TIME_INPUT_FORMATS': (
+        ISO_8601,
+    ),
+    'TIME_FORMAT': None,
+
+    # Pending deprecation
+    'FILTER_BACKEND': None,
 }
 
 
@@ -89,6 +113,7 @@ IMPORT_STRINGS = (
     'DEFAULT_CONTENT_NEGOTIATION_CLASS',
     'DEFAULT_MODEL_SERIALIZER_CLASS',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS',
+    'DEFAULT_FILTER_BACKENDS',
     'FILTER_BACKEND',
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN',

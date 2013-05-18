@@ -21,7 +21,12 @@ If any permission check fails an `exceptions.PermissionDenied` exception will be
 
 REST framework permissions also support object-level permissioning.  Object level permissions are used to determine if a user should be allowed to act on a particular object, which will typically be a model instance.
 
-Object level permissions are run by REST framework's generic views when `.get_object()` is called.  As with view level permissions, an `exceptions.PermissionDenied` exception will be raised if the user is not allowed to act on the given object.
+Object level permissions are run by REST framework's generic views when `.get_object()` is called.
+As with view level permissions, an `exceptions.PermissionDenied` exception will be raised if the user is not allowed to act on the given object.
+
+If you're writing your own views and want to enforce object level permissions,
+you'll need to explicitly call the `.check_object_permissions(request, obj)` method on the view at the point at which you've retrieved the object.
+This will either raise a `PermissionDenied` or `NotAuthenticated` exception, or simply return if the view has the appropriate permissions.
 
 ## Setting the permission policy
 
@@ -39,7 +44,8 @@ If not specified, this setting defaults to allowing unrestricted access:
        'rest_framework.permissions.AllowAny',
     )
 
-You can also set the authentication policy on a per-view basis, using the `APIView` class based views.
+You can also set the authentication policy on a per-view, or per-viewset basis,
+using the `APIView` class based views.
 
     class ExampleView(APIView):
         permission_classes = (IsAuthenticated,)
@@ -90,15 +96,34 @@ This permission is suitable if you want to your API to allow read permissions to
 
 ## DjangoModelPermissions
 
-This permission class ties into Django's standard `django.contrib.auth` [model permissions][contribauth].  When applied to a view that has a `.model` property, authorization will only be granted if the user has the relevant model permissions assigned.
+This permission class ties into Django's standard `django.contrib.auth` [model permissions][contribauth].  When applied to a view that has a `.model` property, authorization will only be granted if the user *is authenticated* and has the *relevant model permissions* assigned.
 
 * `POST` requests require the user to have the `add` permission on the model.
 * `PUT` and `PATCH` requests require the user to have the `change` permission on the model.
 * `DELETE` requests require the user to have the `delete` permission on the model.
- 
+
 The default behaviour can also be overridden to support custom model permissions.  For example, you might want to include a `view` model permission for `GET` requests.
 
 To use custom model permissions, override `DjangoModelPermissions` and set the `.perms_map` property.  Refer to the source code for details.
+
+## DjangoModelPermissionsOrAnonReadOnly
+
+Similar to `DjangoModelPermissions`, but also allows unauthenticated users to have  read-only access to the API.
+
+## TokenHasReadWriteScope
+
+This permission class is intended for use with either of the `OAuthAuthentication` and `OAuth2Authentication` classes, and ties into the scoping that their backends provide.
+
+Requests with a safe methods of `GET`, `OPTIONS` or `HEAD` will be allowed if the authenticated token has read permission.
+
+Requests for `POST`, `PUT`, `PATCH` and `DELETE` will be allowed if the authenticated token has write permission.
+
+This permission class relies on the implementations of the [django-oauth-plus][django-oauth-plus] and [django-oauth2-provider][django-oauth2-provider] libraries, which both provide limited support for controlling the scope of access tokens:
+
+* `django-oauth-plus`: Tokens are associated with a `Resource` class which has a `name`, `url` and `is_readonly` properties.
+* `django-oauth2-provider`: Tokens are associated with a bitwise `scope` attribute, that defaults to providing bitwise values for `read` and/or `write`.
+
+If you require more advanced scoping for your API, such as restricting tokens to accessing a subset of functionality of your API then you will need to provide a custom permission class.  See the source of the `django-oauth-plus` or `django-oauth2-provider` package for more details on scoping token access.
 
 ---
 
@@ -168,5 +193,7 @@ Also note that the generic views will only check the object-level permissions fo
 [throttling]: throttling.md
 [contribauth]: https://docs.djangoproject.com/en/1.0/topics/auth/#permissions
 [guardian]: https://github.com/lukaszb/django-guardian
+[django-oauth-plus]: http://code.larlet.fr/django-oauth-plus
+[django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
 [2.2-announcement]: ../topics/2.2-announcement.md
 [filtering]: filtering.md

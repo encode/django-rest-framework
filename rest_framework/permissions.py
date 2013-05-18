@@ -7,6 +7,8 @@ import warnings
 
 SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
+from rest_framework.compat import oauth2_provider_scope, oauth2_constants
+
 
 class BasePermission(object):
     """
@@ -23,10 +25,12 @@ class BasePermission(object):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
-        if len(inspect.getargspec(self.has_permission)[0]) == 4:
-            warnings.warn('The `obj` argument in `has_permission` is due to be deprecated. '
-                      'Use `has_object_permission()` instead for object permissions.',
-                       PendingDeprecationWarning, stacklevel=2)
+        if len(inspect.getargspec(self.has_permission).args) == 4:
+            warnings.warn(
+                'The `obj` argument in `has_permission` is deprecated. '
+                'Use `has_object_permission()` instead for object permissions.',
+                DeprecationWarning, stacklevel=2
+            )
             return self.has_permission(request, view, obj)
         return True
 
@@ -85,8 +89,8 @@ class DjangoModelPermissions(BasePermission):
     It ensures that the user is authenticated, and has the appropriate
     `add`/`change`/`delete` permissions on the model.
 
-    This permission will only be applied against view classes that
-    provide a `.model` attribute, such as the generic class-based views.
+    This permission can only be applied against view classes that
+    provide a `.model` or `.queryset` attribute.
     """
 
     # Map methods into required permission codes.
@@ -102,6 +106,8 @@ class DjangoModelPermissions(BasePermission):
         'DELETE': ['%(app_label)s.delete_%(model_name)s'],
     }
 
+    authenticated_users_only = True
+
     def get_required_permissions(self, method, model_cls):
         """
         Given a model and an HTTP method, return the list of permission
@@ -115,13 +121,54 @@ class DjangoModelPermissions(BasePermission):
 
     def has_permission(self, request, view):
         model_cls = getattr(view, 'model', None)
-        if not model_cls:
+        queryset = getattr(view, 'queryset', None)
+
+        if model_cls is None and queryset is not None:
+            model_cls = queryset.model
+
+        # Workaround to ensure DjangoModelPermissions are not applied
+        # to the root view when using DefaultRouter.
+        if model_cls is None and getattr(view, '_ignore_model_permissions'):
             return True
+
+        assert model_cls, ('Cannot apply DjangoModelPermissions on a view that'
+                           ' does not have `.model` or `.queryset` property.')
 
         perms = self.get_required_permissions(request.method, model_cls)
 
         if (request.user and
-            request.user.is_authenticated() and
+            (request.user.is_authenticated() or not self.authenticated_users_only) and
             request.user.has_perms(perms)):
             return True
         return False
+
+
+class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
+    """
+    Similar to DjangoModelPermissions, except that anonymous users are
+    allowed read-only access.
+    """
+    authenticated_users_only = False
+
+
+class TokenHasReadWriteScope(BasePermission):
+    """
+    The request is authenticated as a user and the token used has the right scope
+    """
+
+    def has_permission(self, request, view):
+        token = request.auth
+        read_only = request.method in SAFE_METHODS
+
+        if not token:
+            return False
+
+        if hasattr(token, 'resource'):  # OAuth 1
+            return read_only or not request.auth.resource.is_readonly
+        elif hasattr(token, 'scope'):  # OAuth 2
+            required = oauth2_constants.READ if read_only else oauth2_constants.WRITE
+            return oauth2_provider_scope.check(required, request.auth.scope)
+
+        assert False, ('TokenHasReadWriteScope requires either the'
+        '`OAuthAuthentication` or `OAuth2Authentication` authentication '
+        'class to be used.')

@@ -43,7 +43,8 @@ The default authentication schemes may be set globally, using the `DEFAULT_AUTHE
         )
     }
 
-You can also set the authentication scheme on a per-view basis, using the `APIView` class based views.
+You can also set the authentication scheme on a per-view or per-viewset basis,
+using the `APIView` class based views.
 
     class ExampleView(APIView):
         authentication_classes = (SessionAuthentication, BasicAuthentication)
@@ -107,13 +108,20 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
     WWW-Authenticate: Basic realm="api"
 
-**Note:** If you use `BasicAuthentication` in production you must ensure that your API is only available over `https` only.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.
+**Note:** If you use `BasicAuthentication` in production you must ensure that your API is only available over `https`.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.
 
 ## TokenAuthentication
 
-This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.
+This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients. 
 
-To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in your `INSTALLED_APPS` setting.
+To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in your `INSTALLED_APPS` setting:
+
+    INSTALLED_APPS = (
+        ...
+        'rest_framework.authtoken'
+    )
+    
+Make sure to run `manage.py syncdb` after changing your settings.
 
 You'll also need to create tokens for your users.
 
@@ -135,9 +143,17 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
     WWW-Authenticate: Token
 
-**Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https` only.
+The `curl` command line tool may be useful for testing token authenticated APIs.  For example:
+
+    curl -X GET http://127.0.0.1:8000/api/example/ -H 'Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b'
 
 ---
+
+**Note:** If you use `TokenAuthentication` in production you must ensure that your API is only available over `https`.
+
+---
+
+#### Generating Tokens
 
 If you want every user to have an automatically generated Token, you can simply catch the User's `post_save` signal.
 
@@ -154,8 +170,7 @@ If you've already created some users, you can generate tokens for all existing u
     for user in User.objects.all():
         Token.objects.get_or_create(user=user)
 
-When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password. 
-REST framework provides a built-in view to provide this behavior.  To use it, add the `obtain_auth_token` view to your URLconf:
+When using `TokenAuthentication`, you may want to provide a mechanism for clients to obtain a token given the username and password.  REST framework provides a built-in view to provide this behavior.  To use it, add the `obtain_auth_token` view to your URLconf:
 
     urlpatterns += patterns('',
         url(r'^api-token-auth/', 'rest_framework.authtoken.views.obtain_auth_token')
@@ -169,6 +184,23 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
 
 Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.  If you need a customized version of the `obtain_auth_token` view, you can do so by overriding the `ObtainAuthToken` view class, and using that in your url conf instead.
 
+#### Custom user models
+
+The `rest_framework.authtoken` app includes a south migration that will create the authtoken table.   If you're using a [custom user model][custom-user-model] you'll need to make sure that any initial migration that creates the user table runs before the authtoken table is created.
+
+You can do so by inserting a `needed_by` attribute in your user migration:
+
+    class Migration:
+
+        needed_by = (
+            ('authtoken', '0001_initial'),
+        )
+        
+        def forwards(self):
+            ...
+
+For more details, see the [south documentation on dependencies][south-dependencies].
+
 ## SessionAuthentication
 
 This authentication scheme uses Django's default session backend for authentication.  Session authentication is appropriate for AJAX clients that are running in the same session context as your website.
@@ -181,6 +213,97 @@ If successfully authenticated, `SessionAuthentication` provides the following cr
 Unauthenticated responses that are denied permission will result in an `HTTP 403 Forbidden` response.
 
 If you're using an AJAX style API with SessionAuthentication, you'll need to make sure you include a valid CSRF token for any "unsafe" HTTP method calls, such as `PUT`, `PATCH`, `POST` or `DELETE` requests.  See the [Django CSRF documentation][csrf-ajax] for more details.
+
+## OAuthAuthentication
+
+This authentication uses [OAuth 1.0a][oauth-1.0a] authentication scheme. OAuth 1.0a provides signature validation which provides a reasonable level of security over plain non-HTTPS connections.  However, it may also be considered more complicated than OAuth2, as it requires clients to sign their requests.
+
+This authentication class depends on the optional `django-oauth-plus` and `oauth2` packages. In order to make it work you must install these packages and add `oauth_provider` to your `INSTALLED_APPS`:
+
+    INSTALLED_APPS = (
+        ...
+        `oauth_provider`,
+    )
+
+Don't forget to run `syncdb` once you've added the package.
+
+    python manage.py syncdb
+
+#### Getting started with django-oauth-plus
+
+The OAuthAuthentication class only provides token verification and signature validation for requests. It doesn't provide authorization flow for your clients. You still need to implement your own views for accessing and authorizing tokens.
+
+The `django-oauth-plus` package provides simple foundation for classic 'three-legged' oauth flow.  Please refer to [the documentation][django-oauth-plus] for more details.
+
+## OAuth2Authentication
+
+This authentication uses [OAuth 2.0][rfc6749] authentication scheme.  OAuth2 is more simple to work with than OAuth1, and provides much better security than simple token authentication.  It is an unauthenticated scheme, and requires you to use an HTTPS connection.
+
+This authentication class depends on the optional [django-oauth2-provider][django-oauth2-provider] project. In order to make it work you must install this package and add `provider` and `provider.oauth2` to your `INSTALLED_APPS`:
+
+    INSTALLED_APPS = (
+        ...
+        'provider',
+        'provider.oauth2',
+    )
+
+You must also include the following in your root `urls.py` module:
+
+    url(r'^oauth2/', include('provider.oauth2.urls', namespace='oauth2')),
+
+Note that the `namespace='oauth2'` argument is required.
+
+Finally, sync your database.
+
+    python manage.py syncdb
+    python manage.py migrate 
+
+---
+
+**Note:** If you use `OAuth2Authentication` in production you must ensure that your API is only available over `https`.
+
+---
+
+#### Getting started with django-oauth2-provider
+
+The `OAuth2Authentication` class only provides token verification for requests. It doesn't provide authorization flow for your clients.
+
+The OAuth 2 authorization flow is taken care by the [django-oauth2-provider][django-oauth2-provider] dependency. A walkthrough is given here, but for more details you should refer to [the documentation][django-oauth2-provider-docs]. 
+
+To get started:
+
+##### 1. Create a client
+
+You can create a client, either through the shell, or by using the Django admin.
+
+Go to the admin panel and create a new `Provider.Client` entry. It will create the `client_id` and `client_secret` properties for you.
+
+##### 2. Request an access token
+
+To request an access token, submit a `POST` request to the url `/oauth2/access_token` with the following fields:
+
+* `client_id` the client id you've just configured at the previous step.
+* `client_secret` again configured at the previous step.
+* `username` the username with which you want to log in.
+* `password` well, that speaks for itself.
+
+You can use the command line to test that your local configuration is working:
+
+    curl -X POST -d "client_id=YOUR_CLIENT_ID&client_secret=YOUR_CLIENT_SECRET&grant_type=password&username=YOUR_USERNAME&password=YOUR_PASSWORD" http://localhost:8000/oauth2/access_token/
+
+You should get a response that looks something like this:
+
+    {"access_token": "<your-access-token>", "scope": "read", "expires_in": 86399, "refresh_token": "<your-refresh-token>"}
+
+##### 3. Access the API
+
+The only thing needed to make the `OAuth2Authentication` class work is to insert the `access_token` you've received in the `Authorization` request header.
+
+The command line to test the authentication looks like:
+
+    curl -H "Authorization: Bearer <your-access-token>" http://localhost:8000/api/
+
+---
 
 # Custom authentication
 
@@ -233,5 +356,12 @@ HTTP digest authentication is a widely implemented scheme that was intended to r
 [throttling]: throttling.md
 [csrf-ajax]: https://docs.djangoproject.com/en/dev/ref/contrib/csrf/#ajax
 [mod_wsgi_official]: http://code.google.com/p/modwsgi/wiki/ConfigurationDirectives#WSGIPassAuthorization
+[custom-user-model]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#specifying-a-custom-user-model
+[south-dependencies]: http://south.readthedocs.org/en/latest/dependencies.html
 [juanriaza]: https://github.com/juanriaza
 [djangorestframework-digestauth]: https://github.com/juanriaza/django-rest-framework-digestauth
+[oauth-1.0a]: http://oauth.net/core/1.0a
+[django-oauth-plus]: http://code.larlet.fr/django-oauth-plus
+[django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
+[django-oauth2-provider-docs]: https://django-oauth2-provider.readthedocs.org/en/latest/
+[rfc6749]: http://tools.ietf.org/html/rfc6749

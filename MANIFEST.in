@@ -1,2 +1,2 @@
 recursive-include rest_framework/static *.js *.css *.png
-recursive-include rest_framework/templates *.txt *.html
+recursive-include rest_framework/templates *.html
