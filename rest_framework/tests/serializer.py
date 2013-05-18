@@ -1,8 +1,9 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.db.models.fields import BLANK_CHOICE_DASH
-from django.utils.datastructures import MultiValueDict
 from django.test import TestCase
+from django.utils.datastructures import MultiValueDict
+from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel, DefaultValueModel,
@@ -1246,6 +1247,7 @@ class DeserializeListTestCase(TestCase):
 
 # test for issue 747
 
+
 class LazyStringModel(object):
     def __init__(self, lazystring):
         self.lazystring = lazystring
@@ -1258,16 +1260,14 @@ class LazyStringSerializer(serializers.Serializer):
         if instance is not None:
             instance.lazystring = attrs.get('lazystring', instance.lazystring)
             return instance
-        return Comment(**attrs)
+        return LazyStringModel(**attrs)
 
 
 class LazyStringsTestCase(TestCase):
-
     def setUp(self):
-        from django.utils.translation import ugettext_lazy as _
-
-        self.model = LazyStringModel(lazystring=_("lazystring"))
+        self.model = LazyStringModel(lazystring=_('lazystring'))
 
     def test_lazy_strings_are_translated(self):
         serializer = LazyStringSerializer(self.model)
-        self.assertEqual(type(serializer.data['lazystring']), type("lazystring"))
+        self.assertEqual(type(serializer.data['lazystring']),
+                         type('lazystring'))
