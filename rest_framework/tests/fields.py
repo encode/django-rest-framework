@@ -2,13 +2,12 @@
 General serializer field tests.
 """
 from __future__ import unicode_literals
+from django.utils.datastructures import SortedDict
 import datetime
 from decimal import Decimal
-
 from django.db import models
 from django.test import TestCase
 from django.core import validators
-
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
 
@@ -62,6 +61,20 @@ class BasicFieldTests(TestCase):
         """
         serializer = CharPrimaryKeyModelSerializer()
         self.assertEqual(serializer.fields['id'].read_only, False)
+
+    def test_dict_field_ordering(self):
+        """
+        Field should preserve dictionary ordering, if it exists.
+        See: https://github.com/tomchristie/django-rest-framework/issues/832
+        """
+        ret = SortedDict()
+        ret['c'] = 1
+        ret['b'] = 1
+        ret['a'] = 1
+        ret['z'] = 1
+        field = serializers.Field()
+        keys = list(field.to_native(ret).keys())
+        self.assertEqual(keys, ['c', 'b', 'a', 'z'])
 
 
 class DateFieldTest(TestCase):
@@ -646,3 +659,29 @@ class DecimalFieldTest(TestCase):
 
         self.assertFalse(s.is_valid())
         self.assertEqual(s.errors,  {'decimal_field': ['Ensure that there are no more than 4 digits in total.']})
+
+
+class ChoiceFieldTests(TestCase):
+    """
+    Tests for the ChoiceField options generator
+    """
+
+    SAMPLE_CHOICES = [
+        ('red', 'Red'),
+        ('green', 'Green'),
+        ('blue', 'Blue'),
+    ]
+
+    def test_choices_required(self):
+        """
+        Make sure proper choices are rendered if field is required
+        """
+        f = serializers.ChoiceField(required=True, choices=self.SAMPLE_CHOICES)
+        self.assertEqual(f.choices, self.SAMPLE_CHOICES)
+
+    def test_choices_not_required(self):
+        """
+        Make sure proper choices (plus blank) are rendered if the field isn't required
+        """
+        f = serializers.ChoiceField(required=False, choices=self.SAMPLE_CHOICES)
+        self.assertEqual(f.choices, models.fields.BLANK_CHOICE_DASH + self.SAMPLE_CHOICES)

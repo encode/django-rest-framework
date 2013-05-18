@@ -1,4 +1,6 @@
 from __future__ import unicode_literals
+from django.db import models
+from django.db.models.fields import BLANK_CHOICE_DASH
 from django.utils.datastructures import MultiValueDict
 from django.test import TestCase
 from rest_framework import serializers
@@ -41,6 +43,17 @@ class CommentSerializer(serializers.Serializer):
         for key, val in data.items():
             setattr(instance, key, val)
         return instance
+
+
+class NamesSerializer(serializers.Serializer):
+    first = serializers.CharField()
+    last = serializers.CharField(required=False, default='')
+    initials = serializers.CharField(required=False, default='')
+
+
+class PersonIdentifierSerializer(serializers.Serializer):
+    ssn = serializers.CharField()
+    names = NamesSerializer(source='names', required=False)
 
 
 class BookSerializer(serializers.ModelSerializer):
@@ -152,6 +165,42 @@ class BasicTests(TestCase):
         self.assertEqual(serializer.object, expected)
         self.assertFalse(serializer.object is expected)
         self.assertEqual(serializer.data['sub_comment'], 'And Merry Christmas!')
+
+    def test_create_nested(self):
+        """Test a serializer with nested data."""
+        names = {'first': 'John', 'last': 'Doe', 'initials': 'jd'}
+        data = {'ssn': '1234567890', 'names': names}
+        serializer = PersonIdentifierSerializer(data=data)
+
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, data)
+        self.assertFalse(serializer.object is data)
+        self.assertEqual(serializer.data['names'], names)
+
+    def test_create_partial_nested(self):
+        """Test a serializer with nested data which has missing fields."""
+        names = {'first': 'John'}
+        data = {'ssn': '1234567890', 'names': names}
+        serializer = PersonIdentifierSerializer(data=data)
+
+        expected_names = {'first': 'John', 'last': '', 'initials': ''}
+        data['names'] = expected_names
+
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, data)
+        self.assertFalse(serializer.object is expected_names)
+        self.assertEqual(serializer.data['names'], expected_names)
+
+    def test_null_nested(self):
+        """Test a serializer with a nonexistent nested field"""
+        data = {'ssn': '1234567890'}
+        serializer = PersonIdentifierSerializer(data=data)
+
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, data)
+        self.assertFalse(serializer.object is data)
+        expected = {'ssn': '1234567890', 'names': None}
+        self.assertEqual(serializer.data, expected)
 
     def test_update(self):
         serializer = CommentSerializer(self.comment, data=self.data)
@@ -871,23 +920,6 @@ class RelatedTraversalTest(TestCase):
 
         self.assertEqual(serializer.data, expected)
 
-    def test_queryset_nested_traversal(self):
-        """
-        Relational fields should be able to use methods as their source.
-        """
-        BlogPost.objects.create(title='blah')
-
-        class QuerysetMethodSerializer(serializers.Serializer):
-            blogposts = serializers.RelatedField(many=True, source='get_all_blogposts')
-
-        class ClassWithQuerysetMethod(object):
-            def get_all_blogposts(self):
-                return BlogPost.objects
-
-        obj = ClassWithQuerysetMethod()
-        serializer = QuerysetMethodSerializer(obj)
-        self.assertEqual(serializer.data, {'blogposts': ['BlogPost object']})
-
 
 class SerializerMethodFieldTests(TestCase):
     def setUp(self):
@@ -1016,6 +1048,73 @@ class SerializerPickleTests(TestCase):
         """
         data = serializers.SortedDictWithMetadata({1: 1})
         repr(pickle.loads(pickle.dumps(data, 0)))
+
+
+# test for issue #725
+class SeveralChoicesModel(models.Model):
+    color = models.CharField(
+        max_length=10,
+        choices=[('red', 'Red'), ('green', 'Green'), ('blue', 'Blue')],
+        blank=False
+    )
+    drink = models.CharField(
+        max_length=10,
+        choices=[('beer', 'Beer'), ('wine', 'Wine'), ('cider', 'Cider')],
+        blank=False,
+        default='beer'
+    )
+    os = models.CharField(
+        max_length=10,
+        choices=[('linux', 'Linux'), ('osx', 'OSX'), ('windows', 'Windows')],
+        blank=True
+    )
+    music_genre = models.CharField(
+        max_length=10,
+        choices=[('rock', 'Rock'), ('metal', 'Metal'), ('grunge', 'Grunge')],
+        blank=True,
+        default='metal'
+    )
+
+
+class SerializerChoiceFields(TestCase):
+
+    def setUp(self):
+        super(SerializerChoiceFields, self).setUp()
+
+        class SeveralChoicesSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = SeveralChoicesModel
+                fields = ('color', 'drink', 'os', 'music_genre')
+
+        self.several_choices_serializer = SeveralChoicesSerializer
+
+    def test_choices_blank_false_not_default(self):
+        serializer = self.several_choices_serializer()
+        self.assertEqual(
+            serializer.fields['color'].choices,
+            [('red', 'Red'), ('green', 'Green'), ('blue', 'Blue')]
+        )
+
+    def test_choices_blank_false_with_default(self):
+        serializer = self.several_choices_serializer()
+        self.assertEqual(
+            serializer.fields['drink'].choices,
+            [('beer', 'Beer'), ('wine', 'Wine'), ('cider', 'Cider')]
+        )
+
+    def test_choices_blank_true_not_default(self):
+        serializer = self.several_choices_serializer()
+        self.assertEqual(
+            serializer.fields['os'].choices,
+            BLANK_CHOICE_DASH + [('linux', 'Linux'), ('osx', 'OSX'), ('windows', 'Windows')]
+        )
+
+    def test_choices_blank_true_with_default(self):
+        serializer = self.several_choices_serializer()
+        self.assertEqual(
+            serializer.fields['music_genre'].choices,
+            BLANK_CHOICE_DASH + [('rock', 'Rock'), ('metal', 'Metal'), ('grunge', 'Grunge')]
+        )
 
 
 class DepthTest(TestCase):

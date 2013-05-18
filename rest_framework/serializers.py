@@ -722,15 +722,14 @@ class ModelSerializer(Serializer):
         Creates a default instance of a basic non-relational field.
         """
         kwargs = {}
-        has_default = model_field.has_default()
 
-        if model_field.null or model_field.blank or has_default:
+        if model_field.null or model_field.blank:
             kwargs['required'] = False
 
         if isinstance(model_field, models.AutoField) or not model_field.editable:
             kwargs['read_only'] = True
 
-        if has_default:
+        if model_field.has_default():
             kwargs['default'] = model_field.get_default()
 
         if issubclass(model_field.__class__, models.TextField):
