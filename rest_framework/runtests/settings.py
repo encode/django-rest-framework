@@ -4,6 +4,8 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 DEBUG_PROPAGATE_EXCEPTIONS = True
 
+ALLOWED_HOSTS = ['*']
+
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
