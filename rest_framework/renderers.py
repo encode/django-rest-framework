@@ -366,7 +366,8 @@ class BrowsableAPIRenderer(BaseRenderer):
             if getattr(v, 'default', None) is not None:
                 kwargs['initial'] = v.default
 
-            kwargs['label'] = k
+            kwargs['label'] = v.label
+            kwargs['help_text'] = v.help_text
 
             fields[k] = v.form_field_class(**kwargs)
 
