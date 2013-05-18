@@ -2,6 +2,7 @@
 Generic views that provide commonly needed behaviour.
 """
 from __future__ import unicode_literals
+import inspect
 
 from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Paginator, InvalidPage
@@ -66,13 +67,30 @@ class GenericAPIView(views.APIView):
             'view': self
         }
 
+    def _get_serializer_class(self, request):
+        """
+        The signature of get_serializer_class can be request-specific now.
+        """
+        if len(inspect.getargspec(self.get_serializer_class).args) != 2:
+            warnings.warn(
+                '`get_serializer_class` now expects to be provided the request '
+                'object directly.', DeprecationWarning, stacklevel=2
+            )
+            old_request = self.request
+            try:
+                self.request = request
+                return self.get_serializer_class()
+            finally:
+                self.request = old_request
+        return self.get_serializer_class(request)
+
     def get_serializer(self, instance=None, data=None,
-                       files=None, many=False, partial=False):
+                       files=None, many=False, partial=False, request=None):
         """
         Return the serializer instance that should be used for validating and
         deserializing input, and for serializing output.
         """
-        serializer_class = self.get_serializer_class()
+        serializer_class = self._get_serializer_class(request or self.request)
         context = self.get_serializer_context()
         return serializer_class(instance, data=data, files=files,
                                 many=many, partial=partial, context=context)
@@ -83,7 +101,8 @@ class GenericAPIView(views.APIView):
         """
         class SerializerClass(self.pagination_serializer_class):
             class Meta:
-                object_serializer_class = self.get_serializer_class()
+                object_serializer_class = self._get_serializer_class(
+                    self.request)
 
         pagination_serializer_class = SerializerClass
         context = self.get_serializer_context()
@@ -193,7 +212,7 @@ class GenericAPIView(views.APIView):
 
         return self.paginate_by
 
-    def get_serializer_class(self):
+    def get_serializer_class(self, request):
         """
         Return the class to use for the serializer.
         Defaults to using `self.serializer_class`.
@@ -201,7 +220,7 @@ class GenericAPIView(views.APIView):
         You may want to override this if you need to provide different
         serializations depending on the incoming request.
 
-        (Eg. admins get full serialization, others get basic serilization)
+        (Eg. admins get full serialization, others get basic serialization)
         """
         serializer_class = self.serializer_class
         if serializer_class is not None:

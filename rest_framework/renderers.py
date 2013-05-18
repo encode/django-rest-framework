@@ -403,7 +403,9 @@ class BrowsableAPIRenderer(BaseRenderer):
         provide a form that can be used to submit arbitrary content.
         """
         obj = getattr(view, 'object', None)
-        if not self.show_form_for_method(view, method, request, obj):
+        cloned_request = clone_request(request, method)
+
+        if not self.show_form_for_method(view, method, cloned_request, obj):
             return
 
         if method in ('DELETE', 'OPTIONS'):
@@ -412,7 +414,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         if not getattr(view, 'get_serializer', None) or not parsers.FormParser in view.parser_classes:
             return
 
-        serializer = view.get_serializer(instance=obj)
+        serializer = view.get_serializer(instance=obj, request=cloned_request)
         fields = self.serializer_to_form_fields(serializer)
 
         # Creating an on the fly form see:
@@ -437,7 +439,8 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         # Check permissions
         obj = getattr(view, 'object', None)
-        if not self.show_form_for_method(view, method, request, obj):
+        cloned_request = clone_request(request, method)
+        if not self.show_form_for_method(view, method, cloned_request, obj):
             return
 
         content_type_field = api_settings.FORM_CONTENTTYPE_OVERRIDE
