@@ -1,10 +1,12 @@
 from __future__ import unicode_literals
+from django.db import models
+from django.db.models.fields import BLANK_CHOICE_DASH
 from django.utils.datastructures import MultiValueDict
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel, DefaultValueModel,
-    ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
+    ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo, RESTFrameworkModel)
 import datetime
 import pickle
 
@@ -43,6 +45,17 @@ class CommentSerializer(serializers.Serializer):
         return instance
 
 
+class NamesSerializer(serializers.Serializer):
+    first = serializers.CharField()
+    last = serializers.CharField(required=False, default='')
+    initials = serializers.CharField(required=False, default='')
+
+
+class PersonIdentifierSerializer(serializers.Serializer):
+    ssn = serializers.CharField()
+    names = NamesSerializer(source='names', required=False)
+
+
 class BookSerializer(serializers.ModelSerializer):
     isbn = serializers.RegexField(regex=r'^[0-9]{13}$', error_messages={'invalid': 'isbn has to be exact 13 numbers'})
 
@@ -76,6 +89,17 @@ class PersonSerializer(serializers.ModelSerializer):
         model = Person
         fields = ('name', 'age', 'info')
         read_only_fields = ('age',)
+
+
+class NestedSerializer(serializers.Serializer):
+    info = serializers.Field()
+
+
+class ModelSerializerWithNestedSerializer(serializers.ModelSerializer):
+    nested = NestedSerializer(source='*')
+
+    class Meta:
+        model = Person
 
 
 class PersonSerializerInvalidReadOnly(serializers.ModelSerializer):
@@ -152,6 +176,42 @@ class BasicTests(TestCase):
         self.assertEqual(serializer.object, expected)
         self.assertFalse(serializer.object is expected)
         self.assertEqual(serializer.data['sub_comment'], 'And Merry Christmas!')
+
+    def test_create_nested(self):
+        """Test a serializer with nested data."""
+        names = {'first': 'John', 'last': 'Doe', 'initials': 'jd'}
+        data = {'ssn': '1234567890', 'names': names}
+        serializer = PersonIdentifierSerializer(data=data)
+
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, data)
+        self.assertFalse(serializer.object is data)
+        self.assertEqual(serializer.data['names'], names)
+
+    def test_create_partial_nested(self):
+        """Test a serializer with nested data which has missing fields."""
+        names = {'first': 'John'}
+        data = {'ssn': '1234567890', 'names': names}
+        serializer = PersonIdentifierSerializer(data=data)
+
+        expected_names = {'first': 'John', 'last': '', 'initials': ''}
+        data['names'] = expected_names
+
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, data)
+        self.assertFalse(serializer.object is expected_names)
+        self.assertEqual(serializer.data['names'], expected_names)
+
+    def test_null_nested(self):
+        """Test a serializer with a nonexistent nested field"""
+        data = {'ssn': '1234567890'}
+        serializer = PersonIdentifierSerializer(data=data)
+
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, data)
+        self.assertFalse(serializer.object is data)
+        expected = {'ssn': '1234567890', 'names': None}
+        self.assertEqual(serializer.data, expected)
 
     def test_update(self):
         serializer = CommentSerializer(self.comment, data=self.data)
@@ -368,6 +428,17 @@ class ValidationTests(TestCase):
             self.assertEqual(e.args[0], "Serializer class 'BrokenModelSerializer' is missing 'model' Meta option")
         except:
             self.fail('Wrong exception type thrown.')
+
+    def test_writable_star_source_on_nested_serializer(self):
+        """
+        Assert that a nested serializer instantiated with source='*' correctly
+        expands the data into the outer serializer.
+        """
+        serializer = ModelSerializerWithNestedSerializer(data={
+            'name': 'marko',
+            'nested': {'info': 'hi'}},
+        )
+        self.assertEqual(serializer.is_valid(), True)
 
 
 class CustomValidationTests(TestCase):
@@ -871,23 +942,6 @@ class RelatedTraversalTest(TestCase):
 
         self.assertEqual(serializer.data, expected)
 
-    def test_queryset_nested_traversal(self):
-        """
-        Relational fields should be able to use methods as their source.
-        """
-        BlogPost.objects.create(title='blah')
-
-        class QuerysetMethodSerializer(serializers.Serializer):
-            blogposts = serializers.RelatedField(many=True, source='get_all_blogposts')
-
-        class ClassWithQuerysetMethod(object):
-            def get_all_blogposts(self):
-                return BlogPost.objects
-
-        obj = ClassWithQuerysetMethod()
-        serializer = QuerysetMethodSerializer(obj)
-        self.assertEqual(serializer.data, {'blogposts': ['BlogPost object']})
-
 
 class SerializerMethodFieldTests(TestCase):
     def setUp(self):
@@ -1018,6 +1072,130 @@ class SerializerPickleTests(TestCase):
         repr(pickle.loads(pickle.dumps(data, 0)))
 
 
+# test for issue #725
+class SeveralChoicesModel(models.Model):
+    color = models.CharField(
+        max_length=10,
+        choices=[('red', 'Red'), ('green', 'Green'), ('blue', 'Blue')],
+        blank=False
+    )
+    drink = models.CharField(
+        max_length=10,
+        choices=[('beer', 'Beer'), ('wine', 'Wine'), ('cider', 'Cider')],
+        blank=False,
+        default='beer'
+    )
+    os = models.CharField(
+        max_length=10,
+        choices=[('linux', 'Linux'), ('osx', 'OSX'), ('windows', 'Windows')],
+        blank=True
+    )
+    music_genre = models.CharField(
+        max_length=10,
+        choices=[('rock', 'Rock'), ('metal', 'Metal'), ('grunge', 'Grunge')],
+        blank=True,
+        default='metal'
+    )
+
+
+class SerializerChoiceFields(TestCase):
+
+    def setUp(self):
+        super(SerializerChoiceFields, self).setUp()
+
+        class SeveralChoicesSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = SeveralChoicesModel
+                fields = ('color', 'drink', 'os', 'music_genre')
+
+        self.several_choices_serializer = SeveralChoicesSerializer
+
+    def test_choices_blank_false_not_default(self):
+        serializer = self.several_choices_serializer()
+        self.assertEqual(
+            serializer.fields['color'].choices,
+            [('red', 'Red'), ('green', 'Green'), ('blue', 'Blue')]
+        )
+
+    def test_choices_blank_false_with_default(self):
+        serializer = self.several_choices_serializer()
+        self.assertEqual(
+            serializer.fields['drink'].choices,
+            [('beer', 'Beer'), ('wine', 'Wine'), ('cider', 'Cider')]
+        )
+
+    def test_choices_blank_true_not_default(self):
+        serializer = self.several_choices_serializer()
+        self.assertEqual(
+            serializer.fields['os'].choices,
+            BLANK_CHOICE_DASH + [('linux', 'Linux'), ('osx', 'OSX'), ('windows', 'Windows')]
+        )
+
+    def test_choices_blank_true_with_default(self):
+        serializer = self.several_choices_serializer()
+        self.assertEqual(
+            serializer.fields['music_genre'].choices,
+            BLANK_CHOICE_DASH + [('rock', 'Rock'), ('metal', 'Metal'), ('grunge', 'Grunge')]
+        )
+
+
+# Regression tests for #675
+class Ticket(models.Model):
+    assigned = models.ForeignKey(
+        Person, related_name='assigned_tickets')
+    reviewer = models.ForeignKey(
+        Person, blank=True, null=True, related_name='reviewed_tickets')
+
+
+class SerializerRelatedChoicesTest(TestCase):
+
+    def setUp(self):
+        super(SerializerRelatedChoicesTest, self).setUp()
+
+        class RelatedChoicesSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Ticket
+                fields = ('assigned', 'reviewer')
+
+        self.related_fields_serializer = RelatedChoicesSerializer
+
+    def test_empty_queryset_required(self):
+        serializer = self.related_fields_serializer()
+        self.assertEqual(serializer.fields['assigned'].queryset.count(), 0)
+        self.assertEqual(
+            [x for x in serializer.fields['assigned'].widget.choices],
+            []
+        )
+
+    def test_empty_queryset_not_required(self):
+        serializer = self.related_fields_serializer()
+        self.assertEqual(serializer.fields['reviewer'].queryset.count(), 0)
+        self.assertEqual(
+            [x for x in serializer.fields['reviewer'].widget.choices],
+            [('', '---------')]
+        )
+
+    def test_with_some_persons_required(self):
+        Person.objects.create(name="Lionel Messi")
+        Person.objects.create(name="Xavi Hernandez")
+        serializer = self.related_fields_serializer()
+        self.assertEqual(serializer.fields['assigned'].queryset.count(), 2)
+        self.assertEqual(
+            [x for x in serializer.fields['assigned'].widget.choices],
+            [(1, 'Person object - 1'), (2, 'Person object - 2')]
+        )
+
+    def test_with_some_persons_not_required(self):
+        Person.objects.create(name="Lionel Messi")
+        Person.objects.create(name="Xavi Hernandez")
+        serializer = self.related_fields_serializer()
+        self.assertEqual(serializer.fields['reviewer'].queryset.count(), 2)
+        self.assertEqual(
+            [x for x in serializer.fields['reviewer'].widget.choices],
+            [('', '---------'), (1, 'Person object - 1'), (2, 'Person object - 2')]
+        )
+
+
 class DepthTest(TestCase):
     def test_implicit_nesting(self):
 
@@ -1143,3 +1321,84 @@ class DeserializeListTestCase(TestCase):
         self.assertFalse(serializer.is_valid())
         expected = [{}, {'email': ['This field is required.']}, {}]
         self.assertEqual(serializer.errors, expected)
+
+
+class AttributeMappingOnAutogeneratedFieldsTests(TestCase):
+
+    def setUp(self):
+        class AMOAFModel(RESTFrameworkModel):
+            char_field = models.CharField(max_length=1024, blank=True)
+            comma_separated_integer_field = models.CommaSeparatedIntegerField(max_length=1024, blank=True)
+            decimal_field = models.DecimalField(max_digits=64, decimal_places=32, blank=True)
+            email_field = models.EmailField(max_length=1024, blank=True)
+            file_field = models.FileField(max_length=1024, blank=True)
+            image_field = models.ImageField(max_length=1024, blank=True)
+            slug_field = models.SlugField(max_length=1024, blank=True)
+            url_field = models.URLField(max_length=1024, blank=True)
+
+        class AMOAFSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = AMOAFModel
+
+        self.serializer_class = AMOAFSerializer
+        self.fields_attributes = {
+            'char_field': [
+                ('max_length', 1024),
+            ],
+            'comma_separated_integer_field': [
+                ('max_length', 1024),
+            ],
+            'decimal_field': [
+                ('max_digits', 64),
+                ('decimal_places', 32),
+            ],
+            'email_field': [
+                ('max_length', 1024),
+            ],
+            'file_field': [
+                ('max_length', 1024),
+            ],
+            'image_field': [
+                ('max_length', 1024),
+            ],
+            'slug_field': [
+                ('max_length', 1024),
+            ],
+            'url_field': [
+                ('max_length', 1024),
+            ],
+        }
+
+    def field_test(self, field):
+        serializer = self.serializer_class(data={})
+        self.assertEqual(serializer.is_valid(), True)
+
+        for attribute in self.fields_attributes[field]:
+            self.assertEqual(
+                getattr(serializer.fields[field], attribute[0]),
+                attribute[1]
+            )
+
+    def test_char_field(self):
+        self.field_test('char_field')
+
+    def test_comma_separated_integer_field(self):
+        self.field_test('comma_separated_integer_field')
+
+    def test_decimal_field(self):
+        self.field_test('decimal_field')
+
+    def test_email_field(self):
+        self.field_test('email_field')
+
+    def test_file_field(self):
+        self.field_test('file_field')
+
+    def test_image_field(self):
+        self.field_test('image_field')
+
+    def test_slug_field(self):
+        self.field_test('slug_field')
+
+    def test_url_field(self):
+        self.field_test('url_field')

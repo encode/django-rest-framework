@@ -378,23 +378,27 @@ class BaseSerializer(WritableField):
         # Set the serializer object if it exists
         obj = getattr(self.parent.object, field_name) if self.parent.object else None
 
-        if value in (None, ''):
-            into[(self.source or field_name)] = None
+        if self.source == '*':
+            if value:
+                into.update(value)
         else:
-            kwargs = {
-                'instance': obj,
-                'data': value,
-                'context': self.context,
-                'partial': self.partial,
-                'many': self.many
-            }
-            serializer = self.__class__(**kwargs)
-
-            if serializer.is_valid():
-                into[self.source or field_name] = serializer.object
+            if value in (None, ''):
+                into[(self.source or field_name)] = None
             else:
-                # Propagate errors up to our parent
-                raise NestedValidationError(serializer.errors)
+                kwargs = {
+                    'instance': obj,
+                    'data': value,
+                    'context': self.context,
+                    'partial': self.partial,
+                    'many': self.many
+                }
+                serializer = self.__class__(**kwargs)
+
+                if serializer.is_valid():
+                    into[self.source or field_name] = serializer.object
+                else:
+                    # Propagate errors up to our parent
+                    raise NestedValidationError(serializer.errors)
 
     def get_identity(self, data):
         """
@@ -587,10 +591,15 @@ class ModelSerializer(Serializer):
         forward_rels += [field for field in opts.many_to_many if field.serialize]
 
         for model_field in forward_rels:
+            has_through_model = False
+
             if model_field.rel:
                 to_many = isinstance(model_field,
                                      models.fields.related.ManyToManyField)
                 related_model = model_field.rel.to
+
+                if to_many and not model_field.rel.through._meta.auto_created:
+                    has_through_model = True
 
             if model_field.rel and nested:
                 if len(inspect.getargspec(self.get_nested_field).args) == 2:
@@ -620,6 +629,9 @@ class ModelSerializer(Serializer):
                 field = self.get_field(model_field)
 
             if field:
+                if has_through_model:
+                    field.read_only = True
+
                 ret[model_field.name] = field
 
         # Deal with reverse relationships
@@ -637,6 +649,12 @@ class ModelSerializer(Serializer):
                 continue
             related_model = relation.model
             to_many = relation.field.rel.multiple
+            has_through_model = False
+            is_m2m = isinstance(relation.field,
+                                models.fields.related.ManyToManyField)
+
+            if is_m2m and not relation.field.rel.through._meta.auto_created:
+                has_through_model = True
 
             if nested:
                 field = self.get_nested_field(None, related_model, to_many)
@@ -644,6 +662,9 @@ class ModelSerializer(Serializer):
                 field = self.get_related_field(None, related_model, to_many)
 
             if field:
+                if has_through_model:
+                    field.read_only = True
+
                 ret[accessor_name] = field
 
         # Add the `read_only` flag to any fields that have bee specified
@@ -705,15 +726,14 @@ class ModelSerializer(Serializer):
         Creates a default instance of a basic non-relational field.
         """
         kwargs = {}
-        has_default = model_field.has_default()
 
-        if model_field.null or model_field.blank or has_default:
+        if model_field.null or model_field.blank:
             kwargs['required'] = False
 
         if isinstance(model_field, models.AutoField) or not model_field.editable:
             kwargs['read_only'] = True
 
-        if has_default:
+        if model_field.has_default():
             kwargs['default'] = model_field.get_default()
 
         if issubclass(model_field.__class__, models.TextField):
@@ -723,6 +743,22 @@ class ModelSerializer(Serializer):
         if model_field.flatchoices:  # This ModelField contains choices
             kwargs['choices'] = model_field.flatchoices
             return ChoiceField(**kwargs)
+
+        attribute_dict = {
+            models.CharField: ['max_length'],
+            models.CommaSeparatedIntegerField: ['max_length'],
+            models.DecimalField: ['max_digits', 'decimal_places'],
+            models.EmailField: ['max_length'],
+            models.FileField: ['max_length'],
+            models.ImageField: ['max_length'],
+            models.SlugField: ['max_length'],
+            models.URLField: ['max_length'],
+        }
+
+        if model_field.__class__ in attribute_dict:
+            attributes = attribute_dict[model_field.__class__]
+            for attribute in attributes:
+                kwargs.update({attribute: getattr(model_field, attribute)})
 
         try:
             return self.field_mapping[model_field.__class__](**kwargs)
