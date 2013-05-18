@@ -495,3 +495,16 @@ except ImportError:
     oauth2_provider_forms = None
     oauth2_provider_scope = None
     oauth2_constants = None
+
+# Handle lazy strings
+from django.utils.functional import Promise
+
+if six.PY3:
+    def is_non_str_iterable(obj):
+        if (isinstance(obj, str) or
+            (isinstance(obj, Promise) and obj._delegate_text)):
+            return False
+        return hasattr(obj, '__iter__')
+else:
+    def is_non_str_iterable(obj):
+        return hasattr(obj, '__iter__')

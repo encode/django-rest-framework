@@ -19,7 +19,6 @@ from django.db.models.fields import BLANK_CHOICE_DASH
 from django import forms
 from django.forms import widgets
 from django.utils.encoding import is_protected_type
-from django.utils.functional import Promise
 from django.utils.translation import ugettext_lazy as _
 from django.utils.datastructures import SortedDict
 
@@ -27,7 +26,7 @@ from rest_framework import ISO_8601
 from rest_framework.compat import timezone, parse_date, parse_datetime, parse_time
 from rest_framework.compat import BytesIO
 from rest_framework.compat import six
-from rest_framework.compat import smart_text, force_text
+from rest_framework.compat import smart_text, force_text, is_non_str_iterable
 from rest_framework.settings import api_settings
 
 
@@ -45,16 +44,6 @@ def is_simple_callable(obj):
     len_args = len(args) if function else len(args) - 1
     len_defaults = len(defaults) if defaults else 0
     return len_args <= len_defaults
-
-if six.PY3:
-    def is_non_str_iterable(obj):
-        if (isinstance(obj, str) or
-            (isinstance(obj, Promise) and obj._delegate_text)):
-            return False
-        return hasattr(obj, '__iter__')
-else:
-    def is_non_str_iterable(obj):
-        return hasattr(obj, '__iter__')
 
 def get_component(obj, attr_name):
     """
