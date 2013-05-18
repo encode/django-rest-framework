@@ -1117,6 +1117,63 @@ class SerializerChoiceFields(TestCase):
         )
 
 
+# Regression tests for #675
+class Ticket(models.Model):
+    assigned = models.ForeignKey(
+        Person, related_name='assigned_tickets')
+    reviewer = models.ForeignKey(
+        Person, blank=True, null=True, related_name='reviewed_tickets')
+
+
+class SerializerRelatedChoicesTest(TestCase):
+
+    def setUp(self):
+        super(SerializerRelatedChoicesTest, self).setUp()
+
+        class RelatedChoicesSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Ticket
+                fields = ('assigned', 'reviewer')
+
+        self.related_fields_serializer = RelatedChoicesSerializer
+
+    def test_empty_queryset_required(self):
+        serializer = self.related_fields_serializer()
+        self.assertEqual(serializer.fields['assigned'].queryset.count(), 0)
+        self.assertEqual(
+            [x for x in serializer.fields['assigned'].widget.choices],
+            []
+        )
+
+    def test_empty_queryset_not_required(self):
+        serializer = self.related_fields_serializer()
+        self.assertEqual(serializer.fields['reviewer'].queryset.count(), 0)
+        self.assertEqual(
+            [x for x in serializer.fields['reviewer'].widget.choices],
+            [(u'', u'---------')]
+        )
+
+    def test_with_some_persons_required(self):
+        Person.objects.create(name="Lionel Messi")
+        Person.objects.create(name="Xavi Hernandez")
+        serializer = self.related_fields_serializer()
+        self.assertEqual(serializer.fields['assigned'].queryset.count(), 2)
+        self.assertEqual(
+            [x for x in serializer.fields['assigned'].widget.choices],
+            [(1, u'Person object - 1'), (2, u'Person object - 2')]
+        )
+
+    def test_with_some_persons_not_required(self):
+        Person.objects.create(name="Lionel Messi")
+        Person.objects.create(name="Xavi Hernandez")
+        serializer = self.related_fields_serializer()
+        self.assertEqual(serializer.fields['reviewer'].queryset.count(), 2)
+        self.assertEqual(
+            [x for x in serializer.fields['reviewer'].widget.choices],
+            [(u'', u'---------'), (1, u'Person object - 1'), (2, u'Person object - 2')]
+        )
+
+
 class DepthTest(TestCase):
     def test_implicit_nesting(self):
 
