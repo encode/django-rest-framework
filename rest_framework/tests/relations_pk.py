@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
 from rest_framework.tests.models import ManyToManyTarget, ManyToManySource, ForeignKeyTarget, ForeignKeySource, NullableForeignKeySource, OneToOneTarget, NullableOneToOneSource
@@ -124,6 +125,7 @@ class PKManyToManyTests(TestCase):
         # Ensure source 4 is added, and everything else is as expected
         queryset = ManyToManySource.objects.all()
         serializer = ManyToManySourceSerializer(queryset, many=True)
+        self.assertFalse(serializer.fields['targets'].read_only)
         expected = [
             {'id': 1, 'name': 'source-1', 'targets': [1]},
             {'id': 2, 'name': 'source-2', 'targets': [1, 2]},
@@ -135,6 +137,7 @@ class PKManyToManyTests(TestCase):
     def test_reverse_many_to_many_create(self):
         data = {'id': 4, 'name': 'target-4', 'sources': [1, 3]}
         serializer = ManyToManyTargetSerializer(data=data)
+        self.assertFalse(serializer.fields['sources'].read_only)
         self.assertTrue(serializer.is_valid())
         obj = serializer.save()
         self.assertEqual(serializer.data, data)
@@ -421,3 +424,63 @@ class PKNullableOneToOneTests(TestCase):
             {'id': 2, 'name': 'target-2', 'nullable_source': 1},
         ]
         self.assertEqual(serializer.data, expected)
+
+
+# The below models and tests ensure that serializer fields corresponding
+# to a ManyToManyField field with a user-specified ``through`` model are
+# set to read only
+
+
+class ManyToManyThroughTarget(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class ManyToManyThrough(models.Model):
+    source = models.ForeignKey('ManyToManyThroughSource')
+    target = models.ForeignKey(ManyToManyThroughTarget)
+
+
+class ManyToManyThroughSource(models.Model):
+    name = models.CharField(max_length=100)
+    targets = models.ManyToManyField(ManyToManyThroughTarget,
+                                     related_name='sources',
+                                     through='ManyToManyThrough')
+
+
+class ManyToManyThroughTargetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ManyToManyThroughTarget
+        fields = ('id', 'name', 'sources')
+
+
+class ManyToManyThroughSourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ManyToManyThroughSource
+        fields = ('id', 'name', 'targets')
+
+
+class PKManyToManyThroughTests(TestCase):
+    def setUp(self):
+        self.source = ManyToManyThroughSource.objects.create(
+            name='through-source-1')
+        self.target = ManyToManyThroughTarget.objects.create(
+            name='through-target-1')
+
+    def test_many_to_many_create(self):
+        data = {'id': 2, 'name': 'source-2', 'targets': [self.target.pk]}
+        serializer = ManyToManyThroughSourceSerializer(data=data)
+        self.assertTrue(serializer.fields['targets'].read_only)
+        self.assertTrue(serializer.is_valid())
+        obj = serializer.save()
+        self.assertEqual(obj.name, 'source-2')
+        self.assertEqual(obj.targets.count(), 0)
+
+    def test_many_to_many_reverse_create(self):
+        data = {'id': 2, 'name': 'target-2', 'sources': [self.source.pk]}
+        serializer = ManyToManyThroughTargetSerializer(data=data)
+        self.assertTrue(serializer.fields['sources'].read_only)
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+        obj = serializer.save()
+        self.assertEqual(obj.name, 'target-2')
+        self.assertEqual(obj.sources.count(), 0)
