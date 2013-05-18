@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
-from rest_framework import generics, serializers, status
+from rest_framework import generics, renderers, serializers, status
 from rest_framework.tests.utils import RequestFactory
 from rest_framework.tests.models import BasicModel, Comment, SlugBasedModel
 from rest_framework.compat import six
@@ -476,3 +476,35 @@ class TestFilterBackendAppliedToViews(TestCase):
         response = instance_view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foo'})
+
+
+class TwoFieldModel(models.Model):
+    field_a = models.CharField(max_length=100)
+    field_b = models.CharField(max_length=100)
+
+
+class DynamicSerializerView(generics.ListCreateAPIView):
+    model = TwoFieldModel
+    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            class DynamicSerializer(serializers.ModelSerializer):
+                class Meta:
+                    model = TwoFieldModel
+                    fields = ('field_b',)
+            return DynamicSerializer
+        return super(DynamicSerializerView, self).get_serializer_class()
+
+
+class TestFilterBackendAppliedToViews(TestCase):
+
+    def test_dynamic_serializer_form_in_browsable_api(self):
+        """
+        GET requests to ListCreateAPIView should return filtered list.
+        """
+        view = DynamicSerializerView.as_view()
+        request = factory.get('/')
+        response = view(request).render()
+        self.assertContains(response, 'field_b')
+        self.assertNotContains(response, 'field_a')
