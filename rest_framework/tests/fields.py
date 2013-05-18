@@ -4,12 +4,17 @@ General serializer field tests.
 from __future__ import unicode_literals
 from django.utils.datastructures import SortedDict
 import datetime
+from rest_framework.fields import humanize_field, humanize_field_type
+from django import forms
 from decimal import Decimal
 from django.db import models
 from django.test import TestCase
 from django.core import validators
 from rest_framework import serializers
 from rest_framework.serializers import Serializer
+from rest_framework.fields import Field
+from collections import namedtuple
+from uuid import uuid4
 
 
 class TimestampedModel(models.Model):
@@ -685,3 +690,55 @@ class ChoiceFieldTests(TestCase):
         """
         f = serializers.ChoiceField(required=False, choices=self.SAMPLE_CHOICES)
         self.assertEqual(f.choices, models.fields.BLANK_CHOICE_DASH + self.SAMPLE_CHOICES)
+
+
+class HumanizedFieldType(TestCase):
+    def test_standard_type_classes(self):
+        for field_type_name in forms.fields.__all__:
+            field_type = getattr(forms.fields, field_type_name)
+            humanized = humanize_field_type(field_type)
+            self.assert_valid_name(humanized)
+
+    def test_standard_type_names(self):
+        for field_type_name in forms.fields.__all__:
+            humanized = humanize_field_type(field_type_name)
+            self.assert_valid_name(humanized)
+
+    def test_custom_type_name(self):
+        humanized = humanize_field_type('SomeCustomType')
+        self.assertEquals(humanized, u'Some custom type')
+
+    def test_custom_type(self):
+        custom_type = namedtuple('SomeCustomType', [])
+        humanized = humanize_field_type(custom_type)
+        self.assertEquals(humanized, u'Some custom type')
+
+    def assert_valid_name(self, humanized):
+        """A humanized field name is valid if it's a non-empty
+        unicode.
+
+        """
+        self.assertIsInstance(humanized, unicode)
+        self.assertTrue(humanized)
+
+
+class HumanizedField(TestCase):
+    def setUp(self):
+        self.required_field = Field()
+        self.required_field.label = uuid4().hex
+        self.required_field.required = True
+
+        self.optional_field = Field()
+        self.optional_field.label = uuid4().hex
+        self.optional_field.required = False
+
+    def test_required(self):
+        self.assertEqual(humanize_field(self.required_field)['required'], True)
+
+    def test_optional(self):
+        self.assertEqual(humanize_field(self.optional_field)['required'],
+                         False)
+
+    def test_label(self):
+        for field in (self.required_field, self.optional_field):
+            self.assertEqual(humanize_field(field)['label'], field.label)

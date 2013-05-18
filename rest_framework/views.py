@@ -80,6 +80,8 @@ class APIView(View):
                 if serializer is not None:
                     field_name_types = {}
                     for name, field in serializer.fields.iteritems():
+                        from rest_framework.fields import humanize_field
+                        humanize_field(field)
                         field_name_types[name] = field.__class__.__name__
 
                 actions[method] = field_name_types

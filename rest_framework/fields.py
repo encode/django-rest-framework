@@ -23,11 +23,42 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.datastructures import SortedDict
 
 from rest_framework import ISO_8601
-from rest_framework.compat import timezone, parse_date, parse_datetime, parse_time
+from rest_framework.compat import (timezone, parse_date, parse_datetime,
+                                   parse_time)
 from rest_framework.compat import BytesIO
 from rest_framework.compat import six
 from rest_framework.compat import smart_text
 from rest_framework.settings import api_settings
+
+
+HUMANIZED_FIELD_TYPES = {
+    'BooleanField': u'Boolean',
+    'CharField': u'Single Character',
+    'ChoiceField': u'Single Choice',
+    'ComboField': u'Single Choice',
+    'DateField': u'Date',
+    'DateTimeField': u'Date and Time',
+    'DecimalField': u'Decimal',
+    'EmailField': u'Email',
+    'Field': u'Field',
+    'FileField': u'File',
+    'FilePathField': u'File Path',
+    'FloatField': u'Float',
+    'GenericIPAddressField': u'Generic IP Address',
+    'IPAddressField': u'IP Address',
+    'ImageField': u'Image',
+    'IntegerField': u'Integer',
+    'MultiValueField': u'Multiple Value',
+    'MultipleChoiceField': u'Multiple Choice',
+    'NullBooleanField': u'Nullable Boolean',
+    'RegexField': u'Regular Expression',
+    'SlugField': u'Slug',
+    'SplitDateTimeField': u'Split Date and Time',
+    'TimeField': u'Time',
+    'TypedChoiceField': u'Typed Single Choice',
+    'TypedMultipleChoiceField': u'Typed Multiple Choice',
+    'URLField': u'URL',
+}
 
 
 def is_simple_callable(obj):
@@ -62,13 +93,69 @@ def get_component(obj, attr_name):
 
 
 def readable_datetime_formats(formats):
-    format = ', '.join(formats).replace(ISO_8601, 'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]')
+    format = ', '.join(formats).replace(ISO_8601,
+             'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]')
     return humanize_strptime(format)
 
 
 def readable_date_formats(formats):
     format = ', '.join(formats).replace(ISO_8601, 'YYYY[-MM[-DD]]')
     return humanize_strptime(format)
+
+
+def humanize_field_type(field_type):
+    """Return a human-readable name for a field type.
+
+    :param field_type: Either a field type class (for example
+        django.forms.fields.DateTimeField), or the name of a field type
+        (for example "DateTimeField").
+
+    :return: unicode
+
+    """
+    if isinstance(field_type, basestring):
+        field_type_name = field_type
+    else:
+        field_type_name = field_type.__name__
+    try:
+        return HUMANIZED_FIELD_TYPES[field_type_name]
+    except KeyError:
+        humanized = re.sub('([a-z0-9])([A-Z])', r'\1 \2', field_type_name)
+        return humanized.capitalize()
+
+
+def humanize_field(field):
+    """Return a human-readable description of a field.
+
+    :param field: A Django field.
+
+    :return: A dictionary of the form {type: type name, required: bool,
+             label: field label: read_only: bool,
+             help_text: optional help text}
+
+    """
+    humanized = {
+        'type': (field.type_name if field.type_name
+                 else humanize_field_type(field.form_field_class)),
+        'required': getattr(field, 'required', False),
+        'label': field.label,
+    }
+    optional_attrs = ['read_only', 'help_text']
+    for attr in optional_attrs:
+        if hasattr(field, attr):
+            humanized[attr] = getattr(field, attr)
+    return humanized
+
+
+def humanize_form_fields(form):
+    """Return a humanized description of all the fields in a form.
+
+    :param form: A Django form.
+    :return: A dictionary of {field_label: humanized description}
+
+    """
+    fields = SortedDict([(f.name, humanize_field(f)) for f in form.fields])
+    return fields
 
 
 def readable_time_formats(formats):
