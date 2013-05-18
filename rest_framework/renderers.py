@@ -27,6 +27,9 @@ from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework.utils.formatting import get_view_name, get_view_description
 from rest_framework import exceptions, parsers, status, VERSION
 
+import re
+control_chars = ''.join(map(unichr, range(0,32) + range(127,160)))
+control_char_re = re.compile('[%s]' % re.escape(control_chars))
 
 class BaseRenderer(object):
     """
@@ -49,6 +52,7 @@ class JSONRenderer(BaseRenderer):
     media_type = 'application/json'
     format = 'json'
     encoder_class = encoders.JSONEncoder
+    ensure_ascii = True
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -72,7 +76,7 @@ class JSONRenderer(BaseRenderer):
             except (ValueError, TypeError):
                 indent = None
 
-        return json.dumps(data, cls=self.encoder_class, indent=indent)
+        return json.dumps(data, cls=self.encoder_class, indent=indent, ensure_ascii=self.ensure_ascii)
 
 
 class JSONPRenderer(JSONRenderer):
@@ -320,7 +324,9 @@ class BrowsableAPIRenderer(BaseRenderer):
         renderer_context['indent'] = 4
         content = renderer.render(data, accepted_media_type, renderer_context)
 
-        if not all(char in string.printable for char in content):
+        if type(content) == unicode and control_char_re.match(content):
+            return '[%d bytes of binary content]'
+        if type(content) == str and not all(char in string.printable for char in content):
             return '[%d bytes of binary content]'
 
         return content
@@ -540,3 +546,6 @@ class BrowsableAPIRenderer(BaseRenderer):
             response.status_code = status.HTTP_200_OK
 
         return ret
+
+class UnicodeJSONRenderer(BaseRenderer):
+    ensure_ascii = False
