@@ -332,8 +332,8 @@ class BrowsableAPIRenderer(BaseRenderer):
         renderer_context['indent'] = 4
         content = renderer.render(data, accepted_media_type, renderer_context)
 
-        if not isinstance(content, six.text_type):
-            return '[%d bytes of binary content]'
+        if not all(char in string.printable for char in content):
+            return '[%d bytes of binary content]' % len(content)
 
         return content
 
