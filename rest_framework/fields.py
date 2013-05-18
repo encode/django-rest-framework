@@ -19,6 +19,7 @@ from django.db.models.fields import BLANK_CHOICE_DASH
 from django import forms
 from django.forms import widgets
 from django.utils.encoding import is_protected_type
+from django.utils.functional import Promise
 from django.utils.translation import ugettext_lazy as _
 from django.utils.datastructures import SortedDict
 
@@ -45,6 +46,15 @@ def is_simple_callable(obj):
     len_defaults = len(defaults) if defaults else 0
     return len_args <= len_defaults
 
+if six.PY3:
+    def is_non_str_iterable(obj):
+        if (isinstance(obj, str) or
+            (isinstance(obj, Promise) and obj._delegate_text)):
+            return False
+        return hasattr(obj, '__iter__')
+else:
+    def is_non_str_iterable(obj):
+        return hasattr(obj, '__iter__')
 
 def get_component(obj, attr_name):
     """
@@ -169,7 +179,8 @@ class Field(object):
 
         if is_protected_type(value):
             return value
-        elif hasattr(value, '__iter__') and not isinstance(value, (dict, six.string_types)):
+        elif (is_non_str_iterable(value) and
+              not isinstance(value, (dict, six.string_types))):
             return [self.to_native(item) for item in value]
         elif isinstance(value, dict):
             # Make sure we preserve field ordering, if it exists
