@@ -108,6 +108,51 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = instance_view(request, pk='2')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+    def test_options_permitted(self):
+        request = factory.options('/', content_type='application/json',
+                               HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = root_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('actions', response.data)
+        self.assertEquals(response.data['actions'].keys(), ['POST', 'GET',])
+
+        request = factory.options('/1', content_type='application/json',
+                               HTTP_AUTHORIZATION=self.permitted_credentials)
+        response = instance_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('actions', response.data)
+        self.assertEquals(response.data['actions'].keys(), ['PUT', 'PATCH', 'DELETE', 'GET',])
+
+    def test_options_disallowed(self):
+        request = factory.options('/', content_type='application/json',
+                               HTTP_AUTHORIZATION=self.disallowed_credentials)
+        response = root_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('actions', response.data)
+        self.assertEquals(response.data['actions'].keys(), ['GET',])
+
+        request = factory.options('/1', content_type='application/json',
+                               HTTP_AUTHORIZATION=self.disallowed_credentials)
+        response = instance_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('actions', response.data)
+        self.assertEquals(response.data['actions'].keys(), ['GET',])
+
+    def test_options_updateonly(self):
+        request = factory.options('/', content_type='application/json',
+                               HTTP_AUTHORIZATION=self.updateonly_credentials)
+        response = root_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('actions', response.data)
+        self.assertEquals(response.data['actions'].keys(), ['GET',])
+
+        request = factory.options('/1', content_type='application/json',
+                               HTTP_AUTHORIZATION=self.updateonly_credentials)
+        response = instance_view(request, pk='1')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn('actions', response.data)
+        self.assertEquals(response.data['actions'].keys(), ['PUT', 'PATCH', 'GET',])
+
 
 class OwnerModel(models.Model):
     text = models.CharField(max_length=100)
