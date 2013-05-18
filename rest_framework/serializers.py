@@ -378,23 +378,27 @@ class BaseSerializer(WritableField):
         # Set the serializer object if it exists
         obj = getattr(self.parent.object, field_name) if self.parent.object else None
 
-        if value in (None, ''):
-            into[(self.source or field_name)] = None
+        if self.source == '*':
+            if value:
+                into.update(value)
         else:
-            kwargs = {
-                'instance': obj,
-                'data': value,
-                'context': self.context,
-                'partial': self.partial,
-                'many': self.many
-            }
-            serializer = self.__class__(**kwargs)
-
-            if serializer.is_valid():
-                into[self.source or field_name] = serializer.object
+            if value in (None, ''):
+                into[(self.source or field_name)] = None
             else:
-                # Propagate errors up to our parent
-                raise NestedValidationError(serializer.errors)
+                kwargs = {
+                    'instance': obj,
+                    'data': value,
+                    'context': self.context,
+                    'partial': self.partial,
+                    'many': self.many
+                }
+                serializer = self.__class__(**kwargs)
+
+                if serializer.is_valid():
+                    into[self.source or field_name] = serializer.object
+                else:
+                    # Propagate errors up to our parent
+                    raise NestedValidationError(serializer.errors)
 
     def get_identity(self, data):
         """
