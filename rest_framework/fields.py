@@ -135,8 +135,7 @@ def humanize_field(field):
 
     """
     humanized = {
-        'type': (field.type_name if field.type_name
-                 else humanize_field_type(field.form_field_class)),
+        'type': humanize_field_type(field.__class__),
         'required': getattr(field, 'required', False),
         'label': field.label,
     }
@@ -154,7 +153,8 @@ def humanize_form_fields(form):
     :return: A dictionary of {field_label: humanized description}
 
     """
-    fields = SortedDict([(f.name, humanize_field(f)) for f in form.fields])
+    fields = SortedDict([(name, humanize_field(field))
+                         for name, field in form.fields.iteritems()])
     return fields
 
 

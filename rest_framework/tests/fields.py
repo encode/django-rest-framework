@@ -4,7 +4,8 @@ General serializer field tests.
 from __future__ import unicode_literals
 from django.utils.datastructures import SortedDict
 import datetime
-from rest_framework.fields import humanize_field, humanize_field_type
+from rest_framework.fields import (humanize_field, humanize_field_type,
+                                   humanize_form_fields)
 from django import forms
 from decimal import Decimal
 from django.db import models
@@ -742,3 +743,23 @@ class HumanizedField(TestCase):
     def test_label(self):
         for field in (self.required_field, self.optional_field):
             self.assertEqual(humanize_field(field)['label'], field.label)
+
+
+class Form(forms.Form):
+    field1 = forms.CharField(max_length=3, label='field one')
+    field2 = forms.CharField(label='field two')
+
+
+class HumanizedSerializer(TestCase):
+    def setUp(self):
+        self.serializer = TimestampedModelSerializer()
+
+    def test_humanized(self):
+        humanized = humanize_form_fields(Form())
+        self.assertEqual(humanized, {
+            'field1': {
+                u'help_text': u'', u'required': True,
+                u'type': u'Single Character', u'label': 'field one'},
+            'field2': {
+                u'help_text': u'', u'required': True,
+                u'type': u'Single Character', u'label': 'field two'}})
