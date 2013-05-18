@@ -48,7 +48,7 @@ urlpatterns = patterns('',
     (r'^token/$', MockView.as_view(authentication_classes=[TokenAuthentication])),
     (r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
     (r'^oauth/$', MockView.as_view(authentication_classes=[OAuthAuthentication])),
-    (r'^oauth-with-scope/$', MockView.as_view(authentication_classes=[OAuthAuthentication], 
+    (r'^oauth-with-scope/$', MockView.as_view(authentication_classes=[OAuthAuthentication],
         permission_classes=[permissions.TokenHasReadWriteScope]))
 )
 
@@ -56,14 +56,14 @@ if oauth2_provider is not None:
     urlpatterns += patterns('',
         url(r'^oauth2/', include('provider.oauth2.urls', namespace='oauth2')),
         url(r'^oauth2-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication])),
-        url(r'^oauth2-with-scope-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication], 
+        url(r'^oauth2-with-scope-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication],
             permission_classes=[permissions.TokenHasReadWriteScope])),
     )
 
 
 class BasicAuthTests(TestCase):
     """Basic authentication"""
-    urls = 'rest_framework.tests.authentication'
+    urls = 'rest_framework.tests.test_authentication'
 
     def setUp(self):
         self.csrf_client = Client(enforce_csrf_checks=True)
@@ -102,7 +102,7 @@ class BasicAuthTests(TestCase):
 
 class SessionAuthTests(TestCase):
     """User session authentication"""
-    urls = 'rest_framework.tests.authentication'
+    urls = 'rest_framework.tests.test_authentication'
 
     def setUp(self):
         self.csrf_client = Client(enforce_csrf_checks=True)
@@ -149,7 +149,7 @@ class SessionAuthTests(TestCase):
 
 class TokenAuthTests(TestCase):
     """Token authentication"""
-    urls = 'rest_framework.tests.authentication'
+    urls = 'rest_framework.tests.test_authentication'
 
     def setUp(self):
         self.csrf_client = Client(enforce_csrf_checks=True)
@@ -243,7 +243,7 @@ class IncorrectCredentialsTests(TestCase):
 
 class OAuthTests(TestCase):
     """OAuth 1.0a authentication"""
-    urls = 'rest_framework.tests.authentication'
+    urls = 'rest_framework.tests.test_authentication'
 
     def setUp(self):
         # these imports are here because oauth is optional and hiding them in try..except block or compat
@@ -429,7 +429,7 @@ class OAuthTests(TestCase):
 
 class OAuth2Tests(TestCase):
     """OAuth 2.0 authentication"""
-    urls = 'rest_framework.tests.authentication'
+    urls = 'rest_framework.tests.test_authentication'
 
     def setUp(self):
         self.csrf_client = Client(enforce_csrf_checks=True)
