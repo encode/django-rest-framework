@@ -15,6 +15,7 @@ import warnings
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.conf import settings
+from django.db.models.fields import BLANK_CHOICE_DASH
 from django import forms
 from django.forms import widgets
 from django.utils.encoding import is_protected_type
@@ -51,7 +52,7 @@ def get_component(obj, attr_name):
     return that attribute on the object.
     """
     if isinstance(obj, dict):
-        val = obj[attr_name]
+        val = obj.get(attr_name)
     else:
         val = getattr(obj, attr_name)
 
@@ -407,6 +408,8 @@ class ChoiceField(WritableField):
     def __init__(self, choices=(), *args, **kwargs):
         super(ChoiceField, self).__init__(*args, **kwargs)
         self.choices = choices
+        if not self.required:
+            self.choices = BLANK_CHOICE_DASH + self.choices
 
     def _get_choices(self):
         return self._choices
