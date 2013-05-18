@@ -272,9 +272,9 @@ Exceptions raised and handled by an HTML renderer will attempt to render using o
 * Load and render a template named `api_exception.html`.
 * Render the HTTP status code and text, for example "404 Not Found".
 
-**Note**: If `DEBUG=True`, Django's standard traceback error page will be displayed instead of rendering the HTTP status code and text.
-
 Templates will render with a `RequestContext` which includes the `status_code` and `details` keys.
+
+**Note**: If `DEBUG=True`, Django's standard traceback error page will be displayed instead of rendering the HTTP status code and text.
 
 ---
 
