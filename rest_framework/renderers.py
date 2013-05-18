@@ -49,6 +49,7 @@ class JSONRenderer(BaseRenderer):
     media_type = 'application/json'
     format = 'json'
     encoder_class = encoders.JSONEncoder
+    ensure_ascii = True
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -72,7 +73,7 @@ class JSONRenderer(BaseRenderer):
             except (ValueError, TypeError):
                 indent = None
 
-        return json.dumps(data, cls=self.encoder_class, indent=indent)
+        return json.dumps(data, cls=self.encoder_class, indent=indent, ensure_ascii=self.ensure_ascii)
 
 
 class JSONPRenderer(JSONRenderer):
