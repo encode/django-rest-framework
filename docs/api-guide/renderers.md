@@ -274,6 +274,8 @@ Exceptions raised and handled by an HTML renderer will attempt to render using o
 
 Templates will render with a `RequestContext` which includes the `status_code` and `details` keys.
 
+**Note**: If `DEBUG=True`, Django's standard traceback error page will be displayed instead of rendering the HTTP status code and text.
+
 ---
 
 # Third party packages
