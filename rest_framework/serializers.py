@@ -737,7 +737,7 @@ class ModelSerializer(Serializer):
         if model_field.__class__ in attribute_dict:
             attributes = attribute_dict[model_field.__class__]
             for attribute in attributes:
-                kwargs.update({attribute: model_field.__getattribute__(attribute)})
+                kwargs.update({attribute: getattr(model_field, attribute)})
 
         try:
             return self.field_mapping[model_field.__class__](**kwargs)
