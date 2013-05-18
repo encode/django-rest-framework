@@ -79,6 +79,7 @@ class JSONRenderer(BaseRenderer):
 
 class UnicodeJSONRenderer(JSONRenderer):
     ensure_ascii = False
+    charset = 'utf-8'
 
 
 class JSONPRenderer(JSONRenderer):
