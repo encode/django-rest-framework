@@ -129,6 +129,7 @@ The following people have helped make REST framework great.
 * Brian Zambrano - [brianz]
 * Òscar Vilaplana - [grimborg]
 * Ryan Kaskel - [ryankask]
+* Andy McKay - [andymckay]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -294,3 +295,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [brianz]: https://github.com/brianz
 [grimborg]: https://github.com/grimborg
 [ryankask]: https://github.com/ryankask
+[andymckay]: https://github.com/andymckay
