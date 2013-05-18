@@ -1,7 +1,10 @@
 from __future__ import unicode_literals
 from django.test import TestCase
 from rest_framework import serializers
-from rest_framework.tests.models import ManyToManyTarget, ManyToManySource, ForeignKeyTarget, ForeignKeySource, NullableForeignKeySource, OneToOneTarget, NullableOneToOneSource
+from rest_framework.tests.models import (
+    BlogPost, ManyToManyTarget, ManyToManySource, ForeignKeyTarget, ForeignKeySource,
+    NullableForeignKeySource, OneToOneTarget, NullableOneToOneSource,
+)
 from rest_framework.compat import six
 
 
@@ -421,3 +424,37 @@ class PKNullableOneToOneTests(TestCase):
             {'id': 2, 'name': 'target-2', 'nullable_source': 1},
         ]
         self.assertEqual(serializer.data, expected)
+
+
+# Regression tests for #694 (`source` attribute on related fields)
+
+class PrimaryKeyRelatedFieldSourceTests(TestCase):
+    def test_related_manager_source(self):
+        """
+        Relational fields should be able to use manager-returning methods as their source.
+        """
+        BlogPost.objects.create(title='blah')
+        field = serializers.PrimaryKeyRelatedField(many=True, source='get_blogposts_manager')
+
+        class ClassWithManagerMethod(object):
+            def get_blogposts_manager(self):
+                return BlogPost.objects
+
+        obj = ClassWithManagerMethod()
+        value = field.field_to_native(obj, 'field_name')
+        self.assertEqual(value, [1])
+
+    def test_related_queryset_source(self):
+        """
+        Relational fields should be able to use queryset-returning methods as their source.
+        """
+        BlogPost.objects.create(title='blah')
+        field = serializers.PrimaryKeyRelatedField(many=True, source='get_blogposts_queryset')
+
+        class ClassWithQuerysetMethod(object):
+            def get_blogposts_queryset(self):
+                return BlogPost.objects.all()
+
+        obj = ClassWithQuerysetMethod()
+        value = field.field_to_native(obj, 'field_name')
+        self.assertEqual(value, [1])
