@@ -739,6 +739,10 @@ class ModelSerializer(Serializer):
         if issubclass(model_field.__class__, models.TextField):
             kwargs['widget'] = widgets.Textarea
 
+        if issubclass(model_field.__class__, models.PositiveIntegerField) or\
+                issubclass(model_field.__class__, models.PositiveSmallIntegerField):
+            kwargs['min_value'] = 0
+
         # TODO: TypedChoiceField?
         if model_field.flatchoices:  # This ModelField contains choices
             kwargs['choices'] = model_field.flatchoices
