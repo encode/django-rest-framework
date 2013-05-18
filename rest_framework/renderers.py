@@ -349,6 +349,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         try:
             view.check_permissions(request)
+            view.check_object_permissions(request, obj)
         except exceptions.APIException:
             return False  # Doesn't have permissions
         return True
