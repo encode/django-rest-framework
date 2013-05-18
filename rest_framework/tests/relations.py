@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
+from rest_framework.tests.models import BlogPost
 
 
 class NullModel(models.Model):
@@ -33,7 +34,7 @@ class FieldTests(TestCase):
         self.assertRaises(serializers.ValidationError, field.from_native, [])
 
 
-class TestManyRelateMixin(TestCase):
+class TestManyRelatedMixin(TestCase):
     def test_missing_many_to_many_related_field(self):
         '''
         Regression test for #632
@@ -45,3 +46,55 @@ class TestManyRelateMixin(TestCase):
         into = {}
         field.field_from_native({}, None, 'field_name', into)
         self.assertEqual(into['field_name'], [])
+
+
+# Regression tests for #694 (`source` attribute on related fields)
+
+class RelatedFieldSourceTests(TestCase):
+    def test_related_manager_source(self):
+        """
+        Relational fields should be able to use manager-returning methods as their source.
+        """
+        BlogPost.objects.create(title='blah')
+        field = serializers.RelatedField(many=True, source='get_blogposts_manager')
+
+        class ClassWithManagerMethod(object):
+            def get_blogposts_manager(self):
+                return BlogPost.objects
+
+        obj = ClassWithManagerMethod()
+        value = field.field_to_native(obj, 'field_name')
+        self.assertEqual(value, ['BlogPost object'])
+
+    def test_related_queryset_source(self):
+        """
+        Relational fields should be able to use queryset-returning methods as their source.
+        """
+        BlogPost.objects.create(title='blah')
+        field = serializers.RelatedField(many=True, source='get_blogposts_queryset')
+
+        class ClassWithQuerysetMethod(object):
+            def get_blogposts_queryset(self):
+                return BlogPost.objects.all()
+
+        obj = ClassWithQuerysetMethod()
+        value = field.field_to_native(obj, 'field_name')
+        self.assertEqual(value, ['BlogPost object'])
+
+    def test_dotted_source(self):
+        """
+        Source argument should support dotted.source notation.
+        """
+        BlogPost.objects.create(title='blah')
+        field = serializers.RelatedField(many=True, source='a.b.c')
+
+        class ClassWithQuerysetMethod(object):
+            a = {
+                'b': {
+                    'c': BlogPost.objects.all()
+                }
+            }
+
+        obj = ClassWithQuerysetMethod()
+        value = field.field_to_native(obj, 'field_name')
+        self.assertEqual(value, ['BlogPost object'])
