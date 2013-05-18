@@ -5,6 +5,7 @@ from rest_framework import serializers, fields, relations
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
+from rest_framework.tests.models import BasicModelSerializer
 import datetime
 import pickle
 
@@ -1148,11 +1149,7 @@ class DeserializeListTestCase(TestCase):
 # Test for issue #467
 class FieldLabelTest(TestCase):
     def setUp(self):
-        class LabelModelSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = BasicModel
-
-        self.serializer_class = LabelModelSerializer
+        self.serializer_class = BasicModelSerializer
 
     def test_label_from_model(self):
         """
