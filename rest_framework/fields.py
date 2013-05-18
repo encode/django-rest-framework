@@ -383,7 +383,6 @@ class URLField(CharField):
     type_name = 'URLField'
 
     def __init__(self, **kwargs):
-        kwargs['max_length'] = kwargs.get('max_length', 200)
         kwargs['validators'] = [validators.URLValidator()]
         super(URLField, self).__init__(**kwargs)
 
@@ -392,7 +391,6 @@ class SlugField(CharField):
     type_name = 'SlugField'
 
     def __init__(self, *args, **kwargs):
-        kwargs['max_length'] = kwargs.get('max_length', 50)
         super(SlugField, self).__init__(*args, **kwargs)
 
 
