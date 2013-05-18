@@ -50,6 +50,7 @@ class JSONRenderer(BaseRenderer):
     media_type = 'application/json'
     format = 'json'
     encoder_class = encoders.JSONEncoder
+    ensure_ascii = True
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -73,7 +74,11 @@ class JSONRenderer(BaseRenderer):
             except (ValueError, TypeError):
                 indent = None
 
-        return json.dumps(data, cls=self.encoder_class, indent=indent)
+        return json.dumps(data, cls=self.encoder_class, indent=indent, ensure_ascii=self.ensure_ascii)
+
+
+class UnicodeJSONRenderer(JSONRenderer):
+    ensure_ascii = False
 
 
 class JSONPRenderer(JSONRenderer):
@@ -326,7 +331,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         renderer_context['indent'] = 4
         content = renderer.render(data, accepted_media_type, renderer_context)
 
-        if not all(char in string.printable for char in content):
+        if not isinstance(content, six.text_type):
             return '[%d bytes of binary content]'
 
         return content
