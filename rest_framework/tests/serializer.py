@@ -872,23 +872,6 @@ class RelatedTraversalTest(TestCase):
 
         self.assertEqual(serializer.data, expected)
 
-    def test_queryset_nested_traversal(self):
-        """
-        Relational fields should be able to use methods as their source.
-        """
-        BlogPost.objects.create(title='blah')
-
-        class QuerysetMethodSerializer(serializers.Serializer):
-            blogposts = serializers.RelatedField(many=True, source='get_all_blogposts')
-
-        class ClassWithQuerysetMethod(object):
-            def get_all_blogposts(self):
-                return BlogPost.objects
-
-        obj = ClassWithQuerysetMethod()
-        serializer = QuerysetMethodSerializer(obj)
-        self.assertEqual(serializer.data, {'blogposts': ['BlogPost object']})
-
 
 class SerializerMethodFieldTests(TestCase):
     def setUp(self):
