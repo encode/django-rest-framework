@@ -76,6 +76,10 @@ class JSONRenderer(BaseRenderer):
         return json.dumps(data, cls=self.encoder_class, indent=indent, ensure_ascii=self.ensure_ascii)
 
 
+class UnicodeJSONRenderer(JSONRenderer):
+    ensure_ascii = False
+
+
 class JSONPRenderer(JSONRenderer):
     """
     Renderer which serializes to json,
