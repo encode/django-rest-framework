@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
 from rest_framework.compat import View
 from rest_framework.response import Response
-from rest_framework.request import Request
+from rest_framework.request import clone_request, Request
 from rest_framework.settings import api_settings
 from rest_framework.utils.formatting import get_view_name, get_view_description
 
@@ -52,19 +52,42 @@ class APIView(View):
         }
 
     def metadata(self, request):
-        return {
+        content = {
             'name': get_view_name(self.__class__),
             'description': get_view_description(self.__class__),
             'renders': [renderer.media_type for renderer in self.renderer_classes],
             'parses': [parser.media_type for parser in self.parser_classes],
         }
-        #  TODO: Add 'fields', from serializer info, if it exists.
-        # serializer = self.get_serializer()
-        # if serializer is not None:
-        #     field_name_types = {}
-        #     for name, field in form.fields.iteritems():
-        #         field_name_types[name] = field.__class__.__name__
-        #     content['fields'] = field_name_types
+        action_metadata = self._generate_action_metadata(request)
+        if action_metadata is not None:
+            content['actions'] = action_metadata
+
+        return content
+
+    def _generate_action_metadata(self, request):
+        '''
+        Helper for generating the fields metadata for allowed and permitted methods.
+        '''
+        actions = {}
+
+        for method in self.allowed_methods:
+            cloned_request = clone_request(request, method)
+            try:
+                self.check_permissions(cloned_request)
+
+                # TODO: find right placement - APIView does not have get_serializer
+                serializer = self.get_serializer()
+                if serializer is not None:
+                    field_name_types = {}
+                    for name, field in serializer.fields.iteritems():
+                        field_name_types[name] = field.__class__.__name__
+
+                actions[method] = field_name_types
+            except:
+                # don't add this method
+                pass
+
+        return actions if len(actions) > 0 else None
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
