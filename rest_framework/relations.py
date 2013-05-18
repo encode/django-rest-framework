@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch
 from django import forms
+from django.db.models.fields import BLANK_CHOICE_DASH
 from django.forms import widgets
 from django.forms.models import ModelChoiceIterator
 from django.utils.translation import ugettext_lazy as _
@@ -47,7 +48,7 @@ class RelatedField(WritableField):
                           DeprecationWarning, stacklevel=2)
             kwargs['required'] = not kwargs.pop('null')
 
-        self.queryset = kwargs.pop('queryset', None)
+        queryset = kwargs.pop('queryset', None)
         self.many = kwargs.pop('many', self.many)
         if self.many:
             self.widget = self.many_widget
@@ -55,6 +56,11 @@ class RelatedField(WritableField):
 
         kwargs['read_only'] = kwargs.pop('read_only', self.read_only)
         super(RelatedField, self).__init__(*args, **kwargs)
+
+        if not self.required:
+            self.empty_label = BLANK_CHOICE_DASH[0][1]
+
+        self.queryset = queryset
 
     def initialize(self, parent, field_name):
         super(RelatedField, self).initialize(parent, field_name)
