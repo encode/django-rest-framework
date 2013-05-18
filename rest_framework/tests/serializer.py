@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from django.utils.datastructures import MultiValueDict
 from django.test import TestCase
-from rest_framework import serializers, fields
+from rest_framework import serializers, fields, relations
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo)
@@ -1170,5 +1170,5 @@ class FieldLabelTest(TestCase):
         """
         self.assertEquals(u'Label', fields.Field(label='Label', help_text='Help').label)
         self.assertEquals(u'Help', fields.CharField(label='Label', help_text='Help').help_text)
-        self.assertEquals(u'Label', fields.ManyHyperlinkedRelatedField(view_name='fake', label='Label', help_text='Help').label)
+        self.assertEquals(u'Label', relations.ManyHyperlinkedRelatedField(view_name='fake', label='Label', help_text='Help').label)
 
