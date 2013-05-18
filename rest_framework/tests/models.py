@@ -34,7 +34,7 @@ class Anchor(RESTFrameworkModel):
 
 
 class BasicModel(RESTFrameworkModel):
-    text = models.CharField(max_length=100, verbose_name=_("Text"), help_text=_("Text description."))
+    text = models.CharField(max_length=100, verbose_name=_("Text comes here"), help_text=_("Text description."))
 
 
 class SlugBasedModel(RESTFrameworkModel):
