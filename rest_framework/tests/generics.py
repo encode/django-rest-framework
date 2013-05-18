@@ -125,7 +125,7 @@ class TestRootView(TestCase):
             'actions': {}
         }
         # TODO: this is just a draft for fields' metadata - needs review and decision
-        for method in ('HEAD', 'GET', 'POST', 'OPTIONS'):
+        for method in ('GET', 'POST',):
             expected['actions'][method] = {
                 'text': {
                     'description': '',
@@ -261,7 +261,7 @@ class TestInstanceView(TestCase):
             'actions': {}
         }
         # TODO: this is just a draft idea for fields' metadata - needs review and decision
-        for method in ('HEAD', 'GET', 'PATCH', 'PUT', 'OPTIONS', 'DELETE'):
+        for method in ('GET', 'PATCH', 'PUT', 'DELETE'):
             expected['actions'][method] = {
                 'text': {
                     'description': '',

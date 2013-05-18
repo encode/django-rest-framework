@@ -71,6 +71,10 @@ class APIView(View):
         actions = {}
 
         for method in self.allowed_methods:
+            # skip HEAD and OPTIONS
+            if method in ('HEAD', 'OPTIONS'):
+                continue
+
             cloned_request = clone_request(request, method)
             try:
                 self.check_permissions(cloned_request)
