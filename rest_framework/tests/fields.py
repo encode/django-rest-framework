@@ -808,4 +808,5 @@ class URLFieldTests(TestCase):
 
         serializer = URLFieldSerializer(data={})
         self.assertEqual(serializer.is_valid(), True)
-        self.assertEqual(getattr(serializer.fields['url_field'], 'max_length'), 20)
+        self.assertEqual(getattr(serializer.fields['url_field'], 'max_length'), 20
+                         
