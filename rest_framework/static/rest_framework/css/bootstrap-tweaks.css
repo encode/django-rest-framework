@@ -37,7 +37,7 @@ a single block in the template.
   border-radius: 0px;
 }
 
-.navbar .navbar-inner .nav li, .navbar .navbar-inner .nav li a, .navbar .navbar-inner .brand{
+.navbar .navbar-inner .nav li, .navbar .navbar-inner .nav li a, .navbar .navbar-inner .brand:hover{
   color: white;
 }
 
