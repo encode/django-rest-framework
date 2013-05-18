@@ -2,7 +2,7 @@
 
 We're going to create a simple API to allow admin users to view and edit the users and groups in the system.
 
-Create a new Django project, and start a new app called `quickstart`.  Once you've set up a database and got everything synced and ready to go open up the app's directory and we'll get coding...
+Create a new Django project called `rest_framework_tutorial`, and start a new app called `quickstart`.  Set up a database and get everything synced. Open up the app's directory to get coding...
 
 ## Serializers
 
@@ -55,7 +55,7 @@ We can easily break these down into individual views if we need to, but using vi
 
 ## URLs
 
-Okay, now let's wire up the API URLs.  On to `quickstart/urls.py`...
+Okay, now let's wire up the API URLs.  On to `rest_framework_tutorial/urls.py`...
 
     from django.conf.urls import patterns, url, include
     from rest_framework import routers
@@ -84,7 +84,7 @@ We'd also like to set a few global settings.  We'd like to turn on pagination, a
 
     INSTALLED_APPS = (
         ...
-        'rest_framework',
+        'quickstart',
     )
 
     REST_FRAMEWORK = {
