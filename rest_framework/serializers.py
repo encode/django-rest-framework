@@ -591,7 +591,7 @@ class ModelSerializer(Serializer):
         forward_rels += [field for field in opts.many_to_many if field.serialize]
 
         for model_field in forward_rels:
-            has_user_through_model = False
+            has_through_model = False
 
             if model_field.rel:
                 to_many = isinstance(model_field,
@@ -599,7 +599,7 @@ class ModelSerializer(Serializer):
                 related_model = model_field.rel.to
 
                 if to_many and not model_field.rel.through._meta.auto_created:
-                    has_user_through_model = True
+                    has_through_model = True
 
             if model_field.rel and nested:
                 if len(inspect.getargspec(self.get_nested_field).args) == 2:
@@ -629,7 +629,7 @@ class ModelSerializer(Serializer):
                 field = self.get_field(model_field)
 
             if field:
-                if has_user_through_model:
+                if has_through_model:
                     field.read_only = True
 
                 ret[model_field.name] = field
@@ -649,12 +649,12 @@ class ModelSerializer(Serializer):
                 continue
             related_model = relation.model
             to_many = relation.field.rel.multiple
-            has_user_through_model = False
+            has_through_model = False
             is_m2m = isinstance(relation.field,
                                 models.fields.related.ManyToManyField)
 
             if is_m2m and not relation.field.rel.through._meta.auto_created:
-                has_user_through_model = True
+                has_through_model = True
 
             if nested:
                 field = self.get_nested_field(None, related_model, to_many)
@@ -662,7 +662,7 @@ class ModelSerializer(Serializer):
                 field = self.get_related_field(None, related_model, to_many)
 
             if field:
-                if has_user_through_model:
+                if has_through_model:
                     field.read_only = True
 
                 ret[accessor_name] = field
