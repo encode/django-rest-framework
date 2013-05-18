@@ -499,3 +499,26 @@ class HyperlinkedRelatedFieldSourceTests(TestCase):
         obj = ClassWithQuerysetMethod()
         value = field.field_to_native(obj, 'field_name')
         self.assertEqual(value, ['http://testserver/dummyurl/1/'])
+
+    def test_dotted_source(self):
+        """
+        Source argument should support dotted.source notation.
+        """
+        BlogPost.objects.create(title='blah')
+        field = serializers.HyperlinkedRelatedField(
+            many=True,
+            source='a.b.c',
+            view_name='dummy-url',
+        )
+        field.context = {'request': request}
+
+        class ClassWithQuerysetMethod(object):
+            a = {
+                'b': {
+                    'c': BlogPost.objects.all()
+                }
+            }
+
+        obj = ClassWithQuerysetMethod()
+        value = field.field_to_native(obj, 'field_name')
+        self.assertEqual(value, ['http://testserver/dummyurl/1/'])

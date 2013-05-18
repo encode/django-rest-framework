@@ -458,3 +458,21 @@ class PrimaryKeyRelatedFieldSourceTests(TestCase):
         obj = ClassWithQuerysetMethod()
         value = field.field_to_native(obj, 'field_name')
         self.assertEqual(value, [1])
+
+    def test_dotted_source(self):
+        """
+        Source argument should support dotted.source notation.
+        """
+        BlogPost.objects.create(title='blah')
+        field = serializers.PrimaryKeyRelatedField(many=True, source='a.b.c')
+
+        class ClassWithQuerysetMethod(object):
+            a = {
+                'b': {
+                    'c': BlogPost.objects.all()
+                }
+            }
+
+        obj = ClassWithQuerysetMethod()
+        value = field.field_to_native(obj, 'field_name')
+        self.assertEqual(value, [1])
