@@ -1172,7 +1172,7 @@ class SerializerRelatedChoicesTest(TestCase):
         self.assertEqual(serializer.fields['reviewer'].queryset.count(), 0)
         self.assertEqual(
             [x for x in serializer.fields['reviewer'].widget.choices],
-            [(u'', u'---------')]
+            [('', '---------')]
         )
 
     def test_with_some_persons_required(self):
@@ -1182,7 +1182,7 @@ class SerializerRelatedChoicesTest(TestCase):
         self.assertEqual(serializer.fields['assigned'].queryset.count(), 2)
         self.assertEqual(
             [x for x in serializer.fields['assigned'].widget.choices],
-            [(1, u'Person object - 1'), (2, u'Person object - 2')]
+            [(1, 'Person object - 1'), (2, 'Person object - 2')]
         )
 
     def test_with_some_persons_not_required(self):
@@ -1192,7 +1192,7 @@ class SerializerRelatedChoicesTest(TestCase):
         self.assertEqual(serializer.fields['reviewer'].queryset.count(), 2)
         self.assertEqual(
             [x for x in serializer.fields['reviewer'].widget.choices],
-            [(u'', u'---------'), (1, u'Person object - 1'), (2, u'Person object - 2')]
+            [('', '---------'), (1, 'Person object - 1'), (2, 'Person object - 2')]
         )
 
 
