@@ -727,6 +727,22 @@ class ModelSerializer(Serializer):
             kwargs['choices'] = model_field.flatchoices
             return ChoiceField(**kwargs)
 
+        attribute_dict = {
+            models.CharField: ['max_length'],
+            models.CommaSeparatedIntegerField: ['max_length'],
+            models.DecimalField: ['max_digits', 'decimal_places'],
+            models.EmailField: ['max_length'],
+            models.FileField: ['max_length'],
+            models.ImageField: ['max_length'],
+            models.SlugField: ['max_length'],
+            models.URLField: ['max_length'],
+        }
+
+        if model_field.__class__ in attribute_dict:
+            attributes = attribute_dict[model_field.__class__]
+            for attribute in attributes:
+                kwargs.update({attribute: getattr(model_field, attribute)})
+
         try:
             return self.field_mapping[model_field.__class__](**kwargs)
         except KeyError:
