@@ -744,6 +744,11 @@ class ModelSerializer(Serializer):
             kwargs['choices'] = model_field.flatchoices
             return ChoiceField(**kwargs)
 
+        # put this below the ChoiceField because min_value isn't a valid initializer
+        if issubclass(model_field.__class__, models.PositiveIntegerField) or\
+                issubclass(model_field.__class__, models.PositiveSmallIntegerField):
+            kwargs['min_value'] = 0
+
         attribute_dict = {
             models.CharField: ['max_length'],
             models.CommaSeparatedIntegerField: ['max_length'],
