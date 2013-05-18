@@ -83,6 +83,8 @@ DEFAULTS = {
     'FORMAT_SUFFIX_KWARG': 'format',
 
     # Input and output formats
+    'DEFAULT_CHARSET': None,
+    
     'DATE_INPUT_FORMATS': (
         ISO_8601,
     ),

@@ -39,14 +39,18 @@ class Response(SimpleTemplateResponse):
     def rendered_content(self):
         renderer = getattr(self, 'accepted_renderer', None)
         media_type = getattr(self, 'accepted_media_type', None)
+        charset = getattr(self, 'charset', None)
         context = getattr(self, 'renderer_context', None)
 
         assert renderer, ".accepted_renderer not set on Response"
         assert media_type, ".accepted_media_type not set on Response"
         assert context, ".renderer_context not set on Response"
         context['response'] = self
-
-        self['Content-Type'] = media_type
+        if charset is not None:
+            ct = "{0}; charset={1}".format(media_type, charset)
+        else:
+            ct = media_type
+        self['Content-Type'] = ct
         return renderer.render(self.data, media_type, context)
 
     @property
