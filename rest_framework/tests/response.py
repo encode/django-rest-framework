@@ -12,7 +12,6 @@ from rest_framework.renderers import (
 from rest_framework.settings import api_settings
 from rest_framework.compat import six
 
-
 class MockPickleRenderer(BaseRenderer):
     media_type = 'application/pickle'
 
@@ -20,6 +19,8 @@ class MockPickleRenderer(BaseRenderer):
 class MockJsonRenderer(BaseRenderer):
     media_type = 'application/json'
 
+class MockTextMediaRenderer(BaseRenderer):
+    media_type = 'text/html'
 
 DUMMYSTATUS = status.HTTP_200_OK
 DUMMYCONTENT = 'dummycontent'
@@ -43,13 +44,17 @@ class RendererB(BaseRenderer):
     def render(self, data, media_type=None, renderer_context=None):
         return RENDERER_B_SERIALIZER(data)
 
+class RendererC(RendererB):
+    media_type = 'mock/rendererc'
+    format = 'formatc'
+    charset = "rendererc"
+
 
 class MockView(APIView):
-    renderer_classes = (RendererA, RendererB)
+    renderer_classes = (RendererA, RendererB, RendererC)
 
     def get(self, request, **kwargs):
         return Response(DUMMYCONTENT, status=DUMMYSTATUS)
-
 
 class HTMLView(APIView):
     renderer_classes = (BrowsableAPIRenderer, )
@@ -64,10 +69,9 @@ class HTMLView1(APIView):
     def get(self, request, **kwargs):
         return Response('text')
 
-
 urlpatterns = patterns('',
-    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
-    url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
+    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
+    url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
     url(r'^restframework', include('rest_framework.urls', namespace='rest_framework'))
@@ -173,3 +177,44 @@ class Issue122Tests(TestCase):
         Test if no infinite recursion occurs.
         """
         self.client.get('/html1')
+
+class Issue807Testts(TestCase):
+    """
+    Covers #807
+    """
+    
+    urls = 'rest_framework.tests.response'
+    
+    def test_does_not_append_charset_by_default(self):
+        """
+        For backwards compatibility `REST_FRAMEWORK['DEFAULT_CHARSET']` defaults
+        to None, so that all legacy code works as expected.
+        """
+        headers = {"HTTP_ACCEPT": RendererA.media_type}
+        resp = self.client.get('/', **headers)
+        self.assertEquals(RendererA.media_type, resp['Content-Type'])
+    
+    def test_if_there_is_charset_specified_on_renderer_it_gets_appended(self):
+        """
+        If renderer class has charset attribute declared, it gets appended
+        to Response's Content-Type
+        """
+        resp = self.client.get('/?format=%s' % RendererC.format)
+        expected = "{0}; charset={1}".format(RendererC.media_type, RendererC.charset)
+        self.assertEquals(expected, resp['Content-Type'])
+    
+    def test_if_there_is_default_charset_specified_it_gets_appended(self):
+        """
+        If user defines `REST_FRAMEWORK['DEFAULT_CHARSET']` it will get appended
+        to Content-Type of all responses.
+        """
+        original_default_charset = api_settings.DEFAULT_CHARSET
+        api_settings.DEFAULT_CHARSET = "utf-8"
+        headers = {'HTTP_ACCEPT': RendererA.media_type}
+        resp = self.client.get('/', **headers)
+        expected = "{0}; charset={1}".format(
+            RendererA.media_type,
+            api_settings.DEFAULT_CHARSET
+        )
+        self.assertEquals(expected, resp['Content-Type'])
+        api_settings.DEFAULT_CHARSET = original_default_charset

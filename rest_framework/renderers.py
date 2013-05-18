@@ -36,10 +36,10 @@ class BaseRenderer(object):
 
     media_type = None
     format = None
+    charset = None
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         raise NotImplemented('Renderer class requires .render() to be implemented')
-
 
 class JSONRenderer(BaseRenderer):
     """
