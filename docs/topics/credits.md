@@ -124,6 +124,8 @@ The following people have helped make REST framework great.
 * Marlon Bailey - [avinash240]
 * James Summerfield - [jsummerfield]
 * Andy Freeland - [rouge8]
+* Òscar Vilaplana - [grimborg]
+* Ryan Kaskel - [ryankask]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -284,3 +286,5 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [avinash240]: https://github.com/avinash240
 [jsummerfield]: https://github.com/jsummerfield
 [rouge8]: https://github.com/rouge8
+[grimborg]: https://github.com/grimborg
+[ryankask]: https://github.com/ryankask
