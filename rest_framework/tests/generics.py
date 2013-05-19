@@ -262,26 +262,17 @@ class TestInstanceView(TestCase):
             'description': 'Example description for OPTIONS.',
             'actions': {}
         }
-        # TODO: this is just a draft idea for fields' metadata - needs review and decision
         for method in ('GET', 'DELETE'):
             expected['actions'][method] = {}
         for method in ('PATCH', 'PUT'):
             expected['actions'][method] = {
                 'text': {
-                    # TODO uncomment label and description when they are
-                    # available
-                    #'description': '',
-                    #'label': None,
                     'max_length': 100,
                     'read_only': False,
                     'required': True,
                     'type': 'String',
                 },
                 'id': {
-                    # TODO uncomment label and description when they are
-                    # available
-                    #'description': '',
-                    #'label': None,
                     'read_only': True,
                     'required': False,
                     'type': 'Integer',
