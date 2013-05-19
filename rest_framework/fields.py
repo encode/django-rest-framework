@@ -136,11 +136,10 @@ def humanize_field(field):
     humanized = {
         'type': humanize_field_type(field.__class__),
         'required': getattr(field, 'required', False),
-        'label': getattr(field, 'label', None),
     }
-    optional_attrs = ['read_only', 'help_text']
+    optional_attrs = ['read_only', 'help_text', 'label']
     for attr in optional_attrs:
-        if hasattr(field, attr):
+        if getattr(field, attr, None) is not None:
             humanized[attr] = getattr(field, attr)
     return humanized
 
