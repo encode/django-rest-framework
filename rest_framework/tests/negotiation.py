@@ -3,17 +3,22 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from rest_framework.negotiation import DefaultContentNegotiation
 from rest_framework.request import Request
+from rest_framework.renderers import BaseRenderer
 
 
 factory = RequestFactory()
 
 
-class MockJSONRenderer(object):
+class MockJSONRenderer(BaseRenderer):
     media_type = 'application/json'
 
 
-class MockHTMLRenderer(object):
+class MockHTMLRenderer(BaseRenderer):
     media_type = 'text/html'
+
+
+class NoCharsetSpecifiedRenderer(BaseRenderer):
+    media_type = 'my/media'
 
 
 class TestAcceptedMediaType(TestCase):

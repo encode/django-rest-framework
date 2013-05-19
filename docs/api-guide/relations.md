@@ -381,6 +381,15 @@ Note that reverse generic keys, expressed using the `GenericRelation` field, can
 
 For more information see [the Django documentation on generic relations][generic-relations].
 
+## ManyToManyFields with a Through Model
+
+By default, relational fields that target a ``ManyToManyField`` with a
+``through`` model specified are set to read-only.
+
+If you exlicitly specify a relational field pointing to a
+``ManyToManyField`` with a through model, be sure to set ``read_only``
+to ``True``.
+
 ## Advanced Hyperlinked fields
 
 If you have very specific requirements for the style of your hyperlinked relationships you can override `HyperlinkedRelatedField`. 

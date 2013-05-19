@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from decimal import Decimal
 from django.core.cache import cache
 from django.test import TestCase
@@ -8,7 +9,7 @@ from rest_framework.compat import yaml, etree, patterns, url, include
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
-    XMLRenderer, JSONPRenderer, BrowsableAPIRenderer
+    XMLRenderer, JSONPRenderer, BrowsableAPIRenderer, UnicodeJSONRenderer
 from rest_framework.parsers import YAMLParser, XMLParser
 from rest_framework.settings import api_settings
 from rest_framework.compat import StringIO
@@ -253,6 +254,23 @@ class JSONRendererTests(TestCase):
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json; indent=2')
         self.assertEqual(strip_trailing_whitespace(content), _indented_repr)
+
+    def test_check_ascii(self):
+        obj = {'countries': ['United Kingdom', 'France', 'España']}
+        renderer = JSONRenderer()
+        content = renderer.render(obj, 'application/json')
+        self.assertEqual(content, '{"countries": ["United Kingdom", "France", "Espa\\u00f1a"]}')
+
+
+class UnicodeJSONRendererTests(TestCase):
+    """
+    Tests specific for the Unicode JSON Renderer
+    """
+    def test_proper_encoding(self):
+        obj = {'countries': ['United Kingdom', 'France', 'España']}
+        renderer = UnicodeJSONRenderer()
+        content = renderer.render(obj, 'application/json')
+        self.assertEqual(content, '{"countries": ["United Kingdom", "France", "España"]}')
 
 
 class JSONPRendererTests(TestCase):

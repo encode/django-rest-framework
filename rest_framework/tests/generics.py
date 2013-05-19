@@ -121,8 +121,27 @@ class TestRootView(TestCase):
                 'text/html'
             ],
             'name': 'Root',
-            'description': 'Example description for OPTIONS.'
+            'description': 'Example description for OPTIONS.',
+            'actions': {}
         }
+        # TODO: this is just a draft for fields' metadata - needs review and decision
+        for method in ('GET', 'POST',):
+            expected['actions'][method] = {
+                'text': {
+                    #'description': '',
+                    'label': None,
+                    'read_only': False,
+                    'required': True,
+                    'type': 'Single Character',
+                },
+                'id': {
+                    #'description': '',
+                    'label': None,
+                    'read_only': True,
+                    'required': False,
+                    'type': 'Integer',
+                },
+            }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected)
 
@@ -238,8 +257,27 @@ class TestInstanceView(TestCase):
                 'text/html'
             ],
             'name': 'Instance',
-            'description': 'Example description for OPTIONS.'
+            'description': 'Example description for OPTIONS.',
+            'actions': {}
         }
+        # TODO: this is just a draft idea for fields' metadata - needs review and decision
+        for method in ('GET', 'PATCH', 'PUT', 'DELETE'):
+            expected['actions'][method] = {
+                'text': {
+                    #'description': '',
+                    'label': None,
+                    'read_only': False,
+                    'required': True,
+                    'type': 'Single Character',
+                },
+                'id': {
+                    #'description': '',
+                    'label': None,
+                    'read_only': True,
+                    'required': False,
+                    'type': 'Integer',
+                },
+            }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected)
 
