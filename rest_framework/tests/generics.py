@@ -124,7 +124,6 @@ class TestRootView(TestCase):
             'description': 'Example description for OPTIONS.',
             'actions': {}
         }
-        # TODO: this is just a draft for fields' metadata - needs review and decision
         expected['actions']['GET'] = {}
         expected['actions']['POST'] = {
             'text': {
