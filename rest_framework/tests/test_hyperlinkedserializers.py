@@ -5,6 +5,7 @@ from django.test.client import RequestFactory
 from rest_framework import generics, status, serializers
 from rest_framework.compat import patterns, url
 from rest_framework.tests.models import Anchor, BasicModel, ManyToManyModel, BlogPost, BlogPostComment, Album, Photo, OptionalRelationModel
+from rest_framework.permissions import AllowAny
 
 factory = RequestFactory()
 
@@ -38,56 +39,67 @@ class AlbumSerializer(serializers.ModelSerializer):
 class BasicList(generics.ListCreateAPIView):
     model = BasicModel
     model_serializer_class = serializers.HyperlinkedModelSerializer
+    permission_classes = (AllowAny,)
 
 
 class BasicDetail(generics.RetrieveUpdateDestroyAPIView):
     model = BasicModel
     model_serializer_class = serializers.HyperlinkedModelSerializer
+    permission_classes = (AllowAny,)
 
 
 class AnchorDetail(generics.RetrieveAPIView):
     model = Anchor
     model_serializer_class = serializers.HyperlinkedModelSerializer
+    permission_classes = (AllowAny,)
 
 
 class ManyToManyList(generics.ListAPIView):
     model = ManyToManyModel
     model_serializer_class = serializers.HyperlinkedModelSerializer
+    permission_classes = (AllowAny,)
 
 
 class ManyToManyDetail(generics.RetrieveAPIView):
     model = ManyToManyModel
     model_serializer_class = serializers.HyperlinkedModelSerializer
+    permission_classes = (AllowAny,)
 
 
 class BlogPostCommentListCreate(generics.ListCreateAPIView):
     model = BlogPostComment
     serializer_class = BlogPostCommentSerializer
+    permission_classes = (AllowAny,)
 
 
 class BlogPostCommentDetail(generics.RetrieveAPIView):
     model = BlogPostComment
     serializer_class = BlogPostCommentSerializer
+    permission_classes = (AllowAny,)
 
 
 class BlogPostDetail(generics.RetrieveAPIView):
     model = BlogPost
+    permission_classes = (AllowAny,)
 
 
 class PhotoListCreate(generics.ListCreateAPIView):
     model = Photo
     model_serializer_class = PhotoSerializer
+    permission_classes = (AllowAny,)
 
 
 class AlbumDetail(generics.RetrieveAPIView):
     model = Album
     serializer_class = AlbumSerializer
     lookup_field = 'title'
+    permission_classes = (AllowAny,)
 
 
 class OptionalRelationDetail(generics.RetrieveUpdateDestroyAPIView):
     model = OptionalRelationModel
     model_serializer_class = serializers.HyperlinkedModelSerializer
+    permission_classes = (AllowAny,)
 
 
 urlpatterns = patterns('',

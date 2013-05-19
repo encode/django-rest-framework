@@ -6,6 +6,7 @@ from rest_framework import generics, renderers, serializers, status
 from rest_framework.tests.utils import RequestFactory
 from rest_framework.tests.models import BasicModel, Comment, SlugBasedModel
 from rest_framework.compat import six
+from rest_framework.permissions import AllowAny
 import json
 
 factory = RequestFactory()
@@ -16,6 +17,7 @@ class RootView(generics.ListCreateAPIView):
     Example description for OPTIONS.
     """
     model = BasicModel
+    permission_classes = (AllowAny,)
 
 
 class InstanceView(generics.RetrieveUpdateDestroyAPIView):
@@ -23,6 +25,7 @@ class InstanceView(generics.RetrieveUpdateDestroyAPIView):
     Example description for OPTIONS.
     """
     model = BasicModel
+    permission_classes = (AllowAny,)
 
 
 class SlugSerializer(serializers.ModelSerializer):
@@ -355,6 +358,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class CommentView(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
+    permission_classes = (AllowAny,)
     model = Comment
 
 
@@ -486,6 +490,7 @@ class TwoFieldModel(models.Model):
 class DynamicSerializerView(generics.ListCreateAPIView):
     model = TwoFieldModel
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
+    permission_classes = (AllowAny,)
 
     def get_serializer_class(self):
         if self.request.method == 'POST':

@@ -16,6 +16,8 @@ from rest_framework.parsers import (
     MultiPartParser,
     JSONParser
 )
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -241,6 +243,7 @@ class TestContentParsing(TestCase):
 
 class MockView(APIView):
     authentication_classes = (SessionAuthentication,)
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         if request.POST.get('example') is not None:

@@ -6,6 +6,8 @@ from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.test.client import RequestFactory
+from rest_framework.decorators import api_view
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.throttling import UserRateThrottle
 from rest_framework.response import Response
@@ -23,6 +25,7 @@ class User3MinRateThrottle(UserRateThrottle):
 
 class MockView(APIView):
     throttle_classes = (User3SecRateThrottle,)
+    permission_classes = (AllowAny,)
 
     def get(self, request):
         return Response('foo')
@@ -30,6 +33,7 @@ class MockView(APIView):
 
 class MockView_MinuteThrottling(APIView):
     throttle_classes = (User3MinRateThrottle,)
+    permission_classes = (AllowAny,)
 
     def get(self, request):
         return Response('foo')

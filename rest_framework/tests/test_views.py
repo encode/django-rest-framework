@@ -2,7 +2,8 @@ from __future__ import unicode_literals
 from django.test import TestCase
 from django.test.client import RequestFactory
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
@@ -12,6 +13,7 @@ factory = RequestFactory()
 
 
 class BasicView(APIView):
+    permission_classes = (AllowAny,)
     def get(self, request, *args, **kwargs):
         return Response({'method': 'GET'})
 
@@ -20,6 +22,7 @@ class BasicView(APIView):
 
 
 @api_view(['GET', 'POST', 'PUT', 'PATCH'])
+@permission_classes((AllowAny,))
 def basic_view(request):
     if request.method == 'GET':
         return {'method': 'GET'}
