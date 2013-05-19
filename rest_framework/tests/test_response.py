@@ -196,7 +196,7 @@ class Issue807Testts(TestCase):
     Covers #807
     """
 
-    urls = 'rest_framework.tests.response'
+    urls = 'rest_framework.tests.test_response'
 
     def test_does_not_append_charset_by_default(self):
         """
