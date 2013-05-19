@@ -846,7 +846,7 @@ class HumanizedFieldType(TestCase):
 
         """
         self.assertIsInstance(humanized, unicode)
-        self.assertTrue(humanized)
+        self.assertNotEqual(humanized, '')
 
 
 class HumanizedField(TestCase):
