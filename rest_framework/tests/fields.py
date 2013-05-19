@@ -2,21 +2,23 @@
 General serializer field tests.
 """
 from __future__ import unicode_literals
-from django.utils.datastructures import SortedDict
-import datetime
-from rest_framework.fields import (humanize_field, humanize_field_type,
-                                   humanize_form_fields)
-from django import forms
+
+from collections import namedtuple
 from decimal import Decimal
+from uuid import uuid4
+
+import datetime
+from django import forms
+from django.core import validators
 from django.db import models
 from django.test import TestCase
-from django.core import validators
+from django.utils.datastructures import SortedDict
+
 from rest_framework import serializers
+from rest_framework.fields import (humanize_field, humanize_field_type, humanize_form_fields,
+                                   Field)
 from rest_framework.serializers import Serializer
 from rest_framework.tests.models import RESTFrameworkModel
-from rest_framework.fields import Field
-from collections import namedtuple
-from uuid import uuid4
 
 
 class TimestampedModel(models.Model):

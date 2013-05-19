@@ -2,13 +2,16 @@
 Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
+
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+
 from rest_framework import status, exceptions
 from rest_framework.compat import View
-from rest_framework.response import Response
+from rest_framework.fields import humanize_form_fields
 from rest_framework.request import clone_request, Request
+from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.utils.formatting import get_view_name, get_view_description
 
@@ -69,7 +72,6 @@ class APIView(View):
         Helper for generating the fields metadata for allowed and permitted methods.
         '''
         actions = {}
-
         for method in self.allowed_methods:
             # skip HEAD and OPTIONS
             if method in ('HEAD', 'OPTIONS'):
@@ -84,17 +86,11 @@ class APIView(View):
                     actions[method] = {}
                     continue
 
-                # TODO: find right placement - APIView does not have get_serializer
                 if not hasattr(self, 'get_serializer'):
                     continue
                 serializer = self.get_serializer()
                 if serializer is not None:
-                    field_name_types = {}
-                    for name, field in serializer.fields.iteritems():
-                        from rest_framework.fields import humanize_field
-                        field_name_types[name] = humanize_field(field)
-
-                actions[method] = field_name_types
+                    actions[method] = humanize_form_fields(serializer)
             except exceptions.PermissionDenied:
                 # don't add this method
                 pass
