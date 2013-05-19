@@ -12,6 +12,10 @@ factory = RequestFactory()
 
 
 class BasicView(APIView):
+    ## Uncomment this to see how attribute validation works
+    # valid_attributes = ('foo', )
+    # foo = 'foo'
+    # bar = 'bar'
     def get(self, request, *args, **kwargs):
         return Response({'method': 'GET'})
 
