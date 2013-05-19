@@ -8,6 +8,8 @@ from django.test.client import RequestFactory
 from django.utils import unittest
 from rest_framework import generics, serializers, status, filters
 from rest_framework.compat import django_filters, patterns, url
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.tests.models import BasicModel
 
 factory = RequestFactory()
@@ -69,11 +71,13 @@ if django_filters:
         serializer_class = FilterableItemSerializer
         filter_fields = ['decimal', 'date']
         filter_backends = (filters.DjangoFilterBackend,)
+        permission_classes = (AllowAny,)
 
     class GetQuerysetView(generics.ListCreateAPIView):
         serializer_class = FilterableItemSerializer
         filter_class = SeveralFieldsFilter
         filter_backends = (filters.DjangoFilterBackend,)
+        permission_classes = (AllowAny,)
 
         def get_queryset(self):
             return FilterableItem.objects.all()
@@ -243,7 +247,7 @@ class IntegrationTestDetailFiltering(CommonFilteringTestCase):
     """
     Integration tests for filtered detail views.
     """
-    urls = 'rest_framework.tests.filters'
+    urls = 'rest_framework.tests.test_filters'
 
     def _get_url(self, item):
         return reverse('detail-view', kwargs=dict(pk=item.pk))
@@ -312,6 +316,7 @@ class SearchFilterTests(TestCase):
         class SearchListView(generics.ListAPIView):
             model = SearchFilterModel
             filter_backends = (filters.SearchFilter,)
+            permission_classes = (AllowAny,)
             search_fields = ('title', 'text')
 
         view = SearchListView.as_view()
