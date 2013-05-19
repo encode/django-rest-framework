@@ -128,18 +128,18 @@ class TestRootView(TestCase):
         for method in ('GET', 'POST',):
             expected['actions'][method] = {
                 'text': {
-                    'description': '',
-                    'label': '',
-                    'readonly': False,
+                    #'description': '',
+                    'label': None,
+                    'read_only': False,
                     'required': True,
-                    'type': 'CharField',
+                    'type': 'Single Character',
                 },
                 'id': {
-                    'description': '',
-                    'label': '',
-                    'readonly': True,
-                    'required': True,
-                    'type': 'IntegerField',
+                    #'description': '',
+                    'label': None,
+                    'read_only': True,
+                    'required': False,
+                    'type': 'Integer',
                 },
             }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -264,18 +264,18 @@ class TestInstanceView(TestCase):
         for method in ('GET', 'PATCH', 'PUT', 'DELETE'):
             expected['actions'][method] = {
                 'text': {
-                    'description': '',
-                    'label': '',
-                    'readonly': False,
+                    #'description': '',
+                    'label': None,
+                    'read_only': False,
                     'required': True,
-                    'type': 'CharField',
+                    'type': 'Single Character',
                 },
                 'id': {
-                    'description': '',
-                    'label': '',
-                    'readonly': True,
-                    'required': True,
-                    'type': 'IntegerField',
+                    #'description': '',
+                    'label': None,
+                    'read_only': True,
+                    'required': False,
+                    'type': 'Integer',
                 },
             }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
