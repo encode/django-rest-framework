@@ -66,19 +66,19 @@ class TemplateHTMLRendererTests(TestCase):
     def test_simple_html_view(self):
         response = self.client.get('/')
         self.assertContains(response, "example: foobar")
-        self.assertEqual(response['Content-Type'], 'text/html')
+        self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
 
     def test_not_found_html_view(self):
         response = self.client.get('/not_found')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.content, six.b("404 Not Found"))
-        self.assertEqual(response['Content-Type'], 'text/html')
+        self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
 
     def test_permission_denied_html_view(self):
         response = self.client.get('/permission_denied')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.content, six.b("403 Forbidden"))
-        self.assertEqual(response['Content-Type'], 'text/html')
+        self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
 
 
 class TemplateHTMLRendererExceptionTests(TestCase):
@@ -109,10 +109,10 @@ class TemplateHTMLRendererExceptionTests(TestCase):
         response = self.client.get('/not_found')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.content, six.b("404: Not found"))
-        self.assertEqual(response['Content-Type'], 'text/html')
+        self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')
 
     def test_permission_denied_html_view_with_template(self):
         response = self.client.get('/permission_denied')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.content, six.b("403: Permission denied"))
-        self.assertEqual(response['Content-Type'], 'text/html')
+        self.assertEqual(response['Content-Type'], 'text/html; charset=utf-8')

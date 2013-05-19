@@ -27,7 +27,7 @@ from rest_framework.compat import (timezone, parse_date, parse_datetime,
                                    parse_time)
 from rest_framework.compat import BytesIO
 from rest_framework.compat import six
-from rest_framework.compat import smart_text
+from rest_framework.compat import smart_text, force_text, is_non_str_iterable
 from rest_framework.settings import api_settings
 
 
@@ -75,7 +75,6 @@ def is_simple_callable(obj):
     len_args = len(args) if function else len(args) - 1
     len_defaults = len(defaults) if defaults else 0
     return len_args <= len_defaults
-
 
 def get_component(obj, attr_name):
     """
@@ -256,7 +255,8 @@ class Field(object):
 
         if is_protected_type(value):
             return value
-        elif hasattr(value, '__iter__') and not isinstance(value, (dict, six.string_types)):
+        elif (is_non_str_iterable(value) and
+              not isinstance(value, (dict, six.string_types))):
             return [self.to_native(item) for item in value]
         elif isinstance(value, dict):
             # Make sure we preserve field ordering, if it exists
@@ -264,7 +264,7 @@ class Field(object):
             for key, val in value.items():
                 ret[key] = self.to_native(val)
             return ret
-        return smart_text(value)
+        return force_text(value)
 
     def attributes(self):
         """
