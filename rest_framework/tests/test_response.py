@@ -21,6 +21,9 @@ class MockJsonRenderer(BaseRenderer):
     media_type = 'application/json'
 
 
+class MockTextMediaRenderer(BaseRenderer):
+    media_type = 'text/html'
+
 DUMMYSTATUS = status.HTTP_200_OK
 DUMMYCONTENT = 'dummycontent'
 
@@ -44,11 +47,24 @@ class RendererB(BaseRenderer):
         return RENDERER_B_SERIALIZER(data)
 
 
+class RendererC(RendererB):
+    media_type = 'mock/rendererc'
+    format = 'formatc'
+    charset = "rendererc"
+
+
 class MockView(APIView):
-    renderer_classes = (RendererA, RendererB)
+    renderer_classes = (RendererA, RendererB, RendererC)
 
     def get(self, request, **kwargs):
         return Response(DUMMYCONTENT, status=DUMMYSTATUS)
+
+
+class MockViewSettingCharset(APIView):
+    renderer_classes = (RendererA, RendererB, RendererC)
+
+    def get(self, request, **kwargs):
+        return Response(DUMMYCONTENT, status=DUMMYSTATUS, charset='setbyview')
 
 
 class HTMLView(APIView):
@@ -64,10 +80,10 @@ class HTMLView1(APIView):
     def get(self, request, **kwargs):
         return Response('text')
 
-
 urlpatterns = patterns('',
-    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
-    url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
+    url(r'^setbyview$', MockViewSettingCharset.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
+    url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
+    url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
     url(r'^restframework', include('rest_framework.urls', namespace='rest_framework'))
@@ -173,3 +189,38 @@ class Issue122Tests(TestCase):
         Test if no infinite recursion occurs.
         """
         self.client.get('/html1')
+
+
+class Issue807Testts(TestCase):
+    """
+    Covers #807
+    """
+
+    urls = 'rest_framework.tests.response'
+
+    def test_does_not_append_charset_by_default(self):
+        """
+        Renderers don't include a charset unless set explicitly.
+        """
+        headers = {"HTTP_ACCEPT": RendererA.media_type}
+        resp = self.client.get('/', **headers)
+        self.assertEqual(RendererA.media_type, resp['Content-Type'])
+
+    def test_if_there_is_charset_specified_on_renderer_it_gets_appended(self):
+        """
+        If renderer class has charset attribute declared, it gets appended
+        to Response's Content-Type
+        """
+        headers = {"HTTP_ACCEPT": RendererC.media_type}
+        resp = self.client.get('/', **headers)
+        expected = "{0}; charset={1}".format(RendererC.media_type, RendererC.charset)
+        self.assertEqual(expected, resp['Content-Type'])
+
+    def test_charset_set_explictly_on_response(self):
+        """
+        The charset may be set explictly on the response.
+        """
+        headers = {"HTTP_ACCEPT": RendererC.media_type}
+        resp = self.client.get('/setbyview', **headers)
+        expected = "{0}; charset={1}".format(RendererC.media_type, 'setbyview')
+        self.assertEqual(expected, resp['Content-Type'])

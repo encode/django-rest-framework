@@ -36,6 +36,7 @@ class BaseRenderer(object):
 
     media_type = None
     format = None
+    charset = None
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         raise NotImplemented('Renderer class requires .render() to be implemented')
@@ -49,6 +50,7 @@ class JSONRenderer(BaseRenderer):
     media_type = 'application/json'
     format = 'json'
     encoder_class = encoders.JSONEncoder
+    ensure_ascii = True
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -72,7 +74,12 @@ class JSONRenderer(BaseRenderer):
             except (ValueError, TypeError):
                 indent = None
 
-        return json.dumps(data, cls=self.encoder_class, indent=indent)
+        return json.dumps(data, cls=self.encoder_class, indent=indent, ensure_ascii=self.ensure_ascii)
+
+
+class UnicodeJSONRenderer(JSONRenderer):
+    ensure_ascii = False
+    charset = 'utf-8'
 
 
 class JSONPRenderer(JSONRenderer):
@@ -115,6 +122,7 @@ class XMLRenderer(BaseRenderer):
 
     media_type = 'application/xml'
     format = 'xml'
+    charset = 'utf-8'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -164,6 +172,7 @@ class YAMLRenderer(BaseRenderer):
     media_type = 'application/yaml'
     format = 'yaml'
     encoder = encoders.SafeDumper
+    charset = 'utf-8'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -204,6 +213,7 @@ class TemplateHTMLRenderer(BaseRenderer):
         '%(status_code)s.html',
         'api_exception.html'
     ]
+    charset = 'utf-8'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -275,6 +285,7 @@ class StaticHTMLRenderer(TemplateHTMLRenderer):
     """
     media_type = 'text/html'
     format = 'html'
+    charset = 'utf-8'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         renderer_context = renderer_context or {}
@@ -296,6 +307,7 @@ class BrowsableAPIRenderer(BaseRenderer):
     media_type = 'text/html'
     format = 'api'
     template = 'rest_framework/api.html'
+    charset = 'utf-8'
 
     def get_default_renderer(self, view):
         """
@@ -321,7 +333,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         content = renderer.render(data, accepted_media_type, renderer_context)
 
         if not all(char in string.printable for char in content):
-            return '[%d bytes of binary content]'
+            return '[%d bytes of binary content]' % len(content)
 
         return content
 
@@ -337,6 +349,8 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         try:
             view.check_permissions(request)
+            if obj is not None:
+                view.check_object_permissions(request, obj)
         except exceptions.APIException:
             return False  # Doesn't have permissions
         return True

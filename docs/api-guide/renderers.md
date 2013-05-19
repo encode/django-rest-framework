@@ -67,13 +67,17 @@ If your API includes views that can serve both regular webpages and API response
 
 ## JSONRenderer
 
-Renders the request data into `JSON`.
+Renders the request data into `JSON` enforcing ASCII encoding
 
 The client may additionally include an `'indent'` media type parameter, in which case the returned `JSON` will be indented.  For example `Accept: application/json; indent=4`.
 
 **.media_type**: `application/json`
 
 **.format**: `'.json'`
+
+## UnicodeJSONRenderer
+
+Same as `JSONRenderer` but doesn't enforce ASCII encoding
 
 ## JSONPRenderer
 

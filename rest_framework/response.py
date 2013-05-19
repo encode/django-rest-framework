@@ -18,7 +18,7 @@ class Response(SimpleTemplateResponse):
 
     def __init__(self, data=None, status=200,
                  template_name=None, headers=None,
-                 exception=False):
+                 exception=False, charset=None):
         """
         Alters the init arguments slightly.
         For example, drop 'template_name', and instead use 'data'.
@@ -30,6 +30,7 @@ class Response(SimpleTemplateResponse):
         self.data = data
         self.template_name = template_name
         self.exception = exception
+        self.charset = charset
 
         if headers:
             for name, value in six.iteritems(headers):
@@ -46,7 +47,14 @@ class Response(SimpleTemplateResponse):
         assert context, ".renderer_context not set on Response"
         context['response'] = self
 
-        self['Content-Type'] = media_type
+        if self.charset is None:
+            self.charset = renderer.charset
+
+        if self.charset is not None:
+            content_type = "{0}; charset={1}".format(media_type, self.charset)
+        else:
+            content_type = media_type
+        self['Content-Type'] = content_type
         return renderer.render(self.data, media_type, context)
 
     @property
