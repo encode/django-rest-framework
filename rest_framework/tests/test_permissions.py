@@ -39,14 +39,19 @@ class ModelPermissionsIntegrationTests(TestCase):
     def setUp(self):
         User.objects.create_user('disallowed', 'disallowed@example.com', 'password')
         user = User.objects.create_user('permitted', 'permitted@example.com', 'password')
+        # Keep get() lines clean and short
+        perm_kwargs = {
+            'content_type__app_label': 'tests',
+            'content_type__name': 'basic model',
+        }
         user.user_permissions = [
-            Permission.objects.get(content_type__name='basic model', codename='add_basicmodel'),
-            Permission.objects.get(content_type__name='basic model', codename='change_basicmodel'),
-            Permission.objects.get(content_type__name='basic model', codename='delete_basicmodel')
+            Permission.objects.get(codename='add_basicmodel', **perm_kwargs),
+            Permission.objects.get(codename='change_basicmodel', **perm_kwargs),
+            Permission.objects.get(codename='delete_basicmodel', **perm_kwargs)
         ]
         user = User.objects.create_user('updateonly', 'updateonly@example.com', 'password')
         user.user_permissions = [
-            Permission.objects.get(content_type__name='basic model', codename='change_basicmodel'),
+            Permission.objects.get(codename='change_basicmodel', **perm_kwargs),
         ]
 
         self.permitted_credentials = basic_auth_header('permitted', 'password')
