@@ -133,7 +133,7 @@ class TestRootView(TestCase):
                 #'label': None,
                 'read_only': False,
                 'required': True,
-                'type': 'Single Character',
+                'type': 'String',
             },
             'id': {
                 # TODO add help_text and label when they are available
@@ -274,7 +274,7 @@ class TestInstanceView(TestCase):
                     #'label': None,
                     'read_only': False,
                     'required': True,
-                    'type': 'Single Character',
+                    'type': 'String',
                 },
                 'id': {
                     # TODO uncomment label and description when they are

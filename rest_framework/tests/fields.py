@@ -885,7 +885,7 @@ class HumanizedSerializer(TestCase):
         self.assertEqual(humanized, {
             'field1': {
                 u'help_text': u'', u'required': True,
-                u'type': u'Single Character', u'label': 'field one'},
+                u'type': u'String', u'label': 'field one'},
             'field2': {
                 u'help_text': u'', u'required': True,
-                u'type': u'Single Character', u'label': 'field two'}})
+                u'type': u'String', u'label': 'field two'}})

@@ -33,7 +33,7 @@ from rest_framework.settings import api_settings
 
 HUMANIZED_FIELD_TYPES = {
     'BooleanField': u'Boolean',
-    'CharField': u'Single Character',
+    'CharField': u'String',
     'ChoiceField': u'Single Choice',
     'ComboField': u'Single Choice',
     'DateField': u'Date',
