@@ -80,6 +80,8 @@ class APIView(View):
                 self.check_permissions(cloned_request)
 
                 # TODO: find right placement - APIView does not have get_serializer
+                if not hasattr(self, 'get_serializer'):
+                    continue
                 serializer = self.get_serializer()
                 if serializer is not None:
                     field_name_types = {}
