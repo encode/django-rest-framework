@@ -79,7 +79,14 @@ class APIView(View):
             try:
                 self.check_permissions(cloned_request)
 
+                # TODO: discuss whether and how to expose parameters like e.g. filter or paginate
+                if method in ('GET', 'DELETE'):
+                    actions[method] = {}
+                    continue
+
                 # TODO: find right placement - APIView does not have get_serializer
+                if not hasattr(self, 'get_serializer'):
+                    continue
                 serializer = self.get_serializer()
                 if serializer is not None:
                     field_name_types = {}
