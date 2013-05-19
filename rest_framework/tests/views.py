@@ -1,14 +1,16 @@
 from __future__ import unicode_literals
+
+import copy
+
 from django.test import TestCase
 from django.test.client import RequestFactory
+
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
-from rest_framework import exceptions
-from rest_framework import serializers
-import copy
+
 
 factory = RequestFactory()
 
