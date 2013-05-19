@@ -127,18 +127,12 @@ class TestRootView(TestCase):
         expected['actions']['GET'] = {}
         expected['actions']['POST'] = {
             'text': {
-                # TODO add help_text and label when they are available
-                #'help_text': '',
-                #'label': None,
                 'max_length': 100,
                 'read_only': False,
                 'required': True,
                 'type': 'String',
             },
             'id': {
-                # TODO add help_text and label when they are available
-                #'help_text': '',
-                #'label': None,
                 'read_only': True,
                 'required': False,
                 'type': 'Integer',
