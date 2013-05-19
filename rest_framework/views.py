@@ -10,6 +10,7 @@ from rest_framework.compat import View
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.settings import api_settings
+from rest_framework.class_validator import ValidatorMeta
 from rest_framework.utils.formatting import get_view_name, get_view_description
 
 
