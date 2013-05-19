@@ -131,6 +131,7 @@ class TestRootView(TestCase):
                 # TODO add help_text and label when they are available
                 #'help_text': '',
                 #'label': None,
+                'max_length': 100,
                 'read_only': False,
                 'required': True,
                 'type': 'String',
@@ -272,6 +273,7 @@ class TestInstanceView(TestCase):
                     # available
                     #'description': '',
                     #'label': None,
+                    'max_length': 100,
                     'read_only': False,
                     'required': True,
                     'type': 'String',

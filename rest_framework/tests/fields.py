@@ -15,8 +15,8 @@ from django.test import TestCase
 from django.utils.datastructures import SortedDict
 
 from rest_framework import serializers
-from rest_framework.fields import (humanize_field, humanize_field_type, humanize_form_fields,
-                                   Field)
+from rest_framework.fields import (humanize_field, humanize_field_type,
+                                   humanize_form_fields, Field)
 from rest_framework.serializers import Serializer
 from rest_framework.tests.models import RESTFrameworkModel
 
@@ -882,10 +882,14 @@ class HumanizedSerializer(TestCase):
 
     def test_humanized(self):
         humanized = humanize_form_fields(Form())
-        self.assertEqual(humanized, {
-            'field1': {
-                u'help_text': u'', u'required': True,
-                u'type': u'String', u'label': 'field one'},
-            'field2': {
-                u'help_text': u'', u'required': True,
-                u'type': u'String', u'label': 'field two'}})
+        expected = {
+            'field1': {u'help_text': u'',
+                       u'label': u'field one',
+                       u'max_length': 3,
+                       u'required': True,
+                       u'type': u'String'},
+            'field2': {u'help_text': u'',
+                       u'label': u'field two',
+                       u'required': True,
+                       u'type': u'String'}}
+        self.assertEqual(humanized, expected)

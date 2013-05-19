@@ -61,15 +61,16 @@ class APIView(View):
             'renders': [renderer.media_type for renderer in self.renderer_classes],
             'parses': [parser.media_type for parser in self.parser_classes],
         }
-        action_metadata = self._generate_action_metadata(request)
-        if action_metadata is not None:
-            content['actions'] = action_metadata
+        content['actions'] = self.action_metadata(request)
 
         return content
 
-    def _generate_action_metadata(self, request):
-        """
-        Helper for generating the fields metadata for allowed and permitted methods.
+    def action_metadata(self, request):
+        """Return a dictionary with the fields required fo reach allowed method. If no method is allowed,
+        return an empty dictionary.
+
+        :param request: Request for which to return the metadata of the allowed methods.
+        :return: A dictionary of the form {method: {field: {field attribute: value}}}
         """
         actions = {}
         for method in self.allowed_methods:
