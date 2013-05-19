@@ -128,15 +128,17 @@ class TestRootView(TestCase):
         for method in ('GET', 'POST',):
             expected['actions'][method] = {
                 'text': {
-                    #'description': '',
-                    'label': None,
+                    # TODO add help_text and label when they are available
+                    #'help_text': '',
+                    #'label': None,
                     'read_only': False,
                     'required': True,
                     'type': 'Single Character',
                 },
                 'id': {
-                    #'description': '',
-                    'label': None,
+                    # TODO add help_text and label when they are available
+                    #'help_text': '',
+                    #'label': None,
                     'read_only': True,
                     'required': False,
                     'type': 'Integer',
@@ -264,15 +266,19 @@ class TestInstanceView(TestCase):
         for method in ('GET', 'PATCH', 'PUT', 'DELETE'):
             expected['actions'][method] = {
                 'text': {
+                    # TODO uncomment label and description when they are
+                    # available
                     #'description': '',
-                    'label': None,
+                    #'label': None,
                     'read_only': False,
                     'required': True,
                     'type': 'Single Character',
                 },
                 'id': {
+                    # TODO uncomment label and description when they are
+                    # available
                     #'description': '',
-                    'label': None,
+                    #'label': None,
                     'read_only': True,
                     'required': False,
                     'type': 'Integer',
