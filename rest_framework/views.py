@@ -68,9 +68,9 @@ class APIView(View):
         return content
 
     def _generate_action_metadata(self, request):
-        '''
+        """
         Helper for generating the fields metadata for allowed and permitted methods.
-        '''
+        """
         actions = {}
         for method in self.allowed_methods:
             # skip HEAD and OPTIONS
