@@ -14,6 +14,14 @@ from rest_framework.utils.formatting import get_view_name, get_view_description
 
 
 class APIView(View):
+    __metaclass__ = ValidatorMeta
+    valid_attributes = set(('settings', 'renderer_classes', 'parser_classes',
+        'authentication_classes', 'throttle_classes',
+        'permission_classes', 'content_negotiation_class',
+        'allowed_methods', 'default_response_headers',
+        'as_view',
+    ))
+
     settings = api_settings
 
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
