@@ -125,25 +125,25 @@ class TestRootView(TestCase):
             'actions': {}
         }
         # TODO: this is just a draft for fields' metadata - needs review and decision
-        for method in ('GET', 'POST',):
-            expected['actions'][method] = {
-                'text': {
-                    # TODO add help_text and label when they are available
-                    #'help_text': '',
-                    #'label': None,
-                    'read_only': False,
-                    'required': True,
-                    'type': 'Single Character',
-                },
-                'id': {
-                    # TODO add help_text and label when they are available
-                    #'help_text': '',
-                    #'label': None,
-                    'read_only': True,
-                    'required': False,
-                    'type': 'Integer',
-                },
-            }
+        expected['actions']['GET'] = {}
+        expected['actions']['POST'] = {
+            'text': {
+                # TODO add help_text and label when they are available
+                #'help_text': '',
+                #'label': None,
+                'read_only': False,
+                'required': True,
+                'type': 'Single Character',
+            },
+            'id': {
+                # TODO add help_text and label when they are available
+                #'help_text': '',
+                #'label': None,
+                'read_only': True,
+                'required': False,
+                'type': 'Integer',
+            },
+        }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected)
 
@@ -263,7 +263,9 @@ class TestInstanceView(TestCase):
             'actions': {}
         }
         # TODO: this is just a draft idea for fields' metadata - needs review and decision
-        for method in ('GET', 'PATCH', 'PUT', 'DELETE'):
+        for method in ('GET', 'DELETE'):
+            expected['actions'][method] = {}
+        for method in ('PATCH', 'PUT'):
             expected['actions'][method] = {
                 'text': {
                     # TODO uncomment label and description when they are
