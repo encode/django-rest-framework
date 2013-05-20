@@ -20,7 +20,7 @@ Unless you want to heavily customize REST framework for some reason, you should 
 
 ## Response()
 
-**Signature:** `Response(data, status=None, template_name=None, headers=None)`
+**Signature:** `Response(data, status=None, template_name=None, headers=None, content_type=None)`
 
 Unlike regular `HttpResponse` objects, you do not instantiate `Response` objects with rendered content.  Instead you pass in unrendered data, which may consist of any python primatives.
 
@@ -34,6 +34,7 @@ Arguments:
 * `status`: A status code for the response.  Defaults to 200.  See also [status codes][statuscodes].
 * `template_name`: A template name to use if `HTMLRenderer` is selected.
 * `headers`: A dictionary of HTTP headers to use in the response.
+* `content_type`: The content type of the response.  Typically, this will be set automatically by the renderer as determined by content negotiation, but there may be some cases where you need to specify the content type explicitly.
 
 ---
 

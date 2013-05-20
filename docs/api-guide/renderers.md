@@ -300,6 +300,15 @@ For example:
         data = serializer.data
         return Response(data)
 
+## Underspecifying the media type
+
+In some cases you might want a renderer to serve a range of media types.
+In this case you can underspecify the media types it should respond to, by using a `media_type` value such as `image/*`, or `*/*`.
+
+If you underspecify the renderer's media type, you should make sure to specify the media type explictly when you return the response, using the `content_type` attribute.  For example:
+
+    return Response(data, content_type='image/png')
+
 ## Designing your media types
 
 For the purposes of many Web APIs, simple `JSON` responses with hyperlinked relations may be sufficient.  If you want to fully embrace RESTful design and [HATEOAS] you'll need to consider the design and usage of your media types in more detail.

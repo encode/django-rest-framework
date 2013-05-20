@@ -60,11 +60,11 @@ class MockView(APIView):
         return Response(DUMMYCONTENT, status=DUMMYSTATUS)
 
 
-class MockViewSettingCharset(APIView):
+class MockViewSettingContentType(APIView):
     renderer_classes = (RendererA, RendererB, RendererC)
 
     def get(self, request, **kwargs):
-        return Response(DUMMYCONTENT, status=DUMMYSTATUS, charset='setbyview')
+        return Response(DUMMYCONTENT, status=DUMMYSTATUS, content_type='setbyview')
 
 
 class HTMLView(APIView):
@@ -81,7 +81,7 @@ class HTMLView1(APIView):
         return Response('text')
 
 urlpatterns = patterns('',
-    url(r'^setbyview$', MockViewSettingCharset.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
+    url(r'^setbyview$', MockViewSettingContentType.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
     url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
     url(r'^html$', HTMLView.as_view()),
@@ -217,11 +217,10 @@ class Issue807Testts(TestCase):
         expected = "{0}; charset={1}".format(RendererC.media_type, RendererC.charset)
         self.assertEqual(expected, resp['Content-Type'])
 
-    def test_charset_set_explictly_on_response(self):
+    def test_content_type_set_explictly_on_response(self):
         """
-        The charset may be set explictly on the response.
+        The content type may be set explictly on the response.
         """
         headers = {"HTTP_ACCEPT": RendererC.media_type}
         resp = self.client.get('/setbyview', **headers)
-        expected = "{0}; charset={1}".format(RendererC.media_type, 'setbyview')
-        self.assertEqual(expected, resp['Content-Type'])
+        self.assertEqual('setbyview', resp['Content-Type'])

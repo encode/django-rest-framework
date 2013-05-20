@@ -18,7 +18,7 @@ class Response(SimpleTemplateResponse):
 
     def __init__(self, data=None, status=200,
                  template_name=None, headers=None,
-                 exception=False, charset=None):
+                 exception=False, content_type=None):
         """
         Alters the init arguments slightly.
         For example, drop 'template_name', and instead use 'data'.
@@ -30,7 +30,7 @@ class Response(SimpleTemplateResponse):
         self.data = data
         self.template_name = template_name
         self.exception = exception
-        self.charset = charset
+        self.content_type = content_type
 
         if headers:
             for name, value in six.iteritems(headers):
@@ -47,18 +47,20 @@ class Response(SimpleTemplateResponse):
         assert context, ".renderer_context not set on Response"
         context['response'] = self
 
-        if self.charset is None:
-            self.charset = renderer.charset
+        charset = renderer.charset
+        content_type = self.content_type
 
-        if self.charset is not None:
-            content_type = "{0}; charset={1}".format(media_type, self.charset)
-        else:
+        if content_type is None and charset is not None:
+            content_type = "{0}; charset={1}".format(media_type, charset)
+        elif content_type is None:
             content_type = media_type
         self['Content-Type'] = content_type
 
         ret = renderer.render(self.data, media_type, context)
         if isinstance(ret, six.text_type):
-            return bytes(ret.encode(self.charset))
+            assert charset, 'renderer returned unicode, and did not specify ' \
+            'a charset value.'
+            return bytes(ret.encode(charset))
         return ret
 
     @property
