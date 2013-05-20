@@ -769,6 +769,21 @@ class SlugFieldTests(TestCase):
         self.assertEqual(serializer.is_valid(), True)
         self.assertEqual(getattr(serializer.fields['slug_field'], 'max_length'), 20)
 
+    def test_invalid_slug(self):
+        """
+        Make sure an invalid slug raises ValidationError
+        """
+        class SlugFieldSerializer(serializers.ModelSerializer):
+            slug_field = serializers.SlugField(source='slug_field', max_length=20, required=True)
+        
+            class Meta:
+                model = self.SlugFieldModel
+                
+        s = SlugFieldSerializer(data={'slug_field': 'a b'})
+        
+        self.assertEqual(s.is_valid(), False)
+        self.assertEqual(s.errors,  {'slug_field': ["Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."]})
+
 
 class URLFieldTests(TestCase):
     """
