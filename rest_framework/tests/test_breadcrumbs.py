@@ -36,7 +36,7 @@ urlpatterns = patterns('',
 class BreadcrumbTests(TestCase):
     """Tests the breadcrumb functionality used by the HTML renderer."""
 
-    urls = 'rest_framework.tests.breadcrumbs'
+    urls = 'rest_framework.tests.test_breadcrumbs'
 
     def test_root_breadcrumbs(self):
         url = '/'

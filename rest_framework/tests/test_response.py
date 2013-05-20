@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 from django.test import TestCase
 from rest_framework.compat import patterns, url, include
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -55,6 +57,7 @@ class RendererC(RendererB):
 
 class MockView(APIView):
     renderer_classes = (RendererA, RendererB, RendererC)
+    permission_classes = (AllowAny,)
 
     def get(self, request, **kwargs):
         return Response(DUMMYCONTENT, status=DUMMYSTATUS)
@@ -62,6 +65,7 @@ class MockView(APIView):
 
 class MockViewSettingCharset(APIView):
     renderer_classes = (RendererA, RendererB, RendererC)
+    permission_classes = (AllowAny,)
 
     def get(self, request, **kwargs):
         return Response(DUMMYCONTENT, status=DUMMYSTATUS, charset='setbyview')
@@ -69,6 +73,7 @@ class MockViewSettingCharset(APIView):
 
 class HTMLView(APIView):
     renderer_classes = (BrowsableAPIRenderer, )
+    permission_classes = (AllowAny,)
 
     def get(self, request, **kwargs):
         return Response('text')
@@ -76,6 +81,7 @@ class HTMLView(APIView):
 
 class HTMLView1(APIView):
     renderer_classes = (BrowsableAPIRenderer, JSONRenderer)
+    permission_classes = (AllowAny,)
 
     def get(self, request, **kwargs):
         return Response('text')
@@ -96,7 +102,7 @@ class RendererIntegrationTests(TestCase):
     End-to-end testing of renderers using an ResponseMixin on a generic view.
     """
 
-    urls = 'rest_framework.tests.response'
+    urls = 'rest_framework.tests.test_response'
 
     def test_default_renderer_serializes_content(self):
         """If the Accept header is not set the default renderer should serialize the response."""
@@ -176,7 +182,7 @@ class Issue122Tests(TestCase):
     """
     Tests that covers #122.
     """
-    urls = 'rest_framework.tests.response'
+    urls = 'rest_framework.tests.test_response'
 
     def test_only_html_renderer(self):
         """
@@ -196,7 +202,7 @@ class Issue807Testts(TestCase):
     Covers #807
     """
 
-    urls = 'rest_framework.tests.response'
+    urls = 'rest_framework.tests.test_response'
 
     def test_does_not_append_charset_by_default(self):
         """

@@ -6,6 +6,7 @@ from django.test.client import RequestFactory
 from django.utils import unittest
 from rest_framework import status, permissions
 from rest_framework.compat import yaml, etree, patterns, url, include
+from rest_framework.decorators import permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
@@ -14,6 +15,7 @@ from rest_framework.parsers import YAMLParser, XMLParser
 from rest_framework.settings import api_settings
 from rest_framework.compat import StringIO
 from rest_framework.compat import six
+from rest_framework.permissions import AllowAny
 import datetime
 import pickle
 import re
@@ -56,6 +58,7 @@ class RendererB(BaseRenderer):
 
 class MockView(APIView):
     renderer_classes = (RendererA, RendererB)
+    permission_classes = (AllowAny,)
 
     def get(self, request, **kwargs):
         response = Response(DUMMYCONTENT, status=DUMMYSTATUS)
@@ -64,12 +67,14 @@ class MockView(APIView):
 
 class MockGETView(APIView):
 
+    permission_classes = (AllowAny,)
     def get(self, request, **kwargs):
         return Response({'foo': ['bar', 'baz']})
 
 
 class HTMLView(APIView):
     renderer_classes = (BrowsableAPIRenderer, )
+    permission_classes = (AllowAny,)
 
     def get(self, request, **kwargs):
         return Response('text')
@@ -77,6 +82,7 @@ class HTMLView(APIView):
 
 class HTMLView1(APIView):
     renderer_classes = (BrowsableAPIRenderer, JSONRenderer)
+    permission_classes = (AllowAny,)
 
     def get(self, request, **kwargs):
         return Response('text')
@@ -130,7 +136,7 @@ class RendererEndToEndTests(TestCase):
     End-to-end testing of renderers using an RendererMixin on a generic view.
     """
 
-    urls = 'rest_framework.tests.renderers'
+    urls = 'rest_framework.tests.test_renderers'
 
     def test_default_renderer_serializes_content(self):
         """If the Accept header is not set the default renderer should serialize the response."""
@@ -278,7 +284,7 @@ class JSONPRendererTests(TestCase):
     Tests specific to the JSONP Renderer
     """
 
-    urls = 'rest_framework.tests.renderers'
+    urls = 'rest_framework.tests.test_renderers'
 
     def test_without_callback_with_json_renderer(self):
         """
@@ -451,7 +457,7 @@ class CacheRenderTest(TestCase):
     Tests specific to caching responses
     """
 
-    urls = 'rest_framework.tests.renderers'
+    urls = 'rest_framework.tests.test_renderers'
 
     cache_key = 'just_a_cache_key'
 

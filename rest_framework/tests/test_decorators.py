@@ -6,7 +6,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework.authentication import BasicAuthentication
 from rest_framework.throttling import UserRateThrottle
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.decorators import (
     api_view,
@@ -35,6 +35,7 @@ class DecoratorTestCase(TestCase):
         """
 
         @api_view
+        @permission_classes((AllowAny,))
         def view(request):
             return Response()
 
@@ -48,12 +49,14 @@ class DecoratorTestCase(TestCase):
 
         with self.assertRaises(AssertionError):
             @api_view('GET')
+            @permission_classes((AllowAny,))
             def view(request):
                 return Response()
 
     def test_calling_method(self):
 
         @api_view(['GET'])
+        @permission_classes((AllowAny,))
         def view(request):
             return Response({})
 
@@ -68,6 +71,7 @@ class DecoratorTestCase(TestCase):
     def test_calling_put_method(self):
 
         @api_view(['GET', 'PUT'])
+        @permission_classes((AllowAny,))
         def view(request):
             return Response({})
 
@@ -82,6 +86,7 @@ class DecoratorTestCase(TestCase):
     def test_calling_patch_method(self):
 
         @api_view(['GET', 'PATCH'])
+        @permission_classes((AllowAny,))
         def view(request):
             return Response({})
 
@@ -96,6 +101,7 @@ class DecoratorTestCase(TestCase):
     def test_renderer_classes(self):
 
         @api_view(['GET'])
+        @permission_classes((AllowAny,))
         @renderer_classes([JSONRenderer])
         def view(request):
             return Response({})
@@ -107,6 +113,7 @@ class DecoratorTestCase(TestCase):
     def test_parser_classes(self):
 
         @api_view(['GET'])
+        @permission_classes((AllowAny,))
         @parser_classes([JSONParser])
         def view(request):
             self.assertEqual(len(request.parsers), 1)
@@ -120,6 +127,7 @@ class DecoratorTestCase(TestCase):
     def test_authentication_classes(self):
 
         @api_view(['GET'])
+        @permission_classes((AllowAny,))
         @authentication_classes([BasicAuthentication])
         def view(request):
             self.assertEqual(len(request.authenticators), 1)
@@ -146,6 +154,7 @@ class DecoratorTestCase(TestCase):
             rate = '1/day'
 
         @api_view(['GET'])
+        @permission_classes((AllowAny,))
         @throttle_classes([OncePerDayUserThrottle])
         def view(request):
             return Response({})

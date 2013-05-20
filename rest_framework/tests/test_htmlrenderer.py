@@ -6,14 +6,16 @@ from django.template import TemplateDoesNotExist, Template
 import django.template.loader
 from rest_framework import status
 from rest_framework.compat import patterns, url
-from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.decorators import api_view, renderer_classes, permission_classes
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.compat import six
+from rest_framework.permissions import AllowAny
 
 
 @api_view(('GET',))
 @renderer_classes((TemplateHTMLRenderer,))
+@permission_classes((AllowAny,))
 def example(request):
     """
     A view that can returns an HTML representation.
@@ -24,12 +26,14 @@ def example(request):
 
 @api_view(('GET',))
 @renderer_classes((TemplateHTMLRenderer,))
+@permission_classes((AllowAny,))
 def permission_denied(request):
     raise PermissionDenied()
 
 
 @api_view(('GET',))
 @renderer_classes((TemplateHTMLRenderer,))
+@permission_classes((AllowAny,))
 def not_found(request):
     raise Http404()
 
@@ -42,7 +46,7 @@ urlpatterns = patterns('',
 
 
 class TemplateHTMLRendererTests(TestCase):
-    urls = 'rest_framework.tests.htmlrenderer'
+    urls = 'rest_framework.tests.test_htmlrenderer'
 
     def setUp(self):
         """
@@ -82,7 +86,7 @@ class TemplateHTMLRendererTests(TestCase):
 
 
 class TemplateHTMLRendererExceptionTests(TestCase):
-    urls = 'rest_framework.tests.htmlrenderer'
+    urls = 'rest_framework.tests.test_htmlrenderer'
 
     def setUp(self):
         """
