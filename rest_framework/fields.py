@@ -389,11 +389,25 @@ class URLField(CharField):
 
 class SlugField(CharField):
     type_name = 'SlugField'
-
+    form_field_class = forms.SlugField
+    
+    default_error_messages = {
+        'invalid': _("Enter a valid 'slug' consisting of letters, numbers,"
+                     " underscores or hyphens."),
+    }
+    default_validators = [validators.validate_slug]
+    
     def __init__(self, *args, **kwargs):
         super(SlugField, self).__init__(*args, **kwargs)
 
-
+    def __deepcopy__(self, memo):
+        result = copy.copy(self)
+        memo[id(self)] = result
+        #result.widget = copy.deepcopy(self.widget, memo)
+        result.validators = self.validators[:]
+        return result
+    
+  
 class ChoiceField(WritableField):
     type_name = 'ChoiceField'
     form_field_class = forms.ChoiceField
