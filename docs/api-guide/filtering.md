@@ -87,7 +87,7 @@ The default filter backends may be set globally, using the `DEFAULT_FILTER_BACKE
         'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
     }
 
-You can also set the authentication policy on a per-view, or per-viewset basis,
+You can also set the filter backends on a per-view, or per-viewset basis,
 using the `GenericAPIView` class based views.
 
     class UserListView(generics.ListAPIView):
@@ -216,7 +216,7 @@ For more details, see the [Django documentation][search-django-admin].
 
 ## OrderingFilter
 
-The `OrderingFilter` class supports simple query parameter controlled ordering of results.  To specify the result order, set a query parameter named `'order'` to the required field name.  For example:
+The `OrderingFilter` class supports simple query parameter controlled ordering of results.  To specify the result order, set a query parameter named `'ordering'` to the required field name.  For example:
 
     http://example.com/api/users?ordering=username
 
