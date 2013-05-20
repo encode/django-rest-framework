@@ -132,6 +132,7 @@ The following people have helped make REST framework great.
 * Andy McKay - [andymckay]
 * Matteo Suppo - [matteosuppo]
 * Karol Majta - [lolek09]
+* David Jones - [commonorgarden]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -300,3 +301,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [andymckay]: https://github.com/andymckay
 [matteosuppo]: https://github.com/matteosuppo
 [lolek09]: https://github.com/lolek09
+[commonorgarden]: https://github.com/commonorgarden
