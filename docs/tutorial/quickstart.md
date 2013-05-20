@@ -2,7 +2,43 @@
 
 We're going to create a simple API to allow admin users to view and edit the users and groups in the system.
 
-Create a new Django project, and start a new app called `quickstart`.  Once you've set up a database and got everything synced and ready to go open up the app's directory and we'll get coding...
+## Project setup
+
+Create a new Django project named `tutorial`, then start a new app called `quickstart`.
+
+    # Set up a new project
+    django-admin.py startproject tutorial
+    cd tutorial
+
+    # Create a virtualenv to isolate our package dependancies locally
+    virtualenv env
+    source env/bin/activate
+
+    # Install Django and Django REST framework into the virtualenv
+    pip install django
+    pip install djangorestframework
+
+    # Create a new app
+    python manage.py startapp quickstart
+
+Next you'll need to get a database set up and synced.  If you just want to use SQLite for now, then you'll want to edit your `tutorial/settings.py` module to include something like this:
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'database.sql',
+            'USER': '',
+            'PASSWORD': '',
+            'HOST': '',
+            'PORT': ''
+        }
+    }
+
+The run `syncdb` like so:
+
+    python manange.py syncdb
+
+Once you've set up a database and got everything synced and ready to go, open up the app's directory and we'll get coding...
 
 ## Serializers
 
@@ -80,7 +116,7 @@ Finally, we're including default login and logout views for use with the browsab
 
 ## Settings
 
-We'd also like to set a few global settings.  We'd like to turn on pagination, and we want our API to only be accessible to admin users.
+We'd also like to set a few global settings.  We'd like to turn on pagination, and we want our API to only be accessible to admin users.  The settings module will be in `tutorial/settings.py`
 
     INSTALLED_APPS = (
         ...
@@ -97,6 +133,10 @@ Okay, we're done.
 ---
 
 ## Testing our API
+
+We're now ready to test the API we've built.  Let's fire up the server from the command line.
+
+    python ./manage.py runserver
 
 We can now access our API, both from the command-line, using tools like `curl`...
 
