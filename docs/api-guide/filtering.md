@@ -87,7 +87,7 @@ The default filter backends may be set globally, using the `DEFAULT_FILTER_BACKE
         'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',)
     }
 
-You can also set the authentication policy on a per-view, or per-viewset basis,
+You can also set the filter backends on a per-view, or per-viewset basis,
 using the `GenericAPIView` class based views.
 
     class UserListView(generics.ListAPIView):
