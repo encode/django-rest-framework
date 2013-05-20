@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from decimal import Decimal
 from django.core.cache import cache
 from django.test import TestCase
@@ -135,7 +137,7 @@ class RendererEndToEndTests(TestCase):
     def test_default_renderer_serializes_content(self):
         """If the Accept header is not set the default renderer should serialize the response."""
         resp = self.client.get('/')
-        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -143,13 +145,13 @@ class RendererEndToEndTests(TestCase):
         """No response must be included in HEAD requests."""
         resp = self.client.head('/')
         self.assertEqual(resp.status_code, DUMMYSTATUS)
-        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, six.b(''))
 
     def test_default_renderer_serializes_content_on_accept_any(self):
         """If the Accept header is set to */* the default renderer should serialize the response."""
         resp = self.client.get('/', HTTP_ACCEPT='*/*')
-        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -157,7 +159,7 @@ class RendererEndToEndTests(TestCase):
         """If the Accept header is set the specified renderer should serialize the response.
         (In this case we check that works for the default renderer)"""
         resp = self.client.get('/', HTTP_ACCEPT=RendererA.media_type)
-        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -165,7 +167,7 @@ class RendererEndToEndTests(TestCase):
         """If the Accept header is set the specified renderer should serialize the response.
         (In this case we check that works for a non-default renderer)"""
         resp = self.client.get('/', HTTP_ACCEPT=RendererB.media_type)
-        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -176,7 +178,7 @@ class RendererEndToEndTests(TestCase):
             RendererB.media_type
         )
         resp = self.client.get('/' + param)
-        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -193,7 +195,7 @@ class RendererEndToEndTests(TestCase):
             RendererB.format
         )
         resp = self.client.get('/' + param)
-        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -201,7 +203,7 @@ class RendererEndToEndTests(TestCase):
         """If a 'format' keyword arg is specified, the renderer with the matching
         format attribute should serialize the response."""
         resp = self.client.get('/something.formatb')
-        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -214,7 +216,7 @@ class RendererEndToEndTests(TestCase):
         )
         resp = self.client.get('/' + param,
                                HTTP_ACCEPT=RendererB.media_type)
-        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -270,7 +272,7 @@ class UnicodeJSONRendererTests(TestCase):
         obj = {'countries': ['United Kingdom', 'France', 'España']}
         renderer = UnicodeJSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"countries": ["United Kingdom", "France", "España"]}')
+        self.assertEqual(content, '{"countries": ["United Kingdom", "France", "España"]}'.encode('utf-8'))
 
 
 class JSONPRendererTests(TestCase):
@@ -287,7 +289,7 @@ class JSONPRendererTests(TestCase):
         resp = self.client.get('/jsonp/jsonrenderer',
                                HTTP_ACCEPT='application/javascript')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp['Content-Type'], 'application/javascript')
+        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=iso-8859-1')
         self.assertEqual(resp.content,
             ('callback(%s);' % _flat_repr).encode('ascii'))
 
@@ -298,7 +300,7 @@ class JSONPRendererTests(TestCase):
         resp = self.client.get('/jsonp/nojsonrenderer',
                                HTTP_ACCEPT='application/javascript')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp['Content-Type'], 'application/javascript')
+        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=iso-8859-1')
         self.assertEqual(resp.content,
             ('callback(%s);' % _flat_repr).encode('ascii'))
 
@@ -310,7 +312,7 @@ class JSONPRendererTests(TestCase):
         resp = self.client.get('/jsonp/nojsonrenderer?callback=' + callback_func,
                                HTTP_ACCEPT='application/javascript')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp['Content-Type'], 'application/javascript')
+        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=iso-8859-1')
         self.assertEqual(resp.content,
             ('%s(%s);' % (callback_func, _flat_repr)).encode('ascii'))
 

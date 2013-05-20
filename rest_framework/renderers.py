@@ -9,7 +9,6 @@ REST framework also provides an HTML renderer the renders the browsable API.
 from __future__ import unicode_literals
 
 import copy
-import string
 import json
 from django import forms
 from django.http.multipartparser import parse_header
@@ -36,7 +35,7 @@ class BaseRenderer(object):
 
     media_type = None
     format = None
-    charset = None
+    charset = 'utf-8'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         raise NotImplemented('Renderer class requires .render() to be implemented')
@@ -51,6 +50,7 @@ class JSONRenderer(BaseRenderer):
     format = 'json'
     encoder_class = encoders.JSONEncoder
     ensure_ascii = True
+    charset = 'iso-8859-1'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -74,7 +74,12 @@ class JSONRenderer(BaseRenderer):
             except (ValueError, TypeError):
                 indent = None
 
-        return json.dumps(data, cls=self.encoder_class, indent=indent, ensure_ascii=self.ensure_ascii)
+        ret = json.dumps(data, cls=self.encoder_class,
+            indent=indent, ensure_ascii=self.ensure_ascii)
+
+        if not self.ensure_ascii:
+            return bytes(ret.encode(self.charset))
+        return ret
 
 
 class UnicodeJSONRenderer(JSONRenderer):
@@ -332,7 +337,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         renderer_context['indent'] = 4
         content = renderer.render(data, accepted_media_type, renderer_context)
 
-        if not all(char in string.printable for char in content):
+        if renderer.charset is None:
             return '[%d bytes of binary content]' % len(content)
 
         return content

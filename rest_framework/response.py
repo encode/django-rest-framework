@@ -55,7 +55,11 @@ class Response(SimpleTemplateResponse):
         else:
             content_type = media_type
         self['Content-Type'] = content_type
-        return renderer.render(self.data, media_type, context)
+
+        ret = renderer.render(self.data, media_type, context)
+        if isinstance(ret, six.text_type):
+            return bytes(ret.encode(self.charset))
+        return ret
 
     @property
     def status_text(self):

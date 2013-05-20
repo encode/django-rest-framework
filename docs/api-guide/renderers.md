@@ -67,7 +67,7 @@ If your API includes views that can serve both regular webpages and API response
 
 ## JSONRenderer
 
-Renders the request data into `JSON` enforcing ASCII encoding
+Renders the request data into `JSON`, using ASCII encoding.
 
 The client may additionally include an `'indent'` media type parameter, in which case the returned `JSON` will be indented.  For example `Accept: application/json; indent=4`.
 
@@ -75,9 +75,19 @@ The client may additionally include an `'indent'` media type parameter, in which
 
 **.format**: `'.json'`
 
+**.charset**: `iso-8859-1`
+
 ## UnicodeJSONRenderer
 
-Same as `JSONRenderer` but doesn't enforce ASCII encoding
+Renders the request data into `JSON`, using utf-8 encoding.
+
+The client may additionally include an `'indent'` media type parameter, in which case the returned `JSON` will be indented.  For example `Accept: application/json; indent=4`.
+
+**.media_type**: `application/json`
+
+**.format**: `'.json'`
+
+**.charset**: `utf-8`
 
 ## JSONPRenderer
 
@@ -91,6 +101,8 @@ The javascript callback function must be set by the client including a `callback
 
 **.format**: `'.jsonp'`
 
+**.charset**: `iso-8859-1`
+
 ## YAMLRenderer
 
 Renders the request data into `YAML`. 
@@ -100,6 +112,8 @@ Requires the `pyyaml` package to be installed.
 **.media_type**: `application/yaml`
 
 **.format**: `'.yaml'`
+
+**.charset**: `utf-8`
 
 ## XMLRenderer
 
@@ -112,6 +126,8 @@ If you are considering using `XML` for your API, you may want to consider implem
 **.media_type**: `application/xml`
 
 **.format**: `'.xml'`
+
+**.charset**: `utf-8`
 
 ## TemplateHTMLRenderer
 
@@ -147,6 +163,8 @@ If you're building websites that use `TemplateHTMLRenderer` along with other ren
 
 **.format**: `'.html'`
 
+**.charset**: `utf-8`
+
 See also: `StaticHTMLRenderer`
 
 ## StaticHTMLRenderer
@@ -167,6 +185,8 @@ You can use `TemplateHTMLRenderer` either to return regular HTML pages using RES
 
 **.format**: `'.html'`
 
+**.charset**: `utf-8`
+
 See also: `TemplateHTMLRenderer`
 
 ## BrowsableAPIRenderer
@@ -177,11 +197,15 @@ Renders data into HTML for the Browsable API.  This renderer will determine whic
 
 **.format**: `'.api'`
 
+**.charset**: `utf-8`
+
 ---
 
 # Custom renderers
 
 To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, media_type=None, renderer_context=None)` method.
+
+The method should return a bytestring, which wil be used as the body of the HTTP response.
 
 The arguments passed to the `.render()` method are:
 
@@ -209,14 +233,34 @@ The following is an example plaintext renderer that will return a response with 
     from rest_framework import renderers
 
 
-    class PlainText(renderers.BaseRenderer):
+    class PlainTextRenderer(renderers.BaseRenderer):
         media_type = 'text/plain'
         format = 'txt'
         
         def render(self, data, media_type=None, renderer_context=None):
-            if isinstance(data, basestring):
-                return data
-            return smart_unicode(data)
+            return data.encode(self.charset)
+
+## Setting the character set
+
+By default renderer classes are assumed to be using the `UTF-8` encoding.  To use a different encoding, set the `charset` attribute on the renderer.
+
+    class PlainTextRenderer(renderers.BaseRenderer):
+        media_type = 'text/plain'
+        format = 'txt'
+        charset = 'iso-8859-1'
+
+        def render(self, data, media_type=None, renderer_context=None):
+            return data.encode(self.charset)
+
+If the renderer returns a raw bytestring, you should set a charset value of `None`, which will ensure the `Content-Type` header of the response will not have a `charset` value set.  Doing so will also ensure that the browsable API will not attempt to display the binary content as a string.
+
+    class JPEGRenderer(renderers.BaseRenderer):
+        media_type = 'image/jpeg'
+        format = 'jpg'
+        charset = None
+
+        def render(self, data, media_type=None, renderer_context=None):
+            return data
 
 ---
 
@@ -286,11 +330,11 @@ Templates will render with a `RequestContext` which includes the `status_code` a
 
 The following third party packages are also available.
 
-## MessagePack
+### MessagePack
 
 [MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
 
-## CSV
+### CSV
 
 Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications.  [Mjumbe Poe][mjumbewu] maintains the [djangorestframework-csv][djangorestframework-csv] package which provides CSV renderer support for REST framework.
 
