@@ -216,7 +216,7 @@ For more details, see the [Django documentation][search-django-admin].
 
 ## OrderingFilter
 
-The `OrderingFilter` class supports simple query parameter controlled ordering of results.  To specify the result order, set a query parameter named `'order'` to the required field name.  For example:
+The `OrderingFilter` class supports simple query parameter controlled ordering of results.  To specify the result order, set a query parameter named `'ordering'` to the required field name.  For example:
 
     http://example.com/api/users?ordering=username
 
