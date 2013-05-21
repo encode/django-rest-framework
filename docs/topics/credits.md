@@ -134,6 +134,8 @@ The following people have helped make REST framework great.
 * Karol Majta - [lolek09]
 * David Jones - [commonorgarden]
 * Andrew Tarzwell - [atarzwell]
+* Michal Dvořák - [mikee2185]
+* Markus Törnqvist - [mjtorn]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -304,3 +306,5 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [lolek09]: https://github.com/lolek09
 [commonorgarden]: https://github.com/commonorgarden
 [atarzwell]: https://github.com/atarzwell
+[mikee2185]: https://github.com/mikee2185
+[mjtorn]: https://github.com/mjtorn
