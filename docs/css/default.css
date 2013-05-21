@@ -103,6 +103,10 @@ pre {
   overflow: hidden;
 }
 
+.nav-list > li > a {
+  padding: 2px 15px 3px;
+}
+
 /* Set the table of contents to static so it flows back into the content when
    viewed on tablets and smaller. */
 @media (max-width: 767px) {
