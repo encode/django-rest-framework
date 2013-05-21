@@ -739,6 +739,12 @@ class ModelSerializer(Serializer):
         if issubclass(model_field.__class__, models.TextField):
             kwargs['widget'] = widgets.Textarea
 
+        if model_field.verbose_name is not None:
+            kwargs['label'] = model_field.verbose_name
+
+        if model_field.help_text is not None:
+            kwargs['help_text'] = model_field.help_text
+
         # TODO: TypedChoiceField?
         if model_field.flatchoices:  # This ModelField contains choices
             kwargs['choices'] = model_field.flatchoices

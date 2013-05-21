@@ -1,14 +1,18 @@
 from __future__ import unicode_literals
 from django.test import TestCase
+from rest_framework.tests.models import BasicModel, BasicModelSerializer
 from rest_framework.compat import patterns, url, include
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework import generics
+from rest_framework import routers
 from rest_framework import status
 from rest_framework.renderers import (
     BaseRenderer,
     JSONRenderer,
     BrowsableAPIRenderer
 )
+from rest_framework import viewsets
 from rest_framework.settings import api_settings
 from rest_framework.compat import six
 
@@ -80,12 +84,30 @@ class HTMLView1(APIView):
     def get(self, request, **kwargs):
         return Response('text')
 
+
+class HTMLNewModelViewSet(viewsets.ModelViewSet):
+    model = BasicModel
+
+
+class HTMLNewModelView(generics.ListCreateAPIView):
+    renderer_classes = (BrowsableAPIRenderer,)
+    permission_classes = []
+    serializer_class = BasicModelSerializer
+    model = BasicModel
+
+
+new_model_viewset_router = routers.DefaultRouter()
+new_model_viewset_router.register(r'', HTMLNewModelViewSet)
+
+
 urlpatterns = patterns('',
     url(r'^setbyview$', MockViewSettingContentType.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
     url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
+    url(r'^html_new_model$', HTMLNewModelView.as_view()),
+    url(r'^html_new_model_viewset', include(new_model_viewset_router.urls)),
     url(r'^restframework', include('rest_framework.urls', namespace='rest_framework'))
 )
 
@@ -191,7 +213,21 @@ class Issue122Tests(TestCase):
         self.client.get('/html1')
 
 
-class Issue807Testts(TestCase):
+class Issue467Tests(TestCase):
+    """
+    Tests for #467
+    """
+
+    urls = 'rest_framework.tests.response'
+
+    def test_form_has_label_and_help_text(self):
+        resp = self.client.get('/html_new_model')
+        self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
+        self.assertContains(resp, 'Text comes here')
+        self.assertContains(resp, 'Text description.')
+
+
+class Issue807Tests(TestCase):
     """
     Covers #807
     """
@@ -224,3 +260,19 @@ class Issue807Testts(TestCase):
         headers = {"HTTP_ACCEPT": RendererC.media_type}
         resp = self.client.get('/setbyview', **headers)
         self.assertEqual('setbyview', resp['Content-Type'])
+
+    def test_viewset_label_help_text(self):
+        param = '?%s=%s' % (
+            api_settings.URL_ACCEPT_OVERRIDE,
+            'text/html'
+        )
+        resp = self.client.get('/html_new_model_viewset/' + param)
+        self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
+        self.assertContains(resp, 'Text comes here')
+        self.assertContains(resp, 'Text description.')
+
+    def test_form_has_label_and_help_text(self):
+        resp = self.client.get('/html_new_model')
+        self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
+        self.assertContains(resp, 'Text comes here')
+        self.assertContains(resp, 'Text description.')
