@@ -110,16 +110,6 @@ class UpdateModelMixin(object):
     """
     Update a model instance.
     """
-    def get_object_or_none(self):
-        try:
-            return self.get_object()
-        except Http404:
-            # If this is a PUT-as-create operation, we need to ensure that
-            # we have relevant permissions, as if this was a POST request.
-            # This will either raise a PermissionDenied exception,
-            # or simply return None
-            self.check_permissions(clone_request(self.request, 'POST'))
-
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         self.object = self.get_object_or_none()
@@ -147,6 +137,16 @@ class UpdateModelMixin(object):
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
+
+    def get_object_or_none(self):
+        try:
+            return self.get_object()
+        except Http404:
+            # If this is a PUT-as-create operation, we need to ensure that
+            # we have relevant permissions, as if this was a POST request.
+            # This will either raise a PermissionDenied exception,
+            # or simply return None
+            self.check_permissions(clone_request(self.request, 'POST'))
 
     def pre_save(self, obj):
         """
