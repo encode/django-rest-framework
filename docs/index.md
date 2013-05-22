@@ -206,7 +206,13 @@ For updates on REST framework development, you may also want to follow [the auth
 
 <a style="padding-top: 10px" href="https://twitter.com/_tomchristie" class="twitter-follow-button" data-show-count="false">Follow @_tomchristie</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
- 
+
+## Security
+
+If you believe you’ve found something in Django REST framework which has security implications, please **do not raise the issue in a public forum**.
+
+Send a description of the issue via email to [rest-framework-security@googlegroups.com][security-mail].  The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
+
 ## License
 
 Copyright (c) 2011-2013, Tom Christie
@@ -294,6 +300,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [stack-overflow]: http://stackoverflow.com/
 [django-rest-framework-tag]: http://stackoverflow.com/questions/tagged/django-rest-framework
 [django-tag]: http://stackoverflow.com/questions/tagged/django
+[security-mail]: mailto:rest-framework-security@googlegroups.com
 [paid-support]: http://dabapps.com/services/build/api-development/
 [dabapps]: http://dabapps.com
 [contact-dabapps]: http://dabapps.com/contact/

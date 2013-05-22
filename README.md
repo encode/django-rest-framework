@@ -102,6 +102,12 @@ For questions and support, use the [REST framework discussion group][group], or 
 
 You may also want to [follow the author on Twitter][twitter].
 
+# Security
+
+If you believe you’ve found something in Django REST framework which has security implications, please **do not raise the issue in a public forum**.
+
+Send a description of the issue via email to [rest-framework-security@googlegroups.com][security-mail].  The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
+
 # License
 
 Copyright (c) 2011-2013, Tom Christie
@@ -149,3 +155,4 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [pyyaml]: http://pypi.python.org/pypi/PyYAML
 [defusedxml]: https://pypi.python.org/pypi/defusedxml
 [django-filter]: http://pypi.python.org/pypi/django-filter
+[security-mail]: mailto:rest-framework-security@googlegroups.com
