@@ -129,11 +129,6 @@ class PositiveIntegerAsChoiceSerializer(serializers.ModelSerializer):
         fields = ['some_integer']
 
 
-class BrokenModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        fields = ['some_field']
-
-
 class BasicTests(TestCase):
     def setUp(self):
         self.comment = Comment(
@@ -424,8 +419,12 @@ class ValidationTests(TestCase):
         Assert that a meaningful exception message is outputted when the model
         field is missing (e.g. when mistyping ``model``).
         """
+        class BrokenModelSerializer(serializers.ModelSerializer):
+            class Meta:
+                fields = ['some_field']
+
         try:
-            serializer = BrokenModelSerializer()
+            BrokenModelSerializer()
         except AssertionError as e:
             self.assertEqual(e.args[0], "Serializer class 'BrokenModelSerializer' is missing 'model' Meta option")
         except:
@@ -447,7 +446,7 @@ class CustomValidationTests(TestCase):
     class CommentSerializerWithFieldValidator(CommentSerializer):
 
         def validate_email(self, attrs, source):
-            value = attrs[source]
+            attrs[source]
             return attrs
 
         def validate_content(self, attrs, source):
