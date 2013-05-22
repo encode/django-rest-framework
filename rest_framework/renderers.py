@@ -43,18 +43,21 @@ class BaseRenderer(object):
 
 class JSONRenderer(BaseRenderer):
     """
-    Renderer which serializes to json.
+    Renderer which serializes to JSON.
+    Applies JSON's backslash-u character escaping for non-ascii characters.
     """
 
     media_type = 'application/json'
     format = 'json'
     encoder_class = encoders.JSONEncoder
     ensure_ascii = True
-    charset = 'iso-8859-1'
+    charset = 'utf-8'
+    # Note that JSON encodings must be utf-8, utf-16 or utf-32.
+    # See: http://www.ietf.org/rfc/rfc4627.txt
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
-        Render `obj` into json.
+        Render `data` into JSON.
         """
         if data is None:
             return ''
@@ -77,7 +80,11 @@ class JSONRenderer(BaseRenderer):
         ret = json.dumps(data, cls=self.encoder_class,
             indent=indent, ensure_ascii=self.ensure_ascii)
 
-        if not self.ensure_ascii:
+        # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
+        # but if ensure_ascii=False, the return type is underspecified,
+        # and may (or may not) be unicode.
+        # On python 3.x json.dumps() returns unicode strings.
+        if isinstance(ret, six.text_type):
             return bytes(ret.encode(self.charset))
         return ret
 
@@ -85,6 +92,10 @@ class JSONRenderer(BaseRenderer):
 class UnicodeJSONRenderer(JSONRenderer):
     ensure_ascii = False
     charset = 'utf-8'
+    """
+    Renderer which serializes to JSON.
+    Does *not* apply JSON's character escaping for non-ascii characters.
+    """
 
 
 class JSONPRenderer(JSONRenderer):
@@ -117,7 +128,7 @@ class JSONPRenderer(JSONRenderer):
         callback = self.get_callback(renderer_context)
         json = super(JSONPRenderer, self).render(data, accepted_media_type,
                                                  renderer_context)
-        return "%s(%s);" % (callback, json)
+        return callback.encode(self.charset) + b'(' + json + b');'
 
 
 class XMLRenderer(BaseRenderer):
@@ -138,7 +149,7 @@ class XMLRenderer(BaseRenderer):
 
         stream = StringIO()
 
-        xml = SimplerXMLGenerator(stream, "utf-8")
+        xml = SimplerXMLGenerator(stream, self.charset)
         xml.startDocument()
         xml.startElement("root", {})
 
@@ -188,7 +199,7 @@ class YAMLRenderer(BaseRenderer):
         if data is None:
             return ''
 
-        return yaml.dump(data, stream=None, Dumper=self.encoder)
+        return yaml.dump(data, stream=None, encoding=self.charset, Dumper=self.encoder)
 
 
 class TemplateHTMLRenderer(BaseRenderer):

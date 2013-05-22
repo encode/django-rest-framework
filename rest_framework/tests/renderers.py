@@ -29,7 +29,7 @@ RENDERER_B_SERIALIZER = lambda x: ('Renderer B: %s' % x).encode('ascii')
 
 
 expected_results = [
-    ((elem for elem in [1, 2, 3]), JSONRenderer, '[1, 2, 3]')  # Generator
+    ((elem for elem in [1, 2, 3]), JSONRenderer, b'[1, 2, 3]')  # Generator
 ]
 
 
@@ -246,7 +246,7 @@ class JSONRendererTests(TestCase):
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
         # Fix failing test case which depends on version of JSON library.
-        self.assertEqual(content, _flat_repr)
+        self.assertEqual(content.decode('utf-8'), _flat_repr)
 
     def test_with_content_type_args(self):
         """
@@ -255,13 +255,13 @@ class JSONRendererTests(TestCase):
         obj = {'foo': ['bar', 'baz']}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json; indent=2')
-        self.assertEqual(strip_trailing_whitespace(content), _indented_repr)
+        self.assertEqual(strip_trailing_whitespace(content.decode('utf-8')), _indented_repr)
 
     def test_check_ascii(self):
         obj = {'countries': ['United Kingdom', 'France', 'España']}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
-        self.assertEqual(content, '{"countries": ["United Kingdom", "France", "Espa\\u00f1a"]}')
+        self.assertEqual(content, '{"countries": ["United Kingdom", "France", "Espa\\u00f1a"]}'.encode('utf-8'))
 
 
 class UnicodeJSONRendererTests(TestCase):
@@ -289,7 +289,7 @@ class JSONPRendererTests(TestCase):
         resp = self.client.get('/jsonp/jsonrenderer',
                                HTTP_ACCEPT='application/javascript')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=iso-8859-1')
+        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=utf-8')
         self.assertEqual(resp.content,
             ('callback(%s);' % _flat_repr).encode('ascii'))
 
@@ -300,7 +300,7 @@ class JSONPRendererTests(TestCase):
         resp = self.client.get('/jsonp/nojsonrenderer',
                                HTTP_ACCEPT='application/javascript')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=iso-8859-1')
+        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=utf-8')
         self.assertEqual(resp.content,
             ('callback(%s);' % _flat_repr).encode('ascii'))
 
@@ -312,7 +312,7 @@ class JSONPRendererTests(TestCase):
         resp = self.client.get('/jsonp/nojsonrenderer?callback=' + callback_func,
                                HTTP_ACCEPT='application/javascript')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=iso-8859-1')
+        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=utf-8')
         self.assertEqual(resp.content,
             ('%s(%s);' % (callback_func, _flat_repr)).encode('ascii'))
 

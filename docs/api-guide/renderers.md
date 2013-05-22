@@ -67,21 +67,39 @@ If your API includes views that can serve both regular webpages and API response
 
 ## JSONRenderer
 
-Renders the request data into `JSON`, using ASCII encoding.
+Renders the request data into `JSON`, using utf-8 encoding.
+
+Note that non-ascii charaters will be rendered using JSON's `\uXXXX` character escape.  For example:
+
+    {"unicode black star": "\u2605"}
 
 The client may additionally include an `'indent'` media type parameter, in which case the returned `JSON` will be indented.  For example `Accept: application/json; indent=4`.
+
+    {
+        "unicode black star": "\u2605"
+    }
 
 **.media_type**: `application/json`
 
 **.format**: `'.json'`
 
-**.charset**: `iso-8859-1`
+**.charset**: `utf-8`
 
 ## UnicodeJSONRenderer
 
 Renders the request data into `JSON`, using utf-8 encoding.
 
+Note that non-ascii charaters will not be character escaped.  For example:
+
+    {"unicode black star": "★"}
+
 The client may additionally include an `'indent'` media type parameter, in which case the returned `JSON` will be indented.  For example `Accept: application/json; indent=4`.
+
+    {
+        "unicode black star": "★"
+    }
+
+Both the `JSONRenderer` and `UnicodeJSONRenderer` styles conform to [RFC 4627][rfc4627], and are syntactically valid JSON.
 
 **.media_type**: `application/json`
 
@@ -101,7 +119,7 @@ The javascript callback function must be set by the client including a `callback
 
 **.format**: `'.jsonp'`
 
-**.charset**: `iso-8859-1`
+**.charset**: `utf-8`
 
 ## YAMLRenderer
 
@@ -252,7 +270,9 @@ By default renderer classes are assumed to be using the `UTF-8` encoding.  To us
         def render(self, data, media_type=None, renderer_context=None):
             return data.encode(self.charset)
 
-If the renderer returns a raw bytestring, you should set a charset value of `None`, which will ensure the `Content-Type` header of the response will not have a `charset` value set.  Doing so will also ensure that the browsable API will not attempt to display the binary content as a string.
+Note that if a renderer class returns a unicode string, then the response content will be coerced into a bytestring by the `Response` class, with the `charset` attribute set on the renderer used to determine the encoding.
+
+If the renderer returns a bytestring representing raw binary content, you should set a charset value of `None`, which will ensure the `Content-Type` header of the response will not have a `charset` value set.  Doing so will also ensure that the browsable API will not attempt to display the binary content as a string.
 
     class JPEGRenderer(renderers.BaseRenderer):
         media_type = 'image/jpeg'
@@ -350,6 +370,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
+[rfc4627]: http://www.ietf.org/rfc/rfc4627.txt
 [cors]: http://www.w3.org/TR/cors/
 [cors-docs]: ../topics/ajax-csrf-cors.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas
