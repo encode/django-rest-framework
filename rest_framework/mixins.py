@@ -44,6 +44,16 @@ class CreateModelMixin(object):
     """
     Create a model instance.
     """
+
+    def valid_creation(self, serializer):
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=headers)
+
+    def invalid_creation(self, serializer):
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
 
@@ -51,11 +61,9 @@ class CreateModelMixin(object):
             self.pre_save(serializer.object)
             self.object = serializer.save(force_insert=True)
             self.post_save(self.object, created=True)
-            headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED,
-                            headers=headers)
+            return self.valid_creation(serializer)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return self.invalid_creation(serializer)
 
     def get_success_headers(self, data):
         try:
@@ -69,6 +77,9 @@ class ListModelMixin(object):
     List a queryset.
     """
     empty_error = "Empty list and '%(class_name)s.allow_empty' is False."
+
+    def get_list_response(self, serializer):
+        return Response(serializer.data)
 
     def list(self, request, *args, **kwargs):
         self.object_list = self.filter_queryset(self.get_queryset())
@@ -93,7 +104,7 @@ class ListModelMixin(object):
         else:
             serializer = self.get_serializer(self.object_list, many=True)
 
-        return Response(serializer.data)
+        return self.get_list_response(serializer)
 
 
 class RetrieveModelMixin(object):
@@ -120,6 +131,16 @@ class UpdateModelMixin(object):
             # or simply return None
             self.check_permissions(clone_request(self.request, 'POST'))
 
+    def valid_update(self, serializer):
+        if self.object is None:
+            success_status_code = status.HTTP_201_CREATED
+        else:
+            success_status_code = status.HTTP_200_OK
+        return Response(serializer.data, status=success_status_code)
+
+    def invalid_update(self, serializer):
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         self.object = self.get_object_or_none()
@@ -127,11 +148,9 @@ class UpdateModelMixin(object):
         if self.object is None:
             created = True
             save_kwargs = {'force_insert': True}
-            success_status_code = status.HTTP_201_CREATED
         else:
             created = False
             save_kwargs = {'force_update': True}
-            success_status_code = status.HTTP_200_OK
 
         serializer = self.get_serializer(self.object, data=request.DATA,
                                          files=request.FILES, partial=partial)
@@ -140,9 +159,9 @@ class UpdateModelMixin(object):
             self.pre_save(serializer.object)
             self.object = serializer.save(**save_kwargs)
             self.post_save(self.object, created=created)
-            return Response(serializer.data, status=success_status_code)
+            return self.valid_update(serializer)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return self.invalid_update(serializer)
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
