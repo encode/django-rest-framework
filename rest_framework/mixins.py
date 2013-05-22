@@ -131,14 +131,14 @@ class UpdateModelMixin(object):
             # or simply return None
             self.check_permissions(clone_request(self.request, 'POST'))
 
-    def valid_update(self, serializer):
-        if self.object is None:
+    def valid_update(self, serializer, created=False):
+        if created:
             success_status_code = status.HTTP_201_CREATED
         else:
             success_status_code = status.HTTP_200_OK
         return Response(serializer.data, status=success_status_code)
 
-    def invalid_update(self, serializer):
+    def invalid_update(self, serializer, created=False):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):
@@ -159,9 +159,9 @@ class UpdateModelMixin(object):
             self.pre_save(serializer.object)
             self.object = serializer.save(**save_kwargs)
             self.post_save(self.object, created=created)
-            return self.valid_update(serializer)
+            return self.valid_update(serializer, created)
 
-        return self.invalid_update(serializer)
+        return self.invalid_update(serializer, created)
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
