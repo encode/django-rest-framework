@@ -12,6 +12,7 @@ from rest_framework.compat import CsrfViewMiddleware
 from rest_framework.compat import oauth, oauth_provider, oauth_provider_store
 from rest_framework.compat import oauth2_provider
 from rest_framework.authtoken.models import Token
+from rest_framework.settings import api_settings
 
 
 def get_authorization_header(request):
@@ -20,7 +21,7 @@ def get_authorization_header(request):
 
     Hide some test client ickyness where the header can be unicode.
     """
-    auth = request.META.get('HTTP_AUTHORIZATION', b'')
+    auth = request.META.get(api_settings.AUTHORIZATION_HEADER, b'')
     if type(auth) == type(''):
         # Work around django test client oddness
         auth = auth.encode(HTTP_HEADER_ENCODING)

@@ -70,6 +70,7 @@ DEFAULTS = {
     # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
+    'AUTHORIZATION_HEADER': 'HTTP_AUTHORIZATION',
 
     # Browser enhancements
     'FORM_METHOD_OVERRIDE': '_method',
