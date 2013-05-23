@@ -31,36 +31,6 @@ from rest_framework.compat import smart_text, force_text, is_non_str_iterable
 from rest_framework.settings import api_settings
 
 
-HUMANIZED_FIELD_TYPES = {
-    'BooleanField': u'Boolean',
-    'CharField': u'String',
-    'ChoiceField': u'Single Choice',
-    'ComboField': u'Single Choice',
-    'DateField': u'Date',
-    'DateTimeField': u'Date and Time',
-    'DecimalField': u'Decimal',
-    'EmailField': u'Email',
-    'Field': u'Field',
-    'FileField': u'File',
-    'FilePathField': u'File Path',
-    'FloatField': u'Float',
-    'GenericIPAddressField': u'Generic IP Address',
-    'IPAddressField': u'IP Address',
-    'ImageField': u'Image',
-    'IntegerField': u'Integer',
-    'MultiValueField': u'Multiple Value',
-    'MultipleChoiceField': u'Multiple Choice',
-    'NullBooleanField': u'Nullable Boolean',
-    'RegexField': u'Regular Expression',
-    'SlugField': u'Slug',
-    'SplitDateTimeField': u'Split Date and Time',
-    'TimeField': u'Time',
-    'TypedChoiceField': u'Typed Single Choice',
-    'TypedMultipleChoiceField': u'Typed Multiple Choice',
-    'URLField': u'URL',
-}
-
-
 def is_simple_callable(obj):
     """
     True if the object is a callable that takes no arguments.
@@ -100,49 +70,6 @@ def readable_datetime_formats(formats):
 def readable_date_formats(formats):
     format = ', '.join(formats).replace(ISO_8601, 'YYYY[-MM[-DD]]')
     return humanize_strptime(format)
-
-
-def humanize_field_type(field_type):
-    """Return a human-readable name for a field type.
-
-    :param field_type: Either a field type class (for example
-        django.forms.fields.DateTimeField), or the name of a field type
-        (for example "DateTimeField").
-
-    :return: unicode
-
-    """
-    if isinstance(field_type, basestring):
-        field_type_name = field_type
-    else:
-        field_type_name = field_type.__name__
-    try:
-        return HUMANIZED_FIELD_TYPES[field_type_name]
-    except KeyError:
-        humanized = re.sub('([a-z0-9])([A-Z])', r'\1 \2', field_type_name)
-        return humanized.capitalize()
-
-
-def humanize_field(field):
-    """Return a human-readable description of a field.
-
-    :param field: A Django field.
-
-    :return: A dictionary of the form {type: type name, required: bool,
-             label: field label: read_only: bool,
-             help_text: optional help text}
-
-    """
-    humanized = {
-        'type': humanize_field_type(field.__class__),
-        'required': getattr(field, 'required', False),
-    }
-    optional_attrs = ['read_only', 'help_text', 'label',
-                      'min_length', 'max_length']
-    for attr in optional_attrs:
-        if getattr(field, attr, None) is not None:
-            humanized[attr] = getattr(field, attr)
-    return humanized
 
 
 def humanize_form_fields(form):
@@ -273,6 +200,19 @@ class Field(object):
         if self.type_name:
             return {'type': self.type_name}
         return {}
+
+    @property
+    def humanized(self):
+        humanized = {
+            'type': self.type_name,
+            'required': getattr(self, 'required', False),
+        }
+        optional_attrs = ['read_only', 'help_text', 'label',
+                          'min_length', 'max_length']
+        for attr in optional_attrs:
+            if getattr(self, attr, None) is not None:
+                humanized[attr] = getattr(self, attr)
+        return humanized
 
 
 class WritableField(Field):

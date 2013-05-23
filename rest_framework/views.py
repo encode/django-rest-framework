@@ -91,7 +91,7 @@ class APIView(View):
                     continue
                 serializer = self.get_serializer()
                 if serializer is not None:
-                    actions[method] = humanize_form_fields(serializer)
+                    actions[method] = serializer.humanized
             except exceptions.PermissionDenied:
                 # don't add this method
                 pass

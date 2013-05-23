@@ -15,8 +15,7 @@ from django.test import TestCase
 from django.utils.datastructures import SortedDict
 
 from rest_framework import serializers
-from rest_framework.fields import (humanize_field, humanize_field_type,
-                                   humanize_form_fields, Field)
+from rest_framework.fields import Field, CharField
 from rest_framework.serializers import Serializer
 from rest_framework.tests.models import RESTFrameworkModel
 
@@ -768,14 +767,16 @@ class SlugFieldTests(TestCase):
 
     def test_given_serializer_value(self):
         class SlugFieldSerializer(serializers.ModelSerializer):
-            slug_field = serializers.SlugField(source='slug_field', max_length=20, required=False)
+            slug_field = serializers.SlugField(source='slug_field',
+                                               max_length=20, required=False)
 
             class Meta:
                 model = self.SlugFieldModel
 
         serializer = SlugFieldSerializer(data={})
         self.assertEqual(serializer.is_valid(), True)
-        self.assertEqual(getattr(serializer.fields['slug_field'], 'max_length'), 20)
+        self.assertEqual(getattr(serializer.fields['slug_field'],
+                                 'max_length'), 20)
 
 
 class URLFieldTests(TestCase):
@@ -796,7 +797,8 @@ class URLFieldTests(TestCase):
 
         serializer = URLFieldSerializer(data={})
         self.assertEqual(serializer.is_valid(), True)
-        self.assertEqual(getattr(serializer.fields['url_field'], 'max_length'), 200)
+        self.assertEqual(getattr(serializer.fields['url_field'],
+                                 'max_length'), 200)
 
     def test_given_model_value(self):
         class URLFieldSerializer(serializers.ModelSerializer):
@@ -805,48 +807,21 @@ class URLFieldTests(TestCase):
 
         serializer = URLFieldSerializer(data={})
         self.assertEqual(serializer.is_valid(), True)
-        self.assertEqual(getattr(serializer.fields['url_field'], 'max_length'), 128)
+        self.assertEqual(getattr(serializer.fields['url_field'],
+                                 'max_length'), 128)
 
     def test_given_serializer_value(self):
         class URLFieldSerializer(serializers.ModelSerializer):
-            url_field = serializers.URLField(source='url_field', max_length=20, required=False)
+            url_field = serializers.URLField(source='url_field',
+                                             max_length=20, required=False)
 
             class Meta:
                 model = self.URLFieldWithGivenMaxLengthModel
 
         serializer = URLFieldSerializer(data={})
         self.assertEqual(serializer.is_valid(), True)
-        self.assertEqual(getattr(serializer.fields['url_field'], 'max_length'), 20)
-
-
-class HumanizedFieldType(TestCase):
-    def test_standard_type_classes(self):
-        for field_type_name in forms.fields.__all__:
-            field_type = getattr(forms.fields, field_type_name)
-            humanized = humanize_field_type(field_type)
-            self.assert_valid_name(humanized)
-
-    def test_standard_type_names(self):
-        for field_type_name in forms.fields.__all__:
-            humanized = humanize_field_type(field_type_name)
-            self.assert_valid_name(humanized)
-
-    def test_custom_type_name(self):
-        humanized = humanize_field_type('SomeCustomType')
-        self.assertEquals(humanized, u'Some custom type')
-
-    def test_custom_type(self):
-        custom_type = namedtuple('SomeCustomType', [])
-        humanized = humanize_field_type(custom_type)
-        self.assertEquals(humanized, u'Some custom type')
-
-    def assert_valid_name(self, humanized):
-        """A humanized field name is valid if it's a non-empty
-        unicode.
-
-        """
-        self.assertIsInstance(humanized, unicode)
-        self.assertNotEqual(humanized, '')
+        self.assertEqual(getattr(serializer.fields['url_field'],
+                         'max_length'), 20)
 
 
 class HumanizedField(TestCase):
@@ -859,37 +834,41 @@ class HumanizedField(TestCase):
         self.optional_field.label = uuid4().hex
         self.optional_field.required = False
 
+    def test_type(self):
+        for field in (self.required_field, self.optional_field):
+            self.assertEqual(field.humanized['type'], field.type_name)
+
     def test_required(self):
-        self.assertEqual(humanize_field(self.required_field)['required'], True)
+        self.assertEqual(self.required_field.humanized['required'], True)
 
     def test_optional(self):
-        self.assertEqual(humanize_field(self.optional_field)['required'],
-                         False)
+        self.assertEqual(self.optional_field.humanized['required'], False)
 
     def test_label(self):
         for field in (self.required_field, self.optional_field):
-            self.assertEqual(humanize_field(field)['label'], field.label)
+            self.assertEqual(field.humanized['label'], field.label)
 
 
-class Form(forms.Form):
-    field1 = forms.CharField(max_length=3, label='field one')
-    field2 = forms.CharField(label='field two')
+class HumanizableSerializer(Serializer):
+    field1 = CharField(3, required=True)
+    field2 = CharField(10, required=False)
 
 
 class HumanizedSerializer(TestCase):
     def setUp(self):
-        self.serializer = TimestampedModelSerializer()
+        self.serializer = HumanizableSerializer()
 
     def test_humanized(self):
-        humanized = humanize_form_fields(Form())
+        humanized = self.serializer.humanized
         expected = {
-            'field1': {u'help_text': u'',
-                       u'label': u'field one',
+            'field1': {u'required': True,
                        u'max_length': 3,
-                       u'required': True,
-                       u'type': u'String'},
-            'field2': {u'help_text': u'',
-                       u'label': u'field two',
-                       u'required': True,
-                       u'type': u'String'}}
-        self.assertEqual(humanized, expected)
+                       u'type': u'CharField',
+                       u'read_only': False},
+            'field2': {u'required': False,
+                       u'max_length': 10,
+                       u'type': u'CharField',
+                       u'read_only': False}}
+        self.assertEqual(set(expected.keys()), set(humanized.keys()))
+        for k, v in humanized.iteritems():
+            self.assertEqual(v, expected[k])

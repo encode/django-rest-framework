@@ -521,6 +521,13 @@ class BaseSerializer(WritableField):
 
         return self.object
 
+    @property
+    def humanized(self):
+        humanized_fields = SortedDict(
+            [(name, field.humanized)
+             for name, field in self.fields.iteritems()])
+        return humanized_fields
+
 
 class Serializer(six.with_metaclass(SerializerMetaclass, BaseSerializer)):
     pass
