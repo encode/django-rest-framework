@@ -23,7 +23,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.datastructures import SortedDict
 
 from rest_framework import ISO_8601
-from rest_framework.compat import timezone, parse_date, parse_datetime, parse_time
+from rest_framework.compat import (timezone, parse_date, parse_datetime,
+                                   parse_time)
 from rest_framework.compat import BytesIO
 from rest_framework.compat import six
 from rest_framework.compat import smart_text, force_text, is_non_str_iterable
@@ -61,13 +62,26 @@ def get_component(obj, attr_name):
 
 
 def readable_datetime_formats(formats):
-    format = ', '.join(formats).replace(ISO_8601, 'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]')
+    format = ', '.join(formats).replace(ISO_8601,
+             'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]')
     return humanize_strptime(format)
 
 
 def readable_date_formats(formats):
     format = ', '.join(formats).replace(ISO_8601, 'YYYY[-MM[-DD]]')
     return humanize_strptime(format)
+
+
+def humanize_form_fields(form):
+    """Return a humanized description of all the fields in a form.
+
+    :param form: A Django form.
+    :return: A dictionary of {field_label: humanized description}
+
+    """
+    fields = SortedDict([(name, humanize_field(field))
+                         for name, field in form.fields.iteritems()])
+    return fields
 
 
 def readable_time_formats(formats):
@@ -192,6 +206,19 @@ class Field(object):
         if self.type_name:
             return {'type': self.type_name}
         return {}
+
+    @property
+    def humanized(self):
+        humanized = {
+            'type': self.type_name,
+            'required': getattr(self, 'required', False),
+        }
+        optional_attrs = ['read_only', 'help_text', 'label',
+                          'min_length', 'max_length']
+        for attr in optional_attrs:
+            if getattr(self, attr, None) is not None:
+                humanized[attr] = getattr(self, attr)
+        return humanized
 
 
 class WritableField(Field):
