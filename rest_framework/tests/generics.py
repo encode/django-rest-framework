@@ -121,7 +121,22 @@ class TestRootView(TestCase):
                 'text/html'
             ],
             'name': 'Root',
-            'description': 'Example description for OPTIONS.'
+            'description': 'Example description for OPTIONS.',
+            'actions': {}
+        }
+        expected['actions']['GET'] = {}
+        expected['actions']['POST'] = {
+            'text': {
+                'max_length': 100,
+                'read_only': False,
+                'required': True,
+                'type': 'String',
+            },
+            'id': {
+                'read_only': True,
+                'required': False,
+                'type': 'Integer',
+            },
         }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected)
@@ -238,8 +253,25 @@ class TestInstanceView(TestCase):
                 'text/html'
             ],
             'name': 'Instance',
-            'description': 'Example description for OPTIONS.'
+            'description': 'Example description for OPTIONS.',
+            'actions': {}
         }
+        for method in ('GET', 'DELETE'):
+            expected['actions'][method] = {}
+        for method in ('PATCH', 'PUT'):
+            expected['actions'][method] = {
+                'text': {
+                    'max_length': 100,
+                    'read_only': False,
+                    'required': True,
+                    'type': 'String',
+                },
+                'id': {
+                    'read_only': True,
+                    'required': False,
+                    'type': 'Integer',
+                },
+            }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected)
 
