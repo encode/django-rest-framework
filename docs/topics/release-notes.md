@@ -42,7 +42,18 @@ You can determine your currently installed version using `pip freeze`:
 
 ### Master
 
+* Serializer fields now support `label` and `help_text`.
+* Added `UnicodeJSONRenderer`.
+* Bugfix: `charset` now properly included in `Content-Type` of responses.
+* Bugfix: Blank choice now added in browsable API on nullable relationships.
+* Bugfix: Many to many relationships with `through` tables are now read-only.
+* Bugfix: Serializer fields now respect model field args such as `max_length`.
+* Bugfix: SlugField now performs slug validation.
+* Bugfix: Lazy-translatable strings now properly serialized.
+* Bugfix: Browsable API now supports bootswatch styles properly.
 * Bugfix: HyperlinkedIdentityField now uses `lookup_field` kwarg.
+
+**Note**: Responses now correctly include an appropriate charset on the `Content-Type` header.  For example: `application/json; charset=utf-8`.  If you have tests that check the content type of responses, you may need to update these accordingly.
 
 ### 2.3.3
 

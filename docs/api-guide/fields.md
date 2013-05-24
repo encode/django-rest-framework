@@ -56,6 +56,13 @@ A dictionary of error codes to error messages.
 Used only if rendering the field to HTML.
 This argument sets the widget that should be used to render the field.
 
+### `label`
+
+A short text string that may be used as the name of the field in HTML form fields or other descriptive elements.
+
+### `help_text`
+
+A text string that may be used as a description of the field in HTML form fields or other descriptive elements.
 
 ---
 
