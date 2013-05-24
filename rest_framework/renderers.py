@@ -507,10 +507,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
-        Renders *obj* using the :attr:`template` set on the class.
-
-        The context used in the template contains all the information
-        needed to self-document the response to this request.
+        Render the HTML for the browsable API representation.
         """
         accepted_media_type = accepted_media_type or ''
         renderer_context = renderer_context or {}

@@ -40,7 +40,9 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
-### Master
+### 2.3.4
+
+**Date**: 24th May 2013
 
 * Serializer fields now support `label` and `help_text`.
 * Added `UnicodeJSONRenderer`.
