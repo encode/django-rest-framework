@@ -514,12 +514,20 @@ class HyperlinkedIdentityField(Field):
 
         super(HyperlinkedIdentityField, self).__init__(*args, **kwargs)
 
+    def get_lookup_value(self, obj):
+        """Return the value of the lookup field.  Subclasses can override this
+        for custom behavior which is more complex than returning a pk or other
+        named attribute of the object.
+
+        """
+        return getattr(obj, self.lookup_field)
+
     def field_to_native(self, obj, field_name):
         request = self.context.get('request', None)
         format = self.context.get('format', None)
         view_name = self.view_name or self.parent.opts.view_name
-        lookup_field = getattr(obj, self.lookup_field)
-        kwargs = {self.lookup_field: lookup_field}
+
+        kwargs = {self.lookup_field: self.get_lookup_value(obj)}
 
         if request is None:
             warnings.warn("Using `HyperlinkedIdentityField` without including the "
