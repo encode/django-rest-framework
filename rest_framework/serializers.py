@@ -521,12 +521,16 @@ class BaseSerializer(WritableField):
 
         return self.object
 
-    @property
-    def humanized(self):
-        humanized_fields = SortedDict(
-            [(name, field.humanized)
-             for name, field in self.fields.iteritems()])
-        return humanized_fields
+    def metadata(self):
+        """
+        Return a dictionary of metadata about the fields on the serializer.
+        Useful for things like responding to OPTIONS requests, or generating
+        API schemas for auto-documentation.
+        """
+        return SortedDict(
+            [(field_name, field.metadata())
+            for field_name, field in six.iteritems(self.fields)]
+        )
 
 
 class Serializer(six.with_metaclass(SerializerMetaclass, BaseSerializer)):

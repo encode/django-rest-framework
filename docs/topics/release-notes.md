@@ -44,6 +44,7 @@ You can determine your currently installed version using `pip freeze`:
 
 * Serializer fields now support `label` and `help_text`.
 * Added `UnicodeJSONRenderer`.
+* `OPTIONS` requests now return metadata about fields for `POST` and `PUT` requests.
 * Bugfix: `charset` now properly included in `Content-Type` of responses.
 * Bugfix: Blank choice now added in browsable API on nullable relationships.
 * Bugfix: Many to many relationships with `through` tables are now read-only.

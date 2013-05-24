@@ -3,17 +3,13 @@ General serializer field tests.
 """
 from __future__ import unicode_literals
 
-from collections import namedtuple
+import datetime
 from decimal import Decimal
 from uuid import uuid4
-
-import datetime
-from django import forms
 from django.core import validators
 from django.db import models
 from django.test import TestCase
 from django.utils.datastructures import SortedDict
-
 from rest_framework import serializers
 from rest_framework.fields import Field, CharField
 from rest_framework.serializers import Serializer
@@ -784,12 +780,12 @@ class SlugFieldTests(TestCase):
         """
         class SlugFieldSerializer(serializers.ModelSerializer):
             slug_field = serializers.SlugField(source='slug_field', max_length=20, required=True)
-        
+
             class Meta:
                 model = self.SlugFieldModel
-                
+
         s = SlugFieldSerializer(data={'slug_field': 'a b'})
-        
+
         self.assertEqual(s.is_valid(), False)
         self.assertEqual(s.errors,  {'slug_field': ["Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."]})
 
@@ -839,7 +835,7 @@ class URLFieldTests(TestCase):
                          'max_length'), 20)
 
 
-class HumanizedField(TestCase):
+class FieldMetadata(TestCase):
     def setUp(self):
         self.required_field = Field()
         self.required_field.label = uuid4().hex
@@ -849,41 +845,35 @@ class HumanizedField(TestCase):
         self.optional_field.label = uuid4().hex
         self.optional_field.required = False
 
-    def test_type(self):
-        for field in (self.required_field, self.optional_field):
-            self.assertEqual(field.humanized['type'], field.type_name)
-
     def test_required(self):
-        self.assertEqual(self.required_field.humanized['required'], True)
+        self.assertEqual(self.required_field.metadata()['required'], True)
 
     def test_optional(self):
-        self.assertEqual(self.optional_field.humanized['required'], False)
+        self.assertEqual(self.optional_field.metadata()['required'], False)
 
     def test_label(self):
         for field in (self.required_field, self.optional_field):
-            self.assertEqual(field.humanized['label'], field.label)
+            self.assertEqual(field.metadata()['label'], field.label)
 
 
-class HumanizableSerializer(Serializer):
+class MetadataSerializer(Serializer):
     field1 = CharField(3, required=True)
     field2 = CharField(10, required=False)
 
 
-class HumanizedSerializer(TestCase):
+class MetadataSerializerTestCase(TestCase):
     def setUp(self):
-        self.serializer = HumanizableSerializer()
+        self.serializer = MetadataSerializer()
 
-    def test_humanized(self):
-        humanized = self.serializer.humanized
+    def test_serializer_metadata(self):
+        metadata = self.serializer.metadata()
         expected = {
-            'field1': {u'required': True,
-                       u'max_length': 3,
-                       u'type': u'CharField',
-                       u'read_only': False},
-            'field2': {u'required': False,
-                       u'max_length': 10,
-                       u'type': u'CharField',
-                       u'read_only': False}}
-        self.assertEqual(set(expected.keys()), set(humanized.keys()))
-        for k, v in humanized.iteritems():
-            self.assertEqual(v, expected[k])
+            'field1': {'required': True,
+                       'max_length': 3,
+                       'type': 'string',
+                       'read_only': False},
+            'field2': {'required': False,
+                       'max_length': 10,
+                       'type': 'string',
+                       'read_only': False}}
+        self.assertEqual(expected, metadata)

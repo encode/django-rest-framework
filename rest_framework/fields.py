@@ -11,7 +11,6 @@ from decimal import Decimal, DecimalException
 import inspect
 import re
 import warnings
-
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.conf import settings
@@ -21,7 +20,6 @@ from django.forms import widgets
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
 from django.utils.datastructures import SortedDict
-
 from rest_framework import ISO_8601
 from rest_framework.compat import (timezone, parse_date, parse_datetime,
                                    parse_time)
@@ -45,6 +43,7 @@ def is_simple_callable(obj):
     len_args = len(args) if function else len(args) - 1
     len_defaults = len(defaults) if defaults else 0
     return len_args <= len_defaults
+
 
 def get_component(obj, attr_name):
     """
@@ -70,18 +69,6 @@ def readable_datetime_formats(formats):
 def readable_date_formats(formats):
     format = ', '.join(formats).replace(ISO_8601, 'YYYY[-MM[-DD]]')
     return humanize_strptime(format)
-
-
-def humanize_form_fields(form):
-    """Return a humanized description of all the fields in a form.
-
-    :param form: A Django form.
-    :return: A dictionary of {field_label: humanized description}
-
-    """
-    fields = SortedDict([(name, humanize_field(field))
-                         for name, field in form.fields.iteritems()])
-    return fields
 
 
 def readable_time_formats(formats):
@@ -122,6 +109,7 @@ class Field(object):
     partial = False
     use_files = False
     form_field_class = forms.CharField
+    type_label = 'field'
 
     def __init__(self, source=None, label=None, help_text=None):
         self.parent = None
@@ -207,18 +195,17 @@ class Field(object):
             return {'type': self.type_name}
         return {}
 
-    @property
-    def humanized(self):
-        humanized = {
-            'type': self.type_name,
-            'required': getattr(self, 'required', False),
-        }
-        optional_attrs = ['read_only', 'help_text', 'label',
+    def metadata(self):
+        metadata = SortedDict()
+        metadata['type'] = self.type_label
+        metadata['required'] = getattr(self, 'required', False)
+        optional_attrs = ['read_only', 'label', 'help_text',
                           'min_length', 'max_length']
         for attr in optional_attrs:
-            if getattr(self, attr, None) is not None:
-                humanized[attr] = getattr(self, attr)
-        return humanized
+            value = getattr(self, attr, None)
+            if value is not None and value != '':
+                metadata[attr] = force_text(value, strings_only=True)
+        return metadata
 
 
 class WritableField(Field):
@@ -375,6 +362,7 @@ class ModelField(WritableField):
 
 class BooleanField(WritableField):
     type_name = 'BooleanField'
+    type_label = 'boolean'
     form_field_class = forms.BooleanField
     widget = widgets.CheckboxInput
     default_error_messages = {
@@ -397,6 +385,7 @@ class BooleanField(WritableField):
 
 class CharField(WritableField):
     type_name = 'CharField'
+    type_label = 'string'
     form_field_class = forms.CharField
 
     def __init__(self, max_length=None, min_length=None, *args, **kwargs):
@@ -415,6 +404,7 @@ class CharField(WritableField):
 
 class URLField(CharField):
     type_name = 'URLField'
+    type_label = 'url'
 
     def __init__(self, **kwargs):
         kwargs['validators'] = [validators.URLValidator()]
@@ -423,14 +413,15 @@ class URLField(CharField):
 
 class SlugField(CharField):
     type_name = 'SlugField'
+    type_label = 'slug'
     form_field_class = forms.SlugField
-    
+
     default_error_messages = {
         'invalid': _("Enter a valid 'slug' consisting of letters, numbers,"
                      " underscores or hyphens."),
     }
     default_validators = [validators.validate_slug]
-    
+
     def __init__(self, *args, **kwargs):
         super(SlugField, self).__init__(*args, **kwargs)
 
@@ -440,10 +431,11 @@ class SlugField(CharField):
         #result.widget = copy.deepcopy(self.widget, memo)
         result.validators = self.validators[:]
         return result
-    
-  
+
+
 class ChoiceField(WritableField):
     type_name = 'ChoiceField'
+    type_label = 'multiple choice'
     form_field_class = forms.ChoiceField
     widget = widgets.Select
     default_error_messages = {
@@ -494,6 +486,7 @@ class ChoiceField(WritableField):
 
 class EmailField(CharField):
     type_name = 'EmailField'
+    type_label = 'email'
     form_field_class = forms.EmailField
 
     default_error_messages = {
@@ -517,6 +510,7 @@ class EmailField(CharField):
 
 class RegexField(CharField):
     type_name = 'RegexField'
+    type_label = 'regex'
     form_field_class = forms.RegexField
 
     def __init__(self, regex, max_length=None, min_length=None, *args, **kwargs):
@@ -546,6 +540,7 @@ class RegexField(CharField):
 
 class DateField(WritableField):
     type_name = 'DateField'
+    type_label = 'date'
     widget = widgets.DateInput
     form_field_class = forms.DateField
 
@@ -609,6 +604,7 @@ class DateField(WritableField):
 
 class DateTimeField(WritableField):
     type_name = 'DateTimeField'
+    type_label = 'datetime'
     widget = widgets.DateTimeInput
     form_field_class = forms.DateTimeField
 
@@ -678,6 +674,7 @@ class DateTimeField(WritableField):
 
 class TimeField(WritableField):
     type_name = 'TimeField'
+    type_label = 'time'
     widget = widgets.TimeInput
     form_field_class = forms.TimeField
 
@@ -734,6 +731,7 @@ class TimeField(WritableField):
 
 class IntegerField(WritableField):
     type_name = 'IntegerField'
+    type_label = 'integer'
     form_field_class = forms.IntegerField
 
     default_error_messages = {
@@ -764,6 +762,7 @@ class IntegerField(WritableField):
 
 class FloatField(WritableField):
     type_name = 'FloatField'
+    type_label = 'float'
     form_field_class = forms.FloatField
 
     default_error_messages = {
@@ -783,6 +782,7 @@ class FloatField(WritableField):
 
 class DecimalField(WritableField):
     type_name = 'DecimalField'
+    type_label = 'decimal'
     form_field_class = forms.DecimalField
 
     default_error_messages = {
@@ -853,6 +853,7 @@ class DecimalField(WritableField):
 class FileField(WritableField):
     use_files = True
     type_name = 'FileField'
+    type_label = 'file upload'
     form_field_class = forms.FileField
     widget = widgets.FileInput
 
@@ -896,6 +897,8 @@ class FileField(WritableField):
 
 class ImageField(FileField):
     use_files = True
+    type_name = 'ImageField'
+    type_label = 'image upload'
     form_field_class = forms.ImageField
 
     default_error_messages = {

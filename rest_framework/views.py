@@ -5,12 +5,11 @@ from __future__ import unicode_literals
 
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponse
+from django.utils.datastructures import SortedDict
 from django.views.decorators.csrf import csrf_exempt
-
 from rest_framework import status, exceptions
 from rest_framework.compat import View
-from rest_framework.fields import humanize_form_fields
-from rest_framework.request import clone_request, Request
+from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.utils.formatting import get_view_name, get_view_description
@@ -53,53 +52,6 @@ class APIView(View):
             'Allow': ', '.join(self.allowed_methods),
             'Vary': 'Accept'
         }
-
-    def metadata(self, request):
-        content = {
-            'name': get_view_name(self.__class__),
-            'description': get_view_description(self.__class__),
-            'renders': [renderer.media_type for renderer in self.renderer_classes],
-            'parses': [parser.media_type for parser in self.parser_classes],
-        }
-        content['actions'] = self.action_metadata(request)
-
-        return content
-
-    def action_metadata(self, request):
-        """Return a dictionary with the fields required fo reach allowed method. If no method is allowed,
-        return an empty dictionary.
-
-        :param request: Request for which to return the metadata of the allowed methods.
-        :return: A dictionary of the form {method: {field: {field attribute: value}}}
-        """
-        actions = {}
-        for method in self.allowed_methods:
-            # skip HEAD and OPTIONS
-            if method in ('HEAD', 'OPTIONS'):
-                continue
-
-            cloned_request = clone_request(request, method)
-            try:
-                self.check_permissions(cloned_request)
-
-                # TODO: discuss whether and how to expose parameters like e.g. filter or paginate
-                if method in ('GET', 'DELETE'):
-                    actions[method] = {}
-                    continue
-
-                if not hasattr(self, 'get_serializer'):
-                    continue
-                serializer = self.get_serializer()
-                if serializer is not None:
-                    actions[method] = serializer.humanized
-            except exceptions.PermissionDenied:
-                # don't add this method
-                pass
-            except exceptions.NotAuthenticated:
-                # don't add this method
-                pass
-
-        return actions if len(actions) > 0 else None
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
@@ -383,3 +335,15 @@ class APIView(View):
         a less useful default implementation.
         """
         return Response(self.metadata(request), status=status.HTTP_200_OK)
+
+    def metadata(self, request):
+        """
+        Return a dictionary of metadata about the view.
+        Used to return responses for OPTIONS requests.
+        """
+        ret = SortedDict()
+        ret['name'] = get_view_name(self.__class__)
+        ret['description'] = get_view_description(self.__class__)
+        ret['renders'] = [renderer.media_type for renderer in self.renderer_classes]
+        ret['parses'] = [parser.media_type for parser in self.parser_classes]
+        return ret

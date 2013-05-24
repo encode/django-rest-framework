@@ -3,13 +3,13 @@ Generic views that provide commonly needed behaviour.
 """
 from __future__ import unicode_literals
 
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext as _
-from rest_framework import views, mixins
-from rest_framework.exceptions import ConfigurationError
+from rest_framework import views, mixins, exceptions
+from rest_framework.request import clone_request
 from rest_framework.settings import api_settings
 import warnings
 
@@ -274,7 +274,7 @@ class GenericAPIView(views.APIView):
             )
             filter_kwargs = {self.slug_field: slug}
         else:
-            raise ConfigurationError(
+            raise exceptions.ConfigurationError(
                 'Expected view %s to be called with a URL keyword argument '
                 'named "%s". Fix your URL conf, or set the `.lookup_field` '
                 'attribute on the view correctly.' %
@@ -309,6 +309,41 @@ class GenericAPIView(views.APIView):
         Placeholder method for calling after saving an object.
         """
         pass
+
+    def metadata(self, request):
+        """
+        Return a dictionary of metadata about the view.
+        Used to return responses for OPTIONS requests.
+
+        We override the default behavior, and add some extra information
+        about the required request body for POST and PUT operations.
+        """
+        ret = super(GenericAPIView, self).metadata(request)
+
+        actions = {}
+        for method in ('PUT', 'POST'):
+            if method not in self.allowed_methods:
+                continue
+
+            cloned_request = clone_request(request, method)
+            try:
+                # Test global permissions
+                self.check_permissions(cloned_request)
+                # Test object permissions
+                if method == 'PUT':
+                    self.get_object()
+            except (exceptions.APIException, PermissionDenied, Http404):
+                pass
+            else:
+                # If user has appropriate permissions for the view, include
+                # appropriate metadata about the fields that should be supplied.
+                serializer = self.get_serializer()
+                actions[method] = serializer.metadata()
+
+        if actions:
+            ret['actions'] = actions
+
+        return ret
 
 
 ##########################################################

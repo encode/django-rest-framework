@@ -114,44 +114,41 @@ class ModelPermissionsIntegrationTests(TestCase):
         response = root_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('actions', response.data)
-        self.assertEquals(response.data['actions'].keys(), ['POST', 'GET',])
+        self.assertEqual(list(response.data['actions'].keys()), ['POST'])
 
         request = factory.options('/1', content_type='application/json',
                                HTTP_AUTHORIZATION=self.permitted_credentials)
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('actions', response.data)
-        self.assertEquals(response.data['actions'].keys(), ['PUT', 'PATCH', 'DELETE', 'GET',])
+        self.assertEqual(list(response.data['actions'].keys()), ['PUT'])
 
     def test_options_disallowed(self):
         request = factory.options('/', content_type='application/json',
                                HTTP_AUTHORIZATION=self.disallowed_credentials)
         response = root_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('actions', response.data)
-        self.assertEquals(response.data['actions'].keys(), ['GET',])
+        self.assertNotIn('actions', response.data)
 
         request = factory.options('/1', content_type='application/json',
                                HTTP_AUTHORIZATION=self.disallowed_credentials)
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('actions', response.data)
-        self.assertEquals(response.data['actions'].keys(), ['GET',])
+        self.assertNotIn('actions', response.data)
 
     def test_options_updateonly(self):
         request = factory.options('/', content_type='application/json',
                                HTTP_AUTHORIZATION=self.updateonly_credentials)
         response = root_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertIn('actions', response.data)
-        self.assertEquals(response.data['actions'].keys(), ['GET',])
+        self.assertNotIn('actions', response.data)
 
         request = factory.options('/1', content_type='application/json',
                                HTTP_AUTHORIZATION=self.updateonly_credentials)
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('actions', response.data)
-        self.assertEquals(response.data['actions'].keys(), ['PUT', 'PATCH', 'GET',])
+        self.assertEqual(list(response.data['actions'].keys()), ['PUT'])
 
 
 class OwnerModel(models.Model):

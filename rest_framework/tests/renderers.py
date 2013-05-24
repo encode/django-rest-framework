@@ -6,6 +6,7 @@ from django.core.cache import cache
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import unittest
+from django.utils.translation import ugettext_lazy as _
 from rest_framework import status, permissions
 from rest_framework.compat import yaml, etree, patterns, url, include
 from rest_framework.response import Response
@@ -237,6 +238,13 @@ class JSONRendererTests(TestCase):
     """
     Tests specific to the JSON Renderer
     """
+
+    def test_render_lazy_strings(self):
+        """
+        JSONRenderer should deal with lazy translated strings.
+        """
+        ret = JSONRenderer().render(_('test'))
+        self.assertEqual(ret, b'"test"')
 
     def test_without_content_type_args(self):
         """
