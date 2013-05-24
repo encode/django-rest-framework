@@ -35,6 +35,15 @@ class AlbumSerializer(serializers.ModelSerializer):
         fields = ('title', 'url')
 
 
+class UpperCaseTitleField(serializers.HyperlinkedIdentityField):
+    def get_lookup_value(self, obj):
+        return obj.title.upper()
+
+
+class UpperCaseAlbumSerializer(AlbumSerializer):
+    url = UpperCaseTitleField(view_name='album-detail', lookup_field='title')
+
+
 class BasicList(generics.ListCreateAPIView):
     model = BasicModel
     model_serializer_class = serializers.HyperlinkedModelSerializer
@@ -83,6 +92,10 @@ class AlbumDetail(generics.RetrieveAPIView):
     model = Album
     serializer_class = AlbumSerializer
     lookup_field = 'title'
+
+
+class UpperCaseAlbumDetail(AlbumDetail):
+    serializer_class = UpperCaseAlbumSerializer
 
 
 class OptionalRelationDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -201,23 +214,41 @@ class TestHyperlinkedIdentityFieldLookup(TestCase):
         for title in titles:
             album = Album(title=title)
             album.save()
-        self.detail_view = AlbumDetail.as_view()
-        self.data = {
-            'foo': {'title': 'foo', 'url': 'http://testserver/albums/foo/'},
-            'bar': {'title': 'bar', 'url': 'http://testserver/albums/bar/'},
-            'baz': {'title': 'baz', 'url': 'http://testserver/albums/baz/'}
-        }
 
     def test_lookup_field(self):
         """
         GET requests to AlbumDetail view should return serialized Albums
         with a url field keyed by `title`.
         """
+        detail_view = AlbumDetail.as_view()
+        data = {
+            'foo': {'title': 'foo', 'url': 'http://testserver/albums/foo/'},
+            'bar': {'title': 'bar', 'url': 'http://testserver/albums/bar/'},
+            'baz': {'title': 'baz', 'url': 'http://testserver/albums/baz/'}
+        }
         for album in Album.objects.all():
             request = factory.get('/albums/{0}/'.format(album.title))
-            response = self.detail_view(request, title=album.title)
+            response = detail_view(request, title=album.title)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
-            self.assertEqual(response.data, self.data[album.title])
+            self.assertEqual(response.data, data[album.title])
+
+    def test_lookup_field_function(self):
+        """
+        GET requests to UpperCaseAlbumDetail which runs with a custom
+        HyperlinkedIdentityField, tranforming the title to uppercase via an
+        overridden method.
+        """
+        uppercase_view = UpperCaseAlbumDetail.as_view()
+        data = {
+            'foo': {'title': 'foo', 'url': 'http://testserver/albums/FOO/'},
+            'bar': {'title': 'bar', 'url': 'http://testserver/albums/BAR/'},
+            'baz': {'title': 'baz', 'url': 'http://testserver/albums/BAZ/'}
+        }
+        for album in Album.objects.all():
+            request = factory.get('/albums/{0}/'.format(album.title))
+            response = uppercase_view(request, title=album.title)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.data, data[album.title])
 
 
 class TestCreateWithForeignKeys(TestCase):
