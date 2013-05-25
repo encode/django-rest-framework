@@ -130,12 +130,12 @@ class TestRootView(TestCase):
                 'max_length': 100,
                 'read_only': False,
                 'required': True,
-                'type': 'String',
+                'type': 'CharField',
             },
             'id': {
                 'read_only': True,
                 'required': False,
-                'type': 'Integer',
+                'type': 'IntegerField',
             },
         }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -264,12 +264,12 @@ class TestInstanceView(TestCase):
                     'max_length': 100,
                     'read_only': False,
                     'required': True,
-                    'type': 'String',
+                    'type': 'CharField',
                 },
                 'id': {
                     'read_only': True,
                     'required': False,
-                    'type': 'Integer',
+                    'type': 'IntegerField',
                 },
             }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
