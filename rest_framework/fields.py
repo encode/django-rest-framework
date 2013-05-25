@@ -72,18 +72,6 @@ def readable_date_formats(formats):
     return humanize_strptime(format)
 
 
-def humanize_form_fields(form):
-    """Return a humanized description of all the fields in a form.
-
-    :param form: A Django form.
-    :return: A dictionary of {field_label: humanized description}
-
-    """
-    fields = SortedDict([(name, humanize_field(field))
-                         for name, field in form.fields.iteritems()])
-    return fields
-
-
 def readable_time_formats(formats):
     format = ', '.join(formats).replace(ISO_8601, 'hh:mm[:ss[.uuuuuu]]')
     return humanize_strptime(format)
@@ -204,9 +192,10 @@ class Field(object):
     @property
     def humanized(self):
         humanized = {
-            'type': self.type_name,
             'required': getattr(self, 'required', False),
         }
+        if self.type_name is not None:
+            humanized['type'] = self.type_name.replace('Field', '')
         optional_attrs = ['read_only', 'help_text', 'label',
                           'min_length', 'max_length']
         for attr in optional_attrs:

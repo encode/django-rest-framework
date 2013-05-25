@@ -8,14 +8,13 @@ from decimal import Decimal
 from uuid import uuid4
 
 import datetime
-from django import forms
 from django.core import validators
 from django.db import models
 from django.test import TestCase
 from django.utils.datastructures import SortedDict
 
 from rest_framework import serializers
-from rest_framework.fields import Field, CharField
+from rest_framework.fields import Field, CharField, IntegerField
 from rest_framework.serializers import Serializer
 from rest_framework.tests.models import RESTFrameworkModel
 
@@ -827,16 +826,21 @@ class URLFieldTests(TestCase):
 class HumanizedField(TestCase):
     def setUp(self):
         self.required_field = Field()
+        self.required_field.type_name = 'IntegerField'
         self.required_field.label = uuid4().hex
         self.required_field.required = True
 
         self.optional_field = Field()
+        self.optional_field.type_name = 'CharField'
         self.optional_field.label = uuid4().hex
         self.optional_field.required = False
 
+        self.integer_field = IntegerField()
+        self.char_field = CharField()
+
     def test_type(self):
-        for field in (self.required_field, self.optional_field):
-            self.assertEqual(field.humanized['type'], field.type_name)
+        self.assertEqual(self.char_field.humanized['type'], 'Char')
+        self.assertEqual(self.integer_field.humanized['type'], 'Integer')
 
     def test_required(self):
         self.assertEqual(self.required_field.humanized['required'], True)
@@ -863,11 +867,11 @@ class HumanizedSerializer(TestCase):
         expected = {
             'field1': {u'required': True,
                        u'max_length': 3,
-                       u'type': u'CharField',
+                       u'type': u'Char',
                        u'read_only': False},
             'field2': {u'required': False,
                        u'max_length': 10,
-                       u'type': u'CharField',
+                       u'type': u'Char',
                        u'read_only': False}}
         self.assertEqual(set(expected.keys()), set(humanized.keys()))
         for k, v in humanized.iteritems():

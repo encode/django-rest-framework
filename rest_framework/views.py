@@ -9,7 +9,6 @@ from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import status, exceptions
 from rest_framework.compat import View
-from rest_framework.fields import humanize_form_fields
 from rest_framework.request import clone_request, Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -62,7 +61,6 @@ class APIView(View):
             'parses': [parser.media_type for parser in self.parser_classes],
         }
         content['actions'] = self.action_metadata(request)
-
         return content
 
     def action_metadata(self, request):
