@@ -129,6 +129,15 @@ class JSONPRenderer(JSONRenderer):
         json = super(JSONPRenderer, self).render(data, accepted_media_type,
                                                  renderer_context)
         return callback.encode(self.charset) + b'(' + json + b');'
+                
+
+class UnicodeJSONPRenderer(JSONPRenderer):
+    ensure_ascii = False
+    charset = 'utf-8'
+    """
+    Renderer which serializes to JSON.
+    Does *not* apply JSON's character escaping for non-ascii characters.
+    """
 
 
 class XMLRenderer(BaseRenderer):
