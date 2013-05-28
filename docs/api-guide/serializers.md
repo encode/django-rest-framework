@@ -3,7 +3,7 @@
 # Serializers
 
 > Expanding the usefulness of the serializers is something that we would
-like to address. However, it's not a trivial problem, and it
+like to address.  However, it's not a trivial problem, and it
 will take some serious design work.
 >
 > &mdash; Russell Keith-Magee, [Django users group][cite]
@@ -104,11 +104,11 @@ When deserializing a list of items, errors will be returned as a list of diction
 
 #### Field-level validation
 
-You can specify custom field-level validation by adding `.validate_<fieldname>` methods to your `Serializer` subclass. These are analogous to `.clean_<fieldname>` methods on Django forms, but accept slightly different arguments.
+You can specify custom field-level validation by adding `.validate_<fieldname>` methods to your `Serializer` subclass.  These are analogous to `.clean_<fieldname>` methods on Django forms, but accept slightly different arguments.
 
 They take a dictionary of deserialized attributes as a first argument, and the field name in that dictionary as a second argument (which will be either the name of the field or the value of the `source` argument to the field, if one was provided).
 
-Your `validate_<fieldname>` methods should either just return the `attrs` dictionary or raise a `ValidationError`. For example:
+Your `validate_<fieldname>` methods should either just return the `attrs` dictionary or raise a `ValidationError`.  For example:
 
     from rest_framework import serializers
 
@@ -127,7 +127,7 @@ Your `validate_<fieldname>` methods should either just return the `attrs` dictio
 
 #### Object-level validation
 
-To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass. This method takes a single argument, which is the `attrs` dictionary. It should raise a `ValidationError` if necessary, or just return `attrs`.  For example:
+To do any other validation that requires access to multiple fields, add a method called `.validate()` to your `Serializer` subclass.  This method takes a single argument, which is the `attrs` dictionary.  It should raise a `ValidationError` if necessary, or just return `attrs`.  For example:
 
     from rest_framework import serializers
 
@@ -285,7 +285,7 @@ To map the incoming data items to their corresponding object instances, the `.ge
 
 There are some cases where you need to provide extra context to the serializer in addition to the object being serialized.  One common case is if you're using a serializer that includes hyperlinked relations, which requires the serializer to have access to the current request so that it can properly generate fully qualified URLs.
 
-You can provide arbitrary additional context by passing a `context` argument when instantiating the serializer. For example:
+You can provide arbitrary additional context by passing a `context` argument when instantiating the serializer.  For example:
 
     serializer = AccountSerializer(account, context={'request': request})
     serializer.data
@@ -333,7 +333,7 @@ The `depth` option should be set to an integer value that indicates the depth of
 
 ## Specifying which fields should be read-only 
 
-You may wish to specify multiple fields as read-only. Instead of adding each field explicitly with the `read_only=True` attribute, you may use the `read_only_fields` Meta option, like so:
+You may wish to specify multiple fields as read-only.  Instead of adding each field explicitly with the `read_only=True` attribute, you may use the `read_only_fields` Meta option, like so:
 
     class AccountSerializer(serializers.ModelSerializer):
         class Meta:
@@ -425,7 +425,7 @@ Doing so should be considered advanced usage, and will only be needed if you hav
 
 The `field_mapping` attribute is a dictionary that maps model classes to serializer classes.  Overriding the attribute will let you set a different set of default serializer classes. 
 
-For more advanced customization than simply changing the default serializer class you can override various `get_<field_type>_field` methods.  Doing so will allow you to customize the arguments that each serializer field is initialized with. Each of these methods may either return a field or serializer instance, or `None`.
+For more advanced customization than simply changing the default serializer class you can override various `get_<field_type>_field` methods.  Doing so will allow you to customize the arguments that each serializer field is initialized with.  Each of these methods may either return a field or serializer instance, or `None`.
 
 ### get_pk_field
 

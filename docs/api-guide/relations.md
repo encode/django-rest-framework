@@ -138,7 +138,7 @@ By default this field is read-write, although you can change this behavior using
 * `many` - If applied to a to-many relationship, you should set this argument to `True`.
 * `required` - If set to `False`, the field will accept values of `None` or the empty-string for nullable relationships.
 * `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
-* `lookup_field` - The field on the target that should be used for the lookup.  Should correspond to a URL keyword argument on the referenced view. Default is `'pk'`.
+* `lookup_field` - The field on the target that should be used for the lookup.  Should correspond to a URL keyword argument on the referenced view.  Default is `'pk'`.
 * `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
 
 ## SlugRelatedField
@@ -202,7 +202,7 @@ This field is always read-only.
 **Arguments**:
 
 * `view_name` - The view name that should be used as the target of the relationship.  **required**.
-* `lookup_field` - The field on the target that should be used for the lookup.  Should correspond to a URL keyword argument on the referenced view. Default is `'pk'`.
+* `lookup_field` - The field on the target that should be used for the lookup.  Should correspond to a URL keyword argument on the referenced view.  Default is `'pk'`.
 * `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
 
 ---

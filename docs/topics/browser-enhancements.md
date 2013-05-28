@@ -21,7 +21,7 @@ For example, given the following form:
 
 ## HTTP header based method overriding
 
-REST framework also supports method overriding via the semi-standard `X-HTTP-Method-Override` header. This can be useful if you are working with non-form content such as JSON and are working with an older web server and/or hosting provider that doesn't recognise particular HTTP methods such as `PATCH`. For example [Amazon Web Services ELB][aws_elb].
+REST framework also supports method overriding via the semi-standard `X-HTTP-Method-Override` header.  This can be useful if you are working with non-form content such as JSON and are working with an older web server and/or hosting provider that doesn't recognise particular HTTP methods such as `PATCH`.  For example [Amazon Web Services ELB][aws_elb].
 
 To use it, make a `POST` request, setting the `X-HTTP-Method-Override` header.
 

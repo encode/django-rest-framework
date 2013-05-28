@@ -86,7 +86,7 @@ Note that when a request may successfully authenticate, but still be denied perm
 
 Note that if deploying to [Apache using mod_wsgi][mod_wsgi_official], the authorization header is not passed through to a WSGI application by default, as it is assumed that authentication will be handled by Apache, rather than at an application level.
 
-If you are deploying to Apache, and using any non-session based authentication, you will need to explicitly configure mod_wsgi to pass the required headers through to the application. This can be done by specifying the `WSGIPassAuthorization` directive in the appropriate context and setting it to `'On'`.
+If you are deploying to Apache, and using any non-session based authentication, you will need to explicitly configure mod_wsgi to pass the required headers through to the application.  This can be done by specifying the `WSGIPassAuthorization` directive in the appropriate context and setting it to `'On'`.
 
     # this can go in either server config, virtual host, directory or .htaccess 
     WSGIPassAuthorization On
@@ -216,9 +216,9 @@ If you're using an AJAX style API with SessionAuthentication, you'll need to mak
 
 ## OAuthAuthentication
 
-This authentication uses [OAuth 1.0a][oauth-1.0a] authentication scheme. OAuth 1.0a provides signature validation which provides a reasonable level of security over plain non-HTTPS connections.  However, it may also be considered more complicated than OAuth2, as it requires clients to sign their requests.
+This authentication uses [OAuth 1.0a][oauth-1.0a] authentication scheme.  OAuth 1.0a provides signature validation which provides a reasonable level of security over plain non-HTTPS connections.  However, it may also be considered more complicated than OAuth2, as it requires clients to sign their requests.
 
-This authentication class depends on the optional `django-oauth-plus` and `oauth2` packages. In order to make it work you must install these packages and add `oauth_provider` to your `INSTALLED_APPS`:
+This authentication class depends on the optional `django-oauth-plus` and `oauth2` packages.  In order to make it work you must install these packages and add `oauth_provider` to your `INSTALLED_APPS`:
 
     INSTALLED_APPS = (
         ...
@@ -231,7 +231,7 @@ Don't forget to run `syncdb` once you've added the package.
 
 #### Getting started with django-oauth-plus
 
-The OAuthAuthentication class only provides token verification and signature validation for requests. It doesn't provide authorization flow for your clients. You still need to implement your own views for accessing and authorizing tokens.
+The OAuthAuthentication class only provides token verification and signature validation for requests.  It doesn't provide authorization flow for your clients.  You still need to implement your own views for accessing and authorizing tokens.
 
 The `django-oauth-plus` package provides simple foundation for classic 'three-legged' oauth flow.  Please refer to [the documentation][django-oauth-plus] for more details.
 
@@ -239,7 +239,7 @@ The `django-oauth-plus` package provides simple foundation for classic 'three-le
 
 This authentication uses [OAuth 2.0][rfc6749] authentication scheme.  OAuth2 is more simple to work with than OAuth1, and provides much better security than simple token authentication.  It is an unauthenticated scheme, and requires you to use an HTTPS connection.
 
-This authentication class depends on the optional [django-oauth2-provider][django-oauth2-provider] project. In order to make it work you must install this package and add `provider` and `provider.oauth2` to your `INSTALLED_APPS`:
+This authentication class depends on the optional [django-oauth2-provider][django-oauth2-provider] project.  In order to make it work you must install this package and add `provider` and `provider.oauth2` to your `INSTALLED_APPS`:
 
     INSTALLED_APPS = (
         ...
@@ -266,9 +266,9 @@ Finally, sync your database.
 
 #### Getting started with django-oauth2-provider
 
-The `OAuth2Authentication` class only provides token verification for requests. It doesn't provide authorization flow for your clients.
+The `OAuth2Authentication` class only provides token verification for requests.  It doesn't provide authorization flow for your clients.
 
-The OAuth 2 authorization flow is taken care by the [django-oauth2-provider][django-oauth2-provider] dependency. A walkthrough is given here, but for more details you should refer to [the documentation][django-oauth2-provider-docs]. 
+The OAuth 2 authorization flow is taken care by the [django-oauth2-provider][django-oauth2-provider] dependency.  A walkthrough is given here, but for more details you should refer to [the documentation][django-oauth2-provider-docs].
 
 To get started:
 
@@ -276,7 +276,7 @@ To get started:
 
 You can create a client, either through the shell, or by using the Django admin.
 
-Go to the admin panel and create a new `Provider.Client` entry. It will create the `client_id` and `client_secret` properties for you.
+Go to the admin panel and create a new `Provider.Client` entry.  It will create the `client_id` and `client_secret` properties for you.
 
 ##### 2. Request an access token
 

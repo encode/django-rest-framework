@@ -16,7 +16,7 @@ Serializer fields handle converting between primitive values and internal dataty
 
 ## Core arguments
 
-Each serializer field class constructor takes at least these arguments. Some Field classes take additional, field-specific arguments, but the following should always be accepted:
+Each serializer field class constructor takes at least these arguments.  Some Field classes take additional, field-specific arguments, but the following should always be accepted:
 
 ### `source`
 
@@ -119,7 +119,7 @@ A generic field that can be tied to any arbitrary model field.  The `ModelField`
 
 ## SerializerMethodField
 
-This is a read-only field. It gets its value by calling a method on the serializer class it is attached to. It can be used to add any sort of data to the serialized representation of your object. The field's constructor accepts a single argument, which is the name of the method on the serializer to be called. The method should accept a single argument (in addition to `self`), which is the object being serialized. It should return whatever you want to be included in the serialized representation of the object. For example:
+This is a read-only field.  It gets its value by calling a method on the serializer class it is attached to.  It can be used to add any sort of data to the serialized representation of your object.  The field's constructor accepts a single argument, which is the name of the method on the serializer to be called.  The method should accept a single argument (in addition to `self`), which is the object being serialized.  It should return whatever you want to be included in the serialized representation of the object.  For example:
 
     from rest_framework import serializers
     from django.contrib.auth.models import User
@@ -158,7 +158,7 @@ or `django.db.models.fields.TextField`.
 
 ## URLField
 
-Corresponds to `django.db.models.fields.URLField`. Uses Django's `django.core.validators.URLValidator` for validation.
+Corresponds to `django.db.models.fields.URLField`.  Uses Django's `django.core.validators.URLValidator` for validation.
 
 **Signature:** `CharField(max_length=200, min_length=None)`
 
@@ -211,9 +211,9 @@ In the case of JSON this means the default datetime representation uses the [ECM
 **Signature:** `DateTimeField(format=None, input_formats=None)`
 
 * `format` - A string representing the output format.  If not specified, this defaults to `None`, which indicates that python `datetime` objects should be returned by `to_native`.  In this case the datetime encoding will be determined by the renderer. 
-* `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
+* `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
 
-DateTime format strings may either be [python strftime formats][strftime] which explicitly specifiy the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style datetimes should be used. (eg `'2013-01-29T12:34:56.000000Z'`)
+DateTime format strings may either be [python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style datetimes should be used. (eg `'2013-01-29T12:34:56.000000Z'`)
 
 ## DateField
 
@@ -224,7 +224,7 @@ Corresponds to `django.db.models.fields.DateField`
 **Signature:** `DateField(format=None, input_formats=None)`
 
 * `format` - A string representing the output format.  If not specified, this defaults to `None`, which indicates that python `date` objects should be returned by `to_native`.  In this case the date encoding will be determined by the renderer.
-* `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `DATE_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`. 
+* `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `DATE_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
 
 Date format strings may either be [python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style dates should be used. (eg `'2013-01-29'`)
 
@@ -239,9 +239,9 @@ Corresponds to `django.db.models.fields.TimeField`
 **Signature:** `TimeField(format=None, input_formats=None)`
 
 * `format` - A string representing the output format.  If not specified, this defaults to `None`, which indicates that python `time` objects should be returned by `to_native`.  In this case the time encoding will be determined by the renderer.
-* `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `TIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
+* `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `TIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
 
-Time format strings may either be [python strftime formats][strftime] which explicitly specifiy the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style times should be used. (eg `'12:34:56.000000'`)
+Time format strings may either be [python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style times should be used. (eg `'12:34:56.000000'`)
 
 ## IntegerField
 
@@ -263,7 +263,7 @@ Corresponds to `django.db.models.fields.DecimalField`.
 
 ## FileField
 
-A file representation. Performs Django's standard FileField validation. 
+A file representation.  Performs Django's standard FileField validation.
 
 Corresponds to `django.forms.fields.FileField`.
 
@@ -292,7 +292,7 @@ Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
 
 # Custom fields
 
-If you want to create a custom field, you'll probably want to override either one or both of the `.to_native()` and `.from_native()` methods.  These two methods are used to convert between the intial datatype, and a primative, serializable datatype.  Primative datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primative objects.
+If you want to create a custom field, you'll probably want to override either one or both of the `.to_native()` and `.from_native()` methods.  These two methods are used to convert between the initial datatype, and a primative, serializable datatype.  Primative datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primative objects.
 
 The `.to_native()` method is called to convert the initial datatype into a primative, serializable datatype.  The `from_native()` method is called to restore a primative datatype into it's initial representation.
 

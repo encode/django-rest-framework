@@ -225,7 +225,7 @@ The security vulnerabilities only affect APIs which use the `XMLParser` class, b
 * Bugfix: Validation errors instead of exceptions when related fields receive incorrect types.
 * Bugfix: Handle ObjectDoesNotExist exception when serializing null reverse one-to-one
 
-**Note**: Prior to 2.1.16, The Decimals would render in JSON using floating point if `simplejson` was installed, but otherwise render using string notation. Now that use of `simplejson` has been deprecated, Decimals will consistently render using string notation.  See [#582] for more details. 
+**Note**: Prior to 2.1.16, The Decimals would render in JSON using floating point if `simplejson` was installed, but otherwise render using string notation.  Now that use of `simplejson` has been deprecated, Decimals will consistently render using string notation.  See [#582] for more details.
 
 ### 2.1.15
 
