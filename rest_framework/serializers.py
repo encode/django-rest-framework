@@ -25,7 +25,7 @@ from rest_framework.compat import get_concrete_model, six
 #
 #     example_field = serializers.CharField(...)
 #
-# This helps keep the seperation between model fields, form fields, and
+# This helps keep the separation between model fields, form fields, and
 # serializer fields more explicit.
 
 from rest_framework.relations import *
@@ -58,7 +58,7 @@ class DictWithMetadata(dict):
     def __getstate__(self):
         """
         Used by pickle (e.g., caching).
-        Overriden to remove the metadata from the dict, since it shouldn't be
+        Overridden to remove the metadata from the dict, since it shouldn't be
         pickled and may in some instances be unpickleable.
         """
         return dict(self)

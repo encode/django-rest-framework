@@ -104,7 +104,7 @@ When deserializing a list of items, errors will be returned as a list of diction
 
 #### Field-level validation
 
-You can specify custom field-level validation by adding `.validate_<fieldname>` methods to your `Serializer` subclass. These are analagous to `.clean_<fieldname>` methods on Django forms, but accept slightly different arguments.
+You can specify custom field-level validation by adding `.validate_<fieldname>` methods to your `Serializer` subclass. These are analogous to `.clean_<fieldname>` methods on Django forms, but accept slightly different arguments.
 
 They take a dictionary of deserialized attributes as a first argument, and the field name in that dictionary as a second argument (which will be either the name of the field or the value of the `source` argument to the field, if one was provided).
 

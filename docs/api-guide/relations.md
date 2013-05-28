@@ -237,7 +237,7 @@ Would serialize to a nested representation like this:
         'album_name': 'The Grey Album',
         'artist': 'Danger Mouse'
         'tracks': [
-            {'order': 1, 'title': 'Public Service Annoucement'},
+            {'order': 1, 'title': 'Public Service Announcement'},
             {'order': 2, 'title': 'What More Can I Say'},
             {'order': 3, 'title': 'Encore'},
             ...

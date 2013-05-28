@@ -60,7 +60,7 @@ have any control over what is sent in the `Accept` header.
 ## URL based format suffixes
 
 REST framework can take `?format=json` style URL parameters, which can be a
-useful shortcut for determing which content type should be returned from
+useful shortcut for determining which content type should be returned from
 the view.
 
 This is a more concise than using the `accept` override, but it also gives

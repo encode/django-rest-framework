@@ -60,7 +60,7 @@ REST framework 2 also allows you to work with both function-based and class-base
 
 ## API Design
 
-Pretty much every aspect of REST framework has been reworked, with the aim of ironing out some of the design flaws of the previous versions.  Each of the components of REST framework are cleanly decoupled, and can be used independantly of each-other, and there are no monolithic resource classes, overcomplicated mixin combinations, or opinionated serialization or URL routing decisions.
+Pretty much every aspect of REST framework has been reworked, with the aim of ironing out some of the design flaws of the previous versions.  Each of the components of REST framework are cleanly decoupled, and can be used independently of each-other, and there are no monolithic resource classes, overcomplicated mixin combinations, or opinionated serialization or URL routing decisions.
 
 ## The Browsable API
 
@@ -70,7 +70,7 @@ Browsable Web APIs are easier to work with, visualize and debug, and generally m
 
 With REST framework 2, the browsable API gets a snazzy new bootstrap-based theme that looks great and is even nicer to work with.
 
-There are also some functionality improvments - actions such as as `POST` and `DELETE` will only display if the user has the appropriate permissions.
+There are also some functionality improvements - actions such as as `POST` and `DELETE` will only display if the user has the appropriate permissions.
 
 ![Browsable API][image]
 
