@@ -14,7 +14,7 @@ The set of valid renderers for a view is always defined as a list of classes.  W
 
 The basic process of content negotiation involves examining the request's `Accept` header, to determine which media types it expects in the response.  Optionally, format suffixes on the URL may be used to explicitly request a particular representation.  For example the URL `http://example.com/api/users_count.json` might be an endpoint that always returns JSON data.
 
-For more information see the documentation on [content negotation][conneg].
+For more information see the documentation on [content negotiation][conneg].
 
 ## Setting the renderers
 
@@ -69,7 +69,7 @@ If your API includes views that can serve both regular webpages and API response
 
 Renders the request data into `JSON`, using utf-8 encoding.
 
-Note that non-ascii charaters will be rendered using JSON's `\uXXXX` character escape.  For example:
+Note that non-ascii characters will be rendered using JSON's `\uXXXX` character escape.  For example:
 
     {"unicode black star": "\u2605"}
 
@@ -89,7 +89,7 @@ The client may additionally include an `'indent'` media type parameter, in which
 
 Renders the request data into `JSON`, using utf-8 encoding.
 
-Note that non-ascii charaters will not be character escaped.  For example:
+Note that non-ascii characters will not be character escaped.  For example:
 
     {"unicode black star": "★"}
 

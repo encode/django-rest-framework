@@ -204,7 +204,7 @@ If you want to override this behavior, you'll need to declare the `DateTimeField
         class Meta:
             model = Comment
 
-Note that by default, datetime representations are deteremined by the renderer in use, although this can be explicitly overridden as detailed below.
+Note that by default, datetime representations are determined by the renderer in use, although this can be explicitly overridden as detailed below.
 
 In the case of JSON this means the default datetime representation uses the [ECMA 262 date time string specification][ecma262].  This is a subset of ISO 8601 which uses millisecond precision, and includes the 'Z' suffix for the UTC timezone, for example: `2013-01-29T12:34:56.123Z`.
 
@@ -226,7 +226,7 @@ Corresponds to `django.db.models.fields.DateField`
 * `format` - A string representing the output format.  If not specified, this defaults to `None`, which indicates that python `date` objects should be returned by `to_native`.  In this case the date encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date. If not specified, the `DATE_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`. 
 
-Date format strings may either be [python strftime formats][strftime] which explicitly specifiy the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style dates should be used. (eg `'2013-01-29'`)
+Date format strings may either be [python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style dates should be used. (eg `'2013-01-29'`)
 
 ## TimeField
 

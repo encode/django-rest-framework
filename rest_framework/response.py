@@ -1,5 +1,5 @@
 """
-The Response class in REST framework is similiar to HTTPResponse, except that
+The Response class in REST framework is similar to HTTPResponse, except that
 it is initialized with unrendered data, instead of a pre-rendered string.
 
 The appropriate renderer is called during Django's template response rendering.

@@ -106,14 +106,14 @@ You can determine your currently installed version using `pip freeze`:
 **Date**: 17th April 2013
 
 * Loud failure when view does not return a `Response` or `HttpResponse`.
-* Bugfix: Fix for Django 1.3 compatiblity.
+* Bugfix: Fix for Django 1.3 compatibility.
 * Bugfix: Allow overridden `get_object()` to work correctly.
 
 ### 2.2.6
 
 **Date**: 4th April 2013
 
-* OAuth2 authentication no longer requires unneccessary URL parameters in addition to the token.
+* OAuth2 authentication no longer requires unnecessary URL parameters in addition to the token.
 * URL hyperlinking in browsable API now handles more cases correctly.
 * Long HTTP headers in browsable API are broken in multiple lines when possible.
 * Bugfix: Fix regression with DjangoFilterBackend not worthing correctly with single object views.

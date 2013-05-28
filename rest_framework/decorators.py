@@ -1,5 +1,5 @@
 """
-The most imporant decorator in this module is `@api_view`, which is used
+The most important decorator in this module is `@api_view`, which is used
 for writing function-based views with REST framework.
 
 There are also various decorators for setting the API policies on function
@@ -40,7 +40,7 @@ def api_view(http_method_names):
 
         # api_view applied with eg. string instead of list of strings
         assert isinstance(http_method_names, (list, tuple)), \
-            '@api_view expected a list of strings, recieved %s' % type(http_method_names).__name__
+            '@api_view expected a list of strings, received %s' % type(http_method_names).__name__
 
         allowed_methods = set(http_method_names) | set(('options',))
         WrappedAPIView.http_method_names = [method.lower() for method in allowed_methods]
