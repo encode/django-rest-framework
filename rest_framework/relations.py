@@ -518,8 +518,6 @@ class HyperlinkedIdentityField(Field):
         request = self.context.get('request', None)
         format = self.context.get('format', None)
         view_name = self.view_name or self.parent.opts.view_name
-        lookup_field = getattr(obj, self.lookup_field)
-        kwargs = {self.lookup_field: lookup_field}
 
         if request is None:
             warnings.warn("Using `HyperlinkedIdentityField` without including the "
@@ -539,27 +537,30 @@ class HyperlinkedIdentityField(Field):
         if format and self.format and self.format != format:
             format = self.format
 
+        lookup_field = getattr(obj, self.lookup_field)
+        kwargs = {self.lookup_field: lookup_field}
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except NoReverseMatch:
             pass
+
+        if self.pk_url_kwarg != 'pk':
+            # Only try pk lookup if it has been explicitly set.
+            # Otherwise, the default `lookup_field = 'pk'` has us covered.
+            kwargs = {self.pk_url_kwarg: obj.pk}
+            try:
+                return reverse(view_name, kwargs=kwargs, request=request, format=format)
+            except NoReverseMatch:
+                pass
 
         slug = getattr(obj, self.slug_field, None)
-
-        if not slug:
-            raise Exception('Could not resolve URL for field using view name "%s"' % view_name)
-
-        kwargs = {self.slug_url_kwarg: slug}
-        try:
-            return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except NoReverseMatch:
-            pass
-
-        kwargs = {self.pk_url_kwarg: obj.pk, self.slug_url_kwarg: slug}
-        try:
-            return reverse(view_name, kwargs=kwargs, request=request, format=format)
-        except NoReverseMatch:
-            pass
+        if slug:
+            # Only use slug lookup if a slug field exists on the model
+            kwargs = {self.slug_url_kwarg: slug}
+            try:
+                return reverse(view_name, kwargs=kwargs, request=request, format=format)
+            except NoReverseMatch:
+                pass
 
         raise Exception('Could not resolve URL for field using view name "%s"' % view_name)
 
