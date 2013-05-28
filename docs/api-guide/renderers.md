@@ -233,13 +233,13 @@ The request data, as set by the `Response()` instantiation.
 
 ### `media_type=None`
 
-Optional. If provided, this is the accepted media type, as determined by the content negotiation stage.
+Optional.  If provided, this is the accepted media type, as determined by the content negotiation stage.
 
 Depending on the client's `Accept:` header, this may be more specific than the renderer's `media_type` attribute, and may include media type parameters.  For example `"application/json; nested=true"`.
 
 ### `renderer_context=None`
 
-Optional. If provided, this is a dictionary of contextual information provided by the view.
+Optional.  If provided, this is a dictionary of contextual information provided by the view.
 
 By default this will include the following keys: `view`, `request`, `response`, `args`, `kwargs`.
 
@@ -325,7 +325,7 @@ For example:
 In some cases you might want a renderer to serve a range of media types.
 In this case you can underspecify the media types it should respond to, by using a `media_type` value such as `image/*`, or `*/*`.
 
-If you underspecify the renderer's media type, you should make sure to specify the media type explictly when you return the response, using the `content_type` attribute.  For example:
+If you underspecify the renderer's media type, you should make sure to specify the media type explicitly when you return the response, using the `content_type` attribute.  For example:
 
     return Response(data, content_type='image/png')
 

@@ -2,7 +2,7 @@
 
 What it is, and why you should care.
 
-> Most people just make the mistake that it should be simple to design simple things. In reality, the effort required to design something is inversely proportional to the simplicity of the result.
+> Most people just make the mistake that it should be simple to design simple things.  In reality, the effort required to design something is inversely proportional to the simplicity of the result.
 >
 > &mdash; [Roy Fielding][cite]
 
@@ -22,9 +22,9 @@ This article is intended to give you a flavor of what REST framework 2 is, and w
 
 Before we get cracking, let's start with the hard sell, with a few bits of feedback from some early adopters…
 
-"Django REST framework 2 is beautiful. Some of the API design is worthy of @kennethreitz." - [Kit La Touche][quote1]
+"Django REST framework 2 is beautiful.  Some of the API design is worthy of @kennethreitz." - [Kit La Touche][quote1]
 
-"Since it's pretty much just Django, controlling things like URLs has been a breeze... I think [REST framework 2] has definitely got the right approach here; even simple things like being able to override a function called post to do custom work during rather than having to intimately know what happens during a post make a huge difference to your productivity." - [Ian Strachan][quote2]
+"Since it's pretty much just Django, controlling things like URLs has been a breeze...  I think [REST framework 2] has definitely got the right approach here; even simple things like being able to override a function called post to do custom work during rather than having to intimately know what happens during a post make a huge difference to your productivity." - [Ian Strachan][quote2]
 
 "I switched to the 2.0 branch and I don't regret it - fully refactored my code in another &half; day and it's *much* more to my tastes" - [Bruno Desthuilliers][quote3]
 

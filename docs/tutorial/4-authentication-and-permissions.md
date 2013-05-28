@@ -94,7 +94,7 @@ On **both** the `SnippetList` and `SnippetDetail` view classes, add the followin
 
 ## Updating our serializer
 
-Now that snippets are associated with the user that created them, let's update our `SnippetSerializer` to reflect that. Add the following field to the serializer definition:
+Now that snippets are associated with the user that created them, let's update our `SnippetSerializer` to reflect that.  Add the following field to the serializer definition:
 
     owner = serializers.Field(source='owner.username')
 
@@ -120,7 +120,7 @@ Then, add the following property to **both** the `SnippetList` and `SnippetDetai
 
 ## Adding login to the Browsable API
 
-If you open a browser and navigate to the browsable API at the moment, you'll find that you're no longer able to create new code snippets. In order to do so we'd need to be able to login as a user.
+If you open a browser and navigate to the browsable API at the moment, you'll find that you're no longer able to create new code snippets.  In order to do so we'd need to be able to login as a user.
 
 We can add a login view for use with the browsable API, by editing our URLconf once more.
 

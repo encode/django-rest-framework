@@ -1,6 +1,6 @@
 # REST, Hypermedia & HATEOAS
 
-> You keep using that word "REST". I do not think it means what you think it means.
+> You keep using that word "REST".  I do not think it means what you think it means.
 >
 > &mdash; Mike Amundsen, [REST fest 2012 keynote][cite].
 
