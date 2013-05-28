@@ -34,7 +34,7 @@ Let's define a simple viewset that can be used to list or retrieve all the users
             serializer = UserSerializer(user)
             return Response(serializer.data)
 
-If we need to, we can bind this viewset into two seperate views, like so:
+If we need to, we can bind this viewset into two separate views, like so:
 
     user_list = UserViewSet.as_view({'get': 'list'})
     user_detail = UserViewSet.as_view({'get': 'retrieve'})
@@ -92,7 +92,7 @@ The default routers included with REST framework will provide routes for a stand
         def destroy(self, request, pk=None):
             pass
 
-If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@link` or `@action` decorators.  The `@link` decorator will route `GET` requests, and the `@action` decroator will route `POST` requests.
+If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@link` or `@action` decorators.  The `@link` decorator will route `GET` requests, and the `@action` decorator will route `POST` requests.
 
 For example:
 

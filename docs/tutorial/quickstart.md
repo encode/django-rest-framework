@@ -10,7 +10,7 @@ Create a new Django project named `tutorial`, then start a new app called `quick
     django-admin.py startproject tutorial
     cd tutorial
 
-    # Create a virtualenv to isolate our package dependancies locally
+    # Create a virtualenv to isolate our package dependencies locally
     virtualenv env
     source env/bin/activate
 
@@ -36,7 +36,7 @@ Next you'll need to get a database set up and synced.  If you just want to use S
 
 The run `syncdb` like so:
 
-    python manange.py syncdb
+    python manage.py syncdb
 
 Once you've set up a database and got everything synced and ready to go, open up the app's directory and we'll get coding...
 

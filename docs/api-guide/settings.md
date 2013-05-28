@@ -125,7 +125,7 @@ Default: `None`
 
 #### PAGINATE_BY_PARAM
 
-The name of a query parameter, which can be used by the client to overide the default page size to use for pagination.  If set to `None`, clients may not override the default page size.
+The name of a query parameter, which can be used by the client to override the default page size to use for pagination.  If set to `None`, clients may not override the default page size.
 
 Default: `None`
 

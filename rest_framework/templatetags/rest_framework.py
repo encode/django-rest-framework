@@ -15,7 +15,7 @@ register = template.Library()
 
 # When 1.3 becomes unsupported by REST framework, we can instead start to
 # use the {% load staticfiles %} tag, remove the following code,
-# and add a dependancy that `django.contrib.staticfiles` must be installed.
+# and add a dependency that `django.contrib.staticfiles` must be installed.
 
 # Note: We can't put this into the `compat` module because the compat import
 # from rest_framework.compat import ...
