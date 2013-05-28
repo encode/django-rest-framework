@@ -136,6 +136,7 @@ The following people have helped make REST framework great.
 * Andrew Tarzwell - [atarzwell]
 * Michal Dvořák - [mikee2185]
 * Markus Törnqvist - [mjtorn]
+* Pascal Borreli - [pborreli]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -308,3 +309,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [atarzwell]: https://github.com/atarzwell
 [mikee2185]: https://github.com/mikee2185
 [mjtorn]: https://github.com/mjtorn
+[pborreli]: https://github.com/pborreli
