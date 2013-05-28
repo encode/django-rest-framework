@@ -122,13 +122,13 @@ You won't typically need to override this method.
 >
 > &mdash; [Nick Coghlan][cite2]
 
-REST framework also allows you to work with regular function based views. It provides a set of simple decorators that wrap your function based views to ensure they receive an instance of `Request` (rather than the usual Django `HttpRequest`) and allows them to return a `Response` (instead of a Django `HttpResponse`), and allow you to configure how the request is processed.
+REST framework also allows you to work with regular function based views.  It provides a set of simple decorators that wrap your function based views to ensure they receive an instance of `Request` (rather than the usual Django `HttpRequest`) and allows them to return a `Response` (instead of a Django `HttpResponse`), and allow you to configure how the request is processed.
 
 ## @api_view()
 
 **Signature:** `@api_view(http_method_names)`
 
-The core of this functionality is the `api_view` decorator, which takes a list of HTTP methods that your view should respond to. For example, this is how you would write a very simple view that just manually returns some data:
+The core of this functionality is the `api_view` decorator, which takes a list of HTTP methods that your view should respond to.  For example, this is how you would write a very simple view that just manually returns some data:
 
     from rest_framework.decorators import api_view
 
@@ -141,7 +141,7 @@ This view will use the default renderers, parsers, authentication classes etc sp
 
 ## API policy decorators
 
-To override the default settings, REST framework provides a set of additional decorators which can be added to your views. These must come *after* (below) the `@api_view` decorator. For example, to create a view that uses a [throttle](throttling) to ensure it can only be called once per day by a particular user, use the `@throttle_classes` decorator, passing a list of throttle classes:
+To override the default settings, REST framework provides a set of additional decorators which can be added to your views.  These must come *after* (below) the `@api_view` decorator.  For example, to create a view that uses a [throttle](throttling) to ensure it can only be called once per day by a particular user, use the `@throttle_classes` decorator, passing a list of throttle classes:
 
     from rest_framework.decorators import api_view, throttle_classes
     from rest_framework.throttling import UserRateThrottle

@@ -58,11 +58,11 @@ Also note that `format_suffix_patterns` does not support descending into `includ
         
 ## Accept headers vs. format suffixes
 
-There seems to be a view among some of the Web community that filename extensions are not a RESTful pattern, and that `HTTP Accept` headers should always be used instead.  
+There seems to be a view among some of the Web community that filename extensions are not a RESTful pattern, and that `HTTP Accept` headers should always be used instead.
 
 It is actually a misconception.  For example, take the following quote from Roy Fielding discussing the relative merits of query parameter media-type indicators vs. file extension media-type indicators: 
 
-&ldquo;That's why I always prefer extensions. Neither choice has anything to do with REST.&rdquo; &mdash; Roy Fielding, [REST discuss mailing list][cite2]
+&ldquo;That's why I always prefer extensions.  Neither choice has anything to do with REST.&rdquo; &mdash; Roy Fielding, [REST discuss mailing list][cite2]
 
 The quote does not mention Accept headers, but it does make it clear that format suffixes should be considered an acceptable pattern.
 

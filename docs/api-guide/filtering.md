@@ -2,7 +2,7 @@
 
 # Filtering
 
-> The root QuerySet provided by the Manager describes all objects in the database table. Usually, though, you'll need to select only a subset of the complete set of objects.
+> The root QuerySet provided by the Manager describes all objects in the database table.  Usually, though, you'll need to select only a subset of the complete set of objects.
 >
 > &mdash; [Django documentation][cite]
 
