@@ -279,6 +279,16 @@ class TestInstanceView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected)
 
+    def test_get_instance_view_incorrect_arg(self):
+        """
+        GET requests with an incorrect pk type, should raise 404, not 500.
+        Regression test for #890.
+        """
+        request = factory.get('/a')
+        with self.assertNumQueries(0):
+            response = self.view(request, pk='a').render()
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
     def test_put_cannot_set_id(self):
         """
         PUT requests to create a new object should not be able to set the id.

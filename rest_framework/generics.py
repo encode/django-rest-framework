@@ -6,12 +6,23 @@ from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404 as _get_object_or_404
 from django.utils.translation import ugettext as _
 from rest_framework import views, mixins, exceptions
 from rest_framework.request import clone_request
 from rest_framework.settings import api_settings
 import warnings
+
+
+def get_object_or_404(queryset, **filter_kwargs):
+    """
+    Same as Django's standard shortcut, but make sure to raise 404
+    if the filter_kwargs don't match the required types.
+    """
+    try:
+        return _get_object_or_404(queryset, **filter_kwargs)
+    except (TypeError, ValueError):
+        raise Http404
 
 
 class GenericAPIView(views.APIView):
