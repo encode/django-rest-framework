@@ -537,6 +537,25 @@ class HyperlinkedIdentityField(Field):
         if format and self.format and self.format != format:
             format = self.format
 
+        # Return the hyperlink, or error if incorrectly configured.
+        try:
+            return self.get_url(obj, view_name, request, format)
+        except NoReverseMatch:
+            msg = (
+                'Could not resolve URL for hyperlinked relationship using '
+                'view name "%s". You may have failed to include the related '
+                'model in your API, or incorrectly configured the '
+                '`lookup_field` attribute on this field.'
+            )
+            raise Exception(msg % view_name)
+
+    def get_url(self, obj, view_name, request, format):
+        """
+        Given an object, return the URL that hyperlinks to the object.
+
+        May raise a `NoReverseMatch` if the `view_name` and `lookup_field`
+        attributes are not configured to correctly match the URL conf.
+        """
         lookup_field = getattr(obj, self.lookup_field)
         kwargs = {self.lookup_field: lookup_field}
         try:
@@ -562,7 +581,7 @@ class HyperlinkedIdentityField(Field):
             except NoReverseMatch:
                 pass
 
-        raise Exception('Could not resolve URL for field using view name "%s"' % view_name)
+        raise NoReverseMatch()
 
 
 ### Old-style many classes for backwards compat
