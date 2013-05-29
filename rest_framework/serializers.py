@@ -315,7 +315,8 @@ class BaseSerializer(WritableField):
         self._errors = {}
         if data is not None or files is not None:
             attrs = self.restore_fields(data, files)
-            attrs = self.perform_validation(attrs)
+            if attrs is not None:
+                attrs = self.perform_validation(attrs)
         else:
             self._errors['non_field_errors'] = ['No input provided']
 

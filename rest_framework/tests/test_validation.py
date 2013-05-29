@@ -63,3 +63,16 @@ class TestPreSaveValidationExclusions(TestCase):
         # does not have `blank=True`, so this serializer should not validate.
         serializer = ShouldValidateModelSerializer(data={'renamed': ''})
         self.assertEqual(serializer.is_valid(), False)
+
+
+class FieldValidationSerializer(serializers.Serializer):
+    foo = serializers.CharField()
+
+    def validate_foo(self, attrs, source):
+        raise StandardError("validate_foo was called")
+
+
+class TestFieldValidationWithInvalidData(TestCase):
+    def test_validate_foo_was_not_called(self):
+        serializer = FieldValidationSerializer(data='invalid data')
+        self.assertFalse(serializer.is_valid())
