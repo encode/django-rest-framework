@@ -36,7 +36,7 @@ class MockView_MinuteThrottling(APIView):
 
 
 class ThrottlingTests(TestCase):
-    urls = 'rest_framework.tests.throttling'
+    urls = 'rest_framework.tests.test_throttling'
 
     def setUp(self):
         """

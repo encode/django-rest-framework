@@ -118,7 +118,7 @@ class RendererIntegrationTests(TestCase):
     End-to-end testing of renderers using an ResponseMixin on a generic view.
     """
 
-    urls = 'rest_framework.tests.response'
+    urls = 'rest_framework.tests.test_response'
 
     def test_default_renderer_serializes_content(self):
         """If the Accept header is not set the default renderer should serialize the response."""
@@ -198,7 +198,7 @@ class Issue122Tests(TestCase):
     """
     Tests that covers #122.
     """
-    urls = 'rest_framework.tests.response'
+    urls = 'rest_framework.tests.test_response'
 
     def test_only_html_renderer(self):
         """
@@ -218,7 +218,7 @@ class Issue467Tests(TestCase):
     Tests for #467
     """
 
-    urls = 'rest_framework.tests.response'
+    urls = 'rest_framework.tests.test_response'
 
     def test_form_has_label_and_help_text(self):
         resp = self.client.get('/html_new_model')
@@ -232,7 +232,7 @@ class Issue807Tests(TestCase):
     Covers #807
     """
 
-    urls = 'rest_framework.tests.response'
+    urls = 'rest_framework.tests.test_response'
 
     def test_does_not_append_charset_by_default(self):
         """

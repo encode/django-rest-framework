@@ -42,7 +42,7 @@ urlpatterns = patterns('',
 
 
 class TemplateHTMLRendererTests(TestCase):
-    urls = 'rest_framework.tests.htmlrenderer'
+    urls = 'rest_framework.tests.test_htmlrenderer'
 
     def setUp(self):
         """
@@ -82,7 +82,7 @@ class TemplateHTMLRendererTests(TestCase):
 
 
 class TemplateHTMLRendererExceptionTests(TestCase):
-    urls = 'rest_framework.tests.htmlrenderer'
+    urls = 'rest_framework.tests.test_htmlrenderer'
 
     def setUp(self):
         """
