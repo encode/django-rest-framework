@@ -622,6 +622,7 @@ class ModelSerializerOptions(SerializerOptions):
         self.model = getattr(meta, 'model', None)
         self.read_only_fields = getattr(meta, 'read_only_fields', ())
         self.write_only_fields = getattr(meta, 'write_only_fields', ())
+        self.use_model_error_messages = getattr(meta, 'use_model_error_messages', False)
 
 
 class ModelSerializer(Serializer):
@@ -782,7 +783,7 @@ class ModelSerializer(Serializer):
                 "Non-existant field '%s' specified in `write_only_fields` "
                 "on serializer '%s'." %
                 (field_name, self.__class__.__name__))
-            ret[field_name].write_only = True            
+            ret[field_name].write_only = True
 
         return ret
 
@@ -848,7 +849,7 @@ class ModelSerializer(Serializer):
         if model_field.help_text is not None:
             kwargs['help_text'] = model_field.help_text
 
-        if model_field.error_messages is not None:
+        if self.opts.use_model_error_messages and model_field.error_messages is not None:
             kwargs['error_messages'] = model_field.error_messages
 
         # TODO: TypedChoiceField?
