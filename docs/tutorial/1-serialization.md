@@ -146,6 +146,8 @@ The first thing we need to get started on our Web API is provide a way of serial
 
 The first part of serializer class defines the fields that get serialized/deserialized.  The `restore_object` method defines how fully fledged instances get created when deserializing data.
 
+Notice that the code serializer includes a parameter for a form widget. This is included so that the default Browsable API returns a form with a text field instead of the default input field, which is a lot less appealing for typing code into. You do not have to worry about creating a browsable API endpoint as it will be discussed in the third tutorial.
+
 We can actually also save ourselves some time by using the `ModelSerializer` class, as we'll see later, but for now we'll keep our serializer definition explicit.  
 
 ## Working with Serializers
