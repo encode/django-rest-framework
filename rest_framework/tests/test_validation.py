@@ -65,14 +65,23 @@ class TestPreSaveValidationExclusions(TestCase):
         self.assertEqual(serializer.is_valid(), False)
 
 
-class FieldValidationSerializer(serializers.Serializer):
+class ValidationSerializer(serializers.Serializer):
     foo = serializers.CharField()
 
     def validate_foo(self, attrs, source):
-        raise StandardError("validate_foo was called")
+        raise serializers.ValidationError("foo invalid")
+
+    def validate(self, attrs):
+        raise serializers.ValidationError("serializer invalid")
 
 
-class TestFieldValidationWithInvalidData(TestCase):
-    def test_validate_foo_was_not_called(self):
-        serializer = FieldValidationSerializer(data='invalid data')
+class TestAvoidValidation(TestCase):
+    """
+    If serializer was initialized with invalid data (None or non dict-like), it
+    should avoid validation layer (validate_<field> and validate methods)
+    """
+    def test_serializer_errors_has_only_invalid_data_error(self):
+        serializer = ValidationSerializer(data='invalid data')
         self.assertFalse(serializer.is_valid())
+        self.assertDictEqual(serializer.errors,
+                             {'non_field_errors': ['Invalid data']})
