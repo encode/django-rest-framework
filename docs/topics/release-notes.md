@@ -40,6 +40,12 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
+### Master
+
+* Added `get_url` hook to `HyperlinkedIdentityField`.
+* Bugfix: `HyperlinkedIdentityField` should continue to support `pk_url_kwarg`, `slug_url_kwarg`, `slug_field`, in a pending deprecation state.
+* Bugfix: Ensure we always return 404 instead of 500 if a lookup field cannot be converted to the correct lookup type.  (Eg non-numeric `AutoInteger` pk lookup)
+
 ### 2.3.4
 
 **Date**: 24th May 2013
