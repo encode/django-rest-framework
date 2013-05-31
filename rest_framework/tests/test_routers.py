@@ -1,12 +1,10 @@
 from __future__ import unicode_literals
 from django.test import TestCase
 from django.test.client import RequestFactory
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework import viewsets
 from rest_framework.decorators import link, action
 from rest_framework.routers import SimpleRouter
-import copy
 
 factory = RequestFactory()
 
@@ -51,5 +49,3 @@ class TestSimpleRouter(TestCase):
             else:
                 method_map = 'get'
             self.assertEqual(route.mapping[method_map], endpoint)
-
-

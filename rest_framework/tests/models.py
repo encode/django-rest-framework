@@ -162,8 +162,8 @@ class NullableOneToOneSource(RESTFrameworkModel):
     target = models.OneToOneField(OneToOneTarget, null=True, blank=True,
                                   related_name='nullable_source')
 
+
 # Serializer used to test BasicModel
 class BasicModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasicModel
-

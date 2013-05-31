@@ -48,7 +48,7 @@ urlpatterns = patterns('',
     (r'^token/$', MockView.as_view(authentication_classes=[TokenAuthentication])),
     (r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
     (r'^oauth/$', MockView.as_view(authentication_classes=[OAuthAuthentication])),
-    (r'^oauth-with-scope/$', MockView.as_view(authentication_classes=[OAuthAuthentication], 
+    (r'^oauth-with-scope/$', MockView.as_view(authentication_classes=[OAuthAuthentication],
         permission_classes=[permissions.TokenHasReadWriteScope]))
 )
 
@@ -56,7 +56,7 @@ if oauth2_provider is not None:
     urlpatterns += patterns('',
         url(r'^oauth2/', include('provider.oauth2.urls', namespace='oauth2')),
         url(r'^oauth2-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication])),
-        url(r'^oauth2-with-scope-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication], 
+        url(r'^oauth2-with-scope-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication],
             permission_classes=[permissions.TokenHasReadWriteScope])),
     )
 
