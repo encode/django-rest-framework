@@ -907,6 +907,8 @@ class HyperlinkedModelSerializer(ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super(HyperlinkedModelSerializer, self).__init__(*args, **kwargs)
+        lookup_field = self.opts.lookup_field
+        self.fields['url'] = HyperlinkedIdentityField(lookup_field=lookup_field)
         if self.opts.view_name is None:
             self.opts.view_name = self._get_default_view_name(self.opts.model)
 

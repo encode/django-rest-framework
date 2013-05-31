@@ -493,8 +493,9 @@ class HyperlinkedIdentityField(Field):
         self.view_name = kwargs.pop('view_name', None)
         # Optionally the format of the target hyperlink may be specified
         self.format = kwargs.pop('format', None)
-
-        self.lookup_field = kwargs.pop('lookup_field', self.lookup_field)
+        lookup_field = kwargs.pop('lookup_field', None)
+        if lookup_field is not None:
+            self.lookup_field = lookup_field
 
         # These are pending deprecation
         if 'pk_url_kwarg' in kwargs:
