@@ -231,7 +231,7 @@ Multiple orderings may also be specified:
 
 If an `ordering` attribute is set on the view, this will be used as the default ordering.
 
-Typicaly you'd instead control this by setting `order_by` on the initial queryset, but using the `ordering` parameter on the view allows you to specify the ordering in a way that it can then be passed automatically as context to a rendered template.  This makes it possible to automatically render column headers differently if they are being used to order the results.
+Typically you'd instead control this by setting `order_by` on the initial queryset, but using the `ordering` parameter on the view allows you to specify the ordering in a way that it can then be passed automatically as context to a rendered template.  This makes it possible to automatically render column headers differently if they are being used to order the results.
 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
