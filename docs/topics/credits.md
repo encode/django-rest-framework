@@ -137,6 +137,7 @@ The following people have helped make REST framework great.
 * Michal Dvořák - [mikee2185]
 * Markus Törnqvist - [mjtorn]
 * Pascal Borreli - [pborreli]
+* Alex Burgel - [aburgel]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -310,3 +311,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [mikee2185]: https://github.com/mikee2185
 [mjtorn]: https://github.com/mjtorn
 [pborreli]: https://github.com/pborreli
+[aburgel]: https://github.com/aburgel
