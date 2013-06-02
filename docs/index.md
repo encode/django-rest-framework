@@ -32,7 +32,7 @@ There is a live example API for testing purposes, [available here][sandbox].
 REST framework requires the following:
 
 * Python (2.6.5+, 2.7, 3.2, 3.3)
-* Django (1.3, 1.4, 1.5)
+* Django (1.3, 1.4, 1.5, 1.6)
 
 The following packages are optional:
 
