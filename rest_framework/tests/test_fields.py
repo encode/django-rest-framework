@@ -11,8 +11,6 @@ from django.db import models
 from django.test import TestCase
 from django.utils.datastructures import SortedDict
 from rest_framework import serializers
-from rest_framework.fields import Field, CharField
-from rest_framework.serializers import Serializer
 from rest_framework.tests.models import RESTFrameworkModel
 
 
@@ -590,7 +588,7 @@ class DecimalFieldTest(TestCase):
         """
         Make sure the serializer works correctly
         """
-        class DecimalSerializer(Serializer):
+        class DecimalSerializer(serializers.Serializer):
             decimal_field = serializers.DecimalField(max_value=9010,
                                                      min_value=9000,
                                                      max_digits=6,
@@ -608,7 +606,7 @@ class DecimalFieldTest(TestCase):
         """
         Make sure max_value violations raises ValidationError
         """
-        class DecimalSerializer(Serializer):
+        class DecimalSerializer(serializers.Serializer):
             decimal_field = serializers.DecimalField(max_value=100)
 
         s = DecimalSerializer(data={'decimal_field': '123'})
@@ -620,7 +618,7 @@ class DecimalFieldTest(TestCase):
         """
         Make sure min_value violations raises ValidationError
         """
-        class DecimalSerializer(Serializer):
+        class DecimalSerializer(serializers.Serializer):
             decimal_field = serializers.DecimalField(min_value=100)
 
         s = DecimalSerializer(data={'decimal_field': '99'})
@@ -632,7 +630,7 @@ class DecimalFieldTest(TestCase):
         """
         Make sure max_digits violations raises ValidationError
         """
-        class DecimalSerializer(Serializer):
+        class DecimalSerializer(serializers.Serializer):
             decimal_field = serializers.DecimalField(max_digits=5)
 
         s = DecimalSerializer(data={'decimal_field': '123.456'})
@@ -644,7 +642,7 @@ class DecimalFieldTest(TestCase):
         """
         Make sure max_decimal_places violations raises ValidationError
         """
-        class DecimalSerializer(Serializer):
+        class DecimalSerializer(serializers.Serializer):
             decimal_field = serializers.DecimalField(decimal_places=3)
 
         s = DecimalSerializer(data={'decimal_field': '123.4567'})
@@ -656,7 +654,7 @@ class DecimalFieldTest(TestCase):
         """
         Make sure max_whole_digits violations raises ValidationError
         """
-        class DecimalSerializer(Serializer):
+        class DecimalSerializer(serializers.Serializer):
             decimal_field = serializers.DecimalField(max_digits=4, decimal_places=3)
 
         s = DecimalSerializer(data={'decimal_field': '12345.6'})
@@ -837,11 +835,11 @@ class URLFieldTests(TestCase):
 
 class FieldMetadata(TestCase):
     def setUp(self):
-        self.required_field = Field()
+        self.required_field = serializers.Field()
         self.required_field.label = uuid4().hex
         self.required_field.required = True
 
-        self.optional_field = Field()
+        self.optional_field = serializers.Field()
         self.optional_field.label = uuid4().hex
         self.optional_field.required = False
 
@@ -854,26 +852,3 @@ class FieldMetadata(TestCase):
     def test_label(self):
         for field in (self.required_field, self.optional_field):
             self.assertEqual(field.metadata()['label'], field.label)
-
-
-class MetadataSerializer(Serializer):
-    field1 = CharField(3, required=True)
-    field2 = CharField(10, required=False)
-
-
-class MetadataSerializerTestCase(TestCase):
-    def setUp(self):
-        self.serializer = MetadataSerializer()
-
-    def test_serializer_metadata(self):
-        metadata = self.serializer.metadata()
-        expected = {
-            'field1': {'required': True,
-                       'max_length': 3,
-                       'type': 'string',
-                       'read_only': False},
-            'field2': {'required': False,
-                       'max_length': 10,
-                       'type': 'string',
-                       'read_only': False}}
-        self.assertEqual(expected, metadata)
