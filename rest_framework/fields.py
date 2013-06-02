@@ -250,9 +250,6 @@ class WritableField(Field):
         self.validators = self.default_validators + validators
         self.default = default if default is not None else self.default
 
-        if is_simple_callable(self.default):
-            self.default = self.default()
-
         # Widgets are ony used for HTML forms.
         widget = widget or self.widget
         if isinstance(widget, type):
@@ -298,7 +295,10 @@ class WritableField(Field):
         except KeyError:
             if self.default is not None and not self.partial:
                 # Note: partial updates shouldn't set defaults
-                native = self.default
+                if is_simple_callable(self.default):
+                    native = self.default()
+                else:
+                    native = self.default
             else:
                 if self.required:
                     raise ValidationError(self.error_messages['required'])

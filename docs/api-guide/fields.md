@@ -41,7 +41,9 @@ Defaults to `True`.
 
 ### `default`
 
-If set, this gives the default value that will be used for the field if none is supplied.  If not set the default behavior is to not populate the attribute at all.
+If set, this gives the default value that will be used for the field if none is supplied.  If not set the default behavior is to not populate the attribute at all. 
+
+May be set to a function or other callable, in which case the value will be evaluated each time it is used.
 
 ### `validators`
 

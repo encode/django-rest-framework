@@ -852,3 +852,17 @@ class FieldMetadata(TestCase):
     def test_label(self):
         for field in (self.required_field, self.optional_field):
             self.assertEqual(field.metadata()['label'], field.label)
+
+
+class FieldCallableDefault(TestCase):
+    def setUp(self):
+        self.simple_callable = lambda: 'foo bar'
+
+    def test_default_can_be_simple_callable(self):
+        """
+        Ensure that the 'default' argument can also be a simple callable.
+        """
+        field = serializers.WritableField(default=self.simple_callable)
+        into = {}
+        field.field_from_native({}, {}, 'field', into)
+        self.assertEquals(into, {'field': 'foo bar'})
