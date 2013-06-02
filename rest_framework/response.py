@@ -12,7 +12,7 @@ from rest_framework.compat import six
 
 class Response(SimpleTemplateResponse):
     """
-    An HttpResponse that allows it's data to be rendered into
+    An HttpResponse that allows its data to be rendered into
     arbitrary media types.
     """
 
