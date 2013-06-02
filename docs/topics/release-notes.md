@@ -44,6 +44,7 @@ You can determine your currently installed version using `pip freeze`:
 
 * Added `get_url` hook to `HyperlinkedIdentityField`.
 * Serializer field `default` argument may be a callable.
+* `@action` decorator now accepts a `methods` argument.
 * Bugfix: The `lookup_field` option on `HyperlinkedIdentityField` should apply by default to the url field on the serializer.
 * Bugfix: `HyperlinkedIdentityField` should continue to support `pk_url_kwarg`, `slug_url_kwarg`, `slug_field`, in a pending deprecation state.
 * Bugfix: Ensure we always return 404 instead of 500 if a lookup field cannot be converted to the correct lookup type.  (Eg non-numeric `AutoInteger` pk lookup)

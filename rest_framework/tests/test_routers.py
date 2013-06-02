@@ -25,6 +25,10 @@ class BasicViewSet(viewsets.ViewSet):
     def action2(self, request, *args, **kwargs):
         return Response({'method': 'action2'})
 
+    @action(methods=['post', 'delete'])
+    def action3(self, request, *args, **kwargs):
+        return Response({'method': 'action2'})
+
     @link()
     def link1(self, request, *args, **kwargs):
         return Response({'method': 'link1'})
@@ -42,17 +46,20 @@ class TestSimpleRouter(TestCase):
         routes = self.router.get_routes(BasicViewSet)
         decorator_routes = routes[2:]
         # Make sure all these endpoints exist and none have been clobbered
-        for i, endpoint in enumerate(['action1', 'action2', 'link1', 'link2']):
+        for i, endpoint in enumerate(['action1', 'action2', 'action3', 'link1', 'link2']):
             route = decorator_routes[i]
             # check url listing
             self.assertEqual(route.url,
                              '^{{prefix}}/{{lookup}}/{0}/$'.format(endpoint))
             # check method to function mapping
-            if endpoint.startswith('action'):
-                method_map = 'post'
+            if endpoint == 'action3':
+                methods_map = ['post', 'delete']
+            elif endpoint.startswith('action'):
+                methods_map = ['post']
             else:
-                method_map = 'get'
-            self.assertEqual(route.mapping[method_map], endpoint)
+                methods_map = ['get']
+            for method in methods_map:
+                self.assertEqual(route.mapping[method], endpoint)
 
 
 class RouterTestModel(models.Model):

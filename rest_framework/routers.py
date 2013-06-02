@@ -131,20 +131,20 @@ class SimpleRouter(BaseRouter):
         dynamic_routes = []
         for methodname in dir(viewset):
             attr = getattr(viewset, methodname)
-            httpmethod = getattr(attr, 'bind_to_method', None)
-            if httpmethod:
-                dynamic_routes.append((httpmethod, methodname))
+            httpmethods = getattr(attr, 'bind_to_methods', None)
+            if httpmethods:
+                dynamic_routes.append((httpmethods, methodname))
 
         ret = []
         for route in self.routes:
             if route.mapping == {'{httpmethod}': '{methodname}'}:
                 # Dynamic routes (@link or @action decorator)
-                for httpmethod, methodname in dynamic_routes:
+                for httpmethods, methodname in dynamic_routes:
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
                     ret.append(Route(
                         url=replace_methodname(route.url, methodname),
-                        mapping={httpmethod: methodname},
+                        mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
                         name=replace_methodname(route.name, methodname),
                         initkwargs=initkwargs,
                     ))

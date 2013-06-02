@@ -126,6 +126,11 @@ The `@action` and `@link` decorators can additionally take extra arguments that 
         def set_password(self, request, pk=None):
            ...
 
+The `@action` decorator will route `POST` requests by default, but may also accept other HTTP methods, by using the `method` argument.  For example:
+
+        @action(methods=['POST', 'DELETE'])
+        def unset_password(self, request, pk=None):
+           ...
 ---
 
 # API Reference
