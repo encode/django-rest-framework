@@ -903,14 +903,23 @@ class HyperlinkedModelSerializer(ModelSerializer):
     _default_view_name = '%(model_name)s-detail'
     _hyperlink_field_class = HyperlinkedRelatedField
 
-    url = HyperlinkedIdentityField()
+    # Just a placeholder to ensure 'url' is the first field
+    # The field itself is actually created on initialization,
+    # when the view_name and lookup_field arguments are available.
+    url = Field()
 
     def __init__(self, *args, **kwargs):
         super(HyperlinkedModelSerializer, self).__init__(*args, **kwargs)
-        lookup_field = self.opts.lookup_field
-        self.fields['url'] = HyperlinkedIdentityField(lookup_field=lookup_field)
+
         if self.opts.view_name is None:
             self.opts.view_name = self._get_default_view_name(self.opts.model)
+
+        url_field = HyperlinkedIdentityField(
+            view_name=self.opts.view_name,
+            lookup_field=self.opts.lookup_field
+        )
+        url_field.initialize(self, 'url')
+        self.fields['url'] = url_field
 
     def _get_default_view_name(self, model):
         """

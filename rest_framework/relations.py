@@ -72,7 +72,6 @@ class RelatedField(WritableField):
                 else:  # Reverse
                     self.queryset = manager.field.rel.to._default_manager.all()
             except Exception:
-                raise
                 msg = ('Serializer related fields must include a `queryset`' +
                        ' argument or set `read_only=True')
                 raise Exception(msg)
@@ -488,14 +487,15 @@ class HyperlinkedIdentityField(Field):
     slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
 
     def __init__(self, *args, **kwargs):
-        # TODO: Make view_name mandatory, and have the
-        # HyperlinkedModelSerializer set it on-the-fly
-        self.view_name = kwargs.pop('view_name', None)
-        # Optionally the format of the target hyperlink may be specified
+        try:
+            self.view_name = kwargs.pop('view_name')
+        except KeyError:
+            msg = "HyperlinkedIdentityField requires 'view_name' argument"
+            raise ValueError(msg)
+
         self.format = kwargs.pop('format', None)
         lookup_field = kwargs.pop('lookup_field', None)
-        if lookup_field is not None:
-            self.lookup_field = lookup_field
+        self.lookup_field = lookup_field or self.lookup_field
 
         # These are pending deprecation
         if 'pk_url_kwarg' in kwargs:
@@ -518,7 +518,7 @@ class HyperlinkedIdentityField(Field):
     def field_to_native(self, obj, field_name):
         request = self.context.get('request', None)
         format = self.context.get('format', None)
-        view_name = self.view_name or self.parent.opts.view_name
+        view_name = self.view_name
 
         if request is None:
             warnings.warn("Using `HyperlinkedIdentityField` without including the "
