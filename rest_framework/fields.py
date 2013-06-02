@@ -250,6 +250,9 @@ class WritableField(Field):
         self.validators = self.default_validators + validators
         self.default = default if default is not None else self.default
 
+        if is_simple_callable(self.default):
+            self.default = self.default()
+
         # Widgets are ony used for HTML forms.
         widget = widget or self.widget
         if isinstance(widget, type):
