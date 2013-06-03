@@ -55,7 +55,7 @@ class CreateModelMixin(object):
             return Response(serializer.data, status=status.HTTP_201_CREATED,
                             headers=headers)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     def get_success_headers(self, data):
         try:
@@ -132,7 +132,7 @@ class UpdateModelMixin(object):
             self.post_save(self.object, created=created)
             return Response(serializer.data, status=success_status_code)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
