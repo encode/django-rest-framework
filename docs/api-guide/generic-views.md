@@ -182,7 +182,7 @@ Provides a `.create(request, *args, **kwargs)` method, that implements creating 
 
 If an object is created this returns a `201 Created` response, with a serialized representation of the object as the body of the response.  If the representation contains a key named `url`, then the `Location` header of the response will be populated with that value.
 
-If the request data provided for creating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
+If the request data provided for creating the object was invalid, a `422 Unprocessable Entity` response will be returned, with the error details as the body of the response.
 
 ## RetrieveModelMixin
 
@@ -200,7 +200,7 @@ If an object is updated this returns a `200 OK` response, with a serialized repr
 
 If an object is created, for example when making a `DELETE` request followed by a `PUT` request to the same URL, this returns a `201 Created` response, with a serialized representation of the object as the body of the response.
 
-If the request data provided for updating the object was invalid, a `400 Bad Request` response will be returned, with the error details as the body of the response.
+If the request data provided for updating the object was invalid, a `422 Unprocessable Entity` response will be returned, with the error details as the body of the response.
 
 ## DestroyModelMixin
 
