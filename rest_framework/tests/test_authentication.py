@@ -6,6 +6,8 @@ from django.utils import unittest
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
 from rest_framework import permissions
+from rest_framework import renderers
+from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authentication import (
     BaseAuthentication,
@@ -553,3 +555,40 @@ class OAuth2Tests(TestCase):
         auth = self._create_authorization_header(token=read_write_access_token.token)
         response = self.csrf_client.post('/oauth2-with-scope-test/', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
+
+
+class FailingAuthAccessedInRenderer(TestCase):
+    def setUp(self):
+        class AuthAccessingRenderer(renderers.BaseRenderer):
+            media_type = 'text/plain'
+            format = 'txt'
+
+            def render(self, data, media_type=None, renderer_context=None):
+                request = renderer_context['request']
+                if request.user.is_authenticated():
+                    return b'authenticated'
+                return b'not authenticated'
+
+        class FailingAuth(BaseAuthentication):
+            def authenticate(self, request):
+                raise exceptions.AuthenticationFailed('authentication failed')
+
+        class ExampleView(APIView):
+            authentication_classes = (FailingAuth,)
+            renderer_classes = (AuthAccessingRenderer,)
+
+            def get(self, request):
+                return Response({'foo': 'bar'})
+
+        self.view = ExampleView.as_view()
+
+    def test_failing_auth_accessed_in_renderer(self):
+        """
+        When authentication fails the renderer should still be able to access
+        `request.user` without raising an exception. Particularly relevant
+        to HTML responses that might reasonably access `request.user`.
+        """
+        request = factory.get('/')
+        response = self.view(request)
+        content = response.render().content
+        self.assertEqual(content, b'not authenticated')

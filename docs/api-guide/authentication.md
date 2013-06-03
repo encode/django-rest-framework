@@ -333,7 +333,7 @@ The following example will authenticate any incoming request as the user given b
             try:
                 user = User.objects.get(username=username)
             except User.DoesNotExist:
-                raise authenticate.AuthenticationFailed('No such user')
+                raise exceptions.AuthenticationFailed('No such user')
             
             return (user, None)
 

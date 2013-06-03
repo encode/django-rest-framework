@@ -173,7 +173,7 @@ class Request(object):
         by the authentication classes provided to the request.
         """
         if not hasattr(self, '_user'):
-            self._authenticator, self._user, self._auth = self._authenticate()
+            self._authenticate()
         return self._user
 
     @user.setter
@@ -192,7 +192,7 @@ class Request(object):
         request, such as an authentication token.
         """
         if not hasattr(self, '_auth'):
-            self._authenticator, self._user, self._auth = self._authenticate()
+            self._authenticate()
         return self._auth
 
     @auth.setter
@@ -210,7 +210,7 @@ class Request(object):
         to authenticate the request, or `None`.
         """
         if not hasattr(self, '_authenticator'):
-            self._authenticator, self._user, self._auth = self._authenticate()
+            self._authenticate()
         return self._authenticator
 
     def _load_data_and_files(self):
@@ -330,11 +330,18 @@ class Request(object):
         Returns a three-tuple of (authenticator, user, authtoken).
         """
         for authenticator in self.authenticators:
-            user_auth_tuple = authenticator.authenticate(self)
+            try:
+                user_auth_tuple = authenticator.authenticate(self)
+            except exceptions.APIException:
+                self._not_authenticated()
+                raise
+
             if not user_auth_tuple is None:
-                user, auth = user_auth_tuple
-                return (authenticator, user, auth)
-        return self._not_authenticated()
+                self._authenticator = authenticator
+                self._user, self._auth = user_auth_tuple
+                return
+
+        self._not_authenticated()
 
     def _not_authenticated(self):
         """
@@ -343,17 +350,17 @@ class Request(object):
 
         By default this will be (None, AnonymousUser, None).
         """
+        self._authenticator = None
+
         if api_settings.UNAUTHENTICATED_USER:
-            user = api_settings.UNAUTHENTICATED_USER()
+            self._user = api_settings.UNAUTHENTICATED_USER()
         else:
-            user = None
+            self._user = None
 
         if api_settings.UNAUTHENTICATED_TOKEN:
-            auth = api_settings.UNAUTHENTICATED_TOKEN()
+            self._auth = api_settings.UNAUTHENTICATED_TOKEN()
         else:
-            auth = None
-
-        return (None, user, auth)
+            self._auth = None
 
     def __getattr__(self, attr):
         """
