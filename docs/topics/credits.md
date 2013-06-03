@@ -138,6 +138,7 @@ The following people have helped make REST framework great.
 * Markus Törnqvist - [mjtorn]
 * Pascal Borreli - [pborreli]
 * Alex Burgel - [aburgel]
+* David Medina - [copitux]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -312,3 +313,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [mjtorn]: https://github.com/mjtorn
 [pborreli]: https://github.com/pborreli
 [aburgel]: https://github.com/aburgel
+[copitux]: https://github.com/copitux
