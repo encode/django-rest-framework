@@ -1556,3 +1556,34 @@ class MetadataSerializerTestCase(TestCase):
             }
         }
         self.assertEqual(expected, metadata)
+
+
+class SimpleModel(models.Model):
+    text = models.CharField(max_length=100)
+
+
+class SimpleModelSerializer(serializers.ModelSerializer):
+    text = serializers.CharField()
+    other = serializers.CharField()
+
+    class Meta:
+        model = SimpleModel
+
+    def validate_other(self, attrs, source):
+        del attrs['other']
+        return attrs
+
+class FieldValidationRemovingAttr(TestCase):
+    def test_removing_non_model_field_in_validation(self):
+        """
+        Removing an attr during field valiation should ensure that it is not
+        passed through when restoring the object.
+
+        This allows additional non-model fields to be supported.
+
+        Regression test for #840.
+        """
+        serializer = SimpleModelSerializer(data={'text': 'foo', 'other': 'bar'})
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+        self.assertEqual(serializer.object.text, 'foo')
