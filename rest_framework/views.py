@@ -5,8 +5,7 @@ from __future__ import unicode_literals
 
 import warnings
 
-from django.core.exceptions import PermissionDenied
-from django.http import Http404, HttpResponse
+from django.http import HttpResponse
 from django.utils.datastructures import SortedDict
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
@@ -26,6 +25,7 @@ class APIView(View):
     throttle_classes = api_settings.DEFAULT_THROTTLE_CLASSES
     permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
     content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
+    handle_exception = api_settings.DEFAULT_EXCEPTION_HANDLER
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -264,38 +264,6 @@ class APIView(View):
             response[key] = value
 
         return response
-
-    def handle_exception(self, exc):
-        """
-        Handle any exception that occurs, by returning an appropriate response,
-        or re-raising the error.
-        """
-        if isinstance(exc, exceptions.Throttled):
-            # Throttle wait header
-            self.headers['X-Throttle-Wait-Seconds'] = '%d' % exc.wait
-
-        if isinstance(exc, (exceptions.NotAuthenticated,
-                            exceptions.AuthenticationFailed)):
-            # WWW-Authenticate header for 401 responses, else coerce to 403
-            auth_header = self.get_authenticate_header(self.request)
-
-            if auth_header:
-                self.headers['WWW-Authenticate'] = auth_header
-            else:
-                exc.status_code = status.HTTP_403_FORBIDDEN
-
-        if isinstance(exc, exceptions.APIException):
-            return Response(exc.data, status=exc.status_code,
-                            exception=True)
-        elif isinstance(exc, Http404):
-            return Response({'detail': 'Not found'},
-                            status=status.HTTP_404_NOT_FOUND,
-                            exception=True)
-        elif isinstance(exc, PermissionDenied):
-            return Response({'detail': 'Permission denied'},
-                            status=status.HTTP_403_FORBIDDEN,
-                            exception=True)
-        raise
 
     # Note: session based authentication is explicitly CSRF validated,
     # all other authentication is CSRF exempt.

@@ -59,6 +59,9 @@ DEFAULTS = {
         'rest_framework.pagination.PaginationSerializer',
     'DEFAULT_FILTER_BACKENDS': (),
 
+    # Exception handling
+    'DEFAULT_EXCEPTION_HANDLER': 'rest_framework.handlers.handle_exception',
+
     # Throttling
     'DEFAULT_THROTTLE_RATES': {
         'user': None,
@@ -117,6 +120,7 @@ IMPORT_STRINGS = (
     'FILTER_BACKEND',
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN',
+    'DEFAULT_EXCEPTION_HANDLER',
 )
 
 

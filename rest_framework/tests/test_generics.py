@@ -343,7 +343,7 @@ class TestInstanceView(TestCase):
         self.assertIn('text', response.data)
         self.assertEqual(
             response.data['text'],
-            [u'Ensure this value has at most 100 characters (it has 120).'])
+            ['Ensure this value has at most 100 characters (it has 120).'])
 
     def test_put_to_deleted_instance(self):
         """
