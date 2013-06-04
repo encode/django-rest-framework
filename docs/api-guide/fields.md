@@ -117,7 +117,9 @@ A field that supports both read and write operations.  By itself `WritableField`
 
 A generic field that can be tied to any arbitrary model field.  The `ModelField` class delegates the task of serialization/deserialization to it's associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.
 
-**Signature:** `ModelField(model_field=<Django ModelField class>)`
+The `ModelField` class is generally intended for internal use, but can be used by your API if needed.  In order to properly instantiate a `ModelField`, it must be passed a field that is attached to an instantiated model.  For example: `ModelField(model_field=MyModel()._meta.get_field('custom_field'))`
+
+**Signature:** `ModelField(model_field=<Django ModelField instance>)`
 
 ## SerializerMethodField
 
