@@ -3,6 +3,8 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
 
+import warnings
+
 from django.core.exceptions import PermissionDenied
 from django.http import Http404, HttpResponse
 from django.utils.datastructures import SortedDict
@@ -320,6 +322,11 @@ class APIView(View):
                 handler = self.http_method_not_allowed
 
             response = handler(request, *args, **kwargs)
+
+            if response.status_code >= 400:
+                warnings.warn('Status code >= 400 returned. You should raise'
+                              ' `rest_framework.exceptions.APIException`'
+                              ' instead.', stacklevel=2)
 
         except Exception as exc:
             response = self.handle_exception(exc)

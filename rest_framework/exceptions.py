@@ -34,6 +34,13 @@ class DeserializeError(APIException):
         self.data = dict(errors)
 
 
+class TokenAuthenticationError(DeserializeError):
+    """Raised when incorrect data is posted during Token Authentication."""
+    # TODO: Change status code to HTTP_401
+    # TODO: Make data look like {'detail': 'Reason of failure'}
+    pass
+
+
 class AuthenticationFailed(APIException):
     status_code = status.HTTP_401_UNAUTHORIZED
     default_detail = 'Incorrect authentication credentials.'
