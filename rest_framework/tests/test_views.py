@@ -94,7 +94,7 @@ class ClassBasedViewIntegrationTests(TestCase):
     def test_return_400_error(self):
         request = factory.post('/', '{"return_400_error": true}',
                                content_type='application/json')
-        with warnings.catch_warnings(True) as w:
+        with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter('always')
             response = self.view(request)
             self.assertEqual(len(w), 1)
@@ -146,7 +146,7 @@ class FunctionBasedViewIntegrationTests(TestCase):
     def test_return_400_error(self):
         request = factory.post('/', '{"return_400_error": true}',
                                content_type='application/json')
-        with warnings.catch_warnings(True) as w:
+        with warnings.catch_warnings(record=True) as w:
             warnings.simplefilter('always')
             response = self.view(request)
             self.assertEqual(len(w), 1)
