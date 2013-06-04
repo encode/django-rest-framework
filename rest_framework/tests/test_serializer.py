@@ -1558,6 +1558,8 @@ class MetadataSerializerTestCase(TestCase):
         self.assertEqual(expected, metadata)
 
 
+### Regression test for #840
+
 class SimpleModel(models.Model):
     text = models.CharField(max_length=100)
 
@@ -1573,6 +1575,7 @@ class SimpleModelSerializer(serializers.ModelSerializer):
         del attrs['other']
         return attrs
 
+
 class FieldValidationRemovingAttr(TestCase):
     def test_removing_non_model_field_in_validation(self):
         """
@@ -1587,3 +1590,44 @@ class FieldValidationRemovingAttr(TestCase):
         self.assertTrue(serializer.is_valid())
         serializer.save()
         self.assertEqual(serializer.object.text, 'foo')
+
+
+### Regression test for #878
+
+class SimpleTargetModel(models.Model):
+    text = models.CharField(max_length=100)
+
+
+class SimplePKSourceModelSerializer(serializers.Serializer):
+    targets = serializers.PrimaryKeyRelatedField(queryset=SimpleTargetModel.objects.all(), many=True)
+    text = serializers.CharField()
+
+
+class SimpleSlugSourceModelSerializer(serializers.Serializer):
+    targets = serializers.SlugRelatedField(queryset=SimpleTargetModel.objects.all(), many=True, slug_field='pk')
+    text = serializers.CharField()
+
+
+class SerializerSupportsManyRelationships(TestCase):
+    def setUp(self):
+        SimpleTargetModel.objects.create(text='foo')
+        SimpleTargetModel.objects.create(text='bar')
+
+    def test_serializer_supports_pk_many_relationships(self):
+        """
+        Regression test for #878.
+
+        Note that pk behavior has a different code path to usual cases,
+        for performance reasons.
+        """
+        serializer = SimplePKSourceModelSerializer(data={'text': 'foo', 'targets': [1, 2]})
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.data, {'text': 'foo', 'targets': [1, 2]})
+
+    def test_serializer_supports_slug_many_relationships(self):
+        """
+        Regression test for #878.
+        """
+        serializer = SimpleSlugSourceModelSerializer(data={'text': 'foo', 'targets': [1, 2]})
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.data, {'text': 'foo', 'targets': [1, 2]})

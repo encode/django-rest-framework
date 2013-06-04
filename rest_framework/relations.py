@@ -12,7 +12,7 @@ from django.db.models.fields import BLANK_CHOICE_DASH
 from django.forms import widgets
 from django.forms.models import ModelChoiceIterator
 from django.utils.translation import ugettext_lazy as _
-from rest_framework.fields import Field, WritableField, get_component
+from rest_framework.fields import Field, WritableField, get_component, is_simple_callable
 from rest_framework.reverse import reverse
 from rest_framework.compat import urlparse
 from rest_framework.compat import smart_text
@@ -144,7 +144,12 @@ class RelatedField(WritableField):
             return None
 
         if self.many:
-            return [self.to_native(item) for item in value.all()]
+            if is_simple_callable(getattr(value, 'all', None)):
+                return [self.to_native(item) for item in value.all()]
+            else:
+                # Also support non-queryset iterables.
+                # This allows us to also support plain lists of related items.
+                return [self.to_native(item) for item in value]
         return self.to_native(value)
 
     def field_from_native(self, data, files, field_name, into):
@@ -242,7 +247,12 @@ class PrimaryKeyRelatedField(RelatedField):
                     queryset = get_component(queryset, component)
 
             # Forward relationship
-            return [self.to_native(item.pk) for item in queryset.all()]
+            if is_simple_callable(getattr(queryset, 'all', None)):
+                return [self.to_native(item.pk) for item in queryset.all()]
+            else:
+                # Also support non-queryset iterables.
+                # This allows us to also support plain lists of related items.
+                return [self.to_native(item.pk) for item in queryset]
 
         # To-one relationship
         try:
