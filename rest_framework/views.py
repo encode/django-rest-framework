@@ -283,8 +283,7 @@ class APIView(View):
                 exc.status_code = status.HTTP_403_FORBIDDEN
 
         if isinstance(exc, exceptions.APIException):
-            return Response({'detail': exc.detail},
-                            status=exc.status_code,
+            return Response(exc.data, status=exc.status_code,
                             exception=True)
         elif isinstance(exc, Http404):
             return Response({'detail': 'Not found'},
