@@ -66,6 +66,13 @@ This router includes routes for the standard set of `list`, `create`, `retrieve`
     <tr><td>POST</td><td>@action decorated method</td></tr>
 </table>
 
+By default the URLs created by `SimpleRouter` are appending with a trailing slash.
+This behavior can be modified by setting the `trailing_slash` argument to `False` when instantiating the router.  For example:
+
+    router = SimpleRouter(trailing_slash=False)
+
+Trailing slashes are conventional in Django, but are not used by default in some other frameworks such as Rails.  Which style you choose to use is largely a matter of preference, although some javascript frameworks may expect a particular routing style.
+
 ## DefaultRouter
 
 This router is similar to `SimpleRouter` as above, but additionally includes a default API root view, that returns a response containing hyperlinks to all the list views.  It also generates routes for optional `.json` style format suffixes.
@@ -83,6 +90,10 @@ This router is similar to `SimpleRouter` as above, but additionally includes a d
     <tr><td>POST</td><td>@action decorated method</td></tr>
 </table>
 
+As with `SimpleRouter` the trailing slashs on the URL routes can be removed by setting the `trailing_slash` argument to `False` when instantiating the router.
+
+    router = DefaultRouter(trailing_slash=False)
+
 # Custom Routers
 
 Implementing a custom router isn't something you'd need to do very often, but it can be useful if you have specific requirements about how the your URLs for your API are strutured.  Doing so allows you to encapsulate the URL structure in a reusable way that ensures you don't have to write your URL patterns explicitly for each new view.
@@ -91,7 +102,7 @@ The simplest way to implement a custom router is to subclass one of the existing
 
 ## Example
 
-The following example will only route to the `list` and `retrieve` actions, and unlike the routers included by REST framework, it does not use the trailing slash convention.
+The following example will only route to the `list` and `retrieve` actions, and does not use the trailing slash convention.
 
     class ReadOnlyRouter(SimpleRouter):
         """

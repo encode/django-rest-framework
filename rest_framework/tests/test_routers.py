@@ -50,7 +50,7 @@ class TestSimpleRouter(TestCase):
             route = decorator_routes[i]
             # check url listing
             self.assertEqual(route.url,
-                             '^{{prefix}}/{{lookup}}/{0}/$'.format(endpoint))
+                             '^{{prefix}}/{{lookup}}/{0}{{trailing_slash}}$'.format(endpoint))
             # check method to function mapping
             if endpoint == 'action3':
                 methods_map = ['post', 'delete']
@@ -103,7 +103,7 @@ class TestCustomLookupFields(TestCase):
 
     def test_retrieve_lookup_field_list_view(self):
         response = self.client.get('/notes/')
-        self.assertEquals(response.data,
+        self.assertEqual(response.data,
             [{
                 "url": "http://testserver/notes/123/",
                 "uuid": "123", "text": "foo bar"
@@ -112,10 +112,39 @@ class TestCustomLookupFields(TestCase):
 
     def test_retrieve_lookup_field_detail_view(self):
         response = self.client.get('/notes/123/')
-        self.assertEquals(response.data,
+        self.assertEqual(response.data,
             {
                 "url": "http://testserver/notes/123/",
                 "uuid": "123", "text": "foo bar"
             }
         )
 
+
+class TestTrailingSlash(TestCase):
+    def setUp(self):
+        class NoteViewSet(viewsets.ModelViewSet):
+            model = RouterTestModel
+
+        self.router = SimpleRouter()
+        self.router.register(r'notes', NoteViewSet)
+        self.urls = self.router.urls
+
+    def test_urls_have_trailing_slash_by_default(self):
+        expected = ['^notes/$', '^notes/(?P<pk>[^/]+)/$']
+        for idx in range(len(expected)):
+            self.assertEqual(expected[idx], self.urls[idx].regex.pattern)
+
+
+class TestTrailingSlash(TestCase):
+    def setUp(self):
+        class NoteViewSet(viewsets.ModelViewSet):
+            model = RouterTestModel
+
+        self.router = SimpleRouter(trailing_slash=False)
+        self.router.register(r'notes', NoteViewSet)
+        self.urls = self.router.urls
+
+    def test_urls_can_have_trailing_slash_removed(self):
+        expected = ['^notes$', '^notes/(?P<pk>[^/]+)$']
+        for idx in range(len(expected)):
+            self.assertEqual(expected[idx], self.urls[idx].regex.pattern)
