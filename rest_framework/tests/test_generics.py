@@ -158,6 +158,19 @@ class TestRootView(TestCase):
         created = self.objects.get(id=4)
         self.assertEqual(created.text, 'foobar')
 
+    def test_post_wrong_data(self):
+        """
+        POST requests with wrong JSON data should raise HTTP 400
+        """
+        content = {'id': 999, 'wrongtext': 'foobar'}
+        request = factory.post('/', json.dumps(content),
+                              content_type='application/json')
+        with self.assertNumQueries(0):
+            response = self.view(request, pk=1).render()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('text', response.data)
+        self.assertEqual(response.data['text'], ['This field is required.'])
+
 
 class TestInstanceView(TestCase):
     def setUp(self):
@@ -302,6 +315,35 @@ class TestInstanceView(TestCase):
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
         updated = self.objects.get(id=1)
         self.assertEqual(updated.text, 'foobar')
+
+    def test_put_wrong_data(self):
+        """
+        PUT requests with wrong JSON data should raise HTTP 400
+        """
+        content = {'id': 999, 'wrongtext': 'foobar'}
+        request = factory.put('/1', json.dumps(content),
+                              content_type='application/json')
+        with self.assertNumQueries(1):
+            response = self.view(request, pk=1).render()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('text', response.data)
+        self.assertEqual(response.data['text'], ['This field is required.'])
+
+    def test_patch_wrong_data(self):
+        """
+        PATCH requests with wrong JSON data should raise HTTP 400
+        """
+        content = {'text': 'foobar' * 20}  # too long
+        request = factory.patch('/1', json.dumps(content),
+                              content_type='application/json')
+
+        with self.assertNumQueries(1):
+            response = self.view(request, pk=1).render()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('text', response.data)
+        self.assertEqual(
+            response.data['text'],
+            ['Ensure this value has at most 100 characters (it has 120).'])
 
     def test_put_to_deleted_instance(self):
         """

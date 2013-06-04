@@ -11,41 +11,49 @@ from rest_framework import status
 class APIException(Exception):
     """
     Base class for REST framework exceptions.
-    Subclasses should provide `.status_code` and `.detail` properties.
+    Subclasses should provide `.status_code` and `.data` properties.
+
+    The `.data` is a dictionary that usually contains just one
+    field: "detail". However, some exception classes may override
+    it.
     """
-    pass
+
+    def __init__(self, detail=None):
+        self.data = {'detail': detail or self.default_detail}
 
 
 class ParseError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = 'Malformed request.'
 
-    def __init__(self, detail=None):
-        self.detail = detail or self.default_detail
+
+class DeserializeError(APIException):
+    status_code = status.HTTP_400_BAD_REQUEST
+
+    def __init__(self, errors):
+        self.data = dict(errors)
+
+
+class TokenAuthenticationError(DeserializeError):
+    """Raised when incorrect data is posted during Token Authentication."""
+    # TODO: Change status code to HTTP_401
+    # TODO: Make data look like {'detail': 'Reason of failure'}
+    pass
 
 
 class AuthenticationFailed(APIException):
     status_code = status.HTTP_401_UNAUTHORIZED
     default_detail = 'Incorrect authentication credentials.'
 
-    def __init__(self, detail=None):
-        self.detail = detail or self.default_detail
-
 
 class NotAuthenticated(APIException):
     status_code = status.HTTP_401_UNAUTHORIZED
     default_detail = 'Authentication credentials were not provided.'
 
-    def __init__(self, detail=None):
-        self.detail = detail or self.default_detail
-
 
 class PermissionDenied(APIException):
     status_code = status.HTTP_403_FORBIDDEN
     default_detail = 'You do not have permission to perform this action.'
-
-    def __init__(self, detail=None):
-        self.detail = detail or self.default_detail
 
 
 class MethodNotAllowed(APIException):
@@ -53,7 +61,7 @@ class MethodNotAllowed(APIException):
     default_detail = "Method '%s' not allowed."
 
     def __init__(self, method, detail=None):
-        self.detail = (detail or self.default_detail) % method
+        self.data = {'detail': (detail or self.default_detail) % method}
 
 
 class NotAcceptable(APIException):
@@ -61,7 +69,9 @@ class NotAcceptable(APIException):
     default_detail = "Could not satisfy the request's Accept header"
 
     def __init__(self, detail=None, available_renderers=None):
-        self.detail = detail or self.default_detail
+        super(NotAcceptable, self).__init__(detail)
+        # TODO: self.available_renderers not used anywhere
+        #       across the code
         self.available_renderers = available_renderers
 
 
@@ -70,7 +80,7 @@ class UnsupportedMediaType(APIException):
     default_detail = "Unsupported media type '%s' in request."
 
     def __init__(self, media_type, detail=None):
-        self.detail = (detail or self.default_detail) % media_type
+        self.data = {'detail': (detail or self.default_detail) % media_type}
 
 
 class Throttled(APIException):
@@ -83,9 +93,10 @@ class Throttled(APIException):
         self.wait = wait and math.ceil(wait) or None
         if wait is not None:
             format = detail or self.default_detail + self.extra_detail
-            self.detail = format % (self.wait, self.wait != 1 and 's' or '')
+            self.data = {'detail':
+                         format % (self.wait, self.wait != 1 and 's' or '')}
         else:
-            self.detail = detail or self.default_detail
+            self.data = {'detail': detail or self.default_detail}
 
 
 class ConfigurationError(Exception):
