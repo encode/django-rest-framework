@@ -10,7 +10,9 @@ A `ViewSet` class is only bound to a set of method handlers at the last moment, 
 
 Let's take our current set of views, and refactor them into view sets.
 
-First of all let's refactor our `UserListView` and `UserDetailView` views into a single `UserViewSet`.  We can remove the two views, and replace then with a single class:
+First of all let's refactor our `UserList` and `UserDetail` views into a single `UserViewSet`.  We can remove the two views, and replace then with a single class:
+
+    from rest_framework import viewsets
 
     class UserViewSet(viewsets.ReadOnlyModelViewSet):
         """
@@ -23,15 +25,14 @@ Here we've used `ReadOnlyModelViewSet` class to automatically provide the defaul
 
 Next we're going to replace the `SnippetList`, `SnippetDetail` and `SnippetHighlight` view classes.  We can remove the three views, and again replace them with a single class.
 
-    from rest_framework import viewsets
     from rest_framework.decorators import link
 
     class SnippetViewSet(viewsets.ModelViewSet):
         """
         This viewset automatically provides `list`, `create`, `retrieve`,
         `update` and `destroy` actions.
-        
-        Additionally we also provide an extra `highlight` action. 
+
+        Additionally we also provide an extra `highlight` action.
         """
         queryset = Snippet.objects.all()
         serializer_class = SnippetSerializer
@@ -107,7 +108,7 @@ Here's our re-wired `urls.py` file.
     router = DefaultRouter()
     router.register(r'snippets', views.SnippetViewSet)
     router.register(r'users', views.UserViewSet)
-    
+
     # The API URLs are now determined automatically by the router.
     # Additionally, we include the login URLs for the browseable API.
     urlpatterns = patterns('',
@@ -131,7 +132,7 @@ With an incredibly small amount of code, we've now got a complete pastebin Web A
 
 We've walked through each step of the design process, and seen how if we need to customize anything we can gradually work our way down to simply using regular Django views.
 
-You can review the final [tutorial code][repo] on GitHub, or try out a live example in [the sandbox][sandbox]. 
+You can review the final [tutorial code][repo] on GitHub, or try out a live example in [the sandbox][sandbox].
 
 ## Onwards and upwards
 
