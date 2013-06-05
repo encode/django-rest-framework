@@ -803,6 +803,26 @@ class CallableDefaultValueTests(TestCase):
         self.assertEqual(instance.text, 'overridden')
 
 
+class CallableSourceTests(TestCase):
+    def setUp(self):
+        class CommentSerializer(serializers.Serializer):
+            email = serializers.EmailField()
+            content = serializers.CharField(max_length=1000)
+            length = serializers.IntegerField(
+                source=lambda comment: len(comment.content),
+                read_only=True)
+        self.serializer_class = CommentSerializer
+
+    def test_callable_source(self):
+        instance = Comment('user@email.com', 'foobar', None)
+        serializer = self.serializer_class(instance=instance)
+        self.assertEquals(serializer.data, {
+            'email': 'user@email.com',
+            'content': 'foobar',
+            'length': 6
+        })
+
+
 class ManyRelatedTests(TestCase):
     def test_reverse_relations(self):
         post = BlogPost.objects.create(title="Test blog post")

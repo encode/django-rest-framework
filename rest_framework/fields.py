@@ -160,6 +160,9 @@ class Field(object):
         source = self.source or field_name
         value = obj
 
+        if callable(source):
+            return source(value)
+
         for component in source.split('.'):
             value = get_component(value, component)
             if value is None:
