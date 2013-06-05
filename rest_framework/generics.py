@@ -285,7 +285,7 @@ class GenericAPIView(views.APIView):
             )
             filter_kwargs = {self.slug_field: slug}
         else:
-            raise exceptions.ConfigurationError(
+            raise ImproperlyConfigured(
                 'Expected view %s to be called with a URL keyword argument '
                 'named "%s". Fix your URL conf, or set the `.lookup_field` '
                 'attribute on the view correctly.' %
