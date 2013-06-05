@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
+from rest_framework import serializers
 
 
 def foobar():
@@ -32,7 +34,7 @@ class Anchor(RESTFrameworkModel):
 
 
 class BasicModel(RESTFrameworkModel):
-    text = models.CharField(max_length=100)
+    text = models.CharField(max_length=100, verbose_name=_("Text comes here"), help_text=_("Text description."))
 
 
 class SlugBasedModel(RESTFrameworkModel):
@@ -56,13 +58,6 @@ class ManyToManyModel(RESTFrameworkModel):
 class ReadOnlyManyToManyModel(RESTFrameworkModel):
     text = models.CharField(max_length=100, default='anchor')
     rel = models.ManyToManyField(Anchor)
-
-
-# Model to test filtering.
-class FilterableItem(RESTFrameworkModel):
-    text = models.CharField(max_length=100)
-    decimal = models.DecimalField(max_digits=4, decimal_places=2)
-    date = models.DateField()
 
 
 # Model for regression test for #285
@@ -166,3 +161,9 @@ class NullableOneToOneSource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
     target = models.OneToOneField(OneToOneTarget, null=True, blank=True,
                                   related_name='nullable_source')
+
+
+# Serializer used to test BasicModel
+class BasicModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicModel

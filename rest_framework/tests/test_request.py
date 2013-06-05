@@ -254,7 +254,7 @@ urlpatterns = patterns('',
 
 
 class TestContentParsingWithAuthentication(TestCase):
-    urls = 'rest_framework.tests.request'
+    urls = 'rest_framework.tests.test_request'
 
     def setUp(self):
         self.csrf_client = Client(enforce_csrf_checks=True)

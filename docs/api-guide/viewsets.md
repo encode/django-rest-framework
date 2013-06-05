@@ -13,11 +13,11 @@ A `ViewSet` class is simply **a type of class-based View, that does not provide 
 
 The method handlers for a `ViewSet` are only bound to the corresponding actions at the point of finalizing the view, using the `.as_view()` method.
 
-Typically, rather than exlicitly registering the views in a viewset in the urlconf, you'll register the viewset with a router class, that automatically determines the urlconf for you.
+Typically, rather than explicitly registering the views in a viewset in the urlconf, you'll register the viewset with a router class, that automatically determines the urlconf for you.
 
 ## Example
 
-Let's define a simple viewset that can be used to listing or retrieving all the users in the system.
+Let's define a simple viewset that can be used to list or retrieve all the users in the system.
 
     class UserViewSet(viewsets.ViewSet):
         """
@@ -34,7 +34,7 @@ Let's define a simple viewset that can be used to listing or retrieving all the 
             serializer = UserSerializer(user)
             return Response(serializer.data)
 
-If we need to, we can bind this viewset into two seperate views, like so:
+If we need to, we can bind this viewset into two separate views, like so:
 
     user_list = UserViewSet.as_view({'get': 'list'})
     user_detail = UserViewSet.as_view({'get': 'retrieve'})
@@ -65,7 +65,7 @@ Both of these come with a trade-off.  Using regular views and URL confs is more 
 
 The default routers included with REST framework will provide routes for a standard set of create/retrieve/update/destroy style operations, as shown below:
 
-    class UserViewSet(viewsets.VietSet):
+    class UserViewSet(viewsets.ViewSet):
         """
         Example empty viewset demonstrating the standard
         actions that will be handled by a router class.
@@ -92,7 +92,7 @@ The default routers included with REST framework will provide routes for a stand
         def destroy(self, request, pk=None):
             pass
 
-If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@link` or `@action` decorators.  The `@link` decorator will route `GET` requests, and the `@action` decroator will route `POST` requests.
+If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@link` or `@action` decorators.  The `@link` decorator will route `GET` requests, and the `@action` decorator will route `POST` requests.
 
 For example:
 
@@ -126,6 +126,11 @@ The `@action` and `@link` decorators can additionally take extra arguments that 
         def set_password(self, request, pk=None):
            ...
 
+The `@action` decorator will route `POST` requests by default, but may also accept other HTTP methods, by using the `method` argument.  For example:
+
+        @action(methods=['POST', 'DELETE'])
+        def unset_password(self, request, pk=None):
+           ...
 ---
 
 # API Reference
@@ -136,9 +141,15 @@ The `ViewSet` class inherits from `APIView`.  You can use any of the standard at
 
 The `ViewSet` class does not provide any implementations of actions.  In order to use a `ViewSet` class you'll override the class and define the action implementations explicitly.
 
+## GenericViewSet
+
+The `GenericViewSet` class inherits from `GenericAPIView`, and provides the default set of `get_object`, `get_queryset` methods and other generic view base behavior, but does not include any actions by default.
+
+In order to use a `GenericViewSet` class you'll override the class and either mixin the required mixin classes, or define the action implementations explicitly.
+
 ## ModelViewSet
 
-The `ModelViewSet` class inherits from `GenericAPIView` and includes implementations for various actions, by mixing in the behavior of the
+The `ModelViewSet` class inherits from `GenericAPIView` and includes implementations for various actions, by mixing in the behavior of the various mixin classes.
 
 The actions provided by the `ModelViewSet` class are `.list()`, `.retrieve()`,  `.create()`, `.update()`, and `.destroy()`.
 
@@ -188,17 +199,18 @@ Again, as with `ModelViewSet`, you can use any of the standard attributes and me
 
 # Custom ViewSet base classes 
 
-Any standard `View` class can be turned into a `ViewSet` class by mixing in `ViewSetMixin`.  You can use this to define your own base classes.
+You may need to provide custom `ViewSet` classes that do not have the full set of `ModelViewSet` actions, or that customize the behavior in some other way.
 
 ## Example
 
-For example, we can create a base viewset class that provides `retrieve`, `update` and `list` operations:
+To create a base viewset class that provides `create`, `list` and `retrieve` operations, inherit from `GenericViewSet`, and mixin the required actions:
 
-    class RetrieveUpdateListViewSet(mixins.RetrieveModelMixin,
-                                    mixins.UpdateModelMixin,
-                                    mixins.ListModelMixin,
-                                    viewsets.ViewSetMixin,
-                                    generics.GenericAPIView):
+    class CreateListRetrieveViewSet(mixins.CreateMixin,
+                                    mixins.ListMixin,
+                                    mixins.RetrieveMixin,
+                                    viewsets.GenericViewSet):
+        pass
+
         """
         A viewset that provides `retrieve`, `update`, and `list` actions.
         
@@ -207,6 +219,6 @@ For example, we can create a base viewset class that provides `retrieve`, `updat
         """
         pass
 
-By creating your own base `ViewSet` classes, you can provide common behavior that can be reused in multiple views across your API.
+By creating your own base `ViewSet` classes, you can provide common behavior that can be reused in multiple viewsets across your API.
 
 [cite]: http://guides.rubyonrails.org/routing.html

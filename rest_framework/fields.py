@@ -11,20 +11,21 @@ from decimal import Decimal, DecimalException
 import inspect
 import re
 import warnings
-
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.conf import settings
+from django.db.models.fields import BLANK_CHOICE_DASH
 from django import forms
 from django.forms import widgets
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
-
+from django.utils.datastructures import SortedDict
 from rest_framework import ISO_8601
-from rest_framework.compat import timezone, parse_date, parse_datetime, parse_time
+from rest_framework.compat import (timezone, parse_date, parse_datetime,
+                                   parse_time)
 from rest_framework.compat import BytesIO
 from rest_framework.compat import six
-from rest_framework.compat import smart_text
+from rest_framework.compat import smart_text, force_text, is_non_str_iterable
 from rest_framework.settings import api_settings
 
 
@@ -50,7 +51,7 @@ def get_component(obj, attr_name):
     return that attribute on the object.
     """
     if isinstance(obj, dict):
-        val = obj[attr_name]
+        val = obj.get(attr_name)
     else:
         val = getattr(obj, attr_name)
 
@@ -60,7 +61,8 @@ def get_component(obj, attr_name):
 
 
 def readable_datetime_formats(formats):
-    format = ', '.join(formats).replace(ISO_8601, 'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]')
+    format = ', '.join(formats).replace(ISO_8601,
+             'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]')
     return humanize_strptime(format)
 
 
@@ -107,14 +109,21 @@ class Field(object):
     partial = False
     use_files = False
     form_field_class = forms.CharField
+    type_label = 'field'
 
-    def __init__(self, source=None):
+    def __init__(self, source=None, label=None, help_text=None):
         self.parent = None
 
         self.creation_counter = Field.creation_counter
         Field.creation_counter += 1
 
         self.source = source
+
+        if label is not None:
+            self.label = smart_text(label)
+
+        if help_text is not None:
+            self.help_text = smart_text(help_text)
 
     def initialize(self, parent, field_name):
         """
@@ -167,11 +176,16 @@ class Field(object):
 
         if is_protected_type(value):
             return value
-        elif hasattr(value, '__iter__') and not isinstance(value, (dict, six.string_types)):
+        elif (is_non_str_iterable(value) and
+              not isinstance(value, (dict, six.string_types))):
             return [self.to_native(item) for item in value]
         elif isinstance(value, dict):
-            return dict(map(self.to_native, (k, v)) for k, v in value.items())
-        return smart_text(value)
+            # Make sure we preserve field ordering, if it exists
+            ret = SortedDict()
+            for key, val in value.items():
+                ret[key] = self.to_native(val)
+            return ret
+        return force_text(value)
 
     def attributes(self):
         """
@@ -180,6 +194,18 @@ class Field(object):
         if self.type_name:
             return {'type': self.type_name}
         return {}
+
+    def metadata(self):
+        metadata = SortedDict()
+        metadata['type'] = self.type_label
+        metadata['required'] = getattr(self, 'required', False)
+        optional_attrs = ['read_only', 'label', 'help_text',
+                          'min_length', 'max_length']
+        for attr in optional_attrs:
+            value = getattr(self, attr, None)
+            if value is not None and value != '':
+                metadata[attr] = force_text(value, strings_only=True)
+        return metadata
 
 
 class WritableField(Field):
@@ -194,7 +220,8 @@ class WritableField(Field):
     widget = widgets.TextInput
     default = None
 
-    def __init__(self, source=None, read_only=False, required=None,
+    def __init__(self, source=None, label=None, help_text=None,
+                 read_only=False, required=None,
                  validators=[], error_messages=None, widget=None,
                  default=None, blank=None):
 
@@ -205,7 +232,7 @@ class WritableField(Field):
                           DeprecationWarning, stacklevel=2)
             required = not(blank)
 
-        super(WritableField, self).__init__(source=source)
+        super(WritableField, self).__init__(source=source, label=label, help_text=help_text)
 
         self.read_only = read_only
         if required is None:
@@ -268,7 +295,10 @@ class WritableField(Field):
         except KeyError:
             if self.default is not None and not self.partial:
                 # Note: partial updates shouldn't set defaults
-                native = self.default
+                if is_simple_callable(self.default):
+                    native = self.default()
+                else:
+                    native = self.default
             else:
                 if self.required:
                     raise ValidationError(self.error_messages['required'])
@@ -335,6 +365,7 @@ class ModelField(WritableField):
 
 class BooleanField(WritableField):
     type_name = 'BooleanField'
+    type_label = 'boolean'
     form_field_class = forms.BooleanField
     widget = widgets.CheckboxInput
     default_error_messages = {
@@ -357,6 +388,7 @@ class BooleanField(WritableField):
 
 class CharField(WritableField):
     type_name = 'CharField'
+    type_label = 'string'
     form_field_class = forms.CharField
 
     def __init__(self, max_length=None, min_length=None, *args, **kwargs):
@@ -375,23 +407,38 @@ class CharField(WritableField):
 
 class URLField(CharField):
     type_name = 'URLField'
+    type_label = 'url'
 
     def __init__(self, **kwargs):
-        kwargs['max_length'] = kwargs.get('max_length', 200)
         kwargs['validators'] = [validators.URLValidator()]
         super(URLField, self).__init__(**kwargs)
 
 
 class SlugField(CharField):
     type_name = 'SlugField'
+    type_label = 'slug'
+    form_field_class = forms.SlugField
+
+    default_error_messages = {
+        'invalid': _("Enter a valid 'slug' consisting of letters, numbers,"
+                     " underscores or hyphens."),
+    }
+    default_validators = [validators.validate_slug]
 
     def __init__(self, *args, **kwargs):
-        kwargs['max_length'] = kwargs.get('max_length', 50)
         super(SlugField, self).__init__(*args, **kwargs)
+
+    def __deepcopy__(self, memo):
+        result = copy.copy(self)
+        memo[id(self)] = result
+        #result.widget = copy.deepcopy(self.widget, memo)
+        result.validators = self.validators[:]
+        return result
 
 
 class ChoiceField(WritableField):
     type_name = 'ChoiceField'
+    type_label = 'multiple choice'
     form_field_class = forms.ChoiceField
     widget = widgets.Select
     default_error_messages = {
@@ -402,6 +449,8 @@ class ChoiceField(WritableField):
     def __init__(self, choices=(), *args, **kwargs):
         super(ChoiceField, self).__init__(*args, **kwargs)
         self.choices = choices
+        if not self.required:
+            self.choices = BLANK_CHOICE_DASH + self.choices
 
     def _get_choices(self):
         return self._choices
@@ -440,6 +489,7 @@ class ChoiceField(WritableField):
 
 class EmailField(CharField):
     type_name = 'EmailField'
+    type_label = 'email'
     form_field_class = forms.EmailField
 
     default_error_messages = {
@@ -463,6 +513,7 @@ class EmailField(CharField):
 
 class RegexField(CharField):
     type_name = 'RegexField'
+    type_label = 'regex'
     form_field_class = forms.RegexField
 
     def __init__(self, regex, max_length=None, min_length=None, *args, **kwargs):
@@ -492,6 +543,7 @@ class RegexField(CharField):
 
 class DateField(WritableField):
     type_name = 'DateField'
+    type_label = 'date'
     widget = widgets.DateInput
     form_field_class = forms.DateField
 
@@ -555,6 +607,7 @@ class DateField(WritableField):
 
 class DateTimeField(WritableField):
     type_name = 'DateTimeField'
+    type_label = 'datetime'
     widget = widgets.DateTimeInput
     form_field_class = forms.DateTimeField
 
@@ -624,6 +677,7 @@ class DateTimeField(WritableField):
 
 class TimeField(WritableField):
     type_name = 'TimeField'
+    type_label = 'time'
     widget = widgets.TimeInput
     form_field_class = forms.TimeField
 
@@ -680,6 +734,7 @@ class TimeField(WritableField):
 
 class IntegerField(WritableField):
     type_name = 'IntegerField'
+    type_label = 'integer'
     form_field_class = forms.IntegerField
 
     default_error_messages = {
@@ -710,6 +765,7 @@ class IntegerField(WritableField):
 
 class FloatField(WritableField):
     type_name = 'FloatField'
+    type_label = 'float'
     form_field_class = forms.FloatField
 
     default_error_messages = {
@@ -729,6 +785,7 @@ class FloatField(WritableField):
 
 class DecimalField(WritableField):
     type_name = 'DecimalField'
+    type_label = 'decimal'
     form_field_class = forms.DecimalField
 
     default_error_messages = {
@@ -799,6 +856,7 @@ class DecimalField(WritableField):
 class FileField(WritableField):
     use_files = True
     type_name = 'FileField'
+    type_label = 'file upload'
     form_field_class = forms.FileField
     widget = widgets.FileInput
 
@@ -842,6 +900,8 @@ class FileField(WritableField):
 
 class ImageField(FileField):
     use_files = True
+    type_name = 'ImageField'
+    type_label = 'image upload'
     form_field_class = forms.ImageField
 
     default_error_messages = {

@@ -1,14 +1,18 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from decimal import Decimal
 from django.core.cache import cache
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.utils import unittest
+from django.utils.translation import ugettext_lazy as _
 from rest_framework import status, permissions
 from rest_framework.compat import yaml, etree, patterns, url, include
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
-    XMLRenderer, JSONPRenderer, BrowsableAPIRenderer
+    XMLRenderer, JSONPRenderer, BrowsableAPIRenderer, UnicodeJSONRenderer
 from rest_framework.parsers import YAMLParser, XMLParser
 from rest_framework.settings import api_settings
 from rest_framework.compat import StringIO
@@ -26,7 +30,7 @@ RENDERER_B_SERIALIZER = lambda x: ('Renderer B: %s' % x).encode('ascii')
 
 
 expected_results = [
-    ((elem for elem in [1, 2, 3]), JSONRenderer, '[1, 2, 3]')  # Generator
+    ((elem for elem in [1, 2, 3]), JSONRenderer, b'[1, 2, 3]')  # Generator
 ]
 
 
@@ -129,12 +133,12 @@ class RendererEndToEndTests(TestCase):
     End-to-end testing of renderers using an RendererMixin on a generic view.
     """
 
-    urls = 'rest_framework.tests.renderers'
+    urls = 'rest_framework.tests.test_renderers'
 
     def test_default_renderer_serializes_content(self):
         """If the Accept header is not set the default renderer should serialize the response."""
         resp = self.client.get('/')
-        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -142,13 +146,13 @@ class RendererEndToEndTests(TestCase):
         """No response must be included in HEAD requests."""
         resp = self.client.head('/')
         self.assertEqual(resp.status_code, DUMMYSTATUS)
-        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, six.b(''))
 
     def test_default_renderer_serializes_content_on_accept_any(self):
         """If the Accept header is set to */* the default renderer should serialize the response."""
         resp = self.client.get('/', HTTP_ACCEPT='*/*')
-        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -156,7 +160,7 @@ class RendererEndToEndTests(TestCase):
         """If the Accept header is set the specified renderer should serialize the response.
         (In this case we check that works for the default renderer)"""
         resp = self.client.get('/', HTTP_ACCEPT=RendererA.media_type)
-        self.assertEqual(resp['Content-Type'], RendererA.media_type)
+        self.assertEqual(resp['Content-Type'], RendererA.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_A_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -164,7 +168,7 @@ class RendererEndToEndTests(TestCase):
         """If the Accept header is set the specified renderer should serialize the response.
         (In this case we check that works for a non-default renderer)"""
         resp = self.client.get('/', HTTP_ACCEPT=RendererB.media_type)
-        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -175,7 +179,7 @@ class RendererEndToEndTests(TestCase):
             RendererB.media_type
         )
         resp = self.client.get('/' + param)
-        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -192,7 +196,7 @@ class RendererEndToEndTests(TestCase):
             RendererB.format
         )
         resp = self.client.get('/' + param)
-        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -200,7 +204,7 @@ class RendererEndToEndTests(TestCase):
         """If a 'format' keyword arg is specified, the renderer with the matching
         format attribute should serialize the response."""
         resp = self.client.get('/something.formatb')
-        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -213,7 +217,7 @@ class RendererEndToEndTests(TestCase):
         )
         resp = self.client.get('/' + param,
                                HTTP_ACCEPT=RendererB.media_type)
-        self.assertEqual(resp['Content-Type'], RendererB.media_type)
+        self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
@@ -235,6 +239,13 @@ class JSONRendererTests(TestCase):
     Tests specific to the JSON Renderer
     """
 
+    def test_render_lazy_strings(self):
+        """
+        JSONRenderer should deal with lazy translated strings.
+        """
+        ret = JSONRenderer().render(_('test'))
+        self.assertEqual(ret, b'"test"')
+
     def test_without_content_type_args(self):
         """
         Test basic JSON rendering.
@@ -243,7 +254,7 @@ class JSONRendererTests(TestCase):
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json')
         # Fix failing test case which depends on version of JSON library.
-        self.assertEqual(content, _flat_repr)
+        self.assertEqual(content.decode('utf-8'), _flat_repr)
 
     def test_with_content_type_args(self):
         """
@@ -252,7 +263,24 @@ class JSONRendererTests(TestCase):
         obj = {'foo': ['bar', 'baz']}
         renderer = JSONRenderer()
         content = renderer.render(obj, 'application/json; indent=2')
-        self.assertEqual(strip_trailing_whitespace(content), _indented_repr)
+        self.assertEqual(strip_trailing_whitespace(content.decode('utf-8')), _indented_repr)
+
+    def test_check_ascii(self):
+        obj = {'countries': ['United Kingdom', 'France', 'España']}
+        renderer = JSONRenderer()
+        content = renderer.render(obj, 'application/json')
+        self.assertEqual(content, '{"countries": ["United Kingdom", "France", "Espa\\u00f1a"]}'.encode('utf-8'))
+
+
+class UnicodeJSONRendererTests(TestCase):
+    """
+    Tests specific for the Unicode JSON Renderer
+    """
+    def test_proper_encoding(self):
+        obj = {'countries': ['United Kingdom', 'France', 'España']}
+        renderer = UnicodeJSONRenderer()
+        content = renderer.render(obj, 'application/json')
+        self.assertEqual(content, '{"countries": ["United Kingdom", "France", "España"]}'.encode('utf-8'))
 
 
 class JSONPRendererTests(TestCase):
@@ -260,7 +288,7 @@ class JSONPRendererTests(TestCase):
     Tests specific to the JSONP Renderer
     """
 
-    urls = 'rest_framework.tests.renderers'
+    urls = 'rest_framework.tests.test_renderers'
 
     def test_without_callback_with_json_renderer(self):
         """
@@ -269,7 +297,7 @@ class JSONPRendererTests(TestCase):
         resp = self.client.get('/jsonp/jsonrenderer',
                                HTTP_ACCEPT='application/javascript')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp['Content-Type'], 'application/javascript')
+        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=utf-8')
         self.assertEqual(resp.content,
             ('callback(%s);' % _flat_repr).encode('ascii'))
 
@@ -280,7 +308,7 @@ class JSONPRendererTests(TestCase):
         resp = self.client.get('/jsonp/nojsonrenderer',
                                HTTP_ACCEPT='application/javascript')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp['Content-Type'], 'application/javascript')
+        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=utf-8')
         self.assertEqual(resp.content,
             ('callback(%s);' % _flat_repr).encode('ascii'))
 
@@ -292,7 +320,7 @@ class JSONPRendererTests(TestCase):
         resp = self.client.get('/jsonp/nojsonrenderer?callback=' + callback_func,
                                HTTP_ACCEPT='application/javascript')
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
-        self.assertEqual(resp['Content-Type'], 'application/javascript')
+        self.assertEqual(resp['Content-Type'], 'application/javascript; charset=utf-8')
         self.assertEqual(resp.content,
             ('%s(%s);' % (callback_func, _flat_repr)).encode('ascii'))
 
@@ -433,7 +461,7 @@ class CacheRenderTest(TestCase):
     Tests specific to caching responses
     """
 
-    urls = 'rest_framework.tests.renderers'
+    urls = 'rest_framework.tests.test_renderers'
 
     cache_key = 'just_a_cache_key'
 

@@ -108,10 +108,18 @@ class ViewSet(ViewSetMixin, views.APIView):
     pass
 
 
+class GenericViewSet(ViewSetMixin, generics.GenericAPIView):
+    """
+    The GenericViewSet class does not provide any actions by default,
+    but does include the base set of generic view behavior, such as
+    the `get_object` and `get_queryset` methods.
+    """
+    pass
+
+
 class ReadOnlyModelViewSet(mixins.RetrieveModelMixin,
                            mixins.ListModelMixin,
-                           ViewSetMixin,
-                           generics.GenericAPIView):
+                           GenericViewSet):
     """
     A viewset that provides default `list()` and `retrieve()` actions.
     """
@@ -123,8 +131,7 @@ class ModelViewSet(mixins.CreateModelMixin,
                     mixins.UpdateModelMixin,
                     mixins.DestroyModelMixin,
                     mixins.ListModelMixin,
-                    ViewSetMixin,
-                    generics.GenericAPIView):
+                    GenericViewSet):
     """
     A viewset that provides default `create()`, `retrieve()`, `update()`,
     `partial_update()`, `destroy()` and `list()` actions.

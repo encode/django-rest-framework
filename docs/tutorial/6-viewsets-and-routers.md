@@ -1,4 +1,4 @@
-# Tutorial 6 - ViewSets & Routers
+# Tutorial 6: ViewSets & Routers
 
 REST framework includes an abstraction for dealing with `ViewSets`, that allows the developer to concentrate on modeling the state and interactions of the API, and leave the URL construction to be handled automatically, based on common conventions.
 
@@ -59,7 +59,7 @@ To see what's going on under the hood let's first explicitly create a set of vie
 
 In the `urls.py` file we bind our `ViewSet` classes into a set of concrete views.
 
-    from snippets.resources import SnippetResource, UserResource
+    from snippets.views import SnippetViewSet, UserViewSet
 
     snippet_list = SnippetViewSet.as_view({
         'get': 'list',
@@ -119,7 +119,7 @@ Registering the viewsets with the router is similar to providing a urlpattern.  
 
 The `DefaultRouter` class we're using also automatically creates the API root view for us, so we can now delete the `api_root` method from our `views` module.
 
-## Trade-offs between views vs viewsets.
+## Trade-offs between views vs viewsets
 
 Using viewsets can be a really useful abstraction.  It helps ensure that URL conventions will be consistent across your API, minimizes the amount of code you need to write, and allows you to concentrate on the interactions and representations your API provides rather than the specifics of the URL conf.
 

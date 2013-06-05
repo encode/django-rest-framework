@@ -2,7 +2,7 @@
 
 What it is, and why you should care.
 
-> Most people just make the mistake that it should be simple to design simple things. In reality, the effort required to design something is inversely proportional to the simplicity of the result.
+> Most people just make the mistake that it should be simple to design simple things.  In reality, the effort required to design something is inversely proportional to the simplicity of the result.
 >
 > &mdash; [Roy Fielding][cite]
 
@@ -22,9 +22,9 @@ This article is intended to give you a flavor of what REST framework 2 is, and w
 
 Before we get cracking, let's start with the hard sell, with a few bits of feedback from some early adopters…
 
-"Django REST framework 2 is beautiful. Some of the API design is worthy of @kennethreitz." - [Kit La Touche][quote1]
+"Django REST framework 2 is beautiful.  Some of the API design is worthy of @kennethreitz." - [Kit La Touche][quote1]
 
-"Since it's pretty much just Django, controlling things like URLs has been a breeze... I think [REST framework 2] has definitely got the right approach here; even simple things like being able to override a function called post to do custom work during rather than having to intimately know what happens during a post make a huge difference to your productivity." - [Ian Strachan][quote2]
+"Since it's pretty much just Django, controlling things like URLs has been a breeze...  I think [REST framework 2] has definitely got the right approach here; even simple things like being able to override a function called post to do custom work during rather than having to intimately know what happens during a post make a huge difference to your productivity." - [Ian Strachan][quote2]
 
 "I switched to the 2.0 branch and I don't regret it - fully refactored my code in another &half; day and it's *much* more to my tastes" - [Bruno Desthuilliers][quote3]
 
@@ -60,7 +60,7 @@ REST framework 2 also allows you to work with both function-based and class-base
 
 ## API Design
 
-Pretty much every aspect of REST framework has been reworked, with the aim of ironing out some of the design flaws of the previous versions.  Each of the components of REST framework are cleanly decoupled, and can be used independantly of each-other, and there are no monolithic resource classes, overcomplicated mixin combinations, or opinionated serialization or URL routing decisions.
+Pretty much every aspect of REST framework has been reworked, with the aim of ironing out some of the design flaws of the previous versions.  Each of the components of REST framework are cleanly decoupled, and can be used independently of each-other, and there are no monolithic resource classes, overcomplicated mixin combinations, or opinionated serialization or URL routing decisions.
 
 ## The Browsable API
 
@@ -70,7 +70,7 @@ Browsable Web APIs are easier to work with, visualize and debug, and generally m
 
 With REST framework 2, the browsable API gets a snazzy new bootstrap-based theme that looks great and is even nicer to work with.
 
-There are also some functionality improvments - actions such as as `POST` and `DELETE` will only display if the user has the appropriate permissions.
+There are also some functionality improvements - actions such as as `POST` and `DELETE` will only display if the user has the appropriate permissions.
 
 ![Browsable API][image]
 

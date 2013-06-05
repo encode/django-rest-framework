@@ -2,13 +2,13 @@
 
 ## Introduction
 
-This tutorial will cover creating a simple pastebin code highlighting Web API. Along the way it will introduce the various components that make up REST framework, and give you a comprehensive understanding of how everything fits together.
+This tutorial will cover creating a simple pastebin code highlighting Web API.  Along the way it will introduce the various components that make up REST framework, and give you a comprehensive understanding of how everything fits together.
 
 The tutorial is fairly in-depth, so you should probably get a cookie and a cup of your favorite brew before getting started.  If you just want a quick overview, you should head over to the [quickstart] documentation instead.
 
 ---
 
-**Note**: The code for this tutorial is available in the [tomchristie/rest-framework-tutorial][repo] repository on GitHub. The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
+**Note**: The code for this tutorial is available in the [tomchristie/rest-framework-tutorial][repo] repository on GitHub.  The completed implementation is also online as a sandbox version for testing, [available here][sandbox].
 
 ---
 
@@ -73,7 +73,7 @@ Okay, we're ready to roll.
 
 ## Creating a model to work with
 
-For the purposes of this tutorial we're going to start by creating a simple `Snippet` model that is used to store code snippets.  Go ahead and edit the  `snippets` app's `models.py` file. Note: Good programming practices include comments. Although you will find them in our repository version of this tutorial code, we have omitted them here to focus on the code itself.
+For the purposes of this tutorial we're going to start by creating a simple `Snippet` model that is used to store code snippets.  Go ahead and edit the `snippets` app's `models.py` file.  Note: Good programming practices include comments.  Although you will find them in our repository version of this tutorial code, we have omitted them here to focus on the code itself.
 
     from django.db import models
     from pygments.lexers import get_all_lexers
@@ -145,6 +145,8 @@ The first thing we need to get started on our Web API is provide a way of serial
             return Snippet(**attrs)
 
 The first part of serializer class defines the fields that get serialized/deserialized.  The `restore_object` method defines how fully fledged instances get created when deserializing data.
+
+Notice that we can also use various attributes that would typically be used on form fields, such as `widget=widgets.Testarea`.  These can be used to control how the serializer should render when displayed as an HTML form.  This is particularly useful for controlling how the browsable API should be displayed, as we'll see later in the tutorial.
 
 We can actually also save ourselves some time by using the `ModelSerializer` class, as we'll see later, but for now we'll keep our serializer definition explicit.  
 
@@ -293,7 +295,7 @@ We'll also need a view which corresponds to an individual snippet, and can be us
             snippet.delete()
             return HttpResponse(status=204)
 
-Finally we need to wire these views up. Create the `snippets/urls.py` file:
+Finally we need to wire these views up.  Create the `snippets/urls.py` file:
 
     from django.conf.urls import patterns, url
 

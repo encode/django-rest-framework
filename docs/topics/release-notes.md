@@ -40,6 +40,46 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
+### 2.3.5
+
+**Date**: 3rd June 2013
+
+* Added `get_url` hook to `HyperlinkedIdentityField`.
+* Serializer field `default` argument may be a callable.
+* `@action` decorator now accepts a `methods` argument.
+* Bugfix: `request.user` should be still be accessible in renderer context if authentication fails.
+* Bugfix: The `lookup_field` option on `HyperlinkedIdentityField` should apply by default to the url field on the serializer.
+* Bugfix: `HyperlinkedIdentityField` should continue to support `pk_url_kwarg`, `slug_url_kwarg`, `slug_field`, in a pending deprecation state.
+* Bugfix: Ensure we always return 404 instead of 500 if a lookup field cannot be converted to the correct lookup type.  (Eg non-numeric `AutoInteger` pk lookup)
+
+### 2.3.4
+
+**Date**: 24th May 2013
+
+* Serializer fields now support `label` and `help_text`.
+* Added `UnicodeJSONRenderer`.
+* `OPTIONS` requests now return metadata about fields for `POST` and `PUT` requests.
+* Bugfix: `charset` now properly included in `Content-Type` of responses.
+* Bugfix: Blank choice now added in browsable API on nullable relationships.
+* Bugfix: Many to many relationships with `through` tables are now read-only.
+* Bugfix: Serializer fields now respect model field args such as `max_length`.
+* Bugfix: SlugField now performs slug validation.
+* Bugfix: Lazy-translatable strings now properly serialized.
+* Bugfix: Browsable API now supports bootswatch styles properly.
+* Bugfix: HyperlinkedIdentityField now uses `lookup_field` kwarg.
+
+**Note**: Responses now correctly include an appropriate charset on the `Content-Type` header.  For example: `application/json; charset=utf-8`.  If you have tests that check the content type of responses, you may need to update these accordingly.
+
+### 2.3.3
+
+**Date**: 16th May 2013
+
+* Added SearchFilter
+* Added OrderingFilter
+* Added GenericViewSet
+* Bugfix: Multiple `@action` and `@link` methods now allowed on viewsets. 
+* Bugfix: Fix API Root view issue with DjangoModelPermissions
+
 ### 2.3.2
 
 **Date**: 8th May 2013
@@ -78,14 +118,14 @@ You can determine your currently installed version using `pip freeze`:
 **Date**: 17th April 2013
 
 * Loud failure when view does not return a `Response` or `HttpResponse`.
-* Bugfix: Fix for Django 1.3 compatiblity.
+* Bugfix: Fix for Django 1.3 compatibility.
 * Bugfix: Allow overridden `get_object()` to work correctly.
 
 ### 2.2.6
 
 **Date**: 4th April 2013
 
-* OAuth2 authentication no longer requires unneccessary URL parameters in addition to the token.
+* OAuth2 authentication no longer requires unnecessary URL parameters in addition to the token.
 * URL hyperlinking in browsable API now handles more cases correctly.
 * Long HTTP headers in browsable API are broken in multiple lines when possible.
 * Bugfix: Fix regression with DjangoFilterBackend not worthing correctly with single object views.
@@ -197,7 +237,7 @@ The security vulnerabilities only affect APIs which use the `XMLParser` class, b
 * Bugfix: Validation errors instead of exceptions when related fields receive incorrect types.
 * Bugfix: Handle ObjectDoesNotExist exception when serializing null reverse one-to-one
 
-**Note**: Prior to 2.1.16, The Decimals would render in JSON using floating point if `simplejson` was installed, but otherwise render using string notation. Now that use of `simplejson` has been deprecated, Decimals will consistently render using string notation.  See [#582] for more details. 
+**Note**: Prior to 2.1.16, The Decimals would render in JSON using floating point if `simplejson` was installed, but otherwise render using string notation.  Now that use of `simplejson` has been deprecated, Decimals will consistently render using string notation.  See [#582] for more details.
 
 ### 2.1.15
 

@@ -2,15 +2,16 @@
 General serializer field tests.
 """
 from __future__ import unicode_literals
+
 import datetime
 from decimal import Decimal
-
+from uuid import uuid4
+from django.core import validators
 from django.db import models
 from django.test import TestCase
-from django.core import validators
-
+from django.utils.datastructures import SortedDict
 from rest_framework import serializers
-from rest_framework.serializers import Serializer
+from rest_framework.tests.models import RESTFrameworkModel
 
 
 class TimestampedModel(models.Model):
@@ -62,6 +63,20 @@ class BasicFieldTests(TestCase):
         """
         serializer = CharPrimaryKeyModelSerializer()
         self.assertEqual(serializer.fields['id'].read_only, False)
+
+    def test_dict_field_ordering(self):
+        """
+        Field should preserve dictionary ordering, if it exists.
+        See: https://github.com/tomchristie/django-rest-framework/issues/832
+        """
+        ret = SortedDict()
+        ret['c'] = 1
+        ret['b'] = 1
+        ret['a'] = 1
+        ret['z'] = 1
+        field = serializers.Field()
+        keys = list(field.to_native(ret).keys())
+        self.assertEqual(keys, ['c', 'b', 'a', 'z'])
 
 
 class DateFieldTest(TestCase):
@@ -573,7 +588,7 @@ class DecimalFieldTest(TestCase):
         """
         Make sure the serializer works correctly
         """
-        class DecimalSerializer(Serializer):
+        class DecimalSerializer(serializers.Serializer):
             decimal_field = serializers.DecimalField(max_value=9010,
                                                      min_value=9000,
                                                      max_digits=6,
@@ -591,7 +606,7 @@ class DecimalFieldTest(TestCase):
         """
         Make sure max_value violations raises ValidationError
         """
-        class DecimalSerializer(Serializer):
+        class DecimalSerializer(serializers.Serializer):
             decimal_field = serializers.DecimalField(max_value=100)
 
         s = DecimalSerializer(data={'decimal_field': '123'})
@@ -603,7 +618,7 @@ class DecimalFieldTest(TestCase):
         """
         Make sure min_value violations raises ValidationError
         """
-        class DecimalSerializer(Serializer):
+        class DecimalSerializer(serializers.Serializer):
             decimal_field = serializers.DecimalField(min_value=100)
 
         s = DecimalSerializer(data={'decimal_field': '99'})
@@ -615,7 +630,7 @@ class DecimalFieldTest(TestCase):
         """
         Make sure max_digits violations raises ValidationError
         """
-        class DecimalSerializer(Serializer):
+        class DecimalSerializer(serializers.Serializer):
             decimal_field = serializers.DecimalField(max_digits=5)
 
         s = DecimalSerializer(data={'decimal_field': '123.456'})
@@ -627,7 +642,7 @@ class DecimalFieldTest(TestCase):
         """
         Make sure max_decimal_places violations raises ValidationError
         """
-        class DecimalSerializer(Serializer):
+        class DecimalSerializer(serializers.Serializer):
             decimal_field = serializers.DecimalField(decimal_places=3)
 
         s = DecimalSerializer(data={'decimal_field': '123.4567'})
@@ -639,10 +654,215 @@ class DecimalFieldTest(TestCase):
         """
         Make sure max_whole_digits violations raises ValidationError
         """
-        class DecimalSerializer(Serializer):
+        class DecimalSerializer(serializers.Serializer):
             decimal_field = serializers.DecimalField(max_digits=4, decimal_places=3)
 
         s = DecimalSerializer(data={'decimal_field': '12345.6'})
 
         self.assertFalse(s.is_valid())
         self.assertEqual(s.errors,  {'decimal_field': ['Ensure that there are no more than 4 digits in total.']})
+
+
+class ChoiceFieldTests(TestCase):
+    """
+    Tests for the ChoiceField options generator
+    """
+
+    SAMPLE_CHOICES = [
+        ('red', 'Red'),
+        ('green', 'Green'),
+        ('blue', 'Blue'),
+    ]
+
+    def test_choices_required(self):
+        """
+        Make sure proper choices are rendered if field is required
+        """
+        f = serializers.ChoiceField(required=True, choices=self.SAMPLE_CHOICES)
+        self.assertEqual(f.choices, self.SAMPLE_CHOICES)
+
+    def test_choices_not_required(self):
+        """
+        Make sure proper choices (plus blank) are rendered if the field isn't required
+        """
+        f = serializers.ChoiceField(required=False, choices=self.SAMPLE_CHOICES)
+        self.assertEqual(f.choices, models.fields.BLANK_CHOICE_DASH + self.SAMPLE_CHOICES)
+
+
+class EmailFieldTests(TestCase):
+    """
+    Tests for EmailField attribute values
+    """
+
+    class EmailFieldModel(RESTFrameworkModel):
+        email_field = models.EmailField(blank=True)
+
+    class EmailFieldWithGivenMaxLengthModel(RESTFrameworkModel):
+        email_field = models.EmailField(max_length=150, blank=True)
+
+    def test_default_model_value(self):
+        class EmailFieldSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = self.EmailFieldModel
+
+        serializer = EmailFieldSerializer(data={})
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(getattr(serializer.fields['email_field'], 'max_length'), 75)
+
+    def test_given_model_value(self):
+        class EmailFieldSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = self.EmailFieldWithGivenMaxLengthModel
+
+        serializer = EmailFieldSerializer(data={})
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(getattr(serializer.fields['email_field'], 'max_length'), 150)
+
+    def test_given_serializer_value(self):
+        class EmailFieldSerializer(serializers.ModelSerializer):
+            email_field = serializers.EmailField(source='email_field', max_length=20, required=False)
+
+            class Meta:
+                model = self.EmailFieldModel
+
+        serializer = EmailFieldSerializer(data={})
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(getattr(serializer.fields['email_field'], 'max_length'), 20)
+
+
+class SlugFieldTests(TestCase):
+    """
+    Tests for SlugField attribute values
+    """
+
+    class SlugFieldModel(RESTFrameworkModel):
+        slug_field = models.SlugField(blank=True)
+
+    class SlugFieldWithGivenMaxLengthModel(RESTFrameworkModel):
+        slug_field = models.SlugField(max_length=84, blank=True)
+
+    def test_default_model_value(self):
+        class SlugFieldSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = self.SlugFieldModel
+
+        serializer = SlugFieldSerializer(data={})
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(getattr(serializer.fields['slug_field'], 'max_length'), 50)
+
+    def test_given_model_value(self):
+        class SlugFieldSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = self.SlugFieldWithGivenMaxLengthModel
+
+        serializer = SlugFieldSerializer(data={})
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(getattr(serializer.fields['slug_field'], 'max_length'), 84)
+
+    def test_given_serializer_value(self):
+        class SlugFieldSerializer(serializers.ModelSerializer):
+            slug_field = serializers.SlugField(source='slug_field',
+                                               max_length=20, required=False)
+
+            class Meta:
+                model = self.SlugFieldModel
+
+        serializer = SlugFieldSerializer(data={})
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(getattr(serializer.fields['slug_field'],
+                                 'max_length'), 20)
+
+    def test_invalid_slug(self):
+        """
+        Make sure an invalid slug raises ValidationError
+        """
+        class SlugFieldSerializer(serializers.ModelSerializer):
+            slug_field = serializers.SlugField(source='slug_field', max_length=20, required=True)
+
+            class Meta:
+                model = self.SlugFieldModel
+
+        s = SlugFieldSerializer(data={'slug_field': 'a b'})
+
+        self.assertEqual(s.is_valid(), False)
+        self.assertEqual(s.errors,  {'slug_field': ["Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."]})
+
+
+class URLFieldTests(TestCase):
+    """
+    Tests for URLField attribute values
+    """
+
+    class URLFieldModel(RESTFrameworkModel):
+        url_field = models.URLField(blank=True)
+
+    class URLFieldWithGivenMaxLengthModel(RESTFrameworkModel):
+        url_field = models.URLField(max_length=128, blank=True)
+
+    def test_default_model_value(self):
+        class URLFieldSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = self.URLFieldModel
+
+        serializer = URLFieldSerializer(data={})
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(getattr(serializer.fields['url_field'],
+                                 'max_length'), 200)
+
+    def test_given_model_value(self):
+        class URLFieldSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = self.URLFieldWithGivenMaxLengthModel
+
+        serializer = URLFieldSerializer(data={})
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(getattr(serializer.fields['url_field'],
+                                 'max_length'), 128)
+
+    def test_given_serializer_value(self):
+        class URLFieldSerializer(serializers.ModelSerializer):
+            url_field = serializers.URLField(source='url_field',
+                                             max_length=20, required=False)
+
+            class Meta:
+                model = self.URLFieldWithGivenMaxLengthModel
+
+        serializer = URLFieldSerializer(data={})
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(getattr(serializer.fields['url_field'],
+                         'max_length'), 20)
+
+
+class FieldMetadata(TestCase):
+    def setUp(self):
+        self.required_field = serializers.Field()
+        self.required_field.label = uuid4().hex
+        self.required_field.required = True
+
+        self.optional_field = serializers.Field()
+        self.optional_field.label = uuid4().hex
+        self.optional_field.required = False
+
+    def test_required(self):
+        self.assertEqual(self.required_field.metadata()['required'], True)
+
+    def test_optional(self):
+        self.assertEqual(self.optional_field.metadata()['required'], False)
+
+    def test_label(self):
+        for field in (self.required_field, self.optional_field):
+            self.assertEqual(field.metadata()['label'], field.label)
+
+
+class FieldCallableDefault(TestCase):
+    def setUp(self):
+        self.simple_callable = lambda: 'foo bar'
+
+    def test_default_can_be_simple_callable(self):
+        """
+        Ensure that the 'default' argument can also be a simple callable.
+        """
+        field = serializers.WritableField(default=self.simple_callable)
+        into = {}
+        field.field_from_native({}, {}, 'field', into)
+        self.assertEqual(into, {'field': 'foo bar'})

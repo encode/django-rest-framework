@@ -3,7 +3,8 @@ Helper classes for parsers.
 """
 from __future__ import unicode_literals
 from django.utils.datastructures import SortedDict
-from rest_framework.compat import timezone
+from django.utils.functional import Promise
+from rest_framework.compat import timezone, force_text
 from rest_framework.serializers import DictWithMetadata, SortedDictWithMetadata
 import datetime
 import decimal
@@ -19,7 +20,9 @@ class JSONEncoder(json.JSONEncoder):
     def default(self, o):
         # For Date Time string spec, see ECMA 262
         # http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
-        if isinstance(o, datetime.datetime):
+        if isinstance(o, Promise):
+            return force_text(o)
+        elif isinstance(o, datetime.datetime):
             r = o.isoformat()
             if o.microsecond:
                 r = r[:23] + r[26:]

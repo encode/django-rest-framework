@@ -9,7 +9,6 @@ REST framework also provides an HTML renderer the renders the browsable API.
 from __future__ import unicode_literals
 
 import copy
-import string
 import json
 from django import forms
 from django.http.multipartparser import parse_header
@@ -36,6 +35,7 @@ class BaseRenderer(object):
 
     media_type = None
     format = None
+    charset = 'utf-8'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         raise NotImplemented('Renderer class requires .render() to be implemented')
@@ -43,16 +43,21 @@ class BaseRenderer(object):
 
 class JSONRenderer(BaseRenderer):
     """
-    Renderer which serializes to json.
+    Renderer which serializes to JSON.
+    Applies JSON's backslash-u character escaping for non-ascii characters.
     """
 
     media_type = 'application/json'
     format = 'json'
     encoder_class = encoders.JSONEncoder
+    ensure_ascii = True
+    charset = 'utf-8'
+    # Note that JSON encodings must be utf-8, utf-16 or utf-32.
+    # See: http://www.ietf.org/rfc/rfc4627.txt
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
-        Render `obj` into json.
+        Render `data` into JSON.
         """
         if data is None:
             return ''
@@ -72,7 +77,25 @@ class JSONRenderer(BaseRenderer):
             except (ValueError, TypeError):
                 indent = None
 
-        return json.dumps(data, cls=self.encoder_class, indent=indent)
+        ret = json.dumps(data, cls=self.encoder_class,
+            indent=indent, ensure_ascii=self.ensure_ascii)
+
+        # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
+        # but if ensure_ascii=False, the return type is underspecified,
+        # and may (or may not) be unicode.
+        # On python 3.x json.dumps() returns unicode strings.
+        if isinstance(ret, six.text_type):
+            return bytes(ret.encode(self.charset))
+        return ret
+
+
+class UnicodeJSONRenderer(JSONRenderer):
+    ensure_ascii = False
+    charset = 'utf-8'
+    """
+    Renderer which serializes to JSON.
+    Does *not* apply JSON's character escaping for non-ascii characters.
+    """
 
 
 class JSONPRenderer(JSONRenderer):
@@ -105,7 +128,7 @@ class JSONPRenderer(JSONRenderer):
         callback = self.get_callback(renderer_context)
         json = super(JSONPRenderer, self).render(data, accepted_media_type,
                                                  renderer_context)
-        return "%s(%s);" % (callback, json)
+        return callback.encode(self.charset) + b'(' + json + b');'
 
 
 class XMLRenderer(BaseRenderer):
@@ -115,6 +138,7 @@ class XMLRenderer(BaseRenderer):
 
     media_type = 'application/xml'
     format = 'xml'
+    charset = 'utf-8'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -125,7 +149,7 @@ class XMLRenderer(BaseRenderer):
 
         stream = StringIO()
 
-        xml = SimplerXMLGenerator(stream, "utf-8")
+        xml = SimplerXMLGenerator(stream, self.charset)
         xml.startDocument()
         xml.startElement("root", {})
 
@@ -164,6 +188,7 @@ class YAMLRenderer(BaseRenderer):
     media_type = 'application/yaml'
     format = 'yaml'
     encoder = encoders.SafeDumper
+    charset = 'utf-8'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -174,7 +199,7 @@ class YAMLRenderer(BaseRenderer):
         if data is None:
             return ''
 
-        return yaml.dump(data, stream=None, Dumper=self.encoder)
+        return yaml.dump(data, stream=None, encoding=self.charset, Dumper=self.encoder)
 
 
 class TemplateHTMLRenderer(BaseRenderer):
@@ -204,6 +229,7 @@ class TemplateHTMLRenderer(BaseRenderer):
         '%(status_code)s.html',
         'api_exception.html'
     ]
+    charset = 'utf-8'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
@@ -275,6 +301,7 @@ class StaticHTMLRenderer(TemplateHTMLRenderer):
     """
     media_type = 'text/html'
     format = 'html'
+    charset = 'utf-8'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         renderer_context = renderer_context or {}
@@ -296,6 +323,7 @@ class BrowsableAPIRenderer(BaseRenderer):
     media_type = 'text/html'
     format = 'api'
     template = 'rest_framework/api.html'
+    charset = 'utf-8'
 
     def get_default_renderer(self, view):
         """
@@ -320,8 +348,8 @@ class BrowsableAPIRenderer(BaseRenderer):
         renderer_context['indent'] = 4
         content = renderer.render(data, accepted_media_type, renderer_context)
 
-        if not all(char in string.printable for char in content):
-            return '[%d bytes of binary content]'
+        if renderer.charset is None:
+            return '[%d bytes of binary content]' % len(content)
 
         return content
 
@@ -336,7 +364,9 @@ class BrowsableAPIRenderer(BaseRenderer):
             return  # Cannot use form overloading
 
         try:
-            view.check_permissions(clone_request(request, method))
+            view.check_permissions(request)
+            if obj is not None:
+                view.check_object_permissions(request, obj)
         except exceptions.APIException:
             return False  # Doesn't have permissions
         return True
@@ -366,11 +396,39 @@ class BrowsableAPIRenderer(BaseRenderer):
             if getattr(v, 'default', None) is not None:
                 kwargs['initial'] = v.default
 
-            kwargs['label'] = k
+            if getattr(v, 'label', None) is not None:
+                kwargs['label'] = v.label
+
+            if getattr(v, 'help_text', None) is not None:
+                kwargs['help_text'] = v.help_text
 
             fields[k] = v.form_field_class(**kwargs)
 
         return fields
+
+    def _get_form(self, view, method, request):
+        # We need to impersonate a request with the correct method,
+        # so that eg. any dynamic get_serializer_class methods return the
+        # correct form for each method.
+        restore = view.request
+        request = clone_request(request, method)
+        view.request = request
+        try:
+            return self.get_form(view, method, request)
+        finally:
+            view.request = restore
+
+    def _get_raw_data_form(self, view, method, request, media_types):
+        # We need to impersonate a request with the correct method,
+        # so that eg. any dynamic get_serializer_class methods return the
+        # correct form for each method.
+        restore = view.request
+        request = clone_request(request, method)
+        view.request = request
+        try:
+            return self.get_raw_data_form(view, method, request, media_types)
+        finally:
+            view.request = restore
 
     def get_form(self, view, method, request):
         """
@@ -449,10 +507,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
-        Renders *obj* using the :attr:`template` set on the class.
-
-        The context used in the template contains all the information
-        needed to self-document the response to this request.
+        Render the HTML for the browsable API representation.
         """
         accepted_media_type = accepted_media_type or ''
         renderer_context = renderer_context or {}
@@ -465,15 +520,15 @@ class BrowsableAPIRenderer(BaseRenderer):
         renderer = self.get_default_renderer(view)
         content = self.get_content(renderer, data, accepted_media_type, renderer_context)
 
-        put_form = self.get_form(view, 'PUT', request)
-        post_form = self.get_form(view, 'POST', request)
-        patch_form = self.get_form(view, 'PATCH', request)
-        delete_form = self.get_form(view, 'DELETE', request)
-        options_form = self.get_form(view, 'OPTIONS', request)
+        put_form = self._get_form(view, 'PUT', request)
+        post_form = self._get_form(view, 'POST', request)
+        patch_form = self._get_form(view, 'PATCH', request)
+        delete_form = self._get_form(view, 'DELETE', request)
+        options_form = self._get_form(view, 'OPTIONS', request)
 
-        raw_data_put_form = self.get_raw_data_form(view, 'PUT', request, media_types)
-        raw_data_post_form = self.get_raw_data_form(view, 'POST', request, media_types)
-        raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request, media_types)
+        raw_data_put_form = self._get_raw_data_form(view, 'PUT', request, media_types)
+        raw_data_post_form = self._get_raw_data_form(view, 'POST', request, media_types)
+        raw_data_patch_form = self._get_raw_data_form(view, 'PATCH', request, media_types)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
         name = self.get_name(view)

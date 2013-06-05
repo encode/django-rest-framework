@@ -10,6 +10,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), "../.."))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'rest_framework.runtests.settings'
 
+import django
 from django.conf import settings
 from django.test.utils import get_runner
 
@@ -35,7 +36,11 @@ def main():
     else:
         print(usage())
         sys.exit(1)
-    failures = test_runner.run_tests(['tests' + test_case])
+    test_module_name = 'rest_framework.tests'
+    if django.VERSION[0] == 1 and django.VERSION[1] < 6:
+        test_module_name = 'tests'
+
+    failures = test_runner.run_tests([test_module_name + test_case])
 
     sys.exit(failures)
 

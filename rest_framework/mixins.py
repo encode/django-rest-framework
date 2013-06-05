@@ -10,6 +10,7 @@ from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.request import clone_request
+import warnings
 
 
 def _get_validation_exclusions(obj, pk=None, slug_field=None, lookup_field=None):
@@ -42,7 +43,6 @@ def _get_validation_exclusions(obj, pk=None, slug_field=None, lookup_field=None)
 class CreateModelMixin(object):
     """
     Create a model instance.
-    Should be mixed in with any `GenericAPIView`.
     """
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
@@ -67,7 +67,6 @@ class CreateModelMixin(object):
 class ListModelMixin(object):
     """
     List a queryset.
-    Should be mixed in with `MultipleObjectAPIView`.
     """
     empty_error = "Empty list and '%(class_name)s.allow_empty' is False."
 
@@ -77,6 +76,12 @@ class ListModelMixin(object):
         # Default is to allow empty querysets.  This can be altered by setting
         # `.allow_empty = False`, to raise 404 errors on empty querysets.
         if not self.allow_empty and not self.object_list:
+            warnings.warn(
+                'The `allow_empty` parameter is due to be deprecated. '
+                'To use `allow_empty=False` style behavior, You should override '
+                '`get_queryset()` and explicitly raise a 404 on empty querysets.',
+                PendingDeprecationWarning
+            )
             class_name = self.__class__.__name__
             error_msg = self.empty_error % {'class_name': class_name}
             raise Http404(error_msg)
@@ -94,7 +99,6 @@ class ListModelMixin(object):
 class RetrieveModelMixin(object):
     """
     Retrieve a model instance.
-    Should be mixed in with `SingleObjectAPIView`.
     """
     def retrieve(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -105,17 +109,12 @@ class RetrieveModelMixin(object):
 class UpdateModelMixin(object):
     """
     Update a model instance.
-    Should be mixed in with `SingleObjectAPIView`.
     """
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
-        self.object = None
-        try:
-            self.object = self.get_object()
-        except Http404:
-            # If this is a PUT-as-create operation, we need to ensure that
-            # we have relevant permissions, as if this was a POST request.
-            self.check_permissions(clone_request(request, 'POST'))
+        self.object = self.get_object_or_none()
+
+        if self.object is None:
             created = True
             save_kwargs = {'force_insert': True}
             success_status_code = status.HTTP_201_CREATED
@@ -138,6 +137,16 @@ class UpdateModelMixin(object):
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
+
+    def get_object_or_none(self):
+        try:
+            return self.get_object()
+        except Http404:
+            # If this is a PUT-as-create operation, we need to ensure that
+            # we have relevant permissions, as if this was a POST request.
+            # This will either raise a PermissionDenied exception,
+            # or simply return None
+            self.check_permissions(clone_request(self.request, 'POST'))
 
     def pre_save(self, obj):
         """
@@ -168,7 +177,6 @@ class UpdateModelMixin(object):
 class DestroyModelMixin(object):
     """
     Destroy a model instance.
-    Should be mixed in with `SingleObjectAPIView`.
     """
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()

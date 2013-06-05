@@ -14,7 +14,7 @@ The set of valid renderers for a view is always defined as a list of classes.  W
 
 The basic process of content negotiation involves examining the request's `Accept` header, to determine which media types it expects in the response.  Optionally, format suffixes on the URL may be used to explicitly request a particular representation.  For example the URL `http://example.com/api/users_count.json` might be an endpoint that always returns JSON data.
 
-For more information see the documentation on [content negotation][conneg].
+For more information see the documentation on [content negotiation][conneg].
 
 ## Setting the renderers
 
@@ -67,13 +67,45 @@ If your API includes views that can serve both regular webpages and API response
 
 ## JSONRenderer
 
-Renders the request data into `JSON`.
+Renders the request data into `JSON`, using utf-8 encoding.
+
+Note that non-ascii characters will be rendered using JSON's `\uXXXX` character escape.  For example:
+
+    {"unicode black star": "\u2605"}
 
 The client may additionally include an `'indent'` media type parameter, in which case the returned `JSON` will be indented.  For example `Accept: application/json; indent=4`.
+
+    {
+        "unicode black star": "\u2605"
+    }
 
 **.media_type**: `application/json`
 
 **.format**: `'.json'`
+
+**.charset**: `utf-8`
+
+## UnicodeJSONRenderer
+
+Renders the request data into `JSON`, using utf-8 encoding.
+
+Note that non-ascii characters will not be character escaped.  For example:
+
+    {"unicode black star": "★"}
+
+The client may additionally include an `'indent'` media type parameter, in which case the returned `JSON` will be indented.  For example `Accept: application/json; indent=4`.
+
+    {
+        "unicode black star": "★"
+    }
+
+Both the `JSONRenderer` and `UnicodeJSONRenderer` styles conform to [RFC 4627][rfc4627], and are syntactically valid JSON.
+
+**.media_type**: `application/json`
+
+**.format**: `'.json'`
+
+**.charset**: `utf-8`
 
 ## JSONPRenderer
 
@@ -87,6 +119,8 @@ The javascript callback function must be set by the client including a `callback
 
 **.format**: `'.jsonp'`
 
+**.charset**: `utf-8`
+
 ## YAMLRenderer
 
 Renders the request data into `YAML`. 
@@ -96,6 +130,8 @@ Requires the `pyyaml` package to be installed.
 **.media_type**: `application/yaml`
 
 **.format**: `'.yaml'`
+
+**.charset**: `utf-8`
 
 ## XMLRenderer
 
@@ -108,6 +144,8 @@ If you are considering using `XML` for your API, you may want to consider implem
 **.media_type**: `application/xml`
 
 **.format**: `'.xml'`
+
+**.charset**: `utf-8`
 
 ## TemplateHTMLRenderer
 
@@ -143,6 +181,8 @@ If you're building websites that use `TemplateHTMLRenderer` along with other ren
 
 **.format**: `'.html'`
 
+**.charset**: `utf-8`
+
 See also: `StaticHTMLRenderer`
 
 ## StaticHTMLRenderer
@@ -163,6 +203,8 @@ You can use `TemplateHTMLRenderer` either to return regular HTML pages using RES
 
 **.format**: `'.html'`
 
+**.charset**: `utf-8`
+
 See also: `TemplateHTMLRenderer`
 
 ## BrowsableAPIRenderer
@@ -173,11 +215,15 @@ Renders data into HTML for the Browsable API.  This renderer will determine whic
 
 **.format**: `'.api'`
 
+**.charset**: `utf-8`
+
 ---
 
 # Custom renderers
 
 To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, media_type=None, renderer_context=None)` method.
+
+The method should return a bytestring, which wil be used as the body of the HTTP response.
 
 The arguments passed to the `.render()` method are:
 
@@ -187,13 +233,13 @@ The request data, as set by the `Response()` instantiation.
 
 ### `media_type=None`
 
-Optional. If provided, this is the accepted media type, as determined by the content negotiation stage.
+Optional.  If provided, this is the accepted media type, as determined by the content negotiation stage.
 
 Depending on the client's `Accept:` header, this may be more specific than the renderer's `media_type` attribute, and may include media type parameters.  For example `"application/json; nested=true"`.
 
 ### `renderer_context=None`
 
-Optional. If provided, this is a dictionary of contextual information provided by the view.
+Optional.  If provided, this is a dictionary of contextual information provided by the view.
 
 By default this will include the following keys: `view`, `request`, `response`, `args`, `kwargs`.
 
@@ -205,14 +251,36 @@ The following is an example plaintext renderer that will return a response with 
     from rest_framework import renderers
 
 
-    class PlainText(renderers.BaseRenderer):
+    class PlainTextRenderer(renderers.BaseRenderer):
         media_type = 'text/plain'
         format = 'txt'
         
         def render(self, data, media_type=None, renderer_context=None):
-            if isinstance(data, basestring):
-                return data
-            return smart_unicode(data)
+            return data.encode(self.charset)
+
+## Setting the character set
+
+By default renderer classes are assumed to be using the `UTF-8` encoding.  To use a different encoding, set the `charset` attribute on the renderer.
+
+    class PlainTextRenderer(renderers.BaseRenderer):
+        media_type = 'text/plain'
+        format = 'txt'
+        charset = 'iso-8859-1'
+
+        def render(self, data, media_type=None, renderer_context=None):
+            return data.encode(self.charset)
+
+Note that if a renderer class returns a unicode string, then the response content will be coerced into a bytestring by the `Response` class, with the `charset` attribute set on the renderer used to determine the encoding.
+
+If the renderer returns a bytestring representing raw binary content, you should set a charset value of `None`, which will ensure the `Content-Type` header of the response will not have a `charset` value set.  Doing so will also ensure that the browsable API will not attempt to display the binary content as a string.
+
+    class JPEGRenderer(renderers.BaseRenderer):
+        media_type = 'image/jpeg'
+        format = 'jpg'
+        charset = None
+
+        def render(self, data, media_type=None, renderer_context=None):
+            return data
 
 ---
 
@@ -252,6 +320,15 @@ For example:
         data = serializer.data
         return Response(data)
 
+## Underspecifying the media type
+
+In some cases you might want a renderer to serve a range of media types.
+In this case you can underspecify the media types it should respond to, by using a `media_type` value such as `image/*`, or `*/*`.
+
+If you underspecify the renderer's media type, you should make sure to specify the media type explicitly when you return the response, using the `content_type` attribute.  For example:
+
+    return Response(data, content_type='image/png')
+
 ## Designing your media types
 
 For the purposes of many Web APIs, simple `JSON` responses with hyperlinked relations may be sufficient.  If you want to fully embrace RESTful design and [HATEOAS] you'll need to consider the design and usage of your media types in more detail.
@@ -274,6 +351,8 @@ Exceptions raised and handled by an HTML renderer will attempt to render using o
 
 Templates will render with a `RequestContext` which includes the `status_code` and `details` keys.
 
+**Note**: If `DEBUG=True`, Django's standard traceback error page will be displayed instead of rendering the HTTP status code and text.
+
 ---
 
 # Third party packages
@@ -291,6 +370,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
+[rfc4627]: http://www.ietf.org/rfc/rfc4627.txt
 [cors]: http://www.w3.org/TR/cors/
 [cors-docs]: ../topics/ajax-csrf-cors.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas

@@ -1,6 +1,6 @@
 # REST, Hypermedia & HATEOAS
 
-> You keep using that word "REST". I do not think it means what you think it means.
+> You keep using that word "REST".  I do not think it means what you think it means.
 >
 > &mdash; Mike Amundsen, [REST fest 2012 keynote][cite].
 
@@ -37,8 +37,8 @@ What REST framework doesn't do is give you is machine readable hypermedia format
 [cite]: http://vimeo.com/channels/restfest/page:2
 [dissertation]: http://www.ics.uci.edu/~fielding/pubs/dissertation/top.htm
 [hypertext-driven]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
-[restful-web-services]: 
-[building-hypermedia-apis]: …
+[restful-web-services]: http://www.amazon.com/Restful-Web-Services-Leonard-Richardson/dp/0596529260
+[building-hypermedia-apis]: http://www.amazon.com/Building-Hypermedia-APIs-HTML5-Node/dp/1449306578
 [designing-hypermedia-apis]: http://designinghypermediaapis.com/
 [restisover]: http://blog.steveklabnik.com/posts/2012-02-23-rest-is-over
 [readinglist]: http://blog.steveklabnik.com/posts/2012-02-27-hypermedia-api-reading-list

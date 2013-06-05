@@ -16,8 +16,8 @@ For example, you might have a `urls.py` that looks something like this:
 from __future__ import unicode_literals
 
 from collections import namedtuple
-from django.conf.urls import url, patterns
-from rest_framework.decorators import api_view
+from rest_framework import views
+from rest_framework.compat import patterns, url
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.urlpatterns import format_suffix_patterns
@@ -71,7 +71,7 @@ class SimpleRouter(BaseRouter):
     routes = [
         # List route.
         Route(
-            url=r'^{prefix}/$',
+            url=r'^{prefix}{trailing_slash}$',
             mapping={
                 'get': 'list',
                 'post': 'create'
@@ -81,7 +81,7 @@ class SimpleRouter(BaseRouter):
         ),
         # Detail route.
         Route(
-            url=r'^{prefix}/{lookup}/$',
+            url=r'^{prefix}/{lookup}{trailing_slash}$',
             mapping={
                 'get': 'retrieve',
                 'put': 'update',
@@ -94,7 +94,7 @@ class SimpleRouter(BaseRouter):
         # Dynamically generated routes.
         # Generated using @action or @link decorators on methods of the viewset.
         Route(
-            url=r'^{prefix}/{lookup}/{methodname}/$',
+            url=r'^{prefix}/{lookup}/{methodname}{trailing_slash}$',
             mapping={
                 '{httpmethod}': '{methodname}',
             },
@@ -102,6 +102,10 @@ class SimpleRouter(BaseRouter):
             initkwargs={}
         ),
     ]
+
+    def __init__(self, trailing_slash=True):
+        self.trailing_slash = trailing_slash and '/' or ''
+        super(SimpleRouter, self).__init__()
 
     def get_default_base_name(self, viewset):
         """
@@ -127,23 +131,23 @@ class SimpleRouter(BaseRouter):
         """
 
         # Determine any `@action` or `@link` decorated methods on the viewset
-        dynamic_routes = {}
+        dynamic_routes = []
         for methodname in dir(viewset):
             attr = getattr(viewset, methodname)
-            httpmethod = getattr(attr, 'bind_to_method', None)
-            if httpmethod:
-                dynamic_routes[httpmethod] = methodname
+            httpmethods = getattr(attr, 'bind_to_methods', None)
+            if httpmethods:
+                dynamic_routes.append((httpmethods, methodname))
 
         ret = []
         for route in self.routes:
             if route.mapping == {'{httpmethod}': '{methodname}'}:
                 # Dynamic routes (@link or @action decorator)
-                for httpmethod, methodname in dynamic_routes.items():
+                for httpmethods, methodname in dynamic_routes:
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
                     ret.append(Route(
                         url=replace_methodname(route.url, methodname),
-                        mapping={httpmethod: methodname},
+                        mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
                         name=replace_methodname(route.name, methodname),
                         initkwargs=initkwargs,
                     ))
@@ -192,7 +196,11 @@ class SimpleRouter(BaseRouter):
                     continue
 
                 # Build the url pattern
-                regex = route.url.format(prefix=prefix, lookup=lookup)
+                regex = route.url.format(
+                    prefix=prefix,
+                    lookup=lookup,
+                    trailing_slash=self.trailing_slash
+                )
                 view = viewset.as_view(mapping, **route.initkwargs)
                 name = route.name.format(basename=basename)
                 ret.append(url(regex, view, name=name))
@@ -217,14 +225,16 @@ class DefaultRouter(SimpleRouter):
         for prefix, viewset, basename in self.registry:
             api_root_dict[prefix] = list_name.format(basename=basename)
 
-        @api_view(('GET',))
-        def api_root(request, format=None):
-            ret = {}
-            for key, url_name in api_root_dict.items():
-                ret[key] = reverse(url_name, request=request, format=format)
-            return Response(ret)
+        class APIRoot(views.APIView):
+            _ignore_model_permissions = True
 
-        return api_root
+            def get(self, request, format=None):
+                ret = {}
+                for key, url_name in api_root_dict.items():
+                    ret[key] = reverse(url_name, request=request, format=format)
+                return Response(ret)
+
+        return APIRoot.as_view()
 
     def get_urls(self):
         """

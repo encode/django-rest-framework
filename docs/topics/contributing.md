@@ -1,6 +1,6 @@
 # Contributing to REST framework
 
-> The world can only really be changed one piece at a time. The art is picking that piece.
+> The world can only really be changed one piece at a time.  The art is picking that piece.
 >
 > &mdash; [Tim Berners-Lee][cite]
 
@@ -22,15 +22,16 @@ It's really helpful if you make sure you address issues to the correct channel. 
 
 Some tips on good issue reporting:
 
-* When decribing issues try to phrase your ticket in terms of the *behavior* you think needs changing rather than the *code* you think need changing.
+* When describing issues try to phrase your ticket in terms of the *behavior* you think needs changing rather than the *code* you think need changing.
 * Search the issue list first for related items, and make sure you're running the latest version of REST framework before reporting an issue.
-* If reporting a bug, then try to include a pull request with a failing test case.  This'll help us quickly identify if there is a valid issue, and make sure that it gets fixed more quickly if there is one. 
+* If reporting a bug, then try to include a pull request with a failing test case.  This will help us quickly identify if there is a valid issue, and make sure that it gets fixed more quickly if there is one.
 
 
 
 * TODO: Triage
 
 # Development
+
 
 * git clone & PYTHONPATH
 * Pep8

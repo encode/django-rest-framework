@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.shortcuts import get_object_or_404
 from django.test import TestCase
-from rest_framework import generics, serializers, status
+from rest_framework import generics, renderers, serializers, status
 from rest_framework.tests.utils import RequestFactory
 from rest_framework.tests.models import BasicModel, Comment, SlugBasedModel
 from rest_framework.compat import six
@@ -39,6 +39,7 @@ class SlugBasedInstanceView(InstanceView):
     """
     model = SlugBasedModel
     serializer_class = SlugSerializer
+    lookup_field = 'slug'
 
 
 class TestRootView(TestCase):
@@ -120,7 +121,25 @@ class TestRootView(TestCase):
                 'text/html'
             ],
             'name': 'Root',
-            'description': 'Example description for OPTIONS.'
+            'description': 'Example description for OPTIONS.',
+            'actions': {
+                'POST': {
+                    'text': {
+                        'max_length': 100,
+                        'read_only': False,
+                        'required': True,
+                        'type': 'string',
+                        "label": "Text comes here",
+                        "help_text": "Text description."
+                    },
+                    'id': {
+                        'read_only': True,
+                        'required': False,
+                        'type': 'integer',
+                        'label': 'ID',
+                    },
+                }
+            }
         }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected)
@@ -223,9 +242,9 @@ class TestInstanceView(TestCase):
         """
         OPTIONS requests to RetrieveUpdateDestroyAPIView should return metadata
         """
-        request = factory.options('/')
-        with self.assertNumQueries(0):
-            response = self.view(request).render()
+        request = factory.options('/1')
+        with self.assertNumQueries(1):
+            response = self.view(request, pk=1).render()
         expected = {
             'parses': [
                 'application/json',
@@ -237,10 +256,38 @@ class TestInstanceView(TestCase):
                 'text/html'
             ],
             'name': 'Instance',
-            'description': 'Example description for OPTIONS.'
+            'description': 'Example description for OPTIONS.',
+            'actions': {
+                'PUT': {
+                    'text': {
+                        'max_length': 100,
+                        'read_only': False,
+                        'required': True,
+                        'type': 'string',
+                        'label': 'Text comes here',
+                        'help_text': 'Text description.'
+                    },
+                    'id': {
+                        'read_only': True,
+                        'required': False,
+                        'type': 'integer',
+                        'label': 'ID',
+                    },
+                }
+            }
         }
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected)
+
+    def test_get_instance_view_incorrect_arg(self):
+        """
+        GET requests with an incorrect pk type, should raise 404, not 500.
+        Regression test for #890.
+        """
+        request = factory.get('/a')
+        with self.assertNumQueries(0):
+            response = self.view(request, pk='a').render()
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_put_cannot_set_id(self):
         """
@@ -434,22 +481,14 @@ class TestFilterBackendAppliedToViews(TestCase):
             {'id': obj.id, 'text': obj.text}
             for obj in self.objects.all()
         ]
-        self.root_view = RootView.as_view()
-        self.instance_view = InstanceView.as_view()
-        self.original_root_backend = getattr(RootView, 'filter_backend')
-        self.original_instance_backend = getattr(InstanceView, 'filter_backend')
-
-    def tearDown(self):
-        setattr(RootView, 'filter_backend', self.original_root_backend)
-        setattr(InstanceView, 'filter_backend', self.original_instance_backend)
 
     def test_get_root_view_filters_by_name_with_filter_backend(self):
         """
         GET requests to ListCreateAPIView should return filtered list.
         """
-        setattr(RootView, 'filter_backend', InclusiveFilterBackend)
+        root_view = RootView.as_view(filter_backends=(InclusiveFilterBackend,))
         request = factory.get('/')
-        response = self.root_view(request).render()
+        response = root_view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertEqual(response.data, [{'id': 1, 'text': 'foo'}])
@@ -458,9 +497,9 @@ class TestFilterBackendAppliedToViews(TestCase):
         """
         GET requests to ListCreateAPIView should return empty list when all models are filtered out.
         """
-        setattr(RootView, 'filter_backend', ExclusiveFilterBackend)
+        root_view = RootView.as_view(filter_backends=(ExclusiveFilterBackend,))
         request = factory.get('/')
-        response = self.root_view(request).render()
+        response = root_view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, [])
 
@@ -468,9 +507,9 @@ class TestFilterBackendAppliedToViews(TestCase):
         """
         GET requests to RetrieveUpdateDestroyAPIView should raise 404 when model filtered out.
         """
-        setattr(InstanceView, 'filter_backend', ExclusiveFilterBackend)
+        instance_view = InstanceView.as_view(filter_backends=(ExclusiveFilterBackend,))
         request = factory.get('/1')
-        response = self.instance_view(request, pk=1).render()
+        response = instance_view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(response.data, {'detail': 'Not found'})
 
@@ -478,8 +517,40 @@ class TestFilterBackendAppliedToViews(TestCase):
         """
         GET requests to RetrieveUpdateDestroyAPIView should return a single object when not excluded
         """
-        setattr(InstanceView, 'filter_backend', InclusiveFilterBackend)
+        instance_view = InstanceView.as_view(filter_backends=(InclusiveFilterBackend,))
         request = factory.get('/1')
-        response = self.instance_view(request, pk=1).render()
+        response = instance_view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foo'})
+
+
+class TwoFieldModel(models.Model):
+    field_a = models.CharField(max_length=100)
+    field_b = models.CharField(max_length=100)
+
+
+class DynamicSerializerView(generics.ListCreateAPIView):
+    model = TwoFieldModel
+    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            class DynamicSerializer(serializers.ModelSerializer):
+                class Meta:
+                    model = TwoFieldModel
+                    fields = ('field_b',)
+            return DynamicSerializer
+        return super(DynamicSerializerView, self).get_serializer_class()
+
+
+class TestFilterBackendAppliedToViews(TestCase):
+
+    def test_dynamic_serializer_form_in_browsable_api(self):
+        """
+        GET requests to ListCreateAPIView should return filtered list.
+        """
+        view = DynamicSerializerView.as_view()
+        request = factory.get('/')
+        response = view(request).render()
+        self.assertContains(response, 'field_b')
+        self.assertNotContains(response, 'field_a')

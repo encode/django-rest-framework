@@ -21,7 +21,7 @@ For example, given the following form:
 
 ## HTTP header based method overriding
 
-REST framework also supports method overriding via the semi-standard `X-HTTP-Method-Override` header. This can be useful if you are working with non-form content such as JSON and are working with an older web server and/or hosting provider that doesn't recognise particular HTTP methods such as `PATCH`. For example [Amazon Web Services ELB][aws_elb].
+REST framework also supports method overriding via the semi-standard `X-HTTP-Method-Override` header.  This can be useful if you are working with non-form content such as JSON and are working with an older web server and/or hosting provider that doesn't recognise particular HTTP methods such as `PATCH`.  For example [Amazon Web Services ELB][aws_elb].
 
 To use it, make a `POST` request, setting the `X-HTTP-Method-Override` header.
 
@@ -60,7 +60,7 @@ have any control over what is sent in the `Accept` header.
 ## URL based format suffixes
 
 REST framework can take `?format=json` style URL parameters, which can be a
-useful shortcut for determing which content type should be returned from
+useful shortcut for determining which content type should be returned from
 the view.
 
 This is a more concise than using the `accept` override, but it also gives

@@ -120,6 +120,25 @@ The following people have helped make REST framework great.
 * Jerome Chen - [chenjyw]
 * Andrew Hughes - [eyepulp]
 * Daniel Hepper - [dhepper]
+* Hamish Campbell - [hamishcampbell]
+* Marlon Bailey - [avinash240]
+* James Summerfield - [jsummerfield]
+* Andy Freeland - [rouge8]
+* Craig de Stigter - [craigds]
+* Pablo Recio - [pyriku]
+* Brian Zambrano - [brianz]
+* Òscar Vilaplana - [grimborg]
+* Ryan Kaskel - [ryankask]
+* Andy McKay - [andymckay]
+* Matteo Suppo - [matteosuppo]
+* Karol Majta - [lolek09]
+* David Jones - [commonorgarden]
+* Andrew Tarzwell - [atarzwell]
+* Michal Dvořák - [mikee2185]
+* Markus Törnqvist - [mjtorn]
+* Pascal Borreli - [pborreli]
+* Alex Burgel - [aburgel]
+* David Medina - [copitux]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -133,7 +152,7 @@ Continuous integration testing is managed with [Travis CI][travis-ci].
 
 The [live sandbox][sandbox] is hosted on [Heroku].
 
-Various inspiration taken from the [Rails], [Piston], [Tastypie] and [Dagny] projects.
+Various inspiration taken from the [Rails], [Piston], [Tastypie], [Dagny] and [django-viewsets] projects.
 
 Development of REST framework 2.0 was sponsored by [DabApps].
 
@@ -152,6 +171,7 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [piston]: https://bitbucket.org/jespern/django-piston
 [tastypie]: https://github.com/toastdriven/django-tastypie
 [dagny]: https://github.com/zacharyvoase/dagny
+[django-viewsets]: https://github.com/BertrandBordage/django-viewsets
 [dabapps]: http://lab.dabapps.com
 [sandbox]: http://restframework.herokuapp.com/
 [heroku]: http://www.heroku.com/
@@ -275,3 +295,22 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [chenjyw]: https://github.com/chenjyw
 [eyepulp]: https://github.com/eyepulp
 [dhepper]: https://github.com/dhepper
+[hamishcampbell]: https://github.com/hamishcampbell
+[avinash240]: https://github.com/avinash240
+[jsummerfield]: https://github.com/jsummerfield
+[rouge8]: https://github.com/rouge8
+[craigds]: https://github.com/craigds
+[pyriku]: https://github.com/pyriku
+[brianz]: https://github.com/brianz
+[grimborg]: https://github.com/grimborg
+[ryankask]: https://github.com/ryankask
+[andymckay]: https://github.com/andymckay
+[matteosuppo]: https://github.com/matteosuppo
+[lolek09]: https://github.com/lolek09
+[commonorgarden]: https://github.com/commonorgarden
+[atarzwell]: https://github.com/atarzwell
+[mikee2185]: https://github.com/mikee2185
+[mjtorn]: https://github.com/mjtorn
+[pborreli]: https://github.com/pborreli
+[aburgel]: https://github.com/aburgel
+[copitux]: https://github.com/copitux

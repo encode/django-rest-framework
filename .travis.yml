@@ -7,18 +7,19 @@ python:
   - "3.3"
 
 env:
-  - DJANGO="django==1.5 --use-mirrors"
-  - DJANGO="django==1.4.3 --use-mirrors"
-  - DJANGO="django==1.3.5 --use-mirrors"
+  - DJANGO="https://www.djangoproject.com/download/1.6a1/tarball/"
+  - DJANGO="django==1.5.1 --use-mirrors"
+  - DJANGO="django==1.4.5 --use-mirrors"
+  - DJANGO="django==1.3.7 --use-mirrors"
 
 install:
   - pip install $DJANGO
   - pip install defusedxml==0.3
   - "if [[ ${TRAVIS_PYTHON_VERSION::1} != '3' ]]; then pip install oauth2==1.5.211 --use-mirrors; fi"
   - "if [[ ${TRAVIS_PYTHON_VERSION::1} != '3' ]]; then pip install django-oauth-plus==2.0 --use-mirrors; fi"
-  - "if [[ ${TRAVIS_PYTHON_VERSION::1} != '3' ]]; then pip install django-oauth2-provider==0.2.3 --use-mirrors; fi"
+  - "if [[ ${TRAVIS_PYTHON_VERSION::1} != '3' ]]; then pip install django-oauth2-provider==0.2.4 --use-mirrors; fi"
   - "if [[ ${DJANGO::11} == 'django==1.3' ]]; then pip install django-filter==0.5.4 --use-mirrors; fi"
-  - "if [[ ${DJANGO::11} != 'django==1.3' ]]; then pip install django-filter==0.6a1 --use-mirrors; fi"
+  - "if [[ ${DJANGO::11} != 'django==1.3' ]]; then pip install django-filter==0.6 --use-mirrors; fi"
   - export PYTHONPATH=.
 
 script:
@@ -27,10 +28,11 @@ script:
 matrix:
   exclude:
     - python: "3.2"
-      env: DJANGO="django==1.4.3 --use-mirrors"
+      env: DJANGO="django==1.4.5 --use-mirrors"
     - python: "3.2"
-      env: DJANGO="django==1.3.5 --use-mirrors"
+      env: DJANGO="django==1.3.7 --use-mirrors"
     - python: "3.3"
-      env: DJANGO="django==1.4.3 --use-mirrors"
+      env: DJANGO="django==1.4.5 --use-mirrors"
     - python: "3.3"
-      env: DJANGO="django==1.3.5 --use-mirrors"
+      env: DJANGO="django==1.3.7 --use-mirrors"
+

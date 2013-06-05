@@ -20,3 +20,166 @@ a single block in the template.
     color: white;
     text-decoration: none;
 }
+
+/* custom navigation styles */
+.wrapper .navbar{
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.navbar .navbar-inner{
+  background: #2C2C2C;
+  color: white;
+  border: none;
+  border-top: 5px solid #A30000;
+  border-radius: 0px;
+}
+
+.navbar .navbar-inner .nav li, .navbar .navbar-inner .nav li a, .navbar .navbar-inner .brand:hover{
+  color: white;
+}
+
+.nav-list > .active > a, .nav-list > .active > a:hover {
+  background: #2c2c2c;
+}
+
+.navbar .navbar-inner .dropdown-menu li a, .navbar .navbar-inner .dropdown-menu li{
+ color: #A30000;
+}
+.navbar .navbar-inner .dropdown-menu li a:hover{
+  background: #eeeeee;
+  color: #c20000;
+}
+
+/*=== dabapps bootstrap styles ====*/
+
+html{
+  width:100%;
+  background: none;
+}
+
+body, .navbar .navbar-inner .container-fluid {
+  max-width: 1150px;
+  margin: 0 auto;
+}
+
+body{
+  background: url("../img/grid.png") repeat-x;
+  background-attachment: fixed;
+}
+
+#content{
+    margin: 0;
+}
+
+/* sticky footer and footer */
+html, body {
+  height: 100%;
+}
+.wrapper {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -60px;
+}
+
+.form-switcher {
+    margin-bottom: 0;
+}
+
+.well {
+    -webkit-box-shadow: none;
+       -moz-box-shadow: none;
+            box-shadow: none;
+}
+
+.well .form-actions {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.well form {
+    margin-bottom: 0;
+}
+
+.well form .help-block {
+    color: #999;
+}
+
+.nav-tabs {
+    border: 0;
+}
+
+.nav-tabs > li {
+    float: right;
+}
+
+.nav-tabs li a {
+    margin-right: 0;
+}
+
+.nav-tabs > .active > a {
+    background: #f5f5f5;
+}
+
+.nav-tabs > .active > a:hover {
+    background: #f5f5f5;
+}
+
+.tabbable.first-tab-active .tab-content
+{
+    border-top-right-radius: 0;
+}
+
+#footer, #push {
+  height: 60px; /* .push must be the same height as .footer */
+}
+
+#footer{
+    text-align: right;
+}
+
+#footer p {
+  text-align: center;
+  color: gray;
+  border-top: 1px solid #DDD;
+  padding-top: 10px;
+}
+
+#footer a {
+  color: gray;
+  font-weight: bold;
+}
+
+#footer a:hover {
+  color: gray;
+}
+
+.page-header {
+    border-bottom: none;
+    padding-bottom: 0px;
+    margin-bottom: 20px;
+}
+
+/* custom general page styles */
+.hero-unit h2, .hero-unit h1{
+  color: #A30000;
+}
+
+body a, body a{
+  color: #A30000;
+}
+
+body a:hover{
+  color: #c20000;
+}
+
+#content a span{
+    text-decoration: underline;
+ }
+
+.request-info {
+    clear:both;
+}

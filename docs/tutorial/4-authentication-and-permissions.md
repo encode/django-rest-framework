@@ -17,7 +17,7 @@ Add the following two fields to the model.
     owner = models.ForeignKey('auth.User', related_name='snippets')
     highlighted = models.TextField()
 
-We'd also need to make sure that when the model is saved, that we populate the highlighted field, using the `pygments` code higlighting library.
+We'd also need to make sure that when the model is saved, that we populate the highlighted field, using the `pygments` code highlighting library.
 
 We'll need some extra imports:
 
@@ -94,7 +94,7 @@ On **both** the `SnippetList` and `SnippetDetail` view classes, add the followin
 
 ## Updating our serializer
 
-Now that snippets are associated with the user that created them, let's update our `SnippetSerializer` to reflect that. Add the following field to the serializer definition:
+Now that snippets are associated with the user that created them, let's update our `SnippetSerializer` to reflect that.  Add the following field to the serializer definition:
 
     owner = serializers.Field(source='owner.username')
 
@@ -120,7 +120,7 @@ Then, add the following property to **both** the `SnippetList` and `SnippetDetai
 
 ## Adding login to the Browsable API
 
-If you open a browser and navigate to the browsable API at the moment, you'll find that you're no longer able to create new code snippets. In order to do so we'd need to be able to login as a user.
+If you open a browser and navigate to the browsable API at the moment, you'll find that you're no longer able to create new code snippets.  In order to do so we'd need to be able to login as a user.
 
 We can add a login view for use with the browsable API, by editing our URLconf once more.
 
@@ -137,7 +137,7 @@ And, at the end of the file, add a pattern to include the login and logout views
 
 The `r'^api-auth/'` part of pattern can actually be whatever URL you want to use.  The only restriction is that the included urls must use the `'rest_framework'` namespace.
 
-Now if you open up the browser again and refresh the page you'll see a 'Login' link in the top right of the page.  If you log in as one of the users you created earier, you'll be able to create code snippets again.
+Now if you open up the browser again and refresh the page you'll see a 'Login' link in the top right of the page.  If you log in as one of the users you created earlier, you'll be able to create code snippets again.
 
 Once you've created a few code snippets, navigate to the '/users/' endpoint, and notice that the representation includes a list of the snippet pks that are associated with each user, in each user's 'snippets' field.
 

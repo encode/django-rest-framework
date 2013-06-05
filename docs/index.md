@@ -1,10 +1,10 @@
 <p class="badges">
 <iframe src="http://ghbtns.com/github-btn.html?user=tomchristie&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" class="github-star-button" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
 
-<a href="https://twitter.com/share" class="twitter-share-button" data-url="django-rest-framework.org" data-text="Checking out the totally awesome Django REST framework! http://django-rest-framework.org" data-count="none">Tweet</a>
+<a href="https://twitter.com/share" class="twitter-share-button" data-url="django-rest-framework.org" data-text="Checking out the totally awesome Django REST framework! http://django-rest-framework.org" data-count="none"></a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="http://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
-<img alt="Travis build image" src="https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master" class="travis-build-image">
+<img src="https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master" class="travis-build-image">
 </p>
 
 # Django REST framework
@@ -15,7 +15,7 @@ Django REST framework is a powerful and flexible toolkit that makes it easy to b
 
 Some reasons you might want to use REST framework:
 
-* The Web browseable API is a huge useability win for your developers.
+* The Web browseable API is a huge usability win for your developers.
 * Authentication policies including OAuth1a and OAuth2 out of the box.
 * Serialization that supports both ORM and non-ORM data sources.
 * Customizable all the way down - just use regular function-based views if you don't need the more powerful features.
@@ -32,7 +32,7 @@ There is a live example API for testing purposes, [available here][sandbox].
 REST framework requires the following:
 
 * Python (2.6.5+, 2.7, 3.2, 3.3)
-* Django (1.3, 1.4, 1.5)
+* Django (1.3, 1.4, 1.5, 1.6)
 
 The following packages are optional:
 
@@ -113,8 +113,8 @@ Here's our project's root `urls.py` module:
     
     # Routers provide an easy way of automatically determining the URL conf
     router = routers.DefaultRouter()
-    router.register(r'users', views.UserViewSet)
-    router.register(r'groups', views.GroupViewSet)
+    router.register(r'users', UserViewSet)
+    router.register(r'groups', GroupViewSet)
 
 
     # Wire up our API using automatic URL routing.
@@ -206,7 +206,13 @@ For updates on REST framework development, you may also want to follow [the auth
 
 <a style="padding-top: 10px" href="https://twitter.com/_tomchristie" class="twitter-follow-button" data-show-count="false">Follow @_tomchristie</a>
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
- 
+
+## Security
+
+If you believe you’ve found something in Django REST framework which has security implications, please **do not raise the issue in a public forum**.
+
+Send a description of the issue via email to [rest-framework-security@googlegroups.com][security-mail].  The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.
+
 ## License
 
 Copyright (c) 2011-2013, Tom Christie
@@ -294,6 +300,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [stack-overflow]: http://stackoverflow.com/
 [django-rest-framework-tag]: http://stackoverflow.com/questions/tagged/django-rest-framework
 [django-tag]: http://stackoverflow.com/questions/tagged/django
+[security-mail]: mailto:rest-framework-security@googlegroups.com
 [paid-support]: http://dabapps.com/services/build/api-development/
 [dabapps]: http://dabapps.com
 [contact-dabapps]: http://dabapps.com/contact/
