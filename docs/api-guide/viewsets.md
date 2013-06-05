@@ -92,7 +92,9 @@ The default routers included with REST framework will provide routes for a stand
         def destroy(self, request, pk=None):
             pass
 
-If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@link` or `@action` decorators.  The `@link` decorator will route `GET` requests, and the `@action` decorator will route `POST` requests.
+If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@collection_link`, `@collection_action`, `@link`, or `@action` decorators.  The `@collection_link` and `@link` decorator will route `GET` requests, and the `@collection_action` and `@action` decorator will route `POST` requests.
+
+The `@link` and `@action` decorators contain `pk` in their URL pattern and are intended for methods which require a single instance. The `@collection_link` and `@collection_action` decorators are intended for methods which operate on a collection of objects.
 
 For example:
 
@@ -121,13 +123,20 @@ For example:
                 return Response(serializer.errors,
                                 status=status.HTTP_400_BAD_REQUEST)
 
-The `@action` and `@link` decorators can additionally take extra arguments that will be set for the routed view only.  For example...
+        @collection_link()
+        def recent_users(self, request):
+            recent_users = User.objects.all().order('-last_login')
+            page = self.paginate_queryset(recent_users)
+            serializer = self.get_pagination_serializer(page)
+            return Response(serializer.data)
+
+The decorators can additionally take extra arguments that will be set for the routed view only.  For example...
 
         @action(permission_classes=[IsAdminOrIsSelf])
         def set_password(self, request, pk=None):
            ...
 
-The `@action` decorator will route `POST` requests by default, but may also accept other HTTP methods, by using the `method` argument.  For example:
+The `@collection_action` and `@action` decorators will route `POST` requests by default, but may also accept other HTTP methods, by using the `method` argument.  For example:
 
         @action(methods=['POST', 'DELETE'])
         def unset_password(self, request, pk=None):
