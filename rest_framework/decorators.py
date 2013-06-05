@@ -113,6 +113,7 @@ def link(**kwargs):
     """
     def decorator(func):
         func.bind_to_methods = ['get']
+        func.collection = False
         func.kwargs = kwargs
         return func
     return decorator
@@ -124,6 +125,31 @@ def action(methods=['post'], **kwargs):
     """
     def decorator(func):
         func.bind_to_methods = methods
+        func.collection = False
+        func.kwargs = kwargs
+        return func
+    return decorator
+
+
+def collection_link(**kwargs):
+    """
+    Used to mark a method on a ViewSet that should be routed for GET requests.
+    """
+    def decorator(func):
+        func.bind_to_methods = ['get']
+        func.collection = True
+        func.kwargs = kwargs
+        return func
+    return decorator
+
+
+def collection_action(methods=['post'], **kwargs):
+    """
+    Used to mark a method on a ViewSet that should be routed for POST requests.
+    """
+    def decorator(func):
+        func.bind_to_methods = methods
+        func.collection = True
         func.kwargs = kwargs
         return func
     return decorator

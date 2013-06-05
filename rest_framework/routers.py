@@ -88,6 +88,17 @@ class SimpleRouter(BaseRouter):
             name='{basename}-list',
             initkwargs={'suffix': 'List'}
         ),
+        # Dynamically generated collection routes.
+        # Generated using @collection_action or @collection_link decorators
+        # on methods of the viewset.
+        Route(
+            url=r'^{prefix}/{methodname}{trailing_slash}$',
+            mapping={
+                '{httpmethod}': '{methodname}',
+            },
+            name='{basename}-collection-{methodnamehyphen}',
+            initkwargs={}
+        ),
         # Detail route.
         Route(
             url=r'^{prefix}/{lookup}{trailing_slash}$',
@@ -107,7 +118,7 @@ class SimpleRouter(BaseRouter):
             mapping={
                 '{httpmethod}': '{methodname}',
             },
-            name='{basename}-{methodnamehyphen}',
+            name='{basename}-dynamic-{methodnamehyphen}',
             initkwargs={}
         ),
     ]
@@ -142,22 +153,38 @@ class SimpleRouter(BaseRouter):
         known_actions = flatten([route.mapping.values() for route in self.routes])
 
         # Determine any `@action` or `@link` decorated methods on the viewset
+        collection_routes = []
         dynamic_routes = []
         for methodname in dir(viewset):
             attr = getattr(viewset, methodname)
             httpmethods = getattr(attr, 'bind_to_methods', None)
+            collection = getattr(attr, 'collection', False)
             if httpmethods:
                 if methodname in known_actions:
                     raise ImproperlyConfigured('Cannot use @action or @link decorator on '
                                                'method "%s" as it is an existing route' % methodname)
                 httpmethods = [method.lower() for method in httpmethods]
-                dynamic_routes.append((httpmethods, methodname))
+                if collection:
+                    collection_routes.append((httpmethods, methodname))
+                else:
+                    dynamic_routes.append((httpmethods, methodname))
 
         ret = []
         for route in self.routes:
-            if route.mapping == {'{httpmethod}': '{methodname}'}:
+            if route.name == '{basename}-dynamic-{methodnamehyphen}':
                 # Dynamic routes (@link or @action decorator)
                 for httpmethods, methodname in dynamic_routes:
+                    initkwargs = route.initkwargs.copy()
+                    initkwargs.update(getattr(viewset, methodname).kwargs)
+                    ret.append(Route(
+                        url=replace_methodname(route.url, methodname),
+                        mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
+                        name=replace_methodname(route.name, methodname),
+                        initkwargs=initkwargs,
+                    ))
+            elif route.name == '{basename}-collection-{methodnamehyphen}':
+                # Dynamic routes (@collection_link or @collection_action decorator)
+                for httpmethods, methodname in collection_routes:
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
                     ret.append(Route(

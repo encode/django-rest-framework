@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import serializers, viewsets, permissions
 from rest_framework.compat import include, patterns, url
-from rest_framework.decorators import link, action
+from rest_framework.decorators import link, action, collection_link, collection_action
 from rest_framework.response import Response
 from rest_framework.routers import SimpleRouter, DefaultRouter
 from rest_framework.test import APIRequestFactory
@@ -214,3 +214,49 @@ class TestActionAppliedToExistingRoute(TestCase):
 
         with self.assertRaises(ImproperlyConfigured):
             self.router.urls
+
+
+class StaticAndDynamicViewSet(viewsets.ViewSet):
+    def list(self, request, *args, **kwargs):
+        return Response({'method': 'list'})
+
+    @collection_action()
+    def collection_action(self, request, *args, **kwargs):
+        return Response({'method': 'action1'})
+
+    @action()
+    def dynamic_action(self, request, *args, **kwargs):
+        return Response({'method': 'action2'})
+
+    @collection_link()
+    def collection_link(self, request, *args, **kwargs):
+        return Response({'method': 'link1'})
+
+    @link()
+    def dynamic_link(self, request, *args, **kwargs):
+        return Response({'method': 'link2'})
+
+
+class TestStaticAndDynamicRouter(TestCase):
+    def setUp(self):
+        self.router = SimpleRouter()
+
+    def test_link_and_action_decorator(self):
+        routes = self.router.get_routes(StaticAndDynamicViewSet)
+        decorator_routes = [r for r in routes if not (r.name.endswith('-list') or r.name.endswith('-detail'))]
+        # Make sure all these endpoints exist and none have been clobbered
+        for i, endpoint in enumerate(['collection_action', 'collection_link', 'dynamic_action', 'dynamic_link']):
+            route = decorator_routes[i]
+            # check url listing
+            if endpoint.startswith('collection_'):
+                self.assertEqual(route.url,
+                                 '^{{prefix}}/{0}{{trailing_slash}}$'.format(endpoint))
+            else:
+                self.assertEqual(route.url,
+                                 '^{{prefix}}/{{lookup}}/{0}{{trailing_slash}}$'.format(endpoint))
+            # check method to function mapping
+            if endpoint.endswith('action'):
+                method_map = 'post'
+            else:
+                method_map = 'get'
+            self.assertEqual(route.mapping[method_map], endpoint)
