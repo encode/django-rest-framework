@@ -39,7 +39,7 @@ Declaring a serializer looks very similar to declaring a form:
             an existing model instance, or create a new model instance.
             """
             if instance is not None:
-                instance.title = attrs.get('title', instance.title)
+                instance.email = attrs.get('email', instance.email)
                 instance.content = attrs.get('content', instance.content)
                 instance.created = attrs.get('created', instance.created)
                 return instance
