@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 
 import copy
-import warnings
 
 from django.test import TestCase
 from django.test.client import RequestFactory
@@ -94,10 +93,7 @@ class ClassBasedViewIntegrationTests(TestCase):
     def test_return_400_error(self):
         request = factory.post('/', '{"return_400_error": true}',
                                content_type='application/json')
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter('always')
-            response = self.view(request)
-            self.assertEqual(len(w), 1)
+        response = self.view(request)
         expected = {
             'detail': 'Bad request'
         }
@@ -146,10 +142,7 @@ class FunctionBasedViewIntegrationTests(TestCase):
     def test_return_400_error(self):
         request = factory.post('/', '{"return_400_error": true}',
                                content_type='application/json')
-        with warnings.catch_warnings(record=True) as w:
-            warnings.simplefilter('always')
-            response = self.view(request)
-            self.assertEqual(len(w), 1)
+        response = self.view(request)
         expected = {
             'detail': 'Bad request'
         }

@@ -7,7 +7,7 @@ which allows mixin classes to be composed in interesting ways.
 from __future__ import unicode_literals
 
 from django.http import Http404
-from rest_framework import status, exceptions
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.request import clone_request
 import warnings
@@ -55,7 +55,7 @@ class CreateModelMixin(object):
             return Response(serializer.data, status=status.HTTP_201_CREATED,
                             headers=headers)
 
-        raise exceptions.DeserializeError(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def get_success_headers(self, data):
         try:
@@ -132,7 +132,7 @@ class UpdateModelMixin(object):
             self.post_save(self.object, created=created)
             return Response(serializer.data, status=success_status_code)
 
-        raise exceptions.DeserializeError(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True

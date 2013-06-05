@@ -2,7 +2,6 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework import parsers
 from rest_framework import renderers
-from rest_framework import exceptions
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
@@ -21,7 +20,7 @@ class ObtainAuthToken(APIView):
         if serializer.is_valid():
             token, created = Token.objects.get_or_create(user=serializer.object['user'])
             return Response({'token': token.key})
-        raise exceptions.TokenAuthenticationError(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 obtain_auth_token = ObtainAuthToken.as_view()
