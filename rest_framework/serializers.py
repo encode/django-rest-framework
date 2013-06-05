@@ -555,6 +555,7 @@ class ModelSerializerOptions(SerializerOptions):
         super(ModelSerializerOptions, self).__init__(meta)
         self.model = getattr(meta, 'model', None)
         self.read_only_fields = getattr(meta, 'read_only_fields', ())
+        self.property_fields = getattr(meta, 'property_fields', ())
 
 
 class ModelSerializer(Serializer):
@@ -702,6 +703,10 @@ class ModelSerializer(Serializer):
                 (field_name, self.__class__.__name__)
             ret[field_name].read_only = True
 
+        # For each of the `property_fields` construct a field
+        for property_name in self.opts.property_fields:
+            ret[property_name] = self.get_property_field(property_name) 
+
         return ret
 
     def get_pk_field(self, model_field):
@@ -741,6 +746,9 @@ class ModelSerializer(Serializer):
             kwargs['required'] = not(model_field.null or model_field.blank)
 
         return PrimaryKeyRelatedField(**kwargs)
+
+    def get_property_field(self, model_property):
+        return CharField(read_only=True, source=model_property)
 
     def get_field(self, model_field):
         """
