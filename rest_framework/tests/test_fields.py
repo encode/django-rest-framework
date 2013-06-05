@@ -865,4 +865,4 @@ class FieldCallableDefault(TestCase):
         field = serializers.WritableField(default=self.simple_callable)
         into = {}
         field.field_from_native({}, {}, 'field', into)
-        self.assertEquals(into, {'field': 'foo bar'})
+        self.assertEqual(into, {'field': 'foo bar'})
