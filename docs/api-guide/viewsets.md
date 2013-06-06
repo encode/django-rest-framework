@@ -92,7 +92,7 @@ The default routers included with REST framework will provide routes for a stand
         def destroy(self, request, pk=None):
             pass
 
-If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@collection_link`, `@collection_action`, `@link`, or `@action` decorators.  The `@collection_link` and `@link` decorator will route `GET` requests, and the `@collection_action` and `@action` decorator will route `POST` requests.
+If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@link`, `@action`, `@collection_link`, or `@collection_action` decorators.  The `@link` and `@collection_link` decorators will route `GET` requests, and the `@action` and `@collection_action` decorators will route `POST` requests.
 
 The `@link` and `@action` decorators contain `pk` in their URL pattern and are intended for methods which require a single instance. The `@collection_link` and `@collection_action` decorators are intended for methods which operate on a collection of objects.
 
@@ -136,7 +136,7 @@ The decorators can additionally take extra arguments that will be set for the ro
         def set_password(self, request, pk=None):
            ...
 
-The `@collection_action` and `@action` decorators will route `POST` requests by default, but may also accept other HTTP methods, by using the `method` argument.  For example:
+The `@action` and `@collection_action` decorators will route `POST` requests by default, but may also accept other HTTP methods, by using the `methods` argument.  For example:
 
         @action(methods=['POST', 'DELETE'])
         def unset_password(self, request, pk=None):
