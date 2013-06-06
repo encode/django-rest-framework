@@ -131,7 +131,7 @@ You may want to override this method to provide more complex behavior such as mo
 For example:
 
     def get_paginate_by(self):
-        self.request.accepted_renderer.format == 'html':
+        if self.request.accepted_renderer.format == 'html':
             return 20
         return 100
 

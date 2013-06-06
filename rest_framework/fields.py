@@ -7,25 +7,24 @@ from __future__ import unicode_literals
 
 import copy
 import datetime
-from decimal import Decimal, DecimalException
 import inspect
 import re
 import warnings
+from decimal import Decimal, DecimalException
+from django import forms
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.db.models.fields import BLANK_CHOICE_DASH
-from django import forms
 from django.forms import widgets
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
 from django.utils.datastructures import SortedDict
 from rest_framework import ISO_8601
-from rest_framework.compat import (timezone, parse_date, parse_datetime,
-                                   parse_time)
-from rest_framework.compat import BytesIO
-from rest_framework.compat import six
-from rest_framework.compat import smart_text, force_text, is_non_str_iterable
+from rest_framework.compat import (
+    timezone, parse_date, parse_datetime, parse_time, BytesIO, six, smart_text,
+    force_text, is_non_str_iterable
+)
 from rest_framework.settings import api_settings
 
 
@@ -256,6 +255,12 @@ class WritableField(Field):
             widget = widget()
         self.widget = widget
 
+    def __deepcopy__(self, memo):
+        result = copy.copy(self)
+        memo[id(self)] = result
+        result.validators = self.validators[:]
+        return result
+
     def validate(self, value):
         if value in validators.EMPTY_VALUES and self.required:
             raise ValidationError(self.error_messages['required'])
@@ -428,13 +433,6 @@ class SlugField(CharField):
     def __init__(self, *args, **kwargs):
         super(SlugField, self).__init__(*args, **kwargs)
 
-    def __deepcopy__(self, memo):
-        result = copy.copy(self)
-        memo[id(self)] = result
-        #result.widget = copy.deepcopy(self.widget, memo)
-        result.validators = self.validators[:]
-        return result
-
 
 class ChoiceField(WritableField):
     type_name = 'ChoiceField'
@@ -503,13 +501,6 @@ class EmailField(CharField):
             return None
         return ret.strip()
 
-    def __deepcopy__(self, memo):
-        result = copy.copy(self)
-        memo[id(self)] = result
-        #result.widget = copy.deepcopy(self.widget, memo)
-        result.validators = self.validators[:]
-        return result
-
 
 class RegexField(CharField):
     type_name = 'RegexField'
@@ -533,12 +524,6 @@ class RegexField(CharField):
         self.validators.append(self._regex_validator)
 
     regex = property(_get_regex, _set_regex)
-
-    def __deepcopy__(self, memo):
-        result = copy.copy(self)
-        memo[id(self)] = result
-        result.validators = self.validators[:]
-        return result
 
 
 class DateField(WritableField):
