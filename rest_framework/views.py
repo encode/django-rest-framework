@@ -304,10 +304,10 @@ class APIView(View):
         `.dispatch()` is pretty much the same as Django's regular dispatch,
         but with extra hooks for startup, finalize, and exception handling.
         """
-        request = self.initialize_request(request, *args, **kwargs)
-        self.request = request
         self.args = args
         self.kwargs = kwargs
+        request = self.initialize_request(request, *args, **kwargs)
+        self.request = request
         self.headers = self.default_response_headers  # deprecate?
 
         try:
