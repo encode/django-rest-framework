@@ -6,7 +6,7 @@ from rest_framework import serializers, viewsets
 from rest_framework.compat import include, patterns, url
 from rest_framework.decorators import link, action
 from rest_framework.response import Response
-from rest_framework.routers import SimpleRouter
+from rest_framework.routers import SimpleRouter, DefaultRouter
 
 factory = RequestFactory()
 
@@ -148,3 +148,17 @@ class TestTrailingSlash(TestCase):
         expected = ['^notes$', '^notes/(?P<pk>[^/]+)$']
         for idx in range(len(expected)):
             self.assertEqual(expected[idx], self.urls[idx].regex.pattern)
+
+class TestNameableRoot(TestCase):
+    def setUp(self):
+        class NoteViewSet(viewsets.ModelViewSet):
+            model = RouterTestModel
+        self.router = DefaultRouter()
+        self.router.root_view_name = 'nameable-root'
+        self.router.register(r'notes', NoteViewSet)
+        self.urls = self.router.urls
+
+    def test_router_has_custom_name(self):
+        expected = 'nameable-root'
+        self.assertEqual(expected, self.urls[0].name)
+
