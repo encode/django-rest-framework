@@ -215,6 +215,7 @@ class DefaultRouter(SimpleRouter):
     """
     include_root_view = True
     include_format_suffixes = True
+    root_view_name = 'api-root'
 
     def get_api_root_view(self):
         """
@@ -244,7 +245,7 @@ class DefaultRouter(SimpleRouter):
         urls = []
 
         if self.include_root_view:
-            root_url = url(r'^$', self.get_api_root_view(), name='api-root')
+            root_url = url(r'^$', self.get_api_root_view(), name=self.root_view_name)
             urls.append(root_url)
 
         default_urls = super(DefaultRouter, self).get_urls()
