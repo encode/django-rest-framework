@@ -60,7 +60,7 @@ The following attributes control the basic view behavior.
 
 * `queryset` - The queryset that should be used for returning objects from this view.  Typically, you must either set this attribute, or override the `get_queryset()` method.
 * `serializer_class` - The serializer class that should be used for validating and deserializing input, and for serializing output.  Typically, you must either set this attribute, or override the `get_serializer_class()` method.
-* `lookup_field` - The field that should be used to lookup individual model instances.  Defaults to `'pk'`.  The URL conf should include a keyword argument corresponding to this value.  More complex lookup styles can be supported by overriding the `get_object()` method.
+* `lookup_field` - The field that should be used to lookup individual model instances.  Defaults to `'pk'`.  The URL conf should include a keyword argument corresponding to this value.  More complex lookup styles can be supported by overriding the `get_object()` method.  Note that when using hyperlinked APIs you'll need to ensure that *both* the API views *and* the serializer classes use lookup fields that correctly correspond with the URL conf.
 
 **Shortcuts**:
 
@@ -131,7 +131,7 @@ You may want to override this method to provide more complex behavior such as mo
 For example:
 
     def get_paginate_by(self):
-        self.request.accepted_renderer.format == 'html':
+        if self.request.accepted_renderer.format == 'html':
             return 20
         return 100
 

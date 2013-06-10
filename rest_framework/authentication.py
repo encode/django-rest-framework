@@ -230,8 +230,9 @@ class OAuthAuthentication(BaseAuthentication):
         try:
             consumer_key = oauth_request.get_parameter('oauth_consumer_key')
             consumer = oauth_provider_store.get_consumer(request, oauth_request, consumer_key)
-        except oauth_provider.store.InvalidConsumerError as err:
-            raise exceptions.AuthenticationFailed(err)
+        except oauth_provider.store.InvalidConsumerError:
+            msg = 'Invalid consumer token: %s' % oauth_request.get_parameter('oauth_consumer_key')
+            raise exceptions.AuthenticationFailed(msg)
 
         if consumer.status != oauth_provider.consts.ACCEPTED:
             msg = 'Invalid consumer key status: %s' % consumer.get_status_display()

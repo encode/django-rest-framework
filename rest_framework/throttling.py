@@ -3,7 +3,7 @@ Provides various throttling policies.
 """
 from __future__ import unicode_literals
 from django.core.cache import cache
-from rest_framework import exceptions
+from django.core.exceptions import ImproperlyConfigured
 from rest_framework.settings import api_settings
 import time
 
@@ -65,13 +65,13 @@ class SimpleRateThrottle(BaseThrottle):
         if not getattr(self, 'scope', None):
             msg = ("You must set either `.scope` or `.rate` for '%s' throttle" %
                    self.__class__.__name__)
-            raise exceptions.ConfigurationError(msg)
+            raise ImproperlyConfigured(msg)
 
         try:
             return self.settings.DEFAULT_THROTTLE_RATES[self.scope]
         except KeyError:
             msg = "No default throttle rate set for '%s' scope" % self.scope
-            raise exceptions.ConfigurationError(msg)
+            raise ImproperlyConfigured(msg)
 
     def parse_rate(self, rate):
         """

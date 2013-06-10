@@ -39,7 +39,7 @@ Declaring a serializer looks very similar to declaring a form:
             an existing model instance, or create a new model instance.
             """
             if instance is not None:
-                instance.title = attrs.get('title', instance.title)
+                instance.email = attrs.get('email', instance.email)
                 instance.content = attrs.get('content', instance.content)
                 instance.created = attrs.get('created', instance.created)
                 return instance
@@ -387,13 +387,15 @@ There needs to be a way of determining which views should be used for hyperlinki
 
 By default hyperlinks are expected to correspond to a view name that matches the style `'{model_name}-detail'`, and looks up the instance by a `pk` keyword argument.
 
-You can change the field that is used for object lookups by setting the `lookup_field` option.  The value of this option should correspond both with a kwarg in the URL conf, and with an field on the model.  For example:
+You can change the field that is used for object lookups by setting the `lookup_field` option.  The value of this option should correspond both with a kwarg in the URL conf, and with a field on the model.  For example:
 
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Account
             fields = ('url', 'account_name', 'users', 'created')
             lookup_field = 'slug'
+
+Not that the `lookup_field` will be used as the default on *all* hyperlinked fields, including both the URL identity, and any hyperlinked relationships.
 
 For more specfic requirements such as specifying a different lookup for each field, you'll want to set the fields on the serializer explicitly.  For example:
 
