@@ -74,7 +74,7 @@ In the `urls.py` file we bind our `ViewSet` classes into a set of concrete views
     })
     snippet_highlight = SnippetViewSet.as_view({
         'get': 'highlight'
-    })
+    }, renderer_classes=[renderers.StaticHTMLRenderer])
     user_list = UserViewSet.as_view({
         'get': 'list'
     })
