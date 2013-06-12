@@ -428,6 +428,47 @@ class OAuthTests(TestCase):
         response = self.csrf_client.post('/oauth-with-scope/', params)
         self.assertEqual(response.status_code, 200)
 
+    @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
+    @unittest.skipUnless(oauth, 'oauth2 not installed')
+    def test_bad_consumer_key(self):
+        """Ensure POSTing using HMAC_SHA1 signature method passes"""
+        params = {
+            'oauth_version': "1.0",
+            'oauth_nonce': oauth.generate_nonce(),
+            'oauth_timestamp': int(time.time()),
+            'oauth_token': self.token.key,
+            'oauth_consumer_key': 'badconsumerkey'
+        }
+
+        req = oauth.Request(method="POST", url="http://testserver/oauth/", parameters=params)
+
+        signature_method = oauth.SignatureMethod_HMAC_SHA1()
+        req.sign_request(signature_method, self.consumer, self.token)
+        auth = req.to_header()["Authorization"]
+
+        response = self.csrf_client.post('/oauth/', HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 401)
+
+    @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
+    @unittest.skipUnless(oauth, 'oauth2 not installed')
+    def test_bad_token_key(self):
+        """Ensure POSTing using HMAC_SHA1 signature method passes"""
+        params = {
+            'oauth_version': "1.0",
+            'oauth_nonce': oauth.generate_nonce(),
+            'oauth_timestamp': int(time.time()),
+            'oauth_token': 'badtokenkey',
+            'oauth_consumer_key': self.consumer.key
+        }
+
+        req = oauth.Request(method="POST", url="http://testserver/oauth/", parameters=params)
+
+        signature_method = oauth.SignatureMethod_HMAC_SHA1()
+        req.sign_request(signature_method, self.consumer, self.token)
+        auth = req.to_header()["Authorization"]
+
+        response = self.csrf_client.post('/oauth/', HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 401)
 
 class OAuth2Tests(TestCase):
     """OAuth 2.0 authentication"""

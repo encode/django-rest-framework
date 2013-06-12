@@ -866,3 +866,33 @@ class FieldCallableDefault(TestCase):
         into = {}
         field.field_from_native({}, {}, 'field', into)
         self.assertEqual(into, {'field': 'foo bar'})
+
+
+class CustomIntegerField(TestCase):
+    """
+        Test that custom fields apply min_value and max_value constraints
+    """
+    def test_custom_fields_can_be_validated_for_value(self):
+
+        class MoneyField(models.PositiveIntegerField):
+            pass
+
+        class EntryModel(models.Model):
+            bank = MoneyField(validators=[validators.MaxValueValidator(100)])
+
+        class EntrySerializer(serializers.ModelSerializer):
+            class Meta:
+                model = EntryModel
+
+        entry = EntryModel(bank=1)
+
+        serializer = EntrySerializer(entry, data={"bank": 11})
+        self.assertTrue(serializer.is_valid())
+
+        serializer = EntrySerializer(entry, data={"bank": -1})
+        self.assertFalse(serializer.is_valid())
+
+        serializer = EntrySerializer(entry, data={"bank": 101})
+        self.assertFalse(serializer.is_valid())
+
+
