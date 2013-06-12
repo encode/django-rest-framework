@@ -212,7 +212,7 @@ class GenericAPIView(views.APIView):
         You may want to override this if you need to provide different
         serializations depending on the incoming request.
 
-        (Eg. admins get full serialization, others get basic serilization)
+        (Eg. admins get full serialization, others get basic serialization)
         """
         serializer_class = self.serializer_class
         if serializer_class is not None:
