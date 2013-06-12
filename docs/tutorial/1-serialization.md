@@ -175,13 +175,13 @@ We've now got a few snippet instances to play with.  Let's take a look at serial
     serializer.data
     # {'pk': 2, 'title': u'', 'code': u'print "hello, world"\n', 'linenos': False, 'language': u'python', 'style': u'friendly'}
 
-At this point we've translated the model instance into python native datatypes.  To finalize the serialization process we render the data into `json`.
+At this point we've translated the model instance into Python native datatypes.  To finalize the serialization process we render the data into `json`.
 
     content = JSONRenderer().render(serializer.data)
     content
     # '{"pk": 2, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
 
-Deserialization is similar.  First we parse a stream into python native datatypes... 
+Deserialization is similar.  First we parse a stream into Python native datatypes... 
 
     import StringIO
 

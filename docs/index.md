@@ -43,7 +43,7 @@ The following packages are optional:
 * [django-oauth-plus][django-oauth-plus] (2.0+) and [oauth2][oauth2] (1.5.211+) - OAuth 1.0a support.
 * [django-oauth2-provider][django-oauth2-provider] (0.2.3+) - OAuth 2.0 support.
 
-**Note**: The `oauth2` python package is badly misnamed, and actually provides OAuth 1.0a support.  Also note that packages required for both OAuth 1.0a, and OAuth 2.0 are not yet Python 3 compatible.
+**Note**: The `oauth2` Python package is badly misnamed, and actually provides OAuth 1.0a support.  Also note that packages required for both OAuth 1.0a, and OAuth 2.0 are not yet Python 3 compatible.
 
 ## Installation
 
