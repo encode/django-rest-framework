@@ -199,9 +199,9 @@ Default: `'format'`
 
 #### DATETIME_FORMAT
 
-A format string that should be used by default for rendering the output of `DateTimeField` serializer fields.  If `None`, then `DateTimeField` serializer fields will return python `datetime` objects, and the datetime encoding will be determined by the renderer.
+A format string that should be used by default for rendering the output of `DateTimeField` serializer fields.  If `None`, then `DateTimeField` serializer fields will return Python `datetime` objects, and the datetime encoding will be determined by the renderer.
 
-May be any of `None`, `'iso-8601'` or a python [strftime format][strftime] string.
+May be any of `None`, `'iso-8601'` or a Python [strftime format][strftime] string.
 
 Default: `None`
 
@@ -209,15 +209,15 @@ Default: `None`
 
 A list of format strings that should be used by default for parsing inputs to `DateTimeField` serializer fields.
 
-May be a list including the string `'iso-8601'` or python [strftime format][strftime] strings.
+May be a list including the string `'iso-8601'` or Python [strftime format][strftime] strings.
 
 Default: `['iso-8601']`
 
 #### DATE_FORMAT
 
-A format string that should be used by default for rendering the output of `DateField` serializer fields.  If `None`, then `DateField` serializer fields will return python `date` objects, and the date encoding will be determined by the renderer.
+A format string that should be used by default for rendering the output of `DateField` serializer fields.  If `None`, then `DateField` serializer fields will return Python `date` objects, and the date encoding will be determined by the renderer.
 
-May be any of `None`, `'iso-8601'` or a python [strftime format][strftime] string.
+May be any of `None`, `'iso-8601'` or a Python [strftime format][strftime] string.
 
 Default: `None`
 
@@ -225,15 +225,15 @@ Default: `None`
 
 A list of format strings that should be used by default for parsing inputs to `DateField` serializer fields.
 
-May be a list including the string `'iso-8601'` or python [strftime format][strftime] strings.
+May be a list including the string `'iso-8601'` or Python [strftime format][strftime] strings.
 
 Default: `['iso-8601']`
 
 #### TIME_FORMAT
 
-A format string that should be used by default for rendering the output of `TimeField` serializer fields.  If `None`, then `TimeField` serializer fields will return python `time` objects, and the time encoding will be determined by the renderer.
+A format string that should be used by default for rendering the output of `TimeField` serializer fields.  If `None`, then `TimeField` serializer fields will return Python `time` objects, and the time encoding will be determined by the renderer.
 
-May be any of `None`, `'iso-8601'` or a python [strftime format][strftime] string.
+May be any of `None`, `'iso-8601'` or a Python [strftime format][strftime] string.
 
 Default: `None`
 
@@ -241,7 +241,7 @@ Default: `None`
 
 A list of format strings that should be used by default for parsing inputs to `TimeField` serializer fields.
 
-May be a list including the string `'iso-8601'` or python [strftime format][strftime] strings.
+May be a list including the string `'iso-8601'` or Python [strftime format][strftime] strings.
 
 Default: `['iso-8601']`
 

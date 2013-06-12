@@ -8,7 +8,7 @@ will take some serious design work.
 >
 > &mdash; Russell Keith-Magee, [Django users group][cite]
 
-Serializers allow complex data such as querysets and model instances to be converted to native python datatypes that can then be easily rendered into `JSON`, `XML` or other content types.  Serializers also provide deserialization, allowing parsed data to be converted back into complex types, after first validating the incoming data.
+Serializers allow complex data such as querysets and model instances to be converted to native Python datatypes that can then be easily rendered into `JSON`, `XML` or other content types.  Serializers also provide deserialization, allowing parsed data to be converted back into complex types, after first validating the incoming data.
 
 REST framework's serializers work very similarly to Django's `Form` and `ModelForm` classes.  It provides a `Serializer` class which gives you a powerful, generic way to control the output of your responses, as well as a `ModelSerializer` class which provides a useful shortcut for creating serializers that deal with model instances and querysets.
 
@@ -57,7 +57,7 @@ We can now use `CommentSerializer` to serialize a comment, or list of comments. 
     serializer.data
     # {'email': u'leila@example.com', 'content': u'foo bar', 'created': datetime.datetime(2012, 8, 22, 16, 20, 9, 822774)}
 
-At this point we've translated the model instance into python native datatypes.  To finalise the serialization process we render the data into `json`.
+At this point we've translated the model instance into Python native datatypes.  To finalise the serialization process we render the data into `json`.
 
     json = JSONRenderer().render(serializer.data)
     json
@@ -65,7 +65,7 @@ At this point we've translated the model instance into python native datatypes. 
 
 ## Deserializing objects
         
-Deserialization is similar.  First we parse a stream into python native datatypes... 
+Deserialization is similar.  First we parse a stream into Python native datatypes... 
 
     stream = StringIO(json)
     data = JSONParser().parse(stream)
