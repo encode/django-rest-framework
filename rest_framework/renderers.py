@@ -11,6 +11,7 @@ from __future__ import unicode_literals
 import copy
 import json
 from django import forms
+from django.core.exceptions import ImproperlyConfigured
 from django.http.multipartparser import parse_header
 from django.template import RequestContext, loader, Template
 from django.utils.xmlutils import SimplerXMLGenerator
@@ -18,7 +19,6 @@ from rest_framework.compat import StringIO
 from rest_framework.compat import six
 from rest_framework.compat import smart_text
 from rest_framework.compat import yaml
-from rest_framework.exceptions import ConfigurationError
 from rest_framework.settings import api_settings
 from rest_framework.request import clone_request
 from rest_framework.utils import encoders
@@ -270,7 +270,7 @@ class TemplateHTMLRenderer(BaseRenderer):
             return [self.template_name]
         elif hasattr(view, 'get_template_names'):
             return view.get_template_names()
-        raise ConfigurationError('Returned a template response with no template_name')
+        raise ImproperlyConfigured('Returned a template response with no template_name')
 
     def get_exception_template(self, response):
         template_names = [name % {'status_code': response.status_code}

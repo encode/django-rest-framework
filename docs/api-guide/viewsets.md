@@ -209,8 +209,6 @@ To create a base viewset class that provides `create`, `list` and `retrieve` ope
                                     mixins.ListMixin,
                                     mixins.RetrieveMixin,
                                     viewsets.GenericViewSet):
-        pass
-
         """
         A viewset that provides `retrieve`, `update`, and `list` actions.
         
