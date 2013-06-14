@@ -14,7 +14,6 @@ env:
 
 install:
   - pip install $DJANGO
-  - pip install coveralls
   - pip install defusedxml==0.3
   - "if [[ ${TRAVIS_PYTHON_VERSION::1} != '3' ]]; then pip install oauth2==1.5.211 --use-mirrors; fi"
   - "if [[ ${TRAVIS_PYTHON_VERSION::1} != '3' ]]; then pip install django-oauth-plus==2.0 --use-mirrors; fi"
@@ -24,10 +23,7 @@ install:
   - export PYTHONPATH=.
 
 script:
-  - coverage run --omit="rest_framework/tests/*,rest_framework/runtests/*,rest_framework/compat.py" rest_framework/runtests/runtests.py
-
-after_success:
-  - coveralls
+  - python rest_framework/runtests/runtests.py
 
 matrix:
   exclude:
