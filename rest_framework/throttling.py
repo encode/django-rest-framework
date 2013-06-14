@@ -40,9 +40,9 @@ class SimpleRateThrottle(BaseThrottle):
     """
 
     timer = time.time
-    settings = api_settings
     cache_format = 'throtte_%(scope)s_%(ident)s'
     scope = None
+    THROTTLE_RATES = api_settings.DEFAULT_THROTTLE_RATES
 
     def __init__(self):
         if not getattr(self, 'rate', None):
@@ -68,7 +68,7 @@ class SimpleRateThrottle(BaseThrottle):
             raise ImproperlyConfigured(msg)
 
         try:
-            return self.settings.DEFAULT_THROTTLE_RATES[self.scope]
+            return self.THROTTLE_RATES[self.scope]
         except KeyError:
             msg = "No default throttle rate set for '%s' scope" % self.scope
             raise ImproperlyConfigured(msg)
@@ -186,6 +186,19 @@ class ScopedRateThrottle(SimpleRateThrottle):
     user id of the request, and the scope of the view being accessed.
     """
     scope_attr = 'throttle_scope'
+
+    def __init__(self):
+        pass
+
+    def allow_request(self, request, view):
+        self.scope = getattr(view, self.scope_attr, None)
+
+        if not self.scope:
+            return True
+
+        self.rate = self.get_rate()
+        self.num_requests, self.duration = self.parse_rate(self.rate)
+        return super(ScopedRateThrottle, self).allow_request(request, view)
 
     def get_cache_key(self, request, view):
         """
