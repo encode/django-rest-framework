@@ -25,7 +25,7 @@ from rest_framework.reverse import reverse
 from rest_framework.urlpatterns import format_suffix_patterns
 
 
-Route = namedtuple('Route', ['url', 'mapping', 'name', 'initkwargs'])
+Route = namedtuple('Route', ['key', 'url', 'mapping', 'name', 'initkwargs'])
 
 
 def replace_methodname(format_string, methodname):
@@ -80,6 +80,7 @@ class SimpleRouter(BaseRouter):
     routes = [
         # List route.
         Route(
+            key='list',
             url=r'^{prefix}{trailing_slash}$',
             mapping={
                 'get': 'list',
@@ -92,15 +93,17 @@ class SimpleRouter(BaseRouter):
         # Generated using @collection_action or @collection_link decorators
         # on methods of the viewset.
         Route(
+            key='collection',
             url=r'^{prefix}/{methodname}{trailing_slash}$',
             mapping={
                 '{httpmethod}': '{methodname}',
             },
-            name='{basename}-collection-{methodnamehyphen}',
+            name='{basename}-{methodnamehyphen}',
             initkwargs={}
         ),
         # Detail route.
         Route(
+            key='detail',
             url=r'^{prefix}/{lookup}{trailing_slash}$',
             mapping={
                 'get': 'retrieve',
@@ -114,11 +117,12 @@ class SimpleRouter(BaseRouter):
         # Dynamically generated routes.
         # Generated using @action or @link decorators on methods of the viewset.
         Route(
+            key='dynamic',
             url=r'^{prefix}/{lookup}/{methodname}{trailing_slash}$',
             mapping={
                 '{httpmethod}': '{methodname}',
             },
-            name='{basename}-dynamic-{methodnamehyphen}',
+            name='{basename}-{methodnamehyphen}',
             initkwargs={}
         ),
     ]
@@ -171,23 +175,25 @@ class SimpleRouter(BaseRouter):
 
         ret = []
         for route in self.routes:
-            if route.name == '{basename}-dynamic-{methodnamehyphen}':
+            if route.key == 'dynamic':
                 # Dynamic routes (@link or @action decorator)
                 for httpmethods, methodname in dynamic_routes:
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
                     ret.append(Route(
+                        key=route.key,
                         url=replace_methodname(route.url, methodname),
                         mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
                         name=replace_methodname(route.name, methodname),
                         initkwargs=initkwargs,
                     ))
-            elif route.name == '{basename}-collection-{methodnamehyphen}':
+            elif route.key == 'collection':
                 # Dynamic routes (@collection_link or @collection_action decorator)
                 for httpmethods, methodname in collection_routes:
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
                     ret.append(Route(
+                        key=route.key,
                         url=replace_methodname(route.url, methodname),
                         mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
                         name=replace_methodname(route.name, methodname),
