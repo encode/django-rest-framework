@@ -216,7 +216,7 @@ class TestActionAppliedToExistingRoute(TestCase):
             self.router.urls
 
 
-class StaticAndDynamicViewSet(viewsets.ViewSet):
+class CollectionAndDynamicViewSet(viewsets.ViewSet):
     def list(self, request, *args, **kwargs):
         return Response({'method': 'list'})
 
@@ -237,12 +237,12 @@ class StaticAndDynamicViewSet(viewsets.ViewSet):
         return Response({'method': 'link2'})
 
 
-class TestStaticAndDynamicRouter(TestCase):
+class TestCollectionAndDynamicRouter(TestCase):
     def setUp(self):
         self.router = SimpleRouter()
 
     def test_link_and_action_decorator(self):
-        routes = self.router.get_routes(StaticAndDynamicViewSet)
+        routes = self.router.get_routes(CollectionAndDynamicViewSet)
         decorator_routes = [r for r in routes if not (r.name.endswith('-list') or r.name.endswith('-detail'))]
         # Make sure all these endpoints exist and none have been clobbered
         for i, endpoint in enumerate(['collection_action', 'collection_link', 'dynamic_action', 'dynamic_link']):
