@@ -904,34 +904,20 @@ class HyperlinkedModelSerializer(ModelSerializer):
     _default_view_name = '%(model_name)s-detail'
     _hyperlink_field_class = HyperlinkedRelatedField
 
-    # Just a placeholder to ensure 'url' is the first field
-    # The field itself is actually created on initialization,
-    # when the view_name and lookup_field arguments are available.
-    url = Field()
-
-    def __init__(self, *args, **kwargs):
-        super(HyperlinkedModelSerializer, self).__init__(*args, **kwargs)
+    def get_default_fields(self):
+        fields = super(HyperlinkedModelSerializer, self).get_default_fields()
 
         if self.opts.view_name is None:
             self.opts.view_name = self._get_default_view_name(self.opts.model)
 
-        url_field = HyperlinkedIdentityField(
-            view_name=self.opts.view_name,
-            lookup_field=self.opts.lookup_field
-        )
-        url_field.initialize(self, 'url')
-        self.fields['url'] = url_field
+        if 'url' not in fields:
+            url_field = HyperlinkedIdentityField(
+                view_name=self.opts.view_name,
+                lookup_field=self.opts.lookup_field
+            )
+            fields.insert(0, 'url', url_field)
 
-    def _get_default_view_name(self, model):
-        """
-        Return the view name to use if 'view_name' is not specified in 'Meta'
-        """
-        model_meta = model._meta
-        format_kwargs = {
-            'app_label': model_meta.app_label,
-            'model_name': model_meta.object_name.lower()
-        }
-        return self._default_view_name % format_kwargs
+        return fields
 
     def get_pk_field(self, model_field):
         if self.opts.fields and model_field.name in self.opts.fields:
@@ -966,3 +952,14 @@ class HyperlinkedModelSerializer(ModelSerializer):
             return data.get('url', None)
         except AttributeError:
             return None
+
+    def _get_default_view_name(self, model):
+        """
+        Return the view name to use if 'view_name' is not specified in 'Meta'
+        """
+        model_meta = model._meta
+        format_kwargs = {
+            'app_label': model_meta.app_label,
+            'model_name': model_meta.object_name.lower()
+        }
+        return self._default_view_name % format_kwargs

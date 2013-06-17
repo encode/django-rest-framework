@@ -301,3 +301,30 @@ class TestOptionalRelationHyperlinkedView(TestCase):
                                    data=json.dumps(self.data),
                                    content_type='application/json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class TestOverriddenURLField(TestCase):
+    def setUp(self):
+        class OverriddenURLSerializer(serializers.HyperlinkedModelSerializer):
+            url = serializers.SerializerMethodField('get_url')
+
+            class Meta:
+                model = BlogPost
+                fields = ('title', 'url')
+
+            def get_url(self, obj):
+                return 'foo bar'
+
+        self.Serializer = OverriddenURLSerializer
+        self.obj = BlogPost.objects.create(title='New blog post')
+
+    def test_overridden_url_field(self):
+        """
+        The 'url' field should respect overriding.
+        Regression test for #936.
+        """
+        serializer = self.Serializer(self.obj)
+        self.assertEqual(
+            serializer.data,
+            {'title': 'New blog post', 'url': 'foo bar'}
+        )
