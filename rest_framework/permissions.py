@@ -128,7 +128,7 @@ class DjangoModelPermissions(BasePermission):
 
         # Workaround to ensure DjangoModelPermissions are not applied
         # to the root view when using DefaultRouter.
-        if model_cls is None and getattr(view, '_ignore_model_permissions'):
+        if model_cls is None and getattr(view, '_ignore_model_permissions', False):
             return True
 
         assert model_cls, ('Cannot apply DjangoModelPermissions on a view that'
