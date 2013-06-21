@@ -43,6 +43,7 @@ You can determine your currently installed version using `pip freeze`:
 ### Master
 
 * Added `trailing_slash` option to routers.
+* Include support for `HttpStreamingResponse`.
 * Support wider range of default serializer validation when used with custom model fields.
 * Bugfix: Return error correctly when OAuth non-existent consumer occurs. 
 * Bugfix: Allow `FileUploadParser` to correctly filename if provided as URL kwarg.
