@@ -893,6 +893,7 @@ class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
         super(HyperlinkedModelSerializerOptions, self).__init__(meta)
         self.view_name = getattr(meta, 'view_name', None)
         self.lookup_field = getattr(meta, 'lookup_field', None)
+        self.url_field_name = getattr(meta, 'url_field_name', 'url')
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
@@ -910,12 +911,12 @@ class HyperlinkedModelSerializer(ModelSerializer):
         if self.opts.view_name is None:
             self.opts.view_name = self._get_default_view_name(self.opts.model)
 
-        if 'url' not in fields:
+        if self.opts.url_field_name not in fields:
             url_field = HyperlinkedIdentityField(
                 view_name=self.opts.view_name,
                 lookup_field=self.opts.lookup_field
             )
-            fields.insert(0, 'url', url_field)
+            fields.insert(0, self.opts.url_field_name, url_field)
 
         return fields
 
