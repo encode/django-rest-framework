@@ -108,7 +108,7 @@ For example:
         queryset = User.objects.all()
         serializer_class = UserSerializer
 
-        @action
+        @action()
         def set_password(self, request, pk=None):
             user = self.get_object()
             serializer = PasswordSerializer(data=request.DATA)
