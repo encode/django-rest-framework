@@ -117,7 +117,7 @@ class SimpleRouter(BaseRouter):
         if model_cls is None and queryset is not None:
             model_cls = queryset.model
 
-        assert model_cls, '`name` not argument not specified, and could ' \
+        assert model_cls, '`base_name` argument not specified, and could ' \
             'not automatically determine the name from the viewset, as ' \
             'it does not have a `.model` or `.queryset` attribute.'
 
