@@ -1,0 +1,133 @@
+<!doctype html PUBLIC "-//W3C//DTD html 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+    <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+    
+    
+    <meta http-equiv='X-UA-Compatible' content='IE=emulateIE7' />
+    <title>Coverage for rest_framework/authtoken/views: 100%</title>
+    <link rel='stylesheet' href='style.css' type='text/css'>
+    <script type='text/javascript' src='jquery-1.4.3.min.js'></script>
+    <script type='text/javascript' src='jquery.hotkeys.js'></script>
+    <script type='text/javascript' src='jquery.isonscreen.js'></script>
+    <script type='text/javascript' src='coverage_html.js'></script>
+    <script type='text/javascript' charset='utf-8'>
+        jQuery(document).ready(coverage.pyfile_ready);
+    </script>
+</head>
+<body id='pyfile'>
+
+<div id='header'>
+    <div class='content'>
+        <h1>Coverage for <b>rest_framework/authtoken/views</b> :
+            <span class='pc_cov'>100%</span>
+        </h1>
+        <img id='keyboard_icon' src='keybd_closed.png'>
+        <h2 class='stats'>
+            21 statements
+            <span class='run hide_run shortkey_r' onclick='coverage.toggle_lines(this, "run")'>21 run</span>
+            <span class='mis shortkey_m' onclick='coverage.toggle_lines(this, "mis")'>0 missing</span>
+            <span class='exc shortkey_x' onclick='coverage.toggle_lines(this, "exc")'>0 excluded</span>
+            
+        </h2>
+    </div>
+</div>
+
+<div class='help_panel'>
+    <img id='panel_icon' src='keybd_open.png'>
+<p class='legend'>Hot-keys on this page</p>
+    <div>
+<p class='keyhelp'>
+        <span class='key'>r</span>
+        <span class='key'>m</span>
+        <span class='key'>x</span>
+        <span class='key'>p</span> &nbsp; toggle line displays
+    </p>
+<p class='keyhelp'>
+        <span class='key'>j</span>
+        <span class='key'>k</span> &nbsp; next/prev highlighted chunk
+    </p>
+<p class='keyhelp'>
+        <span class='key'>0</span> &nbsp; (zero) top of page
+    </p>
+<p class='keyhelp'>
+        <span class='key'>1</span> &nbsp; (one) first highlighted chunk
+    </p>
+    </div>
+</div>
+
+<div id='source'>
+    <table cellspacing='0' cellpadding='0'>
+        <tr>
+            <td class='linenos' valign='top'>
+<p id='n1' class='stm run hide_run'><a href='#n1'>1</a></p>
+<p id='n2' class='stm run hide_run'><a href='#n2'>2</a></p>
+<p id='n3' class='stm run hide_run'><a href='#n3'>3</a></p>
+<p id='n4' class='stm run hide_run'><a href='#n4'>4</a></p>
+<p id='n5' class='stm run hide_run'><a href='#n5'>5</a></p>
+<p id='n6' class='stm run hide_run'><a href='#n6'>6</a></p>
+<p id='n7' class='stm run hide_run'><a href='#n7'>7</a></p>
+<p id='n8' class='pln'><a href='#n8'>8</a></p>
+<p id='n9' class='pln'><a href='#n9'>9</a></p>
+<p id='n10' class='stm run hide_run'><a href='#n10'>10</a></p>
+<p id='n11' class='stm run hide_run'><a href='#n11'>11</a></p>
+<p id='n12' class='stm run hide_run'><a href='#n12'>12</a></p>
+<p id='n13' class='stm run hide_run'><a href='#n13'>13</a></p>
+<p id='n14' class='stm run hide_run'><a href='#n14'>14</a></p>
+<p id='n15' class='stm run hide_run'><a href='#n15'>15</a></p>
+<p id='n16' class='stm run hide_run'><a href='#n16'>16</a></p>
+<p id='n17' class='pln'><a href='#n17'>17</a></p>
+<p id='n18' class='stm run hide_run'><a href='#n18'>18</a></p>
+<p id='n19' class='stm run hide_run'><a href='#n19'>19</a></p>
+<p id='n20' class='stm run hide_run'><a href='#n20'>20</a></p>
+<p id='n21' class='stm run hide_run'><a href='#n21'>21</a></p>
+<p id='n22' class='stm run hide_run'><a href='#n22'>22</a></p>
+<p id='n23' class='stm run hide_run'><a href='#n23'>23</a></p>
+<p id='n24' class='pln'><a href='#n24'>24</a></p>
+<p id='n25' class='pln'><a href='#n25'>25</a></p>
+<p id='n26' class='stm run hide_run'><a href='#n26'>26</a></p>
+                
+            </td>
+            <td class='text' valign='top'>
+<p id='t1' class='stm run hide_run'><span class='key'>from</span> <span class='nam'>rest_framework</span><span class='op'>.</span><span class='nam'>views</span> <span class='key'>import</span> <span class='nam'>APIView</span><span class='strut'>&nbsp;</span></p>
+<p id='t2' class='stm run hide_run'><span class='key'>from</span> <span class='nam'>rest_framework</span> <span class='key'>import</span> <span class='nam'>status</span><span class='strut'>&nbsp;</span></p>
+<p id='t3' class='stm run hide_run'><span class='key'>from</span> <span class='nam'>rest_framework</span> <span class='key'>import</span> <span class='nam'>parsers</span><span class='strut'>&nbsp;</span></p>
+<p id='t4' class='stm run hide_run'><span class='key'>from</span> <span class='nam'>rest_framework</span> <span class='key'>import</span> <span class='nam'>renderers</span><span class='strut'>&nbsp;</span></p>
+<p id='t5' class='stm run hide_run'><span class='key'>from</span> <span class='nam'>rest_framework</span><span class='op'>.</span><span class='nam'>response</span> <span class='key'>import</span> <span class='nam'>Response</span><span class='strut'>&nbsp;</span></p>
+<p id='t6' class='stm run hide_run'><span class='key'>from</span> <span class='nam'>rest_framework</span><span class='op'>.</span><span class='nam'>authtoken</span><span class='op'>.</span><span class='nam'>models</span> <span class='key'>import</span> <span class='nam'>Token</span><span class='strut'>&nbsp;</span></p>
+<p id='t7' class='stm run hide_run'><span class='key'>from</span> <span class='nam'>rest_framework</span><span class='op'>.</span><span class='nam'>authtoken</span><span class='op'>.</span><span class='nam'>serializers</span> <span class='key'>import</span> <span class='nam'>AuthTokenSerializer</span><span class='strut'>&nbsp;</span></p>
+<p id='t8' class='pln'><span class='strut'>&nbsp;</span></p>
+<p id='t9' class='pln'><span class='strut'>&nbsp;</span></p>
+<p id='t10' class='stm run hide_run'><span class='key'>class</span> <span class='nam'>ObtainAuthToken</span><span class='op'>(</span><span class='nam'>APIView</span><span class='op'>)</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p id='t11' class='stm run hide_run'>&nbsp; &nbsp; <span class='nam'>throttle_classes</span> <span class='op'>=</span> <span class='op'>(</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p id='t12' class='stm run hide_run'>&nbsp; &nbsp; <span class='nam'>permission_classes</span> <span class='op'>=</span> <span class='op'>(</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p id='t13' class='stm run hide_run'>&nbsp; &nbsp; <span class='nam'>parser_classes</span> <span class='op'>=</span> <span class='op'>(</span><span class='nam'>parsers</span><span class='op'>.</span><span class='nam'>FormParser</span><span class='op'>,</span> <span class='nam'>parsers</span><span class='op'>.</span><span class='nam'>MultiPartParser</span><span class='op'>,</span> <span class='nam'>parsers</span><span class='op'>.</span><span class='nam'>JSONParser</span><span class='op'>,</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p id='t14' class='stm run hide_run'>&nbsp; &nbsp; <span class='nam'>renderer_classes</span> <span class='op'>=</span> <span class='op'>(</span><span class='nam'>renderers</span><span class='op'>.</span><span class='nam'>JSONRenderer</span><span class='op'>,</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p id='t15' class='stm run hide_run'>&nbsp; &nbsp; <span class='nam'>serializer_class</span> <span class='op'>=</span> <span class='nam'>AuthTokenSerializer</span><span class='strut'>&nbsp;</span></p>
+<p id='t16' class='stm run hide_run'>&nbsp; &nbsp; <span class='nam'>model</span> <span class='op'>=</span> <span class='nam'>Token</span><span class='strut'>&nbsp;</span></p>
+<p id='t17' class='pln'><span class='strut'>&nbsp;</span></p>
+<p id='t18' class='stm run hide_run'>&nbsp; &nbsp; <span class='key'>def</span> <span class='nam'>post</span><span class='op'>(</span><span class='nam'>self</span><span class='op'>,</span> <span class='nam'>request</span><span class='op'>)</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p id='t19' class='stm run hide_run'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>serializer</span> <span class='op'>=</span> <span class='nam'>self</span><span class='op'>.</span><span class='nam'>serializer_class</span><span class='op'>(</span><span class='nam'>data</span><span class='op'>=</span><span class='nam'>request</span><span class='op'>.</span><span class='nam'>DATA</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p id='t20' class='stm run hide_run'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>if</span> <span class='nam'>serializer</span><span class='op'>.</span><span class='nam'>is_valid</span><span class='op'>(</span><span class='op'>)</span><span class='op'>:</span><span class='strut'>&nbsp;</span></p>
+<p id='t21' class='stm run hide_run'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='nam'>token</span><span class='op'>,</span> <span class='nam'>created</span> <span class='op'>=</span> <span class='nam'>Token</span><span class='op'>.</span><span class='nam'>objects</span><span class='op'>.</span><span class='nam'>get_or_create</span><span class='op'>(</span><span class='nam'>user</span><span class='op'>=</span><span class='nam'>serializer</span><span class='op'>.</span><span class='nam'>object</span><span class='op'>[</span><span class='str'>&#39;user&#39;</span><span class='op'>]</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p id='t22' class='stm run hide_run'>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>return</span> <span class='nam'>Response</span><span class='op'>(</span><span class='op'>{</span><span class='str'>&#39;token&#39;</span><span class='op'>:</span> <span class='nam'>token</span><span class='op'>.</span><span class='nam'>key</span><span class='op'>}</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p id='t23' class='stm run hide_run'>&nbsp; &nbsp; &nbsp; &nbsp; <span class='key'>return</span> <span class='nam'>Response</span><span class='op'>(</span><span class='nam'>serializer</span><span class='op'>.</span><span class='nam'>errors</span><span class='op'>,</span> <span class='nam'>status</span><span class='op'>=</span><span class='nam'>status</span><span class='op'>.</span><span class='nam'>HTTP_400_BAD_REQUEST</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+<p id='t24' class='pln'><span class='strut'>&nbsp;</span></p>
+<p id='t25' class='pln'><span class='strut'>&nbsp;</span></p>
+<p id='t26' class='stm run hide_run'><span class='nam'>obtain_auth_token</span> <span class='op'>=</span> <span class='nam'>ObtainAuthToken</span><span class='op'>.</span><span class='nam'>as_view</span><span class='op'>(</span><span class='op'>)</span><span class='strut'>&nbsp;</span></p>
+                
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div id='footer'>
+    <div class='content'>
+        <p>
+            <a class='nav' href='index.html'>&#xab; index</a> &nbsp; &nbsp; <a class='nav' href='http://nedbatchelder.com/code/coverage'>coverage.py v3.5.1</a>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>

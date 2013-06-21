@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.test import TestCase
 from django.test.client import RequestFactory
-from rest_framework import serializers, viewsets
+from rest_framework import serializers, viewsets, permissions
 from rest_framework.compat import include, patterns, url
 from rest_framework.decorators import link, action
 from rest_framework.response import Response
@@ -120,7 +120,7 @@ class TestCustomLookupFields(TestCase):
         )
 
 
-class TestTrailingSlash(TestCase):
+class TestTrailingSlashIncluded(TestCase):
     def setUp(self):
         class NoteViewSet(viewsets.ModelViewSet):
             model = RouterTestModel
@@ -135,7 +135,7 @@ class TestTrailingSlash(TestCase):
             self.assertEqual(expected[idx], self.urls[idx].regex.pattern)
 
 
-class TestTrailingSlash(TestCase):
+class TestTrailingSlashRemoved(TestCase):
     def setUp(self):
         class NoteViewSet(viewsets.ModelViewSet):
             model = RouterTestModel
@@ -148,6 +148,7 @@ class TestTrailingSlash(TestCase):
         expected = ['^notes$', '^notes/(?P<pk>[^/]+)$']
         for idx in range(len(expected)):
             self.assertEqual(expected[idx], self.urls[idx].regex.pattern)
+
 
 class TestNameableRoot(TestCase):
     def setUp(self):
@@ -162,3 +163,31 @@ class TestNameableRoot(TestCase):
         expected = 'nameable-root'
         self.assertEqual(expected, self.urls[0].name)
 
+
+class TestActionKeywordArgs(TestCase):
+    """
+    Ensure keyword arguments passed in the `@action` decorator
+    are properly handled.  Refs #940.
+    """
+
+    def setUp(self):
+        class TestViewSet(viewsets.ModelViewSet):
+            permission_classes = []
+
+            @action(permission_classes=[permissions.AllowAny])
+            def custom(self, request, *args, **kwargs):
+                return Response({
+                    'permission_classes': self.permission_classes
+                })
+
+        self.router = SimpleRouter()
+        self.router.register(r'test', TestViewSet, base_name='test')
+        self.view = self.router.urls[-1].callback
+
+    def test_action_kwargs(self):
+        request = factory.post('/test/0/custom/')
+        response = self.view(request)
+        self.assertEqual(
+            response.data,
+            {'permission_classes': [permissions.AllowAny]}
+        )
