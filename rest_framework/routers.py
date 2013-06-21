@@ -136,6 +136,7 @@ class SimpleRouter(BaseRouter):
             attr = getattr(viewset, methodname)
             httpmethods = getattr(attr, 'bind_to_methods', None)
             if httpmethods:
+                httpmethods = [method.lower() for method in httpmethods]
                 dynamic_routes.append((httpmethods, methodname))
 
         ret = []
