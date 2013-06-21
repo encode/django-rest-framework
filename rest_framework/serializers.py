@@ -950,7 +950,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
         We need to override the default, to use the url as the identity.
         """
         try:
-            return data.get('url', None)
+            return data.get(self.opts.url_field_name, None)
         except AttributeError:
             return None
 
