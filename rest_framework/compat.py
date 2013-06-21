@@ -33,6 +33,12 @@ except ImportError:
     from django.utils.encoding import force_unicode as force_text
 
 
+# HttpResponseBase only exists from 1.5 onwards
+try:
+    from django.http.response import HttpResponseBase
+except ImportError:
+    from django.http import HttpResponse as HttpResponseBase
+
 # django-filter is optional
 try:
     import django_filters
