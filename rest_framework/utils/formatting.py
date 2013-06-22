@@ -24,6 +24,11 @@ def _remove_leading_indent(content):
     Remove leading indent from a block of text.
     Used when generating descriptions from docstrings.
     """
+    try:
+        content = content.decode('utf-8')
+    except (AttributeError, UnicodeEncodeError):
+        pass  # the string should keep the default 'ascii' encoding in
+              # Python 2.x or stay a unicode string in Python 3.x
     whitespace_counts = [len(line) - len(line.lstrip(' '))
                          for line in content.splitlines()[1:] if line.lstrip()]
 
