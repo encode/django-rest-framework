@@ -3,10 +3,10 @@ Provides various authentication policies.
 """
 from __future__ import unicode_literals
 import base64
-from datetime import datetime
 
 from django.contrib.auth import authenticate
 from django.core.exceptions import ImproperlyConfigured
+from django.utils import timezone
 from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.compat import CsrfViewMiddleware
 from rest_framework.compat import oauth, oauth_provider, oauth_provider_store
@@ -320,9 +320,7 @@ class OAuth2Authentication(BaseAuthentication):
 
         try:
             token = oauth2_provider.models.AccessToken.objects.select_related('user')
-            # TODO: Change to timezone aware datetime when oauth2_provider add
-            # support to it.
-            token = token.get(token=access_token, expires__gt=datetime.now())
+            token = token.get(token=access_token, expires__gt=timezone.now())
         except oauth2_provider.models.AccessToken.DoesNotExist:
             raise exceptions.AuthenticationFailed('Invalid token')
 
