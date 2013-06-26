@@ -2,6 +2,7 @@
 The `compat` module provides support for backwards compatibility with older
 versions of django/python, and compatibility wrappers around optional packages.
 """
+
 # flake8: noqa
 from __future__ import unicode_literals
 
@@ -489,12 +490,21 @@ try:
     from provider.oauth2 import forms as oauth2_provider_forms
     from provider import scope as oauth2_provider_scope
     from provider import constants as oauth2_constants
+    from provider import __version__ as provider_version
+    if provider_version in ('0.2.3', '0.2.4'):
+        # 0.2.3 and 0.2.4 are supported version that do not support
+        # timezone aware datetimes
+        from datetime.datetime import now as provider_now
+    else:
+        # Any other supported version does use timezone aware datetimes
+        from django.utils.timezone import now as provider_now
 except ImportError:
     oauth2_provider = None
     oauth2_provider_models = None
     oauth2_provider_forms = None
     oauth2_provider_scope = None
     oauth2_constants = None
+    provider_now = None
 
 # Handle lazy strings
 from django.utils.functional import Promise

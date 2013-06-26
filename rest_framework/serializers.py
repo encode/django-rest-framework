@@ -915,7 +915,10 @@ class HyperlinkedModelSerializer(ModelSerializer):
                 view_name=self.opts.view_name,
                 lookup_field=self.opts.lookup_field
             )
-            fields.insert(0, 'url', url_field)
+            ret = self._dict_class()
+            ret['url'] = url_field
+            ret.update(fields)
+            fields = ret
 
         return fields
 
