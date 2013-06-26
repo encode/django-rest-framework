@@ -92,7 +92,8 @@ May be overridden to provide dynamic behavior such as returning a queryset that 
 For example:
 
     def get_queryset(self):
-        return self.user.accounts.all()
+        user = self.request.user
+        return user.accounts.all()
 
 #### `get_object(self)`
 
