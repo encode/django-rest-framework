@@ -83,15 +83,9 @@ def get_concrete_model(model_cls):
 # Django 1.5 add support for custom auth user model
 if django.VERSION >= (1, 5):
     from django.conf import settings
-    if hasattr(settings, 'AUTH_USER_MODEL'):
-        User = settings.AUTH_USER_MODEL
-    else:
-        from django.contrib.auth.models import User
+    AUTH_USER_MODEL = settings.AUTH_USER_MODEL
 else:
-    try:
-        from django.contrib.auth.models import User
-    except ImportError:
-        raise ImportError("User model is not to be found.")
+    AUTH_USER_MODEL = 'auth.User'
 
 
 if django.VERSION >= (1, 5):
