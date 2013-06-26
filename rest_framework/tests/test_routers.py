@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.test import TestCase
 from django.test.client import RequestFactory
+from django.core.exceptions import ImproperlyConfigured
 from rest_framework import serializers, viewsets, permissions
 from rest_framework.compat import include, patterns, url
 from rest_framework.decorators import link, action
@@ -191,3 +192,24 @@ class TestActionKeywordArgs(TestCase):
             response.data,
             {'permission_classes': [permissions.AllowAny]}
         )
+
+class TestActionAppliedToExistingRoute(TestCase):
+    """
+    Ensure `@action` decorator raises an except when applied
+    to an existing route
+    """
+
+    def test_exception_raised_when_action_applied_to_existing_route(self):
+        class TestViewSet(viewsets.ModelViewSet):
+
+            @action()
+            def retrieve(self, request, *args, **kwargs):
+                return Response({
+                    'hello': 'world'
+                })
+
+        self.router = SimpleRouter()
+        self.router.register(r'test', TestViewSet, base_name='test')
+
+        with self.assertRaises(ImproperlyConfigured):
+            self.router.urls
