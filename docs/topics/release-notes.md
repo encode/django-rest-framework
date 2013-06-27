@@ -40,13 +40,15 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
-### Master
+### 2.3.6
+
+**Date**: 27th June 2013
 
 * Added `trailing_slash` option to routers.
 * Include support for `HttpStreamingResponse`.
 * Support wider range of default serializer validation when used with custom model fields.
 * UTF-8 Support for browsable API descriptions.  
-* OAuth2 provider usez timezone aware datetimes when supported.
+* OAuth2 provider uses timezone aware datetimes when supported.
 * Bugfix: Return error correctly when OAuth non-existent consumer occurs. 
 * Bugfix: Allow `FileUploadParser` to correctly filename if provided as URL kwarg.
 * Bugfix: Fix `ScopedRateThrottle`.
