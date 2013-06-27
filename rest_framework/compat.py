@@ -494,11 +494,14 @@ try:
     if provider_version in ('0.2.3', '0.2.4'):
         # 0.2.3 and 0.2.4 are supported version that do not support
         # timezone aware datetimes
-        from datetime.datetime import now as provider_now
+        import datetime
+        provider_now = datetime.datetime.now
     else:
         # Any other supported version does use timezone aware datetimes
         from django.utils.timezone import now as provider_now
 except ImportError:
+    import traceback
+    traceback.print_exc()
     oauth2_provider = None
     oauth2_provider_models = None
     oauth2_provider_forms = None

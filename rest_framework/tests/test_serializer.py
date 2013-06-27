@@ -1268,7 +1268,7 @@ class NestedSerializerContextTests(TestCase):
                 model = Album
                 fields = ("photo_set", "callable")
 
-            photo_set = PhotoSerializer(source="photo_set")
+            photo_set = PhotoSerializer(source="photo_set", many=True)
             callable = serializers.SerializerMethodField("_callable")
 
             def _callable(self, instance):
@@ -1280,7 +1280,7 @@ class NestedSerializerContextTests(TestCase):
             albums = None
 
         class AlbumCollectionSerializer(serializers.Serializer):
-            albums = AlbumSerializer(source="albums")
+            albums = AlbumSerializer(source="albums", many=True)
 
         album1 = Album.objects.create(title="album 1")
         album2 = Album.objects.create(title="album 2")

@@ -224,13 +224,6 @@ class WritableField(Field):
                  validators=[], error_messages=None, widget=None,
                  default=None, blank=None):
 
-        # 'blank' is to be deprecated in favor of 'required'
-        if blank is not None:
-            warnings.warn('The `blank` keyword argument is deprecated. '
-                          'Use the `required` keyword argument instead.',
-                          DeprecationWarning, stacklevel=2)
-            required = not(blank)
-
         super(WritableField, self).__init__(source=source, label=label, help_text=help_text)
 
         self.read_only = read_only

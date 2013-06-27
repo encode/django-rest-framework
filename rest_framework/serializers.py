@@ -15,7 +15,6 @@ import copy
 import datetime
 import types
 from decimal import Decimal
-from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
@@ -141,7 +140,7 @@ class BaseSerializer(WritableField):
     _dict_class = SortedDictWithMetadata
 
     def __init__(self, instance=None, data=None, files=None,
-                 context=None, partial=False, many=None,
+                 context=None, partial=False, many=False,
                  allow_add_remove=False, **kwargs):
         super(BaseSerializer, self).__init__(**kwargs)
         self.opts = self._options_class(self.Meta)
@@ -348,12 +347,7 @@ class BaseSerializer(WritableField):
         if value is None:
             return None
 
-        if self.many is not None:
-            many = self.many
-        else:
-            many = hasattr(value, '__iter__') and not isinstance(value, (Page, dict, six.text_type))
-
-        if many:
+        if self.many:
             return [self.to_native(item) for item in value]
         return self.to_native(value)
 
@@ -424,16 +418,7 @@ class BaseSerializer(WritableField):
         if self._errors is None:
             data, files = self.init_data, self.init_files
 
-            if self.many is not None:
-                many = self.many
-            else:
-                many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict, six.text_type))
-                if many:
-                    warnings.warn('Implict list/queryset serialization is deprecated. '
-                                  'Use the `many=True` flag when instantiating the serializer.',
-                                  DeprecationWarning, stacklevel=3)
-
-            if many:
+            if self.many:
                 ret = []
                 errors = []
                 update = self.object is not None
@@ -486,16 +471,7 @@ class BaseSerializer(WritableField):
         if self._data is None:
             obj = self.object
 
-            if self.many is not None:
-                many = self.many
-            else:
-                many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict))
-                if many:
-                    warnings.warn('Implict list/queryset serialization is deprecated. '
-                                  'Use the `many=True` flag when instantiating the serializer.',
-                                  DeprecationWarning, stacklevel=2)
-
-            if many:
+            if self.many:
                 self._data = [self.to_native(item) for item in obj]
             else:
                 self._data = self.to_native(obj)

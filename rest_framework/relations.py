@@ -40,14 +40,6 @@ class RelatedField(WritableField):
     many = False
 
     def __init__(self, *args, **kwargs):
-
-        # 'null' is to be deprecated in favor of 'required'
-        if 'null' in kwargs:
-            warnings.warn('The `null` keyword argument is deprecated. '
-                          'Use the `required` keyword argument instead.',
-                          DeprecationWarning, stacklevel=2)
-            kwargs['required'] = not kwargs.pop('null')
-
         queryset = kwargs.pop('queryset', None)
         self.many = kwargs.pop('many', self.many)
         if self.many:
@@ -424,14 +416,11 @@ class HyperlinkedRelatedField(RelatedField):
         request = self.context.get('request', None)
         format = self.format or self.context.get('format', None)
 
-        if request is None:
-            msg = (
-                "Using `HyperlinkedRelatedField` without including the request "
-                "in the serializer context is deprecated. "
-                "Add `context={'request': request}` when instantiating "
-                "the serializer."
-            )
-            warnings.warn(msg, DeprecationWarning, stacklevel=4)
+        assert request is not None, (
+            "`HyperlinkedRelatedField` requires the request in the serializer "
+            "context. Add `context={'request': request}` when instantiating "
+            "the serializer."
+        )
 
         # If the object has not yet been saved then we cannot hyperlink to it.
         if getattr(obj, 'pk', None) is None:
@@ -530,11 +519,11 @@ class HyperlinkedIdentityField(Field):
         format = self.context.get('format', None)
         view_name = self.view_name
 
-        if request is None:
-            warnings.warn("Using `HyperlinkedIdentityField` without including the "
-                          "request in the serializer context is deprecated. "
-                          "Add `context={'request': request}` when instantiating the serializer.",
-                          DeprecationWarning, stacklevel=4)
+        assert request is not None, (
+            "`HyperlinkedIdentityField` requires the request in the serializer"
+            " context. Add `context={'request': request}` when instantiating "
+            "the serializer."
+        )
 
         # By default use whatever format is given for the current context
         # unless the target is a different type to the source.
@@ -593,41 +582,3 @@ class HyperlinkedIdentityField(Field):
                 pass
 
         raise NoReverseMatch()
-
-
-### Old-style many classes for backwards compat
-
-class ManyRelatedField(RelatedField):
-    def __init__(self, *args, **kwargs):
-        warnings.warn('`ManyRelatedField()` is deprecated. '
-                      'Use `RelatedField(many=True)` instead.',
-                       DeprecationWarning, stacklevel=2)
-        kwargs['many'] = True
-        super(ManyRelatedField, self).__init__(*args, **kwargs)
-
-
-class ManyPrimaryKeyRelatedField(PrimaryKeyRelatedField):
-    def __init__(self, *args, **kwargs):
-        warnings.warn('`ManyPrimaryKeyRelatedField()` is deprecated. '
-                      'Use `PrimaryKeyRelatedField(many=True)` instead.',
-                       DeprecationWarning, stacklevel=2)
-        kwargs['many'] = True
-        super(ManyPrimaryKeyRelatedField, self).__init__(*args, **kwargs)
-
-
-class ManySlugRelatedField(SlugRelatedField):
-    def __init__(self, *args, **kwargs):
-        warnings.warn('`ManySlugRelatedField()` is deprecated. '
-                      'Use `SlugRelatedField(many=True)` instead.',
-                       DeprecationWarning, stacklevel=2)
-        kwargs['many'] = True
-        super(ManySlugRelatedField, self).__init__(*args, **kwargs)
-
-
-class ManyHyperlinkedRelatedField(HyperlinkedRelatedField):
-    def __init__(self, *args, **kwargs):
-        warnings.warn('`ManyHyperlinkedRelatedField()` is deprecated. '
-                      'Use `HyperlinkedRelatedField(many=True)` instead.',
-                       DeprecationWarning, stacklevel=2)
-        kwargs['many'] = True
-        super(ManyHyperlinkedRelatedField, self).__init__(*args, **kwargs)
