@@ -98,7 +98,7 @@ As with `SimpleRouter` the trailing slashs on the URL routes can be removed by s
 
 Implementing a custom router isn't something you'd need to do very often, but it can be useful if you have specific requirements about how the your URLs for your API are strutured.  Doing so allows you to encapsulate the URL structure in a reusable way that ensures you don't have to write your URL patterns explicitly for each new view.
 
-The simplest way to implement a custom router is to subclass one of the existing router classes.  The `.routes` attribute is used to template the URL patterns that will be mapped to each viewset. 
+The simplest way to implement a custom router is to subclass one of the existing router classes.  The `.routes` attribute is used to template the URL patterns that will be mapped to each viewset. The `.routes` attribute is a list of `Route` named tuples.
 
 ## Example
 
@@ -109,9 +109,17 @@ The following example will only route to the `list` and `retrieve` actions, and 
         A router for read-only APIs, which doesn't use trailing suffixes.
         """
         routes = [
-            (r'^{prefix}$', {'get': 'list'}, '{basename}-list'),
-            (r'^{prefix}/{lookup}$', {'get': 'retrieve'}, '{basename}-detail')
+            Route(url=r'^{prefix}$',
+                  mapping={'get': 'list'},
+                  name='{basename}-list',
+                  initkwargs={}),
+            Route(url=r'^{prefix}/{lookup}$',
+                  mapping={'get': 'retrieve'},
+                  name='{basename}-detail',
+                  initkwargs={})
         ]
+
+The `SimpleRouter` class provides another example of setting the `.routes` attribute.
 
 ## Advanced custom routers
 
