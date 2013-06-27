@@ -593,10 +593,10 @@ class ModelSerializer(Serializer):
                 if len(inspect.getargspec(self.get_nested_field).args) == 2:
                     warnings.warn(
                         'The `get_nested_field(model_field)` call signature '
-                        'is due to be deprecated. '
+                        'is deprecated. '
                         'Use `get_nested_field(model_field, related_model, '
                         'to_many) instead',
-                        PendingDeprecationWarning
+                        DeprecationWarning
                     )
                     field = self.get_nested_field(model_field)
                 else:
@@ -605,10 +605,10 @@ class ModelSerializer(Serializer):
                 if len(inspect.getargspec(self.get_nested_field).args) == 3:
                     warnings.warn(
                         'The `get_related_field(model_field, to_many)` call '
-                        'signature is due to be deprecated. '
+                        'signature is deprecated. '
                         'Use `get_related_field(model_field, related_model, '
                         'to_many) instead',
-                        PendingDeprecationWarning
+                        DeprecationWarning
                     )
                     field = self.get_related_field(model_field, to_many=to_many)
                 else:

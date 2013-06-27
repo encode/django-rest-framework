@@ -314,7 +314,7 @@ class HyperlinkedRelatedField(RelatedField):
         'incorrect_type': _('Incorrect type.  Expected url string, received %s.'),
     }
 
-    # These are all pending deprecation
+    # These are all deprecated
     pk_url_kwarg = 'pk'
     slug_field = 'slug'
     slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
@@ -328,16 +328,16 @@ class HyperlinkedRelatedField(RelatedField):
         self.lookup_field = kwargs.pop('lookup_field', self.lookup_field)
         self.format = kwargs.pop('format', None)
 
-        # These are pending deprecation
+        # These are deprecated
         if 'pk_url_kwarg' in kwargs:
-            msg = 'pk_url_kwarg is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+            msg = 'pk_url_kwarg is deprecated. Use lookup_field instead.'
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
         if 'slug_url_kwarg' in kwargs:
-            msg = 'slug_url_kwarg is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+            msg = 'slug_url_kwarg is deprecated. Use lookup_field instead.'
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
         if 'slug_field' in kwargs:
-            msg = 'slug_field is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+            msg = 'slug_field is deprecated. Use lookup_field instead.'
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
         self.pk_url_kwarg = kwargs.pop('pk_url_kwarg', self.pk_url_kwarg)
         self.slug_field = kwargs.pop('slug_field', self.slug_field)
@@ -380,9 +380,9 @@ class HyperlinkedRelatedField(RelatedField):
                     # If the lookup succeeds using the default slug params,
                     # then `slug_field` is being used implicitly, and we
                     # we need to warn about the pending deprecation.
-                    msg = 'Implicit slug field hyperlinked fields are pending deprecation.' \
+                    msg = 'Implicit slug field hyperlinked fields are deprecated.' \
                           'You should set `lookup_field=slug` on the HyperlinkedRelatedField.'
-                    warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+                    warnings.warn(msg, DeprecationWarning, stacklevel=2)
                 return ret
             except NoReverseMatch:
                 pass
@@ -480,7 +480,7 @@ class HyperlinkedIdentityField(Field):
     lookup_field = 'pk'
     read_only = True
 
-    # These are all pending deprecation
+    # These are all deprecated
     pk_url_kwarg = 'pk'
     slug_field = 'slug'
     slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
@@ -496,16 +496,16 @@ class HyperlinkedIdentityField(Field):
         lookup_field = kwargs.pop('lookup_field', None)
         self.lookup_field = lookup_field or self.lookup_field
 
-        # These are pending deprecation
+        # These are deprecated
         if 'pk_url_kwarg' in kwargs:
-            msg = 'pk_url_kwarg is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+            msg = 'pk_url_kwarg is deprecated. Use lookup_field instead.'
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
         if 'slug_url_kwarg' in kwargs:
-            msg = 'slug_url_kwarg is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+            msg = 'slug_url_kwarg is deprecated. Use lookup_field instead.'
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
         if 'slug_field' in kwargs:
-            msg = 'slug_field is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+            msg = 'slug_field is deprecated. Use lookup_field instead.'
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
         self.slug_field = kwargs.pop('slug_field', self.slug_field)
         default_slug_kwarg = self.slug_url_kwarg or self.slug_field
