@@ -2,8 +2,10 @@
 
 from __future__ import unicode_literals
 from django.test import TestCase
-from rest_framework.views import APIView
 from rest_framework.compat import apply_markdown, smart_text
+from rest_framework.views import APIView
+from rest_framework.tests.description import ViewWithNonASCIICharactersInDocstring
+from rest_framework.tests.description import UTF8_TEST_DOCSTRING
 from rest_framework.utils.formatting import get_view_name, get_view_description
 
 # We check that docstrings get nicely un-indented.
@@ -47,28 +49,6 @@ MARKED_DOWN_gte_21 = """<h2 id="an-example-docstring">an example docstring</h2>
 </code></pre>
 <p>indented</p>
 <h2 id="hash-style-header">hash style header</h2>"""
-
-
-# test strings snatched from http://www.columbia.edu/~fdc/utf8/,
-# http://winrus.com/utf8-jap.htm and memory
-UTF8_TEST_DOCSTRING = (
-    'zażółć gęślą jaźń'
-    'Sîne klâwen durh die wolken sint geslagen'
-    'Τη γλώσσα μου έδωσαν ελληνική'
-    'யாமறிந்த மொழிகளிலே தமிழ்மொழி'
-    'На берегу пустынных волн'
-    'てすと'
-    'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃ'
-)
-
-
-# Apparently there is an issue where docstrings of imported view classes
-# do not retain their encoding information even if a module has a proper
-# encoding declaration at the top of its source file. Therefore for tests
-# to catch unicode related errors, a mock view has to be declared in a separate
-# module.
-class ViewWithNonASCIICharactersInDocstring(APIView):
-    __doc__ = UTF8_TEST_DOCSTRING
 
 
 class TestViewNamesAndDescriptions(TestCase):
