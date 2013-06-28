@@ -4,6 +4,7 @@
 .*
 
 html/
+htmlcov/
 coverage/
 build/
 dist/
