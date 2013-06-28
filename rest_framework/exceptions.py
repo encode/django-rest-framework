@@ -86,10 +86,3 @@ class Throttled(APIException):
             self.detail = format % (self.wait, self.wait != 1 and 's' or '')
         else:
             self.detail = detail or self.default_detail
-
-
-class ConfigurationError(Exception):
-    """
-    Indicates an internal server error.
-    """
-    pass

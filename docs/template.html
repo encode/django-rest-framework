@@ -198,5 +198,14 @@
       $('.dropdown-menu').on('click touchstart', function(event) {
         event.stopPropagation();
       });
+
+      // Dynamically force sidenav to no higher than browser window
+      $('.side-nav').css('max-height', window.innerHeight - 130);
+
+      $(function(){
+        $(window).resize(function(){
+          $('.side-nav').css('max-height', window.innerHeight - 130);
+        });
+      });
     </script>
 </body></html>

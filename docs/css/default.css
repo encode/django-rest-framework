@@ -303,3 +303,7 @@ table {
   border-color: white;
   margin-bottom: 0.6em;
 }
+
+.side-nav {
+  overflow-y: scroll;
+}

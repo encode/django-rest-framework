@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-from rest_framework.compat import apply_markdown
+from rest_framework.compat import apply_markdown, smart_text
 import re
 
 
@@ -63,7 +63,7 @@ def get_view_description(cls, html=False):
     Return a description for an `APIView` class or `@api_view` function.
     """
     description = cls.__doc__ or ''
-    description = _remove_leading_indent(description)
+    description = _remove_leading_indent(smart_text(description))
     if html:
         return markup_description(description)
     return description

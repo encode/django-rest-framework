@@ -212,7 +212,7 @@ class GenericAPIView(views.APIView):
         You may want to override this if you need to provide different
         serializations depending on the incoming request.
 
-        (Eg. admins get full serialization, others get basic serilization)
+        (Eg. admins get full serialization, others get basic serialization)
         """
         serializer_class = self.serializer_class
         if serializer_class is not None:
@@ -285,7 +285,7 @@ class GenericAPIView(views.APIView):
             )
             filter_kwargs = {self.slug_field: slug}
         else:
-            raise exceptions.ConfigurationError(
+            raise ImproperlyConfigured(
                 'Expected view %s to be called with a URL keyword argument '
                 'named "%s". Fix your URL conf, or set the `.lookup_field` '
                 'attribute on the view correctly.' %

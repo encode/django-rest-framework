@@ -2,6 +2,7 @@
 The `compat` module provides support for backwards compatibility with older
 versions of django/python, and compatibility wrappers around optional packages.
 """
+
 # flake8: noqa
 from __future__ import unicode_literals
 
@@ -32,6 +33,12 @@ try:
 except ImportError:
     from django.utils.encoding import force_unicode as force_text
 
+
+# HttpResponseBase only exists from 1.5 onwards
+try:
+    from django.http.response import HttpResponseBase
+except ImportError:
+    from django.http import HttpResponse as HttpResponseBase
 
 # django-filter is optional
 try:
@@ -77,15 +84,9 @@ def get_concrete_model(model_cls):
 # Django 1.5 add support for custom auth user model
 if django.VERSION >= (1, 5):
     from django.conf import settings
-    if hasattr(settings, 'AUTH_USER_MODEL'):
-        User = settings.AUTH_USER_MODEL
-    else:
-        from django.contrib.auth.models import User
+    AUTH_USER_MODEL = settings.AUTH_USER_MODEL
 else:
-    try:
-        from django.contrib.auth.models import User
-    except ImportError:
-        raise ImportError("User model is not to be found.")
+    AUTH_USER_MODEL = 'auth.User'
 
 
 if django.VERSION >= (1, 5):
@@ -489,12 +490,21 @@ try:
     from provider.oauth2 import forms as oauth2_provider_forms
     from provider import scope as oauth2_provider_scope
     from provider import constants as oauth2_constants
+    from provider import __version__ as provider_version
+    if provider_version in ('0.2.3', '0.2.4'):
+        # 0.2.3 and 0.2.4 are supported version that do not support
+        # timezone aware datetimes
+        from datetime.datetime import now as provider_now
+    else:
+        # Any other supported version does use timezone aware datetimes
+        from django.utils.timezone import now as provider_now
 except ImportError:
     oauth2_provider = None
     oauth2_provider_models = None
     oauth2_provider_forms = None
     oauth2_provider_scope = None
     oauth2_constants = None
+    provider_now = None
 
 # Handle lazy strings
 from django.utils.functional import Promise

@@ -27,7 +27,7 @@ Let's define a simple viewset that can be used to list or retrieve all the users
             queryset = User.objects.all()
             serializer = UserSerializer(queryset, many=True)
             return Response(serializer.data)
-            
+
         def retrieve(self, request, pk=None):
             queryset = User.objects.all()
             user = get_object_or_404(queryset, pk=pk)
@@ -69,7 +69,7 @@ The default routers included with REST framework will provide routes for a stand
         """
         Example empty viewset demonstrating the standard
         actions that will be handled by a router class.
-        
+
         If you're using format suffixes, make sure to also include
         the `format=None` keyword argument for each action.
         """
@@ -103,12 +103,12 @@ For example:
 
     class UserViewSet(viewsets.ModelViewSet):
         """
-        A viewset that provides the standard actions 
+        A viewset that provides the standard actions
         """
         queryset = User.objects.all()
         serializer_class = UserSerializer
-        
-        @action
+
+        @action()
         def set_password(self, request, pk=None):
             user = self.get_object()
             serializer = PasswordSerializer(data=request.DATA)
@@ -197,7 +197,7 @@ As with `ModelViewSet`, you'll normally need to provide at least the `queryset` 
 
 Again, as with `ModelViewSet`, you can use any of the standard attributes and method overrides available to `GenericAPIView`.
 
-# Custom ViewSet base classes 
+# Custom ViewSet base classes
 
 You may need to provide custom `ViewSet` classes that do not have the full set of `ModelViewSet` actions, or that customize the behavior in some other way.
 
@@ -209,11 +209,9 @@ To create a base viewset class that provides `create`, `list` and `retrieve` ope
                                     mixins.ListMixin,
                                     mixins.RetrieveMixin,
                                     viewsets.GenericViewSet):
-        pass
-
         """
         A viewset that provides `retrieve`, `update`, and `list` actions.
-        
+
         To use it, override the class and set the `.queryset` and
         `.serializer_class` attributes.
         """

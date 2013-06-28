@@ -303,6 +303,10 @@ The command line to test the authentication looks like:
 
     curl -H "Authorization: Bearer <your-access-token>" http://localhost:8000/api/
 
+### Alternative OAuth 2 implementations
+
+Note that [Django OAuth Toolkit][django-oauth-toolkit] is an alternative external package that also includes OAuth 2.0 support for REST framework.
+
 ---
 
 # Custom authentication
@@ -347,6 +351,10 @@ The following third party packages are also available.
 
 HTTP digest authentication is a widely implemented scheme that was intended to replace HTTP basic authentication, and which provides a simple encrypted authentication mechanism. [Juan Riaza][juanriaza] maintains the [djangorestframework-digestauth][djangorestframework-digestauth] package which provides HTTP digest authentication support for REST framework.
 
+## Django OAuth Toolkit
+
+The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support, and works with Python 2.7 and Python 3.3+.  The package is maintained by [Evonove][evonove] and uses the excelllent [OAuthLib][oauthlib].  The package is well documented, and comes as a recommended alternative for OAuth 2.0 support.
+
 [cite]: http://jacobian.org/writing/rest-worst-practices/
 [http401]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
 [http403]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
@@ -365,3 +373,6 @@ HTTP digest authentication is a widely implemented scheme that was intended to r
 [django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
 [django-oauth2-provider-docs]: https://django-oauth2-provider.readthedocs.org/en/latest/
 [rfc6749]: http://tools.ietf.org/html/rfc6749
+[django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
+[evonove]: https://github.com/evonove/
+[oauthlib]: https://github.com/idan/oauthlib

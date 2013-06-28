@@ -15,7 +15,9 @@ For example, you might have a `urls.py` that looks something like this:
 """
 from __future__ import unicode_literals
 
+import itertools
 from collections import namedtuple
+from django.core.exceptions import ImproperlyConfigured
 from rest_framework import views
 from rest_framework.compat import patterns, url
 from rest_framework.response import Response
@@ -36,6 +38,13 @@ def replace_methodname(format_string, methodname):
     ret = ret.replace('{methodname}', methodname)
     ret = ret.replace('{methodnamehyphen}', methodnamehyphen)
     return ret
+
+
+def flatten(list_of_lists):
+    """
+    Takes an iterable of iterables, returns a single iterable containing all items
+    """
+    return itertools.chain(*list_of_lists)
 
 
 class BaseRouter(object):
@@ -117,7 +126,7 @@ class SimpleRouter(BaseRouter):
         if model_cls is None and queryset is not None:
             model_cls = queryset.model
 
-        assert model_cls, '`name` not argument not specified, and could ' \
+        assert model_cls, '`base_name` argument not specified, and could ' \
             'not automatically determine the name from the viewset, as ' \
             'it does not have a `.model` or `.queryset` attribute.'
 
@@ -130,12 +139,18 @@ class SimpleRouter(BaseRouter):
         Returns a list of the Route namedtuple.
         """
 
+        known_actions = flatten([route.mapping.values() for route in self.routes])
+
         # Determine any `@action` or `@link` decorated methods on the viewset
         dynamic_routes = []
         for methodname in dir(viewset):
             attr = getattr(viewset, methodname)
             httpmethods = getattr(attr, 'bind_to_methods', None)
             if httpmethods:
+                if methodname in known_actions:
+                    raise ImproperlyConfigured('Cannot use @action or @link decorator on '
+                                               'method "%s" as it is an existing route' % methodname)
+                httpmethods = [method.lower() for method in httpmethods]
                 dynamic_routes.append((httpmethods, methodname))
 
         ret = []
@@ -215,6 +230,7 @@ class DefaultRouter(SimpleRouter):
     """
     include_root_view = True
     include_format_suffixes = True
+    root_view_name = 'api-root'
 
     def get_api_root_view(self):
         """
@@ -244,7 +260,7 @@ class DefaultRouter(SimpleRouter):
         urls = []
 
         if self.include_root_view:
-            root_url = url(r'^$', self.get_api_root_view(), name='api-root')
+            root_url = url(r'^$', self.get_api_root_view(), name=self.root_view_name)
             urls.append(root_url)
 
         default_urls = super(DefaultRouter, self).get_urls()
