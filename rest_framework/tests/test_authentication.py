@@ -21,14 +21,14 @@ from rest_framework.authtoken.models import Token
 from rest_framework.compat import patterns, url, include
 from rest_framework.compat import oauth2_provider, oauth2_provider_models, oauth2_provider_scope
 from rest_framework.compat import oauth, oauth_provider
-from rest_framework.tests.utils import RequestFactory
+from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
-import json
 import base64
 import time
 import datetime
+import json
 
-factory = RequestFactory()
+factory = APIRequestFactory()
 
 
 class MockView(APIView):

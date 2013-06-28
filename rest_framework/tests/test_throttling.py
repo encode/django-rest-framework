@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.test.client import RequestFactory
+from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
 from rest_framework.throttling import UserRateThrottle, ScopedRateThrottle
 from rest_framework.response import Response
@@ -41,7 +41,7 @@ class ThrottlingTests(TestCase):
         Reset the cache so that no throttles will be active
         """
         cache.clear()
-        self.factory = RequestFactory()
+        self.factory = APIRequestFactory()
 
     def test_requests_are_throttled(self):
         """
@@ -173,7 +173,7 @@ class ScopedRateThrottleTests(TestCase):
                 return Response('y')
 
         self.throttle_class = XYScopedRateThrottle
-        self.factory = RequestFactory()
+        self.factory = APIRequestFactory()
         self.x_view = XView.as_view()
         self.y_view = YView.as_view()
         self.unscoped_view = UnscopedView.as_view()
