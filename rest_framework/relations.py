@@ -335,6 +335,7 @@ class HyperlinkedRelatedField(RelatedField):
 
         self.lookup_field = kwargs.pop('lookup_field', self.lookup_field)
         self.format = kwargs.pop('format', None)
+        self.force_absolute = kwargs.pop('absolute', False)
 
         # These are pending deprecation
         if 'pk_url_kwarg' in kwargs:
@@ -364,7 +365,10 @@ class HyperlinkedRelatedField(RelatedField):
         lookup_field = getattr(obj, self.lookup_field)
         kwargs = {self.lookup_field: lookup_field}
         try:
-            return reverse(view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(
+                view_name, kwargs=kwargs, request=request,
+                format=format, force_absolute=self.force_absolute
+            )
         except NoReverseMatch:
             pass
 
@@ -374,7 +378,10 @@ class HyperlinkedRelatedField(RelatedField):
             pk = obj.pk
             kwargs = {self.pk_url_kwarg: pk}
             try:
-                return reverse(view_name, kwargs=kwargs, request=request, format=format)
+                return reverse(
+                    view_name, kwargs=kwargs, request=request,
+                    format=format, force_absolute=self.force_absolute
+                )
             except NoReverseMatch:
                 pass
 
@@ -383,7 +390,10 @@ class HyperlinkedRelatedField(RelatedField):
             # Only try slug if it corresponds to an attribute on the object.
             kwargs = {self.slug_url_kwarg: slug}
             try:
-                ret = reverse(view_name, kwargs=kwargs, request=request, format=format)
+                ret = reverse(
+                    view_name, kwargs=kwargs, request=request,
+                    format=format, force_absolute=self.force_absolute
+                )
                 if self.slug_field == 'slug' and self.slug_url_kwarg == 'slug':
                     # If the lookup succeeds using the default slug params,
                     # then `slug_field` is being used implicitly, and we
@@ -506,6 +516,7 @@ class HyperlinkedIdentityField(Field):
         self.format = kwargs.pop('format', None)
         lookup_field = kwargs.pop('lookup_field', None)
         self.lookup_field = lookup_field or self.lookup_field
+        self.force_absolute = kwargs.pop('force_absolute', False)
 
         # These are pending deprecation
         if 'pk_url_kwarg' in kwargs:
@@ -570,7 +581,10 @@ class HyperlinkedIdentityField(Field):
         lookup_field = getattr(obj, self.lookup_field)
         kwargs = {self.lookup_field: lookup_field}
         try:
-            return reverse(view_name, kwargs=kwargs, request=request, format=format)
+            return reverse(
+                view_name, kwargs=kwargs, request=request,
+                format=format, force_absolute=self.force_absolute
+            )
         except NoReverseMatch:
             pass
 
@@ -579,7 +593,10 @@ class HyperlinkedIdentityField(Field):
             # Otherwise, the default `lookup_field = 'pk'` has us covered.
             kwargs = {self.pk_url_kwarg: obj.pk}
             try:
-                return reverse(view_name, kwargs=kwargs, request=request, format=format)
+                return reverse(
+                    view_name, kwargs=kwargs, request=request,
+                    format=format, force_absolute=self.force_absolute
+                )
             except NoReverseMatch:
                 pass
 
@@ -588,7 +605,10 @@ class HyperlinkedIdentityField(Field):
             # Only use slug lookup if a slug field exists on the model
             kwargs = {self.slug_url_kwarg: slug}
             try:
-                return reverse(view_name, kwargs=kwargs, request=request, format=format)
+                return reverse(
+                    view_name, kwargs=kwargs, request=request,
+                    format=format, force_absolute=self.force_absolute
+                )
             except NoReverseMatch:
                 pass
 

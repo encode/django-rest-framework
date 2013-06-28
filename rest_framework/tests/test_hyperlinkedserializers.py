@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.test.client import RequestFactory
 from rest_framework import generics, status, serializers
 from rest_framework.compat import patterns, url
+from rest_framework.settings import api_settings
 from rest_framework.tests.models import Anchor, BasicModel, ManyToManyModel, BlogPost, BlogPostComment, Album, Photo, OptionalRelationModel
 
 factory = RequestFactory()
@@ -328,3 +329,44 @@ class TestOverriddenURLField(TestCase):
             serializer.data,
             {'title': 'New blog post', 'url': 'foo bar'}
         )
+
+
+class TestGlobalURLOverrides(TestCase):
+    def setUp(self):
+        api_settings.URL_FIELD_NAME = 'global_url_field'
+        api_settings.RELATIVE_URLS = True
+
+        class StandardSerializer(serializers.HyperlinkedModelSerializer):
+            class Meta:
+                model = BlogPost
+                fields = ('title', 'global_url_field')
+        self.Serializer = StandardSerializer
+        self.obj = BlogPost.objects.create(title="New blog post")
+
+    def test_serializer_overridden_url_field_name(self):
+        """
+        The url field name should respect overriding at the serializer level.
+        """
+        class URLFieldNameSerializer(serializers.HyperlinkedModelSerializer):
+            class Meta:
+                model = BlogPost
+                fields = ('title', 'serializer_url_field')
+                url_field_name = "serializer_url_field"
+        serializer = URLFieldNameSerializer(self.obj)
+        self.assertIn('serializer_url_field', serializer.data)
+
+    def test_globally_overridden_url_field_name(self):
+        """
+        The url field name should respect overriding for all serializers.
+        """
+        serializer = self.Serializer(self.obj)
+        import pdb; pdb.set_trace()
+        print serializer.data
+        self.assertIn('global_url_field', serializer.data)
+
+    def test_relative_urls(self):
+        """
+        Test whether url fields can be made relative across the board.
+        """
+        serializer = self.Serializer(self.obj)
+        self.assertTrue(serializer.data['global_url_field'].startswith('/'))

@@ -893,7 +893,7 @@ class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
         super(HyperlinkedModelSerializerOptions, self).__init__(meta)
         self.view_name = getattr(meta, 'view_name', None)
         self.lookup_field = getattr(meta, 'lookup_field', None)
-        self.url_field_name = getattr(meta, 'url_field_name', 'url')
+        self.url_field_name = getattr(meta, 'url_field_name', api_settings.URL_FIELD_NAME)
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
