@@ -109,14 +109,14 @@ class SessionAuthentication(BaseAuthentication):
         """
 
         # Get the underlying HttpRequest object
-        http_request = request._request
-        user = getattr(http_request, 'user', None)
+        request = request._request
+        user = getattr(request, 'user', None)
 
         # Unauthenticated, CSRF validation not required
         if not user or not user.is_active:
             return None
 
-        self.enforce_csrf(http_request)
+        self.enforce_csrf(request)
 
         # CSRF passed with authenticated user
         return (user, None)

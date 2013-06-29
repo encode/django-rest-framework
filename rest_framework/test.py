@@ -86,10 +86,6 @@ class ForceAuthClientHandler(ClientHandler):
         self._force_auth_token = None
         super(ForceAuthClientHandler, self).__init__(*args, **kwargs)
 
-    def force_authenticate(self, user=None, token=None):
-        self._force_auth_user = user
-        self._force_auth_token = token
-
     def get_response(self, request):
         # This is the simplest place we can hook into to patch the
         # request object.
@@ -108,56 +104,20 @@ class APIClient(APIRequestFactory, DjangoClient):
         self._credentials = {}
 
     def credentials(self, **kwargs):
+        """
+        Sets headers that will be used on every outgoing request.
+        """
         self._credentials = kwargs
 
     def authenticate(self, user=None, token=None):
-        self.handler.force_authenticate(user, token)
+        """
+        Forcibly authenticates outgoing requests with the given
+        user and/or token.
+        """
+        self.handler._force_auth_user = user
+        self.handler._force_auth_token = token
 
-    def get(self, path, data={}, follow=False, **extra):
-        extra.update(self._credentials)
-        response = super(APIClient, self).get(path, data=data, **extra)
-        if follow:
-            response = self._handle_redirects(response, **extra)
-        return response
-
-    def head(self, path, data={}, follow=False, **extra):
-        extra.update(self._credentials)
-        response = super(APIClient, self).head(path, data=data, **extra)
-        if follow:
-            response = self._handle_redirects(response, **extra)
-        return response
-
-    def post(self, path, data=None, format=None, content_type=None, follow=False, **extra):
-        extra.update(self._credentials)
-        response = super(APIClient, self).post(path, data=data, format=format, content_type=content_type, **extra)
-        if follow:
-            response = self._handle_redirects(response, **extra)
-        return response
-
-    def put(self, path, data=None, format=None, content_type=None, follow=False, **extra):
-        extra.update(self._credentials)
-        response = super(APIClient, self).post(path, data=data, format=format, content_type=content_type, **extra)
-        if follow:
-            response = self._handle_redirects(response, **extra)
-        return response
-
-    def patch(self, path, data=None, format=None, content_type=None, follow=False, **extra):
-        extra.update(self._credentials)
-        response = super(APIClient, self).post(path, data=data, format=format, content_type=content_type, **extra)
-        if follow:
-            response = self._handle_redirects(response, **extra)
-        return response
-
-    def delete(self, path, data=None, format=None, content_type=None, follow=False, **extra):
-        extra.update(self._credentials)
-        response = super(APIClient, self).post(path, data=data, format=format, content_type=content_type, **extra)
-        if follow:
-            response = self._handle_redirects(response, **extra)
-        return response
-
-    def options(self, path, data=None, format=None, content_type=None, follow=False, **extra):
-        extra.update(self._credentials)
-        response = super(APIClient, self).post(path, data=data, format=format, content_type=content_type, **extra)
-        if follow:
-            response = self._handle_redirects(response, **extra)
-        return response
+    def request(self, **request):
+        # Ensure that any credentials set get added to every request.
+        request.update(self._credentials)
+        return super(APIClient, self).request(**request)
