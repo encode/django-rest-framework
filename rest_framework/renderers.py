@@ -576,7 +576,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
 class MultiPartRenderer(BaseRenderer):
     media_type = 'multipart/form-data; boundary=BoUnDaRyStRiNg'
-    format = 'form'
+    format = 'multipart'
     charset = 'utf-8'
     BOUNDARY = 'BoUnDaRyStRiNg'
 
