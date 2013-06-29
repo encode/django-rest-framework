@@ -1,5 +1,8 @@
+# -- coding: utf-8 --
+
 # Note that we use `DjangoRequestFactory` and `DjangoClient` names in order
 # to make it harder for the user to import the wrong thing without realizing.
+from __future__ import unicode_literals
 from django.conf import settings
 from django.test.client import Client as DjangoClient
 from rest_framework.compat import RequestFactory as DjangoRequestFactory
@@ -72,31 +75,57 @@ class APIRequestFactory(DjangoRequestFactory):
 
 
 class APIClient(APIRequestFactory, DjangoClient):
+    def __init__(self, *args, **kwargs):
+        self._credentials = {}
+        super(APIClient, self).__init__(*args, **kwargs)
+
+    def credentials(self, **kwargs):
+        self._credentials = kwargs
+
+    def get(self, path, data={}, follow=False, **extra):
+        extra.update(self._credentials)
+        response = super(APIClient, self).get(path, data=data, **extra)
+        if follow:
+            response = self._handle_redirects(response, **extra)
+        return response
+
+    def head(self, path, data={}, follow=False, **extra):
+        extra.update(self._credentials)
+        response = super(APIClient, self).head(path, data=data, **extra)
+        if follow:
+            response = self._handle_redirects(response, **extra)
+        return response
+
     def post(self, path, data=None, format=None, content_type=None, follow=False, **extra):
+        extra.update(self._credentials)
         response = super(APIClient, self).post(path, data=data, format=format, content_type=content_type, **extra)
         if follow:
             response = self._handle_redirects(response, **extra)
         return response
 
     def put(self, path, data=None, format=None, content_type=None, follow=False, **extra):
+        extra.update(self._credentials)
         response = super(APIClient, self).post(path, data=data, format=format, content_type=content_type, **extra)
         if follow:
             response = self._handle_redirects(response, **extra)
         return response
 
     def patch(self, path, data=None, format=None, content_type=None, follow=False, **extra):
+        extra.update(self._credentials)
         response = super(APIClient, self).post(path, data=data, format=format, content_type=content_type, **extra)
         if follow:
             response = self._handle_redirects(response, **extra)
         return response
 
     def delete(self, path, data=None, format=None, content_type=None, follow=False, **extra):
+        extra.update(self._credentials)
         response = super(APIClient, self).post(path, data=data, format=format, content_type=content_type, **extra)
         if follow:
             response = self._handle_redirects(response, **extra)
         return response
 
     def options(self, path, data=None, format=None, content_type=None, follow=False, **extra):
+        extra.update(self._credentials)
         response = super(APIClient, self).post(path, data=data, format=format, content_type=content_type, **extra)
         if follow:
             response = self._handle_redirects(response, **extra)
