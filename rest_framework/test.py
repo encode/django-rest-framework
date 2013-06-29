@@ -109,7 +109,7 @@ class APIClient(APIRequestFactory, DjangoClient):
         """
         self._credentials = kwargs
 
-    def authenticate(self, user=None, token=None):
+    def force_authenticate(self, user=None, token=None):
         """
         Forcibly authenticates outgoing requests with the given
         user and/or token.

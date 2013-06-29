@@ -37,12 +37,12 @@ class CheckTestClient(TestCase):
             response = self.client.get('/view/')
             self.assertEqual(response.data['auth'], 'example')
 
-    def test_authenticate(self):
+    def test_force_authenticate(self):
         """
-        Setting `.authenticate()` forcibly authenticates each request.
+        Setting `.force_authenticate()` forcibly authenticates each request.
         """
         user = User.objects.create_user('example', 'example@example.com')
-        self.client.authenticate(user)
+        self.client.force_authenticate(user)
         response = self.client.get('/view/')
         self.assertEqual(response.data['user'], 'example')
 
