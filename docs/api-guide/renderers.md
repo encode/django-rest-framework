@@ -217,6 +217,16 @@ Renders data into HTML for the Browsable API.  This renderer will determine whic
 
 **.charset**: `utf-8`
 
+## MultiPartRenderer
+
+This renderer is used for rendering HTML multipart form data.  **It is not suitable as a response renderer**, but is instead used for creating test requests, using REST framework's [test client and test request factory][testing].
+
+**.media_type**: `multipart/form-data; boundary=BoUnDaRyStRiNg`
+
+**.format**: `'.multipart'`
+
+**.charset**: `utf-8`
+
 ---
 
 # Custom renderers
@@ -373,6 +383,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [rfc4627]: http://www.ietf.org/rfc/rfc4627.txt
 [cors]: http://www.w3.org/TR/cors/
 [cors-docs]: ../topics/ajax-csrf-cors.md
+[testing]: testing.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas
 [quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [application/vnd.github+json]: http://developer.github.com/v3/media/
