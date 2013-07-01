@@ -357,7 +357,7 @@ The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 supp
 
 ## Django OAuth2 Consumer
 
-The [Django Oauth2 Consumer][doac] library from [Rediker Software][rediker] is another package that provides [OAuth2 support for REST framework][doac-rest-framework].  The package includes token scoping permissions on tokens, which allows finer-grained access to your API.
+The [Django OAuth2 Consumer][doac] library from [Rediker Software][rediker] is another package that provides [OAuth2 support for REST framework][doac-rest-framework].  The package includes token scoping permissions on tokens, which allows finer-grained access to your API.
 
 [cite]: http://jacobian.org/writing/rest-worst-practices/
 [http401]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
