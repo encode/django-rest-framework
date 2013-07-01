@@ -16,7 +16,7 @@ Extends [Django's existing `RequestFactory` class][requestfactory].
 
 The `APIRequestFactory` class supports an almost identical API to Django's standard `RequestFactory` class.  This means the that standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.
 
-### Using the format arguments
+#### Using the format arguments
 
 Methods which create a request body, such as `post`, `put` and `patch`, include a `format` argument, which make it easy to generate requests using a content type other than multipart form data.  For example:
 
@@ -31,7 +31,7 @@ If you need to explictly encode the request body, you can do so by explicitly se
 
     request = factory.post('/notes/', json.dumps({'title': 'new idea'}), content_type='application/json')
 
-### PUT and PATCH with form data
+#### PUT and PATCH with form data
 
 One difference worth noting between Django's `RequestFactory` and REST framework's `APIRequestFactory` is that multipart form data will be encoded for methods other than just `.post()`.
 
@@ -105,50 +105,50 @@ To support a wider set of request formats, or change the default format, [see th
 
 ## Authenticating
 
-### .login(**kwargs)
+#### .login(**kwargs)
 
 The `login` method functions exactly as it does with Django's regular `Client` class.  This allows you to authenticate requests against any views which include `SessionAuthentication`.
 
     # Make all requests in the context of a logged in session.
-    >>> client = APIClient()
-    >>> client.login(username='lauren', password='secret')
+    client = APIClient()
+    client.login(username='lauren', password='secret')
 
 To logout, call the `logout` method as usual.
 
     # Log out
-    >>> client.logout()
+    client.logout()
 
 The `login` method is appropriate for testing APIs that use session authentication, for example web sites which include AJAX interaction with the API.
 
-### .credentials(**kwargs)
+#### .credentials(**kwargs)
 
 The `credentials` method can be used to set headers that will then be included on all subsequent requests by the test client.
 
     # Include an appropriate `Authorization:` header on all requests.
-    >>> token = Token.objects.get(username='lauren')
-    >>> client = APIClient()
-    >>> client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+    token = Token.objects.get(username='lauren')
+    client = APIClient()
+    client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 
 Note that calling `credentials` a second time overwrites any existing credentials.  You can unset any existing credentials by calling the method with no arguments.
 
     # Stop including any credentials
-    >>> client.credentials()
+    client.credentials()
 
 The `credentials` method is appropriate for testing APIs that require authentication headers, such as basic authentication, OAuth1a and OAuth2 authentication, and simple token authentication schemes.
 
-### .force_authenticate(user=None, token=None)
+#### .force_authenticate(user=None, token=None)
 
 Sometimes you may want to bypass authentication, and simple force all requests by the test client to be automatically treated as authenticated.
 
 This can be a useful shortcut if you're testing the API but don't want to have to construct valid authentication credentials in order to make test requests.
 
-    >>> user = User.objects.get(username='lauren')
-    >>> client = APIClient()
-    >>> client.force_authenticate(user=user)
+    user = User.objects.get(username='lauren')
+    client = APIClient()
+    client.force_authenticate(user=user)
 
 To unauthenticate subsequent requests, call `force_authenticate` setting the user and/or token to `None`.
 
-    >>> client.force_authenticate(user=None) 
+    client.force_authenticate(user=None) 
 
 ## CSRF validation
 
