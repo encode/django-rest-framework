@@ -355,6 +355,10 @@ HTTP digest authentication is a widely implemented scheme that was intended to r
 
 The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support, and works with Python 2.7 and Python 3.3+.  The package is maintained by [Evonove][evonove] and uses the excelllent [OAuthLib][oauthlib].  The package is well documented, and comes as a recommended alternative for OAuth 2.0 support.
 
+## Django OAuth2 Consumer
+
+The [Django Oauth2 Consumer][doac] library from [Rediker Software][rediker] is another package that provides [OAuth2 support for REST framework][doac-rest-framework].  The package includes token scoping permissions on tokens, which allows finer-grained access to your API.
+
 [cite]: http://jacobian.org/writing/rest-worst-practices/
 [http401]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
 [http403]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
@@ -376,3 +380,6 @@ The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 supp
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
 [evonove]: https://github.com/evonove/
 [oauthlib]: https://github.com/idan/oauthlib
+[doac]: https://github.com/Rediker-Software/doac
+[rediker]: https://github.com/Rediker-Software
+[doac-rest-framework]: https://github.com/Rediker-Software/doac/blob/master/docs/markdown/integrations.md
