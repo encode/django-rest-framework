@@ -382,4 +382,4 @@ The [Django OAuth2 Consumer][doac] library from [Rediker Software][rediker] is a
 [oauthlib]: https://github.com/idan/oauthlib
 [doac]: https://github.com/Rediker-Software/doac
 [rediker]: https://github.com/Rediker-Software
-[doac-rest-framework]: https://github.com/Rediker-Software/doac/blob/master/docs/markdown/integrations.md
+[doac-rest-framework]: https://github.com/Rediker-Software/doac/blob/master/docs/markdown/integrations.md#
