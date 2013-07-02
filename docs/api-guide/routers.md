@@ -102,15 +102,19 @@ The simplest way to implement a custom router is to subclass one of the existing
 
 The arguments to the `Route` named tuple are:
 
-* `url`: The URL to be routed. There are format arguments available, defined in `SimpleRouter.get_urls`:
-    * `prefix` - The URL prefix to use for this set of routes.
-    * `lookup` - The lookup field used to match against a single instance.
-    * `trailing_slash` - the value of `.trailing_slash`.
-* `mapping`: Mapping of HTTP method names to the object's methods
-* `name`: The name of the URL as used in `reverse` calls. There are format arguments available, defined in `SimpleRouter.get_urls`:
-    * `basename` - The base to use for the URL names that are created.
-* `initkwargs`: Any additional arguments to the view.
-    * `suffix` - reserved for identifying the viewset type, used when generating the breadcrumb links, e.g. `AccountViewSet` becomes `Account List` when `suffix='List'`.
+**url**: A string representing the URL to be routed.  May include the following format strings:
+
+* `{prefix}` - The URL prefix to use for this set of routes.
+* `{lookup}` - The lookup field used to match against a single instance.
+* `{trailing_slash}` - Either a '/' or an empty string, depending on the `trailing_slash` argument.
+
+**mapping**: A mapping of HTTP method names to the view methods
+
+**name**: The name of the URL as used in `reverse` calls. May include the following format string:
+
+* `{basename}` - The base to use for the URL names that are created.
+
+**initkwargs**: A dictionary of any additional arguments that should be passed when instantiating the view.  Note that the `suffix` argument is reserved for identifying the viewset type, used when generating the view name and breadcrumb links.
 
 ## Example
 
@@ -118,17 +122,17 @@ The following example will only route to the `list` and `retrieve` actions, and 
 
     class ReadOnlyRouter(SimpleRouter):
         """
-        A router for read-only APIs, which doesn't use trailing suffixes.
+        A router for read-only APIs, which doesn't use trailing slashes.
         """
         routes = [
             Route(url=r'^{prefix}$',
                   mapping={'get': 'list'},
                   name='{basename}-list',
-                  initkwargs={}),
+                  initkwargs={'suffix': 'List'}),
             Route(url=r'^{prefix}/{lookup}$',
                   mapping={'get': 'retrieve'},
                   name='{basename}-detail',
-                  initkwargs={})
+                  initkwargs={'suffix': 'Detail'})
         ]
 
 The `SimpleRouter` class provides another example of setting the `.routes` attribute.
