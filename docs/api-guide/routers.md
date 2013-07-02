@@ -100,6 +100,18 @@ Implementing a custom router isn't something you'd need to do very often, but it
 
 The simplest way to implement a custom router is to subclass one of the existing router classes.  The `.routes` attribute is used to template the URL patterns that will be mapped to each viewset. The `.routes` attribute is a list of `Route` named tuples.
 
+The arguments to the `Route` named tuple are:
+
+* `url`: The URL to be routed. There are format arguments available, defined in `SimpleRouter.get_urls`:
+    * `prefix` - The URL prefix to use for this set of routes.
+    * `lookup` - The lookup field used to match against a single instance.
+    * `trailing_slash` - the value of `.trailing_slash`.
+* `mapping`: Mapping of HTTP method names to the object's methods
+* `name`: The name of the URL as used in `reverse` calls. There are format arguments available, defined in `SimpleRouter.get_urls`:
+    * `basename` - The base to use for the URL names that are created.
+* `initkwargs`: Any additional arguments to the view.
+    * `suffix` - reserved for identifying the viewset type, used when generating the breadcrumb links, e.g. `AccountViewSet` becomes `Account List` when `suffix='List'`.
+
 ## Example
 
 The following example will only route to the `list` and `retrieve` actions, and does not use the trailing slash convention.
