@@ -70,6 +70,7 @@ path_list = [
     'api-guide/exceptions.md',
     'api-guide/status-codes.md',
     'api-guide/settings.md',
+    'topics/documenting-your-api.md',
     'topics/ajax-csrf-cors.md',
     'topics/browser-enhancements.md',
     'topics/browsable-api.md',
