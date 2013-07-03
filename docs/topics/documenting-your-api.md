@@ -44,6 +44,8 @@ The browsable API that REST framwork provides makes it possible for your API to 
 
 ![Screenshot - Self describing API][image-self-describing-api]
 
+---
+
 #### Setting the title
 
 The title that is used in the browsable API is generated from the view class name or function name.  Any trailing `View` or `ViewSet` suffix is stripped, and the string is whitespace separated on uppercase/lowercase boundaries or underscores.
