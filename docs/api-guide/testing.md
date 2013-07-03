@@ -16,10 +16,15 @@ Extends [Django's existing `RequestFactory` class][requestfactory].
 
 The `APIRequestFactory` class supports an almost identical API to Django's standard `RequestFactory` class.  This means the that standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.
 
-#### Using the format arguments
+    # Using the standard RequestFactory API to create a form POST request
+    factory = APIRequestFactory()
+    request = factory.post('/notes/', {'title': 'new idea'})
+
+#### Using the `format` argument
 
 Methods which create a request body, such as `post`, `put` and `patch`, include a `format` argument, which make it easy to generate requests using a content type other than multipart form data.  For example:
 
+    # Create a JSON POST request
     factory = APIRequestFactory()
     request = factory.post('/notes/', {'title': 'new idea'}, format='json')
 
@@ -27,7 +32,9 @@ By default the available formats are `'multipart'` and `'json'`.  For compatibil
 
 To support a wider set of request formats, or change the default format, [see the configuration section][configuration].
 
-If you need to explictly encode the request body, you can do so by explicitly setting the `content_type` flag.  For example:
+#### Explicitly encoding the request body
+
+If you need to explictly encode the request body, you can do so by setting the `content_type` flag.  For example:
 
     request = factory.post('/notes/', json.dumps({'title': 'new idea'}), content_type='application/json')
 
@@ -40,7 +47,7 @@ For example, using `APIRequestFactory`, you can make a form PUT request like so:
     factory = APIRequestFactory()
     request = factory.put('/notes/547/', {'title': 'remember to email dave'})
 
-Using Django's `Factory`, you'd need to explicitly encode the data yourself:
+Using Django's `RequestFactory`, you'd need to explicitly encode the data yourself:
 
     factory = RequestFactory()
     data = {'title': 'remember to email dave'}
