@@ -144,6 +144,7 @@ The following people have helped make REST framework great.
 * David Sanders - [davesque]
 * Philip Douglas - [freakydug]
 * Igor Kalat - [trwired]
+* Rudolf Olah - [omouse]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -324,3 +325,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [davesque]: https://github.com/davesque
 [freakydug]: https://github.com/freakydug
 [trwired]: https://github.com/trwired
+[omouse]: https://github.com/omouse

@@ -170,6 +170,7 @@ The API guide is your complete reference manual to all the functionality provide
 
 General guides to using REST framework.
 
+* [Documenting your API][documenting-your-api]
 * [AJAX, CSRF & CORS][ajax-csrf-cors]
 * [Browser enhancements][browser-enhancements]
 * [The Browsable API][browsableapi]
@@ -289,6 +290,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [status]: api-guide/status-codes.md
 [settings]: api-guide/settings.md
 
+[documenting-your-api]: topics/documenting-your-api.md
 [ajax-csrf-cors]: topics/ajax-csrf-cors.md
 [browser-enhancements]: topics/browser-enhancements.md
 [browsableapi]: topics/browsable-api.md
