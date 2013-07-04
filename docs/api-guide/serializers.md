@@ -427,6 +427,8 @@ Doing so should be considered advanced usage, and will only be needed if you hav
 
 Once a serializer has been initialized, the dictionary of fields that are set on the serializer may be accessed using the `.fields` attribute.  Accessing and modifying this attribute allows you to dynamically modify the serializer.
 
+Modifying the `fields` argument directly allows you to do interesting things such as changing the arguments on serializer fields at runtime, rather than at the point of declaring the serializer.
+
 ### Example
 
 For example, if you wanted to be able to set which fields should be used by a serializer at the point of initializing it, you could create a serializer class like so:
