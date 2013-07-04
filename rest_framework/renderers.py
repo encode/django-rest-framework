@@ -14,6 +14,7 @@ from django import forms
 from django.core.exceptions import ImproperlyConfigured
 from django.http.multipartparser import parse_header
 from django.template import RequestContext, loader, Template
+from django.test.client import encode_multipart
 from django.utils.xmlutils import SimplerXMLGenerator
 from rest_framework.compat import StringIO
 from rest_framework.compat import six
@@ -571,3 +572,13 @@ class BrowsableAPIRenderer(BaseRenderer):
             response.status_code = status.HTTP_200_OK
 
         return ret
+
+
+class MultiPartRenderer(BaseRenderer):
+    media_type = 'multipart/form-data; boundary=BoUnDaRyStRiNg'
+    format = 'multipart'
+    charset = 'utf-8'
+    BOUNDARY = 'BoUnDaRyStRiNg'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        return encode_multipart(self.BOUNDARY, data)

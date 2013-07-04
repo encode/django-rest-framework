@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.test import Client, TestCase
+from django.test import TestCase
 from django.utils import unittest
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
@@ -21,14 +21,13 @@ from rest_framework.authtoken.models import Token
 from rest_framework.compat import patterns, url, include
 from rest_framework.compat import oauth2_provider, oauth2_provider_models, oauth2_provider_scope
 from rest_framework.compat import oauth, oauth_provider
-from rest_framework.tests.utils import RequestFactory
+from rest_framework.test import APIRequestFactory, APIClient
 from rest_framework.views import APIView
-import json
 import base64
 import time
 import datetime
 
-factory = RequestFactory()
+factory = APIRequestFactory()
 
 
 class MockView(APIView):
@@ -68,7 +67,7 @@ class BasicAuthTests(TestCase):
     urls = 'rest_framework.tests.test_authentication'
 
     def setUp(self):
-        self.csrf_client = Client(enforce_csrf_checks=True)
+        self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.username = 'john'
         self.email = 'lennon@thebeatles.com'
         self.password = 'password'
@@ -87,7 +86,7 @@ class BasicAuthTests(TestCase):
         credentials = ('%s:%s' % (self.username, self.password))
         base64_credentials = base64.b64encode(credentials.encode(HTTP_HEADER_ENCODING)).decode(HTTP_HEADER_ENCODING)
         auth = 'Basic %s' % base64_credentials
-        response = self.csrf_client.post('/basic/', json.dumps({'example': 'example'}), 'application/json', HTTP_AUTHORIZATION=auth)
+        response = self.csrf_client.post('/basic/', {'example': 'example'}, format='json', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_post_form_failing_basic_auth(self):
@@ -97,7 +96,7 @@ class BasicAuthTests(TestCase):
 
     def test_post_json_failing_basic_auth(self):
         """Ensure POSTing json over basic auth without correct credentials fails"""
-        response = self.csrf_client.post('/basic/', json.dumps({'example': 'example'}), 'application/json')
+        response = self.csrf_client.post('/basic/', {'example': 'example'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response['WWW-Authenticate'], 'Basic realm="api"')
 
@@ -107,8 +106,8 @@ class SessionAuthTests(TestCase):
     urls = 'rest_framework.tests.test_authentication'
 
     def setUp(self):
-        self.csrf_client = Client(enforce_csrf_checks=True)
-        self.non_csrf_client = Client(enforce_csrf_checks=False)
+        self.csrf_client = APIClient(enforce_csrf_checks=True)
+        self.non_csrf_client = APIClient(enforce_csrf_checks=False)
         self.username = 'john'
         self.email = 'lennon@thebeatles.com'
         self.password = 'password'
@@ -154,7 +153,7 @@ class TokenAuthTests(TestCase):
     urls = 'rest_framework.tests.test_authentication'
 
     def setUp(self):
-        self.csrf_client = Client(enforce_csrf_checks=True)
+        self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.username = 'john'
         self.email = 'lennon@thebeatles.com'
         self.password = 'password'
@@ -172,7 +171,7 @@ class TokenAuthTests(TestCase):
     def test_post_json_passing_token_auth(self):
         """Ensure POSTing form over token auth with correct credentials passes and does not require CSRF"""
         auth = "Token " + self.key
-        response = self.csrf_client.post('/token/', json.dumps({'example': 'example'}), 'application/json', HTTP_AUTHORIZATION=auth)
+        response = self.csrf_client.post('/token/', {'example': 'example'}, format='json', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_post_form_failing_token_auth(self):
@@ -182,7 +181,7 @@ class TokenAuthTests(TestCase):
 
     def test_post_json_failing_token_auth(self):
         """Ensure POSTing json over token auth without correct credentials fails"""
-        response = self.csrf_client.post('/token/', json.dumps({'example': 'example'}), 'application/json')
+        response = self.csrf_client.post('/token/', {'example': 'example'}, format='json')
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_token_has_auto_assigned_key_if_none_provided(self):
@@ -193,33 +192,33 @@ class TokenAuthTests(TestCase):
 
     def test_token_login_json(self):
         """Ensure token login view using JSON POST works."""
-        client = Client(enforce_csrf_checks=True)
+        client = APIClient(enforce_csrf_checks=True)
         response = client.post('/auth-token/',
-                               json.dumps({'username': self.username, 'password': self.password}), 'application/json')
+                               {'username': self.username, 'password': self.password}, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('ascii'))['token'], self.key)
+        self.assertEqual(response.data['token'], self.key)
 
     def test_token_login_json_bad_creds(self):
         """Ensure token login view using JSON POST fails if bad credentials are used."""
-        client = Client(enforce_csrf_checks=True)
+        client = APIClient(enforce_csrf_checks=True)
         response = client.post('/auth-token/',
-                               json.dumps({'username': self.username, 'password': "badpass"}), 'application/json')
+                               {'username': self.username, 'password': "badpass"}, format='json')
         self.assertEqual(response.status_code, 400)
 
     def test_token_login_json_missing_fields(self):
         """Ensure token login view using JSON POST fails if missing fields."""
-        client = Client(enforce_csrf_checks=True)
+        client = APIClient(enforce_csrf_checks=True)
         response = client.post('/auth-token/',
-                               json.dumps({'username': self.username}), 'application/json')
+                               {'username': self.username}, format='json')
         self.assertEqual(response.status_code, 400)
 
     def test_token_login_form(self):
         """Ensure token login view using form POST works."""
-        client = Client(enforce_csrf_checks=True)
+        client = APIClient(enforce_csrf_checks=True)
         response = client.post('/auth-token/',
                                {'username': self.username, 'password': self.password})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(json.loads(response.content.decode('ascii'))['token'], self.key)
+        self.assertEqual(response.data['token'], self.key)
 
 
 class IncorrectCredentialsTests(TestCase):
@@ -256,7 +255,7 @@ class OAuthTests(TestCase):
 
         self.consts = consts
 
-        self.csrf_client = Client(enforce_csrf_checks=True)
+        self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.username = 'john'
         self.email = 'lennon@thebeatles.com'
         self.password = 'password'
@@ -470,12 +469,13 @@ class OAuthTests(TestCase):
         response = self.csrf_client.post('/oauth/', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 401)
 
+
 class OAuth2Tests(TestCase):
     """OAuth 2.0 authentication"""
     urls = 'rest_framework.tests.test_authentication'
 
     def setUp(self):
-        self.csrf_client = Client(enforce_csrf_checks=True)
+        self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.username = 'john'
         self.email = 'lennon@thebeatles.com'
         self.password = 'password'

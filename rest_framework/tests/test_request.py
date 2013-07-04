@@ -5,8 +5,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.sessions.middleware import SessionMiddleware
-from django.test import TestCase, Client
-from django.test.client import RequestFactory
+from django.test import TestCase
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.compat import patterns
@@ -19,12 +18,13 @@ from rest_framework.parsers import (
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
+from rest_framework.test import APIRequestFactory, APIClient
 from rest_framework.views import APIView
 from rest_framework.compat import six
 import json
 
 
-factory = RequestFactory()
+factory = APIRequestFactory()
 
 
 class PlainTextParser(BaseParser):
@@ -116,16 +116,7 @@ class TestContentParsing(TestCase):
         Ensure request.DATA returns content for PUT request with form content.
         """
         data = {'qwerty': 'uiop'}
-
-        from django import VERSION
-
-        if VERSION >= (1, 5):
-            from django.test.client import MULTIPART_CONTENT, BOUNDARY, encode_multipart
-            request = Request(factory.put('/', encode_multipart(BOUNDARY, data),
-                                  content_type=MULTIPART_CONTENT))
-        else:
-            request = Request(factory.put('/', data))
-
+        request = Request(factory.put('/', data))
         request.parsers = (FormParser(), MultiPartParser())
         self.assertEqual(list(request.DATA.items()), list(data.items()))
 
@@ -257,7 +248,7 @@ class TestContentParsingWithAuthentication(TestCase):
     urls = 'rest_framework.tests.test_request'
 
     def setUp(self):
-        self.csrf_client = Client(enforce_csrf_checks=True)
+        self.csrf_client = APIClient(enforce_csrf_checks=True)
         self.username = 'john'
         self.email = 'lennon@thebeatles.com'
         self.password = 'password'
