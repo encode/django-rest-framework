@@ -50,10 +50,7 @@ class JSONParser(BaseParser):
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
-        Returns a 2-tuple of `(data, files)`.
-
-        `data` will be an object which is the parsed content of the response.
-        `files` will always be `None`.
+        Returns a dict of parsed items.
         """
         parser_context = parser_context or {}
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
@@ -74,10 +71,7 @@ class YAMLParser(BaseParser):
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
-        Returns a 2-tuple of `(data, files)`.
-
-        `data` will be an object which is the parsed content of the response.
-        `files` will always be `None`.
+        Returns a dict of parsed items.
         """
         assert yaml, 'YAMLParser requires pyyaml to be installed'
 
@@ -100,10 +94,7 @@ class FormParser(BaseParser):
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
-        Returns a 2-tuple of `(data, files)`.
-
-        `data` will be a :class:`QueryDict` containing all the form parameters.
-        `files` will always be :const:`None`.
+        Returns a dict of parsed items.
         """
         parser_context = parser_context or {}
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
@@ -147,6 +138,9 @@ class XMLParser(BaseParser):
     media_type = 'application/xml'
 
     def parse(self, stream, media_type=None, parser_context=None):
+        """
+        Returns a dict of parsed items.
+        """
         assert etree, 'XMLParser requires defusedxml to be installed'
 
         parser_context = parser_context or {}
