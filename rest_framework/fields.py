@@ -100,6 +100,19 @@ def humanize_strptime(format_string):
     return format_string
 
 
+def strip_multiple_choice_msg(help_text):
+    """
+    Remove the 'Hold down "control" ...' message that is enforced in select
+    multiple fields.
+
+    See https://code.djangoproject.com/ticket/9321
+    """
+    multiple_choice_msg = _(' Hold down "Control", or "Command" on a Mac, to select more than one.')
+    multiple_choice_msg = unicode(multiple_choice_msg)
+
+    return help_text.replace(multiple_choice_msg, '')
+
+
 class Field(object):
     read_only = True
     creation_counter = 0
@@ -122,7 +135,7 @@ class Field(object):
             self.label = smart_text(label)
 
         if help_text is not None:
-            self.help_text = smart_text(help_text)
+            self.help_text = strip_multiple_choice_msg(smart_text(help_text))
 
     def initialize(self, parent, field_name):
         """
