@@ -15,11 +15,11 @@ Django REST framework is a powerful and flexible toolkit that makes it easy to b
 
 Some reasons you might want to use REST framework:
 
-* The Web browseable API is a huge usability win for your developers.
-* Authentication policies including OAuth1a and OAuth2 out of the box.
-* Serialization that supports both ORM and non-ORM data sources.
-* Customizable all the way down - just use regular function-based views if you don't need the more powerful features.
-* Extensive documentation, and great community support.
+* The [Web browseable API][sandbox] is a huge usability win for your developers.
+* [Authentication policies][authentication] including [OAuth1a][oauth1-section] and [OAuth2][oauth2-section] out of the box.
+* [Serialization][serializers] that supports both [ORM][modelserializer-section] and [non-ORM][serializer-section] data sources.
+* Customizable all the way down - just use [regular function-based views][functionview-section] if you don't need the [more][generic-views] [powerful][viewsets] [features][routers].
+* [Extensive documentation][index], and [great community support][group].
 
 There is a live example API for testing purposes, [available here][sandbox].
 
@@ -170,6 +170,7 @@ The API guide is your complete reference manual to all the functionality provide
 
 General guides to using REST framework.
 
+* [Documenting your API][documenting-your-api]
 * [AJAX, CSRF & CORS][ajax-csrf-cors]
 * [Browser enhancements][browser-enhancements]
 * [The Browsable API][browsableapi]
@@ -250,6 +251,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [image]: img/quickstart.png
+[index]: .
+[oauth1-section]: api-guide/authentication.html#oauthauthentication
+[oauth2-section]: api-guide/authentication.html#oauth2authentication
+[serializer-section]: api-guide/serializers.html#serializers
+[modelserializer-section]: api-guide/serializers.html#modelserializer
+[functionview-section]: api-guide/views.html#function-based-views
 [sandbox]: http://restframework.herokuapp.com/
 
 [quickstart]: tutorial/quickstart.md
@@ -283,6 +290,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [status]: api-guide/status-codes.md
 [settings]: api-guide/settings.md
 
+[documenting-your-api]: topics/documenting-your-api.md
 [ajax-csrf-cors]: topics/ajax-csrf-cors.md
 [browser-enhancements]: topics/browser-enhancements.md
 [browsableapi]: topics/browsable-api.md

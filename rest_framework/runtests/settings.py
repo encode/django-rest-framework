@@ -134,6 +134,8 @@ PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.CryptPasswordHasher',
 )
 
+AUTH_USER_MODEL = 'auth.User'
+
 import django
 
 if django.VERSION < (1, 3):

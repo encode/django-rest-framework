@@ -11,69 +11,85 @@ API may stand for Application *Programming* Interface, but humans have to be abl
 
 If you include fully-qualified URLs in your resource output, they will be 'urlized' and made clickable for easy browsing by humans.  The `rest_framework` package includes a [`reverse`][drfreverse] helper for this purpose.
 
-
 ## Formats
 
 By default, the API will return the format specified by the headers, which in the case of the browser is HTML.  The format can be specified using `?format=` in the request, so you can look at the raw JSON response in a browser by adding `?format=json` to the URL.  There are helpful extensions for viewing JSON in [Firefox][ffjsonview] and [Chrome][chromejsonview].
 
-
 ## Customizing
 
-To customize the look-and-feel, create a template called `api.html` and add it to your project, eg: `templates/rest_framework/api.html`, that extends the `rest_framework/base.html` template.
+The browsable API is built with [Twitter's Bootstrap][bootstrap] (v 2.1.1), making it easy to customize the look-and-feel.
 
-The included browsable API template is built with [Bootstrap (2.1.1)][bootstrap], making it easy to customize the look-and-feel.
+To customize the default style, create a template called `rest_framework/api.html` that extends from `rest_framework/base.html`.  For example:
 
-### Theme
+**templates/rest_framework/api.html**
 
-To replace the theme wholesale, add a `bootstrap_theme` block to your `api.html` and insert a `link` to the desired Bootstrap theme css file.  This will completely replace the included theme.
+    {% extends "rest_framework/base.html" %}
+    
+    ...  # Override blocks with required customizations  
+
+### Overriding the default theme
+
+To replace the default theme, add a `bootstrap_theme` block to your `api.html` and insert a `link` to the desired Bootstrap theme css file.  This will completely replace the included theme.
 
     {% block bootstrap_theme %}
         <link rel="stylesheet" href="/path/to/my/bootstrap.css" type="text/css">
     {% endblock %}
 
-A suitable replacement theme can be generated using Bootstrap's [Customize Tool][bcustomize].  Also, there are pre-made themes available at [Bootswatch][bswatch].  To use any of the Bootswatch themes, simply download the theme's `bootstrap.min.css` file, add it to your project, and replace the default one as described above.
+A suitable replacement theme can be generated using Bootstrap's [Customize Tool][bcustomize].  There are also pre-made themes available at [Bootswatch][bswatch].  To use any of the Bootswatch themes, simply download the theme's `bootstrap.min.css` file, add it to your project, and replace the default one as described above.
 
 You can also change the navbar variant, which by default is `navbar-inverse`, using the `bootstrap_navbar_variant` block.  The empty `{% block bootstrap_navbar_variant %}{% endblock %}` will use the original Bootstrap navbar style.
 
-Full Example
+Full example:
 
     {% extends "rest_framework/base.html" %}
 
     {% block bootstrap_theme %}
-        <link rel="stylesheet" href="/path/to/yourtheme/bootstrap.min.css' type="text/css">
+        <link rel="stylesheet" href="http://bootswatch.com/flatly/bootstrap.min.css" type="text/css">
     {% endblock %}
 
     {% block bootstrap_navbar_variant %}{% endblock %}
 
+For more specific CSS tweaks than simply overriding the default bootstrap theme you can override the `style` block.
 
-For more specific CSS tweaks, use the `style` block instead.
+---
 
+![Cerulean theme][cerulean]
+
+*Screenshot of the bootswatch 'Cerulean' theme*
+
+---
+
+![Slate theme][slate]
+
+*Screenshot of the bootswatch 'Slate' theme*
+
+---
 
 ### Blocks
 
 All of the blocks available in the browsable API base template that can be used in your `api.html`.
 
-* `bodyclass`                  - (empty) class attribute for the `<body>`
-* `bootstrap_theme`            - CSS for the Bootstrap theme
-* `bootstrap_navbar_variant`   - CSS class for the navbar
-* `branding`                   - section of the navbar, see [Bootstrap components][bcomponentsnav]
+* `bodyclass`                  - Class attribute for the `<body>` tag, empty by default.
+* `bootstrap_theme`            - CSS for the Bootstrap theme.
+* `bootstrap_navbar_variant`   - CSS class for the navbar.
+* `branding`                   - Branding section of the navbar, see [Bootstrap components][bcomponentsnav].
 * `breadcrumbs`                - Links showing resource nesting, allowing the user to go back up the resources.  It's recommended to preserve these, but they can be overridden using the breadcrumbs block.
-* `footer`                     - Any copyright notices or similar footer materials can go here (by default right-aligned)
-* `style`                      - CSS stylesheets for the page
-* `title`                      - title of the page
-* `userlinks`                  - This is a list of links on the right of the header, by default containing login/logout links.  To add links instead of replace, use {{ block.super }} to preserve the authentication links.
+* `footer`                     - Any copyright notices or similar footer materials can go here (by default right-aligned).
+* `style`                      - CSS stylesheets for the page.
+* `title`                      - Title of the page.
+* `userlinks`                  - This is a list of links on the right of the header, by default containing login/logout links.  To add links instead of replace, use `{{ block.super }}` to preserve the authentication links.
 
 #### Components
 
-All of the [Bootstrap components][bcomponents] are available.
+All of the standard [Bootstrap components][bcomponents] are available.
 
-##### Tooltips
+#### Tooltips
 
-The browsable API makes use of the Bootstrap tooltips component.  Any element with the `js-tooltip` class and a `title` attribute has that title content displayed in a tooltip on hover after a 1000ms delay.
+The browsable API makes use of the Bootstrap tooltips component.  Any element with the `js-tooltip` class and a `title` attribute has that title content will display a tooltip on hover events.
 
 ### Login Template
 
-To add branding and customize the look-and-feel of the auth login template, create a template called `login.html` and add it to your project, eg: `templates/rest_framework/login.html`, that extends the `rest_framework/base_login.html` template.
+To add branding and customize the look-and-feel of the login template, create a template called `login.html` and add it to your project, eg: `templates/rest_framework/login.html`.  The template should extend from `rest_framework/base_login.html`.
 
 You can add your site name or branding by including the branding block:
 
@@ -114,6 +130,8 @@ For more advanced customization, such as not having a Bootstrap basis or tighter
 [ffjsonview]: https://addons.mozilla.org/en-US/firefox/addon/jsonview/
 [chromejsonview]: https://chrome.google.com/webstore/detail/chklaanhfefbnpoihckbnefhakgolnmc
 [bootstrap]: http://getbootstrap.com
+[cerulean]: ../img/cerulean.png
+[slate]: ../img/slate.png
 [bcustomize]: http://twitter.github.com/bootstrap/customize.html#variables
 [bswatch]: http://bootswatch.com/
 [bcomponents]: http://twitter.github.com/bootstrap/components.html

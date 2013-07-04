@@ -4,11 +4,11 @@ Provides an APIView class that is the base of all views in REST framework.
 from __future__ import unicode_literals
 
 from django.core.exceptions import PermissionDenied
-from django.http import Http404, HttpResponse
+from django.http import Http404
 from django.utils.datastructures import SortedDict
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
-from rest_framework.compat import View
+from rest_framework.compat import View, HttpResponseBase
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -244,9 +244,10 @@ class APIView(View):
         Returns the final response object.
         """
         # Make the error obvious if a proper response is not returned
-        assert isinstance(response, HttpResponse), (
-            'Expected a `Response` to be returned from the view, '
-            'but received a `%s`' % type(response)
+        assert isinstance(response, HttpResponseBase), (
+            'Expected a `Response`, `HttpResponse` or `HttpStreamingResponse` '
+            'to be returned from the view, but received a `%s`'
+            % type(response)
         )
 
         if isinstance(response, Response):
