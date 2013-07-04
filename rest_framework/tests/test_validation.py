@@ -2,10 +2,9 @@ from __future__ import unicode_literals
 from django.db import models
 from django.test import TestCase
 from rest_framework import generics, serializers, status
-from rest_framework.tests.utils import RequestFactory
-import json
+from rest_framework.test import APIRequestFactory
 
-factory = RequestFactory()
+factory = APIRequestFactory()
 
 
 # Regression for #666
@@ -33,8 +32,7 @@ class TestPreSaveValidationExclusions(TestCase):
         validation on read only fields.
         """
         obj = ValidationModel.objects.create(blank_validated_field='')
-        request = factory.put('/', json.dumps({}),
-                              content_type='application/json')
+        request = factory.put('/', {}, format='json')
         view = UpdateValidationModel().as_view()
         response = view(request, pk=obj.pk).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)

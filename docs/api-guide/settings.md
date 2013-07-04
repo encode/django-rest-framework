@@ -149,6 +149,33 @@ Default: `None`
 
 ---
 
+## Test settings
+
+*The following settings control the behavior of APIRequestFactory and APIClient*
+
+#### TEST_REQUEST_DEFAULT_FORMAT
+
+The default format that should be used when making test requests.
+
+This should match up with the format of one of the renderer classes in the `TEST_REQUEST_RENDERER_CLASSES` setting.
+
+Default: `'multipart'`
+
+#### TEST_REQUEST_RENDERER_CLASSES
+
+The renderer classes that are supported when building test requests.
+
+The format of any of these renderer classes may be used when contructing a test request, for example: `client.post('/users', {'username': 'jamie'}, format='json')`
+
+Default:
+
+    (
+        'rest_framework.renderers.MultiPartRenderer',
+        'rest_framework.renderers.JSONRenderer'
+    )
+
+---
+
 ## Browser overrides
 
 *The following settings provide URL or form-based overrides of the default browser behavior.*

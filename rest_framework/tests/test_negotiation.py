@@ -1,12 +1,12 @@
 from __future__ import unicode_literals
 from django.test import TestCase
-from django.test.client import RequestFactory
 from rest_framework.negotiation import DefaultContentNegotiation
 from rest_framework.request import Request
 from rest_framework.renderers import BaseRenderer
+from rest_framework.test import APIRequestFactory
 
 
-factory = RequestFactory()
+factory = APIRequestFactory()
 
 
 class MockJSONRenderer(BaseRenderer):

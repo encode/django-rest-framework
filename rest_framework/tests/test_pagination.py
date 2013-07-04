@@ -4,13 +4,13 @@ from decimal import Decimal
 from django.db import models
 from django.core.paginator import Paginator
 from django.test import TestCase
-from django.test.client import RequestFactory
 from django.utils import unittest
 from rest_framework import generics, status, pagination, filters, serializers
 from rest_framework.compat import django_filters
+from rest_framework.test import APIRequestFactory
 from rest_framework.tests.models import BasicModel
 
-factory = RequestFactory()
+factory = APIRequestFactory()
 
 
 class FilterableItem(models.Model):
@@ -369,7 +369,7 @@ class TestCustomPaginationSerializer(TestCase):
         self.page = paginator.page(1)
 
     def test_custom_pagination_serializer(self):
-        request = RequestFactory().get('/foobar')
+        request = APIRequestFactory().get('/foobar')
         serializer = CustomPaginationSerializer(
             instance=self.page,
             context={'request': request}

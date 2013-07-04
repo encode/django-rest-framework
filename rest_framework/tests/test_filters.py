@@ -4,13 +4,13 @@ from decimal import Decimal
 from django.db import models
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.test.client import RequestFactory
 from django.utils import unittest
 from rest_framework import generics, serializers, status, filters
 from rest_framework.compat import django_filters, patterns, url
+from rest_framework.test import APIRequestFactory
 from rest_framework.tests.models import BasicModel
 
-factory = RequestFactory()
+factory = APIRequestFactory()
 
 
 class FilterableItem(models.Model):
