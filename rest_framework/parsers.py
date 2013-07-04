@@ -50,10 +50,7 @@ class JSONParser(BaseParser):
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
-        Returns a 2-tuple of `(data, files)`.
-
-        `data` will be an object which is the parsed content of the response.
-        `files` will always be `None`.
+        Parses the incoming bytestream as JSON and returns the resulting data.
         """
         parser_context = parser_context or {}
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
@@ -74,10 +71,7 @@ class YAMLParser(BaseParser):
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
-        Returns a 2-tuple of `(data, files)`.
-
-        `data` will be an object which is the parsed content of the response.
-        `files` will always be `None`.
+        Parses the incoming bytestream as YAML and returns the resulting data.
         """
         assert yaml, 'YAMLParser requires pyyaml to be installed'
 
@@ -100,10 +94,8 @@ class FormParser(BaseParser):
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
-        Returns a 2-tuple of `(data, files)`.
-
-        `data` will be a :class:`QueryDict` containing all the form parameters.
-        `files` will always be :const:`None`.
+        Parses the incoming bytestream as a URL encoded form,
+        and returns the resulting QueryDict.
         """
         parser_context = parser_context or {}
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
@@ -120,7 +112,8 @@ class MultiPartParser(BaseParser):
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
-        Returns a DataAndFiles object.
+        Parses the incoming bytestream as a multipart encoded form,
+        and returns a DataAndFiles object.
 
         `.data` will be a `QueryDict` containing all the form parameters.
         `.files` will be a `QueryDict` containing all the form files.
@@ -147,6 +140,9 @@ class XMLParser(BaseParser):
     media_type = 'application/xml'
 
     def parse(self, stream, media_type=None, parser_context=None):
+        """
+        Parses the incoming bytestream as XML and returns the resulting data.
+        """
         assert etree, 'XMLParser requires defusedxml to be installed'
 
         parser_context = parser_context or {}
@@ -216,7 +212,8 @@ class FileUploadParser(BaseParser):
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
-        Returns a DataAndFiles object.
+        Treats the incoming bytestream as a raw file upload and returns
+        a `DateAndFiles` object.
 
         `.data` will be None (we expect request body to be a file content).
         `.files` will be a `QueryDict` containing one 'file' element.
