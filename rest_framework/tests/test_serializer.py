@@ -4,7 +4,7 @@ from django.db.models.fields import BLANK_CHOICE_DASH
 from django.test import TestCase
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext_lazy as _
-from rest_framework import serializers, fields, relations
+from rest_framework import fields, generics, relations, serializers, status, test
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo, RESTFrameworkModel)
@@ -1643,3 +1643,65 @@ class SerializerSupportsManyRelationships(TestCase):
         serializer = SimpleSlugSourceModelSerializer(data={'text': 'foo', 'targets': [1, 2]})
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.data, {'text': 'foo', 'targets': [1, 2]})
+
+
+### Test for issue 965 ###
+
+
+# model
+class Artist(models.Model):
+    name = models.CharField(max_length=100)
+
+
+# model
+class Track(models.Model):
+    title = models.CharField(max_length=100)
+    artist = models.ForeignKey(Artist)
+
+
+# serializer
+class TrackSerializer(serializers.ModelSerializer):
+    artist = serializers.PrimaryKeyRelatedField(required=False)
+
+    def validate_title(self, attrs, source):
+        title = attrs[source]
+        if not isinstance(title, basestring) or title is None:
+            raise serializers.ValidationError('title is not of valid type.')
+        if len(title) > 50:
+            raise serializers.ValidationError('title is not of valid length.')
+        return attrs
+
+    def validate_artist(self, attrs, source):
+        artist = attrs[source]
+        if type(artist) != Artist:
+            raise serializers.ValidationError('artist is not of valid type.')
+        if Artist.objects.filter(id=artist.id).count() != 1:
+            raise serializers.ValidationError('artist is not a valid instance.')
+        return attrs
+
+    class Meta:
+        model = Track
+        fields = ('id', 'title', 'artist')
+
+
+# view
+class TrackEditorView(generics.RetrieveUpdateDestroyAPIView):
+    model = Track
+    serializer_class = TrackSerializer
+
+
+# test
+class SerializerSupportsPatchAndCustomValidation(TestCase):
+    def setUp(self):
+        self.band = Artist.objects.create(name='''AC/DC''')
+        self.wrong_title = '''Let Me Put Me Love Into You'''
+        self.right_title = '''Let Me Put My Love Into You'''
+        self.view = TrackEditorView().as_view()
+
+    def test_response_of_PATCH_on_TrackEditorView(self):
+        track_id = Track.objects.create(title=self.wrong_title, artist=self.band).id
+        partial_data = {'title': self.right_title}  # , 'artist': self.band.id}
+        request = test.APIRequestFactory().patch(path='/track/', data=partial_data, format='json')
+        response = self.view(request, pk=track_id)
+
+        self.assertContains(response=response, text=self.right_title, count=1, status_code=status.HTTP_200_OK)
