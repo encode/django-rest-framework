@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers, fields, relations
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel, DefaultValueModel,
-    ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo, RESTFrameworkModel)
+    ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo, OptionalDateTimeModel, RESTFrameworkModel)
 from rest_framework.tests.models import BasicModelSerializer
 import datetime
 import pickle
@@ -127,6 +127,14 @@ class PositiveIntegerAsChoiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = HasPositiveIntegerAsChoice
         fields = ['some_integer']
+
+
+class OptionalDateTimeSerializer(serializers.ModelSerializer):
+    date_read = serializers.DateTimeField(source='date_read', required=False)
+
+    class Meta:
+        model = OptionalDateTimeModel
+        fields = ['text', 'date_read']
 
 
 class BasicTests(TestCase):
@@ -546,6 +554,10 @@ class ModelValidationTests(TestCase):
 
         self.assertTrue(photo_serializer.is_valid())
         self.assertTrue(photo_serializer.save())
+
+    def test_datetime_with_partial(self):
+        serializer = OptionalDateTimeSerializer(data={'text': 'blah', 'date_read': None}, partial=True)
+        self.assertEquals(True, serializer.is_valid())
 
 
 class RegexValidationTest(TestCase):
