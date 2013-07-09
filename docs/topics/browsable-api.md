@@ -24,8 +24,8 @@ To customize the default style, create a template called `rest_framework/api.htm
 **templates/rest_framework/api.html**
 
     {% extends "rest_framework/base.html" %}
-    
-    ...  # Override blocks with required customizations  
+
+    ...  # Override blocks with required customizations
 
 ### Overriding the default theme
 
@@ -96,7 +96,7 @@ You can add your site name or branding by including the branding block:
     {% block branding %}
         <h3 style="margin: 0 0 20px;">My Site Name</h3>
     {% endblock %}
-    
+
 You can also customize the style by adding the `bootstrap_theme` or `style` block similar to `api.html`.
 
 ### Advanced Customization
@@ -125,6 +125,28 @@ The context that's available to the template:
 
 For more advanced customization, such as not having a Bootstrap basis or tighter integration with the rest of your site, you can simply choose not to have `api.html` extend `base.html`.  Then the page content and capabilities are entirely up to you.
 
+#### Autocompletion
+
+When a `ChoiceField` has too many items, the browsable API rendering can become very slow because of all of the options loading. One solution is to replace the selector by an autocomplete widget for example using [django-autocomplete-light]. In addition to the default steps to set up your Autocomplete class, add the the following to the `api.html` template:
+
+    {% block script %}
+    {{ block.super }}
+    {% include 'autocomplete_light/static.html' %}
+    {% endblock %}
+
+And add the `autocomplete_light.ChoiceWidget` for your Autocomplete class to the serializer field.
+
+    import autocomplete_light
+
+    class BookSerializer(serializers.ModelSerializer):
+        author = serializers.ChoiceField(
+            widget=autocomplete_light.ChoiceWidget('AuthorAutocomplete')
+        )
+
+        class Meta:
+            model = Book
+
+
 [cite]: http://en.wikiquote.org/wiki/Alfred_North_Whitehead
 [drfreverse]: ../api-guide/reverse.md
 [ffjsonview]: https://addons.mozilla.org/en-US/firefox/addon/jsonview/
@@ -136,4 +158,4 @@ For more advanced customization, such as not having a Bootstrap basis or tighter
 [bswatch]: http://bootswatch.com/
 [bcomponents]: http://twitter.github.com/bootstrap/components.html
 [bcomponentsnav]: http://twitter.github.com/bootstrap/components.html#navbar
-
+[django-autocomplete-light]: https://github.com/yourlabs/django-autocomplete-light
