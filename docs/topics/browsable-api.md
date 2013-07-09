@@ -127,14 +127,16 @@ For more advanced customization, such as not having a Bootstrap basis or tighter
 
 #### Autocompletion
 
-When a `ChoiceField` has too many items, the browsable API rendering can become very slow because of all of the options loading. One solution is to replace the selector by an autocomplete widget for example using [django-autocomplete-light]. In addition to the default steps to set up your Autocomplete class, add the the following to the `api.html` template:
+When a `ChoiceField` has too many items, rendering the widget containing all the options can become very slow, and cause the browsable API rendering to perform poorly.  One solution is to replace the selector by an autocomplete widget, that only loads and renders a subset of the available options as needed.
+
+There are [a variety of packages for autocomplete widgets][autocomplete-packages], such as [django-autocomplete-light][django-autocomplete-light].  To setup `django-autocomplete-light`, follow the [installation documentation][django-autocomplete-light-install], add the the following to the `api.html` template:
 
     {% block script %}
     {{ block.super }}
     {% include 'autocomplete_light/static.html' %}
     {% endblock %}
 
-And add the `autocomplete_light.ChoiceWidget` for your Autocomplete class to the serializer field.
+You can now add the `autocomplete_light.ChoiceWidget` widget to the serializer field.
 
     import autocomplete_light
 
@@ -146,6 +148,13 @@ And add the `autocomplete_light.ChoiceWidget` for your Autocomplete class to the
         class Meta:
             model = Book
 
+---
+
+![Autocomplete][autocomplete-image]
+
+*Screenshot of the autocomplete-light widget*
+
+---
 
 [cite]: http://en.wikiquote.org/wiki/Alfred_North_Whitehead
 [drfreverse]: ../api-guide/reverse.md
@@ -158,4 +167,7 @@ And add the `autocomplete_light.ChoiceWidget` for your Autocomplete class to the
 [bswatch]: http://bootswatch.com/
 [bcomponents]: http://twitter.github.com/bootstrap/components.html
 [bcomponentsnav]: http://twitter.github.com/bootstrap/components.html#navbar
+[autocomplete-packages]: https://www.djangopackages.com/grids/g/auto-complete/
 [django-autocomplete-light]: https://github.com/yourlabs/django-autocomplete-light
+[django-autocomplete-light-install]: http://django-autocomplete-light.readthedocs.org/en/latest/#install
+[autocomplete-image]: ../img/autocomplete.png
