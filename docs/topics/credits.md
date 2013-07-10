@@ -146,6 +146,7 @@ The following people have helped make REST framework great.
 * Igor Kalat - [trwired]
 * Rudolf Olah - [omouse]
 * Gertjan Oude Lohuis - [gertjanol]
+* Matthias Jacob - [cyroxx]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -328,3 +329,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [trwired]: https://github.com/trwired
 [omouse]: https://github.com/omouse
 [gertjanol]: https://github.com/gertjanol
+[cyroxx]: https://github.com/cyroxx
