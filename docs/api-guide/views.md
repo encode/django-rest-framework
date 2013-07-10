@@ -137,11 +137,11 @@ The core of this functionality is the `api_view` decorator, which takes a list o
         return Response({"message": "Hello, world!"})
 
 
-This view will use the default renderers, parsers, authentication classes etc specified in the [settings](settings).
+This view will use the default renderers, parsers, authentication classes etc specified in the [settings].
 
 ## API policy decorators
 
-To override the default settings, REST framework provides a set of additional decorators which can be added to your views.  These must come *after* (below) the `@api_view` decorator.  For example, to create a view that uses a [throttle](throttling) to ensure it can only be called once per day by a particular user, use the `@throttle_classes` decorator, passing a list of throttle classes:
+To override the default settings, REST framework provides a set of additional decorators which can be added to your views.  These must come *after* (below) the `@api_view` decorator.  For example, to create a view that uses a [throttle][throttling] to ensure it can only be called once per day by a particular user, use the `@throttle_classes` decorator, passing a list of throttle classes:
 
     from rest_framework.decorators import api_view, throttle_classes
     from rest_framework.throttling import UserRateThrottle
