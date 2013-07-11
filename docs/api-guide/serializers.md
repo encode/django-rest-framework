@@ -308,6 +308,12 @@ By default, all the model fields on the class will be mapped to corresponding se
 
 Any relationships such as foreign keys on the model will be mapped to `PrimaryKeyRelatedField`.  Other models fields will be mapped to a corresponding serializer field.
 
+---
+
+**Note**: When validation is applied to a `ModelSerializer`, both the serializer fields, and their corresponding model fields must correctly validate.  If you have optional fields on your model, make sure to correctly set `blank=True` on the model field, as well as setting `required=False` on the serializer field.
+
+---
+
 ## Specifying which fields should be included
 
 If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.
