@@ -107,23 +107,25 @@ def permission_classes(permission_classes):
     return decorator
 
 
-def link(**kwargs):
+def link(endpoint=None, **kwargs):
     """
     Used to mark a method on a ViewSet that should be routed for GET requests.
     """
     def decorator(func):
         func.bind_to_methods = ['get']
         func.kwargs = kwargs
+        func.endpoint = endpoint or func.__name__
         return func
     return decorator
 
 
-def action(methods=['post'], **kwargs):
+def action(methods=['post'], endpoint=None, **kwargs):
     """
     Used to mark a method on a ViewSet that should be routed for POST requests.
     """
     def decorator(func):
         func.bind_to_methods = methods
         func.kwargs = kwargs
+        func.endpoint = endpoint or func.__name__
         return func
     return decorator

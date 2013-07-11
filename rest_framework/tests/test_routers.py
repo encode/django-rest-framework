@@ -30,6 +30,10 @@ class BasicViewSet(viewsets.ViewSet):
     def action3(self, request, *args, **kwargs):
         return Response({'method': 'action2'})
 
+    @action(endpoint='action-name')
+    def action4(self, request, *args, **kwargs):
+        return Response({'method': 'action4'})
+
     @link()
     def link1(self, request, *args, **kwargs):
         return Response({'method': 'link1'})
@@ -38,6 +42,10 @@ class BasicViewSet(viewsets.ViewSet):
     def link2(self, request, *args, **kwargs):
         return Response({'method': 'link2'})
 
+    @link(endpoint='link-name')
+    def link3(self, request, *args, **kwargs):
+        return Response({'method': 'link3'})
+    
 
 class TestSimpleRouter(TestCase):
     def setUp(self):
@@ -47,7 +55,8 @@ class TestSimpleRouter(TestCase):
         routes = self.router.get_routes(BasicViewSet)
         decorator_routes = routes[2:]
         # Make sure all these endpoints exist and none have been clobbered
-        for i, endpoint in enumerate(['action1', 'action2', 'action3', 'link1', 'link2']):
+        for i, endpoint in enumerate(['action1', 'action2', 'action3', 'action-name',
+                                      'link1', 'link2', 'link-name']):
             route = decorator_routes[i]
             # check url listing
             self.assertEqual(route.url,

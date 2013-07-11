@@ -48,6 +48,14 @@ The following URL pattern would additionally be generated:
 
 * URL pattern: `^users/{pk}/set_password/$`  Name: `'user-set-password'`
 
+You can customize endpoint name by supplying `endpoint` argument like this:
+
+    @action(endpoint='fancy-name')
+    def do_stuff(self, request, pk=None):
+        ...
+
+* URL pattern: `^users/{pk}/fancy-name/$`  Name: `'user-do-stuff'`
+
 # API Guide
 
 ## SimpleRouter
