@@ -60,6 +60,11 @@ class ReadOnlyManyToManyModel(RESTFrameworkModel):
     rel = models.ManyToManyField(Anchor)
 
 
+class OptionalDateTimeModel(RESTFrameworkModel):
+    text = models.CharField(max_length=100)
+    date_read = models.DateTimeField(null=True)
+
+
 # Model for regression test for #285
 
 class Comment(RESTFrameworkModel):
