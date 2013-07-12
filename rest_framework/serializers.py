@@ -317,7 +317,7 @@ class BaseSerializer(Field):
 
         # If the object has an "all" method, assume it's a relationship
         if is_simple_callable(getattr(obj, 'all', None)):
-            return [self.to_native(item) for item in obj.all()]
+            return self.many_to_native(obj.all())
 
         if obj is None:
             return None
@@ -328,7 +328,7 @@ class BaseSerializer(Field):
             many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict, six.text_type))
 
         if many:
-            return [self.to_native(item) for item in obj]
+            return self.many_to_native(obj)
         return self.to_native(obj)
 
     @property
@@ -385,7 +385,7 @@ class BaseSerializer(Field):
                                   PendingDeprecationWarning, stacklevel=2)
 
             if many:
-                self._data = [self.to_native(item) for item in obj]
+                self._data = self.many_to_native(obj)
             else:
                 self._data = self.to_native(obj)
 

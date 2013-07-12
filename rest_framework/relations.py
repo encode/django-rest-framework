@@ -133,7 +133,7 @@ class RelatedField(WritableField):
             return None
 
         if self.many:
-            return [self.to_native(item) for item in value.all()]
+            return self.many_to_native(value.all())
         return self.to_native(value)
 
     def field_from_native(self, data, files, field_name, into):
@@ -223,7 +223,7 @@ class PrimaryKeyRelatedField(RelatedField):
                 queryset = getattr(obj, self.source or field_name)
 
             # Forward relationship
-            return [self.to_native(item.pk) for item in queryset.all()]
+            return self.many_to_native(queryset.all(), lambda item: item.pk)
 
         # To-one relationship
         try:

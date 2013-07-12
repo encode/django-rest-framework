@@ -160,10 +160,16 @@ class Field(object):
         if is_protected_type(value):
             return value
         elif hasattr(value, '__iter__') and not isinstance(value, (dict, six.string_types)):
-            return [self.to_native(item) for item in value]
+            return self.many_to_native(value)
         elif isinstance(value, dict):
             return dict(map(self.to_native, (k, v)) for k, v in value.items())
         return smart_text(value)
+
+    def many_to_native(self, many_values, key_func=(lambda value: value)):
+        """
+        Return a list of many simple objects.
+        """
+        return [self.to_native(key_func(value)) for value in many_values]
 
     def attributes(self):
         """
