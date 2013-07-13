@@ -25,7 +25,9 @@ from rest_framework.reverse import reverse
 from rest_framework.urlpatterns import format_suffix_patterns
 
 
-Route = namedtuple('Route', ['key', 'url', 'mapping', 'name', 'initkwargs'])
+Route = namedtuple('Route', ['url', 'mapping', 'name', 'initkwargs'])
+DynamicDetailRoute = namedtuple('DynamicDetailRoute', ['url', 'name', 'initkwargs'])
+DynamicListRoute = namedtuple('DynamicListRoute', ['url', 'name', 'initkwargs'])
 
 
 def replace_methodname(format_string, methodname):
@@ -80,7 +82,6 @@ class SimpleRouter(BaseRouter):
     routes = [
         # List route.
         Route(
-            key='list',
             url=r'^{prefix}{trailing_slash}$',
             mapping={
                 'get': 'list',
@@ -92,18 +93,13 @@ class SimpleRouter(BaseRouter):
         # Dynamically generated list routes.
         # Generated using @list_action or @list_link decorators
         # on methods of the viewset.
-        Route(
-            key='collection',
+        DynamicListRoute(
             url=r'^{prefix}/{methodname}{trailing_slash}$',
-            mapping={
-                '{httpmethod}': '{methodname}',
-            },
             name='{basename}-{methodnamehyphen}',
             initkwargs={}
         ),
         # Detail route.
         Route(
-            key='detail',
             url=r'^{prefix}/{lookup}{trailing_slash}$',
             mapping={
                 'get': 'retrieve',
@@ -116,12 +112,8 @@ class SimpleRouter(BaseRouter):
         ),
         # Dynamically generated detail routes.
         # Generated using @action or @link decorators on methods of the viewset.
-        Route(
-            key='dynamic',
+        DynamicDetailRoute(
             url=r'^{prefix}/{lookup}/{methodname}{trailing_slash}$',
-            mapping={
-                '{httpmethod}': '{methodname}',
-            },
             name='{basename}-{methodnamehyphen}',
             initkwargs={}
         ),
@@ -154,7 +146,7 @@ class SimpleRouter(BaseRouter):
         Returns a list of the Route namedtuple.
         """
 
-        known_actions = flatten([route.mapping.values() for route in self.routes])
+        known_actions = flatten([route.mapping.values() for route in self.routes if isinstance(route, Route)])
 
         # Determine any `@action` or `@link` decorated methods on the viewset
         detail_routes = []
@@ -176,25 +168,23 @@ class SimpleRouter(BaseRouter):
 
         ret = []
         for route in self.routes:
-            if route.key == 'dynamic':
+            if isinstance(route, DynamicDetailRoute):
                 # Dynamic detail routes (@link or @action decorator)
                 for httpmethods, methodname in detail_routes:
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
                     ret.append(Route(
-                        key=route.key,
                         url=replace_methodname(route.url, methodname),
                         mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
                         name=replace_methodname(route.name, methodname),
                         initkwargs=initkwargs,
                     ))
-            elif route.key == 'collection':
+            elif isinstance(route, DynamicListRoute):
                 # Dynamic list routes (@list_link or @list_action decorator)
                 for httpmethods, methodname in list_routes:
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
                     ret.append(Route(
-                        key=route.key,
                         url=replace_methodname(route.url, methodname),
                         mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
                         name=replace_methodname(route.name, methodname),
