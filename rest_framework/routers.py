@@ -89,8 +89,8 @@ class SimpleRouter(BaseRouter):
             name='{basename}-list',
             initkwargs={'suffix': 'List'}
         ),
-        # Dynamically generated collection routes.
-        # Generated using @collection_action or @collection_link decorators
+        # Dynamically generated list routes.
+        # Generated using @list_action or @list_link decorators
         # on methods of the viewset.
         Route(
             key='collection',
@@ -114,7 +114,7 @@ class SimpleRouter(BaseRouter):
             name='{basename}-detail',
             initkwargs={'suffix': 'Instance'}
         ),
-        # Dynamically generated routes.
+        # Dynamically generated detail routes.
         # Generated using @action or @link decorators on methods of the viewset.
         Route(
             key='dynamic',
@@ -157,27 +157,28 @@ class SimpleRouter(BaseRouter):
         known_actions = flatten([route.mapping.values() for route in self.routes])
 
         # Determine any `@action` or `@link` decorated methods on the viewset
-        collection_routes = []
-        dynamic_routes = []
+        detail_routes = []
+        list_routes = []
         for methodname in dir(viewset):
             attr = getattr(viewset, methodname)
             httpmethods = getattr(attr, 'bind_to_methods', None)
-            collection = getattr(attr, 'collection', False)
+            detail = getattr(attr, 'detail', True)
             if httpmethods:
                 if methodname in known_actions:
-                    raise ImproperlyConfigured('Cannot use @action or @link decorator on '
-                                               'method "%s" as it is an existing route' % methodname)
+                    raise ImproperlyConfigured('Cannot use @action, @link, @list_action '
+                                               'or @list_link decorator on method "%s" '
+                                               'as it is an existing route' % methodname)
                 httpmethods = [method.lower() for method in httpmethods]
-                if collection:
-                    collection_routes.append((httpmethods, methodname))
+                if detail:
+                    detail_routes.append((httpmethods, methodname))
                 else:
-                    dynamic_routes.append((httpmethods, methodname))
+                    list_routes.append((httpmethods, methodname))
 
         ret = []
         for route in self.routes:
             if route.key == 'dynamic':
-                # Dynamic routes (@link or @action decorator)
-                for httpmethods, methodname in dynamic_routes:
+                # Dynamic detail routes (@link or @action decorator)
+                for httpmethods, methodname in detail_routes:
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
                     ret.append(Route(
@@ -188,8 +189,8 @@ class SimpleRouter(BaseRouter):
                         initkwargs=initkwargs,
                     ))
             elif route.key == 'collection':
-                # Dynamic routes (@collection_link or @collection_action decorator)
-                for httpmethods, methodname in collection_routes:
+                # Dynamic list routes (@list_link or @list_action decorator)
+                for httpmethods, methodname in list_routes:
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
                     ret.append(Route(

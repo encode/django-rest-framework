@@ -109,11 +109,11 @@ def permission_classes(permission_classes):
 
 def link(**kwargs):
     """
-    Used to mark a method on a ViewSet that should be routed for GET requests.
+    Used to mark a method on a ViewSet that should be routed for detail GET requests.
     """
     def decorator(func):
         func.bind_to_methods = ['get']
-        func.collection = False
+        func.detail = True
         func.kwargs = kwargs
         return func
     return decorator
@@ -121,35 +121,35 @@ def link(**kwargs):
 
 def action(methods=['post'], **kwargs):
     """
-    Used to mark a method on a ViewSet that should be routed for POST requests.
+    Used to mark a method on a ViewSet that should be routed for detail POST requests.
     """
     def decorator(func):
         func.bind_to_methods = methods
-        func.collection = False
+        func.detail = True
         func.kwargs = kwargs
         return func
     return decorator
 
 
-def collection_link(**kwargs):
+def list_link(**kwargs):
     """
     Used to mark a method on a ViewSet that should be routed for GET requests.
     """
     def decorator(func):
         func.bind_to_methods = ['get']
-        func.collection = True
+        func.detail = False
         func.kwargs = kwargs
         return func
     return decorator
 
 
-def collection_action(methods=['post'], **kwargs):
+def list_action(methods=['post'], **kwargs):
     """
     Used to mark a method on a ViewSet that should be routed for POST requests.
     """
     def decorator(func):
         func.bind_to_methods = methods
-        func.collection = True
+        func.detail = False
         func.kwargs = kwargs
         return func
     return decorator

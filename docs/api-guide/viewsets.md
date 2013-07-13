@@ -92,15 +92,15 @@ The default routers included with REST framework will provide routes for a stand
         def destroy(self, request, pk=None):
             pass
 
-If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@link`, `@action`, `@collection_link`, or `@collection_action` decorators.  The `@link` and `@collection_link` decorators will route `GET` requests, and the `@action` and `@collection_action` decorators will route `POST` requests.
+If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@link`, `@action`, `@list_link`, or `@list_action` decorators.  The `@link` and `@list_link` decorators will route `GET` requests, and the `@action` and `@list_action` decorators will route `POST` requests.
 
-The `@link` and `@action` decorators contain `pk` in their URL pattern and are intended for methods which require a single instance. The `@collection_link` and `@collection_action` decorators are intended for methods which operate on a collection of objects.
+The `@link` and `@action` decorators contain `pk` in their URL pattern and are intended for methods which require a single instance. The `@list_link` and `@list_action` decorators are intended for methods which operate on a list of objects.
 
 For example:
 
     from django.contrib.auth.models import User
     from rest_framework import viewsets
-    from rest_framework.decorators import action
+    from rest_framework.decorators import action, list_link
     from rest_framework.response import Response
     from myapp.serializers import UserSerializer, PasswordSerializer
 
@@ -123,7 +123,7 @@ For example:
                 return Response(serializer.errors,
                                 status=status.HTTP_400_BAD_REQUEST)
 
-        @collection_link()
+        @list_link()
         def recent_users(self, request):
             recent_users = User.objects.all().order('-last_login')
             page = self.paginate_queryset(recent_users)
@@ -136,7 +136,7 @@ The decorators can additionally take extra arguments that will be set for the ro
         def set_password(self, request, pk=None):
            ...
 
-The `@action` and `@collection_action` decorators will route `POST` requests by default, but may also accept other HTTP methods, by using the `methods` argument.  For example:
+The `@action` and `@list_action` decorators will route `POST` requests by default, but may also accept other HTTP methods, by using the `methods` argument.  For example:
 
         @action(methods=['POST', 'DELETE'])
         def unset_password(self, request, pk=None):
