@@ -205,9 +205,9 @@ You may need to provide custom `ViewSet` classes that do not have the full set o
 
 To create a base viewset class that provides `create`, `list` and `retrieve` operations, inherit from `GenericViewSet`, and mixin the required actions:
 
-    class CreateListRetrieveViewSet(mixins.CreateMixin,
-                                    mixins.ListMixin,
-                                    mixins.RetrieveMixin,
+    class CreateListRetrieveViewSet(mixins.CreateModelMixin,
+                                    mixins.ListModelMixin,
+                                    mixins.RetrieveModelMixin,
                                     viewsets.GenericViewSet):
         """
         A viewset that provides `retrieve`, `update`, and `list` actions.
