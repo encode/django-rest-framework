@@ -213,8 +213,6 @@ Nested relationships can be expressed by using serializers as fields.
 
 If the field is used to represent a to-many relationship, you should add the `many=True` flag to the serializer field.
 
-Note that nested relationships are currently read-only.  For read-write relationships, you should use a flat relational style.
-
 ## Example
 
 For example, the following serializer:
