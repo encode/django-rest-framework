@@ -91,7 +91,7 @@ class SimpleRouter(BaseRouter):
             initkwargs={'suffix': 'List'}
         ),
         # Dynamically generated list routes.
-        # Generated using @list_action or @list_link decorators
+        # Generated using @list_route decorator
         # on methods of the viewset.
         DynamicListRoute(
             url=r'^{prefix}/{methodname}{trailing_slash}$',
@@ -111,7 +111,7 @@ class SimpleRouter(BaseRouter):
             initkwargs={'suffix': 'Instance'}
         ),
         # Dynamically generated detail routes.
-        # Generated using @action or @link decorators on methods of the viewset.
+        # Generated using @detail_route decorator on methods of the viewset.
         DynamicDetailRoute(
             url=r'^{prefix}/{lookup}/{methodname}{trailing_slash}$',
             name='{basename}-{methodnamehyphen}',
@@ -148,7 +148,7 @@ class SimpleRouter(BaseRouter):
 
         known_actions = flatten([route.mapping.values() for route in self.routes if isinstance(route, Route)])
 
-        # Determine any `@action` or `@link` decorated methods on the viewset
+        # Determine any `@detail_route` or `@list_route` decorated methods on the viewset
         detail_routes = []
         list_routes = []
         for methodname in dir(viewset):
@@ -157,8 +157,8 @@ class SimpleRouter(BaseRouter):
             detail = getattr(attr, 'detail', True)
             if httpmethods:
                 if methodname in known_actions:
-                    raise ImproperlyConfigured('Cannot use @action, @link, @list_action '
-                                               'or @list_link decorator on method "%s" '
+                    raise ImproperlyConfigured('Cannot use @detail_route or @list_route '
+                                               'decorators on method "%s" '
                                                'as it is an existing route' % methodname)
                 httpmethods = [method.lower() for method in httpmethods]
                 if detail:
@@ -169,7 +169,7 @@ class SimpleRouter(BaseRouter):
         ret = []
         for route in self.routes:
             if isinstance(route, DynamicDetailRoute):
-                # Dynamic detail routes (@link or @action decorator)
+                # Dynamic detail routes (@detail_route decorator)
                 for httpmethods, methodname in detail_routes:
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
@@ -180,7 +180,7 @@ class SimpleRouter(BaseRouter):
                         initkwargs=initkwargs,
                     ))
             elif isinstance(route, DynamicListRoute):
-                # Dynamic list routes (@list_link or @list_action decorator)
+                # Dynamic list routes (@list_route decorator)
                 for httpmethods, methodname in list_routes:
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
