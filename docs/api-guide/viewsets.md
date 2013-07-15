@@ -99,7 +99,8 @@ For example:
     from django.contrib.auth.models import User
     from rest_framework import viewsets
     from rest_framework.decorators import action
-    from myapp.serializers import UserSerializer
+    from rest_framework.response import Response
+    from myapp.serializers import UserSerializer, PasswordSerializer
 
     class UserViewSet(viewsets.ModelViewSet):
         """
@@ -176,7 +177,7 @@ Note that you can use any of the standard attributes or method overrides provide
         permission_classes = [IsAccountAdminOrReadOnly]
 
         def get_queryset(self):
-            return request.user.accounts.all()
+            return self.request.user.accounts.all()
 
 Also note that although this class provides the complete set of create/list/retrieve/update/destroy actions by default, you can restrict the available operations by using the standard permission classes.
 
