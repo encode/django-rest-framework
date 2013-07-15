@@ -167,6 +167,36 @@ As usual CSRF validation will only apply to any session authenticated views.  Th
 
 ---
 
+# Test cases
+
+REST framework includes the following test case classes, that mirror the existing Django test case classes, but use `APIClient` instead of Django's default `Client`.
+
+* `APISimpleTestCase`
+* `APITransactionTestCase`
+* `APITestCase`
+* `APILiveServerTestCase`
+
+## Example
+
+You can use any of REST framework's test case classes as you would for the regular Django test case classes.  The `self.client` attribute will be an `APIClient` instance.
+
+    from django.core.urlresolvers import reverse
+    from rest_framework import status
+    from rest_framework.test import APITestCase 
+
+    class AccountTests(APITestCase):
+        def test_create_account(self):
+            """
+            Ensure we can create a new account object.
+            """
+            url = reverse('account-list')
+            data = {'name': 'DabApps'}
+            response = self.client.post(url, data, format='json')
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+            self.assertEqual(response.data, data)
+
+---
+
 # Testing responses
 
 ## Checking the response data
