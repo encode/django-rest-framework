@@ -187,7 +187,7 @@ Similarly if a nested representation should be a list of items, you should pass 
 
 Validation of nested objects will work the same as before.  Errors with nested objects will be nested under the field name of the nested object.
 
-    serializer = CommentSerializer(comment, data={'user': {'email': 'foobar', 'user': 'doe'}, 'content': 'baz'})
+    serializer = CommentSerializer(comment, data={'user': {'email': 'foobar', 'username': 'doe'}, 'content': 'baz'})
     serializer.is_valid()
     # False
     serializer.errors
