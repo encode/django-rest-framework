@@ -3,6 +3,7 @@
 # Note that we import as `DjangoRequestFactory` and `DjangoClient` in order
 # to make it harder for the user to import the wrong thing without realizing.
 from __future__ import unicode_literals
+import django
 from django.conf import settings
 from django.test.client import Client as DjangoClient
 from django.test.client import ClientHandler
@@ -140,10 +141,6 @@ class APIClient(APIRequestFactory, DjangoClient):
         return super(APIClient, self).request(**kwargs)
 
 
-class APISimpleTestCase(testcases.SimpleTestCase):
-    client_class = APIClient
-
-
 class APITransactionTestCase(testcases.TransactionTestCase):
     client_class = APIClient
 
@@ -152,5 +149,9 @@ class APITestCase(testcases.TestCase):
     client_class = APIClient
 
 
-class APILiveServerTestCase(testcases.LiveServerTestCase):
-    client_class = APIClient
+if django.VERSION >= (1, 4):
+    class APISimpleTestCase(testcases.SimpleTestCase):
+        client_class = APIClient
+
+    class APILiveServerTestCase(testcases.LiveServerTestCase):
+        client_class = APIClient
