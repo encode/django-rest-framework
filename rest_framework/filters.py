@@ -23,6 +23,17 @@ class BaseFilterBackend(object):
         raise NotImplementedError(".filter_queryset() must be overridden.")
 
 
+class SimpleDjangoFilterBackend(BaseFilterBackend):
+    """
+    Really simple class that allows straightforward Django ORM filtering.
+    """
+    def filter_queryset(self, request, queryset, view):
+        params = {}
+        for k, v in request.QUERY_PARAMS.iteritems():
+            params.update({k:v[0]})
+        return queryset.filter(**params)
+
+
 class DjangoFilterBackend(BaseFilterBackend):
     """
     A filter backend that uses django-filter.
