@@ -32,7 +32,7 @@ class SimpleDjangoFilterBackend(BaseFilterBackend):
         if filter_fields is None:
             filter_fields = request.QUERY_PARAMS
         # reduce relations to entry point only
-        fields = [field.split('__')[0] for field in filter_fields.keys()]
+        fields = [field.split('__')[0] for field in filter_fields]
         params = {}
         for k, v in request.QUERY_PARAMS.iteritems():
             # if entry point matches, collect the original key
