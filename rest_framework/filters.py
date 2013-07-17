@@ -28,7 +28,7 @@ class SimpleDjangoFilterBackend(BaseFilterBackend):
     Really simple class that allows straightforward Django ORM filtering.
     """
     def filter_queryset(self, request, queryset, view):
-        filter_fields = getattr('filter_fields', view, None)
+        filter_fields = getattr(view, 'filter_fields', None)
         if filter_fields is None:
             filter_fields = request.QUERY_PARAMS.keys()
         # reduce relations to entry point only
