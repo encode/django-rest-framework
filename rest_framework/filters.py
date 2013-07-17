@@ -30,7 +30,7 @@ class SimpleDjangoFilterBackend(BaseFilterBackend):
     def filter_queryset(self, request, queryset, view):
         filter_fields = getattr(view, 'filter_fields', None)
         if filter_fields is None:
-            filter_fields = request.QUERY_PARAMS
+            filter_fields = request.QUERY_PARAMS.keys()
         # reduce relations to entry point only
         fields = [field.split('__')[0] for field in filter_fields]
         params = {}
