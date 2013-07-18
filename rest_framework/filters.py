@@ -37,7 +37,7 @@ class SimpleDjangoFilterBackend(BaseFilterBackend):
         for k, v in request.QUERY_PARAMS.iteritems():
             # if entry point matches, collect the original key
             if k.split('__')[0] in fields:
-                params.update({k: v[0]})
+                params.update({k: v[0] if isinstance(v, list) else v})
         return queryset.filter(**params)
 
 
