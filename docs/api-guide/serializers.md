@@ -177,7 +177,7 @@ If a nested representation may optionally accept the `None` value you should pas
         content = serializers.CharField(max_length=200)
         created = serializers.DateTimeField()
 
-Similarly if a nested representation should be a list of items, you should the `many=True` flag to the nested serialized.
+Similarly if a nested representation should be a list of items, you should pass the `many=True` flag to the nested serialized.
 
     class CommentSerializer(serializers.Serializer):
         user = UserSerializer(required=False)
@@ -185,11 +185,13 @@ Similarly if a nested representation should be a list of items, you should the `
         content = serializers.CharField(max_length=200)
         created = serializers.DateTimeField()
 
----
+Validation of nested objects will work the same as before.  Errors with nested objects will be nested under the field name of the nested object.
 
-**Note**: Nested serializers are only suitable for read-only representations, as there are cases where they would have ambiguous or non-obvious behavior if used when updating instances.  For read-write representations you should always use a flat representation, by using one of the `RelatedField` subclasses.
-
----
+    serializer = CommentSerializer(comment, data={'user': {'email': 'foobar', 'username': 'doe'}, 'content': 'baz'})
+    serializer.is_valid()
+    # False
+    serializer.errors
+    # {'user': {'email': [u'Enter a valid e-mail address.']}, 'created': [u'This field is required.']}
 
 ## Dealing with multiple objects
 
@@ -293,8 +295,7 @@ You can provide arbitrary additional context by passing a `context` argument whe
 
 The context dictionary can be used within any serializer field logic, such as a custom `.to_native()` method, by accessing the `self.context` attribute.
 
----
-
+-
 # ModelSerializer
 
 Often you'll want serializer classes that map closely to model definitions.
@@ -330,6 +331,8 @@ The default `ModelSerializer` uses primary keys for relationships, but you can a
             depth = 1
 
 The `depth` option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.
+
+If you want to customize the way the serialization is done (e.g. using `allow_add_remove`) you'll need to define the field yourself.
 
 ## Specifying which fields should be read-only 
 
