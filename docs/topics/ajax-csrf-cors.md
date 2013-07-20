@@ -23,7 +23,7 @@ To guard against these type of attacks, you need to do two things:
 
 If you're using `SessionAuthentication` you'll need to include valid CSRF tokens for any `POST`, `PUT`, `PATCH` or `DELETE` operations.
 
-The Django documentation describes how to [include CSRF tokens in AJAX requests][csrf-ajax].
+In order to make AJAX requests, you need to include CSRF token in the HTTP header, as [described in the Django documentation][csrf-ajax].
 
 ## CORS
 
