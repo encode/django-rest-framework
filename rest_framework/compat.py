@@ -536,6 +536,8 @@ try:
         # Any other supported version does use timezone aware datetimes
         from django.utils.timezone import now as provider_now
 except ImportError:
+    import traceback
+    traceback.print_exc()
     oauth2_provider = None
     oauth2_provider_models = None
     oauth2_provider_forms = None
