@@ -494,7 +494,7 @@ class CustomValidationTests(TestCase):
         }
         serializer = self.CommentSerializerWithFieldValidator(data=wrong_data)
         self.assertFalse(serializer.is_valid())
-        self.assertEqual(serializer.errors, {'email': ['Enter a valid e-mail address.']})
+        self.assertEqual(serializer.errors, {'email': ['Enter a valid email address.']})
 
 
 class PositiveIntegerAsChoiceTests(TestCase):
