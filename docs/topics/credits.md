@@ -149,6 +149,7 @@ The following people have helped make REST framework great.
 * Matthias Jacob - [cyroxx]
 * Pavel Zinovkin - [pzinovkin]
 * Will Kahn-Greene - [willkg]
+* Kevin Brown - [kevin-brown]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -334,3 +335,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [cyroxx]: https://github.com/cyroxx
 [pzinovkin]: https://github.com/pzinovkin
 [willkg]: https://github.com/willkg
+[kevin-brown]: https://github.com/kevin-brown

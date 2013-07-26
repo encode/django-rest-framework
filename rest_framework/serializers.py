@@ -690,7 +690,7 @@ class ModelSerializer(Serializer):
             assert field_name in ret, \
                 "Noexistant field '%s' specified in `read_only_fields` " \
                 "on serializer '%s'." % \
-                (self.__class__.__name__, field_name)
+                (field_name, self.__class__.__name__)
             ret[field_name].read_only = True
 
         return ret
