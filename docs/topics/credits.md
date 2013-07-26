@@ -148,6 +148,7 @@ The following people have helped make REST framework great.
 * Gertjan Oude Lohuis - [gertjanol]
 * Matthias Jacob - [cyroxx]
 * Pavel Zinovkin - [pzinovkin]
+* Will Kahn-Greene - [willkg]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -332,3 +333,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [gertjanol]: https://github.com/gertjanol
 [cyroxx]: https://github.com/cyroxx
 [pzinovkin]: https://github.com/pzinovkin
+[willkg]: https://github.com/willkg
