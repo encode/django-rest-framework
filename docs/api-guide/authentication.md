@@ -121,7 +121,7 @@ To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in y
         'rest_framework.authtoken'
     )
     
-Make sure to run `manage.py syncdb` after changing your settings.
+Make sure to run `manage.py syncdb` after changing your settings. The `authtoken` database tables are managed by south (see [Schema migrations](#schema-migrations) below).
 
 You'll also need to create tokens for your users.
 
@@ -203,7 +203,7 @@ You can do so by inserting a `needed_by` attribute in your user migration:
 
 For more details, see the [south documentation on dependencies][south-dependencies].
 
-Also not that if you're using a `post_save` signal to create tokens, then the first time you create the database tables, you'll need to ensure any migrations are run prior to creating any superusers.  For example:
+Also note that if you're using a `post_save` signal to create tokens, then the first time you create the database tables, you'll need to ensure any migrations are run prior to creating any superusers.  For example:
 
     python manage.py syncdb --noinput  # Won't create a superuser just yet, due to `--noinput`.
     python manage.py migrate
