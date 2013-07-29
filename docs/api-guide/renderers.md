@@ -217,6 +217,14 @@ Renders data into HTML for the Browsable API.  This renderer will determine whic
 
 **.charset**: `utf-8`
 
+#### Customizing BrowsableAPIRenderer
+
+By default the response content will be rendered with the highest priority renderer apart from `BrowseableAPIRenderer`.  If you need to customize this behavior, for example to use HTML as the default return format, but use JSON in the browsable API, you can do so by overriding the `get_default_renderer()` method.  For example:
+
+    class CustomBrowsableAPIRenderer(BrowsableAPIRenderer):
+        def get_default_renderer(self, view):
+            return JSONRenderer()
+
 ## MultiPartRenderer
 
 This renderer is used for rendering HTML multipart form data.  **It is not suitable as a response renderer**, but is instead used for creating test requests, using REST framework's [test client and test request factory][testing].
