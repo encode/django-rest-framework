@@ -121,7 +121,7 @@ To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in y
         'rest_framework.authtoken'
     )
     
-Make sure to run `manage.py syncdb` after changing your settings.
+Make sure to run `manage.py syncdb` after changing your settings. The `authtoken` database tables are managed by south (see [Schema migrations](#schema-migrations) below).
 
 You'll also need to create tokens for your users.
 
