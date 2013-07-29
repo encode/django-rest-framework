@@ -512,7 +512,7 @@ class EmailField(CharField):
     form_field_class = forms.EmailField
 
     default_error_messages = {
-        'invalid': _('Enter a valid e-mail address.'),
+        'invalid': _('Enter a valid email address.'),
     }
     default_validators = [validators.validate_email]
 

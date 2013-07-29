@@ -147,6 +147,10 @@ The following people have helped make REST framework great.
 * Rudolf Olah - [omouse]
 * Gertjan Oude Lohuis - [gertjanol]
 * Matthias Jacob - [cyroxx]
+* Pavel Zinovkin - [pzinovkin]
+* Will Kahn-Greene - [willkg]
+* Kevin Brown - [kevin-brown]
+* Rodrigo Martell - [coderigo]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -330,3 +334,7 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [omouse]: https://github.com/omouse
 [gertjanol]: https://github.com/gertjanol
 [cyroxx]: https://github.com/cyroxx
+[pzinovkin]: https://github.com/pzinovkin
+[coderigo]: https://github.com/coderigo
+[willkg]: https://github.com/willkg
+[kevin-brown]: https://github.com/kevin-brown
