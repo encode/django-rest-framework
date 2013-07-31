@@ -121,7 +121,7 @@ To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in y
         'rest_framework.authtoken'
     )
     
-Make sure to run `manage.py syncdb` after changing your settings.
+Make sure to run `manage.py syncdb` after changing your settings. The `authtoken` database tables are managed by south (see [Schema migrations](#schema-migrations) below).
 
 You'll also need to create tokens for your users.
 
@@ -184,9 +184,11 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
 
 Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.  If you need a customized version of the `obtain_auth_token` view, you can do so by overriding the `ObtainAuthToken` view class, and using that in your url conf instead.
 
-#### Custom user models
+#### Schema migrations
 
-The `rest_framework.authtoken` app includes a south migration that will create the authtoken table.   If you're using a [custom user model][custom-user-model] you'll need to make sure that any initial migration that creates the user table runs before the authtoken table is created.
+The `rest_framework.authtoken` app includes a south migration that will create the authtoken table.
+
+If you're using a [custom user model][custom-user-model] you'll need to make sure that any initial migration that creates the user table runs before the authtoken table is created.
 
 You can do so by inserting a `needed_by` attribute in your user migration:
 
@@ -200,6 +202,12 @@ You can do so by inserting a `needed_by` attribute in your user migration:
             ...
 
 For more details, see the [south documentation on dependencies][south-dependencies].
+
+Also note that if you're using a `post_save` signal to create tokens, then the first time you create the database tables, you'll need to ensure any migrations are run prior to creating any superusers.  For example:
+
+    python manage.py syncdb --noinput  # Won't create a superuser just yet, due to `--noinput`.
+    python manage.py migrate
+    python manage.py createsuperuser
 
 ## SessionAuthentication
 

@@ -64,6 +64,20 @@ def clone_request(request, method):
     return ret
 
 
+class ForcedAuthentication(object):
+    """
+    This authentication class is used if the test client or request factory
+    forcibly authenticated the request.
+    """
+
+    def __init__(self, force_user, force_token):
+        self.force_user = force_user
+        self.force_token = force_token
+
+    def authenticate(self, request):
+        return (self.force_user, self.force_token)
+
+
 class Request(object):
     """
     Wrapper allowing to enhance a standard `HttpRequest` instance.
@@ -97,6 +111,12 @@ class Request(object):
             self.parser_context = {}
         self.parser_context['request'] = self
         self.parser_context['encoding'] = request.encoding or settings.DEFAULT_CHARSET
+
+        force_user = getattr(request, '_force_auth_user', None)
+        force_token = getattr(request, '_force_auth_token', None)
+        if (force_user is not None or force_token is not None):
+            forced_auth = ForcedAuthentication(force_user, force_token)
+            self.authenticators = (forced_auth,)
 
     def _default_negotiator(self):
         return api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS()

@@ -308,6 +308,12 @@ By default, all the model fields on the class will be mapped to corresponding se
 
 Any relationships such as foreign keys on the model will be mapped to `PrimaryKeyRelatedField`.  Other models fields will be mapped to a corresponding serializer field.
 
+---
+
+**Note**: When validation is applied to a `ModelSerializer`, both the serializer fields, and their corresponding model fields must correctly validate.  If you have optional fields on your model, make sure to correctly set `blank=True` on the model field, as well as setting `required=False` on the serializer field.
+
+---
+
 ## Specifying which fields should be included
 
 If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.
@@ -423,6 +429,49 @@ You can create customized subclasses of `ModelSerializer` or `HyperlinkedModelSe
 
 Doing so should be considered advanced usage, and will only be needed if you have some particular serializer requirements that you often need to repeat.
 
+## Dynamically modifiying fields
+
+Once a serializer has been initialized, the dictionary of fields that are set on the serializer may be accessed using the `.fields` attribute.  Accessing and modifying this attribute allows you to dynamically modify the serializer.
+
+Modifying the `fields` argument directly allows you to do interesting things such as changing the arguments on serializer fields at runtime, rather than at the point of declaring the serializer.
+
+### Example
+
+For example, if you wanted to be able to set which fields should be used by a serializer at the point of initializing it, you could create a serializer class like so:
+
+    class DynamicFieldsModelSerializer(serializers.ModelSerializer):
+        """
+        A ModelSerializer that takes an additional `fields` argument that
+        controls which fields should be displayed.
+        """
+
+        def __init__(self, *args, **kwargs):
+            # Don't pass the 'fields' arg up to the superclass
+            fields = kwargs.pop('fields', None)
+            
+            # Instatiate the superclass normally
+            super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
+    
+            if fields:
+                # Drop any fields that are not specified in the `fields` argument.
+                allowed = set(fields)
+                existing = set(self.fields.keys())
+                for field_name in existing - allowed:
+                    self.fields.pop(field_name)
+
+This would then allow you to do the following:
+
+    >>> class UserSerializer(DynamicFieldsModelSerializer):
+    >>>     class Meta:
+    >>>         model = User
+    >>>         fields = ('id', 'username', 'email')
+    >>>
+    >>> print UserSerializer(user)
+    {'id': 2, 'username': 'jonwatts', 'email': 'jon@example.com'}
+    >>>
+    >>> print UserSerializer(user, fields=('id', 'email'))
+    {'id': 2, 'email': 'jon@example.com'}
+
 ## Customising the default fields
 
 The `field_mapping` attribute is a dictionary that maps model classes to serializer classes.  Overriding the attribute will let you set a different set of default serializer classes. 
@@ -457,7 +506,7 @@ Note that the `model_field` argument will be `None` for reverse relationships.  
 
 Returns the field instance that should be used for non-relational, non-pk fields.
 
-## Example
+### Example
 
 The following custom model serializer could be used as a base class for model serializers that should always exclude the pk by default.
 

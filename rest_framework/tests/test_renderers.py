@@ -4,19 +4,17 @@ from __future__ import unicode_literals
 from decimal import Decimal
 from django.core.cache import cache
 from django.test import TestCase
-from django.test.client import RequestFactory
 from django.utils import unittest
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import status, permissions
-from rest_framework.compat import yaml, etree, patterns, url, include
+from rest_framework.compat import yaml, etree, patterns, url, include, six, StringIO
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
     XMLRenderer, JSONPRenderer, BrowsableAPIRenderer, UnicodeJSONRenderer
 from rest_framework.parsers import YAMLParser, XMLParser
 from rest_framework.settings import api_settings
-from rest_framework.compat import StringIO
-from rest_framework.compat import six
+from rest_framework.test import APIRequestFactory
 import datetime
 import pickle
 import re
@@ -121,7 +119,7 @@ class POSTDeniedView(APIView):
 class DocumentingRendererTests(TestCase):
     def test_only_permitted_forms_are_displayed(self):
         view = POSTDeniedView.as_view()
-        request = RequestFactory().get('/')
+        request = APIRequestFactory().get('/')
         response = view(request).render()
         self.assertNotContains(response, '>POST<')
         self.assertContains(response, '>PUT<')

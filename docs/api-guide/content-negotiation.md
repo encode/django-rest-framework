@@ -43,7 +43,11 @@ This is a valid approach as the HTTP spec deliberately underspecifies how a serv
 
 It's unlikely that you'll want to provide a custom content negotiation scheme for REST framework, but you can do so if needed.  To implement a custom content negotiation scheme override `BaseContentNegotiation`.
 
-REST framework's content negotiation classes handle selection of both the appropriate parser for the request, and the appropriate renderer for the response,  so you should implement both the `.select_parser(request, parsers)` and `.select_renderer(request, renderers, format_suffix)` methods.
+REST framework's content negotiation classes handle selection of both the appropriate parser for the request, and the appropriate renderer for the response, so you should implement both the `.select_parser(request, parsers)` and `.select_renderer(request, renderers, format_suffix)` methods.
+
+The `select_parser()` method should return one of the parser instances from the list of available parsers, or `None` if none of the parsers can handle the incoming request.
+
+The `select_renderer()` method should return a two-tuple of (renderer instance, media type), or raise a `NotAcceptable` exception.
 
 ## Example
 
@@ -61,6 +65,27 @@ request when selecting the appropriate parser or renderer.
             """
             Select the first renderer in the `.renderer_classes` list.
             """
-            return renderers[0]
+            return (renderers[0], renderers[0].media_type)
+
+## Setting the content negotiation
+
+The default content negotiation class may be set globally, using the `DEFAULT_CONTENT_NEGOTIATION_CLASS` setting.  For example, the following settings would use our example `IgnoreClientContentNegotiation` class.
+
+    REST_FRAMEWORK = {
+        'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'myapp.negotiation.IgnoreClientContentNegotiation',
+    }
+
+You can also set the content negotiation used for an individual view, or viewset, using the `APIView` class based views.
+
+    class NoNegotiationView(APIView):
+        """
+        An example view that does not perform content negotiation.
+        """
+        content_negotiation_class = IgnoreClientContentNegotiation
+
+        def get(self, request, format=None):
+            return Response({
+                'accepted media type': request.accepted_renderer.media_type
+            })
 
 [accept-header]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html

@@ -55,7 +55,6 @@ setup(
     name='djangorestframework',
     version=version,
     url='http://django-rest-framework.org',
-    download_url='http://pypi.python.org/pypi/rest_framework/',
     license='BSD',
     description='Web APIs for Django, made easy.',
     author='Tom Christie',

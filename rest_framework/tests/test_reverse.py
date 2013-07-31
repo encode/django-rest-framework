@@ -1,10 +1,10 @@
 from __future__ import unicode_literals
 from django.test import TestCase
-from django.test.client import RequestFactory
 from rest_framework.compat import patterns, url
 from rest_framework.reverse import reverse
+from rest_framework.test import APIRequestFactory
 
-factory = RequestFactory()
+factory = APIRequestFactory()
 
 
 def null_view(request):
