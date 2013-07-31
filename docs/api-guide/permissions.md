@@ -196,7 +196,7 @@ The following third party packages are also available.
 
 ## DRF Any Permissions
 
-The [DRF Any Permissions][drf-any-permissions] packages provides a different permission behavior in contrast to the REST framework.  Only one of the given permissions have to be true in order to get access to the view.
+The [DRF Any Permissions][drf-any-permissions] packages provides a different permission behavior in contrast to the REST framework.  Only one of the given permissions has to be true in order to get access to the view.
 
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
