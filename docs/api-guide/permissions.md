@@ -188,6 +188,16 @@ Note that the generic views will check the appropriate object level permissions,
 
 Also note that the generic views will only check the object-level permissions for views that retrieve a single model instance.  If you require object-level filtering of list views, you'll need to filter the queryset separately.  See the [filtering documentation][filtering] for more details.
 
+---
+
+# Third party packages
+
+The following third party packages are also available.
+
+## DRF Any Permissions
+
+The [DRF Any Permissions][drf-any-permissions] packages provides a different permission behavior in contrast to the REST framework.  Only one of the given permissions have to be true in order to get access to the view.
+
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
 [throttling]: throttling.md
@@ -197,3 +207,4 @@ Also note that the generic views will only check the object-level permissions fo
 [django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
 [2.2-announcement]: ../topics/2.2-announcement.md
 [filtering]: filtering.md
+[drf-any-permissions]: https://github.com/kevin-brown/drf-any-permissions
