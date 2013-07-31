@@ -90,7 +90,7 @@ The browsable API makes use of the Bootstrap tooltips component.  Any element wi
 
 ### Login Template
 
-To add branding and customize the look-and-feel of the login template, create a template called `login.html` and add it to your project, eg: `templates/rest_framework/login.html`.  The template should extend from `rest_framework/base_login.html`.
+To add branding and customize the look-and-feel of the login template, create a template called `login.html` and add it to your project, eg: `templates/rest_framework/login.html`.  The template should extend from `rest_framework/login_base.html`.
 
 You can add your site name or branding by including the branding block:
 
