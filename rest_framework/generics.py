@@ -92,13 +92,14 @@ class GenericAPIView(views.APIView):
         """
         Return a serializer instance to use with paginated data.
         """
-        class SerializerClass(self.pagination_serializer_class):
-            class Meta:
-                object_serializer_class = self.get_serializer_class()
+        if self.pagination_serializer_class:
+            class SerializerClass(self.pagination_serializer_class):
+                class Meta:
+                    object_serializer_class = self.get_serializer_class()
 
-        pagination_serializer_class = SerializerClass
-        context = self.get_serializer_context()
-        return pagination_serializer_class(instance=page, context=context)
+            pagination_serializer_class = SerializerClass
+            context = self.get_serializer_context()
+            return pagination_serializer_class(instance=page, context=context)
 
     def paginate_queryset(self, queryset, page_size=None):
         """
