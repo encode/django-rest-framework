@@ -142,6 +142,7 @@ class TokenAuthentication(BaseAuthentication):
     """
 
     model = Token
+    www_authenticate_realm = 'api'
     """
     A custom token model may be used, but must have the following properties.
 
@@ -176,7 +177,7 @@ class TokenAuthentication(BaseAuthentication):
         return (token.user, token)
 
     def authenticate_header(self, request):
-        return 'Token'
+        return 'Token realm="%s"' % self.www_authenticate_realm
 
 
 class OAuthAuthentication(BaseAuthentication):
