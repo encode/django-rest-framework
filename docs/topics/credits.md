@@ -152,6 +152,7 @@ The following people have helped make REST framework great.
 * Kevin Brown - [kevin-brown]
 * Rodrigo Martell - [coderigo]
 * James Rutherford - [jimr]
+* ricky rosario - [rlr]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -340,3 +341,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [willkg]: https://github.com/willkg
 [kevin-brown]: https://github.com/kevin-brown
 [jimr]: https://github.com/jimr
+[rlr]: https://github.com/rlr
