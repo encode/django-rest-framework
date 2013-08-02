@@ -90,8 +90,11 @@ class ListModelMixin(object):
         page = self.paginate_queryset(self.object_list)
         if page is not None:
             serializer = self.get_pagination_serializer(page)
-        else:
-            serializer = self.get_serializer(self.object_list, many=True)
+
+            if serializer:
+                return Response(serializer.data)
+
+        serializer = self.get_serializer(self.object_list, many=True)
 
         return Response(serializer.data)
 
