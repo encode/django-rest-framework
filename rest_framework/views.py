@@ -224,7 +224,7 @@ class APIView(View):
                        negotiator=self.get_content_negotiator(),
                        parser_context=parser_context)
 
-    def initial(self, request, *args, **kwargs):
+    def initialize(self, request, *args, **kwargs):
         """
         Runs anything that needs to occur prior to calling the method handler.
         """
@@ -312,7 +312,7 @@ class APIView(View):
         self.headers = self.default_response_headers  # deprecate?
 
         try:
-            self.initial(request, *args, **kwargs)
+            self.initialize(request, *args, **kwargs)
 
             # Get the appropriate handler method
             if request.method.lower() in self.http_method_names:
