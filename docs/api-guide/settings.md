@@ -28,7 +28,7 @@ you should use the `api_settings` object.  For example.
     
     print api_settings.DEFAULT_AUTHENTICATION_CLASSES
 
-The `api_settings` object will check for any user-defined settings, and otherwise fallback to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.
+The `api_settings` object will check for any user-defined settings, and otherwise fall back to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.
 
 ---
 
@@ -165,7 +165,7 @@ Default: `'multipart'`
 
 The renderer classes that are supported when building test requests.
 
-The format of any of these renderer classes may be used when contructing a test request, for example: `client.post('/users', {'username': 'jamie'}, format='json')`
+The format of any of these renderer classes may be used when constructing a test request, for example: `client.post('/users', {'username': 'jamie'}, format='json')`
 
 Default:
 
