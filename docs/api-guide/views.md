@@ -110,7 +110,7 @@ You won't typically need to override this method.
 
 ### .finalize_response(self, request, response, \*args, **kwargs)
 
-Ensures that any `Response` object returned from the handler method will be rendered into the correct content type, as determined by the content negotation.
+Ensures that any `Response` object returned from the handler method will be rendered into the correct content type, as determined by the content negotiation.
 
 You won't typically need to override this method.
 
