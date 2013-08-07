@@ -34,7 +34,7 @@ To support a wider set of request formats, or change the default format, [see th
 
 #### Explicitly encoding the request body
 
-If you need to explictly encode the request body, you can do so by setting the `content_type` flag.  For example:
+If you need to explicitly encode the request body, you can do so by setting the `content_type` flag.  For example:
 
     request = factory.post('/notes/', json.dumps({'title': 'new idea'}), content_type='application/json')
 

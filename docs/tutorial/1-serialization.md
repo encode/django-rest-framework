@@ -236,7 +236,7 @@ Edit the `snippet/views.py` file, and add the following.
 
     class JSONResponse(HttpResponse):
         """
-        An HttpResponse that renders it's content into JSON.
+        An HttpResponse that renders its content into JSON.
         """
         def __init__(self, data, **kwargs):
             content = JSONRenderer().render(data)

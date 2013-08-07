@@ -39,7 +39,7 @@ In order to explain the various types of relational fields, we'll use a couple o
 
 ## RelatedField
 
-`RelatedField` may be used to represent the target of the relationship using it's `__unicode__` method.
+`RelatedField` may be used to represent the target of the relationship using its `__unicode__` method.
 
 For example, the following serializer.
  
@@ -71,7 +71,7 @@ This field is read only.
 
 ## PrimaryKeyRelatedField
 
-`PrimaryKeyRelatedField` may be used to represent the target of the relationship using it's primary key.
+`PrimaryKeyRelatedField` may be used to represent the target of the relationship using its primary key.
 
 For example, the following serializer:
  
@@ -252,7 +252,7 @@ If you want to implement a read-write relational field, you must also implement 
 
 ## Example
 
-For, example, we could define a relational field, to serialize a track to a custom string representation, using it's ordering, title, and duration.
+For, example, we could define a relational field, to serialize a track to a custom string representation, using its ordering, title, and duration.
 
     import time
 
@@ -386,7 +386,7 @@ For more information see [the Django documentation on generic relations][generic
 By default, relational fields that target a ``ManyToManyField`` with a
 ``through`` model specified are set to read-only.
 
-If you exlicitly specify a relational field pointing to a
+If you explicitly specify a relational field pointing to a
 ``ManyToManyField`` with a through model, be sure to set ``read_only``
 to ``True``.
 
