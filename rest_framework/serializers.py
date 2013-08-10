@@ -683,7 +683,7 @@ class ModelSerializer(Serializer):
         # in the `read_only_fields` option
         for field_name in self.opts.read_only_fields:
             assert field_name not in self.base_fields.keys(), \
-                "field '%s' on serializer '%s' specfied in " \
+                "field '%s' on serializer '%s' specified in " \
                 "`read_only_fields`, but also added " \
                 "as an explict field.  Remove it from `read_only_fields`." % \
                 (field_name, self.__class__.__name__)
