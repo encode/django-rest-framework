@@ -522,7 +522,7 @@ class BaseSerializer(WritableField):
             if self.object._deleted:
                 [self.delete_object(item) for item in self.object._deleted]
         else:
-            self.save_object(self.object, **kwargs)        
+            self.save_object(self.object, **kwargs)
 
         return self.object
 
@@ -891,7 +891,8 @@ class ModelSerializer(Serializer):
             # Nested relationships need to be saved before we can save the
             # parent instance.
             for field_name, sub_object in obj._nested_forward_relations.items():
-                self.save_object(sub_object)
+                if sub_object:
+                    self.save_object(sub_object)
                 setattr(obj, field_name, sub_object)
 
         obj.save(**kwargs)
