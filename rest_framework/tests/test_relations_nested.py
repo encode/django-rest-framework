@@ -10,7 +10,8 @@ class OneToOneTarget(models.Model):
 
 class OneToOneSource(models.Model):
     name = models.CharField(max_length=100)
-    target = models.OneToOneField(OneToOneTarget, related_name='source')
+    target = models.OneToOneField(OneToOneTarget, related_name='source',
+                                  null=True, blank=True)
 
 
 class OneToManyTarget(models.Model):
@@ -21,7 +22,7 @@ class OneToManySource(models.Model):
     name = models.CharField(max_length=100)
     target = models.ForeignKey(OneToManyTarget, related_name='sources')
 
-        
+
 class ReverseNestedOneToOneTests(TestCase):
     def setUp(self):
         class OneToOneSourceSerializer(serializers.ModelSerializer):
