@@ -180,6 +180,25 @@ class ForwardNestedOneToOneTests(TestCase):
         ]
         self.assertEqual(serializer.data, expected)
 
+    def test_one_to_one_update_to_null(self):
+        data = {'id': 3, 'name': 'source-3-updated', 'target': None}
+        instance = OneToOneSource.objects.get(pk=3)
+        serializer = self.Serializer(instance, data=data)
+        self.assertTrue(serializer.is_valid())
+        obj = serializer.save()
+
+        self.assertEqual(serializer.data, data)
+        self.assertEqual(obj.name, 'source-3-updated')
+        self.assertEqual(obj.target, None)
+
+        queryset = OneToOneSource.objects.all()
+        serializer = self.Serializer(queryset, many=True)
+        expected = [
+            {'id': 1, 'name': 'source-1', 'target': {'id': 1, 'name': 'target-1'}},
+            {'id': 2, 'name': 'source-2', 'target': {'id': 2, 'name': 'target-2'}},
+            {'id': 3, 'name': 'source-3-updated', 'target': None}
+        ]
+        self.assertEqual(serializer.data, expected)
 
     # TODO: Nullable 1-1 tests
     # def test_one_to_one_delete(self):
