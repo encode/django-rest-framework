@@ -4,7 +4,7 @@ Provides various authentication policies.
 from __future__ import unicode_literals
 import base64
 
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, backends as django_backends
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.compat import CsrfViewMiddleware
@@ -346,3 +346,21 @@ class OAuth2Authentication(BaseAuthentication):
         Check details on the `OAuth2Authentication.authenticate` method
         """
         return 'Bearer realm="%s"' % self.www_authenticate_realm
+
+
+class TokenBackend(django_backends.ModelBackend):
+    """A Django authentication backend for Tokens
+
+    Intend to be used listed at settings.AUTHENTICATION_BACKENDS
+    """
+    def authenticate(self, token=None):
+        authenticator = TokenAuthentication()
+        user = None
+
+        if token:
+            try:
+                user, token_object = authenticator.authenticate_credentials(token)
+            except exceptions.AuthenticationFailed:
+                pass # return None
+
+        return user
