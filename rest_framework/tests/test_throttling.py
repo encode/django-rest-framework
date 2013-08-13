@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
-from rest_framework.throttling import UserRateThrottle, ScopedRateThrottle
+from rest_framework.throttling import BaseThrottle, UserRateThrottle, ScopedRateThrottle
 from rest_framework.response import Response
 
 
@@ -21,6 +21,14 @@ class User3MinRateThrottle(UserRateThrottle):
     scope = 'minutes'
 
 
+class NonTimeThrottle(BaseThrottle):
+    def allow_request(self, request, view):
+        if not hasattr(self.__class__, 'called'):
+            self.__class__.called = True
+            return True
+        return False 
+
+
 class MockView(APIView):
     throttle_classes = (User3SecRateThrottle,)
 
@@ -30,6 +38,13 @@ class MockView(APIView):
 
 class MockView_MinuteThrottling(APIView):
     throttle_classes = (User3MinRateThrottle,)
+
+    def get(self, request):
+        return Response('foo')
+
+
+class MockView_NonTimeThrottling(APIView):
+    throttle_classes = (NonTimeThrottle,)
 
     def get(self, request):
         return Response('foo')
@@ -139,6 +154,22 @@ class ThrottlingTests(TestCase):
           (60, None),
           (80, None)
          ))
+
+    def test_non_time_throttle(self):
+        """
+        Ensure for second based throttles.
+        """
+        request = self.factory.get('/')
+
+        self.assertFalse(hasattr(MockView_NonTimeThrottling.throttle_classes[0], 'called'))
+
+        response = MockView_NonTimeThrottling.as_view()(request)
+        self.assertFalse('X-Throttle-Wait-Seconds' in response)
+
+        self.assertTrue(MockView_NonTimeThrottling.throttle_classes[0].called)
+
+        response = MockView_NonTimeThrottling.as_view()(request)
+        self.assertFalse('X-Throttle-Wait-Seconds' in response) 
 
 
 class ScopedRateThrottleTests(TestCase):
