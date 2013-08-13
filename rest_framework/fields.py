@@ -924,7 +924,7 @@ class ImageField(FileField):
         if f is None:
             return None
 
-        from compat import Image
+        from rest_framework.compat import Image
         assert Image is not None, 'PIL must be installed for ImageField support'
 
         # We need to get a file object for PIL. We might have a path or we might
