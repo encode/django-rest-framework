@@ -134,7 +134,7 @@ class OrderingFilter(BaseFilterBackend):
             ordering = self.remove_invalid_fields(queryset, ordering)
 
         if not ordering:
-            # Use 'ordering' attribtue by default
+            # Use 'ordering' attribute by default
             ordering = self.get_default_ordering(view)
 
         if ordering:
