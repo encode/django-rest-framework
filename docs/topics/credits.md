@@ -156,6 +156,7 @@ The following people have helped make REST framework great.
 * Veronica Lynn - [kolvia]
 * Dan Stephenson - [etos]
 * Martin Clement - [martync]
+* Jeremy Satterfield - [jsatt]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -348,3 +349,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [kolvia]: https://github.com/kolvia
 [etos]: https://github.com/etos
 [martync]: https://github.com/martync
+[jsatt]: https://github.com/jsatt
