@@ -69,6 +69,10 @@ DEFAULTS = {
     'PAGINATE_BY': None,
     'PAGINATE_BY_PARAM': None,
 
+    # View configuration
+    'VIEW_NAME_FUNCTION': None,
+    'VIEW_DESCRIPTION_FUNCTION': None,
+
     # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,

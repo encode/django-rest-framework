@@ -7,6 +7,7 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from rest_framework.compat import apply_markdown, smart_text
 import re
+from rest_framework.settings import api_settings
 
 
 def _remove_trailing_string(content, trailing):
@@ -48,7 +49,14 @@ def _camelcase_to_spaces(content):
 def get_view_name(cls, suffix=None):
     """
     Return a formatted name for an `APIView` class or `@api_view` function.
+    If a VIEW_NAME_FUNCTION is set in settings the value of that will be used
+        if that value is "falsy" then the normal formatting will be used.
     """
+    if api_settings.VIEW_NAME_FUNCTION:
+        name = api_settings.VIEW_NAME_FUNCTION(cls, suffix)
+        if name:
+            return name
+
     name = cls.__name__
     name = _remove_trailing_string(name, 'View')
     name = _remove_trailing_string(name, 'ViewSet')
@@ -61,7 +69,14 @@ def get_view_name(cls, suffix=None):
 def get_view_description(cls, html=False):
     """
     Return a description for an `APIView` class or `@api_view` function.
+    If a VIEW_DESCRIPTION_FUNCTION is set in settings the value of that will be used
+        if that value is "falsy" then the normal formatting will be used.
     """
+    if api_settings.VIEW_DESCRIPTION_FUNCTION:
+        description = api_settings.VIEW_DESCRIPTION_FUNCTION(cls)
+        if description:
+            return markup_description(description)
+
     description = cls.__doc__ or ''
     description = _remove_leading_indent(smart_text(description))
     if html:
