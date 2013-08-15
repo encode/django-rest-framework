@@ -49,6 +49,13 @@ def get_view_name(cls, suffix=None):
     """
     Return a formatted name for an `APIView` class or `@api_view` function.
     """
+    if hasattr(cls,'Meta'):
+        # this allows for a simple override of the name used in the template
+        if cls.Meta.view_name:
+            if cls.Meta.suffix:
+                return cls.Meta.view_name + ' ' + suffix
+            return cls.Meta.view_name
+                                                                
     name = cls.__name__
     name = _remove_trailing_string(name, 'View')
     name = _remove_trailing_string(name, 'ViewSet')
