@@ -109,8 +109,7 @@ class OrderingFilter(BaseFilterBackend):
 
     def get_ordering(self, request):
         """
-        Search terms are set by a ?search=... query parameter,
-        and may be comma and/or whitespace delimited.
+        Ordering is set by a comma delimited ?ordering=... query parameter.
         """
         params = request.QUERY_PARAMS.get(self.ordering_param)
         if params:
@@ -134,7 +133,7 @@ class OrderingFilter(BaseFilterBackend):
             ordering = self.remove_invalid_fields(queryset, ordering)
 
         if not ordering:
-            # Use 'ordering' attribtue by default
+            # Use 'ordering' attribute by default
             ordering = self.get_default_ordering(view)
 
         if ordering:
