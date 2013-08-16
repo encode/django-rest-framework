@@ -40,6 +40,19 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
+### 2.3.7
+
+**Date**: 16th August 2013
+
+* Added `APITestClient`, `APIRequestFactory` and `APITestCase` etc...
+* Refactor `SessionAuthentication` to allow esier override for CSRF exemption.
+* Remove 'Hold down "Control" message from help_text' widget messaging when not appropriate.
+* Added admin configuration for auth tokens.
+* Bugfix: `AnonRateThrottle` fixed to not throttle authenticated users.
+* Bugfix: Don't set `X-Throttle-Wait-Seconds` when throttle does not have `wait` value.
+* Bugfix: Fixed `PATCH` button title in browsable API.
+* Bugfix: Fix issue with OAuth2 provider naive datetimes.
+
 ### 2.3.6
 
 **Date**: 27th June 2013

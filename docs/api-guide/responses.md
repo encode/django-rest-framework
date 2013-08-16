@@ -24,7 +24,7 @@ Unless you want to heavily customize REST framework for some reason, you should 
 
 Unlike regular `HttpResponse` objects, you do not instantiate `Response` objects with rendered content.  Instead you pass in unrendered data, which may consist of any Python primitives.
 
-The renderers used by the `Response` class cannot natively handle complex datatypes such as Django model instances, so you need to serialize the data into primative datatypes before creating the `Response` object.
+The renderers used by the `Response` class cannot natively handle complex datatypes such as Django model instances, so you need to serialize the data into primitive datatypes before creating the `Response` object.
 
 You can use REST framework's `Serializer` classes to perform this data serialization, or use your own custom serialization.
 
@@ -54,7 +54,7 @@ The rendered content of the response.  The `.render()` method must have been cal
 
 ## .template_name
 
-The `template_name`, if supplied.  Only required if `HTMLRenderer` or some other custom template renderer is the accepted renderer for the reponse.
+The `template_name`, if supplied.  Only required if `HTMLRenderer` or some other custom template renderer is the accepted renderer for the response.
 
 ## .accepted_renderer
 

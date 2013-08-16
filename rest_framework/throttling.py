@@ -96,6 +96,9 @@ class SimpleRateThrottle(BaseThrottle):
             return True
 
         self.key = self.get_cache_key(request, view)
+        if self.key is None:
+            return True
+
         self.history = cache.get(self.key, [])
         self.now = self.timer()
 

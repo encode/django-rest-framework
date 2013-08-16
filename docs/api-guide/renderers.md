@@ -241,7 +241,7 @@ This renderer is used for rendering HTML multipart form data.  **It is not suita
 
 To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, media_type=None, renderer_context=None)` method.
 
-The method should return a bytestring, which wil be used as the body of the HTTP response.
+The method should return a bytestring, which will be used as the body of the HTTP response.
 
 The arguments passed to the `.render()` method are:
 

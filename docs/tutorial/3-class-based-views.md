@@ -81,7 +81,7 @@ Okay, we're done.  If you run the development server everything should be workin
 
 One of the big wins of using class based views is that it allows us to easily compose reusable bits of behaviour.
 
-The create/retrieve/update/delete operations that we've been using so far are going to be pretty simliar for any model-backed API views we create.  Those bits of common behaviour are implemented in REST framework's mixin classes.
+The create/retrieve/update/delete operations that we've been using so far are going to be pretty similar for any model-backed API views we create.  Those bits of common behaviour are implemented in REST framework's mixin classes.
 
 Let's take a look at how we can compose our views by using the mixin classes.
 
