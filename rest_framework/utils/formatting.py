@@ -49,39 +49,15 @@ def _camelcase_to_spaces(content):
 def get_view_name(cls, suffix=None):
     """
     Return a formatted name for an `APIView` class or `@api_view` function.
-    If a VIEW_NAME_FUNCTION is set in settings the value of that will be used
-        if that value is "falsy" then the normal formatting will be used.
     """
-    if api_settings.VIEW_NAME_FUNCTION:
-        name = api_settings.VIEW_NAME_FUNCTION(cls, suffix)
-        if name:
-            return name
-
-    name = cls.__name__
-    name = _remove_trailing_string(name, 'View')
-    name = _remove_trailing_string(name, 'ViewSet')
-    name = _camelcase_to_spaces(name)
-    if suffix:
-        name += ' ' + suffix
-    return name
+    return api_settings.VIEW_NAME_FUNCTION(cls, suffix)
 
 
 def get_view_description(cls, html=False):
     """
     Return a description for an `APIView` class or `@api_view` function.
-    If a VIEW_DESCRIPTION_FUNCTION is set in settings the value of that will be used
-        if that value is "falsy" then the normal formatting will be used.
     """
-    if api_settings.VIEW_DESCRIPTION_FUNCTION:
-        description = api_settings.VIEW_DESCRIPTION_FUNCTION(cls)
-        if description:
-            return markup_description(description)
-
-    description = cls.__doc__ or ''
-    description = _remove_leading_indent(smart_text(description))
-    if html:
-        return markup_description(description)
-    return description
+    return api_settings.VIEW_DESCRIPTION_FUNCTION(cls)
 
 
 def markup_description(description):
@@ -93,3 +69,21 @@ def markup_description(description):
     else:
         description = escape(description).replace('\n', '<br />')
     return mark_safe(description)
+
+
+def view_name(cls, suffix=None):
+    name = cls.__name__
+    name = _remove_trailing_string(name, 'View')
+    name = _remove_trailing_string(name, 'ViewSet')
+    name = _camelcase_to_spaces(name)
+    if suffix:
+        name += ' ' + suffix
+
+    return name
+
+def view_description(cls, html=False):
+    description = cls.__doc__ or ''
+    description = _remove_leading_indent(smart_text(description))
+    if html:
+        return markup_description(description)
+    return description

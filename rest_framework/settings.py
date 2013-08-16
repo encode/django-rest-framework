@@ -70,8 +70,8 @@ DEFAULTS = {
     'PAGINATE_BY_PARAM': None,
 
     # View configuration
-    'VIEW_NAME_FUNCTION': None,
-    'VIEW_DESCRIPTION_FUNCTION': None,
+    'VIEW_NAME_FUNCTION': 'rest_framework.utils.formatting.view_name',
+    'VIEW_DESCRIPTION_FUNCTION': 'rest_framework.utils.formatting.view_description',
 
     # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
@@ -129,6 +129,8 @@ IMPORT_STRINGS = (
     'TEST_REQUEST_RENDERER_CLASSES',
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN',
+    'VIEW_NAME_FUNCTION',
+    'VIEW_DESCRIPTION_FUNCTION'
 )
 
 
