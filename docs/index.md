@@ -164,6 +164,7 @@ The API guide is your complete reference manual to all the functionality provide
 * [Returning URLs][reverse]
 * [Exceptions][exceptions]
 * [Status codes][status]
+* [Testing][testing]
 * [Settings][settings]
 
 ## Topics
@@ -288,6 +289,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [reverse]: api-guide/reverse.md
 [exceptions]: api-guide/exceptions.md
 [status]: api-guide/status-codes.md
+[testing]: api-guide/testing.md
 [settings]: api-guide/settings.md
 
 [documenting-your-api]: topics/documenting-your-api.md

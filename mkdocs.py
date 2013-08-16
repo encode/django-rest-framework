@@ -69,6 +69,7 @@ path_list = [
     'api-guide/reverse.md',
     'api-guide/exceptions.md',
     'api-guide/status-codes.md',
+    'api-guide/testing.md',
     'api-guide/settings.md',
     'topics/documenting-your-api.md',
     'topics/ajax-csrf-cors.md',
