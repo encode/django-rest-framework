@@ -56,8 +56,8 @@ def markup_description(description):
     return mark_safe(description)
 
 
-def view_name(cls, suffix=None):
-    name = cls.__name__
+def view_name(instance, view, suffix=None):
+    name = view.__name__
     name = _remove_trailing_string(name, 'View')
     name = _remove_trailing_string(name, 'ViewSet')
     name = _camelcase_to_spaces(name)
@@ -66,8 +66,8 @@ def view_name(cls, suffix=None):
 
     return name
 
-def view_description(cls, html=False):
-    description = cls.__doc__ or ''
+def view_description(instance, view, html=False):
+    description = view.__doc__ or ''
     description = _remove_leading_indent(smart_text(description))
     if html:
         return markup_description(description)
