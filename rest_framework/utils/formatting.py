@@ -45,21 +45,6 @@ def _camelcase_to_spaces(content):
     content = re.sub(camelcase_boundry, ' \\1', content).strip()
     return ' '.join(content.split('_')).title()
 
-
-def get_view_name(cls, suffix=None):
-    """
-    Return a formatted name for an `APIView` class or `@api_view` function.
-    """
-    return api_settings.VIEW_NAME_FUNCTION(cls, suffix)
-
-
-def get_view_description(cls, html=False):
-    """
-    Return a description for an `APIView` class or `@api_view` function.
-    """
-    return api_settings.VIEW_DESCRIPTION_FUNCTION(cls)
-
-
 def markup_description(description):
     """
     Apply HTML markup to the given description.
