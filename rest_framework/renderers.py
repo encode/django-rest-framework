@@ -24,7 +24,6 @@ from rest_framework.settings import api_settings
 from rest_framework.request import clone_request
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
-from rest_framework.utils.formatting import get_view_name, get_view_description
 from rest_framework import exceptions, parsers, status, VERSION
 
 
@@ -498,10 +497,10 @@ class BrowsableAPIRenderer(BaseRenderer):
         return GenericContentForm()
 
     def get_name(self, view):
-        return get_view_name(view.__class__, getattr(view, 'suffix', None))
+        return view.get_view_name()
 
     def get_description(self, view):
-        return get_view_description(view.__class__, html=True)
+        return view.get_view_description(html=True)
 
     def get_breadcrumbs(self, request):
         return get_breadcrumbs(request.path)

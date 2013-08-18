@@ -12,7 +12,6 @@ from rest_framework.compat import View, HttpResponseBase
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.utils.formatting import get_view_name, get_view_description
 
 
 class APIView(View):
@@ -24,6 +23,9 @@ class APIView(View):
     throttle_classes = api_settings.DEFAULT_THROTTLE_CLASSES
     permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
     content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
+
+    view_name_function = api_settings.VIEW_NAME_FUNCTION
+    view_description_function = api_settings.VIEW_DESCRIPTION_FUNCTION
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -156,6 +158,21 @@ class APIView(View):
         if not getattr(self, '_negotiator', None):
             self._negotiator = self.content_negotiation_class()
         return self._negotiator
+
+    def get_view_name(self):
+        """
+        Get the view name
+        """
+        # This is used by ViewSets to disambiguate instance vs list views
+        view_name_suffix = getattr(self, 'suffix', None)
+
+        return self.view_name_function(self.__class__, view_name_suffix)
+
+    def get_view_description(self, html=False):
+        """
+        Get the view description
+        """
+        return self.view_description_function(self.__class__, html)
 
     # API policy implementation methods
 
@@ -342,16 +359,12 @@ class APIView(View):
         Return a dictionary of metadata about the view.
         Used to return responses for OPTIONS requests.
         """
-
-        # This is used by ViewSets to disambiguate instance vs list views
-        view_name_suffix = getattr(self, 'suffix', None)
-
         # By default we can't provide any form-like information, however the
         # generic views override this implementation and add additional
         # information for POST and PUT methods, based on the serializer.
         ret = SortedDict()
-        ret['name'] = get_view_name(self.__class__, view_name_suffix)
-        ret['description'] = get_view_description(self.__class__)
+        ret['name'] = self.get_view_name()
+        ret['description'] = self.get_view_description()
         ret['renders'] = [renderer.media_type for renderer in self.renderer_classes]
         ret['parses'] = [parser.media_type for parser in self.parser_classes]
         return ret

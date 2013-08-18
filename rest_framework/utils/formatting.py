@@ -7,6 +7,7 @@ from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from rest_framework.compat import apply_markdown, smart_text
 import re
+from rest_framework.settings import api_settings
 
 
 def _remove_trailing_string(content, trailing):
@@ -44,31 +45,6 @@ def _camelcase_to_spaces(content):
     content = re.sub(camelcase_boundry, ' \\1', content).strip()
     return ' '.join(content.split('_')).title()
 
-
-def get_view_name(cls, suffix=None):
-    """
-    Return a formatted name for an `APIView` class or `@api_view` function.
-    """
-    name = cls.__name__
-    name = _remove_trailing_string(name, 'View')
-    name = _remove_trailing_string(name, 'ViewSet')
-    name = _camelcase_to_spaces(name)
-    if suffix:
-        name += ' ' + suffix
-    return name
-
-
-def get_view_description(cls, html=False):
-    """
-    Return a description for an `APIView` class or `@api_view` function.
-    """
-    description = cls.__doc__ or ''
-    description = _remove_leading_indent(smart_text(description))
-    if html:
-        return markup_description(description)
-    return description
-
-
 def markup_description(description):
     """
     Apply HTML markup to the given description.
@@ -78,3 +54,21 @@ def markup_description(description):
     else:
         description = escape(description).replace('\n', '<br />')
     return mark_safe(description)
+
+
+def view_name(instance, view, suffix=None):
+    name = view.__name__
+    name = _remove_trailing_string(name, 'View')
+    name = _remove_trailing_string(name, 'ViewSet')
+    name = _camelcase_to_spaces(name)
+    if suffix:
+        name += ' ' + suffix
+
+    return name
+
+def view_description(instance, view, html=False):
+    description = view.__doc__ or ''
+    description = _remove_leading_indent(smart_text(description))
+    if html:
+        return markup_description(description)
+    return description
