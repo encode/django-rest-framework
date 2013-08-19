@@ -14,6 +14,7 @@ from django import forms
 from django.core.exceptions import ImproperlyConfigured
 from django.http.multipartparser import parse_header
 from django.template import RequestContext, loader, Template
+from django.test.client import encode_multipart
 from django.utils.xmlutils import SimplerXMLGenerator
 from rest_framework.compat import StringIO
 from rest_framework.compat import six
@@ -23,7 +24,6 @@ from rest_framework.settings import api_settings
 from rest_framework.request import clone_request
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
-from rest_framework.utils.formatting import get_view_name, get_view_description
 from rest_framework import exceptions, parsers, status, VERSION
 
 
@@ -497,10 +497,10 @@ class BrowsableAPIRenderer(BaseRenderer):
         return GenericContentForm()
 
     def get_name(self, view):
-        return get_view_name(view.__class__, getattr(view, 'suffix', None))
+        return view.get_view_name()
 
     def get_description(self, view):
-        return get_view_description(view.__class__, html=True)
+        return view.get_view_description(html=True)
 
     def get_breadcrumbs(self, request):
         return get_breadcrumbs(request.path)
@@ -571,3 +571,13 @@ class BrowsableAPIRenderer(BaseRenderer):
             response.status_code = status.HTTP_200_OK
 
         return ret
+
+
+class MultiPartRenderer(BaseRenderer):
+    media_type = 'multipart/form-data; boundary=BoUnDaRyStRiNg'
+    format = 'multipart'
+    charset = 'utf-8'
+    BOUNDARY = 'BoUnDaRyStRiNg'
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        return encode_multipart(self.BOUNDARY, data)

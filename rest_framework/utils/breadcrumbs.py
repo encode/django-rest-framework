@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 from django.core.urlresolvers import resolve, get_script_prefix
-from rest_framework.utils.formatting import get_view_name
 
 
 def get_breadcrumbs(url):
@@ -29,8 +28,8 @@ def get_breadcrumbs(url):
                 # Don't list the same view twice in a row.
                 # Probably an optional trailing slash.
                 if not seen or seen[-1] != view:
-                    suffix = getattr(view, 'suffix', None)
-                    name = get_view_name(view.cls, suffix)
+                    instance = view.cls()
+                    name = instance.get_view_name()
                     breadcrumbs_list.insert(0, (name, prefix + url))
                     seen.append(view)
 

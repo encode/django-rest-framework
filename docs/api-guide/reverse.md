@@ -17,7 +17,7 @@ The advantages of doing so are:
 
 REST framework provides two utility functions to make it more simple to return absolute URIs from your Web API.
 
-There's no requirement for you to use them, but if you do then the self-describing API will be able to automatically hyperlink it's output for you, which makes browsing the API much easier.
+There's no requirement for you to use them, but if you do then the self-describing API will be able to automatically hyperlink its output for you, which makes browsing the API much easier.
 
 ## reverse
 

@@ -40,7 +40,7 @@ For more complex cases you might also want to override various methods on the vi
 
 For very simple cases you might want to pass through any class attributes using the `.as_view()` method.  For example, your URLconf might include something the following entry.
 
-    url(r'^/users/', ListCreateAPIView.as_view(model=User) name='user-list')
+    url(r'^/users/', ListCreateAPIView.as_view(model=User), name='user-list')
 
 ---
 

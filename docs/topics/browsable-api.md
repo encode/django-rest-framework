@@ -24,8 +24,8 @@ To customize the default style, create a template called `rest_framework/api.htm
 **templates/rest_framework/api.html**
 
     {% extends "rest_framework/base.html" %}
-    
-    ...  # Override blocks with required customizations  
+
+    ...  # Override blocks with required customizations
 
 ### Overriding the default theme
 
@@ -75,6 +75,7 @@ All of the blocks available in the browsable API base template that can be used 
 * `branding`                   - Branding section of the navbar, see [Bootstrap components][bcomponentsnav].
 * `breadcrumbs`                - Links showing resource nesting, allowing the user to go back up the resources.  It's recommended to preserve these, but they can be overridden using the breadcrumbs block.
 * `footer`                     - Any copyright notices or similar footer materials can go here (by default right-aligned).
+* `script`                     - JavaScript files for the page.
 * `style`                      - CSS stylesheets for the page.
 * `title`                      - Title of the page.
 * `userlinks`                  - This is a list of links on the right of the header, by default containing login/logout links.  To add links instead of replace, use `{{ block.super }}` to preserve the authentication links.
@@ -89,14 +90,14 @@ The browsable API makes use of the Bootstrap tooltips component.  Any element wi
 
 ### Login Template
 
-To add branding and customize the look-and-feel of the login template, create a template called `login.html` and add it to your project, eg: `templates/rest_framework/login.html`.  The template should extend from `rest_framework/base_login.html`.
+To add branding and customize the look-and-feel of the login template, create a template called `login.html` and add it to your project, eg: `templates/rest_framework/login.html`.  The template should extend from `rest_framework/login_base.html`.
 
 You can add your site name or branding by including the branding block:
 
     {% block branding %}
         <h3 style="margin: 0 0 20px;">My Site Name</h3>
     {% endblock %}
-    
+
 You can also customize the style by adding the `bootstrap_theme` or `style` block similar to `api.html`.
 
 ### Advanced Customization
@@ -125,6 +126,37 @@ The context that's available to the template:
 
 For more advanced customization, such as not having a Bootstrap basis or tighter integration with the rest of your site, you can simply choose not to have `api.html` extend `base.html`.  Then the page content and capabilities are entirely up to you.
 
+#### Autocompletion
+
+When a `ChoiceField` has too many items, rendering the widget containing all the options can become very slow, and cause the browsable API rendering to perform poorly.  One solution is to replace the selector by an autocomplete widget, that only loads and renders a subset of the available options as needed.
+
+There are [a variety of packages for autocomplete widgets][autocomplete-packages], such as [django-autocomplete-light][django-autocomplete-light].  To setup `django-autocomplete-light`, follow the [installation documentation][django-autocomplete-light-install], add the the following to the `api.html` template:
+
+    {% block script %}
+    {{ block.super }}
+    {% include 'autocomplete_light/static.html' %}
+    {% endblock %}
+
+You can now add the `autocomplete_light.ChoiceWidget` widget to the serializer field.
+
+    import autocomplete_light
+
+    class BookSerializer(serializers.ModelSerializer):
+        author = serializers.ChoiceField(
+            widget=autocomplete_light.ChoiceWidget('AuthorAutocomplete')
+        )
+
+        class Meta:
+            model = Book
+
+---
+
+![Autocomplete][autocomplete-image]
+
+*Screenshot of the autocomplete-light widget*
+
+---
+
 [cite]: http://en.wikiquote.org/wiki/Alfred_North_Whitehead
 [drfreverse]: ../api-guide/reverse.md
 [ffjsonview]: https://addons.mozilla.org/en-US/firefox/addon/jsonview/
@@ -136,4 +168,7 @@ For more advanced customization, such as not having a Bootstrap basis or tighter
 [bswatch]: http://bootswatch.com/
 [bcomponents]: http://twitter.github.com/bootstrap/components.html
 [bcomponentsnav]: http://twitter.github.com/bootstrap/components.html#navbar
-
+[autocomplete-packages]: https://www.djangopackages.com/grids/g/auto-complete/
+[django-autocomplete-light]: https://github.com/yourlabs/django-autocomplete-light
+[django-autocomplete-light-install]: http://django-autocomplete-light.readthedocs.org/en/latest/#install
+[autocomplete-image]: ../img/autocomplete.png

@@ -100,6 +100,19 @@ def humanize_strptime(format_string):
     return format_string
 
 
+def strip_multiple_choice_msg(help_text):
+    """
+    Remove the 'Hold down "control" ...' message that is Django enforces in
+    select multiple fields on ModelForms.  (Required for 1.5 and earlier)
+
+    See https://code.djangoproject.com/ticket/9321
+    """
+    multiple_choice_msg = _(' Hold down "Control", or "Command" on a Mac, to select more than one.')
+    multiple_choice_msg = force_text(multiple_choice_msg)
+
+    return help_text.replace(multiple_choice_msg, '')
+
+
 class Field(object):
     read_only = True
     creation_counter = 0
@@ -122,7 +135,7 @@ class Field(object):
             self.label = smart_text(label)
 
         if help_text is not None:
-            self.help_text = smart_text(help_text)
+            self.help_text = strip_multiple_choice_msg(smart_text(help_text))
 
     def initialize(self, parent, field_name):
         """
@@ -492,7 +505,7 @@ class EmailField(CharField):
     form_field_class = forms.EmailField
 
     default_error_messages = {
-        'invalid': _('Enter a valid e-mail address.'),
+        'invalid': _('Enter a valid email address.'),
     }
     default_validators = [validators.validate_email]
 
@@ -904,7 +917,7 @@ class ImageField(FileField):
         if f is None:
             return None
 
-        from compat import Image
+        from rest_framework.compat import Image
         assert Image is not None, 'PIL must be installed for ImageField support'
 
         # We need to get a file object for PIL. We might have a path or we might

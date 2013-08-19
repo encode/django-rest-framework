@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from collections import namedtuple
 from django.core import urlresolvers
 from django.test import TestCase
-from django.test.client import RequestFactory
+from rest_framework.test import APIRequestFactory
 from rest_framework.compat import patterns, url, include
 from rest_framework.urlpatterns import format_suffix_patterns
 
@@ -20,7 +20,7 @@ class FormatSuffixTests(TestCase):
     Tests `format_suffix_patterns` against different URLPatterns to ensure the URLs still resolve properly, including any captured parameters.
     """
     def _resolve_urlpatterns(self, urlpatterns, test_paths):
-        factory = RequestFactory()
+        factory = APIRequestFactory()
         try:
             urlpatterns = format_suffix_patterns(urlpatterns)
         except Exception:

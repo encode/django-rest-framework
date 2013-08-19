@@ -26,6 +26,12 @@ def get_authorization_header(request):
     return auth
 
 
+class CSRFCheck(CsrfViewMiddleware):
+    def _reject(self, request, reason):
+        # Return the failure reason instead of an HttpResponse
+        return reason
+
+
 class BaseAuthentication(object):
     """
     All authentication classes should extend BaseAuthentication.
@@ -103,26 +109,26 @@ class SessionAuthentication(BaseAuthentication):
         """
 
         # Get the underlying HttpRequest object
-        http_request = request._request
-        user = getattr(http_request, 'user', None)
+        request = request._request
+        user = getattr(request, 'user', None)
 
         # Unauthenticated, CSRF validation not required
         if not user or not user.is_active:
             return None
 
-        # Enforce CSRF validation for session based authentication.
-        class CSRFCheck(CsrfViewMiddleware):
-            def _reject(self, request, reason):
-                # Return the failure reason instead of an HttpResponse
-                return reason
-
-        reason = CSRFCheck().process_view(http_request, None, (), {})
-        if reason:
-            # CSRF failed, bail with explicit error message
-            raise exceptions.AuthenticationFailed('CSRF Failed: %s' % reason)
+        self.enforce_csrf(request)
 
         # CSRF passed with authenticated user
         return (user, None)
+
+    def enforce_csrf(self, request):
+        """
+        Enforce CSRF validation for session based authentication.
+        """
+        reason = CSRFCheck().process_view(request, None, (), {})
+        if reason:
+            # CSRF failed, bail with explicit error message
+            raise exceptions.AuthenticationFailed('CSRF Failed: %s' % reason)
 
 
 class TokenAuthentication(BaseAuthentication):

@@ -308,6 +308,12 @@ By default, all the model fields on the class will be mapped to corresponding se
 
 Any relationships such as foreign keys on the model will be mapped to `PrimaryKeyRelatedField`.  Other models fields will be mapped to a corresponding serializer field.
 
+---
+
+**Note**: When validation is applied to a `ModelSerializer`, both the serializer fields, and their corresponding model fields must correctly validate.  If you have optional fields on your model, make sure to correctly set `blank=True` on the model field, as well as setting `required=False` on the serializer field.
+
+---
+
 ## Specifying which fields should be included
 
 If you only want a subset of the default fields to be used in a model serializer, you can do so using `fields` or `exclude` options, just as you would with a `ModelForm`.
@@ -397,7 +403,7 @@ You can change the field that is used for object lookups by setting the `lookup_
 
 Not that the `lookup_field` will be used as the default on *all* hyperlinked fields, including both the URL identity, and any hyperlinked relationships.
 
-For more specfic requirements such as specifying a different lookup for each field, you'll want to set the fields on the serializer explicitly.  For example:
+For more specific requirements such as specifying a different lookup for each field, you'll want to set the fields on the serializer explicitly.  For example:
 
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         url = serializers.HyperlinkedIdentityField(
@@ -423,7 +429,7 @@ You can create customized subclasses of `ModelSerializer` or `HyperlinkedModelSe
 
 Doing so should be considered advanced usage, and will only be needed if you have some particular serializer requirements that you often need to repeat.
 
-## Dynamically modifiying fields
+## Dynamically modifying fields
 
 Once a serializer has been initialized, the dictionary of fields that are set on the serializer may be accessed using the `.fields` attribute.  Accessing and modifying this attribute allows you to dynamically modify the serializer.
 
@@ -443,7 +449,7 @@ For example, if you wanted to be able to set which fields should be used by a se
             # Don't pass the 'fields' arg up to the superclass
             fields = kwargs.pop('fields', None)
             
-            # Instatiate the superclass normally
+            # Instantiate the superclass normally
             super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
     
             if fields:

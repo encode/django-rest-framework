@@ -38,7 +38,7 @@ The example above would generate the following URL patterns:
 ### Extra link and actions
 
 Any methods on the viewset decorated with `@link` or `@action` will also be routed.
-For example, a given method like this on the `UserViewSet` class:
+For example, given a method like this on the `UserViewSet` class:
 
     @action(permission_classes=[IsAdminOrIsSelf])
     def set_password(self, request, pk=None):
@@ -66,7 +66,7 @@ This router includes routes for the standard set of `list`, `create`, `retrieve`
     <tr><td>POST</td><td>@action decorated method</td></tr>
 </table>
 
-By default the URLs created by `SimpleRouter` are appending with a trailing slash.
+By default the URLs created by `SimpleRouter` are appended with a trailing slash.
 This behavior can be modified by setting the `trailing_slash` argument to `False` when instantiating the router.  For example:
 
     router = SimpleRouter(trailing_slash=False)
@@ -90,13 +90,13 @@ This router is similar to `SimpleRouter` as above, but additionally includes a d
     <tr><td>POST</td><td>@action decorated method</td></tr>
 </table>
 
-As with `SimpleRouter` the trailing slashs on the URL routes can be removed by setting the `trailing_slash` argument to `False` when instantiating the router.
+As with `SimpleRouter` the trailing slashes on the URL routes can be removed by setting the `trailing_slash` argument to `False` when instantiating the router.
 
     router = DefaultRouter(trailing_slash=False)
 
 # Custom Routers
 
-Implementing a custom router isn't something you'd need to do very often, but it can be useful if you have specific requirements about how the your URLs for your API are strutured.  Doing so allows you to encapsulate the URL structure in a reusable way that ensures you don't have to write your URL patterns explicitly for each new view.
+Implementing a custom router isn't something you'd need to do very often, but it can be useful if you have specific requirements about how the your URLs for your API are structured.  Doing so allows you to encapsulate the URL structure in a reusable way that ensures you don't have to write your URL patterns explicitly for each new view.
 
 The simplest way to implement a custom router is to subclass one of the existing router classes.  The `.routes` attribute is used to template the URL patterns that will be mapped to each viewset. The `.routes` attribute is a list of `Route` named tuples.
 
@@ -139,7 +139,7 @@ The `SimpleRouter` class provides another example of setting the `.routes` attri
 
 ## Advanced custom routers
 
-If you want to provide totally custom behavior, you can override `BaseRouter` and override the `get_urls(self)` method.  The method should insect the registered viewsets and return a list of URL patterns.  The registered prefix, viewset and basename tuples may be inspected by accessing the `self.registry` attribute.  
+If you want to provide totally custom behavior, you can override `BaseRouter` and override the `get_urls(self)` method.  The method should inspect the registered viewsets and return a list of URL patterns.  The registered prefix, viewset and basename tuples may be inspected by accessing the `self.registry` attribute.  
 
 You may also want to override the `get_default_base_name(self, viewset)` method, or else always explicitly set the `base_name` argument when registering your viewsets with the router.
 

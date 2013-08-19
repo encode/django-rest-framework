@@ -28,7 +28,7 @@ you should use the `api_settings` object.  For example.
     
     print api_settings.DEFAULT_AUTHENTICATION_CLASSES
 
-The `api_settings` object will check for any user-defined settings, and otherwise fallback to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.
+The `api_settings` object will check for any user-defined settings, and otherwise fall back to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.
 
 ---
 
@@ -149,6 +149,33 @@ Default: `None`
 
 ---
 
+## Test settings
+
+*The following settings control the behavior of APIRequestFactory and APIClient*
+
+#### TEST_REQUEST_DEFAULT_FORMAT
+
+The default format that should be used when making test requests.
+
+This should match up with the format of one of the renderer classes in the `TEST_REQUEST_RENDERER_CLASSES` setting.
+
+Default: `'multipart'`
+
+#### TEST_REQUEST_RENDERER_CLASSES
+
+The renderer classes that are supported when building test requests.
+
+The format of any of these renderer classes may be used when constructing a test request, for example: `client.post('/users', {'username': 'jamie'}, format='json')`
+
+Default:
+
+    (
+        'rest_framework.renderers.MultiPartRenderer',
+        'rest_framework.renderers.JSONRenderer'
+    )
+
+---
+
 ## Browser overrides
 
 *The following settings provide URL or form-based overrides of the default browser behavior.*
@@ -244,6 +271,40 @@ A list of format strings that should be used by default for parsing inputs to `T
 May be a list including the string `'iso-8601'` or Python [strftime format][strftime] strings.
 
 Default: `['iso-8601']`
+
+---
+
+## View names and descriptions
+
+**The following settings are used to generate the view names and descriptions, as used in responses to `OPTIONS` requests, and as used in the browsable API.**
+
+#### VIEW_NAME_FUNCTION
+
+A string representing the function that should be used when generating view names.
+
+This should be a function with the following signature:
+
+    view_name(cls, suffix=None)
+
+* `cls`: The view class.  Typically the name function would inspect the name of the class when generating a descriptive name, by accessing `cls.__name__`.
+* `suffix`: The optional suffix used when differentiating individual views in a viewset.
+
+Default: `'rest_framework.views.get_view_name'`
+
+#### VIEW_DESCRIPTION_FUNCTION
+
+A string representing the function that should be used when generating view descriptions.
+
+This setting can be changed to support markup styles other than the default markdown.  For example, you can use it to support `rst` markup in your view docstrings being output in the browsable API.
+
+This should be a function with the following signature:
+
+    view_description(cls, html=False)
+
+* `cls`: The view class.  Typically the description function would inspect the docstring of the class when generating a description, by accessing `cls.__doc__`
+* `html`: A boolean indicating if HTML output is required.  `True` when used in the browsable API, and `False` when used in generating `OPTIONS` responses.
+
+Default: `'rest_framework.views.get_view_description'`
 
 ---
 

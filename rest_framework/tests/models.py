@@ -52,7 +52,7 @@ class CallableDefaultValueModel(RESTFrameworkModel):
 
 
 class ManyToManyModel(RESTFrameworkModel):
-    rel = models.ManyToManyField(Anchor)
+    rel = models.ManyToManyField(Anchor, help_text='Some help text.')
 
 
 class ReadOnlyManyToManyModel(RESTFrameworkModel):

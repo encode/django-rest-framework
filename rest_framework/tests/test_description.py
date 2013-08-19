@@ -6,7 +6,6 @@ from rest_framework.compat import apply_markdown, smart_text
 from rest_framework.views import APIView
 from rest_framework.tests.description import ViewWithNonASCIICharactersInDocstring
 from rest_framework.tests.description import UTF8_TEST_DOCSTRING
-from rest_framework.utils.formatting import get_view_name, get_view_description
 
 # We check that docstrings get nicely un-indented.
 DESCRIPTION = """an example docstring
@@ -58,7 +57,7 @@ class TestViewNamesAndDescriptions(TestCase):
         """
         class MockView(APIView):
             pass
-        self.assertEqual(get_view_name(MockView), 'Mock')
+        self.assertEqual(MockView().get_view_name(), 'Mock')
 
     def test_view_description_uses_docstring(self):
         """Ensure view descriptions are based on the docstring."""
@@ -78,7 +77,7 @@ class TestViewNamesAndDescriptions(TestCase):
 
             # hash style header #"""
 
-        self.assertEqual(get_view_description(MockView), DESCRIPTION)
+        self.assertEqual(MockView().get_view_description(), DESCRIPTION)
 
     def test_view_description_supports_unicode(self):
         """
@@ -86,7 +85,7 @@ class TestViewNamesAndDescriptions(TestCase):
         """
 
         self.assertEqual(
-            get_view_description(ViewWithNonASCIICharactersInDocstring),
+            ViewWithNonASCIICharactersInDocstring().get_view_description(),
             smart_text(UTF8_TEST_DOCSTRING)
         )
 
@@ -97,7 +96,7 @@ class TestViewNamesAndDescriptions(TestCase):
         """
         class MockView(APIView):
             pass
-        self.assertEqual(get_view_description(MockView), '')
+        self.assertEqual(MockView().get_view_description(), '')
 
     def test_markdown(self):
         """

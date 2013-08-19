@@ -1,15 +1,15 @@
 from __future__ import unicode_literals
 from django.db import models
 from django.test import TestCase
-from django.test.client import RequestFactory
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import serializers, viewsets, permissions
 from rest_framework.compat import include, patterns, url
 from rest_framework.decorators import link, action
 from rest_framework.response import Response
 from rest_framework.routers import SimpleRouter, DefaultRouter
+from rest_framework.test import APIRequestFactory
 
-factory = RequestFactory()
+factory = APIRequestFactory()
 
 urlpatterns = patterns('',)
 
@@ -192,6 +192,7 @@ class TestActionKeywordArgs(TestCase):
             response.data,
             {'permission_classes': [permissions.AllowAny]}
         )
+
 
 class TestActionAppliedToExistingRoute(TestCase):
     """

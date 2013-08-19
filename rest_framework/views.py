@@ -8,11 +8,29 @@ from django.http import Http404
 from django.utils.datastructures import SortedDict
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
-from rest_framework.compat import View, HttpResponseBase
+from rest_framework.compat import smart_text, HttpResponseBase, View
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.utils.formatting import get_view_name, get_view_description
+from rest_framework.utils import formatting
+
+
+def get_view_name(cls, suffix=None):
+    name = cls.__name__
+    name = formatting.remove_trailing_string(name, 'View')
+    name = formatting.remove_trailing_string(name, 'ViewSet')
+    name = formatting.camelcase_to_spaces(name)
+    if suffix:
+        name += ' ' + suffix
+
+    return name
+
+def get_view_description(cls, html=False):
+    description = cls.__doc__ or ''
+    description = formatting.dedent(smart_text(description))
+    if html:
+        return formatting.markup_description(description)
+    return description
 
 
 class APIView(View):
@@ -109,6 +127,22 @@ class APIView(View):
             'kwargs': getattr(self, 'kwargs', {}),
             'request': getattr(self, 'request', None)
         }
+
+    def get_view_name(self):
+        """
+        Return the view name, as used in OPTIONS responses and in the
+        browsable API.
+        """
+        func = api_settings.VIEW_NAME_FUNCTION
+        return func(self.__class__, getattr(self, 'suffix', None))
+
+    def get_view_description(self, html=False):
+        """
+        Return some descriptive text for the view, as used in OPTIONS responses
+        and in the browsable API.
+        """
+        func = api_settings.VIEW_DESCRIPTION_FUNCTION
+        return func(self.__class__, html)
 
     # API policy instantiation methods
 
@@ -269,7 +303,7 @@ class APIView(View):
         Handle any exception that occurs, by returning an appropriate response,
         or re-raising the error.
         """
-        if isinstance(exc, exceptions.Throttled):
+        if isinstance(exc, exceptions.Throttled) and exc.wait is not None:
             # Throttle wait header
             self.headers['X-Throttle-Wait-Seconds'] = '%d' % exc.wait
 
@@ -342,16 +376,12 @@ class APIView(View):
         Return a dictionary of metadata about the view.
         Used to return responses for OPTIONS requests.
         """
-
-        # This is used by ViewSets to disambiguate instance vs list views
-        view_name_suffix = getattr(self, 'suffix', None)
-
         # By default we can't provide any form-like information, however the
         # generic views override this implementation and add additional
         # information for POST and PUT methods, based on the serializer.
         ret = SortedDict()
-        ret['name'] = get_view_name(self.__class__, view_name_suffix)
-        ret['description'] = get_view_description(self.__class__)
+        ret['name'] = self.get_view_name()
+        ret['description'] = self.get_view_description()
         ret['renders'] = [renderer.media_type for renderer in self.renderer_classes]
         ret['parses'] = [parser.media_type for parser in self.parser_classes]
         return ret
