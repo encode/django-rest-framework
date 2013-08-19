@@ -16,6 +16,7 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.db.models.fields import BLANK_CHOICE_DASH
+from django.http import QueryDict
 from django.forms import widgets
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
@@ -399,10 +400,15 @@ class BooleanField(WritableField):
     }
     empty = False
 
-    # Note: we set default to `False` in order to fill in missing value not
-    # supplied by html form.  TODO: Fix so that only html form input gets
-    # this behavior.
-    default = False
+    def field_from_native(self, data, files, field_name, into):
+        # HTML checkboxes do not explicitly represent unchecked as `False`
+        # we deal with that here...
+        if isinstance(data, QueryDict):
+            self.default = False
+
+        return super(BooleanField, self).field_from_native(
+            data, files, field_name, into
+        )
 
     def from_native(self, value):
         if value in ('true', 't', 'True', '1'):
