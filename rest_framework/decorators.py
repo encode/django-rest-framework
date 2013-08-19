@@ -108,6 +108,31 @@ def permission_classes(permission_classes):
     return decorator
 
 
+def detail_route(methods=['get'], **kwargs):
+    """
+    Used to mark a method on a ViewSet that should be routed for detail requests.
+    """
+    def decorator(func):
+        func.bind_to_methods = methods
+        func.detail = True
+        func.kwargs = kwargs
+        return func
+    return decorator
+
+
+def list_route(methods=['get'], **kwargs):
+    """
+    Used to mark a method on a ViewSet that should be routed for list requests.
+    """
+    def decorator(func):
+        func.bind_to_methods = methods
+        func.detail = False
+        func.kwargs = kwargs
+        return func
+    return decorator
+
+# These are now pending deprecation, in favor of `detail_route` and `list_route`.
+
 def link(**kwargs):
     """
     Used to mark a method on a ViewSet that should be routed for detail GET requests.
@@ -131,30 +156,6 @@ def action(methods=['post'], **kwargs):
     def decorator(func):
         func.bind_to_methods = methods
         func.detail = True
-        func.kwargs = kwargs
-        return func
-    return decorator
-
-
-def detail_route(methods=['get'], **kwargs):
-    """
-    Used to mark a method on a ViewSet that should be routed for detail requests.
-    """
-    def decorator(func):
-        func.bind_to_methods = methods
-        func.detail = True
-        func.kwargs = kwargs
-        return func
-    return decorator
-
-
-def list_route(methods=['get'], **kwargs):
-    """
-    Used to mark a method on a ViewSet that should be routed for list requests.
-    """
-    def decorator(func):
-        func.bind_to_methods = methods
-        func.detail = False
         func.kwargs = kwargs
         return func
     return decorator
