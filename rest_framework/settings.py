@@ -70,8 +70,8 @@ DEFAULTS = {
     'PAGINATE_BY_PARAM': None,
 
     # View configuration
-    'VIEW_NAME_FUNCTION': 'rest_framework.utils.formatting.view_name',
-    'VIEW_DESCRIPTION_FUNCTION': 'rest_framework.utils.formatting.view_description',
+    'VIEW_NAME_FUNCTION': 'rest_framework.views.get_view_name',
+    'VIEW_DESCRIPTION_FUNCTION': 'rest_framework.views.get_view_description',
 
     # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',

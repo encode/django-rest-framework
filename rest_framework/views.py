@@ -8,10 +8,29 @@ from django.http import Http404
 from django.utils.datastructures import SortedDict
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
-from rest_framework.compat import View, HttpResponseBase
+from rest_framework.compat import smart_text, HttpResponseBase, View
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
+from rest_framework.utils import formatting
+
+
+def get_view_name(instance, view, suffix=None):
+    name = view.__name__
+    name = formatting.remove_trailing_string(name, 'View')
+    name = formatting.remove_trailing_string(name, 'ViewSet')
+    name = formatting.camelcase_to_spaces(name)
+    if suffix:
+        name += ' ' + suffix
+
+    return name
+
+def get_view_description(instance, view, html=False):
+    description = view.__doc__ or ''
+    description = formatting.dedent(smart_text(description))
+    if html:
+        return formatting.markup_description(description)
+    return description
 
 
 class APIView(View):
