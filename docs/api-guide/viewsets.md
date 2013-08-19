@@ -61,7 +61,7 @@ There are two main advantages of using a `ViewSet` class over using a `View` cla
 
 Both of these come with a trade-off.  Using regular views and URL confs is more explicit and gives you more control.  ViewSets are helpful if you want to get up and running quickly, or when you have a large API and you want to enforce a consistent URL configuration throughout.
 
-## Marking extra methods for routing
+## Marking extra actions for routing
 
 The default routers included with REST framework will provide routes for a standard set of create/retrieve/update/destroy style operations, as shown below:
 
