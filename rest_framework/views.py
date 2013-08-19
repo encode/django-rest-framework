@@ -15,8 +15,8 @@ from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 
 
-def get_view_name(instance, view, suffix=None):
-    name = view.__name__
+def get_view_name(cls, suffix=None):
+    name = cls.__name__
     name = formatting.remove_trailing_string(name, 'View')
     name = formatting.remove_trailing_string(name, 'ViewSet')
     name = formatting.camelcase_to_spaces(name)
@@ -25,8 +25,8 @@ def get_view_name(instance, view, suffix=None):
 
     return name
 
-def get_view_description(instance, view, html=False):
-    description = view.__doc__ or ''
+def get_view_description(cls, html=False):
+    description = cls.__doc__ or ''
     description = formatting.dedent(smart_text(description))
     if html:
         return formatting.markup_description(description)
@@ -42,9 +42,6 @@ class APIView(View):
     throttle_classes = api_settings.DEFAULT_THROTTLE_CLASSES
     permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
     content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
-
-    view_name_function = api_settings.VIEW_NAME_FUNCTION
-    view_description_function = api_settings.VIEW_DESCRIPTION_FUNCTION
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -131,6 +128,22 @@ class APIView(View):
             'request': getattr(self, 'request', None)
         }
 
+    def get_view_name(self):
+        """
+        Return the view name, as used in OPTIONS responses and in the
+        browsable API.
+        """
+        func = api_settings.VIEW_NAME_FUNCTION
+        return func(self.__class__, getattr(self, 'suffix', None))
+
+    def get_view_description(self, html=False):
+        """
+        Return some descriptive text for the view, as used in OPTIONS responses
+        and in the browsable API.
+        """
+        func = api_settings.VIEW_DESCRIPTION_FUNCTION
+        return func(self.__class__, html)
+
     # API policy instantiation methods
 
     def get_format_suffix(self, **kwargs):
@@ -177,21 +190,6 @@ class APIView(View):
         if not getattr(self, '_negotiator', None):
             self._negotiator = self.content_negotiation_class()
         return self._negotiator
-
-    def get_view_name(self):
-        """
-        Get the view name
-        """
-        # This is used by ViewSets to disambiguate instance vs list views
-        view_name_suffix = getattr(self, 'suffix', None)
-
-        return self.view_name_function(self.__class__, view_name_suffix)
-
-    def get_view_description(self, html=False):
-        """
-        Get the view description
-        """
-        return self.view_description_function(self.__class__, html)
 
     # API policy implementation methods
 

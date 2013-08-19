@@ -274,6 +274,40 @@ Default: `['iso-8601']`
 
 ---
 
+## View names and descriptions
+
+**The following settings are used to generate the view names and descriptions, as used in responses to `OPTIONS` requests, and as used in the browsable API.**
+
+#### VIEW_NAME_FUNCTION
+
+A string representing the function that should be used when generating view names.
+
+This should be a function with the following signature:
+
+    view_name(cls, suffix=None)
+
+* `cls`: The view class.  Typically the name function would inspect the name of the class when generating a descriptive name, by accessing `cls.__name__`.
+* `suffix`: The optional suffix used when differentiating individual views in a viewset.
+
+Default: `'rest_framework.views.get_view_name'`
+
+#### VIEW_DESCRIPTION_FUNCTION
+
+A string representing the function that should be used when generating view descriptions.
+
+This setting can be changed to support markup styles other than the default markdown.  For example, you can use it to support `rst` markup in your view docstrings being output in the browsable API.
+
+This should be a function with the following signature:
+
+    view_description(cls, html=False)
+
+* `cls`: The view class.  Typically the description function would inspect the docstring of the class when generating a description, by accessing `cls.__doc__`
+* `html`: A boolean indicating if HTML output is required.  `True` when used in the browsable API, and `False` when used in generating `OPTIONS` responses.
+
+Default: `'rest_framework.views.get_view_description'`
+
+---
+
 ## Miscellaneous settings
 
 #### FORMAT_SUFFIX_KWARG
