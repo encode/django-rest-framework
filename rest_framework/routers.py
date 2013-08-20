@@ -273,3 +273,30 @@ class DefaultRouter(SimpleRouter):
             urls = format_suffix_patterns(urls)
 
         return urls
+
+
+class NestedSimpleRouter(SimpleRouter):
+    def __init__(self, parent_router, parent_prefix, *args, **kwargs):
+        self.parent_router = parent_router
+        self.parent_prefix = parent_prefix
+        self.nest_count = getattr(parent_router, 'nest_count', 0) +1
+        super(NestedSimpleRouter, self).__init__(*args, **kwargs)
+
+        parent_registry = filter(lambda registered: registered[0] == self.parent_prefix, self.parent_router.registry)
+        try:
+            parent_registry = parent_registry[0]
+            parent_prefix, parent_viewset, parent_basename = parent_registry
+        except:
+            raise RuntimeError('parent registered resource not found')
+
+        nested_routes = []
+        nest_prefix = 'nested_%i' % self.nest_count
+        parent_lookup_regex = parent_router.get_lookup_regex(parent_viewset, nest_prefix)
+        for route in self.routes:
+            route_contents = route.__dict__
+            parent_regex = '{parent_prefix}/{parent_lookup_regex}/'.format(parent_prefix=parent_prefix, parent_lookup_regex=parent_lookup_regex)
+
+            route_contents['url'] = route.url.replace('^', '^'+parent_regex)
+            nested_routes.append(Route(**route_contents))
+
+        self.routes = nested_routes
