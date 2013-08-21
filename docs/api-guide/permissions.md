@@ -28,6 +28,13 @@ If you're writing your own views and want to enforce object level permissions,
 you'll need to explicitly call the `.check_object_permissions(request, obj)` method on the view at the point at which you've retrieved the object.
 This will either raise a `PermissionDenied` or `NotAuthenticated` exception, or simply return if the view has the appropriate permissions.
 
+For example:
+
+    def get_object(self):
+        obj = get_object_or_404(self.get_queryset())
+        self.check_object_permissions(self.request, obj)
+        return obj
+
 ## Setting the permission policy
 
 The default permission policy may be set globally, using the `DEFAULT_PERMISSION_CLASSES` setting.  For example.
