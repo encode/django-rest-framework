@@ -47,6 +47,10 @@ If not specified, this setting defaults to allowing unrestricted access:
 You can also set the authentication policy on a per-view, or per-viewset basis,
 using the `APIView` class based views.
 
+    from rest_framework.permissions import IsAuthenticated
+	from rest_framework.responses import Response
+	from rest_framework.views import APIView
+
     class ExampleView(APIView):
         permission_classes = (IsAuthenticated,)
 
@@ -156,6 +160,8 @@ For more details see the [2.2 release announcement][2.2-announcement].
 ## Examples
 
 The following is an example of a permission class that checks the incoming request's IP address against a blacklist, and denies the request if the IP has been blacklisted.
+
+    from rest_framework import permissions
 
     class BlacklistPermission(permissions.BasePermission):
         """

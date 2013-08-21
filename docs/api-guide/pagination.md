@@ -13,6 +13,7 @@ REST framework includes a `PaginationSerializer` class that makes it easy to ret
 Let's start by taking a look at an example from the Django documentation.
 
     from django.core.paginator import Paginator
+
     objects = ['john', 'paul', 'george', 'ringo']
     paginator = Paginator(objects, 2)
     page = paginator.page(1)
@@ -22,6 +23,7 @@ Let's start by taking a look at an example from the Django documentation.
 At this point we've got a page object.  If we wanted to return this page object as a JSON response, we'd need to provide the client with context such as next and previous links, so that it would be able to page through the remaining results.
 
     from rest_framework.pagination import PaginationSerializer
+
     serializer = PaginationSerializer(instance=page)
     serializer.data
     # {'count': 4, 'next': '?page=2', 'previous': None, 'results': [u'john', u'paul']}
@@ -114,6 +116,9 @@ You can also override the name used for the object list field, by setting the `r
 
 For example, to nest a pair of links labelled 'prev' and 'next', and set the name for the results field to 'objects', you might use something like this.
 
+    from rest_framework import pagination
+    from rest_framework import serializers
+
     class LinksSerializer(serializers.Serializer):
         next = pagination.NextPageField(source='*')
         prev = pagination.PreviousPageField(source='*')
@@ -135,7 +140,7 @@ To have your custom pagination serializer be used by default, use the `DEFAULT_P
 
 Alternatively, to set your custom pagination serializer on a per-view basis, use the `pagination_serializer_class` attribute on a generic class based view:
 
-    class PaginatedListView(ListAPIView):
+    class PaginatedListView(generics.ListAPIView):
         model = ExampleModel
         pagination_serializer_class = CustomPaginationSerializer
         paginate_by = 10

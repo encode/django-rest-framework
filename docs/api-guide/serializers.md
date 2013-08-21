@@ -28,6 +28,8 @@ We'll declare a serializer that we can use to serialize and deserialize `Comment
 
 Declaring a serializer looks very similar to declaring a form:
 
+    from rest_framework import serializers
+
     class CommentSerializer(serializers.Serializer):
         email = serializers.EmailField()
         content = serializers.CharField(max_length=200)
@@ -59,6 +61,8 @@ We can now use `CommentSerializer` to serialize a comment, or list of comments. 
 
 At this point we've translated the model instance into Python native datatypes.  To finalise the serialization process we render the data into `json`.
 
+    from rest_framework.renderers import JSONRenderer
+
     json = JSONRenderer().render(serializer.data)
     json
     # '{"email": "leila@example.com", "content": "foo bar", "created": "2012-08-22T16:20:09.822"}'
@@ -66,6 +70,9 @@ At this point we've translated the model instance into Python native datatypes. 
 ## Deserializing objects
         
 Deserialization is similar.  First we parse a stream into Python native datatypes... 
+
+    from StringIO import StringIO
+    from rest_framework.parsers import JSONParser
 
     stream = StringIO(json)
     data = JSONParser().parse(stream)

@@ -76,7 +76,7 @@ This field is read only.
 For example, the following serializer:
  
     class AlbumSerializer(serializers.ModelSerializer):
-        tracks = PrimaryKeyRelatedField(many=True, read_only=True)
+        tracks = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
         
         class Meta:
             model = Album
@@ -110,8 +110,8 @@ By default this field is read-write, although you can change this behavior using
 For example, the following serializer:
  
     class AlbumSerializer(serializers.ModelSerializer):
-        tracks = HyperlinkedRelatedField(many=True, read_only=True,
-                                         view_name='track-detail')
+        tracks = serializers.HyperlinkedRelatedField(many=True, read_only=True,
+                                                     view_name='track-detail')
         
         class Meta:
             model = Album
@@ -148,7 +148,8 @@ By default this field is read-write, although you can change this behavior using
 For example, the following serializer:
  
     class AlbumSerializer(serializers.ModelSerializer):
-        tracks = SlugRelatedField(many=True, read_only=True, slug_field='title')
+        tracks = serializers.SlugRelatedField(many=True, read_only=True,
+                                              slug_field='title')
         
         class Meta:
             model = Album
@@ -183,7 +184,7 @@ When using `SlugRelatedField` as a read-write field, you will normally want to e
 This field can be applied as an identity relationship, such as the `'url'` field on  a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:
 
     class AlbumSerializer(serializers.HyperlinkedModelSerializer):
-        track_listing = HyperlinkedIdentityField(view_name='track-list')
+        track_listing = serializers.HyperlinkedIdentityField(view_name='track-list')
 
         class Meta:
             model = Album
