@@ -14,6 +14,15 @@ from rest_framework.settings import api_settings
 import warnings
 
 
+def strict_positive_int(integer_string):
+    """
+    Cast a string to a strictly positive integer.
+    """
+    ret = int(integer_string)
+    if ret <= 0:
+        raise ValueError()
+    return ret
+
 def get_object_or_404(queryset, **filter_kwargs):
     """
     Same as Django's standard shortcut, but make sure to raise 404
@@ -135,7 +144,7 @@ class GenericAPIView(views.APIView):
         page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
         page = page_kwarg or page_query_param or 1
         try:
-            page_number = int(page)
+            page_number = strict_positive_int(page)
         except ValueError:
             if page == 'last':
                 page_number = paginator.num_pages
