@@ -118,6 +118,8 @@ For example:
         self.check_object_permissions(self.request, obj)
         return obj
 
+Note that if your API doesn't include any object level permissions, you may optionally exclude the ``self.check_object_permissions, and simply return the object from the `get_object_or_404` lookup.
+
 #### `get_serializer_class(self)`
 
 Returns the class that should be used for the serializer.  Defaults to returning the `serializer_class` attribute, or dynamically generating a serializer class if the `model` shortcut is being used.
