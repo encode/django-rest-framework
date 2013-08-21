@@ -1643,3 +1643,72 @@ class SerializerSupportsManyRelationships(TestCase):
         serializer = SimpleSlugSourceModelSerializer(data={'text': 'foo', 'targets': [1, 2]})
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.data, {'text': 'foo', 'targets': [1, 2]})
+
+
+### Regression test for #1053
+
+class OverriddenFieldsBase1(serializers.Serializer):
+    a_field = serializers.CharField()
+
+
+class OverriddenFieldsBase2(serializers.Serializer):
+    a_field = serializers.IntegerField()
+
+
+class OverriddenFieldsWithSingleBase(OverriddenFieldsBase1):
+    a_field = serializers.FloatField()
+
+
+class OverriddenFieldsMultipleBases1(OverriddenFieldsBase1, OverriddenFieldsBase2):
+    # first base takes precedence; a_field should be a CharField.
+    pass
+
+
+class OverriddenFieldsMultipleBases2(OverriddenFieldsBase2, OverriddenFieldsBase1):
+    # first base takes precedence; a_field should be a IntegerField.
+    pass
+
+
+class OverriddenFieldsMultipleBasesOverridden(OverriddenFieldsBase1, OverriddenFieldsBase2):
+    a_field = serializers.FloatField()
+
+
+class SerializerSupportsOverriddenFields(TestCase):
+    def test_base_fields_unchanged(self):
+        self.assertIsInstance(
+            OverriddenFieldsBase1.base_fields['a_field'],
+            serializers.CharField,
+        )
+        s = OverriddenFieldsBase1()
+        self.assertIsInstance(s.fields['a_field'], serializers.CharField)
+
+    def test_overridden_fields_single_base(self):
+        self.assertIsInstance(
+            OverriddenFieldsWithSingleBase.base_fields['a_field'],
+            serializers.FloatField,
+        )
+        s = OverriddenFieldsWithSingleBase()
+        self.assertIsInstance(s.fields['a_field'], serializers.FloatField)
+
+    def test_overridden_fields_multiple_bases(self):
+        self.assertIsInstance(
+            OverriddenFieldsMultipleBases1.base_fields['a_field'],
+            serializers.CharField,
+        )
+        s = OverriddenFieldsMultipleBases1()
+        self.assertIsInstance(s.fields['a_field'], serializers.CharField)
+
+        self.assertIsInstance(
+            OverriddenFieldsMultipleBases2.base_fields['a_field'],
+            serializers.IntegerField,
+        )
+        s = OverriddenFieldsMultipleBases2()
+        self.assertIsInstance(s.fields['a_field'], serializers.IntegerField)
+
+    def test_overridden_fields_multiple_bases_overridden(self):
+        self.assertIsInstance(
+            OverriddenFieldsMultipleBasesOverridden.base_fields['a_field'],
+            serializers.FloatField,
+        )
+        s = OverriddenFieldsMultipleBasesOverridden()
+        self.assertIsInstance(s.fields['a_field'], serializers.FloatField)
