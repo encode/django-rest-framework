@@ -130,13 +130,7 @@ class RelatedField(WritableField):
             if self.source == '*':
                 return self.to_native(obj)
 
-            source = self.source or field_name
-            value = obj
-
-            for component in source.split('.'):
-                value = get_component(value, component)
-                if value is None:
-                    break
+            value = self._get_source_value(obj, field_name)
         except ObjectDoesNotExist:
             return None
 

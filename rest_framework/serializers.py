@@ -289,7 +289,8 @@ class BaseSerializer(WritableField):
         are instantiated.
         """
         if instance is not None:
-            instance.update(attrs)
+            for k, v in attrs.items():
+                self._set_source_value(instance, k, v)
             return instance
         return attrs
 
