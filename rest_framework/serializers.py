@@ -110,6 +110,16 @@ def _get_declared_fields(bases, attrs):
         if hasattr(base, 'base_fields'):
             fields = list(base.base_fields.items()) + fields
 
+    # Allow overriding of fields in subclasses, by
+    # removing the superclass fields from this list.
+    # (otherwise SortedDict will squash the subclass' field and
+    # use the superclass field instead.)
+    seen = {}
+    for i, (name, field) in reversed(list(enumerate(fields))):
+        if name in seen:
+            fields.pop(seen[name])
+        seen[name] = i
+
     return SortedDict(fields)
 
 
