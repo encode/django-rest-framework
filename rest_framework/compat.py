@@ -10,7 +10,7 @@ import django
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 
-# Try to import six from Django, fallback to included `six`.
+# Try to import six from Django, fallback to external `six` package.
 try:
     from django.utils import six
 except ImportError:
