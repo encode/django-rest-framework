@@ -14,7 +14,7 @@ from django.conf import settings
 try:
     from django.utils import six
 except ImportError:
-    from rest_framework import six
+    import six
 
 # location of patterns, url, include changes in 1.4 onwards
 try:
