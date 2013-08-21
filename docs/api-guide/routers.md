@@ -35,12 +35,12 @@ The example above would generate the following URL patterns:
 * URL pattern: `^accounts/$`  Name: `'account-list'`
 * URL pattern: `^accounts/{pk}/$`  Name: `'account-detail'`
 
-### Extra link and actions
+### Registering additional routes
 
-Any methods on the viewset decorated with `@link` or `@action` will also be routed.
+Any methods on the viewset decorated with `@detail_route` or `@list_route` will also be routed.
 For example, given a method like this on the `UserViewSet` class:
 
-    @action(permission_classes=[IsAdminOrIsSelf])
+    @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf])
     def set_password(self, request, pk=None):
         ...
 
@@ -48,22 +48,24 @@ The following URL pattern would additionally be generated:
 
 * URL pattern: `^users/{pk}/set_password/$`  Name: `'user-set-password'`
 
+For more information see the viewset documentation on [marking extra actions for routing][route-decorators].
+
 # API Guide
 
 ## SimpleRouter
 
-This router includes routes for the standard set of `list`, `create`, `retrieve`, `update`, `partial_update` and `destroy` actions.  The viewset can also mark additional methods to be routed, using the `@link` or `@action` decorators.
+This router includes routes for the standard set of `list`, `create`, `retrieve`, `update`, `partial_update` and `destroy` actions.  The viewset can also mark additional methods to be routed, using the `@detail_route` or `@list_route` decorators.
 
 <table border=1>
     <tr><th>URL Style</th><th>HTTP Method</th><th>Action</th><th>URL Name</th></tr>
     <tr><td rowspan=2>{prefix}/</td><td>GET</td><td>list</td><td rowspan=2>{basename}-list</td></tr></tr>
     <tr><td>POST</td><td>create</td></tr>
+    <tr><td>{prefix}/{methodname}/</td><td>GET, or as specified by `methods` argument</td><td>`@list_route` decorated method</td><td>{basename}-{methodname}</td></tr>
     <tr><td rowspan=4>{prefix}/{lookup}/</td><td>GET</td><td>retrieve</td><td rowspan=4>{basename}-detail</td></tr></tr>
     <tr><td>PUT</td><td>update</td></tr>
     <tr><td>PATCH</td><td>partial_update</td></tr>
     <tr><td>DELETE</td><td>destroy</td></tr>
-    <tr><td rowspan=2>{prefix}/{lookup}/{methodname}/</td><td>GET</td><td>@link decorated method</td><td rowspan=2>{basename}-{methodname}</td></tr>
-    <tr><td>POST</td><td>@action decorated method</td></tr>
+    <tr><td>{prefix}/{lookup}/{methodname}/</td><td>GET, or as specified by `methods` argument</td><td>`@detail_route` decorated method</td><td>{basename}-{methodname}</td></tr>
 </table>
 
 By default the URLs created by `SimpleRouter` are appended with a trailing slash.
@@ -82,12 +84,12 @@ This router is similar to `SimpleRouter` as above, but additionally includes a d
     <tr><td>[.format]</td><td>GET</td><td>automatically generated root view</td><td>api-root</td></tr></tr>
     <tr><td rowspan=2>{prefix}/[.format]</td><td>GET</td><td>list</td><td rowspan=2>{basename}-list</td></tr></tr>
     <tr><td>POST</td><td>create</td></tr>
+    <tr><td>{prefix}/{methodname}/[.format]</td><td>GET, or as specified by `methods` argument</td><td>`@list_route` decorated method</td><td>{basename}-{methodname}</td></tr>
     <tr><td rowspan=4>{prefix}/{lookup}/[.format]</td><td>GET</td><td>retrieve</td><td rowspan=4>{basename}-detail</td></tr></tr>
     <tr><td>PUT</td><td>update</td></tr>
     <tr><td>PATCH</td><td>partial_update</td></tr>
     <tr><td>DELETE</td><td>destroy</td></tr>
-    <tr><td rowspan=2>{prefix}/{lookup}/{methodname}/[.format]</td><td>GET</td><td>@link decorated method</td><td rowspan=2>{basename}-{methodname}</td></tr>
-    <tr><td>POST</td><td>@action decorated method</td></tr>
+    <tr><td>{prefix}/{lookup}/{methodname}/[.format]</td><td>GET, or as specified by `methods` argument</td><td>`@detail_route` decorated method</td><td>{basename}-{methodname}</td></tr>
 </table>
 
 As with `SimpleRouter` the trailing slashes on the URL routes can be removed by setting the `trailing_slash` argument to `False` when instantiating the router.
@@ -144,3 +146,4 @@ If you want to provide totally custom behavior, you can override `BaseRouter` an
 You may also want to override the `get_default_base_name(self, viewset)` method, or else always explicitly set the `base_name` argument when registering your viewsets with the router.
 
 [cite]: http://guides.rubyonrails.org/routing.html
+[route-decorators]: viewsets.html#marking-extra-actions-for-routing
