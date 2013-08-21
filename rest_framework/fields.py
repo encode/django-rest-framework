@@ -69,6 +69,9 @@ def set_component(obj, attr_name, value):
     if isinstance(obj, dict):
         obj[attr_name] = value
     else:
+        attr = getattr(obj, attr_name)
+        if six.callable(attr):
+            raise TypeError("%r.%s is a method; can't set it" % (obj, attr_name))
         setattr(obj, attr_name, value)
 
 
@@ -336,10 +339,6 @@ class WritableField(Field):
         item = obj
         for component in parts:
             item = get_component(item, component)
-            if item is None:
-                raise ValueError(
-                    "can't set %r: component %r is None" % (source, component)
-                )
         set_component(item, last_source_part, value)
 
     def field_from_native(self, data, files, field_name, into):
