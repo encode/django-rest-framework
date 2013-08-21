@@ -46,6 +46,11 @@ The default authentication schemes may be set globally, using the `DEFAULT_AUTHE
 You can also set the authentication scheme on a per-view or per-viewset basis,
 using the `APIView` class based views.
 
+    from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+    from rest_framework.permissions import IsAuthenticated
+    from rest_framework.response import Response
+    from rest_framework.views import APIView
+
     class ExampleView(APIView):
         authentication_classes = (SessionAuthentication, BasicAuthentication)
         permission_classes = (IsAuthenticated,)
@@ -157,10 +162,15 @@ The `curl` command line tool may be useful for testing token authenticated APIs.
 
 If you want every user to have an automatically generated Token, you can simply catch the User's `post_save` signal.
 
+    from django.dispatch import receiver
+    from rest_framework.authtoken.models import Token
+
     @receiver(post_save, sender=User)
     def create_auth_token(sender, instance=None, created=False, **kwargs):
         if created:
             Token.objects.create(user=instance)
+
+Note that you'll want to ensure you place this code snippet in an installed `models.py` module, or some other location that will be imported by Django on startup.
 
 If you've already created some users, you can generate tokens for all existing users like this:
 
@@ -335,6 +345,10 @@ If the `.authenticate_header()` method is not overridden, the authentication sch
 ## Example
 
 The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X_USERNAME'.
+
+	from django.contrib.auth.models import User
+    from rest_framework import authentication
+    from rest_framework import exceptions
 
     class ExampleAuthentication(authentication.BaseAuthentication):
         def authenticate(self, request):

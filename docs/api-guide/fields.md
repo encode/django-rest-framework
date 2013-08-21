@@ -78,6 +78,9 @@ A generic, **read-only** field.  You can use this field for any attribute that d
 
 For example, using the following model.
 
+    from django.db import models
+    from django.utils.timezone import now
+
     class Account(models.Model):
         owner = models.ForeignKey('auth.user')
         name = models.CharField(max_length=100)
@@ -85,13 +88,14 @@ For example, using the following model.
         payment_expiry = models.DateTimeField()
         
         def has_expired(self):
-            now = datetime.datetime.now()
-            return now > self.payment_expiry
+            return now() > self.payment_expiry
 
 A serializer definition that looked like this:
 
+    from rest_framework import serializers
+
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
-        expired = Field(source='has_expired')
+        expired = serializers.Field(source='has_expired')
         
         class Meta:
             fields = ('url', 'owner', 'name', 'expired')
@@ -125,12 +129,11 @@ The `ModelField` class is generally intended for internal use, but can be used b
 
 This is a read-only field.  It gets its value by calling a method on the serializer class it is attached to.  It can be used to add any sort of data to the serialized representation of your object.  The field's constructor accepts a single argument, which is the name of the method on the serializer to be called.  The method should accept a single argument (in addition to `self`), which is the object being serialized.  It should return whatever you want to be included in the serialized representation of the object.  For example:
 
-    from rest_framework import serializers
     from django.contrib.auth.models import User
     from django.utils.timezone import now
+    from rest_framework import serializers
 
     class UserSerializer(serializers.ModelSerializer):
-
         days_since_joined = serializers.SerializerMethodField('get_days_since_joined')
 
         class Meta:

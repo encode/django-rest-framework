@@ -19,6 +19,12 @@ Typically, rather than explicitly registering the views in a viewset in the urlc
 
 Let's define a simple viewset that can be used to list or retrieve all the users in the system.
 
+    from django.contrib.auth.models import User
+    from django.shortcuts import get_object_or_404
+    from myapps.serializers import UserSerializer
+    from rest_framework import viewsets
+    from rest_framewor.responses import Response
+
     class UserViewSet(viewsets.ViewSet):
         """
         A simple ViewSet that for listing or retrieving users.
@@ -40,6 +46,9 @@ If we need to, we can bind this viewset into two separate views, like so:
     user_detail = UserViewSet.as_view({'get': 'retrieve'})
 
 Typically we wouldn't do this, but would instead register the viewset with a router, and allow the urlconf to be automatically generated.
+
+    from myapp.views import UserViewSet
+    from rest_framework.routers import DefaultRouter
 
     router = DefaultRouter()
     router.register(r'users', UserViewSet)

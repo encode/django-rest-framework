@@ -896,3 +896,12 @@ class CustomIntegerField(TestCase):
         self.assertFalse(serializer.is_valid())
 
 
+class BooleanField(TestCase):
+    """
+        Tests for BooleanField
+    """
+    def test_boolean_required(self):
+        class BooleanRequiredSerializer(serializers.Serializer):
+            bool_field = serializers.BooleanField(required=True)
+
+        self.assertFalse(BooleanRequiredSerializer(data={}).is_valid())

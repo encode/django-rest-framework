@@ -30,11 +30,16 @@ The default set of renderers may be set globally, using the `DEFAULT_RENDERER_CL
 You can also set the renderers used for an individual view, or viewset,
 using the `APIView` class based views.
 
+    from django.contrib.auth.models import User
+    from rest_framework.renderers import JSONRenderer, YAMLRenderer
+    from rest_framework.response import Response
+    from rest_framework.views import APIView
+
     class UserCountView(APIView):
         """
-        A view that returns the count of active users, in JSON or JSONp.
+        A view that returns the count of active users, in JSON or YAML.
         """
-        renderer_classes = (JSONRenderer, JSONPRenderer)
+        renderer_classes = (JSONRenderer, YAMLRenderer)
 
         def get(self, request, format=None):
             user_count = User.objects.filter(active=True).count()

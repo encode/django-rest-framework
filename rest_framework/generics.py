@@ -144,7 +144,7 @@ class GenericAPIView(views.APIView):
         page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
         page = page_kwarg or page_query_param or 1
         try:
-            page_number = int(page)
+            page_number = strict_positive_int(page)
         except ValueError:
             if page == 'last':
                 page_number = paginator.num_pages

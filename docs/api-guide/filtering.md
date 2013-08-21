@@ -20,6 +20,10 @@ You can do so by filtering based on the value of `request.user`.
 
 For example:
 
+    from myapp.models import Purchase
+    from myapp.serializers import PurchaseSerializer
+    from rest_framework import generics
+
     class PurchaseList(generics.ListAPIView)
         serializer_class = PurchaseSerializer
  
@@ -90,6 +94,11 @@ The default filter backends may be set globally, using the `DEFAULT_FILTER_BACKE
 You can also set the filter backends on a per-view, or per-viewset basis,
 using the `GenericAPIView` class based views.
 
+    from django.contrib.auth.models import User
+	from myapp.serializers import UserSerializer
+    from rest_framework import filters
+	from rest_framework import generics
+
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
         serializer = UserSerializer
@@ -149,6 +158,11 @@ This will automatically create a `FilterSet` class for the given fields, and wil
 #### Specifying a FilterSet
 
 For more advanced filtering requirements you can specify a `FilterSet` class that should be used by the view.  For example:
+
+    import django_filters
+    from myapp.models import Product
+    from myapp.serializers import ProductSerializer
+    from rest_framework import generics
 
     class ProductFilter(django_filters.FilterSet):
         min_price = django_filters.NumberFilter(lookup_type='gte')

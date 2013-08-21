@@ -27,13 +27,13 @@ Has the same behavior as [`django.core.urlresolvers.reverse`][reverse], except t
 
 You should **include the request as a keyword argument** to the function, for example:
 
-    import datetime
     from rest_framework.reverse import reverse
     from rest_framework.views import APIView
+	from django.utils.timezone import now
    
 	class APIRootView(APIView):
 	    def get(self, request):
-	        year = datetime.datetime.now().year
+	        year = now().year
 			data = {
  				...
     		    'year-summary-url': reverse('year-summary', args=[year], request=request)

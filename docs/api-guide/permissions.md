@@ -25,8 +25,16 @@ Object level permissions are run by REST framework's generic views when `.get_ob
 As with view level permissions, an `exceptions.PermissionDenied` exception will be raised if the user is not allowed to act on the given object.
 
 If you're writing your own views and want to enforce object level permissions,
-you'll need to explicitly call the `.check_object_permissions(request, obj)` method on the view at the point at which you've retrieved the object.
+or if you override the `get_object` method on a generic view, then you'll need to explicitly call the `.check_object_permissions(request, obj)` method on the view at the point at which you've retrieved the object.
+
 This will either raise a `PermissionDenied` or `NotAuthenticated` exception, or simply return if the view has the appropriate permissions.
+
+For example:
+
+    def get_object(self):
+        obj = get_object_or_404(self.get_queryset())
+        self.check_object_permissions(self.request, obj)
+        return obj
 
 ## Setting the permission policy
 
@@ -46,6 +54,10 @@ If not specified, this setting defaults to allowing unrestricted access:
 
 You can also set the authentication policy on a per-view, or per-viewset basis,
 using the `APIView` class based views.
+
+    from rest_framework.permissions import IsAuthenticated
+	from rest_framework.responses import Response
+	from rest_framework.views import APIView
 
     class ExampleView(APIView):
         permission_classes = (IsAuthenticated,)
@@ -156,6 +168,8 @@ For more details see the [2.2 release announcement][2.2-announcement].
 ## Examples
 
 The following is an example of a permission class that checks the incoming request's IP address against a blacklist, and denies the request if the IP has been blacklisted.
+
+    from rest_framework import permissions
 
     class BlacklistPermission(permissions.BasePermission):
         """

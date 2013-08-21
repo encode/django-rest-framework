@@ -46,6 +46,7 @@ You can determine your currently installed version using `pip freeze`:
 * `six` no longer bundled.  For Django <= 1.4.1, install `six` package.
 * Support customizable view name and description functions, using the `VIEW_NAME_FUNCTION` and `VIEW_DESCRIPTION_FUNCTION` settings.
 * Bugfix: `?page_size=0` query parameter now falls back to default page size for view, instead of always turning pagination off.
+* Bugfix: `required=True` argument fixed for boolean serializer fields.
 
 ### 2.3.7
 

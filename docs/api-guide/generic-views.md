@@ -17,6 +17,11 @@ If the generic views don't suit the needs of your API, you can drop down to usin
 
 Typically when using the generic views, you'll override the view, and set several class attributes.
 
+    from django.contrib.auth.models import User
+    from myapp.serializers import UserSerializer
+	from rest_framework import generics
+	from rest_framework.permissions import IsAdminUser
+
     class UserList(generics.ListCreateAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
@@ -108,7 +113,12 @@ For example:
         filter = {}
         for field in self.multiple_lookup_fields:
             filter[field] = self.kwargs[field]
-        return get_object_or_404(queryset, **filter)
+
+        obj = get_object_or_404(queryset, **filter)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+Note that if your API doesn't include any object level permissions, you may optionally exclude the ``self.check_object_permissions, and simply return the object from the `get_object_or_404` lookup.
 
 #### `get_serializer_class(self)`
 
