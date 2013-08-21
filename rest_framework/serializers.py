@@ -106,21 +106,29 @@ def _get_declared_fields(bases, attrs):
     # If this class is subclassing another Serializer, add that Serializer's
     # fields.  Note that we loop over the bases in *reverse*. This is necessary
     # in order to maintain the correct order of fields.
+    # Note: The 'seen' dict here ensures that the fields from the 'first' base
+    # take precedence over fields from later bases.
+    # (otherwise SortedDict will squash the first-base field and
+    # use the field from a later base instead.)
+    seen = set()
+    base_fields_map = {}
+    base_fields_order = []
     for base in bases[::-1]:
         if hasattr(base, 'base_fields'):
-            fields = list(base.base_fields.items()) + fields
+            for name, field in base.base_fields.items():
+                base_fields_map[name] = field
+            base_fields_order = list(base.base_fields.keys()) + base_fields_order
 
-    # Allow overriding of fields in subclasses, by
-    # removing the superclass fields from this list.
-    # (otherwise SortedDict will squash the subclass' field and
-    # use the superclass field instead.)
-    seen = {}
-    for i, (name, field) in reversed(list(enumerate(fields))):
-        if name in seen:
-            fields.pop(seen[name])
-        seen[name] = i
+    seen = set()
+    base_fields = []
+    for name in base_fields_order:
+        if name not in seen:
+            base_fields.append((name, base_fields_map[name]))
+        seen.add(name)
 
-    return SortedDict(fields)
+    # if there are fields in both base_fields and fields, SortedDict
+    # uses the *last* one defined. So fields needs to go last.
+    return SortedDict(base_fields + fields)
 
 
 class SerializerMetaclass(type):
