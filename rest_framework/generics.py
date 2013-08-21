@@ -14,6 +14,15 @@ from rest_framework.settings import api_settings
 import warnings
 
 
+def strict_positive_int(integer_string):
+    """
+    Cast a string to a strictly positive integer.
+    """
+    ret = int(integer_string)
+    if ret <= 0:
+        raise ValueError()
+    return ret
+
 def get_object_or_404(queryset, **filter_kwargs):
     """
     Same as Django's standard shortcut, but make sure to raise 404
@@ -198,7 +207,7 @@ class GenericAPIView(views.APIView):
         if self.paginate_by_param:
             query_params = self.request.QUERY_PARAMS
             try:
-                return int(query_params[self.paginate_by_param])
+                return strict_positive_int(query_params[self.paginate_by_param])
             except (KeyError, ValueError):
                 pass
 
