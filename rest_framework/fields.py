@@ -60,6 +60,21 @@ def get_component(obj, attr_name):
     return val
 
 
+def set_component(obj, attr_name, value):
+    """
+    Given an object, and an attribute name, set that attribute on the object.
+    Mirrors get_component, except set_component doesn't handle callable
+    components.
+    """
+    if isinstance(obj, dict):
+        obj[attr_name] = value
+    else:
+        attr = getattr(obj, attr_name)
+        if six.callable(attr):
+            raise TypeError("%r.%s is a method; can't set it" % (obj, attr_name))
+        setattr(obj, attr_name, value)
+
+
 def readable_datetime_formats(formats):
     format = ', '.join(formats).replace(ISO_8601,
              'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]')
@@ -138,6 +153,24 @@ class Field(object):
         if help_text is not None:
             self.help_text = strip_multiple_choice_msg(smart_text(help_text))
 
+    def _get_source_value(self, obj, field_name):
+        """
+        Given an object and a field name, traverses the components in
+        self.source/field_name and returns the source value from the object.
+
+        The source/field_name may contain dot-separated components.
+        Each component should refer to an attribute, a dict key, or a
+        callable with no arguments.
+        """
+        source = self.source or field_name
+        value = obj
+
+        for component in source.split('.'):
+            value = get_component(value, component)
+            if value is None:
+                break
+        return value
+
     def initialize(self, parent, field_name):
         """
         Called to set up a field prior to field_to_native or field_from_native.
@@ -170,13 +203,7 @@ class Field(object):
         if self.source == '*':
             return self.to_native(obj)
 
-        source = self.source or field_name
-        value = obj
-
-        for component in source.split('.'):
-            value = get_component(value, component)
-            if value is None:
-                break
+        value = self._get_source_value(obj, field_name)
 
         return self.to_native(value)
 
@@ -296,6 +323,23 @@ class WritableField(Field):
                     errors.extend(e.messages)
         if errors:
             raise ValidationError(errors)
+
+    def _set_source_value(self, obj, field_name, value):
+        """
+        Looks up a field on the given object and sets its value.
+        Uses self.source if set, otherwise the given field name.
+
+        This obeys the same rules as _get_source_value, except that the
+        final component of self.source/field_name can't be a callable.
+        """
+        source = self.source or field_name
+        parts = source.split('.')
+        last_source_part = parts.pop()
+
+        item = obj
+        for component in parts:
+            item = get_component(item, component)
+        set_component(item, last_source_part, value)
 
     def field_from_native(self, data, files, field_name, into):
         """
