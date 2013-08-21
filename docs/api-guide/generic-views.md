@@ -113,7 +113,10 @@ For example:
         filter = {}
         for field in self.multiple_lookup_fields:
             filter[field] = self.kwargs[field]
-        return get_object_or_404(queryset, **filter)
+
+        obj = get_object_or_404(queryset, **filter)
+        self.check_object_permissions(self.request, obj)
+        return obj
 
 #### `get_serializer_class(self)`
 
