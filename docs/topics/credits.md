@@ -159,6 +159,7 @@ The following people have helped make REST framework great.
 * Jeremy Satterfield - [jsatt]
 * Christopher Paolini - [chrispaolini]
 * Filipe A Ximenes - [filipeximenes]
+* Ramiro Morales - [ramiro]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -354,3 +355,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [jsatt]: https://github.com/jsatt
 [chrispaolini]: https://github.com/chrispaolini
 [filipeximenes]: https://github.com/filipeximenes
+[ramiro]: https://github.com/ramiro
