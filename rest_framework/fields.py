@@ -308,7 +308,10 @@ class WritableField(Field):
         try:
             if self.use_files:
                 files = files or {}
-                native = files[field_name]
+                try:
+                    native = files[field_name]
+                except KeyError:
+                    native = data[field_name]
             else:
                 native = data[field_name]
         except KeyError:
