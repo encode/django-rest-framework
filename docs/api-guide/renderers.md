@@ -88,7 +88,7 @@ The client may additionally include an `'indent'` media type parameter, in which
 
 **.format**: `'.json'`
 
-**.charset**: `utf-8`
+**.charset**: `None`
 
 ## UnicodeJSONRenderer
 
@@ -110,7 +110,7 @@ Both the `JSONRenderer` and `UnicodeJSONRenderer` styles conform to [RFC 4627][r
 
 **.format**: `'.json'`
 
-**.charset**: `utf-8`
+**.charset**: `None`
 
 ## JSONPRenderer
 
@@ -295,12 +295,15 @@ By default renderer classes are assumed to be using the `UTF-8` encoding.  To us
 
 Note that if a renderer class returns a unicode string, then the response content will be coerced into a bytestring by the `Response` class, with the `charset` attribute set on the renderer used to determine the encoding.
 
-If the renderer returns a bytestring representing raw binary content, you should set a charset value of `None`, which will ensure the `Content-Type` header of the response will not have a `charset` value set.  Doing so will also ensure that the browsable API will not attempt to display the binary content as a string.
+If the renderer returns a bytestring representing raw binary content, you should set a charset value of `None`, which will ensure the `Content-Type` header of the response will not have a `charset` value set.
+
+In some cases you may also want to set the `render_style` attribute to `'binary'`.  Doing so will also ensure that the browsable API will not attempt to display the binary content as a string.
 
     class JPEGRenderer(renderers.BaseRenderer):
         media_type = 'image/jpeg'
         format = 'jpg'
         charset = None
+        render_style = 'binary'
 
         def render(self, data, media_type=None, renderer_context=None):
             return data
