@@ -44,6 +44,7 @@ You can determine your currently installed version using `pip freeze`:
 
 * Support customizable view name and description functions, using the `VIEW_NAME_FUNCTION` and `VIEW_DESCRIPTION_FUNCTION` settings.
 * Bugfix: `required=True` argument fixed for boolean serializer fields.
+* Bugfix: `client.force_authenticate(None)` should also clear session info if it exists.
 
 ### 2.3.7
 

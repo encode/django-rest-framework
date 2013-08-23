@@ -17,8 +17,18 @@ def view(request):
     })
 
 
+@api_view(['GET', 'POST'])
+def session_view(request):
+    active_session = request.session.get('active_session', False)
+    request.session['active_session'] = True
+    return Response({
+        'active_session': active_session
+    })
+
+
 urlpatterns = patterns('',
     url(r'^view/$', view),
+    url(r'^session-view/$', session_view),
 )
 
 
@@ -45,6 +55,26 @@ class TestAPITestClient(TestCase):
         self.client.force_authenticate(user)
         response = self.client.get('/view/')
         self.assertEqual(response.data['user'], 'example')
+
+    def test_force_authenticate_with_sessions(self):
+        """
+        Setting `.force_authenticate()` forcibly authenticates each request.
+        """
+        user = User.objects.create_user('example', 'example@example.com')
+        self.client.force_authenticate(user)
+
+        # First request does not yet have an active session
+        response = self.client.get('/session-view/')
+        self.assertEqual(response.data['active_session'], False)
+
+        # Subsequant requests have an active session
+        response = self.client.get('/session-view/')
+        self.assertEqual(response.data['active_session'], True)
+
+        # Force authenticating as `None` should also logout the user session.
+        self.client.force_authenticate(None)
+        response = self.client.get('/session-view/')
+        self.assertEqual(response.data['active_session'], False)
 
     def test_csrf_exempt_by_default(self):
         """
