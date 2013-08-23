@@ -212,6 +212,18 @@ You can use `TemplateHTMLRenderer` either to return regular HTML pages using RES
 
 See also: `TemplateHTMLRenderer`
 
+## HTMLFormRenderer
+
+Renders data returned by a serializer into an HTML form.  The output of this renderer does not include the enclosing `<form>` tags or an submit actions, as you'll probably need those to include the desired method and URL.  Also note that the `HTMLFormRenderer` does not yet support including field error messages.
+
+**.media_type**: `text/html`
+
+**.format**: `'.form'`
+
+**.charset**: `utf-8`
+
+**.template**: `'rest_framework/form.html'`
+
 ## BrowsableAPIRenderer
 
 Renders data into HTML for the Browsable API.  This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.
@@ -221,6 +233,8 @@ Renders data into HTML for the Browsable API.  This renderer will determine whic
 **.format**: `'.api'`
 
 **.charset**: `utf-8`
+
+**.template**: `'rest_framework/api.html'`
 
 #### Customizing BrowsableAPIRenderer
 
