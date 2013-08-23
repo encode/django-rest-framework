@@ -69,3 +69,14 @@ class FileSerializerTests(TestCase):
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.object.created, uploaded_file.created)
         self.assertIsNone(serializer.object.file)
+
+    def test_validation_error_with_non_file(self):
+        """
+        Passing non-files should raise a validation error.
+        """
+        now = datetime.datetime.now()
+        errmsg = 'No file was submitted. Check the encoding type on the form.'
+
+        serializer = UploadedFileSerializer(data={'created': now, 'file': 'abc'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors, {'file': [errmsg]})
