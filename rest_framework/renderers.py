@@ -36,6 +36,7 @@ class BaseRenderer(object):
     media_type = None
     format = None
     charset = 'utf-8'
+    render_style = 'text'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         raise NotImplemented('Renderer class requires .render() to be implemented')
@@ -51,16 +52,17 @@ class JSONRenderer(BaseRenderer):
     format = 'json'
     encoder_class = encoders.JSONEncoder
     ensure_ascii = True
-    charset = 'utf-8'
-    # Note that JSON encodings must be utf-8, utf-16 or utf-32.
+    charset = None
+    # JSON is a binary encoding, that can be encoded as utf-8, utf-16 or utf-32.
     # See: http://www.ietf.org/rfc/rfc4627.txt
+    # Also: http://lucumr.pocoo.org/2013/7/19/application-mimetypes-and-encodings/
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Render `data` into JSON.
         """
         if data is None:
-            return ''
+            return bytes()
 
         # If 'indent' is provided in the context, then pretty print the result.
         # E.g. If we're being called by the BrowsableAPIRenderer.
@@ -85,13 +87,12 @@ class JSONRenderer(BaseRenderer):
         # and may (or may not) be unicode.
         # On python 3.x json.dumps() returns unicode strings.
         if isinstance(ret, six.text_type):
-            return bytes(ret.encode(self.charset))
+            return bytes(ret.encode('utf-8'))
         return ret
 
 
 class UnicodeJSONRenderer(JSONRenderer):
     ensure_ascii = False
-    charset = 'utf-8'
     """
     Renderer which serializes to JSON.
     Does *not* apply JSON's character escaping for non-ascii characters.
@@ -108,6 +109,7 @@ class JSONPRenderer(JSONRenderer):
     format = 'jsonp'
     callback_parameter = 'callback'
     default_callback = 'callback'
+    charset = 'utf-8'
 
     def get_callback(self, renderer_context):
         """
@@ -348,7 +350,10 @@ class BrowsableAPIRenderer(BaseRenderer):
         renderer_context['indent'] = 4
         content = renderer.render(data, accepted_media_type, renderer_context)
 
-        if renderer.charset is None:
+        render_style = getattr(renderer, 'render_style', 'text')
+        assert render_style in ['text', 'binary'], 'Expected .render_style ' \
+            '"text" or "binary", but got "%s"' % render_style
+        if render_style == 'binary':
             return '[%d bytes of binary content]' % len(content)
 
         return content
