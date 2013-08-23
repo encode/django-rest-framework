@@ -319,52 +319,53 @@ class StaticHTMLRenderer(TemplateHTMLRenderer):
 class HTMLFormRenderer(BaseRenderer):
     template = 'rest_framework/form.html'
 
-    def serializer_to_form_fields(self, serializer):
+    def data_to_form_fields(self, data):
         fields = {}
-        for k, v in serializer.get_fields().items():
-            if getattr(v, 'read_only', True):
+        for key, val in data.fields.items():
+            if getattr(val, 'read_only', True):
                 continue
 
             kwargs = {}
-            kwargs['required'] = v.required
+            kwargs['required'] = val.required
 
             #if getattr(v, 'queryset', None):
             #    kwargs['queryset'] = v.queryset
 
-            if getattr(v, 'choices', None) is not None:
-                kwargs['choices'] = v.choices
+            if getattr(val, 'choices', None) is not None:
+                kwargs['choices'] = val.choices
 
-            if getattr(v, 'regex', None) is not None:
-                kwargs['regex'] = v.regex
+            if getattr(val, 'regex', None) is not None:
+                kwargs['regex'] = val.regex
 
-            if getattr(v, 'widget', None):
-                widget = copy.deepcopy(v.widget)
+            if getattr(val, 'widget', None):
+                widget = copy.deepcopy(val.widget)
                 kwargs['widget'] = widget
 
-            if getattr(v, 'default', None) is not None:
-                kwargs['initial'] = v.default
+            if getattr(val, 'default', None) is not None:
+                kwargs['initial'] = val.default
 
-            if getattr(v, 'label', None) is not None:
-                kwargs['label'] = v.label
+            if getattr(val, 'label', None) is not None:
+                kwargs['label'] = val.label
 
-            if getattr(v, 'help_text', None) is not None:
-                kwargs['help_text'] = v.help_text
+            if getattr(val, 'help_text', None) is not None:
+                kwargs['help_text'] = val.help_text
 
-            fields[k] = v.form_field_class(**kwargs)
+            fields[key] = val.form_field_class(**kwargs)
 
         return fields
 
-    def render(self, serializer, obj, request):
-        fields = self.serializer_to_form_fields(serializer)
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        self.renderer_context = renderer_context or {}
+        request = renderer_context['request']
 
         # Creating an on the fly form see:
         # http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
-        OnTheFlyForm = type(str("OnTheFlyForm"), (forms.Form,), fields)
-        data = (obj is not None) and serializer.data or None
-        form_instance = OnTheFlyForm(data)
+        fields = self.data_to_form_fields(data)
+        DynamicForm = type(str('DynamicForm'), (forms.Form,), fields)
+        data = None if data.empty else data
 
         template = loader.get_template(self.template)
-        context = RequestContext(request, {'form': form_instance})
+        context = RequestContext(request, {'form': DynamicForm(data)})
 
         return template.render(context)
 
@@ -377,6 +378,7 @@ class BrowsableAPIRenderer(BaseRenderer):
     format = 'api'
     template = 'rest_framework/api.html'
     charset = 'utf-8'
+    form_renderer_class = HTMLFormRenderer
 
     def get_default_renderer(self, view):
         """
@@ -424,7 +426,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             return False  # Doesn't have permissions
         return True
 
-    def _get_form(self, view, method, request):
+    def _get_rendered_html_form(self, view, method, request):
         # We need to impersonate a request with the correct method,
         # so that eg. any dynamic get_serializer_class methods return the
         # correct form for each method.
@@ -432,27 +434,16 @@ class BrowsableAPIRenderer(BaseRenderer):
         request = clone_request(request, method)
         view.request = request
         try:
-            return self.get_form(view, method, request)
+            return self.get_rendered_html_form(view, method, request)
         finally:
             view.request = restore
 
-    def _get_raw_data_form(self, view, method, request, media_types):
-        # We need to impersonate a request with the correct method,
-        # so that eg. any dynamic get_serializer_class methods return the
-        # correct form for each method.
-        restore = view.request
-        request = clone_request(request, method)
-        view.request = request
-        try:
-            return self.get_raw_data_form(view, method, request, media_types)
-        finally:
-            view.request = restore
-
-    def get_form(self, view, method, request):
+    def get_rendered_html_form(self, view, method, request):
         """
-        Get a form, possibly bound to either the input or output data.
-        In the absence on of the Resource having an associated form then
-        provide a form that can be used to submit arbitrary content.
+        Return a string representing a rendered HTML form, possibly bound to
+        either the input or output data.
+
+        In the absence of the View having an associated form then return None.
         """
         obj = getattr(view, 'object', None)
         if not self.show_form_for_method(view, method, request, obj):
@@ -465,7 +456,21 @@ class BrowsableAPIRenderer(BaseRenderer):
             return
 
         serializer = view.get_serializer(instance=obj)
-        return HTMLFormRenderer().render(serializer, obj, request)
+        data = serializer.data
+        form_renderer = self.form_renderer_class()
+        return form_renderer.render(data, self.accepted_media_type, self.renderer_context)
+
+    def _get_raw_data_form(self, view, method, request, media_types):
+        # We need to impersonate a request with the correct method,
+        # so that eg. any dynamic get_serializer_class methods return the
+        # correct form for each method.
+        restore = view.request
+        request = clone_request(request, method)
+        view.request = request
+        try:
+            return self.get_raw_data_form(view, method, request, media_types)
+        finally:
+            view.request = restore
 
     def get_raw_data_form(self, view, method, request, media_types):
         """
@@ -520,8 +525,8 @@ class BrowsableAPIRenderer(BaseRenderer):
         """
         Render the HTML for the browsable API representation.
         """
-        accepted_media_type = accepted_media_type or ''
-        renderer_context = renderer_context or {}
+        self.accepted_media_type = accepted_media_type or ''
+        self.renderer_context = renderer_context or {}
 
         view = renderer_context['view']
         request = renderer_context['request']
@@ -531,11 +536,11 @@ class BrowsableAPIRenderer(BaseRenderer):
         renderer = self.get_default_renderer(view)
         content = self.get_content(renderer, data, accepted_media_type, renderer_context)
 
-        put_form = self._get_form(view, 'PUT', request)
-        post_form = self._get_form(view, 'POST', request)
-        patch_form = self._get_form(view, 'PATCH', request)
-        delete_form = self._get_form(view, 'DELETE', request)
-        options_form = self._get_form(view, 'OPTIONS', request)
+        put_form = self._get_rendered_html_form(view, 'PUT', request)
+        post_form = self._get_rendered_html_form(view, 'POST', request)
+        patch_form = self._get_rendered_html_form(view, 'PATCH', request)
+        delete_form = self._get_rendered_html_form(view, 'DELETE', request)
+        options_form = self._get_rendered_html_form(view, 'OPTIONS', request)
 
         raw_data_put_form = self._get_raw_data_form(view, 'PUT', request, media_types)
         raw_data_post_form = self._get_raw_data_form(view, 'POST', request, media_types)

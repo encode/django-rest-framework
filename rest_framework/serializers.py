@@ -300,7 +300,8 @@ class BaseSerializer(WritableField):
         Serialize objects -> primitives.
         """
         ret = self._dict_class()
-        ret.fields = {}
+        ret.fields = self._dict_class()
+        ret.empty = obj is None
 
         for field_name, field in self.fields.items():
             field.initialize(parent=self, field_name=field_name)

@@ -244,6 +244,8 @@ class PrimaryKeyRelatedField(RelatedField):
                 source = self.source or field_name
                 queryset = obj
                 for component in source.split('.'):
+                    if queryset is None:
+                        return []
                     queryset = get_component(queryset, component)
 
             # Forward relationship
