@@ -338,9 +338,9 @@ class BaseSerializer(WritableField):
             value = obj
 
             for component in source.split('.'):
-                value = get_component(value, component)
                 if value is None:
-                    break
+                    return self.to_native(None)
+                value = get_component(value, component)
         except ObjectDoesNotExist:
             return None
 
