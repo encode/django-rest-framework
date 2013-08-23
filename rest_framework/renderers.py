@@ -316,6 +316,59 @@ class StaticHTMLRenderer(TemplateHTMLRenderer):
         return data
 
 
+class HTMLFormRenderer(BaseRenderer):
+    template = 'rest_framework/form.html'
+
+    def serializer_to_form_fields(self, serializer):
+        fields = {}
+        for k, v in serializer.get_fields().items():
+            if getattr(v, 'read_only', True):
+                continue
+
+            kwargs = {}
+            kwargs['required'] = v.required
+
+            #if getattr(v, 'queryset', None):
+            #    kwargs['queryset'] = v.queryset
+
+            if getattr(v, 'choices', None) is not None:
+                kwargs['choices'] = v.choices
+
+            if getattr(v, 'regex', None) is not None:
+                kwargs['regex'] = v.regex
+
+            if getattr(v, 'widget', None):
+                widget = copy.deepcopy(v.widget)
+                kwargs['widget'] = widget
+
+            if getattr(v, 'default', None) is not None:
+                kwargs['initial'] = v.default
+
+            if getattr(v, 'label', None) is not None:
+                kwargs['label'] = v.label
+
+            if getattr(v, 'help_text', None) is not None:
+                kwargs['help_text'] = v.help_text
+
+            fields[k] = v.form_field_class(**kwargs)
+
+        return fields
+
+    def render(self, serializer, obj, request):
+        fields = self.serializer_to_form_fields(serializer)
+
+        # Creating an on the fly form see:
+        # http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
+        OnTheFlyForm = type(str("OnTheFlyForm"), (forms.Form,), fields)
+        data = (obj is not None) and serializer.data or None
+        form_instance = OnTheFlyForm(data)
+
+        template = loader.get_template(self.template)
+        context = RequestContext(request, {'form': form_instance})
+
+        return template.render(context)
+
+
 class BrowsableAPIRenderer(BaseRenderer):
     """
     HTML renderer used to self-document the API.
@@ -371,41 +424,6 @@ class BrowsableAPIRenderer(BaseRenderer):
             return False  # Doesn't have permissions
         return True
 
-    def serializer_to_form_fields(self, serializer):
-        fields = {}
-        for k, v in serializer.get_fields().items():
-            if getattr(v, 'read_only', True):
-                continue
-
-            kwargs = {}
-            kwargs['required'] = v.required
-
-            #if getattr(v, 'queryset', None):
-            #    kwargs['queryset'] = v.queryset
-
-            if getattr(v, 'choices', None) is not None:
-                kwargs['choices'] = v.choices
-
-            if getattr(v, 'regex', None) is not None:
-                kwargs['regex'] = v.regex
-
-            if getattr(v, 'widget', None):
-                widget = copy.deepcopy(v.widget)
-                kwargs['widget'] = widget
-
-            if getattr(v, 'default', None) is not None:
-                kwargs['initial'] = v.default
-
-            if getattr(v, 'label', None) is not None:
-                kwargs['label'] = v.label
-
-            if getattr(v, 'help_text', None) is not None:
-                kwargs['help_text'] = v.help_text
-
-            fields[k] = v.form_field_class(**kwargs)
-
-        return fields
-
     def _get_form(self, view, method, request):
         # We need to impersonate a request with the correct method,
         # so that eg. any dynamic get_serializer_class methods return the
@@ -447,14 +465,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             return
 
         serializer = view.get_serializer(instance=obj)
-        fields = self.serializer_to_form_fields(serializer)
-
-        # Creating an on the fly form see:
-        # http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
-        OnTheFlyForm = type(str("OnTheFlyForm"), (forms.Form,), fields)
-        data = (obj is not None) and serializer.data or None
-        form_instance = OnTheFlyForm(data)
-        return form_instance
+        return HTMLFormRenderer().render(serializer, obj, request)
 
     def get_raw_data_form(self, view, method, request, media_types):
         """
