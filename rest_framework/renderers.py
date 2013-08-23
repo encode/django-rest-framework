@@ -326,6 +326,8 @@ class HTMLFormRenderer(BaseRenderer):
     return an HTML form not bound to any object,
     otherwise it will return an HTML form with the appropriate initial data
     populated from the object.
+
+    Note that rendering of field and form errors is not currently supported.
     """
     media_type = 'text/html'
     format = 'form'
@@ -368,6 +370,18 @@ class HTMLFormRenderer(BaseRenderer):
         return fields
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
+        """
+        Render serializer data and return an HTML form, as a string.
+        """
+        # The HTMLFormRenderer currently uses something of a hack to render
+        # the content, by translating each of the serializer fields into
+        # an html form field, creating a dynamic form using those fields,
+        # and then rendering that form.
+
+        # This isn't strictly neccessary, as we could render the serilizer
+        # fields to HTML directly.  The implementation is historical and will
+        # likely change at some point.
+
         self.renderer_context = renderer_context or {}
         request = renderer_context['request']
 
