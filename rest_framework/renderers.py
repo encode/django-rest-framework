@@ -317,7 +317,18 @@ class StaticHTMLRenderer(TemplateHTMLRenderer):
 
 
 class HTMLFormRenderer(BaseRenderer):
+    """
+    Renderers serializer data into an HTML form.
+
+    If the serializer was instantiated without an object then this will
+    return an HTML form not bound to any object,
+    otherwise it will return an HTML form with the appropriate initial data
+    populated from the object.
+    """
+    media_type = 'text/html'
+    format = 'form'
     template = 'rest_framework/form.html'
+    charset = 'utf-8'
 
     def data_to_form_fields(self, data):
         fields = {}
