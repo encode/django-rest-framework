@@ -149,6 +149,8 @@ class UpdateModelMixin(object):
                 # return None.
                 self.check_permissions(clone_request(self.request, 'POST'))
             else:
+                # PATCH requests where the object does not exist should still
+                # return a 404 response.
                 raise
 
     def pre_save(self, obj):
