@@ -161,6 +161,7 @@ The following people have helped make REST framework great.
 * Filipe A Ximenes - [filipeximenes]
 * Ramiro Morales - [ramiro]
 * Krzysztof Jurewicz - [krzysiekj]
+* Eric Buehl - [ericbuehl]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -358,3 +359,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [filipeximenes]: https://github.com/filipeximenes
 [ramiro]: https://github.com/ramiro
 [krzysiekj]: https://github.com/krzysiekj
+[ericbuehl]: https://github.com/ericbuehl
