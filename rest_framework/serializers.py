@@ -945,6 +945,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
     _options_class = HyperlinkedModelSerializerOptions
     _default_view_name = '%(model_name)s-detail'
     _hyperlink_field_class = HyperlinkedRelatedField
+    _hyperlink_identify_field_class = HyperlinkedIdentityField
 
     def get_default_fields(self):
         fields = super(HyperlinkedModelSerializer, self).get_default_fields()
@@ -953,7 +954,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
             self.opts.view_name = self._get_default_view_name(self.opts.model)
 
         if 'url' not in fields:
-            url_field = HyperlinkedIdentityField(
+            url_field = self._hyperlink_identify_field_class(
                 view_name=self.opts.view_name,
                 lookup_field=self.opts.lookup_field
             )
