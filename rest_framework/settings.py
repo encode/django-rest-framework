@@ -68,6 +68,7 @@ DEFAULTS = {
     # Pagination
     'PAGINATE_BY': None,
     'PAGINATE_BY_PARAM': None,
+    'MAX_PAGINATE_BY': None,
 
     # View configuration
     'VIEW_NAME_FUNCTION': 'rest_framework.views.get_view_name',
