@@ -142,6 +142,12 @@ The `@action` decorator will route `POST` requests by default, but may also acce
         @action(methods=['POST', 'DELETE'])
         def unset_password(self, request, pk=None):
            ...
+
+By default endpoint match method name, but this can be overridden with `endpoint` argument.
+
+        @action(endpoint='fancy-name')
+        def do_stuff(self, request, pk=None):
+            ...
 ---
 
 # API Reference

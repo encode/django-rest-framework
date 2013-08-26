@@ -147,22 +147,24 @@ class SimpleRouter(BaseRouter):
             attr = getattr(viewset, methodname)
             httpmethods = getattr(attr, 'bind_to_methods', None)
             if httpmethods:
-                if methodname in known_actions:
+                endpoint = getattr(attr, 'endpoint')
+                if endpoint in known_actions:
                     raise ImproperlyConfigured('Cannot use @action or @link decorator on '
-                                               'method "%s" as it is an existing route' % methodname)
+                                               'method "%s" as %s is an existing route'
+                                               % (methodname, endpoint))
                 httpmethods = [method.lower() for method in httpmethods]
-                dynamic_routes.append((httpmethods, methodname))
+                dynamic_routes.append((httpmethods, methodname, endpoint))
 
         ret = []
         for route in self.routes:
             if route.mapping == {'{httpmethod}': '{methodname}'}:
                 # Dynamic routes (@link or @action decorator)
-                for httpmethods, methodname in dynamic_routes:
+                for httpmethods, methodname, endpoint in dynamic_routes:
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
                     ret.append(Route(
-                        url=replace_methodname(route.url, methodname),
-                        mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
+                        url=replace_methodname(route.url, endpoint),
+                        mapping=dict((httpmethod, endpoint) for httpmethod in httpmethods),
                         name=replace_methodname(route.name, methodname),
                         initkwargs=initkwargs,
                     ))
