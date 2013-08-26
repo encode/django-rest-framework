@@ -13,6 +13,7 @@ from django.conf import settings
 from django.http import QueryDict
 from django.http.multipartparser import parse_header
 from django.utils.datastructures import MultiValueDict
+from rest_framework.utils.datastructures import DotExpandedDict
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
 from rest_framework.compat import BytesIO
@@ -152,6 +153,10 @@ class Request(object):
         """
         if not _hasattr(self, '_data'):
             self._load_data_and_files()
+
+        if api_settings.NESTED_FIELDS:
+            self._data = DotExpandedDict(self._data)
+        
         return self._data
 
     @property
