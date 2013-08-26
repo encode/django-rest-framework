@@ -142,6 +142,10 @@ The `@action` decorator will route `POST` requests by default, but may also acce
         @action(methods=['POST', 'DELETE'])
         def unset_password(self, request, pk=None):
            ...
+           
+The two new actions will then be available at the urls `^users/{pk}/set_password/$` and `^users/{pk}/unset_password/$`
+
+
 ---
 
 # API Reference
