@@ -189,9 +189,6 @@ class SimpleRouter(BaseRouter):
         Given a viewset, return the portion of URL regex that is used
         to match against a single instance.
         """
-        if lookup_prefix:
-            lookup_prefix += '_'
-
         base_regex = '(?P<{lookup_prefix}{lookup_field}>[^/]+)'
         lookup_field = getattr(viewset, 'lookup_field', 'pk')
         return base_regex.format(lookup_field=lookup_field, lookup_prefix=lookup_prefix)
