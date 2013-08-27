@@ -212,12 +212,15 @@ class GenericAPIView(views.APIView):
             except (KeyError, ValueError):
                 pass
             else:
-                if self.max_paginate_by:
+                if self.max_paginate_by is not None:
                     return min(self.max_paginate_by, paginate_by_param)
                 else:
                     return paginate_by_param
 
-        return min(self.max_paginate_by, self.paginate_by) or self.paginate_by
+        if self.max_paginate_by:
+            return min(self.max_paginate_by, self.paginate_by)
+        else:
+            return self.paginate_by
 
     def get_serializer_class(self):
         """
