@@ -10,9 +10,9 @@ from django.core.files.uploadhandler import StopFutureHandlers
 from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError, parse_header, ChunkIter
-from rest_framework.compat import yaml, etree
+from rest_framework.compat import etree, six, yaml
 from rest_framework.exceptions import ParseError
-from rest_framework.compat import six
+from rest_framework.renderers import UnicodeJSONRenderer
 import json
 import datetime
 import decimal
@@ -32,6 +32,8 @@ class BaseParser(object):
 
     media_type = None
 
+    supports_html_forms = False
+
     def parse(self, stream, media_type=None, parser_context=None):
         """
         Given a stream to read from, return the parsed representation.
@@ -47,6 +49,7 @@ class JSONParser(BaseParser):
     """
 
     media_type = 'application/json'
+    renderer_class = UnicodeJSONRenderer
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -91,6 +94,7 @@ class FormParser(BaseParser):
     """
 
     media_type = 'application/x-www-form-urlencoded'
+    supports_html_forms = True
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -109,6 +113,7 @@ class MultiPartParser(BaseParser):
     """
 
     media_type = 'multipart/form-data'
+    supports_html_forms = True
 
     def parse(self, stream, media_type=None, parser_context=None):
         """

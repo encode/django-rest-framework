@@ -24,7 +24,7 @@ from rest_framework.settings import api_settings
 from rest_framework.request import clone_request
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
-from rest_framework import exceptions, parsers, status, VERSION
+from rest_framework import exceptions, status, VERSION
 
 
 class BaseRenderer(object):
@@ -482,7 +482,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         if method in ('DELETE', 'OPTIONS'):
             return True  # Don't actually need to return a form
 
-        if not getattr(view, 'get_serializer', None) or not parsers.FormParser in view.parser_classes:
+        if not getattr(view, 'get_serializer', None) or not any(parser.supports_html_forms for parser in view.parser_classes):
             return
 
         serializer = view.get_serializer(instance=obj)
@@ -561,6 +561,29 @@ class BrowsableAPIRenderer(BaseRenderer):
         view = renderer_context['view']
         request = renderer_context['request']
         response = renderer_context['response']
+
+        obj = getattr(view, 'object', None)
+        if getattr(view, 'get_serializer', None):
+            serializer = view.get_serializer(instance=obj)
+        else:
+            serializer = None
+
+        parsers = []
+        for parser_class in view.parser_classes:
+            content = None
+            renderer_class = getattr(parser_class, 'renderer_class', None)
+            if renderer_class and serializer:
+                renderer = renderer_class()
+                context = renderer_context.copy()
+                context['indent'] = 4
+                content = renderer.render(serializer.data, accepted_media_type, context)
+                print content
+            parsers.append({
+                'media_type': parser_class.media_type,
+                'content': content
+            })
+
+
         media_types = [parser.media_type for parser in view.parser_classes]
 
         renderer = self.get_default_renderer(view)

@@ -158,7 +158,7 @@ class BasicTests(TestCase):
             'email': '',
             'content': '',
             'created': None,
-            'sub_comment': ''
+            #'sub_comment': ''
         }
         self.assertEqual(serializer.data, expected)
 
