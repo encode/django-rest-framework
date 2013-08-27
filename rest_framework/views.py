@@ -15,8 +15,14 @@ from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 
 
-def get_view_name(cls, suffix=None):
-    name = cls.__name__
+def get_view_name(view_cls, suffix=None):
+    """
+    Given a view class, return a textual name to represent the view.
+    This name is used in the browsable API, and in OPTIONS responses.
+
+    This function is the default for the `VIEW_NAME_FUNCTION` setting.
+    """
+    name = view_cls.__name__
     name = formatting.remove_trailing_string(name, 'View')
     name = formatting.remove_trailing_string(name, 'ViewSet')
     name = formatting.camelcase_to_spaces(name)
@@ -25,12 +31,51 @@ def get_view_name(cls, suffix=None):
 
     return name
 
-def get_view_description(cls, html=False):
-    description = cls.__doc__ or ''
+def get_view_description(view_cls, html=False):
+    """
+    Given a view class, return a textual description to represent the view.
+    This name is used in the browsable API, and in OPTIONS responses.
+
+    This function is the default for the `VIEW_DESCRIPTION_FUNCTION` setting.
+    """
+    description = view_cls.__doc__ or ''
     description = formatting.dedent(smart_text(description))
     if html:
         return formatting.markup_description(description)
     return description
+
+
+def exception_handler(exc):
+    """
+    Returns the response that should be used for any given exception.
+
+    By default we handle the REST framework `APIException`, and also
+    Django's builtin `Http404` and `PermissionDenied` exceptions.
+
+    Any unhandled exceptions may return `None`, which will cause a 500 error
+    to be raised.
+    """
+    if isinstance(exc, exceptions.APIException):
+        headers = {}
+        if getattr(exc, 'auth_header', None):
+            headers['WWW-Authenticate'] = exc.auth_header
+        if getattr(exc, 'wait', None):
+            headers['X-Throttle-Wait-Seconds'] = '%d' % exc.wait
+
+        return Response({'detail': exc.detail},
+                        status=exc.status_code,
+                        headers=headers)
+
+    elif isinstance(exc, Http404):
+        return Response({'detail': 'Not found'},
+                        status=status.HTTP_404_NOT_FOUND)
+
+    elif isinstance(exc, PermissionDenied):
+        return Response({'detail': 'Permission denied'},
+                        status=status.HTTP_403_FORBIDDEN)
+
+    # Note: Unhandled exceptions will raise a 500 error.
+    return None
 
 
 class APIView(View):
@@ -303,33 +348,23 @@ class APIView(View):
         Handle any exception that occurs, by returning an appropriate response,
         or re-raising the error.
         """
-        if isinstance(exc, exceptions.Throttled) and exc.wait is not None:
-            # Throttle wait header
-            self.headers['X-Throttle-Wait-Seconds'] = '%d' % exc.wait
-
         if isinstance(exc, (exceptions.NotAuthenticated,
                             exceptions.AuthenticationFailed)):
             # WWW-Authenticate header for 401 responses, else coerce to 403
             auth_header = self.get_authenticate_header(self.request)
 
             if auth_header:
-                self.headers['WWW-Authenticate'] = auth_header
+                exc.auth_header = auth_header
             else:
                 exc.status_code = status.HTTP_403_FORBIDDEN
 
-        if isinstance(exc, exceptions.APIException):
-            return Response({'detail': exc.detail},
-                            status=exc.status_code,
-                            exception=True)
-        elif isinstance(exc, Http404):
-            return Response({'detail': 'Not found'},
-                            status=status.HTTP_404_NOT_FOUND,
-                            exception=True)
-        elif isinstance(exc, PermissionDenied):
-            return Response({'detail': 'Permission denied'},
-                            status=status.HTTP_403_FORBIDDEN,
-                            exception=True)
-        raise
+        response = exception_handler(exc)
+
+        if response is None:
+            raise
+
+        response.exception = True
+        return response
 
     # Note: session based authentication is explicitly CSRF validated,
     # all other authentication is CSRF exempt.
