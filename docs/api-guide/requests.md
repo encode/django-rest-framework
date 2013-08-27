@@ -117,7 +117,7 @@ For more information see the [browser enhancements documentation].
 
 # Standard HttpRequest attributes
 
-As REST framework's `Request` extends Django's `HttpRequest`, all the other standard attributes and methods are also available.  For example the `request.META` dictionary is available as normal.
+As REST framework's `Request` extends Django's `HttpRequest`, all the other standard attributes and methods are also available.  For example the `request.META` and `request.session` dictionaries are available as normal.
 
 Note that due to implementation reasons the `Request` class does not inherit from `HttpRequest` class, but instead extends the class using composition.
 
