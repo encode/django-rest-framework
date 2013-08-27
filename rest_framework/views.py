@@ -79,14 +79,17 @@ def exception_handler(exc):
 
 
 class APIView(View):
-    settings = api_settings
 
+    # The following policies may be set at either globally, or per-view.
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
     parser_classes = api_settings.DEFAULT_PARSER_CLASSES
     authentication_classes = api_settings.DEFAULT_AUTHENTICATION_CLASSES
     throttle_classes = api_settings.DEFAULT_THROTTLE_CLASSES
     permission_classes = api_settings.DEFAULT_PERMISSION_CLASSES
     content_negotiation_class = api_settings.DEFAULT_CONTENT_NEGOTIATION_CLASS
+
+    # Allow dependancy injection of other settings to make testing easier.
+    settings = api_settings
 
     @classmethod
     def as_view(cls, **initkwargs):
@@ -178,7 +181,7 @@ class APIView(View):
         Return the view name, as used in OPTIONS responses and in the
         browsable API.
         """
-        func = api_settings.VIEW_NAME_FUNCTION
+        func = self.settings.VIEW_NAME_FUNCTION
         return func(self.__class__, getattr(self, 'suffix', None))
 
     def get_view_description(self, html=False):
@@ -186,7 +189,7 @@ class APIView(View):
         Return some descriptive text for the view, as used in OPTIONS responses
         and in the browsable API.
         """
-        func = api_settings.VIEW_DESCRIPTION_FUNCTION
+        func = self.settings.VIEW_DESCRIPTION_FUNCTION
         return func(self.__class__, html)
 
     # API policy instantiation methods
