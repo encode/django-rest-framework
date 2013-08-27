@@ -56,6 +56,7 @@ class GenericAPIView(views.APIView):
     # Pagination settings
     paginate_by = api_settings.PAGINATE_BY
     paginate_by_param = api_settings.PAGINATE_BY_PARAM
+    max_paginate_by = api_settings.MAX_PAGINATE_BY
     pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
     page_kwarg = 'page'
 
@@ -207,11 +208,16 @@ class GenericAPIView(views.APIView):
         if self.paginate_by_param:
             query_params = self.request.QUERY_PARAMS
             try:
-                return int(query_params[self.paginate_by_param])
+                paginate_by_param = int(query_params[self.paginate_by_param])
             except (KeyError, ValueError):
                 pass
+            else:
+                if self.max_paginate_by:
+                    return min(self.max_paginate_by, paginate_by_param)
+                else:
+                    return paginate_by_param
 
-        return self.paginate_by
+        return min(self.max_paginate_by, self.paginate_by) or self.paginate_by
 
     def get_serializer_class(self):
         """
