@@ -67,6 +67,7 @@ DEFAULTS = {
     # Pagination
     'PAGINATE_BY': None,
     'PAGINATE_BY_PARAM': None,
+    'MAX_PAGINATE_BY': None,
 
     # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
