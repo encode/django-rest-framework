@@ -48,7 +48,6 @@ DEFAULTS = {
     ),
     'DEFAULT_THROTTLE_CLASSES': (
     ),
-
     'DEFAULT_CONTENT_NEGOTIATION_CLASS':
         'rest_framework.negotiation.DefaultContentNegotiation',
 
@@ -69,13 +68,13 @@ DEFAULTS = {
     'PAGINATE_BY': None,
     'PAGINATE_BY_PARAM': None,
 
-    # View configuration
-    'VIEW_NAME_FUNCTION': 'rest_framework.views.get_view_name',
-    'VIEW_DESCRIPTION_FUNCTION': 'rest_framework.views.get_view_description',
-
     # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
+
+    # View configuration
+    'VIEW_NAME_FUNCTION': 'rest_framework.views.get_view_name',
+    'VIEW_DESCRIPTION_FUNCTION': 'rest_framework.views.get_view_description',
 
     # Testing
     'TEST_REQUEST_RENDERER_CLASSES': (
