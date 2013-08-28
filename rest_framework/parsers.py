@@ -12,7 +12,7 @@ from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError, parse_header, ChunkIter
 from rest_framework.compat import etree, six, yaml
 from rest_framework.exceptions import ParseError
-from rest_framework.renderers import UnicodeJSONRenderer
+from rest_framework import renderers
 import json
 import datetime
 import decimal
@@ -32,8 +32,6 @@ class BaseParser(object):
 
     media_type = None
 
-    supports_html_forms = False
-
     def parse(self, stream, media_type=None, parser_context=None):
         """
         Given a stream to read from, return the parsed representation.
@@ -49,7 +47,7 @@ class JSONParser(BaseParser):
     """
 
     media_type = 'application/json'
-    renderer_class = UnicodeJSONRenderer
+    renderer_class = renderers.UnicodeJSONRenderer
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -94,7 +92,6 @@ class FormParser(BaseParser):
     """
 
     media_type = 'application/x-www-form-urlencoded'
-    supports_html_forms = True
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -113,7 +110,6 @@ class MultiPartParser(BaseParser):
     """
 
     media_type = 'multipart/form-data'
-    supports_html_forms = True
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -134,7 +130,7 @@ class MultiPartParser(BaseParser):
             data, files = parser.parse()
             return DataAndFiles(data, files)
         except MultiPartParserError as exc:
-            raise ParseError('Multipart form parse error - %s' % six.u(exc))
+            raise ParseError('Multipart form parse error - %s' % six.u(exc.strerror))
 
 
 class XMLParser(BaseParser):

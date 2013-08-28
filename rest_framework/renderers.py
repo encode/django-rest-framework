@@ -21,7 +21,7 @@ from rest_framework.compat import six
 from rest_framework.compat import smart_text
 from rest_framework.compat import yaml
 from rest_framework.settings import api_settings
-from rest_framework.request import clone_request
+from rest_framework.request import clone_request, is_form_media_type
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework import exceptions, status, VERSION
@@ -482,7 +482,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         if method in ('DELETE', 'OPTIONS'):
             return True  # Don't actually need to return a form
 
-        if not getattr(view, 'get_serializer', None) or not any(parser.supports_html_forms for parser in view.parser_classes):
+        if not getattr(view, 'get_serializer', None) or not any(is_form_media_type(parser.media_type) for parser in view.parser_classes):
             return
 
         serializer = view.get_serializer(instance=obj)
@@ -565,11 +565,16 @@ class BrowsableAPIRenderer(BaseRenderer):
         obj = getattr(view, 'object', None)
         if getattr(view, 'get_serializer', None):
             serializer = view.get_serializer(instance=obj)
+            for field_name, field in serializer.fields.items():
+                if field.read_only:
+                    del serializer.fields[field_name]
         else:
             serializer = None
 
         parsers = []
         for parser_class in view.parser_classes:
+            if is_form_media_type(parser_class.media_type):
+                continue
             content = None
             renderer_class = getattr(parser_class, 'renderer_class', None)
             if renderer_class and serializer:
@@ -650,3 +655,4 @@ class MultiPartRenderer(BaseRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         return encode_multipart(self.BOUNDARY, data)
+
