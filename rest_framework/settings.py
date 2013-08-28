@@ -108,6 +108,8 @@ DEFAULTS = {
     ),
     'TIME_FORMAT': None,
 
+    'THROTTLE_CACHE_ALIAS': 'default',
+
     # Pending deprecation
     'FILTER_BACKEND': None,
 }
