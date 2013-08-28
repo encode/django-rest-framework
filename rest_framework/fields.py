@@ -777,6 +777,12 @@ class IntegerField(WritableField):
             raise ValidationError(self.error_messages['invalid'])
         return value
 
+    def to_native(self, value):
+        value = super(IntegerField, self).to_native(value)
+        if value is None:
+            return value
+        return int(value)
+
 
 class FloatField(WritableField):
     type_name = 'FloatField'
