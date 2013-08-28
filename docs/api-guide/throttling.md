@@ -70,6 +70,12 @@ Or, if you're using the `@api_view` decorator with function based views.
 
 The throttle classes provided by REST framework use Django's cache backend.  You should make sure that you've set appropriate [cache settings][cache-setting].  The default value of `LocMemCache` backend should be okay for simple setups.  See Django's [cache documentation][cache-docs] for more details.
 
+You could select the cache to use, using the `THROTTLE_CACHE_ALIAS` setting. For example.
+
+    REST_FRAMEWORK = {
+        'THROTTLE_CACHE_ALIAS': 'default'
+    }
+
 ---
 
 # API Reference

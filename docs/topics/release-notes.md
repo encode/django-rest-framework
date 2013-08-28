@@ -43,6 +43,7 @@ You can determine your currently installed version using `pip freeze`:
 ### Master
 
 * Support customizable view name and description functions, using the `VIEW_NAME_FUNCTION` and `VIEW_DESCRIPTION_FUNCTION` settings.
+* Add `THROTTLE_CACHE_ALIAS` option to choose throttle cache.
 * Bugfix: `required=True` argument fixed for boolean serializer fields.
 * Bugfix: `client.force_authenticate(None)` should also clear session info if it exists.
 * Bugfix: Client sending emptry string instead of file now clears `FileField`.
