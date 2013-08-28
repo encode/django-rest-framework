@@ -47,8 +47,8 @@ class MaxPaginateByView(generics.ListAPIView):
     View for testing custom max_paginate_by usage
     """
     model = BasicModel
-    paginate_by = 5
-    max_paginate_by = 3
+    paginate_by = 3
+    max_paginate_by = 5
     paginate_by_param = 'page_size'
 
 
@@ -343,16 +343,17 @@ class TestMaxPaginateByParam(TestCase):
 
     def test_max_paginate_by(self):
         """
-        If max_paginate_by is set and it less than paginate_by, new kwarg should limit requests for review.
+        If max_paginate_by is set, it should limit page size for the view.
         """
         request = factory.get('/?page_size=10')
         response = self.view(request).render()
         self.assertEqual(response.data['count'], 13)
-        self.assertEqual(response.data['results'], self.data[:3])
+        self.assertEqual(response.data['results'], self.data[:5])
 
     def test_max_paginate_by_without_page_size_param(self):
         """
-        If max_paginate_by is set, new kwarg should limit requests for review.
+        If max_paginate_by is set, but client does not specifiy page_size,
+        standard `paginate_by` behavior should be used.
         """
         request = factory.get('/')
         response = self.view(request).render()

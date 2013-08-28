@@ -14,13 +14,15 @@ from rest_framework.settings import api_settings
 import warnings
 
 
-def strict_positive_int(integer_string):
+def strict_positive_int(integer_string, cutoff=None):
     """
     Cast a string to a strictly positive integer.
     """
     ret = int(integer_string)
     if ret <= 0:
         raise ValueError()
+    if cutoff:
+        ret = min(ret, cutoff)
     return ret
 
 def get_object_or_404(queryset, **filter_kwargs):
@@ -206,21 +208,15 @@ class GenericAPIView(views.APIView):
                           PendingDeprecationWarning, stacklevel=2)
 
         if self.paginate_by_param:
-            query_params = self.request.QUERY_PARAMS
             try:
-                paginate_by_param = int(query_params[self.paginate_by_param])
+                return strict_positive_int(
+                    self.request.QUERY_PARAMS[self.paginate_by_param],
+                    cutoff=self.max_paginate_by
+                )
             except (KeyError, ValueError):
                 pass
-            else:
-                if self.max_paginate_by is not None:
-                    return min(self.max_paginate_by, paginate_by_param)
-                else:
-                    return paginate_by_param
 
-        if self.max_paginate_by:
-            return min(self.max_paginate_by, self.paginate_by)
-        else:
-            return self.paginate_by
+        return self.paginate_by
 
     def get_serializer_class(self):
         """
