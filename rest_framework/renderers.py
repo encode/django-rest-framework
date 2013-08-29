@@ -515,7 +515,8 @@ class BrowsableAPIRenderer(BaseRenderer):
                 # Render the raw data content
                 renderer = renderer_class()
                 accepted = self.accepted_media_type
-                context = self.renderer_context.copy().update({'indent': 4})
+                context = self.renderer_context.copy()
+                context['indent'] = 4
                 content = renderer.render(serializer.data, accepted, context)
             else:
                 content = None
