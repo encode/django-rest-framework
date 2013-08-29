@@ -69,7 +69,7 @@ def set_component(obj, attr_name, value):
     if isinstance(obj, dict):
         obj[attr_name] = value
     else:
-        attr = getattr(obj, attr_name)
+        attr = getattr(obj, attr_name, None)
         if six.callable(attr):
             raise TypeError("%r.%s is a method; can't set it" % (obj, attr_name))
         setattr(obj, attr_name, value)
