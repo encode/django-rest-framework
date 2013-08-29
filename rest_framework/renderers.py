@@ -480,15 +480,16 @@ class BrowsableAPIRenderer(BaseRenderer):
             form_renderer = self.form_renderer_class()
             return form_renderer.render(data, self.accepted_media_type, self.renderer_context)
 
-    def get_raw_data_form(self, view, method, request, media_types):
+    def get_raw_data_form(self, view, method, request):
         """
         Returns a form that allows for arbitrary content types to be tunneled
         via standard HTML forms.
         (Which are typically application/x-www-form-urlencoded)
         """
         with override_method(view, request, method) as request:
-            # If we're not using content overloading there's no point in supplying a generic form,
-            # as the view won't treat the form's value as the content of the request.
+            # If we're not using content overloading there's no point in
+            # supplying a generic form, as the view won't treat the form's
+            # value as the content of the request.
             if not (api_settings.FORM_CONTENT_OVERRIDE
                     and api_settings.FORM_CONTENTTYPE_OVERRIDE):
                 return None
@@ -498,8 +499,33 @@ class BrowsableAPIRenderer(BaseRenderer):
             if not self.show_form_for_method(view, method, request, obj):
                 return
 
+            # If possible, serialize the initial content for the generic form
+            default_parser = view.parser_classes[0]
+            renderer_class = getattr(default_parser, 'renderer_class', None)
+            if (hasattr(view, 'get_serializer') and renderer_class):
+                # View has a serializer defined and parser class has a
+                # corresponding renderer that can be used to render the data.
+
+                # Get a read-only version of the serializer
+                serializer = view.get_serializer(instance=obj)
+                for field_name, field in serializer.fields.items():
+                    if field.read_only:
+                        del serializer.fields[field_name]
+
+                # Render the raw data content
+                renderer = renderer_class()
+                accepted = self.accepted_media_type
+                context = self.renderer_context.copy().update({'indent': 4})
+                content = renderer.render(serializer.data, accepted, context)
+            else:
+                content = None
+
+            # Generate a generic form that includes a content type field,
+            # and a content field.
             content_type_field = api_settings.FORM_CONTENTTYPE_OVERRIDE
             content_field = api_settings.FORM_CONTENT_OVERRIDE
+
+            media_types = [parser.media_type for parser in view.parser_classes]
             choices = [(media_type, media_type) for media_type in media_types]
             initial = media_types[0]
 
@@ -515,7 +541,8 @@ class BrowsableAPIRenderer(BaseRenderer):
                     )
                     self.fields[content_field] = forms.CharField(
                         label='Content',
-                        widget=forms.Textarea
+                        widget=forms.Textarea,
+                        initial=content
                     )
 
             return GenericContentForm()
@@ -540,8 +567,6 @@ class BrowsableAPIRenderer(BaseRenderer):
         request = renderer_context['request']
         response = renderer_context['response']
 
-        media_types = [parser.media_type for parser in view.parser_classes]
-
         renderer = self.get_default_renderer(view)
         content = self.get_content(renderer, data, accepted_media_type, renderer_context)
 
@@ -551,9 +576,9 @@ class BrowsableAPIRenderer(BaseRenderer):
         delete_form = self.get_rendered_html_form(view, 'DELETE', request)
         options_form = self.get_rendered_html_form(view, 'OPTIONS', request)
 
-        raw_data_put_form = self.get_raw_data_form(view, 'PUT', request, media_types)
-        raw_data_post_form = self.get_raw_data_form(view, 'POST', request, media_types)
-        raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request, media_types)
+        raw_data_put_form = self.get_raw_data_form(view, 'PUT', request)
+        raw_data_post_form = self.get_raw_data_form(view, 'POST', request)
+        raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
         name = self.get_name(view)
