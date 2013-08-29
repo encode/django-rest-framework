@@ -123,28 +123,87 @@ The arguments to the `Route` named tuple are:
 
 **initkwargs**: A dictionary of any additional arguments that should be passed when instantiating the view.  Note that the `suffix` argument is reserved for identifying the viewset type, used when generating the view name and breadcrumb links.
 
+## Customizing dynamic routes
+
+You can also customize how the `@list_route` and `@detail_route` decorators are routed.
+To route either or both of these decorators, include a `DynamicListRoute` and/or `DynamicDetailRoute` named tuple in the `.routes` list.
+
+The arguments to `DynamicListRoute` and `DynamicDetailRoute` are:
+
+**url**: A string representing the URL to be routed. May include the same format strings as `Route`, and additionally accepts the `{methodname}` and `{methodnamehyphen}` format strings.
+
+**name**: The name of the URL as used in `reverse` calls. May include the following format strings: `{basename}`, `{methodname}` and `{methodnamehyphen}`.
+
+**initkwargs**: A dictionary of any additional arguments that should be passed when instantiating the view.
+
 ## Example
 
 The following example will only route to the `list` and `retrieve` actions, and does not use the trailing slash convention.
 
-    from rest_framework.routers import Route, SimpleRouter
+    from rest_framework.routers import Route, DynamicDetailRoute, SimpleRouter
 
-    class ReadOnlyRouter(SimpleRouter):
+    class CustomReadOnlyRouter(SimpleRouter):
         """
         A router for read-only APIs, which doesn't use trailing slashes.
         """
         routes = [
-            Route(url=r'^{prefix}$',
-                  mapping={'get': 'list'},
-                  name='{basename}-list',
-                  initkwargs={'suffix': 'List'}),
-            Route(url=r'^{prefix}/{lookup}$',
-                  mapping={'get': 'retrieve'},
-                  name='{basename}-detail',
-                  initkwargs={'suffix': 'Detail'})
+            Route(
+            	url=r'^{prefix}$',
+            	mapping={'get': 'list'},
+            	name='{basename}-list',
+            	initkwargs={'suffix': 'List'}
+            ),
+            Route(
+            	url=r'^{prefix}/{lookup}$',
+               mapping={'get': 'retrieve'},
+               name='{basename}-detail',
+               initkwargs={'suffix': 'Detail'}
+            ),
+            DynamicDetailRoute(
+            	url=r'^{prefix}/{lookup}/{methodnamehyphen}$',
+            	name='{basename}-{methodnamehyphen}',
+            	initkwargs={}
+        	)
         ]
 
-The `SimpleRouter` class provides another example of setting the `.routes` attribute.
+Let's take a look at the routes our `CustomReadOnlyRouter` would generate for a simple viewset.
+
+`views.py`:
+
+    class UserViewSet(viewsets.ReadOnlyModelViewSet):
+        """
+        A viewset that provides the standard actions
+        """
+        queryset = User.objects.all()
+        serializer_class = UserSerializer
+        lookup_field = 'username'
+
+        @detail_route()
+        def group_names(self, request):
+            """
+            Returns a list of all the group names that the given
+            user belongs to.
+            """
+            user = self.get_object()
+            groups = user.groups.all()
+            return Response([group.name for group in groups])
+
+`urls.py`:
+
+    router = CustomReadOnlyRouter()
+    router.register('users', UserViewSet)
+	urlpatterns = router.urls
+
+The following mappings would be generated...
+
+<table border=1>
+    <tr><th>URL</th><th>HTTP Method</th><th>Action</th><th>URL Name</th></tr>
+    <tr><td>/users</td><td>GET</td><td>list</td><td>user-list</td></tr>
+    <tr><td>/users/{username}</td><td>GET</td><td>retrieve</td><td>user-detail</td></tr>
+    <tr><td>/users/{username}/group-names</td><td>GET</td><td>group_names</td><td>user-group-names</td></tr>
+</table>
+
+For another example of setting the `.routes` attribute, see the source code for the `SimpleRouter` class.
 
 ## Advanced custom routers
 
