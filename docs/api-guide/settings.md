@@ -127,6 +127,35 @@ Default: `None`
 
 The name of a query parameter, which can be used by the client to override the default page size to use for pagination.  If set to `None`, clients may not override the default page size.
 
+For example, given the following settings:
+
+    REST_FRAMEWORK = {
+    	'PAGINATE_BY': 10,
+    	'PAGINATE_BY_PARAM': 'page_size',
+    }
+
+A client would be able to modify the pagination size by using the `page_size` query parameter.  For example:
+
+    GET http://example.com/api/accounts?page_size=25
+
+Default: `None`
+
+#### MAX_PAGINATE_BY
+
+The maximum page size to allow when the page size is specified by the client.  If set to `None`, then no maximum limit is applied.
+
+For example, given the following settings:
+
+    REST_FRAMEWORK = {
+    	'PAGINATE_BY': 10,
+    	'PAGINATE_BY_PARAM': 'page_size',
+        'MAX_PAGINATE_BY': 100
+    }
+
+A client request like the following would return a paginated list of up to 100 items.
+
+    GET http://example.com/api/accounts?page_size=999
+
 Default: `None`
 
 ---

@@ -688,6 +688,14 @@ class ChoiceFieldTests(TestCase):
         f = serializers.ChoiceField(required=False, choices=self.SAMPLE_CHOICES)
         self.assertEqual(f.choices, models.fields.BLANK_CHOICE_DASH + self.SAMPLE_CHOICES)
 
+    def test_from_native_empty(self):
+        """
+        Make sure from_native() returns None on empty param.
+        """
+        f = serializers.ChoiceField(choices=self.SAMPLE_CHOICES)
+        result = f.from_native('')
+        self.assertEqual(result, None)
+
 
 class EmailFieldTests(TestCase):
     """
