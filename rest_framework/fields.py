@@ -514,6 +514,11 @@ class ChoiceField(WritableField):
                     return True
         return False
 
+    def from_native(self, value):
+        if value in validators.EMPTY_VALUES:
+            return None
+        return super(ChoiceField, self).from_native(value)
+
 
 class EmailField(CharField):
     type_name = 'EmailField'
