@@ -48,6 +48,7 @@ You can determine your currently installed version using `pip freeze`:
 * Bugfix: `required=True` argument fixed for boolean serializer fields.
 * Bugfix: `client.force_authenticate(None)` should also clear session info if it exists.
 * Bugfix: Client sending emptry string instead of file now clears `FileField`.
+* Bugfix: Empty values on ChoiceFields with `required=False` now consistently return `None`.
 
 ### 2.3.7
 
