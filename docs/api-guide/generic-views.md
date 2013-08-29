@@ -73,7 +73,7 @@ The following attributes control the basic view behavior.
 
 **Pagination**:
 
-The following attibutes are used to control pagination when used with list views.
+The following attributes are used to control pagination when used with list views.
 
 * `paginate_by` - The size of pages to use with paginated data.  If set to `None` then pagination is turned off.  If unset this uses the same value as the `PAGINATE_BY` setting, which defaults to `None`.
 * `paginate_by_param` - The name of a query parameter, which can be used by the client to override the default page size to use for pagination.  If unset this uses the same value as the `PAGINATE_BY_PARAM` setting, which defaults to `None`.
@@ -135,7 +135,7 @@ For example:
 
 #### `get_paginate_by(self)`
 
-Returns the page size to use with pagination.  By default this uses the `paginate_by` attribute, and may be overridden by the cient if the `paginate_by_param` attribute is set.
+Returns the page size to use with pagination.  By default this uses the `paginate_by` attribute, and may be overridden by the client if the `paginate_by_param` attribute is set.
 
 You may want to override this method to provide more complex behavior such as modifying page sizes based on the media type of the response.
 
