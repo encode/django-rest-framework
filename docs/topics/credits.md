@@ -164,6 +164,7 @@ The following people have helped make REST framework great.
 * Eric Buehl - [ericbuehl]
 * Kristian Øllegaard - [kristianoellegaard]
 * Alexander Akhmetov - [alexander-akhmetov]
+* Andrey Antukh - [niwibe]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -363,4 +364,5 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [krzysiekj]: https://github.com/krzysiekj
 [ericbuehl]: https://github.com/ericbuehl
 [kristianoellegaard]: https://github.com/kristianoellegaard
-[alexander-akhmetov]: htttps://github.com/alexander-akhmetov
+[alexander-akhmetov]: https://github.com/alexander-akhmetov
+[niwibe]: https://github.com/niwibe
