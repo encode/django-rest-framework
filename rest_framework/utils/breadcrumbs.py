@@ -8,7 +8,10 @@ def get_breadcrumbs(url):
     tuple of (name, url).
     """
 
+    from rest_framework.settings import api_settings
     from rest_framework.views import APIView
+
+    view_name_func = api_settings.VIEW_NAME_FUNCTION
 
     def breadcrumbs_recursive(url, breadcrumbs_list, prefix, seen):
         """
@@ -28,8 +31,8 @@ def get_breadcrumbs(url):
                 # Don't list the same view twice in a row.
                 # Probably an optional trailing slash.
                 if not seen or seen[-1] != view:
-                    instance = view.cls()
-                    name = instance.get_view_name()
+                    suffix = getattr(view, 'suffix', None)
+                    name = view_name_func(cls, suffix)
                     breadcrumbs_list.insert(0, (name, prefix + url))
                     seen.append(view)
 
