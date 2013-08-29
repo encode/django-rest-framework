@@ -28,6 +28,29 @@ def is_form_media_type(media_type):
             base_media_type == 'multipart/form-data')
 
 
+class override_method(object):
+    """
+    A context manager that temporarily overrides the method on a request,
+    additionally setting the `view.request` attribute.
+
+    Usage:
+
+        with override_method(view, request, 'POST') as request:
+            ... # Do stuff with `view` and `request`
+    """
+    def __init__(self, view, request, method):
+        self.view = view
+        self.request = request
+        self.method = method
+
+    def __enter__(self):
+        self.view.request = clone_request(self.request, self.method)
+        return self.view.request
+
+    def __exit__(self, *args, **kwarg):
+        self.view.request = self.request
+
+
 class Empty(object):
     """
     Placeholder for unset attributes.

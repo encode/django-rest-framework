@@ -21,7 +21,7 @@ from rest_framework.compat import six
 from rest_framework.compat import smart_text
 from rest_framework.compat import yaml
 from rest_framework.settings import api_settings
-from rest_framework.request import clone_request, is_form_media_type
+from rest_framework.request import is_form_media_type, override_method
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
 from rest_framework import exceptions, status, VERSION
@@ -456,18 +456,6 @@ class BrowsableAPIRenderer(BaseRenderer):
             return False  # Doesn't have permissions
         return True
 
-    def _get_rendered_html_form(self, view, method, request):
-        # We need to impersonate a request with the correct method,
-        # so that eg. any dynamic get_serializer_class methods return the
-        # correct form for each method.
-        restore = view.request
-        request = clone_request(request, method)
-        view.request = request
-        try:
-            return self.get_rendered_html_form(view, method, request)
-        finally:
-            view.request = restore
-
     def get_rendered_html_form(self, view, method, request):
         """
         Return a string representing a rendered HTML form, possibly bound to
@@ -475,32 +463,22 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         In the absence of the View having an associated form then return None.
         """
-        obj = getattr(view, 'object', None)
-        if not self.show_form_for_method(view, method, request, obj):
-            return
+        with override_method(view, request, method) as request:
+            obj = getattr(view, 'object', None)
+            if not self.show_form_for_method(view, method, request, obj):
+                return
 
-        if method in ('DELETE', 'OPTIONS'):
-            return True  # Don't actually need to return a form
+            if method in ('DELETE', 'OPTIONS'):
+                return True  # Don't actually need to return a form
 
-        if not getattr(view, 'get_serializer', None) or not any(is_form_media_type(parser.media_type) for parser in view.parser_classes):
-            return
+            if (not getattr(view, 'get_serializer', None)
+                or not any(is_form_media_type(parser.media_type) for parser in view.parser_classes)):
+                return
 
-        serializer = view.get_serializer(instance=obj)
-        data = serializer.data
-        form_renderer = self.form_renderer_class()
-        return form_renderer.render(data, self.accepted_media_type, self.renderer_context)
-
-    def _get_raw_data_form(self, view, method, request, media_types):
-        # We need to impersonate a request with the correct method,
-        # so that eg. any dynamic get_serializer_class methods return the
-        # correct form for each method.
-        restore = view.request
-        request = clone_request(request, method)
-        view.request = request
-        try:
-            return self.get_raw_data_form(view, method, request, media_types)
-        finally:
-            view.request = restore
+            serializer = view.get_serializer(instance=obj)
+            data = serializer.data
+            form_renderer = self.form_renderer_class()
+            return form_renderer.render(data, self.accepted_media_type, self.renderer_context)
 
     def get_raw_data_form(self, view, method, request, media_types):
         """
@@ -508,39 +486,39 @@ class BrowsableAPIRenderer(BaseRenderer):
         via standard HTML forms.
         (Which are typically application/x-www-form-urlencoded)
         """
+        with override_method(view, request, method) as request:
+            # If we're not using content overloading there's no point in supplying a generic form,
+            # as the view won't treat the form's value as the content of the request.
+            if not (api_settings.FORM_CONTENT_OVERRIDE
+                    and api_settings.FORM_CONTENTTYPE_OVERRIDE):
+                return None
 
-        # If we're not using content overloading there's no point in supplying a generic form,
-        # as the view won't treat the form's value as the content of the request.
-        if not (api_settings.FORM_CONTENT_OVERRIDE
-                and api_settings.FORM_CONTENTTYPE_OVERRIDE):
-            return None
+            # Check permissions
+            obj = getattr(view, 'object', None)
+            if not self.show_form_for_method(view, method, request, obj):
+                return
 
-        # Check permissions
-        obj = getattr(view, 'object', None)
-        if not self.show_form_for_method(view, method, request, obj):
-            return
+            content_type_field = api_settings.FORM_CONTENTTYPE_OVERRIDE
+            content_field = api_settings.FORM_CONTENT_OVERRIDE
+            choices = [(media_type, media_type) for media_type in media_types]
+            initial = media_types[0]
 
-        content_type_field = api_settings.FORM_CONTENTTYPE_OVERRIDE
-        content_field = api_settings.FORM_CONTENT_OVERRIDE
-        choices = [(media_type, media_type) for media_type in media_types]
-        initial = media_types[0]
+            # NB. http://jacobian.org/writing/dynamic-form-generation/
+            class GenericContentForm(forms.Form):
+                def __init__(self):
+                    super(GenericContentForm, self).__init__()
 
-        # NB. http://jacobian.org/writing/dynamic-form-generation/
-        class GenericContentForm(forms.Form):
-            def __init__(self):
-                super(GenericContentForm, self).__init__()
+                    self.fields[content_type_field] = forms.ChoiceField(
+                        label='Media type',
+                        choices=choices,
+                        initial=initial
+                    )
+                    self.fields[content_field] = forms.CharField(
+                        label='Content',
+                        widget=forms.Textarea
+                    )
 
-                self.fields[content_type_field] = forms.ChoiceField(
-                    label='Media type',
-                    choices=choices,
-                    initial=initial
-                )
-                self.fields[content_field] = forms.CharField(
-                    label='Content',
-                    widget=forms.Textarea
-                )
-
-        return GenericContentForm()
+            return GenericContentForm()
 
     def get_name(self, view):
         return view.get_view_name()
@@ -562,47 +540,20 @@ class BrowsableAPIRenderer(BaseRenderer):
         request = renderer_context['request']
         response = renderer_context['response']
 
-        obj = getattr(view, 'object', None)
-        if getattr(view, 'get_serializer', None):
-            serializer = view.get_serializer(instance=obj)
-            for field_name, field in serializer.fields.items():
-                if field.read_only:
-                    del serializer.fields[field_name]
-        else:
-            serializer = None
-
-        parsers = []
-        for parser_class in view.parser_classes:
-            if is_form_media_type(parser_class.media_type):
-                continue
-            content = None
-            renderer_class = getattr(parser_class, 'renderer_class', None)
-            if renderer_class and serializer:
-                renderer = renderer_class()
-                context = renderer_context.copy()
-                context['indent'] = 4
-                content = renderer.render(serializer.data, accepted_media_type, context)
-                print content
-            parsers.append({
-                'media_type': parser_class.media_type,
-                'content': content
-            })
-
-
         media_types = [parser.media_type for parser in view.parser_classes]
 
         renderer = self.get_default_renderer(view)
         content = self.get_content(renderer, data, accepted_media_type, renderer_context)
 
-        put_form = self._get_rendered_html_form(view, 'PUT', request)
-        post_form = self._get_rendered_html_form(view, 'POST', request)
-        patch_form = self._get_rendered_html_form(view, 'PATCH', request)
-        delete_form = self._get_rendered_html_form(view, 'DELETE', request)
-        options_form = self._get_rendered_html_form(view, 'OPTIONS', request)
+        put_form = self.get_rendered_html_form(view, 'PUT', request)
+        post_form = self.get_rendered_html_form(view, 'POST', request)
+        patch_form = self.get_rendered_html_form(view, 'PATCH', request)
+        delete_form = self.get_rendered_html_form(view, 'DELETE', request)
+        options_form = self.get_rendered_html_form(view, 'OPTIONS', request)
 
-        raw_data_put_form = self._get_raw_data_form(view, 'PUT', request, media_types)
-        raw_data_post_form = self._get_raw_data_form(view, 'POST', request, media_types)
-        raw_data_patch_form = self._get_raw_data_form(view, 'PATCH', request, media_types)
+        raw_data_put_form = self.get_raw_data_form(view, 'PUT', request, media_types)
+        raw_data_post_form = self.get_raw_data_form(view, 'POST', request, media_types)
+        raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request, media_types)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
         name = self.get_name(view)
