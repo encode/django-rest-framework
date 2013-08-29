@@ -128,8 +128,8 @@
                 <div {% if post_form %}class="tabbable"{% endif %}>
                     {% if post_form %}
                     <ul class="nav nav-tabs form-switcher">
-                        <li><a href="#object-form" data-toggle="tab">HTML form</a></li>
-                        <li><a href="#generic-content-form" data-toggle="tab">Raw data</a></li>
+                        <li><a name='html-tab' href="#object-form" data-toggle="tab">HTML form</a></li>
+                        <li><a name='raw-tab' href="#generic-content-form" data-toggle="tab">Raw data</a></li>
                     </ul>
                     {% endif %}
                     <div class="well tab-content">
