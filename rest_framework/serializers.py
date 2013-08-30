@@ -31,6 +31,9 @@ from rest_framework.relations import *
 from rest_framework.fields import *
 
 
+class RelationsList(list):
+    _deleted = []
+
 class NestedValidationError(ValidationError):
     """
     The default ValidationError behavior is to stringify each item in the list
@@ -160,7 +163,6 @@ class BaseSerializer(WritableField):
         self._data = None
         self._files = None
         self._errors = None
-        self._deleted = None
 
         if many and instance is not None and not hasattr(instance, '__iter__'):
             raise ValueError('instance should be a queryset or other iterable with many=True')
@@ -297,7 +299,8 @@ class BaseSerializer(WritableField):
         Serialize objects -> primitives.
         """
         ret = self._dict_class()
-        ret.fields = {}
+        ret.fields = self._dict_class()
+        ret.empty = obj is None
 
         for field_name, field in self.fields.items():
             field.initialize(parent=self, field_name=field_name)
@@ -330,14 +333,15 @@ class BaseSerializer(WritableField):
         if self.source == '*':
             return self.to_native(obj)
 
+        # Get the raw field value
         try:
             source = self.source or field_name
             value = obj
 
             for component in source.split('.'):
-                value = get_component(value, component)
                 if value is None:
                     break
+                value = get_component(value, component)
         except ObjectDoesNotExist:
             return None
 
@@ -372,6 +376,7 @@ class BaseSerializer(WritableField):
 
         # Set the serializer object if it exists
         obj = getattr(self.parent.object, field_name) if self.parent.object else None
+        obj = obj.all() if is_simple_callable(getattr(obj, 'all', None)) else obj
 
         if self.source == '*':
             if value:
@@ -385,7 +390,8 @@ class BaseSerializer(WritableField):
                     'data': value,
                     'context': self.context,
                     'partial': self.partial,
-                    'many': self.many
+                    'many': self.many,
+                    'allow_add_remove': self.allow_add_remove
                 }
                 serializer = self.__class__(**kwargs)
 
@@ -418,8 +424,17 @@ class BaseSerializer(WritableField):
         if self._errors is None:
             data, files = self.init_data, self.init_files
 
-            if self.many:
-                ret = []
+            if self.many is not None:
+                many = self.many
+            else:
+                many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict, six.text_type))
+                if many:
+                    warnings.warn('Implict list/queryset serialization is deprecated. '
+                                  'Use the `many=True` flag when instantiating the serializer.',
+                                  DeprecationWarning, stacklevel=3)
+
+            if many:
+                ret = RelationsList()
                 errors = []
                 update = self.object is not None
 
@@ -446,8 +461,8 @@ class BaseSerializer(WritableField):
                         ret.append(self.from_native(item, None))
                         errors.append(self._errors)
 
-                    if update:
-                        self._deleted = identity_to_objects.values()
+                    if update and self.allow_add_remove:
+                        ret._deleted = identity_to_objects.values()
 
                     self._errors = any(errors) and errors or []
                 else:
@@ -490,11 +505,11 @@ class BaseSerializer(WritableField):
         """
         if isinstance(self.object, list):
             [self.save_object(item, **kwargs) for item in self.object]
+
+            if self.object._deleted:
+                [self.delete_object(item) for item in self.object._deleted]
         else:
             self.save_object(self.object, **kwargs)
-
-        if self.allow_add_remove and self._deleted:
-            [self.delete_object(item) for item in self._deleted]
 
         return self.object
 
@@ -771,9 +786,12 @@ class ModelSerializer(Serializer):
         cls = self.opts.model
         opts = get_concrete_model(cls)._meta
         exclusions = [field.name for field in opts.fields + opts.many_to_many]
+
         for field_name, field in self.fields.items():
             field_name = field.source or field_name
-            if field_name in exclusions and not field.read_only:
+            if field_name in exclusions \
+                and not field.read_only \
+                and not isinstance(field, Serializer):
                 exclusions.remove(field_name)
         return exclusions
 
@@ -799,6 +817,7 @@ class ModelSerializer(Serializer):
         """
         m2m_data = {}
         related_data = {}
+        nested_forward_relations = {}
         meta = self.opts.model._meta
 
         # Reverse fk or one-to-one relations
@@ -818,6 +837,12 @@ class ModelSerializer(Serializer):
             if field.name in attrs:
                 m2m_data[field.name] = attrs.pop(field.name)
 
+        # Nested forward relations - These need to be marked so we can save
+        # them before saving the parent model instance.
+        for field_name in attrs.keys():
+            if isinstance(self.fields.get(field_name, None), Serializer):
+                nested_forward_relations[field_name] = attrs[field_name]
+
         # Update an existing instance...
         if instance is not None:
             for key, val in attrs.items():
@@ -833,6 +858,7 @@ class ModelSerializer(Serializer):
         # at the point of save.
         instance._related_data = related_data
         instance._m2m_data = m2m_data
+        instance._nested_forward_relations = nested_forward_relations
 
         return instance
 
@@ -848,6 +874,14 @@ class ModelSerializer(Serializer):
         """
         Save the deserialized object and return it.
         """
+        if getattr(obj, '_nested_forward_relations', None):
+            # Nested relationships need to be saved before we can save the
+            # parent instance.
+            for field_name, sub_object in obj._nested_forward_relations.items():
+                if sub_object:
+                    self.save_object(sub_object)
+                setattr(obj, field_name, sub_object)
+
         obj.save(**kwargs)
 
         if getattr(obj, '_m2m_data', None):
@@ -857,7 +891,25 @@ class ModelSerializer(Serializer):
 
         if getattr(obj, '_related_data', None):
             for accessor_name, related in obj._related_data.items():
-                setattr(obj, accessor_name, related)
+                if isinstance(related, RelationsList):
+                    # Nested reverse fk relationship
+                    for related_item in related:
+                        fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
+                        setattr(related_item, fk_field, obj)
+                        self.save_object(related_item)
+
+                    # Delete any removed objects
+                    if related._deleted:
+                        [self.delete_object(item) for item in related._deleted]
+
+                elif isinstance(related, models.Model):
+                    # Nested reverse one-one relationship
+                    fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
+                    setattr(related, fk_field, obj)
+                    self.save_object(related)
+                else:
+                    # Reverse FK or reverse one-one
+                    setattr(obj, accessor_name, related)
             del(obj._related_data)
 
 
@@ -879,6 +931,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
     _options_class = HyperlinkedModelSerializerOptions
     _default_view_name = '%(model_name)s-detail'
     _hyperlink_field_class = HyperlinkedRelatedField
+    _hyperlink_identify_field_class = HyperlinkedIdentityField
 
     def get_default_fields(self):
         fields = super(HyperlinkedModelSerializer, self).get_default_fields()
@@ -887,7 +940,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
             self.opts.view_name = self._get_default_view_name(self.opts.model)
 
         if 'url' not in fields:
-            url_field = HyperlinkedIdentityField(
+            url_field = self._hyperlink_identify_field_class(
                 view_name=self.opts.view_name,
                 lookup_field=self.opts.lookup_field
             )

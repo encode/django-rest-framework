@@ -2,7 +2,7 @@
 
 # Testing
 
-> Code without tests is broken as designed
+> Code without tests is broken as designed.
 >
 > &mdash; [Jacob Kaplan-Moss][cite]
 

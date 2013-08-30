@@ -338,6 +338,17 @@ class TestInstanceView(TestCase):
         new_obj = SlugBasedModel.objects.get(slug='test_slug')
         self.assertEqual(new_obj.text, 'foobar')
 
+    def test_patch_cannot_create_an_object(self):
+        """
+        PATCH requests should not be able to create objects.
+        """
+        data = {'text': 'foobar'}
+        request = factory.patch('/999', data, format='json')
+        with self.assertNumQueries(1):
+            response = self.view(request, pk=999).render()
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertFalse(self.objects.filter(id=999).exists())
+
 
 class TestOverriddenGetObject(TestCase):
     """

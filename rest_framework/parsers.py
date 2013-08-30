@@ -10,9 +10,9 @@ from django.core.files.uploadhandler import StopFutureHandlers
 from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError, parse_header, ChunkIter
-from rest_framework.compat import yaml, etree
+from rest_framework.compat import etree, six, yaml
 from rest_framework.exceptions import ParseError
-from rest_framework.compat import six
+from rest_framework import renderers
 import json
 import datetime
 import decimal
@@ -47,6 +47,7 @@ class JSONParser(BaseParser):
     """
 
     media_type = 'application/json'
+    renderer_class = renderers.UnicodeJSONRenderer
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -121,7 +122,8 @@ class MultiPartParser(BaseParser):
         parser_context = parser_context or {}
         request = parser_context['request']
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
-        meta = request.META
+        meta = request.META.copy()
+        meta['CONTENT_TYPE'] = media_type
         upload_handlers = request.upload_handlers
 
         try:
@@ -129,7 +131,7 @@ class MultiPartParser(BaseParser):
             data, files = parser.parse()
             return DataAndFiles(data, files)
         except MultiPartParserError as exc:
-            raise ParseError('Multipart form parse error - %s' % six.u(exc))
+            raise ParseError('Multipart form parse error - %s' % str(exc))
 
 
 class XMLParser(BaseParser):

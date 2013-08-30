@@ -128,17 +128,17 @@
                 <div {% if post_form %}class="tabbable"{% endif %}>
                     {% if post_form %}
                     <ul class="nav nav-tabs form-switcher">
-                        <li><a href="#object-form" data-toggle="tab">HTML form</a></li>
-                        <li><a href="#generic-content-form" data-toggle="tab">Raw data</a></li>
+                        <li><a name='html-tab' href="#object-form" data-toggle="tab">HTML form</a></li>
+                        <li><a name='raw-tab' href="#generic-content-form" data-toggle="tab">Raw data</a></li>
                     </ul>
                     {% endif %}
                     <div class="well tab-content">
                         {% if post_form %}
                         <div class="tab-pane" id="object-form">
                             {% with form=post_form %}
-                            <form action="{{ request.get_full_path }}" method="POST" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
+                            <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal">
                                 <fieldset>
-                                    {% include "rest_framework/form.html" %}
+                                    {{ post_form }}
                                     <div class="form-actions">
                                         <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
                                     </div>
@@ -167,23 +167,21 @@
                 <div {% if put_form %}class="tabbable"{% endif %}>
                     {% if put_form %}
                     <ul class="nav nav-tabs form-switcher">
-                        <li><a href="#object-form" data-toggle="tab">HTML form</a></li>
-                        <li><a href="#generic-content-form" data-toggle="tab">Raw data</a></li>
+                        <li><a name='html-tab' href="#object-form" data-toggle="tab">HTML form</a></li>
+                        <li><a  name='raw-tab' href="#generic-content-form" data-toggle="tab">Raw data</a></li>
                     </ul>
                     {% endif %}
                     <div class="well tab-content">
                         {% if put_form %}
                         <div class="tab-pane" id="object-form">
-                            {% with form=put_form %}
-                            <form action="{{ request.get_full_path }}" method="POST" {% if form.is_multipart %}enctype="multipart/form-data"{% endif %} class="form-horizontal">
+                            <form action="{{ request.get_full_path }}" method="POST" enctype="multipart/form-data" class="form-horizontal">
                                 <fieldset>
-                                    {% include "rest_framework/form.html" %}
+                                    {{ put_form }}
                                     <div class="form-actions">
                                         <button class="btn btn-primary js-tooltip" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" title="Make a PUT request on the {{ name }} resource">PUT</button>
                                     </div>
                                 </fieldset>
                             </form>
-                            {% endwith %}
                         </div>
                         {% endif %}
                         <div {% if put_form %}class="tab-pane"{% endif %} id="generic-content-form">

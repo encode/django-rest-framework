@@ -88,7 +88,7 @@ The client may additionally include an `'indent'` media type parameter, in which
 
 **.format**: `'.json'`
 
-**.charset**: `utf-8`
+**.charset**: `None`
 
 ## UnicodeJSONRenderer
 
@@ -110,7 +110,7 @@ Both the `JSONRenderer` and `UnicodeJSONRenderer` styles conform to [RFC 4627][r
 
 **.format**: `'.json'`
 
-**.charset**: `utf-8`
+**.charset**: `None`
 
 ## JSONPRenderer
 
@@ -212,6 +212,20 @@ You can use `TemplateHTMLRenderer` either to return regular HTML pages using RES
 
 See also: `TemplateHTMLRenderer`
 
+## HTMLFormRenderer
+
+Renders data returned by a serializer into an HTML form.  The output of this renderer does not include the enclosing `<form>` tags or an submit actions, as you'll probably need those to include the desired method and URL.  Also note that the `HTMLFormRenderer` does not yet support including field error messages.
+
+Note that the template used by the `HTMLFormRenderer` class, and the context submitted to it **may be subject to change**.  If you need to use this renderer class it is advised that you either make a local copy of the class and templates, or follow the release note on REST framework upgrades closely.
+
+**.media_type**: `text/html`
+
+**.format**: `'.form'`
+
+**.charset**: `utf-8`
+
+**.template**: `'rest_framework/form.html'`
+
 ## BrowsableAPIRenderer
 
 Renders data into HTML for the Browsable API.  This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.
@@ -221,6 +235,8 @@ Renders data into HTML for the Browsable API.  This renderer will determine whic
 **.format**: `'.api'`
 
 **.charset**: `utf-8`
+
+**.template**: `'rest_framework/api.html'`
 
 #### Customizing BrowsableAPIRenderer
 
@@ -295,12 +311,15 @@ By default renderer classes are assumed to be using the `UTF-8` encoding.  To us
 
 Note that if a renderer class returns a unicode string, then the response content will be coerced into a bytestring by the `Response` class, with the `charset` attribute set on the renderer used to determine the encoding.
 
-If the renderer returns a bytestring representing raw binary content, you should set a charset value of `None`, which will ensure the `Content-Type` header of the response will not have a `charset` value set.  Doing so will also ensure that the browsable API will not attempt to display the binary content as a string.
+If the renderer returns a bytestring representing raw binary content, you should set a charset value of `None`, which will ensure the `Content-Type` header of the response will not have a `charset` value set.
+
+In some cases you may also want to set the `render_style` attribute to `'binary'`.  Doing so will also ensure that the browsable API will not attempt to display the binary content as a string.
 
     class JPEGRenderer(renderers.BaseRenderer):
         media_type = 'image/jpeg'
         format = 'jpg'
         charset = None
+        render_style = 'binary'
 
         def render(self, data, media_type=None, renderer_context=None):
             return data

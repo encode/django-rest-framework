@@ -142,11 +142,16 @@ class UpdateModelMixin(object):
         try:
             return self.get_object()
         except Http404:
-            # If this is a PUT-as-create operation, we need to ensure that
-            # we have relevant permissions, as if this was a POST request.
-            # This will either raise a PermissionDenied exception,
-            # or simply return None
-            self.check_permissions(clone_request(self.request, 'POST'))
+            if self.request.method == 'PUT':
+                # For PUT-as-create operation, we need to ensure that we have
+                # relevant permissions, as if this was a POST request.  This
+                # will either raise a PermissionDenied exception, or simply
+                # return None.
+                self.check_permissions(clone_request(self.request, 'POST'))
+            else:
+                # PATCH requests where the object does not exist should still
+                # return a 404 response.
+                raise
 
     def pre_save(self, obj):
         """

@@ -34,7 +34,7 @@ The default set of parsers may be set globally, using the `DEFAULT_PARSER_CLASSE
         )
     }
 
-You can also set the renderers used for an individual view, or viewset,
+You can also set the parsers used for an individual view, or viewset,
 using the `APIView` class based views.
 
 	from rest_framework.parsers import YAMLParser

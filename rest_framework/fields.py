@@ -301,7 +301,10 @@ class WritableField(Field):
         try:
             if self.use_files:
                 files = files or {}
-                native = files[field_name]
+                try:
+                    native = files[field_name]
+                except KeyError:
+                    native = data[field_name]
             else:
                 native = data[field_name]
         except KeyError:
@@ -503,6 +506,11 @@ class ChoiceField(WritableField):
                 if value == smart_text(k) or value == k:
                     return True
         return False
+
+    def from_native(self, value):
+        if value in validators.EMPTY_VALUES:
+            return None
+        return super(ChoiceField, self).from_native(value)
 
 
 class EmailField(CharField):
