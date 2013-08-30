@@ -338,6 +338,11 @@ class HTMLFormRenderer(BaseRenderer):
         fields = {}
         for key, val in data.fields.items():
             if getattr(val, 'read_only', True):
+                # Don't include read-only fields.
+                continue
+
+            if getattr(val, 'fields', None):
+                # Nested data not supported by HTML forms.
                 continue
 
             kwargs = {}
@@ -476,6 +481,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                 return
 
             serializer = view.get_serializer(instance=obj)
+
             data = serializer.data
             form_renderer = self.form_renderer_class()
             return form_renderer.render(data, self.accepted_media_type, self.renderer_context)
@@ -508,9 +514,10 @@ class BrowsableAPIRenderer(BaseRenderer):
 
                 # Get a read-only version of the serializer
                 serializer = view.get_serializer(instance=obj)
-                for field_name, field in serializer.fields.items():
-                    if field.read_only:
-                        del serializer.fields[field_name]
+                if obj is None:
+                    for name, field in serializer.fields.items():
+                        if getattr(field, 'read_only', None):
+                            del serializer.fields[name]
 
                 # Render the raw data content
                 renderer = renderer_class()

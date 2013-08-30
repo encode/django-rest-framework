@@ -334,13 +334,14 @@ class BaseSerializer(WritableField):
         if self.source == '*':
             return self.to_native(obj)
 
+        # Get the raw field value
         try:
             source = self.source or field_name
             value = obj
 
             for component in source.split('.'):
                 if value is None:
-                    return self.to_native(None)
+                    break
                 value = get_component(value, component)
         except ObjectDoesNotExist:
             return None
