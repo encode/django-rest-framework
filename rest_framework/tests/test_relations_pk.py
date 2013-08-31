@@ -283,6 +283,15 @@ class PKForeignKeyTests(TestCase):
         self.assertFalse(serializer.is_valid())
         self.assertEqual(serializer.errors, {'target': ['This field is required.']})
 
+    def test_foreign_key_with_empty(self):
+        """
+        Regression test for #1072
+
+        https://github.com/tomchristie/django-rest-framework/issues/1072
+        """
+        serializer = NullableForeignKeySourceSerializer()
+        self.assertEqual(serializer.data['target'], None)
+
 
 class PKNullableForeignKeyTests(TestCase):
     def setUp(self):
