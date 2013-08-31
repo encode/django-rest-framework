@@ -264,7 +264,7 @@ class PrimaryKeyRelatedField(RelatedField):
             # RelatedObject (reverse relationship)
             try:
                 pk = getattr(obj, self.source or field_name).pk
-            except ObjectDoesNotExist:
+            except (ObjectDoesNotExist, AttributeError):
                 return None
 
         # Forward relationship
