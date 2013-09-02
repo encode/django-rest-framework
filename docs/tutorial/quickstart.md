@@ -12,6 +12,10 @@ Create a new Django project named `tutorial`, then start a new app called `quick
 
     # Create a virtualenv to isolate our package dependencies locally
     virtualenv env
+    
+    # Windows users: 
+    env\Scripts\activate 
+    # Linux users:
     source env/bin/activate
 
     # Install Django and Django REST framework into the virtualenv
