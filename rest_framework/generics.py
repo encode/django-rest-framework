@@ -360,7 +360,9 @@ class GenericAPIView(views.APIView):
                         self.get_object()
                     except Http404:
                         # Http404 should be acceptable and the serializer
-                        # metadata should be populated.
+                        # metadata should be populated. Except this so the
+                        # outer "else" clause of the try-except-else block
+                        # will be executed.
                         pass
             except (exceptions.APIException, PermissionDenied):
                 pass
