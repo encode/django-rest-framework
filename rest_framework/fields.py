@@ -13,7 +13,7 @@ import warnings
 from decimal import Decimal, DecimalException
 from django import forms
 from django.core import validators
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.conf import settings
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.http import QueryDict
@@ -69,9 +69,14 @@ def set_component(obj, attr_name, value):
     if isinstance(obj, dict):
         obj[attr_name] = value
     else:
-        attr = getattr(obj, attr_name, None)
-        if six.callable(attr):
-            raise TypeError("%r.%s is a method; can't set it" % (obj, attr_name))
+        try:
+            attr = getattr(obj, attr_name, None)
+        except ObjectDoesNotExist:
+            # happens for non-null FK fields that haven't yet been set.
+            pass
+        else:
+            if six.callable(attr):
+                raise TypeError("%r.%s is a method; can't set it" % (obj, attr_name))
         setattr(obj, attr_name, value)
 
 
