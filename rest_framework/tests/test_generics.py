@@ -272,6 +272,48 @@ class TestInstanceView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected)
 
+    def test_options_before_instance_create(self):
+        """
+        OPTIONS requests to RetrieveUpdateDestroyAPIView should return metadata
+        before the instance has been created
+        """
+        request = factory.options('/999')
+        with self.assertNumQueries(1):
+            response = self.view(request, pk=999).render()
+        expected = {
+            'parses': [
+                'application/json',
+                'application/x-www-form-urlencoded',
+                'multipart/form-data'
+            ],
+            'renders': [
+                'application/json',
+                'text/html'
+            ],
+            'name': 'Instance',
+            'description': 'Example description for OPTIONS.',
+            'actions': {
+                'PUT': {
+                    'text': {
+                        'max_length': 100,
+                        'read_only': False,
+                        'required': True,
+                        'type': 'string',
+                        'label': 'Text comes here',
+                        'help_text': 'Text description.'
+                    },
+                    'id': {
+                        'read_only': True,
+                        'required': False,
+                        'type': 'integer',
+                        'label': 'ID',
+                    },
+                }
+            }
+        }
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected)
+
     def test_get_instance_view_incorrect_arg(self):
         """
         GET requests with an incorrect pk type, should raise 404, not 500.

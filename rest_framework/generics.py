@@ -356,8 +356,15 @@ class GenericAPIView(views.APIView):
                 self.check_permissions(cloned_request)
                 # Test object permissions
                 if method == 'PUT':
-                    self.get_object()
-            except (exceptions.APIException, PermissionDenied, Http404):
+                    try:
+                        self.get_object()
+                    except Http404:
+                        # Http404 should be acceptable and the serializer
+                        # metadata should be populated. Except this so the
+                        # outer "else" clause of the try-except-else block
+                        # will be executed.
+                        pass
+            except (exceptions.APIException, PermissionDenied):
                 pass
             else:
                 # If user has appropriate permissions for the view, include
