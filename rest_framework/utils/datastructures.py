@@ -4,13 +4,13 @@ Utility functions for reshaping datastructures
 from rest_framework.settings import api_settings
 from django.http import QueryDict
 
-class DotExpandedDict(QueryDict):
+class TokenExpandedDict(QueryDict):
     """
     A special dictionary constructor that takes a dictionary in which the keys
     may contain dots to specify inner dictionaries. It's confusing, but this
     example should make sense.
 
-    >>> d = DotExpandedDict({'person.1.firstname': ['Simon'], \
+    >>> d = TokenExpandedDict({'person.1.firstname': ['Simon'], \
             'person.1.lastname': ['Willison'], \
             'person.2.firstname': ['Adrian'], \
             'person.2.lastname': ['Holovaty']})
@@ -22,7 +22,7 @@ class DotExpandedDict(QueryDict):
     {'lastname': ['Willison'], 'firstname': ['Simon']}
 
     # Gotcha: Results are unpredictable if the dots are "uneven":
-    >>> DotExpandedDict({'c.1': 2, 'c.2': 3, 'c': 1})
+    >>> TokenExpandedDict({'c.1': 2, 'c.2': 3, 'c': 1})
     {'c': 1}
     """
     def __init__(self, key_to_list_mapping):

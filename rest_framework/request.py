@@ -13,7 +13,6 @@ from django.conf import settings
 from django.http import QueryDict
 from django.http.multipartparser import parse_header
 from django.utils.datastructures import MultiValueDict
-from rest_framework.utils.datastructures import DotExpandedDict
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
 from rest_framework.compat import BytesIO
@@ -151,12 +150,8 @@ class Request(object):
         Similar to usual behaviour of `request.POST`, except that it handles
         arbitrary parsers, and also works on methods other than POST (eg PUT).
         """
-        if not _hasattr(self, '_data'):
-            self._load_data_and_files()
-
-        if api_settings.NESTED_FIELDS:
-            self._data = DotExpandedDict(self._data)
-        
+        #if not _hasattr(self, '_data'):
+        #    self._load_data_and_files()
         return self._data
 
     @property
@@ -282,8 +277,7 @@ class Request(object):
             return
 
         # At this point we're committed to parsing the request as form data.
-        self._data = self._request.POST
-        self._files = self._request.FILES
+        self._data, self._files = self._parse()
 
         # Method overloading - change the method and remove the param from the content.
         if (self._METHOD_PARAM and

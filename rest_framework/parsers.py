@@ -13,6 +13,8 @@ from django.http.multipartparser import MultiPartParserError, parse_header, Chun
 from rest_framework.compat import yaml, etree
 from rest_framework.exceptions import ParseError
 from rest_framework.compat import six
+from rest_framework.utils.datastructures import TokenExpandedDict
+from rest_framework.settings import api_settings
 import json
 import datetime
 import decimal
@@ -39,6 +41,16 @@ class BaseParser(object):
         parsed data and files.
         """
         raise NotImplementedError(".parse() must be overridden.")
+
+    def _parse_tokenization(self, data):
+        """
+        Configuration dependant processing of input data, where character tokens 
+        (such as periods '.') can be used to reshape for data into nested form,
+        for use with NestedModelSerializer.
+        """
+        if api_settings.NESTED_FIELDS:
+            data = TokenExpandedDict(data)
+        return data
 
 
 class JSONParser(BaseParser):
@@ -108,6 +120,8 @@ class FormParser(BaseParser):
         parser_context = parser_context or {}
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
         data = QueryDict(stream.read(), encoding=encoding)
+        data = self._parse_tokenization(data)
+
         return data
 
 
@@ -134,6 +148,8 @@ class MultiPartParser(BaseParser):
         try:
             parser = DjangoMultiPartParser(meta, stream, upload_handlers, encoding)
             data, files = parser.parse()
+            data = self._parse_tokenization(data)
+
             return DataAndFiles(data, files)
         except MultiPartParserError as exc:
             raise ParseError('Multipart form parse error - %s' % six.u(exc))
