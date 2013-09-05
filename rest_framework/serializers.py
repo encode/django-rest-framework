@@ -899,7 +899,13 @@ class ModelSerializer(Serializer):
 
         if getattr(obj, '_m2m_data', None):
             for accessor_name, object_list in obj._m2m_data.items():
-                setattr(obj, accessor_name, object_list)
+                for m2m_object in object_list:
+                    for field in m2m_object.__dict__.keys():
+                        print field
+                        if not field == 'id':
+                            attr = getattr(m2m_object, field)
+                            setattr(m2m_object, field, m2m_object.__dict__[field])
+                    m2m_object.save()
             del(obj._m2m_data)
 
         if getattr(obj, '_related_data', None):
