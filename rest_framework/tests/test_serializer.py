@@ -1645,6 +1645,8 @@ class SerializerSupportsManyRelationships(TestCase):
         self.assertEqual(serializer.data, {'text': 'foo', 'targets': [1, 2]})
 
 
+### Regression test for #1088
+
 class WritablePropertyModelSerializer(serializers.ModelSerializer):
     prop = serializers.CharField(source='prop')
     class Meta:
