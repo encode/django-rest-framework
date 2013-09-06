@@ -901,7 +901,6 @@ class ModelSerializer(Serializer):
             for accessor_name, object_list in obj._m2m_data.items():
                 for m2m_object in object_list:
                     for field in m2m_object.__dict__.keys():
-                        print field
                         if not field == 'id':
                             attr = getattr(m2m_object, field)
                             setattr(m2m_object, field, m2m_object.__dict__[field])
