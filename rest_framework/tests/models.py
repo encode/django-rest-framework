@@ -81,10 +81,16 @@ class Person(RESTFrameworkModel):
 
     @property
     def info(self):
-        return {
-            'name': self.name,
-            'age': self.age,
-        }
+        if not hasattr(self, '_info'):
+            self._info = {
+                'name': self.name,
+                'age': self.age,
+            }
+        return self._info
+
+    @info.setter
+    def info(self, value):
+        self._info = value
 
 
 class BlogPost(RESTFrameworkModel):
@@ -161,6 +167,18 @@ class NullableOneToOneSource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
     target = models.OneToOneField(OneToOneTarget, null=True, blank=True,
                                   related_name='nullable_source')
+
+
+class ModelWithWritableProperty(RESTFrameworkModel):
+    name = models.CharField(max_length=100)
+
+    @property
+    def prop(self):
+        return getattr(self, '_value', 'hi!')
+
+    @prop.setter
+    def prop(self, value):
+        self._value = value
 
 
 # Serializer used to test BasicModel
