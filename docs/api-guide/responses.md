@@ -10,7 +10,7 @@ REST framework supports HTTP content negotiation by providing a `Response` class
 
 The `Response` class subclasses Django's `SimpleTemplateResponse`.  `Response` objects are initialised with data, which should consist of native Python primitives.  REST framework then uses standard HTTP content negotiation to determine how it should render the final response content.
 
-There's no requirement for you to use the `Response` class, you can also return regular `HttpResponse` objects from your views if you want, but it provides a nicer interface for returning Web API responses.
+There's no requirement for you to use the `Response` class, you can also return regular `HttpResponse` or `StreamingHttpResponse` objects from your views if required.  Using the `Response` class simply provides a nicer interface for returning content-negotiated Web API responses, that can be rendered to multiple formats.
 
 Unless you want to heavily customize REST framework for some reason, you should always use an `APIView` class or `@api_view` function for views that return `Response` objects.  Doing so ensures that the view can perform content negotiation and select the appropriate renderer for the response, before it is returned from the view.
 
@@ -24,7 +24,7 @@ Unless you want to heavily customize REST framework for some reason, you should 
 
 Unlike regular `HttpResponse` objects, you do not instantiate `Response` objects with rendered content.  Instead you pass in unrendered data, which may consist of any Python primitives.
 
-The renderers used by the `Response` class cannot natively handle complex datatypes such as Django model instances, so you need to serialize the data into primative datatypes before creating the `Response` object.
+The renderers used by the `Response` class cannot natively handle complex datatypes such as Django model instances, so you need to serialize the data into primitive datatypes before creating the `Response` object.
 
 You can use REST framework's `Serializer` classes to perform this data serialization, or use your own custom serialization.
 
@@ -54,7 +54,7 @@ The rendered content of the response.  The `.render()` method must have been cal
 
 ## .template_name
 
-The `template_name`, if supplied.  Only required if `HTMLRenderer` or some other custom template renderer is the accepted renderer for the reponse.
+The `template_name`, if supplied.  Only required if `HTMLRenderer` or some other custom template renderer is the accepted renderer for the response.
 
 ## .accepted_renderer
 

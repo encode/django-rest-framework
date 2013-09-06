@@ -2,11 +2,13 @@
 The `compat` module provides support for backwards compatibility with older
 versions of django/python, and compatibility wrappers around optional packages.
 """
+
 # flake8: noqa
 from __future__ import unicode_literals
 
 import django
 from django.core.exceptions import ImproperlyConfigured
+from django.conf import settings
 
 # Try to import six from Django, fallback to included `six`.
 try:
@@ -32,6 +34,12 @@ try:
 except ImportError:
     from django.utils.encoding import force_unicode as force_text
 
+
+# HttpResponseBase only exists from 1.5 onwards
+try:
+    from django.http.response import HttpResponseBase
+except ImportError:
+    from django.http import HttpResponse as HttpResponseBase
 
 # django-filter is optional
 try:
@@ -76,16 +84,9 @@ def get_concrete_model(model_cls):
 
 # Django 1.5 add support for custom auth user model
 if django.VERSION >= (1, 5):
-    from django.conf import settings
-    if hasattr(settings, 'AUTH_USER_MODEL'):
-        User = settings.AUTH_USER_MODEL
-    else:
-        from django.contrib.auth.models import User
+    AUTH_USER_MODEL = settings.AUTH_USER_MODEL
 else:
-    try:
-        from django.contrib.auth.models import User
-    except ImportError:
-        raise ImportError("User model is not to be found.")
+    AUTH_USER_MODEL = 'auth.User'
 
 
 if django.VERSION >= (1, 5):
@@ -435,6 +436,42 @@ except ImportError:
         return force_text(url)
 
 
+# RequestFactory only provide `generic` from 1.5 onwards
+
+from django.test.client import RequestFactory as DjangoRequestFactory
+from django.test.client import FakePayload
+try:
+    # In 1.5 the test client uses force_bytes
+    from django.utils.encoding import force_bytes_or_smart_bytes
+except ImportError:
+    # In 1.3 and 1.4 the test client just uses smart_str
+    from django.utils.encoding import smart_str as force_bytes_or_smart_bytes
+
+
+class RequestFactory(DjangoRequestFactory):
+    def generic(self, method, path,
+            data='', content_type='application/octet-stream', **extra):
+        parsed = urlparse.urlparse(path)
+        data = force_bytes_or_smart_bytes(data, settings.DEFAULT_CHARSET)
+        r = {
+            'PATH_INFO':      self._get_path(parsed),
+            'QUERY_STRING':   force_text(parsed[4]),
+            'REQUEST_METHOD': str(method),
+        }
+        if data:
+            r.update({
+                'CONTENT_LENGTH': len(data),
+                'CONTENT_TYPE':   str(content_type),
+                'wsgi.input':     FakePayload(data),
+            })
+        elif django.VERSION <= (1, 4):
+            # For 1.3 we need an empty WSGI payload
+            r.update({
+                'wsgi.input': FakePayload('')
+            })
+        r.update(extra)
+        return self.request(**r)
+
 # Markdown is optional
 try:
     import markdown
@@ -489,12 +526,22 @@ try:
     from provider.oauth2 import forms as oauth2_provider_forms
     from provider import scope as oauth2_provider_scope
     from provider import constants as oauth2_constants
+    from provider import __version__ as provider_version
+    if provider_version in ('0.2.3', '0.2.4'):
+        # 0.2.3 and 0.2.4 are supported version that do not support
+        # timezone aware datetimes
+        import datetime
+        provider_now = datetime.datetime.now
+    else:
+        # Any other supported version does use timezone aware datetimes
+        from django.utils.timezone import now as provider_now
 except ImportError:
     oauth2_provider = None
     oauth2_provider_models = None
     oauth2_provider_forms = None
     oauth2_provider_scope = None
     oauth2_constants = None
+    provider_now = None
 
 # Handle lazy strings
 from django.utils.functional import Promise

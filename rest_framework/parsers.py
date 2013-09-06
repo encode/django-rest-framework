@@ -10,9 +10,9 @@ from django.core.files.uploadhandler import StopFutureHandlers
 from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError, parse_header, ChunkIter
-from rest_framework.compat import yaml, etree
+from rest_framework.compat import etree, six, yaml
 from rest_framework.exceptions import ParseError
-from rest_framework.compat import six
+from rest_framework import renderers
 import json
 import datetime
 import decimal
@@ -47,13 +47,11 @@ class JSONParser(BaseParser):
     """
 
     media_type = 'application/json'
+    renderer_class = renderers.UnicodeJSONRenderer
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
-        Returns a 2-tuple of `(data, files)`.
-
-        `data` will be an object which is the parsed content of the response.
-        `files` will always be `None`.
+        Parses the incoming bytestream as JSON and returns the resulting data.
         """
         parser_context = parser_context or {}
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
@@ -74,10 +72,7 @@ class YAMLParser(BaseParser):
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
-        Returns a 2-tuple of `(data, files)`.
-
-        `data` will be an object which is the parsed content of the response.
-        `files` will always be `None`.
+        Parses the incoming bytestream as YAML and returns the resulting data.
         """
         assert yaml, 'YAMLParser requires pyyaml to be installed'
 
@@ -100,10 +95,8 @@ class FormParser(BaseParser):
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
-        Returns a 2-tuple of `(data, files)`.
-
-        `data` will be a :class:`QueryDict` containing all the form parameters.
-        `files` will always be :const:`None`.
+        Parses the incoming bytestream as a URL encoded form,
+        and returns the resulting QueryDict.
         """
         parser_context = parser_context or {}
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
@@ -120,7 +113,8 @@ class MultiPartParser(BaseParser):
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
-        Returns a DataAndFiles object.
+        Parses the incoming bytestream as a multipart encoded form,
+        and returns a DataAndFiles object.
 
         `.data` will be a `QueryDict` containing all the form parameters.
         `.files` will be a `QueryDict` containing all the form files.
@@ -128,7 +122,8 @@ class MultiPartParser(BaseParser):
         parser_context = parser_context or {}
         request = parser_context['request']
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
-        meta = request.META
+        meta = request.META.copy()
+        meta['CONTENT_TYPE'] = media_type
         upload_handlers = request.upload_handlers
 
         try:
@@ -136,7 +131,7 @@ class MultiPartParser(BaseParser):
             data, files = parser.parse()
             return DataAndFiles(data, files)
         except MultiPartParserError as exc:
-            raise ParseError('Multipart form parse error - %s' % six.u(exc))
+            raise ParseError('Multipart form parse error - %s' % str(exc))
 
 
 class XMLParser(BaseParser):
@@ -147,6 +142,9 @@ class XMLParser(BaseParser):
     media_type = 'application/xml'
 
     def parse(self, stream, media_type=None, parser_context=None):
+        """
+        Parses the incoming bytestream as XML and returns the resulting data.
+        """
         assert etree, 'XMLParser requires defusedxml to be installed'
 
         parser_context = parser_context or {}
@@ -216,7 +214,8 @@ class FileUploadParser(BaseParser):
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
-        Returns a DataAndFiles object.
+        Treats the incoming bytestream as a raw file upload and returns
+        a `DateAndFiles` object.
 
         `.data` will be None (we expect request body to be a file content).
         `.files` will be a `QueryDict` containing one 'file' element.

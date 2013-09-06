@@ -13,6 +13,7 @@ REST framework includes a `PaginationSerializer` class that makes it easy to ret
 Let's start by taking a look at an example from the Django documentation.
 
     from django.core.paginator import Paginator
+
     objects = ['john', 'paul', 'george', 'ringo']
     paginator = Paginator(objects, 2)
     page = paginator.page(1)
@@ -22,6 +23,7 @@ Let's start by taking a look at an example from the Django documentation.
 At this point we've got a page object.  If we wanted to return this page object as a JSON response, we'd need to provide the client with context such as next and previous links, so that it would be able to page through the remaining results.
 
     from rest_framework.pagination import PaginationSerializer
+
     serializer = PaginationSerializer(instance=page)
     serializer.data
     # {'count': 4, 'next': '?page=2', 'previous': None, 'results': [u'john', u'paul']}
@@ -83,11 +85,12 @@ We could now use our pagination serializer in a view like this.
 
 The generic class based views `ListAPIView` and `ListCreateAPIView` provide pagination of the returned querysets by default.  You can customise this behaviour by altering the pagination style, by modifying the default number of results, by allowing clients to override the page size using a query parameter, or by turning pagination off completely.
 
-The default pagination style may be set globally, using the `DEFAULT_PAGINATION_SERIALIZER_CLASS`, `PAGINATE_BY` and `PAGINATE_BY_PARAM` settings.  For example.
+The default pagination style may be set globally, using the `DEFAULT_PAGINATION_SERIALIZER_CLASS`, `PAGINATE_BY`, `PAGINATE_BY_PARAM`, and `MAX_PAGINATE_BY` settings.  For example.
 
     REST_FRAMEWORK = {
-        'PAGINATE_BY': 10,
-        'PAGINATE_BY_PARAM': 'page_size' 
+        'PAGINATE_BY': 10,                 # Default to 10
+        'PAGINATE_BY_PARAM': 'page_size',  # Allow client to override, using `?page_size=xxx`.
+        'MAX_PAGINATE_BY': 100             # Maximum limit allowed when using `?page_size=xxx`.
     }
 
 You can also set the pagination style on a per-view basis, using the `ListAPIView` generic class-based view.
@@ -97,6 +100,7 @@ You can also set the pagination style on a per-view basis, using the `ListAPIVie
         serializer_class = ExampleModelSerializer
         paginate_by = 10
         paginate_by_param = 'page_size'
+        max_paginate_by = 100
 
 Note that using a `paginate_by` value of `None` will turn off pagination for the view.
 
@@ -113,6 +117,9 @@ You can also override the name used for the object list field, by setting the `r
 ## Example
 
 For example, to nest a pair of links labelled 'prev' and 'next', and set the name for the results field to 'objects', you might use something like this.
+
+    from rest_framework import pagination
+    from rest_framework import serializers
 
     class LinksSerializer(serializers.Serializer):
         next = pagination.NextPageField(source='*')
@@ -135,7 +142,7 @@ To have your custom pagination serializer be used by default, use the `DEFAULT_P
 
 Alternatively, to set your custom pagination serializer on a per-view basis, use the `pagination_serializer_class` attribute on a generic class based view:
 
-    class PaginatedListView(ListAPIView):
+    class PaginatedListView(generics.ListAPIView):
         model = ExampleModel
         pagination_serializer_class = CustomPaginationSerializer
         paginate_by = 10

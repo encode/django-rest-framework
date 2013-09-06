@@ -48,7 +48,6 @@ DEFAULTS = {
     ),
     'DEFAULT_THROTTLE_CLASSES': (
     ),
-
     'DEFAULT_CONTENT_NEGOTIATION_CLASS':
         'rest_framework.negotiation.DefaultContentNegotiation',
 
@@ -68,10 +67,22 @@ DEFAULTS = {
     # Pagination
     'PAGINATE_BY': None,
     'PAGINATE_BY_PARAM': None,
+    'MAX_PAGINATE_BY': None,
 
     # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
+
+    # View configuration
+    'VIEW_NAME_FUNCTION': 'rest_framework.views.get_view_name',
+    'VIEW_DESCRIPTION_FUNCTION': 'rest_framework.views.get_view_description',
+
+    # Testing
+    'TEST_REQUEST_RENDERER_CLASSES': (
+        'rest_framework.renderers.MultiPartRenderer',
+        'rest_framework.renderers.JSONRenderer'
+    ),
+    'TEST_REQUEST_DEFAULT_FORMAT': 'multipart',
 
     # Browser enhancements
     'FORM_METHOD_OVERRIDE': '_method',
@@ -117,8 +128,11 @@ IMPORT_STRINGS = (
     'DEFAULT_PAGINATION_SERIALIZER_CLASS',
     'DEFAULT_FILTER_BACKENDS',
     'FILTER_BACKEND',
+    'TEST_REQUEST_RENDERER_CLASSES',
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN',
+    'VIEW_NAME_FUNCTION',
+    'VIEW_DESCRIPTION_FUNCTION'
 )
 
 

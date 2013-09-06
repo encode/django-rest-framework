@@ -17,6 +17,11 @@ If the generic views don't suit the needs of your API, you can drop down to usin
 
 Typically when using the generic views, you'll override the view, and set several class attributes.
 
+    from django.contrib.auth.models import User
+    from myapp.serializers import UserSerializer
+	from rest_framework import generics
+	from rest_framework.permissions import IsAdminUser
+
     class UserList(generics.ListCreateAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
@@ -40,7 +45,7 @@ For more complex cases you might also want to override various methods on the vi
 
 For very simple cases you might want to pass through any class attributes using the `.as_view()` method.  For example, your URLconf might include something the following entry.
 
-    url(r'^/users/', ListCreateAPIView.as_view(model=User) name='user-list')
+    url(r'^/users/', ListCreateAPIView.as_view(model=User), name='user-list')
 
 ---
 
@@ -68,7 +73,7 @@ The following attributes control the basic view behavior.
 
 **Pagination**:
 
-The following attibutes are used to control pagination when used with list views.
+The following attributes are used to control pagination when used with list views.
 
 * `paginate_by` - The size of pages to use with paginated data.  If set to `None` then pagination is turned off.  If unset this uses the same value as the `PAGINATE_BY` setting, which defaults to `None`.
 * `paginate_by_param` - The name of a query parameter, which can be used by the client to override the default page size to use for pagination.  If unset this uses the same value as the `PAGINATE_BY_PARAM` setting, which defaults to `None`.
@@ -92,7 +97,8 @@ May be overridden to provide dynamic behavior such as returning a queryset that 
 For example:
 
     def get_queryset(self):
-        return self.user.accounts.all()
+        user = self.request.user
+        return user.accounts.all()
 
 #### `get_object(self)`
 
@@ -107,7 +113,12 @@ For example:
         filter = {}
         for field in self.multiple_lookup_fields:
             filter[field] = self.kwargs[field]
-        return get_object_or_404(queryset, **filter)
+
+        obj = get_object_or_404(queryset, **filter)
+        self.check_object_permissions(self.request, obj)
+        return obj
+
+Note that if your API doesn't include any object level permissions, you may optionally exclude the ``self.check_object_permissions, and simply return the object from the `get_object_or_404` lookup.
 
 #### `get_serializer_class(self)`
 
@@ -124,7 +135,7 @@ For example:
 
 #### `get_paginate_by(self)`
 
-Returns the page size to use with pagination.  By default this uses the `paginate_by` attribute, and may be overridden by the cient if the `paginate_by_param` attribute is set.
+Returns the page size to use with pagination.  By default this uses the `paginate_by` attribute, and may be overridden by the client if the `paginate_by_param` attribute is set.
 
 You may want to override this method to provide more complex behavior such as modifying page sizes based on the media type of the response.
 

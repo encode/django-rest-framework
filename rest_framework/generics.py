@@ -14,6 +14,17 @@ from rest_framework.settings import api_settings
 import warnings
 
 
+def strict_positive_int(integer_string, cutoff=None):
+    """
+    Cast a string to a strictly positive integer.
+    """
+    ret = int(integer_string)
+    if ret <= 0:
+        raise ValueError()
+    if cutoff:
+        ret = min(ret, cutoff)
+    return ret
+
 def get_object_or_404(queryset, **filter_kwargs):
     """
     Same as Django's standard shortcut, but make sure to raise 404
@@ -47,6 +58,7 @@ class GenericAPIView(views.APIView):
     # Pagination settings
     paginate_by = api_settings.PAGINATE_BY
     paginate_by_param = api_settings.PAGINATE_BY_PARAM
+    max_paginate_by = api_settings.MAX_PAGINATE_BY
     pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
     page_kwarg = 'page'
 
@@ -135,7 +147,7 @@ class GenericAPIView(views.APIView):
         page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
         page = page_kwarg or page_query_param or 1
         try:
-            page_number = int(page)
+            page_number = strict_positive_int(page)
         except ValueError:
             if page == 'last':
                 page_number = paginator.num_pages
@@ -196,9 +208,11 @@ class GenericAPIView(views.APIView):
                           PendingDeprecationWarning, stacklevel=2)
 
         if self.paginate_by_param:
-            query_params = self.request.QUERY_PARAMS
             try:
-                return int(query_params[self.paginate_by_param])
+                return strict_positive_int(
+                    self.request.QUERY_PARAMS[self.paginate_by_param],
+                    cutoff=self.max_paginate_by
+                )
             except (KeyError, ValueError):
                 pass
 
@@ -342,8 +356,15 @@ class GenericAPIView(views.APIView):
                 self.check_permissions(cloned_request)
                 # Test object permissions
                 if method == 'PUT':
-                    self.get_object()
-            except (exceptions.APIException, PermissionDenied, Http404):
+                    try:
+                        self.get_object()
+                    except Http404:
+                        # Http404 should be acceptable and the serializer
+                        # metadata should be populated. Except this so the
+                        # outer "else" clause of the try-except-else block
+                        # will be executed.
+                        pass
+            except (exceptions.APIException, PermissionDenied):
                 pass
             else:
                 # If user has appropriate permissions for the view, include

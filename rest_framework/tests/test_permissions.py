@@ -3,11 +3,10 @@ from django.contrib.auth.models import User, Permission
 from django.db import models
 from django.test import TestCase
 from rest_framework import generics, status, permissions, authentication, HTTP_HEADER_ENCODING
-from rest_framework.tests.utils import RequestFactory
+from rest_framework.test import APIRequestFactory
 import base64
-import json
 
-factory = RequestFactory()
+factory = APIRequestFactory()
 
 
 class BasicModel(models.Model):
@@ -56,15 +55,13 @@ class ModelPermissionsIntegrationTests(TestCase):
         BasicModel(text='foo').save()
 
     def test_has_create_permissions(self):
-        request = factory.post('/', json.dumps({'text': 'foobar'}),
-                               content_type='application/json',
+        request = factory.post('/', {'text': 'foobar'}, format='json',
                                HTTP_AUTHORIZATION=self.permitted_credentials)
         response = root_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
     def test_has_put_permissions(self):
-        request = factory.put('/1', json.dumps({'text': 'foobar'}),
-                              content_type='application/json',
+        request = factory.put('/1', {'text': 'foobar'}, format='json',
                               HTTP_AUTHORIZATION=self.permitted_credentials)
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -75,15 +72,13 @@ class ModelPermissionsIntegrationTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
     def test_does_not_have_create_permissions(self):
-        request = factory.post('/', json.dumps({'text': 'foobar'}),
-                               content_type='application/json',
+        request = factory.post('/', {'text': 'foobar'}, format='json',
                                HTTP_AUTHORIZATION=self.disallowed_credentials)
         response = root_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_does_not_have_put_permissions(self):
-        request = factory.put('/1', json.dumps({'text': 'foobar'}),
-                              content_type='application/json',
+        request = factory.put('/1', {'text': 'foobar'}, format='json',
                               HTTP_AUTHORIZATION=self.disallowed_credentials)
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -95,28 +90,26 @@ class ModelPermissionsIntegrationTests(TestCase):
 
     def test_has_put_as_create_permissions(self):
         # User only has update permissions - should be able to update an entity.
-        request = factory.put('/1', json.dumps({'text': 'foobar'}),
-                              content_type='application/json',
+        request = factory.put('/1', {'text': 'foobar'}, format='json',
                               HTTP_AUTHORIZATION=self.updateonly_credentials)
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         # But if PUTing to a new entity, permission should be denied.
-        request = factory.put('/2', json.dumps({'text': 'foobar'}),
-                              content_type='application/json',
+        request = factory.put('/2', {'text': 'foobar'}, format='json',
                               HTTP_AUTHORIZATION=self.updateonly_credentials)
         response = instance_view(request, pk='2')
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_options_permitted(self):
-        request = factory.options('/', content_type='application/json',
+        request = factory.options('/',
                                HTTP_AUTHORIZATION=self.permitted_credentials)
         response = root_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('actions', response.data)
         self.assertEqual(list(response.data['actions'].keys()), ['POST'])
 
-        request = factory.options('/1', content_type='application/json',
+        request = factory.options('/1',
                                HTTP_AUTHORIZATION=self.permitted_credentials)
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -124,26 +117,26 @@ class ModelPermissionsIntegrationTests(TestCase):
         self.assertEqual(list(response.data['actions'].keys()), ['PUT'])
 
     def test_options_disallowed(self):
-        request = factory.options('/', content_type='application/json',
+        request = factory.options('/',
                                HTTP_AUTHORIZATION=self.disallowed_credentials)
         response = root_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn('actions', response.data)
 
-        request = factory.options('/1', content_type='application/json',
+        request = factory.options('/1',
                                HTTP_AUTHORIZATION=self.disallowed_credentials)
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn('actions', response.data)
 
     def test_options_updateonly(self):
-        request = factory.options('/', content_type='application/json',
+        request = factory.options('/',
                                HTTP_AUTHORIZATION=self.updateonly_credentials)
         response = root_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn('actions', response.data)
 
-        request = factory.options('/1', content_type='application/json',
+        request = factory.options('/1',
                                HTTP_AUTHORIZATION=self.updateonly_credentials)
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)

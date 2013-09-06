@@ -25,8 +25,16 @@ Object level permissions are run by REST framework's generic views when `.get_ob
 As with view level permissions, an `exceptions.PermissionDenied` exception will be raised if the user is not allowed to act on the given object.
 
 If you're writing your own views and want to enforce object level permissions,
-you'll need to explicitly call the `.check_object_permissions(request, obj)` method on the view at the point at which you've retrieved the object.
+or if you override the `get_object` method on a generic view, then you'll need to explicitly call the `.check_object_permissions(request, obj)` method on the view at the point at which you've retrieved the object.
+
 This will either raise a `PermissionDenied` or `NotAuthenticated` exception, or simply return if the view has the appropriate permissions.
+
+For example:
+
+    def get_object(self):
+        obj = get_object_or_404(self.get_queryset())
+        self.check_object_permissions(self.request, obj)
+        return obj
 
 ## Setting the permission policy
 
@@ -46,6 +54,10 @@ If not specified, this setting defaults to allowing unrestricted access:
 
 You can also set the authentication policy on a per-view, or per-viewset basis,
 using the `APIView` class based views.
+
+    from rest_framework.permissions import IsAuthenticated
+	from rest_framework.responses import Response
+	from rest_framework.views import APIView
 
     class ExampleView(APIView):
         permission_classes = (IsAuthenticated,)
@@ -147,7 +159,7 @@ If you need to test if a request is a read operation or a write operation, you s
 
 **Note**: In versions 2.0 and 2.1, the signature for the permission checks always included an optional `obj` parameter, like so: `.has_permission(self, request, view, obj=None)`.  The method would be called twice, first for the global permission checks, with no object supplied, and second for the object-level check when required.
 
-As of version 2.2 this signature has now been replaced with two separate method calls, which is more explict and obvious.  The old style signature continues to work, but it's use will result in a `PendingDeprecationWarning`, which is silent by default.  In 2.3 this will be escalated to a `DeprecationWarning`, and in 2.4 the old-style signature will be removed.
+As of version 2.2 this signature has now been replaced with two separate method calls, which is more explicit and obvious.  The old style signature continues to work, but its use will result in a `PendingDeprecationWarning`, which is silent by default.  In 2.3 this will be escalated to a `DeprecationWarning`, and in 2.4 the old-style signature will be removed.
 
 For more details see the [2.2 release announcement][2.2-announcement].
 
@@ -156,6 +168,8 @@ For more details see the [2.2 release announcement][2.2-announcement].
 ## Examples
 
 The following is an example of a permission class that checks the incoming request's IP address against a blacklist, and denies the request if the IP has been blacklisted.
+
+    from rest_framework import permissions
 
     class BlacklistPermission(permissions.BasePermission):
         """
@@ -188,6 +202,20 @@ Note that the generic views will check the appropriate object level permissions,
 
 Also note that the generic views will only check the object-level permissions for views that retrieve a single model instance.  If you require object-level filtering of list views, you'll need to filter the queryset separately.  See the [filtering documentation][filtering] for more details.
 
+---
+
+# Third party packages
+
+The following third party packages are also available.
+
+## DRF Any Permissions
+
+The [DRF Any Permissions][drf-any-permissions] packages provides a different permission behavior in contrast to REST framework.  Instead of all specified permissions being required, only one of the given permissions has to be true in order to get access to the view.
+
+## Composed Permissions
+
+The [Composed Permissions][composed-permissions] package provides a simple way to define complex and multi-depth (with logic operators) permission objects, using small and reusable components.
+
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
 [throttling]: throttling.md
@@ -197,3 +225,5 @@ Also note that the generic views will only check the object-level permissions fo
 [django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
 [2.2-announcement]: ../topics/2.2-announcement.md
 [filtering]: filtering.md
+[drf-any-permissions]: https://github.com/kevin-brown/drf-any-permissions
+[composed-permissions]: https://github.com/niwibe/djangorestframework-composed-permissions

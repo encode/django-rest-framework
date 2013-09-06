@@ -14,6 +14,8 @@ REST framework adds support for automatic URL routing to Django, and provides yo
 
 Here's an example of a simple URL conf, that uses `DefaultRouter`.
 
+    from rest_framework import routers
+
     router = routers.SimpleRouter()
     router.register(r'users', UserViewSet)
     router.register(r'accounts', AccountViewSet)
@@ -26,7 +28,7 @@ There are two mandatory arguments to the `register()` method:
 
 Optionally, you may also specify an additional argument:
 
-* `base_name` - The base to use for the URL names that are created.  If unset the basename will be automatically generated based on the `model` or `queryset` attribute on the viewset, if it has one.
+* `base_name` - The base to use for the URL names that are created.  If unset the basename will be automatically generated based on the `model` or `queryset` attribute on the viewset, if it has one.  Note that if the viewset does not include a `model` or `queryset` attribute then you must set `base_name` when registering the viewset.
 
 The example above would generate the following URL patterns:
 
@@ -38,7 +40,10 @@ The example above would generate the following URL patterns:
 ### Extra link and actions
 
 Any methods on the viewset decorated with `@link` or `@action` will also be routed.
-For example, a given method like this on the `UserViewSet` class:
+For example, given a method like this on the `UserViewSet` class:
+
+	from myapp.permissions import IsAdminOrIsSelf
+    from rest_framework.decorators import action
 
     @action(permission_classes=[IsAdminOrIsSelf])
     def set_password(self, request, pk=None):
@@ -66,7 +71,7 @@ This router includes routes for the standard set of `list`, `create`, `retrieve`
     <tr><td>POST</td><td>@action decorated method</td></tr>
 </table>
 
-By default the URLs created by `SimpleRouter` are appending with a trailing slash.
+By default the URLs created by `SimpleRouter` are appended with a trailing slash.
 This behavior can be modified by setting the `trailing_slash` argument to `False` when instantiating the router.  For example:
 
     router = SimpleRouter(trailing_slash=False)
@@ -90,32 +95,58 @@ This router is similar to `SimpleRouter` as above, but additionally includes a d
     <tr><td>POST</td><td>@action decorated method</td></tr>
 </table>
 
-As with `SimpleRouter` the trailing slashs on the URL routes can be removed by setting the `trailing_slash` argument to `False` when instantiating the router.
+As with `SimpleRouter` the trailing slashes on the URL routes can be removed by setting the `trailing_slash` argument to `False` when instantiating the router.
 
     router = DefaultRouter(trailing_slash=False)
 
 # Custom Routers
 
-Implementing a custom router isn't something you'd need to do very often, but it can be useful if you have specific requirements about how the your URLs for your API are strutured.  Doing so allows you to encapsulate the URL structure in a reusable way that ensures you don't have to write your URL patterns explicitly for each new view.
+Implementing a custom router isn't something you'd need to do very often, but it can be useful if you have specific requirements about how the your URLs for your API are structured.  Doing so allows you to encapsulate the URL structure in a reusable way that ensures you don't have to write your URL patterns explicitly for each new view.
 
-The simplest way to implement a custom router is to subclass one of the existing router classes.  The `.routes` attribute is used to template the URL patterns that will be mapped to each viewset. 
+The simplest way to implement a custom router is to subclass one of the existing router classes.  The `.routes` attribute is used to template the URL patterns that will be mapped to each viewset. The `.routes` attribute is a list of `Route` named tuples.
+
+The arguments to the `Route` named tuple are:
+
+**url**: A string representing the URL to be routed.  May include the following format strings:
+
+* `{prefix}` - The URL prefix to use for this set of routes.
+* `{lookup}` - The lookup field used to match against a single instance.
+* `{trailing_slash}` - Either a '/' or an empty string, depending on the `trailing_slash` argument.
+
+**mapping**: A mapping of HTTP method names to the view methods
+
+**name**: The name of the URL as used in `reverse` calls. May include the following format string:
+
+* `{basename}` - The base to use for the URL names that are created.
+
+**initkwargs**: A dictionary of any additional arguments that should be passed when instantiating the view.  Note that the `suffix` argument is reserved for identifying the viewset type, used when generating the view name and breadcrumb links.
 
 ## Example
 
 The following example will only route to the `list` and `retrieve` actions, and does not use the trailing slash convention.
 
+    from rest_framework.routers import Route, SimpleRouter
+
     class ReadOnlyRouter(SimpleRouter):
         """
-        A router for read-only APIs, which doesn't use trailing suffixes.
+        A router for read-only APIs, which doesn't use trailing slashes.
         """
         routes = [
-            (r'^{prefix}$', {'get': 'list'}, '{basename}-list'),
-            (r'^{prefix}/{lookup}$', {'get': 'retrieve'}, '{basename}-detail')
+            Route(url=r'^{prefix}$',
+                  mapping={'get': 'list'},
+                  name='{basename}-list',
+                  initkwargs={'suffix': 'List'}),
+            Route(url=r'^{prefix}/{lookup}$',
+                  mapping={'get': 'retrieve'},
+                  name='{basename}-detail',
+                  initkwargs={'suffix': 'Detail'})
         ]
+
+The `SimpleRouter` class provides another example of setting the `.routes` attribute.
 
 ## Advanced custom routers
 
-If you want to provide totally custom behavior, you can override `BaseRouter` and override the `get_urls(self)` method.  The method should insect the registered viewsets and return a list of URL patterns.  The registered prefix, viewset and basename tuples may be inspected by accessing the `self.registry` attribute.  
+If you want to provide totally custom behavior, you can override `BaseRouter` and override the `get_urls(self)` method.  The method should inspect the registered viewsets and return a list of URL patterns.  The registered prefix, viewset and basename tuples may be inspected by accessing the `self.registry` attribute.  
 
 You may also want to override the `get_default_base_name(self, viewset)` method, or else always explicitly set the `base_name` argument when registering your viewsets with the router.
 

@@ -3,14 +3,13 @@ Provides various authentication policies.
 """
 from __future__ import unicode_literals
 import base64
-from datetime import datetime
 
 from django.contrib.auth import authenticate
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.compat import CsrfViewMiddleware
 from rest_framework.compat import oauth, oauth_provider, oauth_provider_store
-from rest_framework.compat import oauth2_provider
+from rest_framework.compat import oauth2_provider, provider_now
 from rest_framework.authtoken.models import Token
 
 
@@ -25,6 +24,12 @@ def get_authorization_header(request):
         # Work around django test client oddness
         auth = auth.encode(HTTP_HEADER_ENCODING)
     return auth
+
+
+class CSRFCheck(CsrfViewMiddleware):
+    def _reject(self, request, reason):
+        # Return the failure reason instead of an HttpResponse
+        return reason
 
 
 class BaseAuthentication(object):
@@ -104,26 +109,26 @@ class SessionAuthentication(BaseAuthentication):
         """
 
         # Get the underlying HttpRequest object
-        http_request = request._request
-        user = getattr(http_request, 'user', None)
+        request = request._request
+        user = getattr(request, 'user', None)
 
         # Unauthenticated, CSRF validation not required
         if not user or not user.is_active:
             return None
 
-        # Enforce CSRF validation for session based authentication.
-        class CSRFCheck(CsrfViewMiddleware):
-            def _reject(self, request, reason):
-                # Return the failure reason instead of an HttpResponse
-                return reason
-
-        reason = CSRFCheck().process_view(http_request, None, (), {})
-        if reason:
-            # CSRF failed, bail with explicit error message
-            raise exceptions.AuthenticationFailed('CSRF Failed: %s' % reason)
+        self.enforce_csrf(request)
 
         # CSRF passed with authenticated user
         return (user, None)
+
+    def enforce_csrf(self, request):
+        """
+        Enforce CSRF validation for session based authentication.
+        """
+        reason = CSRFCheck().process_view(request, None, (), {})
+        if reason:
+            # CSRF failed, bail with explicit error message
+            raise exceptions.AuthenticationFailed('CSRF Failed: %s' % reason)
 
 
 class TokenAuthentication(BaseAuthentication):
@@ -320,9 +325,9 @@ class OAuth2Authentication(BaseAuthentication):
 
         try:
             token = oauth2_provider.models.AccessToken.objects.select_related('user')
-            # TODO: Change to timezone aware datetime when oauth2_provider add
-            # support to it.
-            token = token.get(token=access_token, expires__gt=datetime.now())
+            # provider_now switches to timezone aware datetime when
+            # the oauth2_provider version supports to it.
+            token = token.get(token=access_token, expires__gt=provider_now())
         except oauth2_provider.models.AccessToken.DoesNotExist:
             raise exceptions.AuthenticationFailed('Invalid token')
 

@@ -16,6 +16,7 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.db.models.fields import BLANK_CHOICE_DASH
+from django.http import QueryDict
 from django.forms import widgets
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
@@ -100,6 +101,19 @@ def humanize_strptime(format_string):
     return format_string
 
 
+def strip_multiple_choice_msg(help_text):
+    """
+    Remove the 'Hold down "control" ...' message that is Django enforces in
+    select multiple fields on ModelForms.  (Required for 1.5 and earlier)
+
+    See https://code.djangoproject.com/ticket/9321
+    """
+    multiple_choice_msg = _(' Hold down "Control", or "Command" on a Mac, to select more than one.')
+    multiple_choice_msg = force_text(multiple_choice_msg)
+
+    return help_text.replace(multiple_choice_msg, '')
+
+
 class Field(object):
     read_only = True
     creation_counter = 0
@@ -122,7 +136,7 @@ class Field(object):
             self.label = smart_text(label)
 
         if help_text is not None:
-            self.help_text = smart_text(help_text)
+            self.help_text = strip_multiple_choice_msg(smart_text(help_text))
 
     def initialize(self, parent, field_name):
         """
@@ -294,7 +308,10 @@ class WritableField(Field):
         try:
             if self.use_files:
                 files = files or {}
-                native = files[field_name]
+                try:
+                    native = files[field_name]
+                except KeyError:
+                    native = data[field_name]
             else:
                 native = data[field_name]
         except KeyError:
@@ -386,10 +403,15 @@ class BooleanField(WritableField):
     }
     empty = False
 
-    # Note: we set default to `False` in order to fill in missing value not
-    # supplied by html form.  TODO: Fix so that only html form input gets
-    # this behavior.
-    default = False
+    def field_from_native(self, data, files, field_name, into):
+        # HTML checkboxes do not explicitly represent unchecked as `False`
+        # we deal with that here...
+        if isinstance(data, QueryDict):
+            self.default = False
+
+        return super(BooleanField, self).field_from_native(
+            data, files, field_name, into
+        )
 
     def from_native(self, value):
         if value in ('true', 't', 'True', '1'):
@@ -492,6 +514,11 @@ class ChoiceField(WritableField):
                     return True
         return False
 
+    def from_native(self, value):
+        if value in validators.EMPTY_VALUES:
+            return None
+        return super(ChoiceField, self).from_native(value)
+
 
 class EmailField(CharField):
     type_name = 'EmailField'
@@ -499,7 +526,7 @@ class EmailField(CharField):
     form_field_class = forms.EmailField
 
     default_error_messages = {
-        'invalid': _('Enter a valid e-mail address.'),
+        'invalid': _('Enter a valid email address.'),
     }
     default_validators = [validators.validate_email]
 
@@ -911,7 +938,7 @@ class ImageField(FileField):
         if f is None:
             return None
 
-        from compat import Image
+        from rest_framework.compat import Image
         assert Image is not None, 'PIL must be installed for ImageField support'
 
         # We need to get a file object for PIL. We might have a path or we might

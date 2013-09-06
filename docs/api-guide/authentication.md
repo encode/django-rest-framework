@@ -46,6 +46,11 @@ The default authentication schemes may be set globally, using the `DEFAULT_AUTHE
 You can also set the authentication scheme on a per-view or per-viewset basis,
 using the `APIView` class based views.
 
+    from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+    from rest_framework.permissions import IsAuthenticated
+    from rest_framework.response import Response
+    from rest_framework.views import APIView
+
     class ExampleView(APIView):
         authentication_classes = (SessionAuthentication, BasicAuthentication)
         permission_classes = (IsAuthenticated,)
@@ -121,7 +126,7 @@ To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in y
         'rest_framework.authtoken'
     )
     
-Make sure to run `manage.py syncdb` after changing your settings.
+Make sure to run `manage.py syncdb` after changing your settings. The `authtoken` database tables are managed by south (see [Schema migrations](#schema-migrations) below).
 
 You'll also need to create tokens for your users.
 
@@ -157,10 +162,15 @@ The `curl` command line tool may be useful for testing token authenticated APIs.
 
 If you want every user to have an automatically generated Token, you can simply catch the User's `post_save` signal.
 
+    from django.dispatch import receiver
+    from rest_framework.authtoken.models import Token
+
     @receiver(post_save, sender=User)
     def create_auth_token(sender, instance=None, created=False, **kwargs):
         if created:
             Token.objects.create(user=instance)
+
+Note that you'll want to ensure you place this code snippet in an installed `models.py` module, or some other location that will be imported by Django on startup.
 
 If you've already created some users, you can generate tokens for all existing users like this:
 
@@ -184,9 +194,11 @@ The `obtain_auth_token` view will return a JSON response when valid `username` a
 
 Note that the default `obtain_auth_token` view explicitly uses JSON requests and responses, rather than using default renderer and parser classes in your settings.  If you need a customized version of the `obtain_auth_token` view, you can do so by overriding the `ObtainAuthToken` view class, and using that in your url conf instead.
 
-#### Custom user models
+#### Schema migrations
 
-The `rest_framework.authtoken` app includes a south migration that will create the authtoken table.   If you're using a [custom user model][custom-user-model] you'll need to make sure that any initial migration that creates the user table runs before the authtoken table is created.
+The `rest_framework.authtoken` app includes a south migration that will create the authtoken table.
+
+If you're using a [custom user model][custom-user-model] you'll need to make sure that any initial migration that creates the user table runs before the authtoken table is created.
 
 You can do so by inserting a `needed_by` attribute in your user migration:
 
@@ -200,6 +212,12 @@ You can do so by inserting a `needed_by` attribute in your user migration:
             ...
 
 For more details, see the [south documentation on dependencies][south-dependencies].
+
+Also note that if you're using a `post_save` signal to create tokens, then the first time you create the database tables, you'll need to ensure any migrations are run prior to creating any superusers.  For example:
+
+    python manage.py syncdb --noinput  # Won't create a superuser just yet, due to `--noinput`.
+    python manage.py migrate
+    python manage.py createsuperuser
 
 ## SessionAuthentication
 
@@ -328,6 +346,10 @@ If the `.authenticate_header()` method is not overridden, the authentication sch
 
 The following example will authenticate any incoming request as the user given by the username in a custom request header named 'X_USERNAME'.
 
+	from django.contrib.auth.models import User
+    from rest_framework import authentication
+    from rest_framework import exceptions
+
     class ExampleAuthentication(authentication.BaseAuthentication):
         def authenticate(self, request):
             username = request.META.get('X_USERNAME')
@@ -355,6 +377,10 @@ HTTP digest authentication is a widely implemented scheme that was intended to r
 
 The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 support, and works with Python 2.7 and Python 3.3+.  The package is maintained by [Evonove][evonove] and uses the excelllent [OAuthLib][oauthlib].  The package is well documented, and comes as a recommended alternative for OAuth 2.0 support.
 
+## Django OAuth2 Consumer
+
+The [Django OAuth2 Consumer][doac] library from [Rediker Software][rediker] is another package that provides [OAuth 2.0 support for REST framework][doac-rest-framework].  The package includes token scoping permissions on tokens, which allows finer-grained access to your API.
+
 [cite]: http://jacobian.org/writing/rest-worst-practices/
 [http401]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
 [http403]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
@@ -376,3 +402,6 @@ The [Django OAuth Toolkit][django-oauth-toolkit] package provides OAuth 2.0 supp
 [django-oauth-toolkit]: https://github.com/evonove/django-oauth-toolkit
 [evonove]: https://github.com/evonove/
 [oauthlib]: https://github.com/idan/oauthlib
+[doac]: https://github.com/Rediker-Software/doac
+[rediker]: https://github.com/Rediker-Software
+[doac-rest-framework]: https://github.com/Rediker-Software/doac/blob/master/docs/integrations.md#

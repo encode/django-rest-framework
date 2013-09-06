@@ -12,11 +12,11 @@ Django REST framework is a powerful and flexible toolkit that makes it easy to b
 
 Some reasons you might want to use REST framework:
 
-* The Web browseable API is a huge useability win for your developers.
-* Authentication policies including OAuth1a and OAuth2 out of the box.
-* Serialization that supports both ORM and non-ORM data sources.
-* Customizable all the way down - just use regular function-based views if you don't need the more powerful features.
-* Extensive documentation, and great community support.
+* The [Web browseable API][sandbox] is a huge useability win for your developers.
+* [Authentication policies][authentication] including [OAuth1a][oauth1-section] and [OAuth2][oauth2-section] out of the box.
+* [Serialization][serializers] that supports both [ORM][modelserializer-section] and [non-ORM][serializer-section] data sources.
+* Customizable all the way down - just use [regular function-based views][functionview-section] if you don't need the [more][generic-views] [powerful][viewsets] [features][routers].
+* [Extensive documentation][index], and [great community support][group].
 
 There is a live example API for testing purposes, [available here][sandbox].
 
@@ -139,6 +139,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [group]: https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [sandbox]: http://restframework.herokuapp.com/
+
+[index]: http://django-rest-framework.org/
+[oauth1-section]: http://django-rest-framework.org/api-guide/authentication.html#oauthauthentication
+[oauth2-section]: http://django-rest-framework.org/api-guide/authentication.html#oauth2authentication
+[serializer-section]: http://django-rest-framework.org/api-guide/serializers.html#serializers
+[modelserializer-section]: http://django-rest-framework.org/api-guide/serializers.html#modelserializer
+[functionview-section]: http://django-rest-framework.org/api-guide/views.html#function-based-views
+[generic-views]: http://django-rest-framework.org/api-guide/generic-views.html
+[viewsets]: http://django-rest-framework.org/api-guide/viewsets.html
+[routers]: http://django-rest-framework.org/api-guide/routers.html
+[serializers]: http://django-rest-framework.org/api-guide/serializers.html
+[authentication]: http://django-rest-framework.org/api-guide/authentication.html
+
 [rest-framework-2-announcement]: http://django-rest-framework.org/topics/rest-framework-2-announcement.html
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
 [image]: http://django-rest-framework.org/img/quickstart.png

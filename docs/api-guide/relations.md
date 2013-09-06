@@ -39,7 +39,7 @@ In order to explain the various types of relational fields, we'll use a couple o
 
 ## RelatedField
 
-`RelatedField` may be used to represent the target of the relationship using it's `__unicode__` method.
+`RelatedField` may be used to represent the target of the relationship using its `__unicode__` method.
 
 For example, the following serializer.
  
@@ -71,12 +71,12 @@ This field is read only.
 
 ## PrimaryKeyRelatedField
 
-`PrimaryKeyRelatedField` may be used to represent the target of the relationship using it's primary key.
+`PrimaryKeyRelatedField` may be used to represent the target of the relationship using its primary key.
 
 For example, the following serializer:
  
     class AlbumSerializer(serializers.ModelSerializer):
-        tracks = PrimaryKeyRelatedField(many=True, read_only=True)
+        tracks = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
         
         class Meta:
             model = Album
@@ -110,8 +110,8 @@ By default this field is read-write, although you can change this behavior using
 For example, the following serializer:
  
     class AlbumSerializer(serializers.ModelSerializer):
-        tracks = HyperlinkedRelatedField(many=True, read_only=True,
-                                         view_name='track-detail')
+        tracks = serializers.HyperlinkedRelatedField(many=True, read_only=True,
+                                                     view_name='track-detail')
         
         class Meta:
             model = Album
@@ -148,7 +148,8 @@ By default this field is read-write, although you can change this behavior using
 For example, the following serializer:
  
     class AlbumSerializer(serializers.ModelSerializer):
-        tracks = SlugRelatedField(many=True, read_only=True, slug_field='title')
+        tracks = serializers.SlugRelatedField(many=True, read_only=True,
+                                              slug_field='title')
         
         class Meta:
             model = Album
@@ -183,7 +184,7 @@ When using `SlugRelatedField` as a read-write field, you will normally want to e
 This field can be applied as an identity relationship, such as the `'url'` field on  a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:
 
     class AlbumSerializer(serializers.HyperlinkedModelSerializer):
-        track_listing = HyperlinkedIdentityField(view_name='track-list')
+        track_listing = serializers.HyperlinkedIdentityField(view_name='track-list')
 
         class Meta:
             model = Album
@@ -212,8 +213,6 @@ This field is always read-only.
 Nested relationships can be expressed by using serializers as fields.
 
 If the field is used to represent a to-many relationship, you should add the `many=True` flag to the serializer field.
-
-Note that nested relationships are currently read-only.  For read-write relationships, you should use a flat relational style.
 
 ## Example
 
@@ -252,7 +251,7 @@ If you want to implement a read-write relational field, you must also implement 
 
 ## Example
 
-For, example, we could define a relational field, to serialize a track to a custom string representation, using it's ordering, title, and duration.
+For, example, we could define a relational field, to serialize a track to a custom string representation, using its ordering, title, and duration.
 
     import time
 
@@ -386,7 +385,7 @@ For more information see [the Django documentation on generic relations][generic
 By default, relational fields that target a ``ManyToManyField`` with a
 ``through`` model specified are set to read-only.
 
-If you exlicitly specify a relational field pointing to a
+If you explicitly specify a relational field pointing to a
 ``ManyToManyField`` with a through model, be sure to set ``read_only``
 to ``True``.
 
@@ -422,7 +421,7 @@ For example, if all your object URLs used both a account and a slug in the the U
         def get_object(self, queryset, view_name, view_args, view_kwargs):
             account = view_kwargs['account']
             slug = view_kwargs['slug']
-            return queryset.get(account=account, slug=sug)
+            return queryset.get(account=account, slug=slug)
 
 ---
 

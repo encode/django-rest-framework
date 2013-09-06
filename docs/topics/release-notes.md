@@ -42,8 +42,38 @@ You can determine your currently installed version using `pip freeze`:
 
 ### Master
 
+* Support customizable view name and description functions, using the `VIEW_NAME_FUNCTION` and `VIEW_DESCRIPTION_FUNCTION` settings.
+* Added `MAX_PAGINATE_BY` setting and `max_paginate_by` generic view attribute.
+* Added `cache` attribute to throttles to allow overriding of default cache.
+* 'Raw data' tab in browsable API now contains pre-populated data.
+* 'Raw data' and 'HTML form' tab preference in browseable API now saved between page views.
+* Bugfix: `required=True` argument fixed for boolean serializer fields.
+* Bugfix: `client.force_authenticate(None)` should also clear session info if it exists.
+* Bugfix: Client sending emptry string instead of file now clears `FileField`.
+* Bugfix: Empty values on ChoiceFields with `required=False` now consistently return `None`.
+
+### 2.3.7
+
+**Date**: 16th August 2013
+
+* Added `APITestClient`, `APIRequestFactory` and `APITestCase` etc...
+* Refactor `SessionAuthentication` to allow esier override for CSRF exemption.
+* Remove 'Hold down "Control" message from help_text' widget messaging when not appropriate.
+* Added admin configuration for auth tokens.
+* Bugfix: `AnonRateThrottle` fixed to not throttle authenticated users.
+* Bugfix: Don't set `X-Throttle-Wait-Seconds` when throttle does not have `wait` value.
+* Bugfix: Fixed `PATCH` button title in browsable API.
+* Bugfix: Fix issue with OAuth2 provider naive datetimes.
+
+### 2.3.6
+
+**Date**: 27th June 2013
+
 * Added `trailing_slash` option to routers.
+* Include support for `HttpStreamingResponse`.
 * Support wider range of default serializer validation when used with custom model fields.
+* UTF-8 Support for browsable API descriptions.  
+* OAuth2 provider uses timezone aware datetimes when supported.
 * Bugfix: Return error correctly when OAuth non-existent consumer occurs. 
 * Bugfix: Allow `FileUploadParser` to correctly filename if provided as URL kwarg.
 * Bugfix: Fix `ScopedRateThrottle`.

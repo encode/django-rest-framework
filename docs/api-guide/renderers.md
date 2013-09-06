@@ -30,11 +30,16 @@ The default set of renderers may be set globally, using the `DEFAULT_RENDERER_CL
 You can also set the renderers used for an individual view, or viewset,
 using the `APIView` class based views.
 
+    from django.contrib.auth.models import User
+    from rest_framework.renderers import JSONRenderer, YAMLRenderer
+    from rest_framework.response import Response
+    from rest_framework.views import APIView
+
     class UserCountView(APIView):
         """
-        A view that returns the count of active users, in JSON or JSONp.
+        A view that returns the count of active users, in JSON or YAML.
         """
-        renderer_classes = (JSONRenderer, JSONPRenderer)
+        renderer_classes = (JSONRenderer, YAMLRenderer)
 
         def get(self, request, format=None):
             user_count = User.objects.filter(active=True).count()
@@ -83,7 +88,7 @@ The client may additionally include an `'indent'` media type parameter, in which
 
 **.format**: `'.json'`
 
-**.charset**: `utf-8`
+**.charset**: `None`
 
 ## UnicodeJSONRenderer
 
@@ -105,7 +110,7 @@ Both the `JSONRenderer` and `UnicodeJSONRenderer` styles conform to [RFC 4627][r
 
 **.format**: `'.json'`
 
-**.charset**: `utf-8`
+**.charset**: `None`
 
 ## JSONPRenderer
 
@@ -207,6 +212,20 @@ You can use `TemplateHTMLRenderer` either to return regular HTML pages using RES
 
 See also: `TemplateHTMLRenderer`
 
+## HTMLFormRenderer
+
+Renders data returned by a serializer into an HTML form.  The output of this renderer does not include the enclosing `<form>` tags or an submit actions, as you'll probably need those to include the desired method and URL.  Also note that the `HTMLFormRenderer` does not yet support including field error messages.
+
+Note that the template used by the `HTMLFormRenderer` class, and the context submitted to it **may be subject to change**.  If you need to use this renderer class it is advised that you either make a local copy of the class and templates, or follow the release note on REST framework upgrades closely.
+
+**.media_type**: `text/html`
+
+**.format**: `'.form'`
+
+**.charset**: `utf-8`
+
+**.template**: `'rest_framework/form.html'`
+
 ## BrowsableAPIRenderer
 
 Renders data into HTML for the Browsable API.  This renderer will determine which other renderer would have been given highest priority, and use that to display an API style response within the HTML page.
@@ -217,13 +236,33 @@ Renders data into HTML for the Browsable API.  This renderer will determine whic
 
 **.charset**: `utf-8`
 
+**.template**: `'rest_framework/api.html'`
+
+#### Customizing BrowsableAPIRenderer
+
+By default the response content will be rendered with the highest priority renderer apart from `BrowseableAPIRenderer`.  If you need to customize this behavior, for example to use HTML as the default return format, but use JSON in the browsable API, you can do so by overriding the `get_default_renderer()` method.  For example:
+
+    class CustomBrowsableAPIRenderer(BrowsableAPIRenderer):
+        def get_default_renderer(self, view):
+            return JSONRenderer()
+
+## MultiPartRenderer
+
+This renderer is used for rendering HTML multipart form data.  **It is not suitable as a response renderer**, but is instead used for creating test requests, using REST framework's [test client and test request factory][testing].
+
+**.media_type**: `multipart/form-data; boundary=BoUnDaRyStRiNg`
+
+**.format**: `'.multipart'`
+
+**.charset**: `utf-8`
+
 ---
 
 # Custom renderers
 
 To implement a custom renderer, you should override `BaseRenderer`, set the `.media_type` and `.format` properties, and implement the `.render(self, data, media_type=None, renderer_context=None)` method.
 
-The method should return a bytestring, which wil be used as the body of the HTTP response.
+The method should return a bytestring, which will be used as the body of the HTTP response.
 
 The arguments passed to the `.render()` method are:
 
@@ -272,12 +311,15 @@ By default renderer classes are assumed to be using the `UTF-8` encoding.  To us
 
 Note that if a renderer class returns a unicode string, then the response content will be coerced into a bytestring by the `Response` class, with the `charset` attribute set on the renderer used to determine the encoding.
 
-If the renderer returns a bytestring representing raw binary content, you should set a charset value of `None`, which will ensure the `Content-Type` header of the response will not have a `charset` value set.  Doing so will also ensure that the browsable API will not attempt to display the binary content as a string.
+If the renderer returns a bytestring representing raw binary content, you should set a charset value of `None`, which will ensure the `Content-Type` header of the response will not have a `charset` value set.
+
+In some cases you may also want to set the `render_style` attribute to `'binary'`.  Doing so will also ensure that the browsable API will not attempt to display the binary content as a string.
 
     class JPEGRenderer(renderers.BaseRenderer):
         media_type = 'image/jpeg'
         format = 'jpg'
         charset = None
+        render_style = 'binary'
 
         def render(self, data, media_type=None, renderer_context=None):
             return data
@@ -373,6 +415,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [rfc4627]: http://www.ietf.org/rfc/rfc4627.txt
 [cors]: http://www.w3.org/TR/cors/
 [cors-docs]: ../topics/ajax-csrf-cors.md
+[testing]: testing.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas
 [quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
 [application/vnd.github+json]: http://developer.github.com/v3/media/

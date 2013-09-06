@@ -1,12 +1,13 @@
 from __future__ import unicode_literals
 from django.test import TestCase
 from rest_framework import status
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
-from rest_framework.authentication import BasicAuthentication
+from rest_framework.test import APIRequestFactory
 from rest_framework.throttling import UserRateThrottle
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.decorators import (
     api_view,
@@ -17,13 +18,11 @@ from rest_framework.decorators import (
     permission_classes,
 )
 
-from rest_framework.tests.utils import RequestFactory
-
 
 class DecoratorTestCase(TestCase):
 
     def setUp(self):
-        self.factory = RequestFactory()
+        self.factory = APIRequestFactory()
 
     def _finalize_response(self, request, response, *args, **kwargs):
         response.request = request
