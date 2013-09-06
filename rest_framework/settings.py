@@ -77,6 +77,9 @@ DEFAULTS = {
     'VIEW_NAME_FUNCTION': 'rest_framework.views.get_view_name',
     'VIEW_DESCRIPTION_FUNCTION': 'rest_framework.views.get_view_description',
 
+    # Exception handling
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',
+
     # Testing
     'TEST_REQUEST_RENDERER_CLASSES': (
         'rest_framework.renderers.MultiPartRenderer',
@@ -125,6 +128,7 @@ IMPORT_STRINGS = (
     'DEFAULT_MODEL_SERIALIZER_CLASS',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS',
     'DEFAULT_FILTER_BACKENDS',
+    'EXCEPTION_HANDLER',
     'FILTER_BACKEND',
     'TEST_REQUEST_RENDERER_CLASSES',
     'UNAUTHENTICATED_USER',

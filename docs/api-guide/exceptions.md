@@ -30,8 +30,26 @@ Might receive an error response indicating that the `DELETE` method is not allow
     HTTP/1.1 405 Method Not Allowed
     Content-Type: application/json; charset=utf-8
     Content-Length: 42
-    
+
     {"detail": "Method 'DELETE' not allowed."}
+
+## Custom exception handling
+
+To implement custom exception handling (e.g. to handle additional exception classes or to override the error response format), create an exception handler function with the following signature:
+
+    exception_handler(exc)
+
+* `exc`: The exception.
+
+If the function returns `None`, a 500 error will be raised.
+
+The exception handler is set globally, using the `EXCEPTION_HANDLER` setting. For example:
+
+    'EXCEPTION_HANDLER': 'project.app.module.function'
+
+If not specified, this setting defaults to the exception handler described above:
+
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler'
 
 ---
 
