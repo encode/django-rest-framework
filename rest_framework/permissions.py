@@ -153,7 +153,7 @@ class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
 
 class DjangoObjectLevelModelPermissions(DjangoModelPermissions):
     def __init__(self):
-        assert guardian, 'Using DjangoObjectLevelModelPermissions, but guardian is not installed'
+        assert guardian, 'Using DjangoObjectLevelModelPermissions, but django-guardian is not installed'
 
 
 class TokenHasReadWriteScope(BasePermission):

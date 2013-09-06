@@ -123,6 +123,17 @@ else:
         'provider.oauth2',
     )
 
+# guardian is optional
+try:
+    import guardian
+except ImportError:
+    pass
+else:
+    ANONYMOUS_USER_ID = -1
+    INSTALLED_APPS += (
+        'guardian',
+    )
+
 STATIC_URL = '/static/'
 
 PASSWORD_HASHERS = (

@@ -3,16 +3,13 @@ from django.contrib.auth.models import User, Permission
 from django.db import models
 from django.test import TestCase
 from rest_framework import generics, status, permissions, authentication, HTTP_HEADER_ENCODING
-from rest_framework.test import APIRequestFactory
 from rest_framework.compat import guardian
+from rest_framework.test import APIRequestFactory
+from rest_framework.tests.models import BasicModel
+from rest_framework.settings import api_settings
 import base64
 
 factory = APIRequestFactory()
-
-
-class BasicModel(models.Model):
-    text = models.CharField(max_length=100)
-
 
 class RootView(generics.ListCreateAPIView):
     model = BasicModel
@@ -145,45 +142,67 @@ class ModelPermissionsIntegrationTests(TestCase):
         self.assertEqual(list(response.data['actions'].keys()), ['PUT'])
 
 
-class OwnerModel(models.Model):
-    text = models.CharField(max_length=100)
-    owner = models.ForeignKey(User)
+class BasicPermModel(BasicModel):
 
+    class Meta:
+        app_label = 'tests'
+        permissions = (
+            ('read_basicpermmodel', "Can view basic perm model"),
+            # add, change, delete built in to django
+        )
 
-class IsOwnerPermission(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        return request.user == obj.owner
-
-
-class OwnerInstanceView(generics.RetrieveUpdateDestroyAPIView):
-    model = OwnerModel
+class ObjectPermissionInstanceView(generics.RetrieveUpdateDestroyAPIView):
+    model = BasicModel
     authentication_classes = [authentication.BasicAuthentication]
-    permission_classes = [IsOwnerPermission]
+    permission_classes = [permissions.DjangoObjectLevelModelPermissions]
 
 
-owner_instance_view = OwnerInstanceView.as_view()
+object_permissions_view = ObjectPermissionInstanceView.as_view()
+
+if guardian:
+    class ObjectPermissionsIntegrationTests(TestCase):
+        """
+        Integration tests for the object level permissions API.
+        """
+
+        def setUp(self):
+            # create users
+            User.objects.create_user('no_permission', 'no_permission@example.com', 'password')
+            reader = User.objects.create_user('reader', 'reader@example.com', 'password')
+            writer = User.objects.create_user('writer', 'writer@example.com', 'password')
+            full_access = User.objects.create_user('full_access', 'full_access@example.com', 'password')
+            
+            model = BasicPermModel.objects.create(text='foo')
+
+            # assign permissions appropriately
+            from guardian.shortcuts import assign_perm
+
+            read = "read_basicpermmodel"
+            write = "change_basicpermmodel"
+            delete = "delete_basicpermmodel"
+            app_label = 'tests.'
+            # model level permissions
+            assign_perm(app_label + delete, full_access, obj=model)
+            (assign_perm(app_label + write, user, obj=model) for user in (writer, full_access))
+            (assign_perm(app_label + read, user, obj=model) for user in (reader, writer, full_access))
+
+            # object level permissions
+            assign_perm(delete, full_access, obj=model)
+            (assign_perm(write, user, obj=model) for user in (writer, full_access))
+            (assign_perm(read, user, obj=model) for user in (reader, writer, full_access))
+
+            self.no_permission_credentials = basic_auth_header('no_permission', 'password')
+            self.reader_credentials = basic_auth_header('reader', 'password')
+            self.writer_credentials = basic_auth_header('writer', 'password')
+            self.full_access_credentials = basic_auth_header('full_access', 'password')
 
 
-class ObjectPermissionsIntegrationTests(TestCase):
-    """
-    Integration tests for the object level permissions API.
-    """
+        def test_has_delete_permissions(self):
+            request = factory.delete('/1', HTTP_AUTHORIZATION=self.full_access_credentials)
+            response = object_permissions_view(request, pk='1')
+            self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-    def setUp(self):
-        User.objects.create_user('not_owner', 'not_owner@example.com', 'password')
-        user = User.objects.create_user('owner', 'owner@example.com', 'password')
-
-        self.not_owner_credentials = basic_auth_header('not_owner', 'password')
-        self.owner_credentials = basic_auth_header('owner', 'password')
-
-        OwnerModel(text='foo', owner=user).save()
-
-    def test_owner_has_delete_permissions(self):
-        request = factory.delete('/1', HTTP_AUTHORIZATION=self.owner_credentials)
-        response = owner_instance_view(request, pk='1')
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-
-    def test_non_owner_does_not_have_delete_permissions(self):
-        request = factory.delete('/1', HTTP_AUTHORIZATION=self.not_owner_credentials)
-        response = owner_instance_view(request, pk='1')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        def test_no_delete_permissions(self):
+            request = factory.delete('/1', HTTP_AUTHORIZATION=self.writer_credentials)
+            response = object_permissions_view(request, pk='1')
+            self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
