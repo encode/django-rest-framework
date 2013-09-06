@@ -4,6 +4,7 @@ from django.db import models
 from django.test import TestCase
 from rest_framework import generics, status, permissions, authentication, HTTP_HEADER_ENCODING
 from rest_framework.test import APIRequestFactory
+from rest_framework.compat import guardian
 import base64
 
 factory = APIRequestFactory()

@@ -7,7 +7,7 @@ import warnings
 
 SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
-from rest_framework.compat import oauth2_provider_scope, oauth2_constants
+from rest_framework.compat import oauth2_provider_scope, oauth2_constants, guardian
 
 
 class BasePermission(object):
@@ -149,6 +149,11 @@ class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
     allowed read-only access.
     """
     authenticated_users_only = False
+
+
+class DjangoObjectLevelModelPermissions(DjangoModelPermissions):
+    def __init__(self):
+        assert guardian, 'Using DjangoObjectLevelModelPermissions, but guardian is not installed'
 
 
 class TokenHasReadWriteScope(BasePermission):
