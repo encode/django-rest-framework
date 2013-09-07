@@ -32,6 +32,16 @@ def basic_view(request):
         return {'method': 'PATCH', 'data': request.DATA}
 
 
+class ErrorView(APIView):
+    def get(self, request, *args, **kwargs):
+        raise Exception
+
+
+@api_view(['GET'])
+def error_view(request):
+    raise Exception
+
+
 def sanitise_json_error(error_dict):
     """
     Exact contents of JSON error messages depend on the installed version
@@ -99,3 +109,34 @@ class FunctionBasedViewIntegrationTests(TestCase):
         }
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(sanitise_json_error(response.data), expected)
+
+
+class TestCustomExceptionHandler(TestCase):
+    def setUp(self):
+        self.DEFAULT_HANDLER = api_settings.EXCEPTION_HANDLER
+
+        def exception_handler(exc):
+            return Response('Error!', status=status.HTTP_400_BAD_REQUEST)
+
+        api_settings.EXCEPTION_HANDLER = exception_handler
+
+    def tearDown(self):
+        api_settings.EXCEPTION_HANDLER = self.DEFAULT_HANDLER
+
+    def test_class_based_view_exception_handler(self):
+        view = ErrorView.as_view()
+
+        request = factory.get('/', content_type='application/json')
+        response = view(request)
+        expected = 'Error!'
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, expected)
+
+    def test_function_based_view_exception_handler(self):
+        view = error_view
+
+        request = factory.get('/', content_type='application/json')
+        response = view(request)
+        expected = 'Error!'
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.data, expected)
