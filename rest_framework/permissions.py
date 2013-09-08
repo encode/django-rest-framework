@@ -7,6 +7,7 @@ import warnings
 
 SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
+from django.http import Http404
 from rest_framework.compat import oauth2_provider_scope, oauth2_constants, guardian
 
 
@@ -152,8 +153,53 @@ class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
 
 
 class DjangoObjectLevelModelPermissions(DjangoModelPermissions):
+    """
+    Basic object level permissions utilizing django-guardian.
+    """
+
     def __init__(self):
         assert guardian, 'Using DjangoObjectLevelModelPermissions, but django-guardian is not installed'
+
+    action_perm_map = {
+        'list': 'read',
+        'retrieve': 'read',
+        'create': 'add',
+        'partial_update': 'change',
+        'update': 'change',
+        'destroy': 'delete',
+    }
+
+    def _get_names(self, view):
+        model_cls = getattr(view, 'model', None)
+        queryset = getattr(view, 'queryset', None)
+
+        if model_cls is None and queryset is not None:
+            model_cls = queryset.model
+        if not model_cls:  # no model, no model based permissions
+            return None
+        model_name = model_cls._meta.module_name
+        return model_name
+
+    def has_permission(self, request, view):
+        if view.action == 'list':
+            user = request.user
+            queryset = view.get_queryset()
+            model_name = self._get_names(view)
+            view.queryset = guardian.shortcuts.get_objects_for_user(user, 'read_' + model_name, queryset)  #TODO: move to filter
+        return super(DjangoObjectLevelModelPermissions, self).has_permission(request, view)
+
+    def has_object_permission(self, request, view, obj):
+        user = request.user
+        model_name = self._get_names(view)
+        action = self.action_perm_map.get(view.action)
+
+        assert action, "Tried to determine object permissions but no action specified in view"
+
+        perm = "{action}_{model_name}".format(action=action, model_name=model_name)
+        check = user.has_perm(perm, obj)
+        if not check:
+            raise Http404
+        return user.has_perm(perm, obj)
 
 
 class TokenHasReadWriteScope(BasePermission):
