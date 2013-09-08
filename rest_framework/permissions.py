@@ -9,6 +9,7 @@ SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
 from django.http import Http404
 from rest_framework.compat import oauth2_provider_scope, oauth2_constants, guardian
+from rest_framework.filters import ObjectPermissionReaderFilter
 
 
 class BasePermission(object):
@@ -169,7 +170,7 @@ class DjangoObjectLevelModelPermissions(DjangoModelPermissions):
         'destroy': 'delete',
     }
 
-    def _get_names(self, view):
+    def _get_model_name(self, view):
         model_cls = getattr(view, 'model', None)
         queryset = getattr(view, 'queryset', None)
 
@@ -182,18 +183,16 @@ class DjangoObjectLevelModelPermissions(DjangoModelPermissions):
 
     def has_permission(self, request, view):
         if view.action == 'list':
-            user = request.user
             queryset = view.get_queryset()
-            model_name = self._get_names(view)
-            view.queryset = guardian.shortcuts.get_objects_for_user(user, 'read_' + model_name, queryset)  #TODO: move to filter
+            view.queryset = ObjectPermissionReaderFilter().filter_queryset(request, queryset, view)
         return super(DjangoObjectLevelModelPermissions, self).has_permission(request, view)
 
     def has_object_permission(self, request, view, obj):
-        user = request.user
-        model_name = self._get_names(view)
         action = self.action_perm_map.get(view.action)
-
         assert action, "Tried to determine object permissions but no action specified in view"
+
+        user = request.user
+        model_name = self._get_model_name(view)
 
         perm = "{action}_{model_name}".format(action=action, model_name=model_name)
         check = user.has_perm(perm, obj)
