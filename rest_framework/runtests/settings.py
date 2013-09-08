@@ -130,6 +130,10 @@ except ImportError:
     pass
 else:
     ANONYMOUS_USER_ID = -1
+    AUTHENTICATION_BACKENDS = (
+        'django.contrib.auth.backends.ModelBackend', # default
+        'guardian.backends.ObjectPermissionBackend',
+    )
     INSTALLED_APPS += (
         'guardian',
     )
