@@ -8,8 +8,7 @@ import warnings
 SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
 from django.http import Http404
-from rest_framework.compat import oauth2_provider_scope, oauth2_constants, guardian
-from rest_framework.filters import ObjectPermissionReaderFilter
+from rest_framework.compat import oauth2_provider_scope, oauth2_constants
 
 
 class BasePermission(object):
@@ -158,47 +157,42 @@ class DjangoObjectLevelModelPermissions(DjangoModelPermissions):
     Basic object level permissions utilizing django-guardian.
     """
 
-    def __init__(self):
-        assert guardian, 'Using DjangoObjectLevelModelPermissions, but django-guardian is not installed'
-
-    action_perm_map = {
-        'list': 'read',
-        'retrieve': 'read',
-        'create': 'add',
-        'partial_update': 'change',
-        'update': 'change',
-        'destroy': 'delete',
+    actions_map = {
+        'GET': ['read_%(model_name)s'],
+        'OPTIONS': ['read_%(model_name)s'],
+        'HEAD': ['read_%(model_name)s'],
+        'POST': ['add_%(model_name)s'],
+        'PUT': ['change_%(model_name)s'],
+        'PATCH': ['change_%(model_name)s'],
+        'DELETE': ['delete_%(model_name)s'],
     }
 
-    def _get_model_name(self, view):
-        model_cls = getattr(view, 'model', None)
-        queryset = getattr(view, 'queryset', None)
-
-        if model_cls is None and queryset is not None:
-            model_cls = queryset.model
-        if not model_cls:  # no model, no model based permissions
-            return None
-        model_name = model_cls._meta.module_name
-        return model_name
+    def get_required_object_permissions(self, method, model_cls):
+        kwargs = {
+            'model_name': model_cls._meta.module_name
+        }
+        return [perm % kwargs for perm in self.actions_map[method]]
 
     def has_permission(self, request, view):
-        if view.action == 'list':
+        if getattr(view, 'action', None) == 'list':
             queryset = view.get_queryset()
             view.queryset = ObjectPermissionReaderFilter().filter_queryset(request, queryset, view)
         return super(DjangoObjectLevelModelPermissions, self).has_permission(request, view)
 
     def has_object_permission(self, request, view, obj):
-        action = self.action_perm_map.get(view.action)
-        assert action, "Tried to determine object permissions but no action specified in view"
+        model_cls = getattr(view, 'model', None)
+        queryset = getattr(view, 'queryset', None)
 
+        if model_cls is None and queryset is not None:
+            model_cls = queryset.model
+
+        perms = self.get_required_object_permissions(request.method, model_cls)
         user = request.user
-        model_name = self._get_model_name(view)
 
-        perm = "{action}_{model_name}".format(action=action, model_name=model_name)
-        check = user.has_perm(perm, obj)
+        check = user.has_perms(perms, obj)
         if not check:
             raise Http404
-        return user.has_perm(perm, obj)
+        return user.has_perms(perms, obj)
 
 
 class TokenHasReadWriteScope(BasePermission):

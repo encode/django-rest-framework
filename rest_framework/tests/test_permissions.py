@@ -4,6 +4,7 @@ from django.db import models
 from django.test import TestCase
 from rest_framework import generics, status, permissions, authentication, HTTP_HEADER_ENCODING
 from rest_framework.compat import guardian
+from rest_framework.filters import ObjectPermissionReaderFilter
 from rest_framework.test import APIRequestFactory
 from rest_framework.tests.models import BasicModel
 import base64
@@ -227,13 +228,11 @@ if guardian:
         # Delete
         def test_can_delete_permissions(self):
             request = factory.delete('/1', HTTP_AUTHORIZATION=self.credentials['deleteonly'])
-            object_permissions_view.cls.action = 'destroy'
             response = object_permissions_view(request, pk='1')
             self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
         def test_cannot_delete_permissions(self):
             request = factory.delete('/1', HTTP_AUTHORIZATION=self.credentials['readonly'])
-            object_permissions_view.cls.action = 'destroy'
             response = object_permissions_view(request, pk='1')
             self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -241,7 +240,6 @@ if guardian:
         def test_can_update_permissions(self):
             request = factory.patch('/1', {'text': 'foobar'}, format='json',
                 HTTP_AUTHORIZATION=self.credentials['writeonly'])
-            object_permissions_view.cls.action = 'partial_update'
             response = object_permissions_view(request, pk='1')
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(response.data.get('text'), 'foobar')
@@ -249,34 +247,31 @@ if guardian:
         def test_cannot_update_permissions(self):
             request = factory.patch('/1', {'text': 'foobar'}, format='json',
                 HTTP_AUTHORIZATION=self.credentials['deleteonly'])
-            object_permissions_view.cls.action = 'partial_update'
             response = object_permissions_view(request, pk='1')
             self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         # Read
         def test_can_read_permissions(self):
             request = factory.get('/1', HTTP_AUTHORIZATION=self.credentials['readonly'])
-            object_permissions_view.cls.action = 'retrieve'
             response = object_permissions_view(request, pk='1')
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         def test_cannot_read_permissions(self):
             request = factory.get('/1', HTTP_AUTHORIZATION=self.credentials['writeonly'])
-            object_permissions_view.cls.action = 'retrieve'
             response = object_permissions_view(request, pk='1')
             self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
         # Read list
         def test_can_read_list_permissions(self):
             request = factory.get('/', HTTP_AUTHORIZATION=self.credentials['readonly'])
-            object_permissions_list_view.cls.action = 'list'
+            object_permissions_list_view.cls.filter_backends = (ObjectPermissionReaderFilter,)
             response = object_permissions_list_view(request)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(response.data[0].get('id'), 1)
 
         def test_cannot_read_list_permissions(self):
             request = factory.get('/', HTTP_AUTHORIZATION=self.credentials['writeonly'])
-            object_permissions_list_view.cls.action = 'list'
+            object_permissions_list_view.cls.filter_backends = (ObjectPermissionReaderFilter,)
             response = object_permissions_list_view(request)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertListEqual(response.data, [])
