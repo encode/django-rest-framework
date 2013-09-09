@@ -154,7 +154,14 @@ class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
 
 class DjangoObjectLevelModelPermissions(DjangoModelPermissions):
     """
-    Basic object level permissions utilizing django-guardian.
+    The request is authenticated using `django.contrib.auth` permissions.
+    See: https://docs.djangoproject.com/en/dev/topics/auth/#permissions
+
+    It ensures that the user is authenticated, and has the appropriate
+    `add`/`change`/`delete` permissions on the object using .has_perms.
+
+    This permission can only be applied against view classes that
+    provide a `.model` or `.queryset` attribute.
     """
 
     actions_map = {
@@ -172,12 +179,6 @@ class DjangoObjectLevelModelPermissions(DjangoModelPermissions):
             'model_name': model_cls._meta.module_name
         }
         return [perm % kwargs for perm in self.actions_map[method]]
-
-    def has_permission(self, request, view):
-        if getattr(view, 'action', None) == 'list':
-            queryset = view.get_queryset()
-            view.queryset = ObjectPermissionReaderFilter().filter_queryset(request, queryset, view)
-        return super(DjangoObjectLevelModelPermissions, self).has_permission(request, view)
 
     def has_object_permission(self, request, view, obj):
         model_cls = getattr(view, 'model', None)
