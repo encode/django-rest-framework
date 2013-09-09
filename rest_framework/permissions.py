@@ -7,6 +7,7 @@ import warnings
 
 SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
+from django.http import Http404
 from rest_framework.compat import oauth2_provider_scope, oauth2_constants
 
 
@@ -149,6 +150,50 @@ class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
     allowed read-only access.
     """
     authenticated_users_only = False
+
+
+class DjangoObjectLevelModelPermissions(DjangoModelPermissions):
+    """
+    The request is authenticated using `django.contrib.auth` permissions.
+    See: https://docs.djangoproject.com/en/dev/topics/auth/#permissions
+
+    It ensures that the user is authenticated, and has the appropriate
+    `add`/`change`/`delete` permissions on the object using .has_perms.
+
+    This permission can only be applied against view classes that
+    provide a `.model` or `.queryset` attribute.
+    """
+
+    actions_map = {
+        'GET': ['read_%(model_name)s'],
+        'OPTIONS': ['read_%(model_name)s'],
+        'HEAD': ['read_%(model_name)s'],
+        'POST': ['add_%(model_name)s'],
+        'PUT': ['change_%(model_name)s'],
+        'PATCH': ['change_%(model_name)s'],
+        'DELETE': ['delete_%(model_name)s'],
+    }
+
+    def get_required_object_permissions(self, method, model_cls):
+        kwargs = {
+            'model_name': model_cls._meta.module_name
+        }
+        return [perm % kwargs for perm in self.actions_map[method]]
+
+    def has_object_permission(self, request, view, obj):
+        model_cls = getattr(view, 'model', None)
+        queryset = getattr(view, 'queryset', None)
+
+        if model_cls is None and queryset is not None:
+            model_cls = queryset.model
+
+        perms = self.get_required_object_permissions(request.method, model_cls)
+        user = request.user
+
+        check = user.has_perms(perms, obj)
+        if not check:
+            raise Http404
+        return user.has_perms(perms, obj)
 
 
 class TokenHasReadWriteScope(BasePermission):
