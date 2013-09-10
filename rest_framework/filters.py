@@ -53,6 +53,7 @@ class DjangoFilterBackend(BaseFilterBackend):
                 class Meta:
                     model = queryset.model
                     fields = filter_fields
+                    order_by = True
             return AutoFilterSet
 
         return None
