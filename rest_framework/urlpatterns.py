@@ -25,10 +25,10 @@ def apply_suffix_patterns(urlpatterns, suffix_pattern, suffix_required):
             view = urlpattern._callback or urlpattern._callback_str
             kwargs = urlpattern.default_args
             name = urlpattern.name
-            # Add in both the existing and the new urlpattern
+            # Add in both the new and the existing urlpattern
+            ret.append(url(regex, view, kwargs, name))
             if not suffix_required:
                 ret.append(urlpattern)
-            ret.append(url(regex, view, kwargs, name))
 
     return ret
 
