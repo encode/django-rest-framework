@@ -65,6 +65,10 @@ DEFAULTS = {
         'anon': None,
     },
 
+    # Nested (multi-dimensional) field names
+    'NESTED_FIELDS': False,
+    'NESTED_FIELD_TOKENIZER': '.',
+
     # Pagination
     'PAGINATE_BY': None,
     'PAGINATE_BY_PARAM': None,
