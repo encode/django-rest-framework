@@ -887,50 +887,66 @@ class ModelSerializer(Serializer):
         """
         Save the deserialized object and return it.
         """
-        if getattr(obj, '_nested_forward_relations', None):
-            # Nested relationships need to be saved before we can save the
-            # parent instance.
-            for field_name, sub_object in obj._nested_forward_relations.items():
-                if sub_object:
-                    self.save_object(sub_object)
-                setattr(obj, field_name, sub_object)
+        def save_nested_forward_relations(obj):
+            """
+            Save nested nested forward relations
+            """
+            if getattr(obj, '_nested_forward_relations', None):
+                # Nested relationships need to be saved before we can save the
+                # parent instance.
+                for field_name, sub_object in obj._nested_forward_relations.items():
+                    if sub_object:
+                        self.save_object(sub_object)
+                    setattr(obj, field_name, sub_object)
 
-        obj.save(**kwargs)
+            obj.save(**kwargs)
 
-        if getattr(obj, '_m2m_data', None):
-            if hasattr(obj._m2m_data, '__iter__'):
+        def save_m2m(obj):
+            """
+            Save nested ManyToMany relations
+            """
+            if getattr(obj, '_m2m_data', None) and hasattr(obj._m2m_data, '__iter__'):
                 for accessor_name, object_list in obj._m2m_data.items():
-                    if object_list:
+                    if hasattr(object_list, '__iter__'):
                         for m2m_object in object_list:
-                            for field in m2m_object.__dict__.keys():
-                                if not field == 'id':
-                                    attr = getattr(m2m_object, field)
-                                    setattr(m2m_object, field, m2m_object.__dict__[field])
+                            save_nested_forward_relations(m2m_object)
+                            save_m2m(m2m_object)
+                            save_related_data(m2m_object)
+                            setattr(obj, accessor_name, object_list)
                             m2m_object.save()
                 del(obj._m2m_data)
 
-        if getattr(obj, '_related_data', None):
-            for accessor_name, related in obj._related_data.items():
-                if isinstance(related, RelationsList):
-                    # Nested reverse fk relationship
-                    for related_item in related:
+        def save_related_data(obj):
+            """
+            Save nested nested related data
+            """
+            if getattr(obj, '_related_data', None):
+                for accessor_name, related in obj._related_data.items():
+                    if isinstance(related, RelationsList):
+                        # Nested reverse fk relationship
+                        for related_item in related:
+                            fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
+                            setattr(related_item, fk_field, obj)
+                            self.save_object(related_item)
+
+                        # Delete any removed objects
+                        if related._deleted:
+                            [self.delete_object(item) for item in related._deleted]
+
+                    elif isinstance(related, models.Model):
+                        # Nested reverse one-one relationship
                         fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
-                        setattr(related_item, fk_field, obj)
-                        self.save_object(related_item)
+                        setattr(related, fk_field, obj)
+                        self.save_object(related)
+                    else:
+                        # Reverse FK or reverse one-one
+                        setattr(obj, accessor_name, related)
+                del(obj._related_data)
 
-                    # Delete any removed objects
-                    if related._deleted:
-                        [self.delete_object(item) for item in related._deleted]
-
-                elif isinstance(related, models.Model):
-                    # Nested reverse one-one relationship
-                    fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
-                    setattr(related, fk_field, obj)
-                    self.save_object(related)
-                else:
-                    # Reverse FK or reverse one-one
-                    setattr(obj, accessor_name, related)
-            del(obj._related_data)
+        # Save
+        save_nested_forward_relations(obj)
+        save_m2m(obj)
+        save_related_data(obj)
 
 
 class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
