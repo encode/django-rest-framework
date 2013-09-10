@@ -152,10 +152,10 @@ class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
     authenticated_users_only = False
 
 
-class DjangoObjectLevelModelPermissions(DjangoModelPermissions):
+class DjangoObjectPermissions(DjangoModelPermissions):
     """
-    The request is authenticated using `django.contrib.auth` permissions.
-    See: https://docs.djangoproject.com/en/dev/topics/auth/#permissions
+    The request is authenticated using Django's object-level permissions.
+    It requires an object-permissions-enabled backend, such as Django Guardian.
 
     It ensures that the user is authenticated, and has the appropriate
     `add`/`change`/`delete` permissions on the object using .has_perms.
@@ -164,21 +164,22 @@ class DjangoObjectLevelModelPermissions(DjangoModelPermissions):
     provide a `.model` or `.queryset` attribute.
     """
 
-    actions_map = {
-        'GET': ['read_%(model_name)s'],
-        'OPTIONS': ['read_%(model_name)s'],
-        'HEAD': ['read_%(model_name)s'],
-        'POST': ['add_%(model_name)s'],
-        'PUT': ['change_%(model_name)s'],
-        'PATCH': ['change_%(model_name)s'],
-        'DELETE': ['delete_%(model_name)s'],
+    perms_map = {
+        'GET': [],
+        'OPTIONS': [],
+        'HEAD': [],
+        'POST': ['%(app_label)s.add_%(model_name)s'],
+        'PUT': ['%(app_label)s.change_%(model_name)s'],
+        'PATCH': ['%(app_label)s.change_%(model_name)s'],
+        'DELETE': ['%(app_label)s.delete_%(model_name)s'],
     }
 
     def get_required_object_permissions(self, method, model_cls):
         kwargs = {
+            'app_label': model_cls._meta.app_label,
             'model_name': model_cls._meta.module_name
         }
-        return [perm % kwargs for perm in self.actions_map[method]]
+        return [perm % kwargs for perm in self.perms_map[method]]
 
     def has_object_permission(self, request, view, obj):
         model_cls = getattr(view, 'model', None)
@@ -190,10 +191,24 @@ class DjangoObjectLevelModelPermissions(DjangoModelPermissions):
         perms = self.get_required_object_permissions(request.method, model_cls)
         user = request.user
 
-        check = user.has_perms(perms, obj)
-        if not check:
-            raise Http404
-        return user.has_perms(perms, obj)
+        if not user.has_perms(perms, obj):
+            # If the user does not have permissions we need to determine if
+            # they have read permissions to see 403, or not, and simply see
+            # a 404 reponse.
+
+            if request.method in ('GET', 'OPTIONS', 'HEAD'):
+                # Read permissions already checked and failed, no need
+                # to make another lookup.
+                raise Http404
+
+            read_perms = self.get_required_object_permissions('GET', model_cls)
+            if not user.has_perms(read_perms, obj):
+                raise Http404
+
+            # Has read permissions.
+            return False
+
+        return True
 
 
 class TokenHasReadWriteScope(BasePermission):

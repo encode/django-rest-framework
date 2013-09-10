@@ -23,22 +23,6 @@ class BaseFilterBackend(object):
         raise NotImplementedError(".filter_queryset() must be overridden.")
 
 
-class ObjectPermissionReaderFilter(BaseFilterBackend):
-    """
-    A filter backend that limits results to those where the requesting user
-    has read object level permissions.
-    """
-    def __init__(self):
-        assert guardian, 'Using ObjectPermissionReaderFilter, but django-guardian is not installed'
-
-    def filter_queryset(self, request, queryset, view):
-        user = request.user
-        model_cls = queryset.model
-        model_name = model_cls._meta.module_name
-        permission = 'read_' + model_name
-        return guardian.shortcuts.get_objects_for_user(user, permission, queryset)
-
-
 class DjangoFilterBackend(BaseFilterBackend):
     """
     A filter backend that uses django-filter.
@@ -156,3 +140,24 @@ class OrderingFilter(BaseFilterBackend):
             return queryset.order_by(*ordering)
 
         return queryset
+
+
+class DjangoObjectPermissionsFilter(BaseFilterBackend):
+    """
+    A filter backend that limits results to those where the requesting user
+    has read object level permissions.
+    """
+    def __init__(self):
+        assert guardian, 'Using DjangoObjectPermissionsFilter, but django-guardian is not installed'
+
+    perm_format = '%(app_label)s.view_%(model_name)s'
+
+    def filter_queryset(self, request, queryset, view):
+        user = request.user
+        model_cls = queryset.model
+        kwargs = {
+            'app_label': model_cls._meta.app_label,
+            'model_name': model_cls._meta.module_name
+        }
+        permission = self.perm_format % kwargs
+        return guardian.shortcuts.get_objects_for_user(user, permission, queryset)

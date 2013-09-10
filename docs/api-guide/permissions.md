@@ -120,7 +120,21 @@ To use custom model permissions, override `DjangoModelPermissions` and set the `
 
 ## DjangoModelPermissionsOrAnonReadOnly
 
-Similar to `DjangoModelPermissions`, but also allows unauthenticated users to have  read-only access to the API.
+Similar to `DjangoModelPermissions`, but also allows unauthenticated users to have read-only access to the API.
+
+## DjangoObjectPermissions
+
+This permission class ties into Django's standard [object permissions framework][objectpermissions] that allows per-object permissions on models.  In order to use this permission class, you'll also need to add a permission backend that supports object-level permissions, such as [django-guardian][guardian].
+
+When applied to a view that has a `.model` property, authorization will only be granted if the user *is authenticated* and has the *relevant per-object permissions* and *relevant model permissions* assigned.
+
+* `POST` requests require the user to have the `add` permission on the model instance.
+* `PUT` and `PATCH` requests require the user to have the `change` permission on the model instance.
+* `DELETE` requests require the user to have the `delete` permission on the model instance.
+
+Note that `DjangoObjectPermissions` **does not** require the `django-guardian` package, and should support other object-level backends equally well.
+
+As with `DjangoModelPermissions` you can use custom model permissions by overriding `DjangoModelPermissions` and setting the `.perms_map` property.  Refer to the source code for details.  Note that if you add a custom `view` permission for `GET`, `HEAD` and `OPTIONS` requests, you'll probably also want to consider adding the `DjangoObjectPermissionsFilter` class to ensure that list endpoints only return results including objects for which the user has appropriate view permissions.
 
 ## TokenHasReadWriteScope
 
@@ -220,7 +234,9 @@ The [Composed Permissions][composed-permissions] package provides a simple way t
 [authentication]: authentication.md
 [throttling]: throttling.md
 [contribauth]: https://docs.djangoproject.com/en/1.0/topics/auth/#permissions
+[objectpermissions]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#handling-object-permissions
 [guardian]: https://github.com/lukaszb/django-guardian
+[get_objects_for_user]: http://pythonhosted.org/django-guardian/api/guardian.shortcuts.html#get-objects-for-user
 [django-oauth-plus]: http://code.larlet.fr/django-oauth-plus
 [django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
 [2.2-announcement]: ../topics/2.2-announcement.md
