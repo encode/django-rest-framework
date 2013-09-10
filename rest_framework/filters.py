@@ -4,7 +4,7 @@ returned by list views.
 """
 from __future__ import unicode_literals
 from django.db import models
-from rest_framework.compat import django_filters, six
+from rest_framework.compat import django_filters, six, guardian
 from functools import reduce
 import operator
 
@@ -21,6 +21,22 @@ class BaseFilterBackend(object):
         Return a filtered queryset.
         """
         raise NotImplementedError(".filter_queryset() must be overridden.")
+
+
+class ObjectPermissionReaderFilter(BaseFilterBackend):
+    """
+    A filter backend that limits results to those where the requesting user
+    has read object level permissions.
+    """
+    def __init__(self):
+        assert guardian, 'Using ObjectPermissionReaderFilter, but django-guardian is not installed'
+
+    def filter_queryset(self, request, queryset, view):
+        user = request.user
+        model_cls = queryset.model
+        model_name = model_cls._meta.module_name
+        permission = 'read_' + model_name
+        return guardian.shortcuts.get_objects_for_user(user, permission, queryset)
 
 
 class DjangoFilterBackend(BaseFilterBackend):
