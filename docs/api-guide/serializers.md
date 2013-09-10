@@ -28,6 +28,8 @@ We'll declare a serializer that we can use to serialize and deserialize `Comment
 
 Declaring a serializer looks very similar to declaring a form:
 
+    from rest_framework import serializers
+
     class CommentSerializer(serializers.Serializer):
         email = serializers.EmailField()
         content = serializers.CharField(max_length=200)
@@ -59,6 +61,8 @@ We can now use `CommentSerializer` to serialize a comment, or list of comments. 
 
 At this point we've translated the model instance into Python native datatypes.  To finalise the serialization process we render the data into `json`.
 
+    from rest_framework.renderers import JSONRenderer
+
     json = JSONRenderer().render(serializer.data)
     json
     # '{"email": "leila@example.com", "content": "foo bar", "created": "2012-08-22T16:20:09.822"}'
@@ -66,6 +70,9 @@ At this point we've translated the model instance into Python native datatypes. 
 ## Deserializing objects
         
 Deserialization is similar.  First we parse a stream into Python native datatypes... 
+
+    from StringIO import StringIO
+    from rest_framework.parsers import JSONParser
 
     stream = StringIO(json)
     data = JSONParser().parse(stream)
@@ -177,7 +184,7 @@ If a nested representation may optionally accept the `None` value you should pas
         content = serializers.CharField(max_length=200)
         created = serializers.DateTimeField()
 
-Similarly if a nested representation should be a list of items, you should the `many=True` flag to the nested serialized.
+Similarly if a nested representation should be a list of items, you should pass the `many=True` flag to the nested serialized.
 
     class CommentSerializer(serializers.Serializer):
         user = UserSerializer(required=False)
@@ -185,11 +192,13 @@ Similarly if a nested representation should be a list of items, you should the `
         content = serializers.CharField(max_length=200)
         created = serializers.DateTimeField()
 
----
+Validation of nested objects will work the same as before.  Errors with nested objects will be nested under the field name of the nested object.
 
-**Note**: Nested serializers are only suitable for read-only representations, as there are cases where they would have ambiguous or non-obvious behavior if used when updating instances.  For read-write representations you should always use a flat representation, by using one of the `RelatedField` subclasses.
-
----
+    serializer = CommentSerializer(comment, data={'user': {'email': 'foobar', 'username': 'doe'}, 'content': 'baz'})
+    serializer.is_valid()
+    # False
+    serializer.errors
+    # {'user': {'email': [u'Enter a valid e-mail address.']}, 'created': [u'This field is required.']}
 
 ## Dealing with multiple objects
 
@@ -241,7 +250,7 @@ This allows you to write views that update or create multiple items when a `PUT`
     serializer = BookSerializer(queryset, data=data, many=True)
     serializer.is_valid()
     # True
-    serialize.save()  # `.save()` will be called on each updated or newly created instance.
+    serializer.save()  # `.save()` will be called on each updated or newly created instance.
 
 By default bulk updates will be limited to updating instances that already exist in the provided queryset.
 
@@ -253,7 +262,7 @@ When performing a bulk update you may want to allow new items to be created, and
     serializer.save()  # `.save()` will be called on updated or newly created instances.
                        # `.delete()` will be called on any other items in the `queryset`.
 
-Passing `allow_add_remove=True` ensures that any update operations will completely overwrite the existing queryset, rather than simply updating existing objects. 
+Passing `allow_add_remove=True` ensures that any update operations will completely overwrite the existing queryset, rather than simply updating existing objects.
 
 #### How identity is determined when performing bulk updates
 
@@ -293,8 +302,7 @@ You can provide arbitrary additional context by passing a `context` argument whe
 
 The context dictionary can be used within any serializer field logic, such as a custom `.to_native()` method, by accessing the `self.context` attribute.
 
----
-
+-
 # ModelSerializer
 
 Often you'll want serializer classes that map closely to model definitions.
@@ -336,6 +344,8 @@ The default `ModelSerializer` uses primary keys for relationships, but you can a
             depth = 1
 
 The `depth` option should be set to an integer value that indicates the depth of relationships that should be traversed before reverting to a flat representation.
+
+If you want to customize the way the serialization is done (e.g. using `allow_add_remove`) you'll need to define the field yourself.
 
 ## Specifying which fields should be read-only 
 

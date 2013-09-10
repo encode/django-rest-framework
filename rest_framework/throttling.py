@@ -2,7 +2,7 @@
 Provides various throttling policies.
 """
 from __future__ import unicode_literals
-from django.core.cache import cache
+from django.core.cache import cache as default_cache
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework.settings import api_settings
 import time
@@ -39,6 +39,7 @@ class SimpleRateThrottle(BaseThrottle):
     Previous request information used for throttling is stored in the cache.
     """
 
+    cache = default_cache
     timer = time.time
     cache_format = 'throtte_%(scope)s_%(ident)s'
     scope = None
@@ -99,7 +100,7 @@ class SimpleRateThrottle(BaseThrottle):
         if self.key is None:
             return True
 
-        self.history = cache.get(self.key, [])
+        self.history = self.cache.get(self.key, [])
         self.now = self.timer()
 
         # Drop any requests from the history which have now passed the
@@ -116,7 +117,7 @@ class SimpleRateThrottle(BaseThrottle):
         into the cache.
         """
         self.history.insert(0, self.now)
-        cache.set(self.key, self.history, self.duration)
+        self.cache.set(self.key, self.history, self.duration)
         return True
 
     def throttle_failure(self):
@@ -151,7 +152,9 @@ class AnonRateThrottle(SimpleRateThrottle):
         if request.user.is_authenticated():
             return None  # Only throttle unauthenticated requests.
 
-        ident = request.META.get('REMOTE_ADDR', None)
+        ident = request.META.get('HTTP_X_FORWARDED_FOR')
+        if ident is None:
+            ident = request.META.get('REMOTE_ADDR')
 
         return self.cache_format % {
             'scope': self.scope,

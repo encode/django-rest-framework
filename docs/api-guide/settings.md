@@ -25,7 +25,7 @@ If you need to access the values of REST framework's API settings in your projec
 you should use the `api_settings` object.  For example.
 
     from rest_framework.settings import api_settings
-    
+
     print api_settings.DEFAULT_AUTHENTICATION_CLASSES
 
 The `api_settings` object will check for any user-defined settings, and otherwise fall back to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.
@@ -126,6 +126,35 @@ Default: `None`
 #### PAGINATE_BY_PARAM
 
 The name of a query parameter, which can be used by the client to override the default page size to use for pagination.  If set to `None`, clients may not override the default page size.
+
+For example, given the following settings:
+
+    REST_FRAMEWORK = {
+    	'PAGINATE_BY': 10,
+    	'PAGINATE_BY_PARAM': 'page_size',
+    }
+
+A client would be able to modify the pagination size by using the `page_size` query parameter.  For example:
+
+    GET http://example.com/api/accounts?page_size=25
+
+Default: `None`
+
+#### MAX_PAGINATE_BY
+
+The maximum page size to allow when the page size is specified by the client.  If set to `None`, then no maximum limit is applied.
+
+For example, given the following settings:
+
+    REST_FRAMEWORK = {
+    	'PAGINATE_BY': 10,
+    	'PAGINATE_BY_PARAM': 'page_size',
+        'MAX_PAGINATE_BY': 100
+    }
+
+A client request like the following would return a paginated list of up to 100 items.
+
+    GET http://example.com/api/accounts?page_size=999
 
 Default: `None`
 
@@ -274,7 +303,55 @@ Default: `['iso-8601']`
 
 ---
 
+## View names and descriptions
+
+**The following settings are used to generate the view names and descriptions, as used in responses to `OPTIONS` requests, and as used in the browsable API.**
+
+#### VIEW_NAME_FUNCTION
+
+A string representing the function that should be used when generating view names.
+
+This should be a function with the following signature:
+
+    view_name(cls, suffix=None)
+
+* `cls`: The view class.  Typically the name function would inspect the name of the class when generating a descriptive name, by accessing `cls.__name__`.
+* `suffix`: The optional suffix used when differentiating individual views in a viewset.
+
+Default: `'rest_framework.views.get_view_name'`
+
+#### VIEW_DESCRIPTION_FUNCTION
+
+A string representing the function that should be used when generating view descriptions.
+
+This setting can be changed to support markup styles other than the default markdown.  For example, you can use it to support `rst` markup in your view docstrings being output in the browsable API.
+
+This should be a function with the following signature:
+
+    view_description(cls, html=False)
+
+* `cls`: The view class.  Typically the description function would inspect the docstring of the class when generating a description, by accessing `cls.__doc__`
+* `html`: A boolean indicating if HTML output is required.  `True` when used in the browsable API, and `False` when used in generating `OPTIONS` responses.
+
+Default: `'rest_framework.views.get_view_description'`
+
+---
+
 ## Miscellaneous settings
+
+#### EXCEPTION_HANDLER
+
+A string representing the function that should be used when returning a response for any given exception.  If the function returns `None`, a 500 error will be raised.
+
+This setting can be changed to support error responses other than the default `{"detail": "Failure..."}` responses.  For example, you can use it to provide API responses like `{"errors": [{"message": "Failure...", "code": ""} ...]}`.
+
+This should be a function with the following signature:
+
+    exception_handler(exc)
+
+* `exc`: The exception.
+
+Default: `'rest_framework.views.exception_handler'`
 
 #### FORMAT_SUFFIX_KWARG
 

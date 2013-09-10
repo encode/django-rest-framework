@@ -189,7 +189,11 @@ class SimpleRouter(BaseRouter):
         Given a viewset, return the portion of URL regex that is used
         to match against a single instance.
         """
-        base_regex = '(?P<{lookup_field}>[^/]+)'
+        if self.trailing_slash:
+            base_regex = '(?P<{lookup_field}>[^/]+)'
+        else:
+            # Don't consume `.json` style suffixes
+            base_regex = '(?P<{lookup_field}>[^/.]+)'
         lookup_field = getattr(viewset, 'lookup_field', 'pk')
         return base_regex.format(lookup_field=lookup_field)
 

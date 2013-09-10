@@ -21,11 +21,10 @@ from rest_framework.compat import six
 from rest_framework.compat import smart_text
 from rest_framework.compat import yaml
 from rest_framework.settings import api_settings
-from rest_framework.request import clone_request
+from rest_framework.request import is_form_media_type, override_method
 from rest_framework.utils import encoders
 from rest_framework.utils.breadcrumbs import get_breadcrumbs
-from rest_framework.utils.formatting import get_view_name, get_view_description
-from rest_framework import exceptions, parsers, status, VERSION
+from rest_framework import exceptions, status, VERSION
 
 
 class BaseRenderer(object):
@@ -37,6 +36,7 @@ class BaseRenderer(object):
     media_type = None
     format = None
     charset = 'utf-8'
+    render_style = 'text'
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         raise NotImplemented('Renderer class requires .render() to be implemented')
@@ -52,16 +52,17 @@ class JSONRenderer(BaseRenderer):
     format = 'json'
     encoder_class = encoders.JSONEncoder
     ensure_ascii = True
-    charset = 'utf-8'
-    # Note that JSON encodings must be utf-8, utf-16 or utf-32.
+    charset = None
+    # JSON is a binary encoding, that can be encoded as utf-8, utf-16 or utf-32.
     # See: http://www.ietf.org/rfc/rfc4627.txt
+    # Also: http://lucumr.pocoo.org/2013/7/19/application-mimetypes-and-encodings/
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Render `data` into JSON.
         """
         if data is None:
-            return ''
+            return bytes()
 
         # If 'indent' is provided in the context, then pretty print the result.
         # E.g. If we're being called by the BrowsableAPIRenderer.
@@ -86,13 +87,12 @@ class JSONRenderer(BaseRenderer):
         # and may (or may not) be unicode.
         # On python 3.x json.dumps() returns unicode strings.
         if isinstance(ret, six.text_type):
-            return bytes(ret.encode(self.charset))
+            return bytes(ret.encode('utf-8'))
         return ret
 
 
 class UnicodeJSONRenderer(JSONRenderer):
     ensure_ascii = False
-    charset = 'utf-8'
     """
     Renderer which serializes to JSON.
     Does *not* apply JSON's character escaping for non-ascii characters.
@@ -109,6 +109,7 @@ class JSONPRenderer(JSONRenderer):
     format = 'jsonp'
     callback_parameter = 'callback'
     default_callback = 'callback'
+    charset = 'utf-8'
 
     def get_callback(self, renderer_context):
         """
@@ -317,6 +318,90 @@ class StaticHTMLRenderer(TemplateHTMLRenderer):
         return data
 
 
+class HTMLFormRenderer(BaseRenderer):
+    """
+    Renderers serializer data into an HTML form.
+
+    If the serializer was instantiated without an object then this will
+    return an HTML form not bound to any object,
+    otherwise it will return an HTML form with the appropriate initial data
+    populated from the object.
+
+    Note that rendering of field and form errors is not currently supported.
+    """
+    media_type = 'text/html'
+    format = 'form'
+    template = 'rest_framework/form.html'
+    charset = 'utf-8'
+
+    def data_to_form_fields(self, data):
+        fields = {}
+        for key, val in data.fields.items():
+            if getattr(val, 'read_only', True):
+                # Don't include read-only fields.
+                continue
+
+            if getattr(val, 'fields', None):
+                # Nested data not supported by HTML forms.
+                continue
+
+            kwargs = {}
+            kwargs['required'] = val.required
+
+            #if getattr(v, 'queryset', None):
+            #    kwargs['queryset'] = v.queryset
+
+            if getattr(val, 'choices', None) is not None:
+                kwargs['choices'] = val.choices
+
+            if getattr(val, 'regex', None) is not None:
+                kwargs['regex'] = val.regex
+
+            if getattr(val, 'widget', None):
+                widget = copy.deepcopy(val.widget)
+                kwargs['widget'] = widget
+
+            if getattr(val, 'default', None) is not None:
+                kwargs['initial'] = val.default
+
+            if getattr(val, 'label', None) is not None:
+                kwargs['label'] = val.label
+
+            if getattr(val, 'help_text', None) is not None:
+                kwargs['help_text'] = val.help_text
+
+            fields[key] = val.form_field_class(**kwargs)
+
+        return fields
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        """
+        Render serializer data and return an HTML form, as a string.
+        """
+        # The HTMLFormRenderer currently uses something of a hack to render
+        # the content, by translating each of the serializer fields into
+        # an html form field, creating a dynamic form using those fields,
+        # and then rendering that form.
+
+        # This isn't strictly neccessary, as we could render the serilizer
+        # fields to HTML directly.  The implementation is historical and will
+        # likely change at some point.
+
+        self.renderer_context = renderer_context or {}
+        request = renderer_context['request']
+
+        # Creating an on the fly form see:
+        # http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
+        fields = self.data_to_form_fields(data)
+        DynamicForm = type(str('DynamicForm'), (forms.Form,), fields)
+        data = None if data.empty else data
+
+        template = loader.get_template(self.template)
+        context = RequestContext(request, {'form': DynamicForm(data)})
+
+        return template.render(context)
+
+
 class BrowsableAPIRenderer(BaseRenderer):
     """
     HTML renderer used to self-document the API.
@@ -325,6 +410,7 @@ class BrowsableAPIRenderer(BaseRenderer):
     format = 'api'
     template = 'rest_framework/api.html'
     charset = 'utf-8'
+    form_renderer_class = HTMLFormRenderer
 
     def get_default_renderer(self, view):
         """
@@ -349,7 +435,10 @@ class BrowsableAPIRenderer(BaseRenderer):
         renderer_context['indent'] = 4
         content = renderer.render(data, accepted_media_type, renderer_context)
 
-        if renderer.charset is None:
+        render_style = getattr(renderer, 'render_style', 'text')
+        assert render_style in ['text', 'binary'], 'Expected .render_style ' \
+            '"text" or "binary", but got "%s"' % render_style
+        if render_style == 'binary':
             return '[%d bytes of binary content]' % len(content)
 
         return content
@@ -372,136 +461,105 @@ class BrowsableAPIRenderer(BaseRenderer):
             return False  # Doesn't have permissions
         return True
 
-    def serializer_to_form_fields(self, serializer):
-        fields = {}
-        for k, v in serializer.get_fields().items():
-            if getattr(v, 'read_only', True):
-                continue
-
-            kwargs = {}
-            kwargs['required'] = v.required
-
-            #if getattr(v, 'queryset', None):
-            #    kwargs['queryset'] = v.queryset
-
-            if getattr(v, 'choices', None) is not None:
-                kwargs['choices'] = v.choices
-
-            if getattr(v, 'regex', None) is not None:
-                kwargs['regex'] = v.regex
-
-            if getattr(v, 'widget', None):
-                widget = copy.deepcopy(v.widget)
-                kwargs['widget'] = widget
-
-            if getattr(v, 'default', None) is not None:
-                kwargs['initial'] = v.default
-
-            if getattr(v, 'label', None) is not None:
-                kwargs['label'] = v.label
-
-            if getattr(v, 'help_text', None) is not None:
-                kwargs['help_text'] = v.help_text
-
-            fields[k] = v.form_field_class(**kwargs)
-
-        return fields
-
-    def _get_form(self, view, method, request):
-        # We need to impersonate a request with the correct method,
-        # so that eg. any dynamic get_serializer_class methods return the
-        # correct form for each method.
-        restore = view.request
-        request = clone_request(request, method)
-        view.request = request
-        try:
-            return self.get_form(view, method, request)
-        finally:
-            view.request = restore
-
-    def _get_raw_data_form(self, view, method, request, media_types):
-        # We need to impersonate a request with the correct method,
-        # so that eg. any dynamic get_serializer_class methods return the
-        # correct form for each method.
-        restore = view.request
-        request = clone_request(request, method)
-        view.request = request
-        try:
-            return self.get_raw_data_form(view, method, request, media_types)
-        finally:
-            view.request = restore
-
-    def get_form(self, view, method, request):
+    def get_rendered_html_form(self, view, method, request):
         """
-        Get a form, possibly bound to either the input or output data.
-        In the absence on of the Resource having an associated form then
-        provide a form that can be used to submit arbitrary content.
+        Return a string representing a rendered HTML form, possibly bound to
+        either the input or output data.
+
+        In the absence of the View having an associated form then return None.
         """
-        obj = getattr(view, 'object', None)
-        if not self.show_form_for_method(view, method, request, obj):
-            return
+        with override_method(view, request, method) as request:
+            obj = getattr(view, 'object', None)
+            if not self.show_form_for_method(view, method, request, obj):
+                return
 
-        if method in ('DELETE', 'OPTIONS'):
-            return True  # Don't actually need to return a form
+            if method in ('DELETE', 'OPTIONS'):
+                return True  # Don't actually need to return a form
 
-        if not getattr(view, 'get_serializer', None) or not parsers.FormParser in view.parser_classes:
-            return
+            if (not getattr(view, 'get_serializer', None)
+                or not any(is_form_media_type(parser.media_type) for parser in view.parser_classes)):
+                return
 
-        serializer = view.get_serializer(instance=obj)
-        fields = self.serializer_to_form_fields(serializer)
+            serializer = view.get_serializer(instance=obj)
 
-        # Creating an on the fly form see:
-        # http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
-        OnTheFlyForm = type(str("OnTheFlyForm"), (forms.Form,), fields)
-        data = (obj is not None) and serializer.data or None
-        form_instance = OnTheFlyForm(data)
-        return form_instance
+            data = serializer.data
+            form_renderer = self.form_renderer_class()
+            return form_renderer.render(data, self.accepted_media_type, self.renderer_context)
 
-    def get_raw_data_form(self, view, method, request, media_types):
+    def get_raw_data_form(self, view, method, request):
         """
         Returns a form that allows for arbitrary content types to be tunneled
         via standard HTML forms.
         (Which are typically application/x-www-form-urlencoded)
         """
+        with override_method(view, request, method) as request:
+            # If we're not using content overloading there's no point in
+            # supplying a generic form, as the view won't treat the form's
+            # value as the content of the request.
+            if not (api_settings.FORM_CONTENT_OVERRIDE
+                    and api_settings.FORM_CONTENTTYPE_OVERRIDE):
+                return None
 
-        # If we're not using content overloading there's no point in supplying a generic form,
-        # as the view won't treat the form's value as the content of the request.
-        if not (api_settings.FORM_CONTENT_OVERRIDE
-                and api_settings.FORM_CONTENTTYPE_OVERRIDE):
-            return None
+            # Check permissions
+            obj = getattr(view, 'object', None)
+            if not self.show_form_for_method(view, method, request, obj):
+                return
 
-        # Check permissions
-        obj = getattr(view, 'object', None)
-        if not self.show_form_for_method(view, method, request, obj):
-            return
+            # If possible, serialize the initial content for the generic form
+            default_parser = view.parser_classes[0]
+            renderer_class = getattr(default_parser, 'renderer_class', None)
+            if (hasattr(view, 'get_serializer') and renderer_class):
+                # View has a serializer defined and parser class has a
+                # corresponding renderer that can be used to render the data.
 
-        content_type_field = api_settings.FORM_CONTENTTYPE_OVERRIDE
-        content_field = api_settings.FORM_CONTENT_OVERRIDE
-        choices = [(media_type, media_type) for media_type in media_types]
-        initial = media_types[0]
+                # Get a read-only version of the serializer
+                serializer = view.get_serializer(instance=obj)
+                if obj is None:
+                    for name, field in serializer.fields.items():
+                        if getattr(field, 'read_only', None):
+                            del serializer.fields[name]
 
-        # NB. http://jacobian.org/writing/dynamic-form-generation/
-        class GenericContentForm(forms.Form):
-            def __init__(self):
-                super(GenericContentForm, self).__init__()
+                # Render the raw data content
+                renderer = renderer_class()
+                accepted = self.accepted_media_type
+                context = self.renderer_context.copy()
+                context['indent'] = 4
+                content = renderer.render(serializer.data, accepted, context)
+            else:
+                content = None
 
-                self.fields[content_type_field] = forms.ChoiceField(
-                    label='Media type',
-                    choices=choices,
-                    initial=initial
-                )
-                self.fields[content_field] = forms.CharField(
-                    label='Content',
-                    widget=forms.Textarea
-                )
+            # Generate a generic form that includes a content type field,
+            # and a content field.
+            content_type_field = api_settings.FORM_CONTENTTYPE_OVERRIDE
+            content_field = api_settings.FORM_CONTENT_OVERRIDE
 
-        return GenericContentForm()
+            media_types = [parser.media_type for parser in view.parser_classes]
+            choices = [(media_type, media_type) for media_type in media_types]
+            initial = media_types[0]
+
+            # NB. http://jacobian.org/writing/dynamic-form-generation/
+            class GenericContentForm(forms.Form):
+                def __init__(self):
+                    super(GenericContentForm, self).__init__()
+
+                    self.fields[content_type_field] = forms.ChoiceField(
+                        label='Media type',
+                        choices=choices,
+                        initial=initial
+                    )
+                    self.fields[content_field] = forms.CharField(
+                        label='Content',
+                        widget=forms.Textarea,
+                        initial=content
+                    )
+
+            return GenericContentForm()
 
     def get_name(self, view):
-        return get_view_name(view.__class__, getattr(view, 'suffix', None))
+        return view.get_view_name()
 
     def get_description(self, view):
-        return get_view_description(view.__class__, html=True)
+        return view.get_view_description(html=True)
 
     def get_breadcrumbs(self, request):
         return get_breadcrumbs(request.path)
@@ -510,26 +568,25 @@ class BrowsableAPIRenderer(BaseRenderer):
         """
         Render the HTML for the browsable API representation.
         """
-        accepted_media_type = accepted_media_type or ''
-        renderer_context = renderer_context or {}
+        self.accepted_media_type = accepted_media_type or ''
+        self.renderer_context = renderer_context or {}
 
         view = renderer_context['view']
         request = renderer_context['request']
         response = renderer_context['response']
-        media_types = [parser.media_type for parser in view.parser_classes]
 
         renderer = self.get_default_renderer(view)
         content = self.get_content(renderer, data, accepted_media_type, renderer_context)
 
-        put_form = self._get_form(view, 'PUT', request)
-        post_form = self._get_form(view, 'POST', request)
-        patch_form = self._get_form(view, 'PATCH', request)
-        delete_form = self._get_form(view, 'DELETE', request)
-        options_form = self._get_form(view, 'OPTIONS', request)
+        put_form = self.get_rendered_html_form(view, 'PUT', request)
+        post_form = self.get_rendered_html_form(view, 'POST', request)
+        patch_form = self.get_rendered_html_form(view, 'PATCH', request)
+        delete_form = self.get_rendered_html_form(view, 'DELETE', request)
+        options_form = self.get_rendered_html_form(view, 'OPTIONS', request)
 
-        raw_data_put_form = self._get_raw_data_form(view, 'PUT', request, media_types)
-        raw_data_post_form = self._get_raw_data_form(view, 'POST', request, media_types)
-        raw_data_patch_form = self._get_raw_data_form(view, 'PATCH', request, media_types)
+        raw_data_put_form = self.get_raw_data_form(view, 'PUT', request)
+        raw_data_post_form = self.get_raw_data_form(view, 'POST', request)
+        raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
         name = self.get_name(view)
@@ -582,3 +639,4 @@ class MultiPartRenderer(BaseRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         return encode_multipart(self.BOUNDARY, data)
+

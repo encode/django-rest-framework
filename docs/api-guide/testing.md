@@ -2,7 +2,7 @@
 
 # Testing
 
-> Code without tests is broken as designed
+> Code without tests is broken as designed.
 >
 > &mdash; [Jacob Kaplan-Moss][cite]
 
@@ -15,6 +15,8 @@ Extends [Django's existing `RequestFactory` class][requestfactory].
 ## Creating test requests
 
 The `APIRequestFactory` class supports an almost identical API to Django's standard `RequestFactory` class.  This means the that standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.
+
+    from rest_framework.test import APIRequestFactory
 
     # Using the standard RequestFactory API to create a form POST request
     factory = APIRequestFactory()
@@ -49,6 +51,8 @@ For example, using `APIRequestFactory`, you can make a form PUT request like so:
 
 Using Django's `RequestFactory`, you'd need to explicitly encode the data yourself:
 
+    from django.test.client import encode_multipart, RequestFactory
+
     factory = RequestFactory()
     data = {'title': 'remember to email dave'}
     content = encode_multipart('BoUnDaRyStRiNg', data)
@@ -71,6 +75,12 @@ To forcibly authenticate a request, use the `force_authenticate()` method.
     response = view(request)
 
 The signature for the method is `force_authenticate(request, user=None, token=None)`.  When making the call, either or both of the user and token may be set.
+
+For example, when forcibly authenticating using a token, you might do something like the following:
+
+    user = User.objects.get(username='olivia')
+    request = factory.get('/accounts/django-superstars/')
+    force_authenticate(request, user=user, token=user.token)
 
 ---
 
@@ -105,6 +115,8 @@ Extends [Django's existing `Client` class][client].
 
 The `APIClient` class supports the same request interface as `APIRequestFactory`.  This means the that standard `.get()`, `.post()`, `.put()`, `.patch()`, `.delete()`, `.head()` and `.options()` methods are all available.  For example:
 
+    from rest_framework.test import APIClient
+
     client = APIClient()
     client.post('/notes/', {'title': 'new idea'}, format='json')
 
@@ -131,8 +143,11 @@ The `login` method is appropriate for testing APIs that use session authenticati
 
 The `credentials` method can be used to set headers that will then be included on all subsequent requests by the test client.
 
+    from rest_framework.authtoken.models import Token
+    from rest_framework.test import APIClient
+
     # Include an appropriate `Authorization:` header on all requests.
-    token = Token.objects.get(username='lauren')
+    token = Token.objects.get(user__username='lauren')
     client = APIClient()
     client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
 
@@ -190,10 +205,10 @@ You can use any of REST framework's test case classes as you would for the regul
             Ensure we can create a new account object.
             """
             url = reverse('account-list')
-            data = {'name': 'DabApps'}
+            expected = {'name': 'DabApps'}
             response = self.client.post(url, data, format='json')
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-            self.assertEqual(response.data, data)
+            self.assertEqual(response.data, expected)
 
 ---
 

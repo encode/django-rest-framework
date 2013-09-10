@@ -157,6 +157,16 @@ The following people have helped make REST framework great.
 * Dan Stephenson - [etos]
 * Martin Clement - [martync]
 * Jeremy Satterfield - [jsatt]
+* Christopher Paolini - [chrispaolini]
+* Filipe A Ximenes - [filipeximenes]
+* Ramiro Morales - [ramiro]
+* Krzysztof Jurewicz - [krzysiekj]
+* Eric Buehl - [ericbuehl]
+* Kristian Øllegaard - [kristianoellegaard]
+* Alexander Akhmetov - [alexander-akhmetov]
+* Andrey Antukh - [niwibe]
+* Mathieu Pillard - [diox]
+* Edmond Wong - [edmondwong]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -350,3 +360,13 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [etos]: https://github.com/etos
 [martync]: https://github.com/martync
 [jsatt]: https://github.com/jsatt
+[chrispaolini]: https://github.com/chrispaolini
+[filipeximenes]: https://github.com/filipeximenes
+[ramiro]: https://github.com/ramiro
+[krzysiekj]: https://github.com/krzysiekj
+[ericbuehl]: https://github.com/ericbuehl
+[kristianoellegaard]: https://github.com/kristianoellegaard
+[alexander-akhmetov]: https://github.com/alexander-akhmetov
+[niwibe]: https://github.com/niwibe
+[diox]: https://github.com/diox
+[edmondwong]: https://github.com/edmondwong

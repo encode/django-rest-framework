@@ -42,6 +42,16 @@ class PaginateByParamView(generics.ListAPIView):
     paginate_by_param = 'page_size'
 
 
+class MaxPaginateByView(generics.ListAPIView):
+    """
+    View for testing custom max_paginate_by usage
+    """
+    model = BasicModel
+    paginate_by = 3
+    max_paginate_by = 5
+    paginate_by_param = 'page_size'
+
+
 class IntegrationTestPagination(TestCase):
     """
     Integration tests for paginated list views.
@@ -311,6 +321,43 @@ class TestCustomPaginateByParam(TestCase):
         response = self.view(request).render()
         self.assertEqual(response.data['count'], 13)
         self.assertEqual(response.data['results'], self.data[:5])
+
+
+class TestMaxPaginateByParam(TestCase):
+    """
+    Tests for list views with max_paginate_by kwarg
+    """
+
+    def setUp(self):
+        """
+        Create 13 BasicModel instances.
+        """
+        for i in range(13):
+            BasicModel(text=i).save()
+        self.objects = BasicModel.objects
+        self.data = [
+            {'id': obj.id, 'text': obj.text}
+            for obj in self.objects.all()
+        ]
+        self.view = MaxPaginateByView.as_view()
+
+    def test_max_paginate_by(self):
+        """
+        If max_paginate_by is set, it should limit page size for the view.
+        """
+        request = factory.get('/?page_size=10')
+        response = self.view(request).render()
+        self.assertEqual(response.data['count'], 13)
+        self.assertEqual(response.data['results'], self.data[:5])
+
+    def test_max_paginate_by_without_page_size_param(self):
+        """
+        If max_paginate_by is set, but client does not specifiy page_size,
+        standard `paginate_by` behavior should be used.
+        """
+        request = factory.get('/')
+        response = self.view(request).render()
+        self.assertEqual(response.data['results'], self.data[:3])
 
 
 ### Tests for context in pagination serializers

@@ -272,6 +272,48 @@ class TestInstanceView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, expected)
 
+    def test_options_before_instance_create(self):
+        """
+        OPTIONS requests to RetrieveUpdateDestroyAPIView should return metadata
+        before the instance has been created
+        """
+        request = factory.options('/999')
+        with self.assertNumQueries(1):
+            response = self.view(request, pk=999).render()
+        expected = {
+            'parses': [
+                'application/json',
+                'application/x-www-form-urlencoded',
+                'multipart/form-data'
+            ],
+            'renders': [
+                'application/json',
+                'text/html'
+            ],
+            'name': 'Instance',
+            'description': 'Example description for OPTIONS.',
+            'actions': {
+                'PUT': {
+                    'text': {
+                        'max_length': 100,
+                        'read_only': False,
+                        'required': True,
+                        'type': 'string',
+                        'label': 'Text comes here',
+                        'help_text': 'Text description.'
+                    },
+                    'id': {
+                        'read_only': True,
+                        'required': False,
+                        'type': 'integer',
+                        'label': 'ID',
+                    },
+                }
+            }
+        }
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected)
+
     def test_get_instance_view_incorrect_arg(self):
         """
         GET requests with an incorrect pk type, should raise 404, not 500.
@@ -337,6 +379,17 @@ class TestInstanceView(TestCase):
         self.assertEqual(response.data, {'slug': 'test_slug', 'text': 'foobar'})
         new_obj = SlugBasedModel.objects.get(slug='test_slug')
         self.assertEqual(new_obj.text, 'foobar')
+
+    def test_patch_cannot_create_an_object(self):
+        """
+        PATCH requests should not be able to create objects.
+        """
+        data = {'text': 'foobar'}
+        request = factory.patch('/999', data, format='json')
+        with self.assertNumQueries(1):
+            response = self.view(request, pk=999).render()
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertFalse(self.objects.filter(id=999).exists())
 
 
 class TestOverriddenGetObject(TestCase):

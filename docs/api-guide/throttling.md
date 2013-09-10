@@ -43,6 +43,10 @@ The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `mi
 You can also set the throttling policy on a per-view or per-viewset basis,
 using the `APIView` class based views.
 
+	from rest_framework.response import Response
+    from rest_framework.throttling import UserRateThrottle
+	from rest_framework.views import APIView
+
     class ExampleView(APIView):
         throttle_classes = (UserRateThrottle,)
 
@@ -65,6 +69,13 @@ Or, if you're using the `@api_view` decorator with function based views.
 ## Setting up the cache
 
 The throttle classes provided by REST framework use Django's cache backend.  You should make sure that you've set appropriate [cache settings][cache-setting].  The default value of `LocMemCache` backend should be okay for simple setups.  See Django's [cache documentation][cache-docs] for more details.
+
+If you need to use a cache other than `'default'`, you can do so by creating a custom throttle class and setting the `cache` attribute.  For example:
+
+    class CustomAnonRateThrottle(AnonRateThrottle):
+        cache = get_cache('alternate') 
+
+You'll need to rememeber to also set your custom throttle class in the `'DEFAULT_THROTTLE_CLASSES'` settings key, or using the `throttle_classes` view attribute.
 
 ---
 

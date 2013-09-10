@@ -14,6 +14,8 @@ REST framework adds support for automatic URL routing to Django, and provides yo
 
 Here's an example of a simple URL conf, that uses `DefaultRouter`.
 
+    from rest_framework import routers
+
     router = routers.SimpleRouter()
     router.register(r'users', UserViewSet)
     router.register(r'accounts', AccountViewSet)
@@ -39,6 +41,9 @@ The example above would generate the following URL patterns:
 
 Any methods on the viewset decorated with `@link` or `@action` will also be routed.
 For example, given a method like this on the `UserViewSet` class:
+
+	from myapp.permissions import IsAdminOrIsSelf
+    from rest_framework.decorators import action
 
     @action(permission_classes=[IsAdminOrIsSelf])
     def set_password(self, request, pk=None):
@@ -119,6 +124,8 @@ The arguments to the `Route` named tuple are:
 ## Example
 
 The following example will only route to the `list` and `retrieve` actions, and does not use the trailing slash convention.
+
+    from rest_framework.routers import Route, SimpleRouter
 
     class ReadOnlyRouter(SimpleRouter):
         """

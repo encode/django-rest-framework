@@ -134,9 +134,9 @@ class RelatedField(WritableField):
             value = obj
 
             for component in source.split('.'):
-                value = get_component(value, component)
                 if value is None:
                     break
+                value = get_component(value, component)
         except ObjectDoesNotExist:
             return None
 
@@ -244,6 +244,8 @@ class PrimaryKeyRelatedField(RelatedField):
                 source = self.source or field_name
                 queryset = obj
                 for component in source.split('.'):
+                    if queryset is None:
+                        return []
                     queryset = get_component(queryset, component)
 
             # Forward relationship
@@ -262,7 +264,7 @@ class PrimaryKeyRelatedField(RelatedField):
             # RelatedObject (reverse relationship)
             try:
                 pk = getattr(obj, self.source or field_name).pk
-            except ObjectDoesNotExist:
+            except (ObjectDoesNotExist, AttributeError):
                 return None
 
         # Forward relationship
@@ -567,8 +569,13 @@ class HyperlinkedIdentityField(Field):
         May raise a `NoReverseMatch` if the `view_name` and `lookup_field`
         attributes are not configured to correctly match the URL conf.
         """
-        lookup_field = getattr(obj, self.lookup_field)
+        lookup_field = getattr(obj, self.lookup_field, None)
         kwargs = {self.lookup_field: lookup_field}
+
+        # Handle unsaved object case
+        if lookup_field is None:
+            return None
+
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
         except NoReverseMatch:

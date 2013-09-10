@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 from django.core.urlresolvers import resolve, get_script_prefix
-from rest_framework.utils.formatting import get_view_name
 
 
 def get_breadcrumbs(url):
@@ -9,7 +8,10 @@ def get_breadcrumbs(url):
     tuple of (name, url).
     """
 
+    from rest_framework.settings import api_settings
     from rest_framework.views import APIView
+
+    view_name_func = api_settings.VIEW_NAME_FUNCTION
 
     def breadcrumbs_recursive(url, breadcrumbs_list, prefix, seen):
         """
@@ -30,7 +32,7 @@ def get_breadcrumbs(url):
                 # Probably an optional trailing slash.
                 if not seen or seen[-1] != view:
                     suffix = getattr(view, 'suffix', None)
-                    name = get_view_name(view.cls, suffix)
+                    name = view_name_func(cls, suffix)
                     breadcrumbs_list.insert(0, (name, prefix + url))
                     seen.append(view)
 
