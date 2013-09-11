@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 from django.conf import settings
 from django.core.files.uploadhandler import StopFutureHandlers
 from django.http import QueryDict
+from django.http.request import HttpRequest
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError, parse_header, ChunkIter
 from rest_framework.compat import etree, six, yaml
@@ -31,6 +32,16 @@ class BaseParser(object):
     """
 
     media_type = None
+
+    def prepare_stream(self, stream):
+        """
+        Given a stream to read from, prepare the stream before parsed.
+        In case of django ``HttpRequest`` object, let it assign correct variable
+        from stream before consuming it.
+        """
+        if isinstance(stream, HttpRequest):
+            stream.body
+        return stream
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -57,6 +68,7 @@ class JSONParser(BaseParser):
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
 
         try:
+            stream = self.prepare_stream(stream)
             data = stream.read().decode(encoding)
             return json.loads(data)
         except ValueError as exc:
@@ -80,6 +92,7 @@ class YAMLParser(BaseParser):
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
 
         try:
+            stream = self.prepare_stream(stream)
             data = stream.read().decode(encoding)
             return yaml.safe_load(data)
         except (ValueError, yaml.parser.ParserError) as exc:
@@ -100,6 +113,7 @@ class FormParser(BaseParser):
         """
         parser_context = parser_context or {}
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
+        stream = self.prepare_stream(stream)
         data = QueryDict(stream.read(), encoding=encoding)
         return data
 
@@ -127,6 +141,7 @@ class MultiPartParser(BaseParser):
         upload_handlers = request.upload_handlers
 
         try:
+            stream = self.prepare_stream(stream)
             parser = DjangoMultiPartParser(meta, stream, upload_handlers, encoding)
             data, files = parser.parse()
             return DataAndFiles(data, files)
@@ -151,6 +166,7 @@ class XMLParser(BaseParser):
         encoding = parser_context.get('encoding', settings.DEFAULT_CHARSET)
         parser = etree.DefusedXMLParser(encoding=encoding)
         try:
+            stream = self.prepare_stream(stream)
             tree = etree.parse(stream, parser=parser, forbid_dtd=True)
         except (etree.ParseError, ValueError) as exc:
             raise ParseError('XML parse error - %s' % six.u(exc))
