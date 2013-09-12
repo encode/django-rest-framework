@@ -251,6 +251,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [oauth2]: https://github.com/simplegeo/python-oauth2
 [django-oauth-plus]: https://bitbucket.org/david/django-oauth-plus/wiki/Home
 [django-oauth2-provider]: https://github.com/caffeinehit/django-oauth2-provider
+[django-guardian]: https://github.com/lukaszb/django-guardian
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [image]: img/quickstart.png
 [index]: .
