@@ -68,7 +68,7 @@ class GenericAPIView(views.APIView):
     # The following attributes may be subject to change,
     # and should be considered private API.
     model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
-    paginator_class = Paginator
+    paginator_class = api_settings.DEFAULT_PAGINATOR_CLASS
 
     ######################################
     # These are pending deprecation...
