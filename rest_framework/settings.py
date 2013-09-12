@@ -56,6 +56,8 @@ DEFAULTS = {
         'rest_framework.serializers.ModelSerializer',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS':
         'rest_framework.pagination.PaginationSerializer',
+    'DEFAULT_PAGINATOR_CLASS':
+        'django.core.paginator.Paginator',
     'DEFAULT_FILTER_BACKENDS': (),
 
     # Throttling
@@ -127,6 +129,7 @@ IMPORT_STRINGS = (
     'DEFAULT_CONTENT_NEGOTIATION_CLASS',
     'DEFAULT_MODEL_SERIALIZER_CLASS',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS',
+    'DEFAULT_PAGINATOR_CLASS',
     'DEFAULT_FILTER_BACKENDS',
     'EXCEPTION_HANDLER',
     'FILTER_BACKEND',
