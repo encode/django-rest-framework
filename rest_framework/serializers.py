@@ -156,7 +156,7 @@ class BaseSerializer(WritableField):
 
         self.context = context or {}
 
-        self.init_data = data
+        self.init_data = data or {}
         self.init_files = files
         self.object = instance
         self.fields = self.get_fields()
