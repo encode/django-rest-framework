@@ -150,8 +150,8 @@ class Request(object):
         Similar to usual behaviour of `request.POST`, except that it handles
         arbitrary parsers, and also works on methods other than POST (eg PUT).
         """
-        #if not _hasattr(self, '_data'):
-        #    self._load_data_and_files()
+        if not _hasattr(self, '_data'):
+            self._load_data_and_files()
         return self._data
 
     @property
@@ -277,6 +277,8 @@ class Request(object):
             return
 
         # At this point we're committed to parsing the request as form data.
+        self._data = self._request.POST
+        self._files = self._request.FILES
         self._data, self._files = self._parse()
 
         # Method overloading - change the method and remove the param from the content.
