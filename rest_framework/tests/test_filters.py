@@ -113,7 +113,7 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
     Integration tests for filtered list views.
     """
 
-    @unittest.skipUnless(django_filters, 'django-filters not installed')
+    @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_get_filtered_fields_root_view(self):
         """
         GET requests to paginated ListCreateAPIView should return paginated results.
@@ -142,7 +142,7 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         expected_data = [f for f in self.data if f['date'] == search_date]
         self.assertEqual(response.data, expected_data)
 
-    @unittest.skipUnless(django_filters, 'django-filters not installed')
+    @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_filter_with_queryset(self):
         """
         Regression test for #814.
@@ -157,7 +157,7 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         expected_data = [f for f in self.data if f['decimal'] == search_decimal]
         self.assertEqual(response.data, expected_data)
 
-    @unittest.skipUnless(django_filters, 'django-filters not installed')
+    @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_filter_with_get_queryset_only(self):
         """
         Regression test for #834.
@@ -168,7 +168,7 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         # Used to raise "issubclass() arg 2 must be a class or tuple of classes"
         # here when neither `model' nor `queryset' was specified.
 
-    @unittest.skipUnless(django_filters, 'django-filters not installed')
+    @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_get_filtered_class_root_view(self):
         """
         GET requests to filtered ListCreateAPIView that have a filter_class set
@@ -216,7 +216,7 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
                          f['decimal'] < search_decimal]
         self.assertEqual(response.data, expected_data)
 
-    @unittest.skipUnless(django_filters, 'django-filters not installed')
+    @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_incorrectly_configured_filter(self):
         """
         An error should be displayed when the filter class is misconfigured.
@@ -226,7 +226,7 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         request = factory.get('/')
         self.assertRaises(AssertionError, view, request)
 
-    @unittest.skipUnless(django_filters, 'django-filters not installed')
+    @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_unknown_filter(self):
         """
         GET requests with filters that aren't configured should return 200.
@@ -248,7 +248,7 @@ class IntegrationTestDetailFiltering(CommonFilteringTestCase):
     def _get_url(self, item):
         return reverse('detail-view', kwargs=dict(pk=item.pk))
 
-    @unittest.skipUnless(django_filters, 'django-filters not installed')
+    @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_get_filtered_detail_view(self):
         """
         GET requests to filtered RetrieveAPIView that have a filter_class set
