@@ -40,8 +40,11 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
-### Master
+### 2.3.8
 
+**Date**: 11th September 2013
+
+* Added `DjangoObjectPermissions`, and `DjangoObjectPermissionsFilter`.
 * Support customizable exception handling, using the `EXCEPTION_HANDLER` setting.
 * Support customizable view name and description functions, using the `VIEW_NAME_FUNCTION` and `VIEW_DESCRIPTION_FUNCTION` settings.
 * Added `MAX_PAGINATE_BY` setting and `max_paginate_by` generic view attribute.

@@ -167,6 +167,7 @@ The following people have helped make REST framework great.
 * Andrey Antukh - [niwibe]
 * Mathieu Pillard - [diox]
 * Edmond Wong - [edmondwong]
+* Ben Reilly - [bwreilly]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -370,3 +371,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [niwibe]: https://github.com/niwibe
 [diox]: https://github.com/diox
 [edmondwong]: https://github.com/edmondwong
+[bwreilly]: https://github.com/bwreilly
