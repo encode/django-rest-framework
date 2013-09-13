@@ -858,14 +858,18 @@ class ModelSerializer(Serializer):
             if isinstance(self.fields.get(field_name, None), Serializer):
                 nested_forward_relations[field_name] = attrs[field_name]
 
-        # Update an existing instance...
-        if instance is not None:
-            for key, val in attrs.items():
-                setattr(instance, key, val)
+        if instance is None:
+            # Create a new instance, if we need to
+            field_attrs = {}
+            for field_name in meta.get_all_field_names():
+                if field_name in attrs:
+                    field_attrs[field_name] = attrs.pop(field_name)
 
-        # ...or create a new instance
-        else:
-            instance = self.opts.model(**attrs)
+            instance = self.opts.model(**field_attrs)
+
+        # Update an existing instance...
+        for key, val in attrs.items():
+            setattr(instance, key, val)
 
         # Any relations that cannot be set until we've
         # saved the model get hidden away on these
