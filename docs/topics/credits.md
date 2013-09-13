@@ -168,6 +168,7 @@ The following people have helped make REST framework great.
 * Mathieu Pillard - [diox]
 * Edmond Wong - [edmondwong]
 * Ben Reilly - [bwreilly]
+* Tai Lee - [mrmachine]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -372,3 +373,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [diox]: https://github.com/diox
 [edmondwong]: https://github.com/edmondwong
 [bwreilly]: https://github.com/bwreilly
+[mrmachine]: https://github.com/mrmachine
