@@ -122,7 +122,7 @@ class IntegrationTestPaginationAndFiltering(TestCase):
             for obj in self.objects.all()
         ]
 
-    @unittest.skipUnless(django_filters, 'django-filters not installed')
+    @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_get_django_filter_paginated_filtered_root_view(self):
         """
         GET requests to paginated filtered ListCreateAPIView should return
