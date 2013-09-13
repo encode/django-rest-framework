@@ -76,7 +76,7 @@ The `HyperlinkedModelSerializer` has the following differences from `ModelSerial
 We can easily re-write our existing serializers to use hyperlinking.
 
     class SnippetSerializer(serializers.HyperlinkedModelSerializer):
-        owner = serializers.Field(source='owner.username')
+        owner = serializers.HyperlinkedIdentityField(view_name='user-detail')
         highlight = serializers.HyperlinkedIdentityField(view_name='snippet-highlight', format='html')
     
         class Meta:
