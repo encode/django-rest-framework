@@ -426,7 +426,8 @@ The JSON representation of the same `Tag` example object could now look somethin
 
 These examples cover the default behavior of generic foreign key representation. However, you may also want to write to generic foreign key fields through your API.
 
-By default, the `GenericRelatedField` can be used with `read_only=False` only if you use `HyperlinkedRelatedField` as representation for every model you register with your `GenericRelatedField`.
+By default, a `GenericRelatedField` iterates over its nested serializers and returns the value of the first serializer, that is actually able to perform `from_native`` on the input value without any errors.
+Note, that (at the moment) only `HyperlinkedRelatedField` is able to serialize model objects out of the box.
 
 This `Tag` serializer is able to write to it's generic foreign key field:
 
@@ -454,14 +455,14 @@ The following operations would create a `Tag` object with it's `tagged_object` p
     tag_serializer.is_valid()
     tag_serializer.save()
 
-If you feel that this default behavior doesn't suit your needs, you can subclass `GenericRelatedField` and override its `determine_serializer_for_data` method to implement your own way of decision-making.
+If you feel that this default behavior doesn't suit your needs, you can subclass `GenericRelatedField` and override its `determine_deserializer_for_data` or `determine_serializer_for_data` respectively to implement your own way of decision-making.
 
 A few things you should note:
 
 * Although `GenericForeignKey` fields can be set to any model object, the `GenericRelatedField` only handles models explicitly defined in its configuration dictionary.
 * Reverse generic keys, expressed using the `GenericRelation` field, can be serialized using the regular relational field types, since the type of the target in the relationship is always known.
-* You can mix `ModelSerializer` and `HyperlinkedRelatedField` in one `GenericRelatedField` configuration dictionary for deserialization purposes. It is considered bad practice though.
-* If you mix `ModelSerializer` and `HyperlinkedRelatedField` in one `GenericRelatedField` configuration dictionary, the serialization process (PUT/POST) will raise a `ConfigurationError`.
+* Please take into account that the order in which you register serializers matters as far as write operations are concerned.
+* Unless you provide custom serializer determination, only `HyperlinkedRelatedFields` provide write access to generic model relations.
 
 For more information see [the Django documentation on generic relations][generic-relations].
 

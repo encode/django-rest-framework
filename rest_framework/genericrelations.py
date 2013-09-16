@@ -54,14 +54,11 @@ class GenericRelatedField(serializers.WritableField):
     def from_native(self, value):
         # Get the serializer responsible for input resolving
         serializer = self.determine_serializer_for_data(value)
+        if serializer is None:
+            raise ConfigurationError('Could not determine a valid serializer for value "%r"' % value)
         serializer.initialize(self.parent, self.source)
-
-        # The following is necessary due to the inconsistency of the `from_native` argument count when a serializer
-        # accepts files.
-        args = [value]
-        import inspect
-        if len(inspect.getargspec(serializer.from_native).args) > 2:
-            args.append(None)
+        import pdb
+        pdb.set_trace()
         return serializer.from_native(value)
 
     def determine_deserializer_for_data(self, value):
@@ -73,37 +70,14 @@ class GenericRelatedField(serializers.WritableField):
         return serializer
 
     def determine_serializer_for_data(self, value):
+        # While one could easily execute the "try" block within from_native and reduce operations, I consider  the
+        # concept of serializing is already very naive and vague, that's why I'd go for stringency with the deserialization
+        # process here.
         for serializer in six.itervalues(self.serializers):
-            if not isinstance(serializer, serializers.HyperlinkedRelatedField):
-                raise ConfigurationError('Please use HyperlinkedRelatedField as serializers on GenericRelatedField \
-                instances with read_only=False or set read_only=True.')
-
-        # This excerpt is an exact copy of ``rest_framework.relations.HyperlinkedRelatedField``, Line 363
-        # From here until ...
-        try:
-           http_prefix = value.startswith('http:') or value.startswith('https:')
-        except AttributeError:
-           msg = self.error_messages['incorrect_type']
-           raise ValidationError(msg % type(value).__name__)
-
-        if http_prefix:
-            # If needed convert absolute URLs to relative path
-            value = urlparse.urlparse(value).path
-            prefix = get_script_prefix()
-            if value.startswith(prefix):
-                value = '/' + value[len(prefix):]
-        try:
-            match = resolve(value)
-        except Exception:
-            raise ValidationError(self.error_messages['no_url_match'])
-
-        # ... here
-
-        matched_serializer = None
-        for serializer in six.itervalues(self.serializers):
-            if serializer.view_name == match.url_name:
-                matched_serializer = serializer
-
-        if matched_serializer is None:
-            raise ValidationError(self.error_messages['incorrect_url_match'])
-        return matched_serializer
+            try:
+                serializer.from_native(value)
+                # Returns the first serializer that can handle the value without errors.
+                return serializer
+            except Exception:
+                pass
+        return None

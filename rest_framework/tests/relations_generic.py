@@ -241,9 +241,10 @@ class TestGenericRelatedFieldSerialization(TestCase):
 
         serializer = TagSerializer(data={
             'tag': 'reminder',
-            'tagged_item': reverse('note-detail', kwargs={'pk': self.note.pk})
+            'tagged_item': 'just a string'
         })
         self.assertRaises(ConfigurationError, serializer.is_valid)
+
 
     def test_not_registered_view_name(self):
         class TagSerializer(serializers.ModelSerializer):
