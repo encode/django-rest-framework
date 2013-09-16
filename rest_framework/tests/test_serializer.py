@@ -496,6 +496,33 @@ class CustomValidationTests(TestCase):
         self.assertFalse(serializer.is_valid())
         self.assertEqual(serializer.errors, {'email': ['Enter a valid email address.']})
 
+    def test_partial_update(self):
+        """
+        Make sure that validate_email isn't called when partial=True and email
+        isn't found in data.
+        """
+        initial_data = {
+            'email': 'tom@example.com',
+            'content': 'A test comment',
+            'created': datetime.datetime(2012, 1, 1)
+        }
+
+        serializer = self.CommentSerializerWithFieldValidator(data=initial_data)
+        self.assertEqual(serializer.is_valid(), True)
+        instance = serializer.object
+
+        new_content = 'An *updated* test comment'
+        partial_data = {
+            'content': new_content
+        }
+
+        serializer = self.CommentSerializerWithFieldValidator(instance=instance,
+                                                              data=partial_data,
+                                                              partial=True)
+        self.assertEqual(serializer.is_valid(), True)
+        instance = serializer.object
+        self.assertEqual(instance.content, new_content)
+
 
 class PositiveIntegerAsChoiceTests(TestCase):
     def test_positive_integer_in_json_is_correctly_parsed(self):
