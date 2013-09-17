@@ -73,8 +73,7 @@ class GenericRelatedField(serializers.WritableField):
                 serializer.from_native(value)
                 # Collects all serializers that can handle the input data.
                 serializers.append(serializer)
-            except Exception as e:
-                print e
+            except Exception:
                 pass
         # If no serializer found, raise error.
         l = len(serializers)
