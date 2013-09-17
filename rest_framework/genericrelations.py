@@ -1,11 +1,9 @@
 from __future__ import unicode_literals
 
 from django.core.exceptions import ValidationError
-from django.core.urlresolvers import get_script_prefix, resolve
 from django.utils.translation import ugettext_lazy as _
 from django import forms
 
-from rest_framework.compat import  urlparse
 from rest_framework import six
 from rest_framework import serializers
 from rest_framework.exceptions import ConfigurationError
@@ -54,8 +52,6 @@ class GenericRelatedField(serializers.WritableField):
     def from_native(self, value):
         # Get the serializer responsible for input resolving
         serializer = self.determine_serializer_for_data(value)
-        if serializer is None:
-            raise ConfigurationError('Could not determine a valid serializer for value "%r"' % value)
         serializer.initialize(self.parent, self.source)
         import pdb
         pdb.set_trace()
@@ -73,11 +69,18 @@ class GenericRelatedField(serializers.WritableField):
         # While one could easily execute the "try" block within from_native and reduce operations, I consider  the
         # concept of serializing is already very naive and vague, that's why I'd go for stringency with the deserialization
         # process here.
+        serializers = []
         for serializer in six.itervalues(self.serializers):
             try:
                 serializer.from_native(value)
-                # Returns the first serializer that can handle the value without errors.
-                return serializer
+                # Collects all serializers that can handle the input data.
+                serializers.append(serializer)
             except Exception:
                 pass
-        return None
+        # If no serializer found, raise error.
+        l = len(serializers)
+        if l < 1:
+            raise ConfigurationError('Could not determine a valid serializer for value "%r"' % value)
+        elif l > 1:
+            raise ConfigurationError('There were multiple serializers found for value "%r"' % value)
+        return serializers[0]
