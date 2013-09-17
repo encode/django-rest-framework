@@ -70,6 +70,7 @@
     <!-- Content -->
     <div id="content">
 
+
         {% if 'GET' in allowed_methods %}
             <form id="get-form" class="pull-right">
                 <fieldset>
@@ -111,6 +112,17 @@
         <div class="content-main">
             <div class="page-header"><h1>{{ name }}</h1></div>
             {{ description }}
+            {% if user.auth_token.key %}
+                <input class="input-xxlarge" type="text" value="{{ user.auth_token.key}}" name="key" size="40" onclick="this.select()" />
+                <label class="help-inline" for="key">API Key</label>
+                <span class="help-block">
+                To use Token Authentication append the token into a GET variable named "token" or add
+                to the Authentization header as shown below:
+                </span>
+                <pre class="prettyprint">Authorization: Token {{ user.auth_token.key }}</pre>
+
+            {% endif %}
+
             <div class="request-info" style="clear: both" >
                 <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
             </div>
