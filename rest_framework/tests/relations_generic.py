@@ -243,7 +243,9 @@ class TestGenericRelatedFieldSerialization(TestCase):
             'tag': 'reminder',
             'tagged_item': 'just a string'
         })
-        self.assertRaises(ConfigurationError, serializer.is_valid)
+
+        with self.assertRaises(ConfigurationError):
+            serializer.fields['tagged_item'].determine_serializer_for_data('just a string')
 
     def test_not_registered_view_name(self):
         class TagSerializer(serializers.ModelSerializer):
@@ -262,7 +264,7 @@ class TestGenericRelatedFieldSerialization(TestCase):
         self.assertFalse(serializer.is_valid())
 
     def test_invalid_url(self):
-        # Should fail ATM
+
         class TagSerializer(serializers.ModelSerializer):
             tagged_item = GenericRelatedField({
                     Bookmark: serializers.HyperlinkedRelatedField(view_name='bookmark-detail'),
@@ -276,7 +278,13 @@ class TestGenericRelatedFieldSerialization(TestCase):
             'tag': 'reminder',
             'tagged_item': 'foo-bar'
         })
+
+        expected = {
+            'tagged_item': ['Could not determine a valid serializer for value %r.' % 'foo-bar']
+        }
+
         self.assertFalse(serializer.is_valid())
+        self.assertEqual(expected, serializer.errors)
 
     def test_serializer_save(self):
         class TagSerializer(serializers.ModelSerializer):

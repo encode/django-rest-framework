@@ -51,7 +51,10 @@ class GenericRelatedField(serializers.WritableField):
 
     def from_native(self, value):
         # Get the serializer responsible for input resolving
-        serializer = self.determine_serializer_for_data(value)
+        try:
+            serializer = self.determine_serializer_for_data(value)
+        except ConfigurationError as e:
+            raise ValidationError(e)
         serializer.initialize(self.parent, self.source)
         return serializer.from_native(value)
 
@@ -73,12 +76,12 @@ class GenericRelatedField(serializers.WritableField):
                 serializer.from_native(value)
                 # Collects all serializers that can handle the input data.
                 serializers.append(serializer)
-            except Exception:
+            except:
                 pass
         # If no serializer found, raise error.
         l = len(serializers)
         if l < 1:
-            raise ConfigurationError('Could not determine a valid serializer for value "%r"' % value)
+            raise ConfigurationError('Could not determine a valid serializer for value %r.' % value)
         elif l > 1:
-            raise ConfigurationError('There were multiple serializers found for value "%r"' % value)
+            raise ConfigurationError('There were multiple serializers found for value %r.' % value)
         return serializers[0]
