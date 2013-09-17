@@ -53,8 +53,6 @@ class GenericRelatedField(serializers.WritableField):
         # Get the serializer responsible for input resolving
         serializer = self.determine_serializer_for_data(value)
         serializer.initialize(self.parent, self.source)
-        import pdb
-        pdb.set_trace()
         return serializer.from_native(value)
 
     def determine_deserializer_for_data(self, value):
@@ -75,7 +73,8 @@ class GenericRelatedField(serializers.WritableField):
                 serializer.from_native(value)
                 # Collects all serializers that can handle the input data.
                 serializers.append(serializer)
-            except Exception:
+            except Exception as e:
+                print e
                 pass
         # If no serializer found, raise error.
         l = len(serializers)

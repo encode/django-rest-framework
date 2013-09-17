@@ -245,7 +245,6 @@ class TestGenericRelatedFieldSerialization(TestCase):
         })
         self.assertRaises(ConfigurationError, serializer.is_valid)
 
-
     def test_not_registered_view_name(self):
         class TagSerializer(serializers.ModelSerializer):
             tagged_item = GenericRelatedField({
@@ -263,6 +262,7 @@ class TestGenericRelatedFieldSerialization(TestCase):
         self.assertFalse(serializer.is_valid())
 
     def test_invalid_url(self):
+        # Should fail ATM
         class TagSerializer(serializers.ModelSerializer):
             tagged_item = GenericRelatedField({
                     Bookmark: serializers.HyperlinkedRelatedField(view_name='bookmark-detail'),
