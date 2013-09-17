@@ -150,19 +150,20 @@ class TokenAuthentication(BaseAuthentication):
     """
 
     def authenticate(self, request):
-        auth = get_authorization_header(request).split()
-
-        if not auth or auth[0].lower() != b'token':
+        parts = get_authorization_header(request).split()
+        if parts:
+            if len(parts) == 1:
+                msg = 'Invalid token header. No credentials provided.'
+                raise exceptions.AuthenticationFailed(msg)
+            elif len(parts) > 2:
+                msg = 'Invalid token header. Token string should not contain spaces.'
+                raise exceptions.AuthenticationFailed(msg)
+            token = parts[1]
+        else:
+            token = request.GET.get('token', '')
+        if not token:
             return None
-
-        if len(auth) == 1:
-            msg = 'Invalid token header. No credentials provided.'
-            raise exceptions.AuthenticationFailed(msg)
-        elif len(auth) > 2:
-            msg = 'Invalid token header. Token string should not contain spaces.'
-            raise exceptions.AuthenticationFailed(msg)
-
-        return self.authenticate_credentials(auth[1])
+        return self.authenticate_credentials(token)
 
     def authenticate_credentials(self, key):
         try:
