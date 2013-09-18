@@ -147,7 +147,7 @@ Similarly, we can control the format of the request that we send, using the `Con
     # POST using form data
     curl -X POST http://127.0.0.1:8000/snippets/ -d "code=print 123"
 
-    {"id": 3, "title": "", "code": "123", "linenos": false, "language": "python", "style": "friendly"}
+    {"id": 3, "title": "", "code": "print 123", "linenos": false, "language": "python", "style": "friendly"}
     
     # POST using JSON
     curl -X POST http://127.0.0.1:8000/snippets/ -d '{"code": "print 456"}' -H "Content-Type: application/json"
