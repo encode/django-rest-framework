@@ -271,7 +271,7 @@ class BasicTests(TestCase):
         Check _data attribute is cleared on `save()`
 
         Regression test for #1116
-            — id field is not populated is `data` is accessed prior to `save()`
+            — id field is not populated if `data` is accessed prior to `save()`
         """
         serializer = ActionItemSerializer(self.actionitem)
         self.assertIsNone(serializer.data.get('id',None), 'New instance. `id` should not be set.')
