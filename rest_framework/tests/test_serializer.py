@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.db import models
 from django.db.models.fields import BLANK_CHOICE_DASH
@@ -136,6 +137,7 @@ class BasicTests(TestCase):
             'Happy new year!',
             datetime.datetime(2012, 1, 1)
         )
+        self.actionitem = ActionItem(title='Some to do item',)
         self.data = {
             'email': 'tom@example.com',
             'content': 'Happy new year!',
@@ -263,6 +265,20 @@ class BasicTests(TestCase):
         Regression test for #652.
         """
         self.assertRaises(AssertionError, PersonSerializerInvalidReadOnly, [])
+
+    def test_serializer_data_is_cleared_on_save(self):
+        """
+        Check _data attribute is cleared on `save()`
+
+        Regression test for #1116
+            — id field is not populated if `data` is accessed prior to `save()`
+        """
+        serializer = ActionItemSerializer(self.actionitem)
+        self.assertIsNone(serializer.data.get('id',None), 'New instance. `id` should not be set.')
+        serializer.save()
+        self.assertIsNotNone(serializer.data.get('id',None), 'Model is saved. `id` should be set.')
+
+
 
 
 class DictStyleSerializer(serializers.Serializer):
