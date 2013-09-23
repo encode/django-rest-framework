@@ -47,6 +47,12 @@ try:
 except ImportError:
     django_filters = None
 
+# guardian is optional
+try:
+    import guardian
+except ImportError:
+    guardian = None
+
 
 # cStringIO only if it's available, otherwise StringIO
 try:

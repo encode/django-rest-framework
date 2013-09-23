@@ -25,7 +25,7 @@ If you need to access the values of REST framework's API settings in your projec
 you should use the `api_settings` object.  For example.
 
     from rest_framework.settings import api_settings
-    
+
     print api_settings.DEFAULT_AUTHENTICATION_CLASSES
 
 The `api_settings` object will check for any user-defined settings, and otherwise fall back to the default values.  Any setting that uses string import paths to refer to a class will automatically import and return the referenced class, instead of the string literal.
@@ -338,6 +338,20 @@ Default: `'rest_framework.views.get_view_description'`
 ---
 
 ## Miscellaneous settings
+
+#### EXCEPTION_HANDLER
+
+A string representing the function that should be used when returning a response for any given exception.  If the function returns `None`, a 500 error will be raised.
+
+This setting can be changed to support error responses other than the default `{"detail": "Failure..."}` responses.  For example, you can use it to provide API responses like `{"errors": [{"message": "Failure...", "code": ""} ...]}`.
+
+This should be a function with the following signature:
+
+    exception_handler(exc)
+
+* `exc`: The exception.
+
+Default: `'rest_framework.views.exception_handler'`
 
 #### FORMAT_SUFFIX_KWARG
 

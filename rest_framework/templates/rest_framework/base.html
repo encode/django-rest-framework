@@ -122,7 +122,7 @@
             </div>
         </div>
 
-            {% if response.status_code != 403 %}
+            {% if display_edit_forms %}
 
                 {% if post_form or raw_data_post_form %}
                 <div {% if post_form %}class="tabbable"{% endif %}>

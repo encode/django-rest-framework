@@ -361,7 +361,7 @@ class APIView(View):
             else:
                 exc.status_code = status.HTTP_403_FORBIDDEN
 
-        response = exception_handler(exc)
+        response = self.settings.EXCEPTION_HANDLER(exc)
 
         if response is None:
             raise

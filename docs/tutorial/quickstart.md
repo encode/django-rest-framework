@@ -85,7 +85,7 @@ Right, we'd better write some views then.  Open `quickstart/views.py` and get ty
         queryset = Group.objects.all()
         serializer_class = GroupSerializer
 
-Rather that write multiple views we're grouping together all the common behavior into classes called `ViewSets`.
+Rather than write multiple views we're grouping together all the common behavior into classes called `ViewSets`.
 
 We can easily break these down into individual views if we need to, but using viewsets keeps the view logic nicely organized as well as being very concise.
 
