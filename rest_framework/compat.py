@@ -80,6 +80,14 @@ except ImportError:
         Image = None
 
 
+def get_model_name(model_cls):
+    try:
+        return model_cls._meta.model_name
+    except AttributeError:
+        # < 1.6 used module_name instead of model_name
+        return model_cls._meta.module_name
+
+
 def get_concrete_model(model_cls):
     try:
         return model_cls._meta.concrete_model
