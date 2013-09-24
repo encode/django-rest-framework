@@ -4,7 +4,7 @@ returned by list views.
 """
 from __future__ import unicode_literals
 from django.db import models
-from rest_framework.compat import django_filters, six, guardian
+from rest_framework.compat import django_filters, six, guardian, get_model_name
 from functools import reduce
 import operator
 
@@ -158,7 +158,7 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
         model_cls = queryset.model
         kwargs = {
             'app_label': model_cls._meta.app_label,
-            'model_name': model_cls._meta.module_name
+            'model_name': get_model_name(model_cls)
         }
         permission = self.perm_format % kwargs
         return guardian.shortcuts.get_objects_for_user(user, permission, queryset)
