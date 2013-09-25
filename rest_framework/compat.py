@@ -17,7 +17,7 @@ except ImportError:
     import six
 
 # Handle django.utils.encoding rename in 1.5 onwards.
-# smart_unicode -> smart_text 
+# smart_unicode -> smart_text
 # force_unicode -> force_text
 try:
     from django.utils.encoding import smart_text
