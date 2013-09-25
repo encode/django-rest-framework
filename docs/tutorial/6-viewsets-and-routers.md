@@ -61,6 +61,7 @@ To see what's going on under the hood let's first explicitly create a set of vie
 In the `urls.py` file we bind our `ViewSet` classes into a set of concrete views.
 
     from snippets.views import SnippetViewSet, UserViewSet
+    from rest_framework import renderers
 
     snippet_list = SnippetViewSet.as_view({
         'get': 'list',
@@ -101,6 +102,7 @@ Because we're using `ViewSet` classes rather than `View` classes, we actually do
 
 Here's our re-wired `urls.py` file.
 
+    from django.conf.urls import patterns, url, include
     from snippets import views
     from rest_framework.routers import DefaultRouter
 

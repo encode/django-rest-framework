@@ -23,7 +23,7 @@ Let's define a simple viewset that can be used to list or retrieve all the users
     from django.shortcuts import get_object_or_404
     from myapps.serializers import UserSerializer
     from rest_framework import viewsets
-    from rest_framewor.responses import Response
+    from rest_framework.response import Response
 
     class UserViewSet(viewsets.ViewSet):
         """

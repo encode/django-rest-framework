@@ -421,7 +421,7 @@ For example, if all your object URLs used both a account and a slug in the the U
         def get_object(self, queryset, view_name, view_args, view_kwargs):
             account = view_kwargs['account']
             slug = view_kwargs['slug']
-            return queryset.get(account=account, slug=sug)
+            return queryset.get(account=account, slug=slug)
 
 ---
 

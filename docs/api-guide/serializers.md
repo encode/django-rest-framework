@@ -250,7 +250,7 @@ This allows you to write views that update or create multiple items when a `PUT`
     serializer = BookSerializer(queryset, data=data, many=True)
     serializer.is_valid()
     # True
-    serialize.save()  # `.save()` will be called on each updated or newly created instance.
+    serializer.save()  # `.save()` will be called on each updated or newly created instance.
 
 By default bulk updates will be limited to updating instances that already exist in the provided queryset.
 
