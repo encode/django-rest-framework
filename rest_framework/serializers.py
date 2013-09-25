@@ -18,7 +18,7 @@ from decimal import Decimal
 from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
-from rest_framework.compat import get_concrete_model, six
+from rest_framework.compat import six
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -575,7 +575,7 @@ class ModelSerializer(Serializer):
         cls = self.opts.model
         assert cls is not None, \
                 "Serializer class '%s' is missing 'model' Meta option" % self.__class__.__name__
-        opts = get_concrete_model(cls)._meta
+        opts = cls._meta.concrete_model._meta
         ret = SortedDict()
         nested = bool(self.opts.depth)
 
@@ -784,7 +784,7 @@ class ModelSerializer(Serializer):
         Return a list of field names to exclude from model validation.
         """
         cls = self.opts.model
-        opts = get_concrete_model(cls)._meta
+        opts = cls._meta.concrete_model._meta
         exclusions = [field.name for field in opts.fields + opts.many_to_many]
 
         for field_name, field in self.fields.items():

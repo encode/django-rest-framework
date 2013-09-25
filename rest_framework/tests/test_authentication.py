@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from django.conf.urls import patterns, url, include
 from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import TestCase
@@ -18,7 +19,6 @@ from rest_framework.authentication import (
     OAuth2Authentication
 )
 from rest_framework.authtoken.models import Token
-from rest_framework.compat import patterns, url, include
 from rest_framework.compat import oauth2_provider, oauth2_provider_models, oauth2_provider_scope
 from rest_framework.compat import oauth, oauth_provider
 from rest_framework.test import APIRequestFactory, APIClient

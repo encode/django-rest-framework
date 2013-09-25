@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
+from django.conf.urls import patterns, url
 from django.test import TestCase
 from rest_framework import serializers
-from rest_framework.compat import patterns, url
 from rest_framework.test import APIRequestFactory
 from rest_framework.tests.models import (
     BlogPost,

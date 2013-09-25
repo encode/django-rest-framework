@@ -13,7 +13,7 @@ your authentication settings include `SessionAuthentication`.
     )
 """
 from __future__ import unicode_literals
-from rest_framework.compat import patterns, url
+from django.conf.urls import patterns, url
 
 
 template_name = {'template_name': 'rest_framework/login.html'}

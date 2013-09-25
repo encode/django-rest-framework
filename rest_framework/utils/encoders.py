@@ -2,9 +2,10 @@
 Helper classes for parsers.
 """
 from __future__ import unicode_literals
+from django.utils import timezone
 from django.utils.datastructures import SortedDict
 from django.utils.functional import Promise
-from rest_framework.compat import timezone, force_text
+from rest_framework.compat import force_text
 from rest_framework.serializers import DictWithMetadata, SortedDictWithMetadata
 import datetime
 import decimal

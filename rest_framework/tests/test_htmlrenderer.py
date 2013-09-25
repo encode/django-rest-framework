@@ -1,11 +1,11 @@
 from __future__ import unicode_literals
 from django.core.exceptions import PermissionDenied
+from django.conf.urls import patterns, url
 from django.http import Http404
 from django.test import TestCase
 from django.template import TemplateDoesNotExist, Template
 import django.template.loader
 from rest_framework import status
-from rest_framework.compat import patterns, url
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response

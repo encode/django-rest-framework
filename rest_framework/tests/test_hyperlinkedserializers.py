@@ -1,8 +1,8 @@
 from __future__ import unicode_literals
 import json
+from django.conf.urls import patterns, url
 from django.test import TestCase
 from rest_framework import generics, status, serializers
-from rest_framework.compat import patterns, url
 from rest_framework.test import APIRequestFactory
 from rest_framework.tests.models import (
     Anchor, BasicModel, ManyToManyModel, BlogPost, BlogPostComment,
@@ -24,7 +24,7 @@ class BlogPostCommentSerializer(serializers.ModelSerializer):
 
 class PhotoSerializer(serializers.Serializer):
     description = serializers.CharField()
-    album_url = serializers.HyperlinkedRelatedField(source='album', view_name='album-detail', queryset=Album.objects.all(), lookup_field='title', slug_url_kwarg='title')
+    album_url = serializers.HyperlinkedRelatedField(source='album', view_name='album-detail', queryset=Album.objects.all(), lookup_field='title')
 
     def restore_object(self, attrs, instance=None):
         return Photo(**attrs)
