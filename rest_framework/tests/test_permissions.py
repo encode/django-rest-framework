@@ -4,7 +4,7 @@ from django.db import models
 from django.test import TestCase
 from django.utils import unittest
 from rest_framework import generics, status, permissions, authentication, HTTP_HEADER_ENCODING
-from rest_framework.compat import guardian
+from rest_framework.compat import guardian, get_model_name
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.test import APIRequestFactory
 from rest_framework.tests.models import BasicModel
@@ -202,7 +202,7 @@ class ObjectPermissionsIntegrationTests(TestCase):
 
         # give everyone model level permissions, as we are not testing those
         everyone = Group.objects.create(name='everyone')
-        model_name = BasicPermModel._meta.module_name
+        model_name = get_model_name(BasicPermModel)
         app_label = BasicPermModel._meta.app_label
         f = '{0}_{1}'.format
         perms = {

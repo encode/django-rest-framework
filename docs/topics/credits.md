@@ -169,6 +169,7 @@ The following people have helped make REST framework great.
 * Edmond Wong - [edmondwong]
 * Ben Reilly - [bwreilly]
 * Tai Lee - [mrmachine]
+* Markus Kaiserswerth - [mkai]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -374,3 +375,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [edmondwong]: https://github.com/edmondwong
 [bwreilly]: https://github.com/bwreilly
 [mrmachine]: https://github.com/mrmachine
+[mkai]: https://github.com/mkai
