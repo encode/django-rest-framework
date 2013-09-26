@@ -272,7 +272,9 @@ class TemplateHTMLRenderer(BaseRenderer):
             return [self.template_name]
         elif hasattr(view, 'get_template_names'):
             return view.get_template_names()
-        raise ImproperlyConfigured('Returned a template response with no template_name')
+        elif hasattr(view, 'template_name'):
+            return [view.template_name]
+        raise ImproperlyConfigured('Returned a template response with no `template_name` attribute set on either the view or response')
 
     def get_exception_template(self, response):
         template_names = [name % {'status_code': response.status_code}
@@ -388,7 +390,7 @@ class HTMLFormRenderer(BaseRenderer):
         # likely change at some point.
 
         self.renderer_context = renderer_context or {}
-        request = renderer_context['request']
+        request = self.renderer_context['request']
 
         # Creating an on the fly form see:
         # http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
@@ -419,8 +421,13 @@ class BrowsableAPIRenderer(BaseRenderer):
         """
         renderers = [renderer for renderer in view.renderer_classes
                      if not issubclass(renderer, BrowsableAPIRenderer)]
+        non_template_renderers = [renderer for renderer in renderers
+                                  if not hasattr(renderer, 'get_template_names')]
+
         if not renderers:
             return None
+        elif non_template_renderers:
+            return non_template_renderers[0]()
         return renderers[0]()
 
     def get_content(self, renderer, data,
