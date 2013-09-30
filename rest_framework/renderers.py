@@ -10,6 +10,8 @@ from __future__ import unicode_literals
 
 import copy
 import json
+import inspect
+import warnings
 from django import forms
 from django.core.exceptions import ImproperlyConfigured
 from django.http.multipartparser import parse_header
@@ -562,11 +564,25 @@ class BrowsableAPIRenderer(BaseRenderer):
 
             return GenericContentForm()
 
-    def get_name(self, view):
-        return view.get_view_name()
+    def get_name(self, view, request):
+        if len(inspect.getargspec(view.get_view_name).args) == 1:
+            warnings.warn(
+                'The `APIView.get_view_name` without `request` argument is deprecated.'
+                'Add a `request` argument to your `APIView.get_view_name`.',
+                PendingDeprecationWarning
+            )
+            return view.get_view_name()
+        return view.get_view_name(request)
 
-    def get_description(self, view):
-        return view.get_view_description(html=True)
+    def get_description(self, view, request):
+        if len(inspect.getargspec(view.get_view_description).args) == 2:
+            warnings.warn(
+                'The `APIView.get_view_description` without `request` argument is deprecated.'
+                'Add a `request` argument to your `APIView.get_view_description`.',
+                PendingDeprecationWarning
+            )
+            return view.get_view_description(html=True)
+        return view.get_view_description(html=True, request=request)
 
     def get_breadcrumbs(self, request):
         return get_breadcrumbs(request.path)
@@ -585,13 +601,33 @@ class BrowsableAPIRenderer(BaseRenderer):
         raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
+        if len(inspect.getargspec(self.get_description).args) == 2:
+            warnings.warn(
+                'The `BrowsableAPIRenderer.get_description` without `request` argument is deprecated.'
+                'Add a `request` argument to your `BrowsableAPIRenderer.get_description`.',
+                PendingDeprecationWarning
+            )
+            description = self.get_description(view)
+        else:
+            description = self.get_description(view, request)
+
+        if len(inspect.getargspec(self.get_name).args) == 2:
+            warnings.warn(
+                'The `BrowsableAPIRenderer.get_name` without `request` argument is deprecated.'
+                'Add a `request` argument to your `BrowsableAPIRenderer.get_name`.',
+                PendingDeprecationWarning
+            )
+            name = self.get_name(view)
+        else:
+            name = self.get_name(view, request)
+
         context = {
             'content': self.get_content(renderer, data, accepted_media_type, renderer_context),
             'view': view,
             'request': request,
             'response': response,
-            'description': self.get_description(view),
-            'name': self.get_name(view),
+            'description': description,
+            'name': name,
             'version': VERSION,
             'breadcrumblist': self.get_breadcrumbs(request),
             'allowed_methods': view.allowed_methods,

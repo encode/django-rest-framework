@@ -3,6 +3,8 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
 
+import inspect
+import warnings
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.datastructures import SortedDict
@@ -15,7 +17,7 @@ from rest_framework.settings import api_settings
 from rest_framework.utils import formatting
 
 
-def get_view_name(view_cls, suffix=None):
+def get_view_name(view_cls, suffix=None, request=None):
     """
     Given a view class, return a textual name to represent the view.
     This name is used in the browsable API, and in OPTIONS responses.
@@ -31,7 +33,7 @@ def get_view_name(view_cls, suffix=None):
 
     return name
 
-def get_view_description(view_cls, html=False):
+def get_view_description(view_cls, html=False, request=None):
     """
     Given a view class, return a textual description to represent the view.
     This name is used in the browsable API, and in OPTIONS responses.
@@ -176,21 +178,35 @@ class APIView(View):
             'request': getattr(self, 'request', None)
         }
 
-    def get_view_name(self):
+    def get_view_name(self, request=None):
         """
         Return the view name, as used in OPTIONS responses and in the
         browsable API.
         """
         func = self.settings.VIEW_NAME_FUNCTION
-        return func(self.__class__, getattr(self, 'suffix', None))
+        if len(inspect.getargspec(func).args) == 2:
+            warnings.warn(
+                'The `VIEW_NAME_FUNCTION` without `request` argument is deprecated.'
+                'Add a `request` argument to your `VIEW_NAME_FUNCTION`.',
+                PendingDeprecationWarning
+            )
+            return func(self.__class__, getattr(self, 'suffix', None))
+        return func(self.__class__, getattr(self, 'suffix', None), request)
 
-    def get_view_description(self, html=False):
+    def get_view_description(self, html=False, request=None):
         """
         Return some descriptive text for the view, as used in OPTIONS responses
         and in the browsable API.
         """
         func = self.settings.VIEW_DESCRIPTION_FUNCTION
-        return func(self.__class__, html)
+        if len(inspect.getargspec(func).args) == 2:
+            warnings.warn(
+                'The `VIEW_DESCRIPTION_FUNCTION` without `request` argument is deprecated.'
+                'Add a `request` argument to your `VIEW_DESCRIPTION_FUNCTION`.',
+                PendingDeprecationWarning
+            )
+            return func(self.__class__, html)
+        return func(self.__class__, html, request)
 
     # API policy instantiation methods
 
@@ -418,8 +434,8 @@ class APIView(View):
         # generic views override this implementation and add additional
         # information for POST and PUT methods, based on the serializer.
         ret = SortedDict()
-        ret['name'] = self.get_view_name()
-        ret['description'] = self.get_view_description()
+        ret['name'] = self.get_view_name(request)
+        ret['description'] = self.get_view_description(False, request)
         ret['renders'] = [renderer.media_type for renderer in self.renderer_classes]
         ret['parses'] = [parser.media_type for parser in self.parser_classes]
         return ret
