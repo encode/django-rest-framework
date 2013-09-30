@@ -334,7 +334,7 @@ class Request(object):
             self._CONTENT_PARAM in self._data and
             self._CONTENTTYPE_PARAM in self._data):
             self._content_type = self._data[self._CONTENTTYPE_PARAM]
-            self._stream = BytesIO(self._data[self._CONTENT_PARAM].encode(HTTP_HEADER_ENCODING))
+            self._stream = BytesIO(self._data[self._CONTENT_PARAM].encode('utf-8'))
             self._data, self._files = (Empty, Empty)
 
     def _parse(self):
