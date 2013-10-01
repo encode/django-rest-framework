@@ -51,7 +51,7 @@ This time we've used the `ModelViewSet` class in order to get the complete set o
 
 Notice that we've also used the `@link` decorator to create a custom action, named `highlight`.  This decorator can be used to add any custom endpoints that don't fit into the standard `create`/`update`/`delete` style.
 
-Custom actions which use the `@link` decorator will respond to `GET` requests.  We could have instead used the `@action` decorator if we wanted an action that responded to `POST` requests.
+Custom actions which use the `@link` or `@global_link` decorators will respond to `GET` requests.  We could have instead used the `@action` or `@global_action` decorators if we wanted an action that responded to `POST` requests.
 
 ## Binding ViewSets to URLs explicitly
 

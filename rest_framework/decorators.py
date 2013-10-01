@@ -127,3 +127,25 @@ def action(methods=['post'], **kwargs):
         func.kwargs = kwargs
         return func
     return decorator
+
+
+def global_link(**kwargs):
+    """
+    Used to mark a method on a ViewSet that should be routed for GET requests.
+    """
+    def decorator(func):
+        func.global_bind_to_methods = ['get']
+        func.global_kwargs = kwargs
+        return func
+    return decorator
+
+
+def global_action(methods=['post'], **kwargs):
+    """
+    Used to mark a method on a ViewSet that should be routed for POST requests.
+    """
+    def decorator(func):
+        func.global_bind_to_methods = methods
+        func.global_kwargs = kwargs
+        return func
+    return decorator

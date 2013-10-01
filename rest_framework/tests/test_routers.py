@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import serializers, viewsets, permissions
 from rest_framework.compat import include, patterns, url
-from rest_framework.decorators import link, action
+from rest_framework.decorators import link, action, global_link, global_action
 from rest_framework.response import Response
 from rest_framework.routers import SimpleRouter, DefaultRouter
 from rest_framework.test import APIRequestFactory
@@ -38,6 +38,30 @@ class BasicViewSet(viewsets.ViewSet):
     def link2(self, request, *args, **kwargs):
         return Response({'method': 'link2'})
 
+class BasicWithGlobalsViewSet(viewsets.ViewSet):
+    def list(self, request, *args, **kwargs):
+        return Response({'method': 'list'})
+
+    @global_action()
+    def global_action1(self, request, *args, **kwargs):
+        return Response({'method': 'global_action1'})
+
+    @global_action()
+    def global_action2(self, request, *args, **kwargs):
+        return Response({'method': 'global_action2'})
+
+    @global_action(methods=['post', 'delete'])
+    def global_action3(self, request, *args, **kwargs):
+        return Response({'method': 'global_action3'})
+
+    @global_link()
+    def global_link1(self, request, *args, **kwargs):
+        return Response({'method': 'global_link1'})
+
+    @global_link()
+    def global_link2(self, request, *args, **kwargs):
+        return Response({'method': 'global_link2'})
+
 
 class TestSimpleRouter(TestCase):
     def setUp(self):
@@ -56,6 +80,25 @@ class TestSimpleRouter(TestCase):
             if endpoint == 'action3':
                 methods_map = ['post', 'delete']
             elif endpoint.startswith('action'):
+                methods_map = ['post']
+            else:
+                methods_map = ['get']
+            for method in methods_map:
+                self.assertEqual(route.mapping[method], endpoint)
+
+    def test_global_link_and_global_action_decorator(self):
+        routes = self.router.get_routes(BasicWithGlobalsViewSet)
+        decorator_routes = routes[1:]
+        # Make sure all these endpoints exist and none have been clobbered
+        for i, endpoint in enumerate(['global_action1', 'global_action2', 'global_action3', 'global_link1', 'global_link2']):
+            route = decorator_routes[i]
+            # check url listing
+            self.assertEqual(route.url,
+                             '^{{prefix}}/{0}{{trailing_slash}}$'.format(endpoint))
+            # check method to function mapping
+            if endpoint == 'global_action3':
+                methods_map = ['post', 'delete']
+            elif endpoint.startswith('global_action'):
                 methods_map = ['post']
             else:
                 methods_map = ['get']
