@@ -88,6 +88,16 @@ class SimpleRouter(BaseRouter):
             name='{basename}-list',
             initkwargs={'suffix': 'List'}
         ),
+        # Dynamically generated routes.
+        # Generated using @global_action or @global_link decorators on methods of the viewset.
+        Route(
+            url=r'^{prefix}/{methodname}{trailing_slash}$',
+            mapping={
+                '{httpmethod}': '{globalmethodname}',
+            },
+            name='{basename}-global-{methodnamehyphen}',
+            initkwargs={}
+        ),
         # Detail route.
         Route(
             url=r'^{prefix}/{lookup}{trailing_slash}$',
@@ -141,10 +151,13 @@ class SimpleRouter(BaseRouter):
 
         known_actions = flatten([route.mapping.values() for route in self.routes])
 
-        # Determine any `@action` or `@link` decorated methods on the viewset
+        # Determine any `@action`, `@global_action`, `@link` or `@global_link`
+        # decorated methods on the viewset
         dynamic_routes = []
+        global_dynamic_routes = []
         for methodname in dir(viewset):
             attr = getattr(viewset, methodname)
+
             httpmethods = getattr(attr, 'bind_to_methods', None)
             if httpmethods:
                 if methodname in known_actions:
@@ -153,6 +166,14 @@ class SimpleRouter(BaseRouter):
                 httpmethods = [method.lower() for method in httpmethods]
                 dynamic_routes.append((httpmethods, methodname))
 
+            httpmethods = getattr(attr, 'global_bind_to_methods', None)
+            if httpmethods:
+                if methodname in known_actions:
+                    raise ImproperlyConfigured('Cannot use @global_action or @global_link decorator on '
+                                               'method "%s" as it is an existing route' % methodname)
+                httpmethods = [method.lower() for method in httpmethods]
+                global_dynamic_routes.append((httpmethods, methodname))
+
         ret = []
         for route in self.routes:
             if route.mapping == {'{httpmethod}': '{methodname}'}:
@@ -160,6 +181,17 @@ class SimpleRouter(BaseRouter):
                 for httpmethods, methodname in dynamic_routes:
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
+                    ret.append(Route(
+                        url=replace_methodname(route.url, methodname),
+                        mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
+                        name=replace_methodname(route.name, methodname),
+                        initkwargs=initkwargs,
+                    ))
+            elif route.mapping == {'{httpmethod}': '{globalmethodname}'}:
+                # Dynamic routes (@global_link or @global_action decorator)
+                for httpmethods, methodname in global_dynamic_routes:
+                    initkwargs = route.initkwargs.copy()
+                    initkwargs.update(getattr(viewset, methodname).global_kwargs)
                     ret.append(Route(
                         url=replace_methodname(route.url, methodname),
                         mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),

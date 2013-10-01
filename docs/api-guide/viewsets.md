@@ -101,7 +101,7 @@ The default routers included with REST framework will provide routes for a stand
         def destroy(self, request, pk=None):
             pass
 
-If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@link` or `@action` decorators.  The `@link` decorator will route `GET` requests, and the `@action` decorator will route `POST` requests.
+If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@link`, `@global_link`, `@action` or `@global_action` decorators.  The `@link` and `@global_link` decorators will route `GET` requests, and the `@action` and `@global_action` decorators will route `POST` requests.
 
 For example:
 
@@ -131,13 +131,13 @@ For example:
                 return Response(serializer.errors,
                                 status=status.HTTP_400_BAD_REQUEST)
 
-The `@action` and `@link` decorators can additionally take extra arguments that will be set for the routed view only.  For example...
+The `@action`, `@global_action`, `@link` and `@global_link` decorators can additionally take extra arguments that will be set for the routed view only.  For example...
 
         @action(permission_classes=[IsAdminOrIsSelf])
         def set_password(self, request, pk=None):
            ...
 
-The `@action` decorator will route `POST` requests by default, but may also accept other HTTP methods, by using the `method` argument.  For example:
+The `@action` and `@global_action` decorators will route `POST` requests by default, but may also accept other HTTP methods, by using the `method` argument.  For example:
 
         @action(methods=['POST', 'DELETE'])
         def unset_password(self, request, pk=None):
@@ -145,6 +145,17 @@ The `@action` decorator will route `POST` requests by default, but may also acce
            
 The two new actions will then be available at the urls `^users/{pk}/set_password/$` and `^users/{pk}/unset_password/$`
 
+The global actions allow to generate actions and links without the `{pk}` route part. For example:
+
+        @global_action()
+        def login(self, request):
+           ...
+
+        @global_link()
+        def logout(self, request):
+           ...
+
+This action and link will then be available at the urls `^users/login/$` and `^users/logout/$`
 
 ---
 

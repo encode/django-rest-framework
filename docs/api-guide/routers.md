@@ -39,7 +39,7 @@ The example above would generate the following URL patterns:
 
 ### Extra link and actions
 
-Any methods on the viewset decorated with `@link` or `@action` will also be routed.
+Any methods on the viewset decorated with `@link`, `@global_link`, `@action` or `@global_action` will also be routed.
 For example, given a method like this on the `UserViewSet` class:
 
 	from myapp.permissions import IsAdminOrIsSelf
@@ -49,20 +49,32 @@ For example, given a method like this on the `UserViewSet` class:
     def set_password(self, request, pk=None):
         ...
 
-The following URL pattern would additionally be generated:
+    @global_action()
+    def login(self, request):
+        ...
+
+The following URL pattern would additionally be generated for `@link` and `@action`:
 
 * URL pattern: `^users/{pk}/set_password/$`  Name: `'user-set-password'`
+
+The following URL pattern would additionally be generated for `@global_link` and `@global_action`:
+
+* URL pattern: `^users/login/$`  Name: `'user-global-login'`
+
+**Note**: The `@global_action` and `@global_link` decorators generate urls with greater precedence than routes with `{pk}` params, take care to not hide valid instance urls with an action or link url (For example, on resources with a slug as pk).
 
 # API Guide
 
 ## SimpleRouter
 
-This router includes routes for the standard set of `list`, `create`, `retrieve`, `update`, `partial_update` and `destroy` actions.  The viewset can also mark additional methods to be routed, using the `@link` or `@action` decorators.
+This router includes routes for the standard set of `list`, `create`, `retrieve`, `update`, `partial_update` and `destroy` actions.  The viewset can also mark additional methods to be routed, using the `@link`, `@global_link`, `@action` or `@global_action` decorators.
 
 <table border=1>
     <tr><th>URL Style</th><th>HTTP Method</th><th>Action</th><th>URL Name</th></tr>
     <tr><td rowspan=2>{prefix}/</td><td>GET</td><td>list</td><td rowspan=2>{basename}-list</td></tr></tr>
     <tr><td>POST</td><td>create</td></tr>
+    <tr><td rowspan=2>{prefix}/{methodname}/[.format]</td><td>GET</td><td>@global_link decorated method</td><td rowspan=2>{basename}-global-{methodname}</td></tr>
+    <tr><td>POST</td><td>@global_action decorated method</td></tr>
     <tr><td rowspan=4>{prefix}/{lookup}/</td><td>GET</td><td>retrieve</td><td rowspan=4>{basename}-detail</td></tr></tr>
     <tr><td>PUT</td><td>update</td></tr>
     <tr><td>PATCH</td><td>partial_update</td></tr>
@@ -87,6 +99,8 @@ This router is similar to `SimpleRouter` as above, but additionally includes a d
     <tr><td>[.format]</td><td>GET</td><td>automatically generated root view</td><td>api-root</td></tr></tr>
     <tr><td rowspan=2>{prefix}/[.format]</td><td>GET</td><td>list</td><td rowspan=2>{basename}-list</td></tr></tr>
     <tr><td>POST</td><td>create</td></tr>
+    <tr><td rowspan=2>{prefix}/{methodname}/[.format]</td><td>GET</td><td>@global_link decorated method</td><td rowspan=2>{basename}-global-{methodname}</td></tr>
+    <tr><td>POST</td><td>@global_action decorated method</td></tr>
     <tr><td rowspan=4>{prefix}/{lookup}/[.format]</td><td>GET</td><td>retrieve</td><td rowspan=4>{basename}-detail</td></tr></tr>
     <tr><td>PUT</td><td>update</td></tr>
     <tr><td>PATCH</td><td>partial_update</td></tr>
