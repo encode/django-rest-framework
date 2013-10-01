@@ -28,7 +28,6 @@ def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra
                                                    viewname=viewname)
 
     url = django_reverse(viewname, args=args, kwargs=kwargs,
-                         #current_app=resolve(request.path).app_name,
                           **extra)
     if request:
         return request.build_absolute_uri(url)
