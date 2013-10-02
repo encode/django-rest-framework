@@ -1643,3 +1643,38 @@ class SerializerSupportsManyRelationships(TestCase):
         serializer = SimpleSlugSourceModelSerializer(data={'text': 'foo', 'targets': [1, 2]})
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.data, {'text': 'foo', 'targets': [1, 2]})
+
+
+class TransformMethodsSerializer(serializers.Serializer):
+    a = serializers.CharField()
+    b_renamed = serializers.CharField(source='b')
+
+    def transform_a(self, obj, value):
+        return value.lower()
+
+    def transform_b_renamed(self, obj, value):
+        if value is not None:
+            return 'and ' + value
+
+
+class TestSerializerTransformMethods(TestCase):
+    def setUp(self):
+        self.s = TransformMethodsSerializer()
+
+    def test_transform_methods(self):
+        self.assertEqual(
+            self.s.to_native({'a': 'GREEN EGGS', 'b': 'HAM'}),
+            {
+                'a': 'green eggs',
+                'b_renamed': 'and HAM',
+            }
+        )
+
+    def test_missing_fields(self):
+        self.assertEqual(
+            self.s.to_native({'a': 'GREEN EGGS'}),
+            {
+                'a': 'green eggs',
+                'b_renamed': None,
+            }
+        )
