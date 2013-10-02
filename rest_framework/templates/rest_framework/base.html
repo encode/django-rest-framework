@@ -151,7 +151,7 @@
                             {% with form=raw_data_post_form %}
                             <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
                                 <fieldset>
-                                    {% include "rest_framework/form.html" %}
+                                    {% include "rest_framework/raw_data_form.html" %}
                                     <div class="form-actions">
                                         <button class="btn btn-primary" title="Make a POST request on the {{ name }} resource">POST</button>
                                     </div>
@@ -188,7 +188,7 @@
                             {% with form=raw_data_put_or_patch_form %}
                             <form action="{{ request.get_full_path }}" method="POST" class="form-horizontal">
                                 <fieldset>
-                                    {% include "rest_framework/form.html" %}
+                                    {% include "rest_framework/raw_data_form.html" %}
                                     <div class="form-actions">
                                         {% if raw_data_put_form %}
                                         <button class="btn btn-primary js-tooltip" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="PUT" title="Make a PUT request on the {{ name }} resource">PUT</button>

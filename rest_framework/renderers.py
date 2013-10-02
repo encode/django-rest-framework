@@ -419,6 +419,13 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         In the absence of the View having an associated form then return None.
         """
+        if request.method == method:
+            data = request.DATA
+            files = request.FILES
+        else:
+            data = None
+            files = None
+
         with override_method(view, request, method) as request:
             obj = getattr(view, 'object', None)
             if not self.show_form_for_method(view, method, request, obj):
@@ -431,9 +438,10 @@ class BrowsableAPIRenderer(BaseRenderer):
                 or not any(is_form_media_type(parser.media_type) for parser in view.parser_classes)):
                 return
 
-            serializer = view.get_serializer(instance=obj)
-
+            serializer = view.get_serializer(instance=obj, data=data, files=files)
+            serializer.is_valid()
             data = serializer.data
+
             form_renderer = self.form_renderer_class()
             return form_renderer.render(data, self.accepted_media_type, self.renderer_context)
 
@@ -525,6 +533,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         renderer = self.get_default_renderer(view)
 
+        raw_data_post_form = self.get_raw_data_form(view, 'POST', request)
         raw_data_put_form = self.get_raw_data_form(view, 'PUT', request)
         raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
@@ -543,12 +552,11 @@ class BrowsableAPIRenderer(BaseRenderer):
 
             'put_form': self.get_rendered_html_form(view, 'PUT', request),
             'post_form': self.get_rendered_html_form(view, 'POST', request),
-            'patch_form': self.get_rendered_html_form(view, 'PATCH', request),
             'delete_form': self.get_rendered_html_form(view, 'DELETE', request),
             'options_form': self.get_rendered_html_form(view, 'OPTIONS', request),
 
             'raw_data_put_form': raw_data_put_form,
-            'raw_data_post_form': self.get_raw_data_form(view, 'POST', request),
+            'raw_data_post_form': raw_data_post_form,
             'raw_data_patch_form': raw_data_patch_form,
             'raw_data_put_or_patch_form': raw_data_put_or_patch_form,
 
