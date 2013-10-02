@@ -32,6 +32,13 @@ from rest_framework.relations import *
 from rest_framework.fields import *
 
 
+def pretty_name(name):
+    """Converts 'first_name' to 'First name'"""
+    if not name:
+        return ''
+    return name.replace('_', ' ').capitalize()
+
+
 class RelationsList(list):
     _deleted = []
 
@@ -306,7 +313,17 @@ class BaseSerializer(WritableField):
         for field_name, field in self.fields.items():
             field.initialize(parent=self, field_name=field_name)
             key = self.get_field_key(field_name)
-            value = field.field_to_native(obj, field_name)
+            if self._errors:
+                value = self.init_data.get(field_name)
+            else:
+                value = field.field_to_native(obj, field_name)
+
+            field._errors = self._errors.get(key) if self._errors else None
+            field._name = field_name
+            field._value = value
+            if not field.label:
+                field.label = pretty_name(key)
+
             ret[key] = value
             ret.fields[key] = field
         return ret

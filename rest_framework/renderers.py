@@ -336,71 +336,15 @@ class HTMLFormRenderer(BaseRenderer):
     template = 'rest_framework/form.html'
     charset = 'utf-8'
 
-    def data_to_form_fields(self, data):
-        fields = {}
-        for key, val in data.fields.items():
-            if getattr(val, 'read_only', True):
-                # Don't include read-only fields.
-                continue
-
-            if getattr(val, 'fields', None):
-                # Nested data not supported by HTML forms.
-                continue
-
-            kwargs = {}
-            kwargs['required'] = val.required
-
-            #if getattr(v, 'queryset', None):
-            #    kwargs['queryset'] = v.queryset
-
-            if getattr(val, 'choices', None) is not None:
-                kwargs['choices'] = val.choices
-
-            if getattr(val, 'regex', None) is not None:
-                kwargs['regex'] = val.regex
-
-            if getattr(val, 'widget', None):
-                widget = copy.deepcopy(val.widget)
-                kwargs['widget'] = widget
-
-            if getattr(val, 'default', None) is not None:
-                kwargs['initial'] = val.default
-
-            if getattr(val, 'label', None) is not None:
-                kwargs['label'] = val.label
-
-            if getattr(val, 'help_text', None) is not None:
-                kwargs['help_text'] = val.help_text
-
-            fields[key] = val.form_field_class(**kwargs)
-
-        return fields
-
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Render serializer data and return an HTML form, as a string.
         """
-        # The HTMLFormRenderer currently uses something of a hack to render
-        # the content, by translating each of the serializer fields into
-        # an html form field, creating a dynamic form using those fields,
-        # and then rendering that form.
-
-        # This isn't strictly neccessary, as we could render the serilizer
-        # fields to HTML directly.  The implementation is historical and will
-        # likely change at some point.
-
-        self.renderer_context = renderer_context or {}
-        request = self.renderer_context['request']
-
-        # Creating an on the fly form see:
-        # http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
-        fields = self.data_to_form_fields(data)
-        DynamicForm = type(str('DynamicForm'), (forms.Form,), fields)
-        data = None if data.empty else data
+        renderer_context = renderer_context or {}
+        request = renderer_context['request']
 
         template = loader.get_template(self.template)
-        context = RequestContext(request, {'form': DynamicForm(data)})
-
+        context = RequestContext(request, {'form': data})
         return template.render(context)
 
 

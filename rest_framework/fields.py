@@ -123,6 +123,7 @@ class Field(object):
     use_files = False
     form_field_class = forms.CharField
     type_label = 'field'
+    widget = None
 
     def __init__(self, source=None, label=None, help_text=None):
         self.parent = None
@@ -134,9 +135,29 @@ class Field(object):
 
         if label is not None:
             self.label = smart_text(label)
+        else:
+            self.label = None
 
         if help_text is not None:
             self.help_text = strip_multiple_choice_msg(smart_text(help_text))
+        else:
+            self.help_text = None
+
+        self._errors = []
+        self._value = None
+        self._name = None
+
+    @property
+    def errors(self):
+        return self._errors
+
+    def widget_html(self):
+        if not self.widget:
+            return ''
+        return self.widget.render(self._name, self._value)
+
+    def label_tag(self):
+        return '<label for="%s">%s:</label>' % (self._name, self.label)
 
     def initialize(self, parent, field_name):
         """
