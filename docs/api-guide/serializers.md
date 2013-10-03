@@ -84,7 +84,6 @@ Deserialization is similar.  First we parse a stream into Python native datatype
     # True
     serializer.object
     # <Comment object at 0x10633b2d0>
-    >>> serializer.deserialize('json', stream)
 
 When deserializing data, we can either create a new instance, or update an existing instance.
 
