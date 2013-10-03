@@ -306,6 +306,7 @@ class WritableField(Field):
             return
 
         try:
+            data = data or {}
             if self.use_files:
                 files = files or {}
                 try:
