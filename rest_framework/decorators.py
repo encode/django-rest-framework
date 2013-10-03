@@ -12,7 +12,7 @@ from rest_framework.views import APIView
 import types
 
 
-def api_view(http_method_names):
+def api_view(http_method_names, view_class=APIView):
 
     """
     Decorator that converts a function-based view into an APIView subclass.
@@ -23,7 +23,7 @@ def api_view(http_method_names):
 
         WrappedAPIView = type(
             six.PY3 and 'WrappedAPIView' or b'WrappedAPIView',
-            (APIView,),
+            (view_class,),
             {'__doc__': func.__doc__}
         )
 
