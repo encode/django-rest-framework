@@ -306,7 +306,7 @@ class APIView(View):
                        negotiator=self.get_content_negotiator(),
                        parser_context=parser_context)
 
-    def initial(self, request, *args, **kwargs):
+    def initialize(self, request, *args, **kwargs):
         """
         Runs anything that needs to occur prior to calling the method handler.
         """
@@ -320,6 +320,11 @@ class APIView(View):
         # Perform content negotiation and store the accepted info on the request
         neg = self.perform_content_negotiation(request)
         request.accepted_renderer, request.accepted_media_type = neg
+
+    def initial(self, request, *args, **kwargs):
+        raise DeprecationWarning("Call to deprecated method APIView.initial()."
+                                 " Please use APIView.initialize() instead.")
+        return self.initialize(request, *args, **kwargs)
 
     def finalize_response(self, request, response, *args, **kwargs):
         """
@@ -384,7 +389,7 @@ class APIView(View):
         self.headers = self.default_response_headers  # deprecate?
 
         try:
-            self.initial(request, *args, **kwargs)
+            self.initialize(request, *args, **kwargs)
 
             # Get the appropriate handler method
             if request.method.lower() in self.http_method_names:
