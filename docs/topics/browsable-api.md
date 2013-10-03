@@ -115,12 +115,15 @@ The context that's available to the template:
 * `name`                : The name of the resource
 * `post_form`           : A form instance for use by the POST form (if allowed)
 * `put_form`            : A form instance for use by the PUT form (if allowed)
+* `display_edit_forms`  : A boolean indicating whether or not POST, PUT and PATCH forms will be displayed
 * `request`             : The request object
 * `response`            : The response object
 * `version`             : The version of Django REST Framework
 * `view`                : The view handling the request
 * `FORMAT_PARAM`        : The view can accept a format override
 * `METHOD_PARAM`        : The view can accept a method override
+
+You can override the `BrowsableAPIRenderer.get_context()` method to customise the context that gets passed to the template.
 
 #### Not using base.html
 

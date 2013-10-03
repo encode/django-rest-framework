@@ -272,7 +272,9 @@ class TemplateHTMLRenderer(BaseRenderer):
             return [self.template_name]
         elif hasattr(view, 'get_template_names'):
             return view.get_template_names()
-        raise ImproperlyConfigured('Returned a template response with no template_name')
+        elif hasattr(view, 'template_name'):
+            return [view.template_name]
+        raise ImproperlyConfigured('Returned a template response with no `template_name` attribute set on either the view or response')
 
     def get_exception_template(self, response):
         template_names = [name % {'status_code': response.status_code}
@@ -388,7 +390,7 @@ class HTMLFormRenderer(BaseRenderer):
         # likely change at some point.
 
         self.renderer_context = renderer_context or {}
-        request = renderer_context['request']
+        request = self.renderer_context['request']
 
         # Creating an on the fly form see:
         # http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
@@ -419,8 +421,13 @@ class BrowsableAPIRenderer(BaseRenderer):
         """
         renderers = [renderer for renderer in view.renderer_classes
                      if not issubclass(renderer, BrowsableAPIRenderer)]
+        non_template_renderers = [renderer for renderer in renderers
+                                  if not hasattr(renderer, 'get_template_names')]
+
         if not renderers:
             return None
+        elif non_template_renderers:
+            return non_template_renderers[0]()
         return renderers[0]()
 
     def get_content(self, renderer, data,
@@ -564,6 +571,49 @@ class BrowsableAPIRenderer(BaseRenderer):
     def get_breadcrumbs(self, request):
         return get_breadcrumbs(request.path)
 
+    def get_context(self, data, accepted_media_type, renderer_context):
+        """
+        Returns the context used to render.
+        """
+        view = renderer_context['view']
+        request = renderer_context['request']
+        response = renderer_context['response']
+
+        renderer = self.get_default_renderer(view)
+
+        raw_data_put_form = self.get_raw_data_form(view, 'PUT', request)
+        raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request)
+        raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
+
+        context = {
+            'content': self.get_content(renderer, data, accepted_media_type, renderer_context),
+            'view': view,
+            'request': request,
+            'response': response,
+            'description': self.get_description(view),
+            'name': self.get_name(view),
+            'version': VERSION,
+            'breadcrumblist': self.get_breadcrumbs(request),
+            'allowed_methods': view.allowed_methods,
+            'available_formats': [renderer.format for renderer in view.renderer_classes],
+
+            'put_form': self.get_rendered_html_form(view, 'PUT', request),
+            'post_form': self.get_rendered_html_form(view, 'POST', request),
+            'patch_form': self.get_rendered_html_form(view, 'PATCH', request),
+            'delete_form': self.get_rendered_html_form(view, 'DELETE', request),
+            'options_form': self.get_rendered_html_form(view, 'OPTIONS', request),
+
+            'raw_data_put_form': raw_data_put_form,
+            'raw_data_post_form': self.get_raw_data_form(view, 'POST', request),
+            'raw_data_patch_form': raw_data_patch_form,
+            'raw_data_put_or_patch_form': raw_data_put_or_patch_form,
+
+            'display_edit_forms': bool(response.status_code != 403),
+
+            'api_settings': api_settings
+        }
+        return context
+
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Render the HTML for the browsable API representation.
@@ -571,60 +621,15 @@ class BrowsableAPIRenderer(BaseRenderer):
         self.accepted_media_type = accepted_media_type or ''
         self.renderer_context = renderer_context or {}
 
-        view = renderer_context['view']
-        request = renderer_context['request']
-        response = renderer_context['response']
-
-        renderer = self.get_default_renderer(view)
-        content = self.get_content(renderer, data, accepted_media_type, renderer_context)
-
-        put_form = self.get_rendered_html_form(view, 'PUT', request)
-        post_form = self.get_rendered_html_form(view, 'POST', request)
-        patch_form = self.get_rendered_html_form(view, 'PATCH', request)
-        delete_form = self.get_rendered_html_form(view, 'DELETE', request)
-        options_form = self.get_rendered_html_form(view, 'OPTIONS', request)
-
-        raw_data_put_form = self.get_raw_data_form(view, 'PUT', request)
-        raw_data_post_form = self.get_raw_data_form(view, 'POST', request)
-        raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request)
-        raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
-
-        name = self.get_name(view)
-        description = self.get_description(view)
-        breadcrumb_list = self.get_breadcrumbs(request)
-
         template = loader.get_template(self.template)
-        context = RequestContext(request, {
-            'content': content,
-            'view': view,
-            'request': request,
-            'response': response,
-            'description': description,
-            'name': name,
-            'version': VERSION,
-            'breadcrumblist': breadcrumb_list,
-            'allowed_methods': view.allowed_methods,
-            'available_formats': [renderer.format for renderer in view.renderer_classes],
-
-            'put_form': put_form,
-            'post_form': post_form,
-            'patch_form': patch_form,
-            'delete_form': delete_form,
-            'options_form': options_form,
-
-            'raw_data_put_form': raw_data_put_form,
-            'raw_data_post_form': raw_data_post_form,
-            'raw_data_patch_form': raw_data_patch_form,
-            'raw_data_put_or_patch_form': raw_data_put_or_patch_form,
-
-            'api_settings': api_settings
-        })
-
+        context = self.get_context(data, accepted_media_type, renderer_context)
+        context = RequestContext(renderer_context['request'], context)
         ret = template.render(context)
 
         # Munge DELETE Response code to allow us to return content
         # (Do this *after* we've rendered the template so that we include
         # the normal deletion response code in the output)
+        response = renderer_context['response']
         if response.status_code == status.HTTP_204_NO_CONTENT:
             response.status_code = status.HTTP_200_OK
 

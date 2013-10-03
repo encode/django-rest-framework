@@ -8,7 +8,8 @@ import warnings
 SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
 from django.http import Http404
-from rest_framework.compat import oauth2_provider_scope, oauth2_constants
+from rest_framework.compat import (get_model_name, oauth2_provider_scope,
+                                   oauth2_constants)
 
 
 class BasePermission(object):
@@ -116,7 +117,7 @@ class DjangoModelPermissions(BasePermission):
         """
         kwargs = {
             'app_label': model_cls._meta.app_label,
-            'model_name': model_cls._meta.module_name
+            'model_name': get_model_name(model_cls)
         }
         return [perm % kwargs for perm in self.perms_map[method]]
 
@@ -177,7 +178,7 @@ class DjangoObjectPermissions(DjangoModelPermissions):
     def get_required_object_permissions(self, method, model_cls):
         kwargs = {
             'app_label': model_cls._meta.app_label,
-            'model_name': model_cls._meta.module_name
+            'model_name': get_model_name(model_cls)
         }
         return [perm % kwargs for perm in self.perms_map[method]]
 

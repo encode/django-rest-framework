@@ -518,6 +518,9 @@ class BaseSerializer(WritableField):
         """
         Save the deserialized object and return it.
         """
+        # Clear cached _data, which may be invalidated by `save()`
+        self._data = None
+
         if isinstance(self.object, list):
             [self.save_object(item, **kwargs) for item in self.object]
 
