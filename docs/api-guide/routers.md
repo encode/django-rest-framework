@@ -42,12 +42,15 @@ The example above would generate the following URL patterns:
 Any methods on the viewset decorated with `@detail_route` or `@list_route` will also be routed.
 For example, given a method like this on the `UserViewSet` class:
 
-	from myapp.permissions import IsAdminOrIsSelf
+    from myapp.permissions import IsAdminOrIsSelf
     from rest_framework.decorators import detail_route
-
-    @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf])
-    def set_password(self, request, pk=None):
+    
+    class UserViewSet(ModelViewSet):
         ...
+        
+        @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf])
+        def set_password(self, request, pk=None):
+            ...
 
 The following URL pattern would additionally be generated:
 
