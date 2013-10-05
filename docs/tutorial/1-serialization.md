@@ -225,7 +225,7 @@ For the moment we won't use any of REST framework's other features, we'll just w
 
 We'll start off by creating a subclass of HttpResponse that we can use to render any data we return into `json`.
 
-Edit the `snippet/views.py` file, and add the following.
+Edit the `snippets/views.py` file, and add the following.
 
     from django.http import HttpResponse
     from django.views.decorators.csrf import csrf_exempt
