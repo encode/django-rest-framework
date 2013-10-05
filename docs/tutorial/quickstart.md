@@ -127,6 +127,16 @@ We'd also like to set a few global settings.  We'd like to turn on pagination, a
         'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
         'PAGINATE_BY': 10
     }
+    
+In order for the browsable API to properly render you should also add the
+following information into `tutorial/settings.py`
+
+    INSTALLED_APPS = (
+        ...
+        'django.contrib.staticfiles',
+    )
+    
+    STATIC_URL = '/static/'
 
 Okay, we're done.
 
