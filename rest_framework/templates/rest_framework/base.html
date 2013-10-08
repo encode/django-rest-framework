@@ -110,7 +110,9 @@
 
         <div class="content-main">
             <div class="page-header"><h1>{{ name }}</h1></div>
+            {% block description %}
             {{ description }}
+            {% endblock %}
             <div class="request-info" style="clear: both" >
                 <pre class="prettyprint"><b>{{ request.method }}</b> {{ request.get_full_path }}</pre>
             </div>
