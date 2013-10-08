@@ -22,7 +22,11 @@ def get_view_name(view_cls, suffix=None):
 
     This function is the default for the `VIEW_NAME_FUNCTION` setting.
     """
-    name = view_cls.__name__
+    try:
+        view = view_cls()
+        name = view.get_view_name()
+    else:
+        name = view_cls.__name__
     name = formatting.remove_trailing_string(name, 'View')
     name = formatting.remove_trailing_string(name, 'ViewSet')
     name = formatting.camelcase_to_spaces(name)
