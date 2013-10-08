@@ -187,6 +187,7 @@ Note that you can use any of the standard attributes or method overrides provide
         A simple ViewSet for viewing and editing the accounts
         associated with the user.
         """
+        model = Account
         serializer_class = AccountSerializer
         permission_classes = [IsAccountAdminOrReadOnly]
 
