@@ -25,7 +25,7 @@ def get_view_name(view_cls, suffix=None):
     try:
         view = view_cls()
         name = view.get_view_name()
-    else:
+    except:
         name = view_cls.__name__
     name = formatting.remove_trailing_string(name, 'View')
     name = formatting.remove_trailing_string(name, 'ViewSet')
