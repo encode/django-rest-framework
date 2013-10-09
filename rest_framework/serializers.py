@@ -307,6 +307,9 @@ class BaseSerializer(WritableField):
             field.initialize(parent=self, field_name=field_name)
             key = self.get_field_key(field_name)
             value = field.field_to_native(obj, field_name)
+            method = getattr(self, 'transform_%s' % field_name, None)
+            if callable(method):
+                value = method(obj, value)
             ret[key] = value
             ret.fields[key] = field
         return ret
