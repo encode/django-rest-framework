@@ -157,8 +157,17 @@ class OffsetLimitPage(object):
     A base class to allow offset and limit when listing a queryset.
     """
     def __init__(self, queryset, offset, limit):
-        self.count = queryset.count()
+        self.count = self._set_count(queryset)
         self.object_list = queryset[offset:offset + limit]
+
+    def _set_count(self, queryset):
+        try:
+            return queryset.count()
+        except (AttributeError, TypeError):
+        # AttributeError if object_list has no count() method.
+        # TypeError if object_list.count() requires arguments
+        # (i.e. is of type list).
+            return len(queryset)
 
 
 class OffsetLimitPaginationSerializer(BasePaginationSerializer):
