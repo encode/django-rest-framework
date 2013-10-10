@@ -7,6 +7,18 @@ from rest_framework import serializers
 from rest_framework.templatetags.rest_framework import replace_query_param
 
 
+def strict_positive_int(integer_string, cutoff=None):
+    """
+    Cast a string to a strictly positive integer.
+    """
+    ret = int(integer_string)
+    if ret <= 0:
+        raise ValueError()
+    if cutoff:
+        ret = min(ret, cutoff)
+    return ret
+
+
 class NextPageField(serializers.Field):
     """
     Field that returns a link to the next page in paginated results.
