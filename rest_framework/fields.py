@@ -777,6 +777,7 @@ class IntegerField(WritableField):
     type_name = 'IntegerField'
     type_label = 'integer'
     form_field_class = forms.IntegerField
+    empty = 0
 
     default_error_messages = {
         'invalid': _('Enter a whole number.'),
@@ -808,6 +809,7 @@ class FloatField(WritableField):
     type_name = 'FloatField'
     type_label = 'float'
     form_field_class = forms.FloatField
+    empty = 0
 
     default_error_messages = {
         'invalid': _("'%s' value must be a float."),
@@ -828,6 +830,7 @@ class DecimalField(WritableField):
     type_name = 'DecimalField'
     type_label = 'decimal'
     form_field_class = forms.DecimalField
+    empty = Decimal('0')
 
     default_error_messages = {
         'invalid': _('Enter a number.'),

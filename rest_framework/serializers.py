@@ -310,6 +310,8 @@ class BaseSerializer(WritableField):
         ret.fields = self._dict_class()
 
         for field_name, field in self.fields.items():
+            if field.read_only and obj is None:
+               continue
             field.initialize(parent=self, field_name=field_name)
             key = self.get_field_key(field_name)
             value = field.field_to_native(obj, field_name)
