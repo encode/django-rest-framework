@@ -150,3 +150,17 @@ class LinkPaginationSerializer(PaginationSerializer):
             if (rel in self.relations and link is not None)
         ]
         return {'Link': ', '.join(link_keader_items)}
+
+
+class OffsetLimitPage(object):
+    """
+    A base class to allow offset and limit when listing a queryset.
+    """
+    def __init__(self, queryset, offset, limit):
+        self.count = queryset.count()
+        self.object_list = queryset[offset:offset + limit]
+
+
+class OffsetLimitPaginationSerializer(BasePaginationSerializer):
+    """ OffsetLimitPage serializer """
+    count = serializers.Field()

@@ -190,6 +190,25 @@ class DestroyModelMixin(object):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
+class OffsetLimitPaginationMixin(object):
+    offset_kwarg = 'offset'
+    paginate_by_param = 'limit'
+    pagination_serializer_class = pagination.OffsetLimitPaginationSerializer
+
+    def paginate_queryset(self, queryset):
+        limit = self.get_paginate_by()
+        if not limit:
+            return  # pagination not configured
+        offset_kwarg = self.kwargs.get(self.offset_kwarg)
+        offset_query_param = self.request.QUERY_PARAMS.get(self.offset_kwarg)
+        offset = offset_kwarg or offset_query_param or 0
+        try:
+            offset_number = pagination.strict_positive_int(offset)
+        except ValueError:
+            offset_number = 0
+        return pagination.OffsetLimitPage(queryset, offset_number, limit)
+
+
 class LinkPaginationMixin(object):
     pagination_serializer_class = pagination.LinkPaginationSerializer
 
