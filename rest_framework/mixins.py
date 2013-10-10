@@ -218,5 +218,5 @@ class LinkPaginationMixin(object):
         if page is not None:
             page_ser = self.get_pagination_serializer(page)
             self.headers.update(page_ser.get_link_header())
-        self.object_list = page.object_list
+            self.object_list = page.object_list
         return None  # Don't use pagination serializer on response
