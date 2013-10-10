@@ -136,18 +136,18 @@ class PaginationSerializer(BasePaginationSerializer):
     previous = PreviousPageField(source='*')
 
 
-class LinkPaginationSerializer(PaginationSerializer):
+class LinkPaginationSerializer(serializers.Serializer):
     """ Pagination serializer in order to build Link header """
     first = FirstPageField(source='*')
+    next = NextPageField(source='*')
+    previous = PreviousPageField(source='*')
     last = LastPageField(source='*')
-
-    relations = ('next', 'previous', 'first', 'last')
 
     def get_link_header(self):
         link_keader_items = [
             '<%s>; rel="%s"' % (link, rel)
             for rel, link in self.data.items()
-            if (rel in self.relations and link is not None)
+            if link is not None
         ]
         return {'Link': ', '.join(link_keader_items)}
 
