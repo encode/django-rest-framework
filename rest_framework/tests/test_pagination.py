@@ -412,7 +412,7 @@ class UnitTestPagination(TestCase):
 class UnitTestLinkPagination(TestCase):
 
     def setUp(self):
-        self.objects = range(10)
+        self.objects = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         paginator = Paginator(self.objects, 2)
         self.first_page = paginator.page(1)
         self.third_page = paginator.page(3)
@@ -441,7 +441,7 @@ class UnitTestLinkPagination(TestCase):
 class UnitTestOffsetLimitPagination(TestCase):
 
     def setUp(self):
-        self.objects = range(10)
+        self.objects = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         self.first_page = pagination.OffsetLimitPage(
             self.objects, offset=0, limit=2)
         self.third_page = pagination.OffsetLimitPage(
