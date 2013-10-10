@@ -11,19 +11,9 @@ from django.utils.translation import ugettext as _
 from rest_framework import views, mixins, exceptions
 from rest_framework.request import clone_request
 from rest_framework.settings import api_settings
+from rest_framework.pagination import strict_positive_int
 import warnings
 
-
-def strict_positive_int(integer_string, cutoff=None):
-    """
-    Cast a string to a strictly positive integer.
-    """
-    ret = int(integer_string)
-    if ret <= 0:
-        raise ValueError()
-    if cutoff:
-        ret = min(ret, cutoff)
-    return ret
 
 def get_object_or_404(queryset, *filter_args, **filter_kwargs):
     """

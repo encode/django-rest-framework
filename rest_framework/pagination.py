@@ -7,6 +7,18 @@ from rest_framework import serializers
 from rest_framework.templatetags.rest_framework import replace_query_param
 
 
+def strict_positive_int(integer_string, cutoff=None):
+    """
+    Cast a string to a strictly positive integer.
+    """
+    ret = int(integer_string)
+    if ret <= 0:
+        raise ValueError()
+    if cutoff:
+        ret = min(ret, cutoff)
+    return ret
+
+
 class NextPageField(serializers.Field):
     """
     Field that returns a link to the next page in paginated results.
@@ -32,6 +44,35 @@ class PreviousPageField(serializers.Field):
         if not value.has_previous():
             return None
         page = value.previous_page_number()
+        request = self.context.get('request')
+        url = request and request.build_absolute_uri() or ''
+        return replace_query_param(url, self.page_field, page)
+
+
+class FirstPageField(serializers.Field):
+    """
+    Field that returns a link to the first page in paginated results.
+    """
+    page_field = 'page'
+
+    def to_native(self, value):
+        if not value.has_previous():
+            return None
+        request = self.context.get('request')
+        url = request and request.build_absolute_uri() or ''
+        return replace_query_param(url, self.page_field, 1)
+
+
+class LastPageField(serializers.Field):
+    """
+    Field that returns a link to the previous page in paginated results.
+    """
+    page_field = 'page'
+
+    def to_native(self, value):
+        if not value.has_next():
+            return None
+        page = value.paginator.num_pages
         request = self.context.get('request')
         url = request and request.build_absolute_uri() or ''
         return replace_query_param(url, self.page_field, page)
@@ -82,7 +123,8 @@ class BasePaginationSerializer(serializers.Serializer):
         else:
             context_kwarg = {}
 
-        self.fields[results_field] = object_serializer(source='object_list', **context_kwarg)
+        self.fields[results_field] = object_serializer(source='object_list',
+                                                       **context_kwarg)
 
 
 class PaginationSerializer(BasePaginationSerializer):
@@ -92,3 +134,42 @@ class PaginationSerializer(BasePaginationSerializer):
     count = serializers.Field(source='paginator.count')
     next = NextPageField(source='*')
     previous = PreviousPageField(source='*')
+
+
+class LinkPaginationSerializer(serializers.Serializer):
+    """ Pagination serializer in order to build Link header """
+    first = FirstPageField(source='*')
+    next = NextPageField(source='*')
+    previous = PreviousPageField(source='*')
+    last = LastPageField(source='*')
+
+    def get_link_header(self):
+        link_keader_items = [
+            '<%s>; rel="%s"' % (link, rel)
+            for rel, link in self.data.items()
+            if link is not None
+        ]
+        return {'Link': ', '.join(link_keader_items)}
+
+
+class OffsetLimitPage(object):
+    """
+    A base class to allow offset and limit when listing a queryset.
+    """
+    def __init__(self, queryset, offset, limit):
+        self.count = self._set_count(queryset)
+        self.object_list = queryset[offset:offset + limit]
+
+    def _set_count(self, queryset):
+        try:
+            return queryset.count()
+        except (AttributeError, TypeError):
+        # AttributeError if object_list has no count() method.
+        # TypeError if object_list.count() requires arguments
+        # (i.e. is of type list).
+            return len(queryset)
+
+
+class OffsetLimitPaginationSerializer(BasePaginationSerializer):
+    """ OffsetLimitPage serializer """
+    count = serializers.Field()

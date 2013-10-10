@@ -10,6 +10,7 @@ from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.request import clone_request
+from rest_framework import pagination
 import warnings
 
 
@@ -187,3 +188,35 @@ class DestroyModelMixin(object):
         obj = self.get_object()
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class OffsetLimitPaginationMixin(object):
+    offset_kwarg = 'offset'
+    paginate_by_param = 'limit'
+    pagination_serializer_class = pagination.OffsetLimitPaginationSerializer
+
+    def paginate_queryset(self, queryset):
+        limit = self.get_paginate_by()
+        if not limit:
+            return  # pagination not configured
+        offset_kwarg = self.kwargs.get(self.offset_kwarg)
+        offset_query_param = self.request.QUERY_PARAMS.get(self.offset_kwarg)
+        offset = offset_kwarg or offset_query_param or 0
+        try:
+            offset_number = pagination.strict_positive_int(offset)
+        except ValueError:
+            offset_number = 0
+        return pagination.OffsetLimitPage(queryset, offset_number, limit)
+
+
+class LinkPaginationMixin(object):
+    pagination_serializer_class = pagination.LinkPaginationSerializer
+
+    def paginate_queryset(self, queryset, page_size=None):
+        page = super(LinkPaginationMixin, self).paginate_queryset(
+            queryset, page_size)
+        if page is not None:
+            page_ser = self.get_pagination_serializer(page)
+            self.headers.update(page_ser.get_link_header())
+            self.object_list = page.object_list
+        return None  # Don't use pagination serializer on response
