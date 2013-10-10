@@ -979,5 +979,7 @@ class SerializerMethodField(Field):
         super(SerializerMethodField, self).__init__()
 
     def field_to_native(self, obj, field_name):
-        value = getattr(self.parent, self.method_name)(obj)
-        return self.to_native(value)
+        if obj is not None:
+            value = getattr(self.parent, self.method_name)(obj)
+            return self.to_native(value)
+        return None
