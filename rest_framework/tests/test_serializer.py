@@ -159,8 +159,7 @@ class BasicTests(TestCase):
         expected = {
             'email': '',
             'content': '',
-            'created': None,
-            'sub_comment': ''
+            'created': None
         }
         self.assertEqual(serializer.data, expected)
 
