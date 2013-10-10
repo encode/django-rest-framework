@@ -10,6 +10,7 @@ from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.request import clone_request
+from rest_framework import pagination
 import warnings
 
 
@@ -187,3 +188,15 @@ class DestroyModelMixin(object):
         obj = self.get_object()
         obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class LinkPaginationMixin(object):
+    pagination_serializer_class = pagination.LinkPaginationSerializer
+
+    def paginate_queryset(self, queryset, page_size=None):
+        page = super(LinkPaginationMixin, self).paginate_queryset(
+            queryset, page_size)
+        if page:
+            page_ser = self.get_pagination_serializer(page)
+            self.headers.update(page_ser.get_link_header())
+        return None  # Don't use pagination serializer on response

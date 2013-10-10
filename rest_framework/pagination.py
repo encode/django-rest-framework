@@ -49,6 +49,35 @@ class PreviousPageField(serializers.Field):
         return replace_query_param(url, self.page_field, page)
 
 
+class FirstPageField(serializers.Field):
+    """
+    Field that returns a link to the first page in paginated results.
+    """
+    page_field = 'page'
+
+    def to_native(self, value):
+        if not value.has_previous():
+            return None
+        request = self.context.get('request')
+        url = request and request.build_absolute_uri() or ''
+        return replace_query_param(url, self.page_field, 1)
+
+
+class LastPageField(serializers.Field):
+    """
+    Field that returns a link to the previous page in paginated results.
+    """
+    page_field = 'page'
+
+    def to_native(self, value):
+        if not value.has_next():
+            return None
+        page = value.paginator.num_pages
+        request = self.context.get('request')
+        url = request and request.build_absolute_uri() or ''
+        return replace_query_param(url, self.page_field, page)
+
+
 class DefaultObjectSerializer(serializers.Field):
     """
     If no object serializer is specified, then this serializer will be applied
@@ -94,7 +123,8 @@ class BasePaginationSerializer(serializers.Serializer):
         else:
             context_kwarg = {}
 
-        self.fields[results_field] = object_serializer(source='object_list', **context_kwarg)
+        self.fields[results_field] = object_serializer(source='object_list',
+                                                       **context_kwarg)
 
 
 class PaginationSerializer(BasePaginationSerializer):
@@ -104,3 +134,19 @@ class PaginationSerializer(BasePaginationSerializer):
     count = serializers.Field(source='paginator.count')
     next = NextPageField(source='*')
     previous = PreviousPageField(source='*')
+
+
+class LinkPaginationSerializer(PaginationSerializer):
+    """ Pagination serializer in order to build Link header """
+    first = FirstPageField(source='*')
+    last = LastPageField(source='*')
+
+    relations = ('next', 'previous', 'first', 'last')
+
+    def get_link_header(self):
+        link_keader_items = [
+            '<%s>; rel="%s"' % (link, rel)
+            for rel, link in self.data.items()
+            if (rel in self.relations and link is not None)
+        ]
+        return {'Link': ', '.join(link_keader_items)}
