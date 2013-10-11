@@ -292,7 +292,7 @@ class ForeignKeyNestedSerializerUpdateTests(TestCase):
         """
         Check that we can both *create* and *update* into objects across
         ForeignKeys that have a `source` specified.
-        Regression test for #<ticket>
+        Regression test for #1170
         """
         data = {
             'name': 'Discovery',
