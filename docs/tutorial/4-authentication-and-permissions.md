@@ -75,6 +75,10 @@ We'll also add a couple of views.  We'd like to just use read-only views for the
     class UserDetail(generics.RetrieveAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
+        
+Make sure to also import the `UserSerializer` class
+
+	from snippets.serializers import UserSerializer
 
 Finally we need to add those views into the API, by referencing them from the URL conf.
 
