@@ -912,7 +912,7 @@ class ModelSerializer(Serializer):
 
     def save_object(self, obj, **kwargs):
         """
-        Save the deserialized object and return it.
+        Save the deserialized object.
         """
         if getattr(obj, '_nested_forward_relations', None):
             # Nested relationships need to be saved before we can save the
