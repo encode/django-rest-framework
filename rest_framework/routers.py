@@ -274,3 +274,76 @@ class DefaultRouter(SimpleRouter):
             urls = format_suffix_patterns(urls)
 
         return urls
+
+
+class ParameterizedRouter(SimpleRouter):
+    """
+    Router modification that allows to append a varible into the URL.
+
+    For example:
+
+    http://site.com/search/{TEXT_TO_SEARCH}
+
+    For that, you must can '{text}' into the url regex, like:
+
+    routes = [
+        Route(url        = r'^{prefix}/search/{text}$',
+              mapping    = {'get' : 'search'},
+              name       = '{basename}-search',
+              initkwargs = {'suffix': ''}),
+        ]
+
+    Now, in your view, you can access to the search text, read the 'text'
+    var from the **kwargs:
+
+    class SearchViewSet(ViewSet):
+	    def search(self, request, *args, **kwargs):
+		    s = kwargs['text']
+		    return Response({'search' : s})
+    """
+
+    def get_text_regex(self, viewset):
+        """
+        Given a viewset, return the portion of URL regex that is used
+        to match against free text input.
+        """
+        if self.trailing_slash:
+            base_regex = '(?P<{text_field}>[^/]+)'
+        else:
+            # Don't consume `.json` style suffixes
+            base_regex = '(?P<{text_field}>[^/.]+)'
+        text_field = getattr(viewset, 'text_field', 'text')
+        return base_regex.format(text_field=text_field)
+
+
+    #----------------------------------------------------------------------
+    def get_urls(self):
+        """
+        Use the registered viewsets to generate a list of URL patterns.
+        """
+        urls = []
+
+        for prefix, viewset, basename in self.registry:
+            lookup = self.get_lookup_regex(viewset)
+            text   = self.get_text_regex(viewset)
+            routes = self.get_routes(viewset)
+
+            for route in routes:
+
+                # Only actions which actually exist on the viewset will be bound
+                mapping = self.get_method_map(viewset, route.mapping)
+                if not mapping:
+                    continue
+
+                regex = route.url.format(
+                    prefix=prefix,
+                    lookup=lookup,
+                    trailing_slash=self.trailing_slash,
+                    text = text
+                )
+
+                view = viewset.as_view(mapping, **route.initkwargs)
+                name = route.name.format(basename=basename)
+                urls.append(url(regex, view, name=name))
+
+        return urls
