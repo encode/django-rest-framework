@@ -354,6 +354,17 @@ if yaml:
             data = parser.parse(StringIO(content))
             self.assertEqual(obj, data)
 
+        def test_render_decimal(self):
+            """
+            Test YAML decimal rendering.
+            """
+            renderer = YAMLRenderer()
+            content = renderer.render({'field': Decimal('111.2')}, 'application/yaml')
+            self.assertYAMLContains(content, "field: '111.2'")
+
+        def assertYAMLContains(self, content, string):
+            self.assertTrue(string in content, '%r not in %r' % (string, content))
+
 
 class XMLRendererTestCase(TestCase):
     """
