@@ -4,7 +4,7 @@ We can also write our API views using class based views, rather than function ba
 
 ## Rewriting our API using class based views
 
-We'll start by rewriting the root view as a class based view.  All this involves is a little bit of refactoring.
+We'll start by rewriting the root view as a class based view.  All this involves is a little bit of refactoring of `views.py`.
 
     from snippets.models import Snippet
     from snippets.serializers import SnippetSerializer
@@ -30,7 +30,7 @@ We'll start by rewriting the root view as a class based view.  All this involves
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-So far, so good.  It looks pretty similar to the previous case, but we've got better separation between the different HTTP methods.  We'll also need to update the instance view. 
+So far, so good.  It looks pretty similar to the previous case, but we've got better separation between the different HTTP methods.  We'll also need to update the instance view in `views.py`. 
 
     class SnippetDetail(APIView):
         """
@@ -62,7 +62,7 @@ So far, so good.  It looks pretty similar to the previous case, but we've got be
 
 That's looking good.  Again, it's still pretty similar to the function based view right now.
 
-We'll also need to refactor our URLconf slightly now we're using class based views.
+We'll also need to refactor our `urls.py` slightly now we're using class based views.
 
     from django.conf.urls import patterns, url
     from rest_framework.urlpatterns import format_suffix_patterns
@@ -83,7 +83,7 @@ One of the big wins of using class based views is that it allows us to easily co
 
 The create/retrieve/update/delete operations that we've been using so far are going to be pretty similar for any model-backed API views we create.  Those bits of common behaviour are implemented in REST framework's mixin classes.
 
-Let's take a look at how we can compose our views by using the mixin classes.
+Let's take a look at how we can compose our `views.py` by using the mixin classes.
 
     from snippets.models import Snippet
     from snippets.serializers import SnippetSerializer
@@ -126,7 +126,7 @@ Pretty similar.  Again we're using the `GenericAPIView` class to provide the cor
 
 ## Using generic class based views
 
-Using the mixin classes we've rewritten the views to use slightly less code than before, but we can go one step further.  REST framework provides a set of already mixed-in generic views that we can use.
+Using the mixin classes we've rewritten the views to use slightly less code than before, but we can go one step further.  REST framework provides a set of already mixed-in generic views that we can use to trim down `views.py` even more.
 
     from snippets.models import Snippet
     from snippets.serializers import SnippetSerializer
