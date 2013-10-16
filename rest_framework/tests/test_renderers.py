@@ -328,7 +328,7 @@ if yaml:
 
     class YAMLRendererTests(TestCase):
         """
-        Tests specific to the JSON Renderer
+        Tests specific to the YAML Renderer
         """
 
         def test_render(self):
