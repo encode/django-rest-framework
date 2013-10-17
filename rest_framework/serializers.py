@@ -262,10 +262,13 @@ class BaseSerializer(WritableField):
         for field_name, field in self.fields.items():
             if field_name in self._errors:
                 continue
+
+            source = field.source or field_name
+            if self.partial and source not in attrs:
+                continue
             try:
                 validate_method = getattr(self, 'validate_%s' % field_name, None)
                 if validate_method:
-                    source = field.source or field_name
                     attrs = validate_method(attrs, source)
             except ValidationError as err:
                 self._errors[field_name] = self._errors.get(field_name, []) + list(err.messages)
