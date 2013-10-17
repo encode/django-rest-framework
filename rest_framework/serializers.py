@@ -406,7 +406,7 @@ class BaseSerializer(WritableField):
                 return
 
         # Set the serializer object if it exists
-        obj = getattr(self.parent.object, field_name) if self.parent.object else None
+        obj = get_component(self.parent.object, self.source or field_name) if self.parent.object else None
         obj = obj.all() if is_simple_callable(getattr(obj, 'all', None)) else obj
 
         if self.source == '*':

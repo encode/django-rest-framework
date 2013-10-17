@@ -244,3 +244,70 @@ class WritableNestedSerializerObjectTests(TestCase):
         serializer = self.AlbumSerializer(data=data, many=True)
         self.assertEqual(serializer.is_valid(), True)
         self.assertEqual(serializer.object, expected_object)
+
+
+class ForeignKeyNestedSerializerUpdateTests(TestCase):
+    def setUp(self):
+        class Artist(object):
+            def __init__(self, name):
+                self.name = name
+
+            def __eq__(self, other):
+                return self.name == other.name
+
+        class Album(object):
+            def __init__(self, name, artist):
+                self.name, self.artist = name, artist
+
+            def __eq__(self, other):
+                return self.name == other.name and self.artist == other.artist
+
+        class ArtistSerializer(serializers.Serializer):
+            name = serializers.CharField()
+
+            def restore_object(self, attrs, instance=None):
+                if instance:
+                    instance.name = attrs['name']
+                else:
+                    instance = Artist(attrs['name'])
+                return instance
+
+        class AlbumSerializer(serializers.Serializer):
+            name = serializers.CharField()
+            by = ArtistSerializer(source='artist')
+
+            def restore_object(self, attrs, instance=None):
+                if instance:
+                    instance.name = attrs['name']
+                    instance.artist = attrs['artist']
+                else:
+                    instance = Album(attrs['name'], attrs['artist'])
+                return instance
+
+        self.Artist = Artist
+        self.Album = Album
+        self.AlbumSerializer = AlbumSerializer
+
+    def test_create_via_foreign_key_with_source(self):
+        """
+        Check that we can both *create* and *update* into objects across
+        ForeignKeys that have a `source` specified.
+        Regression test for #1170
+        """
+        data = {
+            'name': 'Discovery',
+            'by': {'name': 'Daft Punk'},
+        }
+
+        expected = self.Album(artist=self.Artist('Daft Punk'), name='Discovery')
+
+        # create
+        serializer = self.AlbumSerializer(data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, expected)
+
+        # update
+        original = self.Album(artist=self.Artist('The Bats'), name='Free All the Monsters')
+        serializer = self.AlbumSerializer(instance=original, data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, expected)
