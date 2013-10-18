@@ -83,7 +83,7 @@ One of the big wins of using class based views is that it allows us to easily co
 
 The create/retrieve/update/delete operations that we've been using so far are going to be pretty similar for any model-backed API views we create.  Those bits of common behaviour are implemented in REST framework's mixin classes.
 
-Let's take a look at how we can compose our `views.py` by using the mixin classes.
+Let's take a look at how we can compose the views by using the mixin classes.  Here's our `views.py` module again.
 
     from snippets.models import Snippet
     from snippets.serializers import SnippetSerializer
@@ -126,7 +126,7 @@ Pretty similar.  Again we're using the `GenericAPIView` class to provide the cor
 
 ## Using generic class based views
 
-Using the mixin classes we've rewritten the views to use slightly less code than before, but we can go one step further.  REST framework provides a set of already mixed-in generic views that we can use to trim down `views.py` even more.
+Using the mixin classes we've rewritten the views to use slightly less code than before, but we can go one step further.  REST framework provides a set of already mixed-in generic views that we can use to trim down our `views.py` module even more.
 
     from snippets.models import Snippet
     from snippets.serializers import SnippetSerializer
