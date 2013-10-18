@@ -64,7 +64,7 @@ We don't need our `JSONResponse` class in `views.py` anymore, so go ahead and de
 
 Our instance view is an improvement over the previous example.  It's a little more concise, and the code now feels very similar to if we were working with the Forms API.  We're also using named status codes, which makes the response meanings more obvious.
 
-Here is the view for an individual snippet (still in `views.py`).
+Here is the view for an individual snippet, in the `views.py` module.
 
     @api_view(['GET', 'PUT', 'DELETE'])
     def snippet_detail(request, pk):
