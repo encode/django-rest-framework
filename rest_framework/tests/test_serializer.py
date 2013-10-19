@@ -1720,3 +1720,35 @@ class TestSerializerTransformMethods(TestCase):
                 'b_renamed': None,
             }
         )
+        
+class BoolenFieldTypeTest(TestCase):
+    '''
+    Ensure the various Boolean based model fields are rendered as the proper
+    field type
+    
+    '''
+    
+    def setUp(self):
+        '''
+        Setup an ActionItemSerializer for BooleanTesting
+        '''
+        data = {
+            'title': 'b' * 201,
+        }
+        self.serializer = ActionItemSerializer(data=data)
+
+    def test_booleanfield_type(self):
+        '''
+        Test that BooleanField is infered from models.BooleanField
+        '''
+        bfield = self.serializer.get_fields()['done']
+        self.assertEqual(type(bfield), fields.BooleanField)
+    
+    def test_nullbooleanfield_type(self):
+        '''
+        Test that BooleanField is infered from models.NullBooleanField 
+        
+        https://groups.google.com/forum/#!topic/django-rest-framework/D9mXEftpuQ8
+        '''
+        bfield = self.serializer.get_fields()['started']
+        self.assertEqual(type(bfield), fields.BooleanField)
