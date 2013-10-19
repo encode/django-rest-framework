@@ -606,6 +606,7 @@ class ModelSerializer(Serializer):
         models.TextField: CharField,
         models.CommaSeparatedIntegerField: CharField,
         models.BooleanField: BooleanField,
+        models.NullBooleanField: BooleanField,
         models.FileField: FileField,
         models.ImageField: ImageField,
     }
