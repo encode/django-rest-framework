@@ -520,7 +520,7 @@ class BaseSerializer(WritableField):
             if self.many is not None:
                 many = self.many
             else:
-                many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict))
+                many = hasattr(obj, '__iter__') and not (isinstance(obj, dict) or hasattr(obj, 'next_page_number'))
                 if many:
                     warnings.warn('Implict list/queryset serialization is deprecated. '
                                   'Use the `many=True` flag when instantiating the serializer.',
