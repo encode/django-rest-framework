@@ -430,3 +430,91 @@ class TestCustomPaginationSerializer(TestCase):
             'objects': ['john', 'paul']
         }
         self.assertEqual(serializer.data, expected)
+
+
+class NonIntegerPage(object):
+
+    def __init__(self, paginator, object_list, prev_token, token, next_token):
+        self.paginator = paginator
+        self.object_list = object_list
+        self.prev_token = prev_token
+        self.token = token
+        self.next_token = next_token
+
+    def has_next(self):
+        return not not self.next_token
+
+    def next_page_number(self):
+        return self.next_token
+
+    def has_previous(self):
+        return not not self.prev_token
+
+    def previous_page_number(self):
+        return self.prev_token
+
+
+class NonIntegerPaginator(object):
+
+    def __init__(self, object_list, per_page):
+        self.object_list = object_list
+        self.per_page = per_page
+
+    def count(self):
+        # pretend like we don't know how many pages we have
+        return None
+
+    def default_page_token(self):
+        return None
+
+    def page(self, token=None):
+        if token:
+            try:
+                first = self.object_list.index(token)
+            except ValueError:
+                first = 0
+        else:
+            first = 0
+        n = len(self.object_list)
+        last = min(first + self.per_page, n)
+        prev_token = self.object_list[last - (2 * self.per_page)] if first else None
+        next_token = self.object_list[last] if last < n else None
+        return NonIntegerPage(self, self.object_list[first:last], prev_token, token, next_token)
+
+
+class TestNonIntegerPagination(TestCase):
+
+
+    def test_custom_pagination_serializer(self):
+        objects = ['john', 'paul', 'george', 'ringo']
+        paginator = NonIntegerPaginator(objects, 2)
+
+        request = APIRequestFactory().get('/foobar')
+        serializer = CustomPaginationSerializer(
+            instance=paginator.page(),
+            context={'request': request}
+        )
+        expected = {
+            'links': {
+                'next': 'http://testserver/foobar?page={0}'.format(objects[2]),
+                'prev': None
+            },
+            'total_results': None,
+            'objects': objects[:2]
+        }
+        self.assertEqual(serializer.data, expected)
+
+        request = APIRequestFactory().get('/foobar')
+        serializer = CustomPaginationSerializer(
+            instance=paginator.page('george'),
+            context={'request': request}
+        )
+        expected = {
+            'links': {
+                'next': None,
+                'prev': 'http://testserver/foobar?page={0}'.format(objects[0]),
+            },
+            'total_results': None,
+            'objects': objects[2:]
+        }
+        self.assertEqual(serializer.data, expected)

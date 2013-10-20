@@ -145,10 +145,18 @@ class GenericAPIView(views.APIView):
                                          allow_empty_first_page=self.allow_empty)
         page_kwarg = self.kwargs.get(self.page_kwarg)
         page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
-        page = page_kwarg or page_query_param or 1
+        page = page_kwarg or page_query_param
+        if not page:
+            # we didn't recieve a page
+            if hasattr(paginator, 'default_page_number'):
+                # our paginator has a method that will provide a default
+                page = paginator.default_page_number()
+            else:
+                # fall back on the base default value
+                page = 1
         try:
-            page_number = strict_positive_int(page)
-        except ValueError:
+            page_number = paginator.validate_number(page)
+        except InvalidPage:
             if page == 'last':
                 page_number = paginator.num_pages
             else:
