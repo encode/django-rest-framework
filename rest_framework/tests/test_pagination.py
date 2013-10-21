@@ -464,9 +464,6 @@ class NonIntegerPaginator(object):
         # pretend like we don't know how many pages we have
         return None
 
-    def default_page_token(self):
-        return None
-
     def page(self, token=None):
         if token:
             try:
