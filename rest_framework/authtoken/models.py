@@ -4,8 +4,10 @@ from hashlib import sha1
 from rest_framework.compat import AUTH_USER_MODEL
 from django.conf import settings
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 
 
+@python_2_unicode_compatible
 class Token(models.Model):
     """
     The default authorization token model.
@@ -31,5 +33,5 @@ class Token(models.Model):
         unique = uuid.uuid4()
         return hmac.new(unique.bytes, digestmod=sha1).hexdigest()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.key
