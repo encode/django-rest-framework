@@ -165,8 +165,8 @@ For more advanced filtering requirements you can specify a `FilterSet` class tha
     from rest_framework import generics
 
     class ProductFilter(django_filters.FilterSet):
-        min_price = django_filters.NumberFilter(lookup_type='gte')
-        max_price = django_filters.NumberFilter(lookup_type='lte')
+        min_price = django_filters.NumberFilter(name="price", lookup_type='gte')
+        max_price = django_filters.NumberFilter(name="price", lookup_type='lte')
         class Meta:
             model = Product
             fields = ['category', 'in_stock', 'min_price', 'max_price']
@@ -176,11 +176,50 @@ For more advanced filtering requirements you can specify a `FilterSet` class tha
         serializer_class = ProductSerializer
         filter_class = ProductFilter
 
+
 Which will allow you to make requests such as:
 
     http://example.com/api/products?category=clothing&max_price=10.00
 
 For more details on using filter sets see the [django-filter documentation][django-filter-docs].
+
+You can also span relationships using `django-filter`, let's assume that each
+product has foreign key to `Manufacturer` model, so we create filter that
+filters using `Manufacturer` name. For example:
+
+    import django_filters
+    from myapp.models import Product
+    from myapp.serializers import ProductSerializer
+    from rest_framework import generics
+
+    class ProductFilter(django_filters.FilterSet):
+        class Meta:
+            model = Product
+            fields = ['category', 'in_stock', 'manufacturer__name`]
+
+This enables us to make queries like:
+
+    http://example.com/api/products?manufacturer__name=foo
+
+This is nice, but it shows underlying model structure in REST API, which may
+be undesired, but you can use:
+
+    import django_filters
+    from myapp.models import Product
+    from myapp.serializers import ProductSerializer
+    from rest_framework import generics
+
+    class ProductFilter(django_filters.FilterSet):
+
+        manufacturer = django_filters.CharFilter(name="manufacturer__name")
+
+        class Meta:
+            model = Product
+            fields = ['category', 'in_stock', 'manufacturer`]
+
+And now you can execute:
+
+    http://example.com/api/products?manufacturer=foo
 
 ---
 
