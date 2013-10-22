@@ -54,6 +54,7 @@ class GenericAPIView(views.APIView):
     # If you want to use object lookups other than pk, set this attribute.
     # For more complex lookup requirements override `get_object()`.
     lookup_field = 'pk'
+    lookup_url_kwarg = None
 
     # Pagination settings
     paginate_by = api_settings.PAGINATE_BY
@@ -147,8 +148,8 @@ class GenericAPIView(views.APIView):
         page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
         page = page_kwarg or page_query_param or 1
         try:
-            page_number = strict_positive_int(page)
-        except ValueError:
+            page_number = paginator.validate_number(page)
+        except InvalidPage:
             if page == 'last':
                 page_number = paginator.num_pages
             else:
@@ -278,9 +279,11 @@ class GenericAPIView(views.APIView):
             pass  # Deprecation warning
 
         # Perform the lookup filtering.
+        # Note that `pk` and `slug` are deprecated styles of lookup filtering.
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        lookup = self.kwargs.get(lookup_url_kwarg, None)
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         slug = self.kwargs.get(self.slug_url_kwarg, None)
-        lookup = self.kwargs.get(self.lookup_field, None)
 
         if lookup is not None:
             filter_kwargs = {self.lookup_field: lookup}

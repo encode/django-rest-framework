@@ -35,7 +35,7 @@ The wrappers also provide behaviour such as returning `405 Method Not Allowed` r
 
 Okay, let's go ahead and start using these new components to write a few views. 
 
-We don't need our `JSONResponse` class anymore, so go ahead and delete that.  Once that's done we can start refactoring our views slightly.
+We don't need our `JSONResponse` class in `views.py` anymore, so go ahead and delete that.  Once that's done we can start refactoring our views slightly.
 
     from rest_framework import status
     from rest_framework.decorators import api_view
@@ -64,7 +64,7 @@ We don't need our `JSONResponse` class anymore, so go ahead and delete that.  On
 
 Our instance view is an improvement over the previous example.  It's a little more concise, and the code now feels very similar to if we were working with the Forms API.  We're also using named status codes, which makes the response meanings more obvious.
 
-Here is the view for an individual snippet.
+Here is the view for an individual snippet, in the `views.py` module.
 
     @api_view(['GET', 'PUT', 'DELETE'])
     def snippet_detail(request, pk):

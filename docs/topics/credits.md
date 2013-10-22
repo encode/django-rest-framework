@@ -172,6 +172,8 @@ The following people have helped make REST framework great.
 * Markus Kaiserswerth - [mkai]
 * Henry Clifford - [hcliff]
 * Thomas Badaud - [badale]
+* Colin Huang - [tamakisquare]
+* Ross McFarland - [ross]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -380,3 +382,5 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [mkai]: https://github.com/mkai
 [hcliff]: https://github.com/hcliff
 [badale]: https://github.com/badale
+[tamakisquare]: https://github.com/tamakisquare
+[ross]: https://github.com/ross
