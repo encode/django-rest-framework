@@ -67,6 +67,7 @@ DEFAULTS = {
     # Pagination
     'PAGINATE_BY': None,
     'PAGINATE_BY_PARAM': None,
+    'PAGINATE_DEFAULT_PAGE': 1,
     'MAX_PAGINATE_BY': None,
 
     # Authentication
