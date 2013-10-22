@@ -174,6 +174,7 @@ The following people have helped make REST framework great.
 * Thomas Badaud - [badale]
 * Colin Huang - [tamakisquare]
 * Ross McFarland - [ross]
+* Jacek Bzdak - [jbzdak]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -384,3 +385,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [badale]: https://github.com/badale
 [tamakisquare]: https://github.com/tamakisquare
 [ross]: https://github.com/ross
+[jbzdak]: https://github.com/jbzdak
