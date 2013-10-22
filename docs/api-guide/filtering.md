@@ -181,8 +181,6 @@ Which will allow you to make requests such as:
 
     http://example.com/api/products?category=clothing&max_price=10.00
 
-For more details on using filter sets see the [django-filter documentation][django-filter-docs].
-
 You can also span relationships using `django-filter`, let's assume that each
 product has foreign key to `Manufacturer` model, so we create filter that
 filters using `Manufacturer` name. For example:
@@ -220,6 +218,8 @@ be undesired, but you can use:
 And now you can execute:
 
     http://example.com/api/products?manufacturer=foo
+    
+For more details on using filter sets see the [django-filter documentation][django-filter-docs].
 
 ---
 
