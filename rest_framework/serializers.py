@@ -326,6 +326,9 @@ class BaseSerializer(WritableField):
 
         return ret
 
+    def many_to_native(self, objects):
+        return [self.to_native(item) for item in objects]
+
     def from_native(self, data, files):
         """
         Deserialize primitives -> objects.
@@ -372,7 +375,7 @@ class BaseSerializer(WritableField):
             return None
 
         if is_simple_callable(getattr(value, 'all', None)):
-            return [self.to_native(item) for item in value.all()]
+            return self.many_to_native(value.all())
 
         if value is None:
             return None
@@ -383,7 +386,7 @@ class BaseSerializer(WritableField):
             many = hasattr(value, '__iter__') and not isinstance(value, (Page, dict, six.text_type))
 
         if many:
-            return [self.to_native(item) for item in value]
+            return self.many_to_native(value)
         return self.to_native(value)
 
     def field_from_native(self, data, files, field_name, into):
@@ -527,7 +530,7 @@ class BaseSerializer(WritableField):
                                   DeprecationWarning, stacklevel=2)
 
             if many:
-                self._data = [self.to_native(item) for item in obj]
+                self._data = self.many_to_native(obj)
             else:
                 self._data = self.to_native(obj)
 
