@@ -59,6 +59,7 @@ class GenericAPIView(views.APIView):
     # Pagination settings
     paginate_by = api_settings.PAGINATE_BY
     paginate_by_param = api_settings.PAGINATE_BY_PARAM
+    paginate_default_page = api_settings.PAGINATE_DEFAULT_PAGE
     max_paginate_by = api_settings.MAX_PAGINATE_BY
     pagination_serializer_class = api_settings.DEFAULT_PAGINATION_SERIALIZER_CLASS
     page_kwarg = 'page'
@@ -146,7 +147,7 @@ class GenericAPIView(views.APIView):
                                          allow_empty_first_page=self.allow_empty)
         page_kwarg = self.kwargs.get(self.page_kwarg)
         page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
-        page = page_kwarg or page_query_param or 1
+        page = page_kwarg or page_query_param or self.paginate_default_page
         try:
             page_number = paginator.validate_number(page)
         except InvalidPage:
