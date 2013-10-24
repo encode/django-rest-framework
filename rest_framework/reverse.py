@@ -18,19 +18,17 @@ def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra
         kwargs = kwargs or {}
         kwargs['format'] = format
 
-    try:
-        namespace=resolve(request.path).namespace
-    except Http404:
-        namespace=None
-
-    if namespace:
-        viewname = '{namespace}:{viewname}'.format(namespace=namespace,
+    if request:
+        namespace = request.resolver_match.namespace
+        if namespace and ':' not in viewname:
+            viewname = '{namespace}:{viewname}'.format(namespace=namespace,
                                                    viewname=viewname)
 
     url = django_reverse(viewname, args=args, kwargs=kwargs,
                           **extra)
     if request:
         return request.build_absolute_uri(url)
+
     return url
 
 
