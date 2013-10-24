@@ -175,6 +175,7 @@ The following people have helped make REST framework great.
 * Colin Huang - [tamakisquare]
 * Ross McFarland - [ross]
 * Jacek Bzdak - [jbzdak]
+* Alexander Lukanin - [alexanderlukanin13]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -386,3 +387,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [tamakisquare]: https://github.com/tamakisquare
 [ross]: https://github.com/ross
 [jbzdak]: https://github.com/jbzdak
+[alexanderlukanin13]: https://github.com/alexanderlukanin13
