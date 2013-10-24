@@ -175,6 +175,14 @@ class GenericAPIView(views.APIView):
         method if you want to apply the configured filtering backend to the
         default queryset.
         """
+        for backend in self.get_filter_backends():
+            queryset = backend().filter_queryset(self.request, queryset, self)
+        return queryset
+
+    def get_filter_backends(self):
+        """
+        Returns the list of filter backends that this view requires.
+        """
         filter_backends = self.filter_backends or []
         if not filter_backends and self.filter_backend:
             warnings.warn(
@@ -185,10 +193,8 @@ class GenericAPIView(views.APIView):
                 PendingDeprecationWarning, stacklevel=2
             )
             filter_backends = [self.filter_backend]
+        return filter_backends
 
-        for backend in filter_backends:
-            queryset = backend().filter_queryset(self.request, queryset, self)
-        return queryset
 
     ########################
     ### The following methods provide default implementations
