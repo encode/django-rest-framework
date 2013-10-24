@@ -19,7 +19,14 @@ def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra
         kwargs['format'] = format
 
     if request:
-        namespace = request.resolver_match.namespace
+        if hasattr(request, 'resolver_match'):
+            namespace = request.resolver_match.namespace
+        else:
+            try:
+                namespace = resolve(request.path).namespace
+            except Http404:
+                namespace=None
+
         if namespace and ':' not in viewname:
             viewname = '{namespace}:{viewname}'.format(namespace=namespace,
                                                    viewname=viewname)
