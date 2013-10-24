@@ -154,8 +154,8 @@ class APIView(View):
         Returns a dict that is passed through to Parser.parse(),
         as the `parser_context` keyword argument.
         """
-        # Note: Additionally `request` will also be added to the context
-        #       by the Request object.
+        # Note: Additionally `request` and `encoding` will also be added
+        #       to the context by the Request object.
         return {
             'view': self,
             'args': getattr(self, 'args', ()),
