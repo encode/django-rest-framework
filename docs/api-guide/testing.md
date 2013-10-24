@@ -205,10 +205,10 @@ You can use any of REST framework's test case classes as you would for the regul
             Ensure we can create a new account object.
             """
             url = reverse('account-list')
-            expected = {'name': 'DabApps'}
+            data = {'name': 'DabApps'}
             response = self.client.post(url, data, format='json')
             self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-            self.assertEqual(response.data, expected)
+            self.assertEqual(response.data, data)
 
 ---
 
