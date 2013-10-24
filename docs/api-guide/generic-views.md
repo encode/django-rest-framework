@@ -125,7 +125,7 @@ Note that if your API doesn't include any object level permissions, you may opti
 
 Returns the class that should be used for the serializer.  Defaults to returning the `serializer_class` attribute, or dynamically generating a serializer class if the `model` shortcut is being used.
 
-May be override to provide dynamic behavior such as using different serializers for read and write operations, or providing different serializers to different types of uesr.
+May be override to provide dynamic behavior such as using different serializers for read and write operations, or providing different serializers to different types of users.
 
 For example:
 
