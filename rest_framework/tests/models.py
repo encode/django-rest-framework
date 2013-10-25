@@ -70,6 +70,7 @@ class Comment(RESTFrameworkModel):
 
 class ActionItem(RESTFrameworkModel):
     title = models.CharField(max_length=200)
+    started = models.NullBooleanField(default=False)
     done = models.BooleanField(default=False)
     info = CustomField(default='---', max_length=12)
 
