@@ -54,7 +54,7 @@ Would serialize to the following representation.
 
     {
         'album_name': 'Things We Lost In The Fire',
-        'artist': 'Low'
+        'artist': 'Low',
         'tracks': [
             '1: Sunflower',
             '2: Whitetail',
@@ -86,7 +86,7 @@ Would serialize to a representation like this:
 
     {
         'album_name': 'The Roots',
-        'artist': 'Undun'
+        'artist': 'Undun',
         'tracks': [
             89,
             90,
@@ -121,7 +121,7 @@ Would serialize to a representation like this:
 
     {
         'album_name': 'Graceland',
-        'artist': 'Paul Simon'
+        'artist': 'Paul Simon',
         'tracks': [
             'http://www.example.com/api/tracks/45/',
             'http://www.example.com/api/tracks/46/',
@@ -159,7 +159,7 @@ Would serialize to a representation like this:
 
     {
         'album_name': 'Dear John',
-        'artist': 'Loney Dear'
+        'artist': 'Loney Dear',
         'tracks': [
             'Airport Surroundings',
             'Everything Turns to You',
@@ -194,7 +194,7 @@ Would serialize to a representation like this:
 
     {
         'album_name': 'The Eraser',
-        'artist': 'Thom Yorke'
+        'artist': 'Thom Yorke',
         'track_listing': 'http://www.example.com/api/track_list/12/',
     }
 
@@ -234,7 +234,7 @@ Would serialize to a nested representation like this:
 
     {
         'album_name': 'The Grey Album',
-        'artist': 'Danger Mouse'
+        'artist': 'Danger Mouse',
         'tracks': [
             {'order': 1, 'title': 'Public Service Announcement'},
             {'order': 2, 'title': 'What More Can I Say'},
@@ -271,7 +271,7 @@ This custom field would then serialize to the following representation.
 
     {
         'album_name': 'Sometimes I Wish We Were an Eagle',
-        'artist': 'Bill Callahan'
+        'artist': 'Bill Callahan',
         'tracks': [
             'Track 1: Jim Cain (04:39)',
             'Track 2: Eid Ma Clack Shaw (04:19)',

@@ -65,7 +65,8 @@ The following attributes control the basic view behavior.
 
 * `queryset` - The queryset that should be used for returning objects from this view.  Typically, you must either set this attribute, or override the `get_queryset()` method.
 * `serializer_class` - The serializer class that should be used for validating and deserializing input, and for serializing output.  Typically, you must either set this attribute, or override the `get_serializer_class()` method.
-* `lookup_field` - The field that should be used to lookup individual model instances.  Defaults to `'pk'`.  The URL conf should include a keyword argument corresponding to this value.  More complex lookup styles can be supported by overriding the `get_object()` method.  Note that when using hyperlinked APIs you'll need to ensure that *both* the API views *and* the serializer classes use lookup fields that correctly correspond with the URL conf.
+* `lookup_field` - The model field that should be used to for performing object lookup of individual model instances.  Defaults to `'pk'`.  Note that when using hyperlinked APIs you'll need to ensure that *both* the API views *and* the serializer classes set the lookup fields if you need to use a custom value.
+* `lookup_url_kwarg` - The URL keyword argument that should be used for object lookup.  The URL conf should include a keyword argument corresponding to this value.  If unset this defaults to using the same value as `lookup_field`.
 
 **Shortcuts**:
 
@@ -120,11 +121,27 @@ For example:
 
 Note that if your API doesn't include any object level permissions, you may optionally exclude the ``self.check_object_permissions, and simply return the object from the `get_object_or_404` lookup.
 
+#### `get_filter_backends(self)`
+
+Returns the classes that should be used to filter the queryset. Defaults to returning the `filter_backends` attribute.
+
+May be override to provide more complex behavior with filters, as using different (or even exlusive) lists of filter_backends depending on different criteria.
+
+For example:
+
+    def get_filter_backends(self):
+        if "geo_route" in self.request.QUERY_PARAMS:
+            return (GeoRouteFilter, CategoryFilter)
+        elif "geo_point" in self.request.QUERY_PARAMS:
+            return (GeoPointFilter, CategoryFilter)
+
+        return (CategoryFilter,)
+
 #### `get_serializer_class(self)`
 
 Returns the class that should be used for the serializer.  Defaults to returning the `serializer_class` attribute, or dynamically generating a serializer class if the `model` shortcut is being used.
 
-May be override to provide dynamic behavior such as using different serializers for read and write operations, or providing different serializers to different types of uesr.
+May be override to provide dynamic behavior such as using different serializers for read and write operations, or providing different serializers to different types of users.
 
 For example:
 
@@ -327,7 +344,7 @@ You can then simply apply this mixin to a view or viewset anytime you need to ap
         serializer_class = UserSerializer
         lookup_fields = ('account', 'username')
 
-Using custom mixins is a good option if you have custom behavior that needs to be used 
+Using custom mixins is a good option if you have custom behavior that needs to be used
 
 ## Creating custom base classes
 
@@ -336,7 +353,7 @@ If you are using a mixin across multiple views, you can take this a step further
     class BaseRetrieveView(MultipleFieldLookupMixin,
                            generics.RetrieveAPIView):
         pass
-    
+
     class BaseRetrieveUpdateDestroyView(MultipleFieldLookupMixin,
                                         generics.RetrieveUpdateDestroyAPIView):
         pass

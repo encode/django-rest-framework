@@ -159,8 +159,7 @@ class BasicTests(TestCase):
         expected = {
             'email': '',
             'content': '',
-            'created': None,
-            'sub_comment': ''
+            'created': None
         }
         self.assertEqual(serializer.data, expected)
 
@@ -511,6 +510,33 @@ class CustomValidationTests(TestCase):
         serializer = self.CommentSerializerWithFieldValidator(data=wrong_data)
         self.assertFalse(serializer.is_valid())
         self.assertEqual(serializer.errors, {'email': ['Enter a valid email address.']})
+
+    def test_partial_update(self):
+        """
+        Make sure that validate_email isn't called when partial=True and email
+        isn't found in data.
+        """
+        initial_data = {
+            'email': 'tom@example.com',
+            'content': 'A test comment',
+            'created': datetime.datetime(2012, 1, 1)
+        }
+
+        serializer = self.CommentSerializerWithFieldValidator(data=initial_data)
+        self.assertEqual(serializer.is_valid(), True)
+        instance = serializer.object
+
+        new_content = 'An *updated* test comment'
+        partial_data = {
+            'content': new_content
+        }
+
+        serializer = self.CommentSerializerWithFieldValidator(instance=instance,
+                                                              data=partial_data,
+                                                              partial=True)
+        self.assertEqual(serializer.is_valid(), True)
+        instance = serializer.object
+        self.assertEqual(instance.content, new_content)
 
 
 class PositiveIntegerAsChoiceTests(TestCase):
@@ -1659,3 +1685,38 @@ class SerializerSupportsManyRelationships(TestCase):
         serializer = SimpleSlugSourceModelSerializer(data={'text': 'foo', 'targets': [1, 2]})
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.data, {'text': 'foo', 'targets': [1, 2]})
+
+
+class TransformMethodsSerializer(serializers.Serializer):
+    a = serializers.CharField()
+    b_renamed = serializers.CharField(source='b')
+
+    def transform_a(self, obj, value):
+        return value.lower()
+
+    def transform_b_renamed(self, obj, value):
+        if value is not None:
+            return 'and ' + value
+
+
+class TestSerializerTransformMethods(TestCase):
+    def setUp(self):
+        self.s = TransformMethodsSerializer()
+
+    def test_transform_methods(self):
+        self.assertEqual(
+            self.s.to_native({'a': 'GREEN EGGS', 'b': 'HAM'}),
+            {
+                'a': 'green eggs',
+                'b_renamed': 'and HAM',
+            }
+        )
+
+    def test_missing_fields(self):
+        self.assertEqual(
+            self.s.to_native({'a': 'GREEN EGGS'}),
+            {
+                'a': 'green eggs',
+                'b_renamed': None,
+            }
+        )

@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.sessions.middleware import SessionMiddleware
+from django.core.handlers.wsgi import WSGIRequest
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
@@ -15,12 +16,13 @@ from rest_framework.parsers import (
     MultiPartParser,
     JSONParser
 )
-from rest_framework.request import Request
+from rest_framework.request import Request, Empty
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory, APIClient
 from rest_framework.views import APIView
 from rest_framework.compat import six
+from io import BytesIO
 import json
 
 
@@ -145,6 +147,34 @@ class TestContentParsing(TestCase):
         request = Request(factory.post('/', form_data))
         request.parsers = (JSONParser(), )
         self.assertEqual(request.DATA, json_data)
+
+    def test_form_POST_unicode(self):
+        """
+        JSON POST via default web interface with unicode data
+        """
+        # Note: environ and other variables here have simplified content compared to real Request
+        CONTENT = b'_content_type=application%2Fjson&_content=%7B%22request%22%3A+4%2C+%22firm%22%3A+1%2C+%22text%22%3A+%22%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82%21%22%7D'
+        environ = {
+            'REQUEST_METHOD': 'POST',
+            'CONTENT_TYPE': 'application/x-www-form-urlencoded',
+            'CONTENT_LENGTH': len(CONTENT),
+            'wsgi.input': BytesIO(CONTENT),
+        }
+        wsgi_request = WSGIRequest(environ=environ)
+        wsgi_request._load_post_and_files()
+        parsers = (JSONParser(), FormParser(), MultiPartParser())
+        parser_context = {
+            'encoding': 'utf-8',
+            'kwargs': {},
+            'args': (),
+        }
+        request = Request(wsgi_request, parsers=parsers, parser_context=parser_context)
+        method = request.method
+        self.assertEqual(method, 'POST')
+        self.assertEqual(request._content_type, 'application/json')
+        self.assertEqual(request._stream.getvalue(), b'{"request": 4, "firm": 1, "text": "\xd0\x9f\xd1\x80\xd0\xb8\xd0\xb2\xd0\xb5\xd1\x82!"}')
+        self.assertEqual(request._data, Empty)
+        self.assertEqual(request._files, Empty)
 
     # def test_accessing_post_after_data_form(self):
     #     """

@@ -158,7 +158,8 @@ class UpdateModelMixin(object):
         Set any attributes on the object that are implicit in the request.
         """
         # pk and/or slug attributes are implicit in the URL.
-        lookup = self.kwargs.get(self.lookup_field, None)
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        lookup = self.kwargs.get(lookup_url_kwarg, None)
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         slug = self.kwargs.get(self.slug_url_kwarg, None)
         slug_field = slug and self.slug_field or None
