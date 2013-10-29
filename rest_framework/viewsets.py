@@ -9,7 +9,7 @@ Actions are only bound to methods at the point of instantiating the views.
     user_detail = UserViewSet.as_view({'get': 'retrieve'})
 
 Typically, rather than instantiate views from viewsets directly, you'll
-regsiter the viewset with a router and let the URL conf be determined
+register the viewset with a router and let the URL conf be determined
 automatically.
 
     router = DefaultRouter()
