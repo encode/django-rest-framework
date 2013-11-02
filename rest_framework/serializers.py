@@ -56,9 +56,9 @@ class NestedValidationError(ValidationError):
 
     def __init__(self, message):
         if isinstance(message, dict):
-            self.messages = [message]
+            self.error_list = [message]
         else:
-            self.messages = message
+            self.error_list = message
 
 
 class DictWithMetadata(dict):
