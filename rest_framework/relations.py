@@ -144,13 +144,17 @@ class RelatedField(WritableField):
             return None
 
         if self.many:
-            if is_simple_callable(getattr(value, 'all', None)):
-                return [self.to_native(item) for item in value.all()]
-            else:
-                # Also support non-queryset iterables.
-                # This allows us to also support plain lists of related items.
-                return [self.to_native(item) for item in value]
-        return self.to_native(value)
+            return self.value_to_native(value)
+        else:
+            return self.to_native(value)
+
+    def value_to_native(self, value):
+        if is_simple_callable(getattr(value, 'all', None)):
+            return [self.to_native(item) for item in value.all()]
+        else:
+            # Also support non-queryset iterables.
+            # This allows us to also support plain lists of related items.
+            return [self.to_native(item) for item in value]
 
     def field_from_native(self, data, files, field_name, into):
         if self.read_only:
@@ -249,12 +253,7 @@ class PrimaryKeyRelatedField(RelatedField):
                     queryset = get_component(queryset, component)
 
             # Forward relationship
-            if is_simple_callable(getattr(queryset, 'all', None)):
-                return [self.to_native(item.pk) for item in queryset.all()]
-            else:
-                # Also support non-queryset iterables.
-                # This allows us to also support plain lists of related items.
-                return [self.to_native(item.pk) for item in queryset]
+            return self.value_to_native(queryset)
 
         # To-one relationship
         try:
@@ -269,6 +268,14 @@ class PrimaryKeyRelatedField(RelatedField):
 
         # Forward relationship
         return self.to_native(pk)
+
+    def value_to_native(self, value):
+        if is_simple_callable(getattr(value, 'all', None)):
+            return [self.to_native(item.pk) for item in value.all()]
+        else:
+            # Also support non-queryset iterables.
+            # This allows us to also support plain lists of related items.
+            return [self.to_native(item.pk) for item in value]
 
 
 ### Slug relationships
