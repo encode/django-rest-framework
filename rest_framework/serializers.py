@@ -351,6 +351,12 @@ class BaseSerializer(WritableField):
             field.label = pretty_name(key)
         return field
 
+    def value_from_native(self, value):
+        return value
+
+    def value_to_native(self, value):
+        return value
+
     def field_to_native(self, obj, field_name):
         """
         Override default so that the serializer can be used as a nested field
@@ -371,8 +377,9 @@ class BaseSerializer(WritableField):
         except ObjectDoesNotExist:
             return None
 
-        if is_simple_callable(getattr(value, 'all', None)):
-            return [self.to_native(item) for item in value.all()]
+        native_value = self.value_to_native(value)
+        if native_value is not None:
+            return native_value
 
         if value is None:
             return None
@@ -407,7 +414,7 @@ class BaseSerializer(WritableField):
 
         # Set the serializer object if it exists
         obj = get_component(self.parent.object, self.source or field_name) if self.parent.object else None
-        obj = obj.all() if is_simple_callable(getattr(obj, 'all', None)) else obj
+        obj = self.value_from_native(obj)
 
         if self.source == '*':
             if value:
@@ -904,6 +911,16 @@ class ModelSerializer(Serializer):
         instance._nested_forward_relations = nested_forward_relations
 
         return instance
+
+    def value_from_native(self, value):
+        if is_simple_callable(getattr(value, 'all', None)):
+            return value.all()
+        else:
+            return value
+
+    def value_to_native(self, value):
+        if is_simple_callable(getattr(value, 'all', None)):
+            return [self.to_native(item) for item in value.all()]
 
     def from_native(self, data, files):
         """
