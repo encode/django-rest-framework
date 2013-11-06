@@ -497,6 +497,7 @@ class ChoiceField(WritableField):
     }
 
     def __init__(self, choices=(), *args, **kwargs):
+        self.empty = kwargs.pop('empty', '')
         super(ChoiceField, self).__init__(*args, **kwargs)
         self.choices = choices
         if not self.required:
@@ -537,9 +538,10 @@ class ChoiceField(WritableField):
         return False
 
     def from_native(self, value):
-        if value in validators.EMPTY_VALUES:
-            return None
-        return super(ChoiceField, self).from_native(value)
+        value = super(ChoiceField, self).from_native(value)
+        if value == self.empty or value in validators.EMPTY_VALUES:
+            return self.empty
+        return value
 
 
 class EmailField(CharField):
