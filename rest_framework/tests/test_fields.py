@@ -709,7 +709,7 @@ class ChoiceFieldTests(TestCase):
     def test_invalid_choice_model(self):
         s = ChoiceFieldModelSerializer(data={'choice' : 'wrong_value'})
         self.assertFalse(s.is_valid())
-        self.assertEqual(s.errors,  {'choice': [u'Select a valid choice. wrong_value is not one of the available choices.']})
+        self.assertEqual(s.errors,  {'choice': ['Select a valid choice. wrong_value is not one of the available choices.']})
         self.assertEqual(s.data['choice'], '')
 
     def test_empty_choice_model(self):
