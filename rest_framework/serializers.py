@@ -42,6 +42,7 @@ def pretty_name(name):
 class RelationsList(list):
     _deleted = []
 
+
 class NestedValidationError(ValidationError):
     """
     The default ValidationError behavior is to stringify each item in the list
@@ -56,9 +57,13 @@ class NestedValidationError(ValidationError):
 
     def __init__(self, message):
         if isinstance(message, dict):
-            self.messages = [message]
+            self._messages = [message]
         else:
-            self.messages = message
+            self._messages = message
+
+    @property
+    def messages(self):
+        return self._messages
 
 
 class DictWithMetadata(dict):
