@@ -873,7 +873,7 @@ class ModelSerializer(Serializer):
 
         # Reverse m2m relations
         for (obj, model) in meta.get_all_related_m2m_objects_with_model():
-            field_name = obj.field.related_query_name()
+            field_name = obj.get_accessor_name()
             if field_name in attrs:
                 m2m_data[field_name] = attrs.pop(field_name)
 
