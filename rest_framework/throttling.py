@@ -18,7 +18,7 @@ class BaseThrottle(object):
         """
         raise NotImplementedError('.allow_request() must be overridden')
 
-    def get_ident(self, request, **kwargs):
+    def get_ident(self, request):
         if 'HTTP_X_FORWARDED_FOR' in request.META:
             xff = request.META.get('HTTP_X_FORWARDED_FOR')
             return xff.split(',')[0].strip()
