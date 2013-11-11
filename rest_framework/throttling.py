@@ -18,6 +18,13 @@ class BaseThrottle(object):
         """
         raise NotImplementedError('.allow_request() must be overridden')
 
+    def get_ident(self, request, **kwargs):
+        if 'HTTP_X_FORWARDED_FOR' in request.META:
+            xff = request.META.get('HTTP_X_FORWARDED_FOR')
+            return xff.split(',')[0].strip()
+
+        return request.META.get('REMOTE_ADDR', None)
+
     def wait(self):
         """
         Optionally, return a recommended number of seconds to wait before
@@ -152,9 +159,7 @@ class AnonRateThrottle(SimpleRateThrottle):
         if request.user.is_authenticated():
             return None  # Only throttle unauthenticated requests.
 
-        ident = request.META.get('HTTP_X_FORWARDED_FOR')
-        if ident is None:
-            ident = request.META.get('REMOTE_ADDR')
+        ident = self.get_ident(request)
 
         return self.cache_format % {
             'scope': self.scope,
@@ -176,7 +181,7 @@ class UserRateThrottle(SimpleRateThrottle):
         if request.user.is_authenticated():
             ident = request.user.id
         else:
-            ident = request.META.get('REMOTE_ADDR', None)
+            ident = self.get_ident(request)
 
         return self.cache_format % {
             'scope': self.scope,
@@ -224,7 +229,7 @@ class ScopedRateThrottle(SimpleRateThrottle):
         if request.user.is_authenticated():
             ident = request.user.id
         else:
-            ident = request.META.get('REMOTE_ADDR', None)
+            ident = self.get_ident(request)
 
         return self.cache_format % {
             'scope': self.scope,
