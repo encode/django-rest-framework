@@ -409,6 +409,10 @@ The following third party packages are also available.
 
 Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications.  [Mjumbe Poe][mjumbewu] maintains the [djangorestframework-csv][djangorestframework-csv] package which provides CSV renderer support for REST framework.
 
+## UltraJSON
+
+[UltraJSON][ultrajson] is a blazing-fast C JSON encoder which can give 2-10x performance increases on typical workloads. [Jacob Haslehurst][hzy] maintains the [drf-ujson-renderer][drf-ujson-renderer] package which implements JSON rendering using the UJSON package.
+
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
@@ -426,3 +430,6 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [mjumbewu]: https://github.com/mjumbewu
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv
+[ultrajson]: https://github.com/esnme/ultrajson
+[hzy]: https://github.com/hzy
+[drf-ujson-renderer]: https://github.com/gizmag/drf-ujson-renderer
