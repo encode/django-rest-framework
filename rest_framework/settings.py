@@ -63,6 +63,7 @@ DEFAULTS = {
         'user': None,
         'anon': None,
     },
+    'NUM_PROXIES': 0,
 
     # Pagination
     'PAGINATE_BY': None,

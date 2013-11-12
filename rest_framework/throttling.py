@@ -21,7 +21,9 @@ class BaseThrottle(object):
     def get_ident(self, request):
         if 'HTTP_X_FORWARDED_FOR' in request.META:
             xff = request.META.get('HTTP_X_FORWARDED_FOR')
-            return xff.split(',')[0].strip()
+            num_proxies = api_settings.NUM_PROXIES
+
+            return xff.split(',')[-min(num_proxies, len(xff))].strip()
 
         return request.META.get('REMOTE_ADDR', None)
 
