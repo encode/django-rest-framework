@@ -35,10 +35,15 @@ The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_C
         'DEFAULT_THROTTLE_RATES': {
             'anon': '100/day',
             'user': '1000/day'
-        }        
+        },
+        'NUM_PROXIES': 2,
     }
 
 The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `minute`, `hour` or `day` as the throttle period.
+
+Additionally the number of application proxies can be set using `NUM_PROXIES`. This
+setting will allow the throttle to correctly identify unique requests there are
+multiple proxies in front of the server.
 
 You can also set the throttling policy on a per-view or per-viewset basis,
 using the `APIView` class based views.
