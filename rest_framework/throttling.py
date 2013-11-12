@@ -19,6 +19,10 @@ class BaseThrottle(object):
         raise NotImplementedError('.allow_request() must be overridden')
 
     def get_ident(self, request):
+        """
+        Identify the machine making the request using HTTP_X_FORWARDED_FOR if
+        present, if not use REMOTE_ADDR.
+        """
         if 'HTTP_X_FORWARDED_FOR' in request.META:
             xff = request.META.get('HTTP_X_FORWARDED_FOR')
             num_proxies = api_settings.NUM_PROXIES
