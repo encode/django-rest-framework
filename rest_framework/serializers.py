@@ -6,8 +6,8 @@ form encoded input.
 Serialization in REST framework is a two-phase process:
 
 1. Serializers marshal between complex types like model instances, and
-python primatives.
-2. The process of marshalling between python primatives and request and
+python primitives.
+2. The process of marshalling between python primitives and request and
 response content is handled by parsers and renderers.
 """
 from __future__ import unicode_literals
@@ -42,6 +42,7 @@ def pretty_name(name):
 class RelationsList(list):
     _deleted = []
 
+
 class NestedValidationError(ValidationError):
     """
     The default ValidationError behavior is to stringify each item in the list
@@ -56,9 +57,13 @@ class NestedValidationError(ValidationError):
 
     def __init__(self, message):
         if isinstance(message, dict):
-            self.messages = [message]
+            self._messages = [message]
         else:
-            self.messages = message
+            self._messages = message
+
+    @property
+    def messages(self):
+        return self._messages
 
 
 class DictWithMetadata(dict):
@@ -262,10 +267,13 @@ class BaseSerializer(WritableField):
         for field_name, field in self.fields.items():
             if field_name in self._errors:
                 continue
+
+            source = field.source or field_name
+            if self.partial and source not in attrs:
+                continue
             try:
                 validate_method = getattr(self, 'validate_%s' % field_name, None)
                 if validate_method:
-                    source = field.source or field_name
                     attrs = validate_method(attrs, source)
             except ValidationError as err:
                 self._errors[field_name] = self._errors.get(field_name, []) + list(err.messages)
@@ -403,7 +411,7 @@ class BaseSerializer(WritableField):
                 return
 
         # Set the serializer object if it exists
-        obj = getattr(self.parent.object, field_name) if self.parent.object else None
+        obj = get_component(self.parent.object, self.source or field_name) if self.parent.object else None
         obj = obj.all() if is_simple_callable(getattr(obj, 'all', None)) else obj
 
         if self.source == '*':
@@ -791,6 +799,8 @@ class ModelSerializer(Serializer):
         # TODO: TypedChoiceField?
         if model_field.flatchoices:  # This ModelField contains choices
             kwargs['choices'] = model_field.flatchoices
+            if model_field.null:
+                kwargs['empty'] = None
             return ChoiceField(**kwargs)
 
         # put this below the ChoiceField because min_value isn't a valid initializer
@@ -868,7 +878,7 @@ class ModelSerializer(Serializer):
 
         # Reverse m2m relations
         for (obj, model) in meta.get_all_related_m2m_objects_with_model():
-            field_name = obj.field.related_query_name()
+            field_name = obj.get_accessor_name()
             if field_name in attrs:
                 m2m_data[field_name] = attrs.pop(field_name)
 
@@ -912,7 +922,7 @@ class ModelSerializer(Serializer):
 
     def save_object(self, obj, **kwargs):
         """
-        Save the deserialized object and return it.
+        Save the deserialized object.
         """
         if getattr(obj, '_nested_forward_relations', None):
             # Nested relationships need to be saved before we can save the
