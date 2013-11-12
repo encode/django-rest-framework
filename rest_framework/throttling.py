@@ -23,9 +23,10 @@ class BaseThrottle(object):
         Identify the machine making the request using HTTP_X_FORWARDED_FOR if
         present, if not use REMOTE_ADDR.
         """
-        if 'HTTP_X_FORWARDED_FOR' in request.META:
+        num_proxies = api_settings.NUM_PROXIES
+
+        if 'HTTP_X_FORWARDED_FOR' in request.META and num_proxies > 0:
             xff = request.META.get('HTTP_X_FORWARDED_FOR')
-            num_proxies = api_settings.NUM_PROXIES
 
             return xff.split(',')[-min(num_proxies, len(xff))].strip()
 
