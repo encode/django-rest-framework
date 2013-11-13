@@ -124,6 +124,7 @@ class OrderingFilter(BaseFilterBackend):
 
     def remove_invalid_fields(self, queryset, ordering):
         field_names = [field.name for field in queryset.model._meta.fields]
+        field_names += queryset.query.aggregates.keys()
         return [term for term in ordering if term.lstrip('-') in field_names]
 
     def filter_queryset(self, request, queryset, view):
