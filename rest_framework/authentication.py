@@ -281,7 +281,8 @@ class OAuthAuthentication(BaseAuthentication):
         """
         Checks nonce of request, and return True if valid.
         """
-        return oauth_provider_store.check_nonce(request, oauth_request, oauth_request['oauth_nonce'])
+        return oauth_provider_store.check_nonce(request, oauth_request,
+            oauth_request['oauth_nonce'], oauth_request['oauth_timestamp'])
 
 
 class OAuth2Authentication(BaseAuthentication):
