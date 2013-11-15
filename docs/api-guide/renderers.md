@@ -411,7 +411,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 
 ## UltraJSON
 
-[UltraJSON][ultrajson] is a blazing-fast C JSON encoder which can give 2-10x performance increases on typical workloads. [Jacob Haslehurst][hzy] maintains the [drf-ujson-renderer][drf-ujson-renderer] package which implements JSON rendering using the UJSON package.
+[UltraJSON][ultrajson] is an optimized C JSON encoder which can give significantly faster JSON rendering. [Jacob Haslehurst][hzy] maintains the [drf-ujson-renderer][drf-ujson-renderer] package which implements JSON rendering using the UJSON package.
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
