@@ -362,7 +362,8 @@ class OAuthTests(TestCase):
     def test_post_form_with_urlencoded_parameters(self):
         """Ensure POSTing with x-www-form-urlencoded auth parameters passes"""
         params = self._create_authorization_url_parameters()
-        response = self.csrf_client.post('/oauth/', params)
+        auth = self._create_authorization_header()
+        response = self.csrf_client.post('/oauth/', params, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
     @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
@@ -424,7 +425,8 @@ class OAuthTests(TestCase):
         read_write_access_token.resource.is_readonly = False
         read_write_access_token.resource.save()
         params = self._create_authorization_url_parameters()
-        response = self.csrf_client.post('/oauth-with-scope/', params)
+        auth = self._create_authorization_header()
+        response = self.csrf_client.post('/oauth-with-scope/', params, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
     @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
