@@ -40,10 +40,21 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
-### Master
+### 2.3.9
 
+**Date**: 15th November 2013
+
+* Fix Django 1.6 exception API compatibility issue caused by `ValidationError`.
+* Include errors in HTML forms in browsable API.
 * Added JSON renderer support for numpy scalars.
+* Added `transform_<fieldname>` hooks on serializers for easily modifying field output.
 * Added `get_context` hook in `BrowsableAPIRenderer`.
+* Allow serializers to be passed `files` but no `data`.
+* `HTMLFormRenderer` now renders serializers directly to HTML without needing to create an intermediate form object.
+* Added `get_filter_backends` hook.
+* Added queryset aggregates to allowed fields in `OrderingFilter`.
+* Bugfix: Fix decimal suppoprt with `YAMLRenderer`.
+* Bugfix: Fix submission of unicode in browsable API through raw data form.
 
 ### 2.3.8
 
