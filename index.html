@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>Django REST framework - APIs made easy</title>
+    <link href="http://django-rest-framework.org/img/favicon.ico" rel="icon" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Django, API, REST, Django REST framework">
+    <meta name="author" content="Tom Christie">
+
+    <!-- Le styles -->
+    <link href="http://django-rest-framework.org/css/prettify.css" rel="stylesheet">
+    <link href="http://django-rest-framework.org/css/bootstrap.css" rel="stylesheet">
+    <link href="http://django-rest-framework.org/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="http://django-rest-framework.org/css/default.css" rel="stylesheet">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-18852272-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+    </script>
+  </head>
+  <body onload="prettyPrint()" class="index-page">
+
+  <div class="wrapper">
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
+            <a class="repo-link btn btn-inverse btn-small " href="tutorial/quickstart.html">Next <i class="icon-arrow-right icon-white"></i></a>
+            <a class="repo-link btn btn-inverse btn-small disabled" href="#"><i class="icon-arrow-left icon-white"></i> Previous</a>
+            <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="http://django-rest-framework.org">Django REST framework</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav">
+              <li><a href="http://django-rest-framework.org">Home</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Tutorial <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="http://django-rest-framework.org/tutorial/quickstart.html">Quickstart</a></li>
+                  <li><a href="http://django-rest-framework.org/tutorial/1-serialization.html">1 - Serialization</a></li>
+                  <li><a href="http://django-rest-framework.org/tutorial/2-requests-and-responses.html">2 - Requests and responses</a></li>
+                  <li><a href="http://django-rest-framework.org/tutorial/3-class-based-views.html">3 - Class based views</a></li>
+                  <li><a href="http://django-rest-framework.org/tutorial/4-authentication-and-permissions.html">4 - Authentication and permissions</a></li>
+                  <li><a href="http://django-rest-framework.org/tutorial/5-relationships-and-hyperlinked-apis.html">5 - Relationships and hyperlinked APIs</a></li>
+                  <li><a href="http://django-rest-framework.org/tutorial/6-viewsets-and-routers.html">6 - Viewsets and routers</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guide <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="http://django-rest-framework.org/api-guide/requests.html">Requests</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/responses.html">Responses</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/views.html">Views</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/generic-views.html">Generic views</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/viewsets.html">Viewsets</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/routers.html">Routers</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/parsers.html">Parsers</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/renderers.html">Renderers</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/serializers.html">Serializers</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/fields.html">Serializer fields</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/relations.html">Serializer relations</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/authentication.html">Authentication</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/permissions.html">Permissions</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/throttling.html">Throttling</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/filtering.html">Filtering</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/pagination.html">Pagination</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/content-negotiation.html">Content negotiation</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/format-suffixes.html">Format suffixes</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/reverse.html">Returning URLs</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/exceptions.html">Exceptions</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/status-codes.html">Status codes</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/testing.html">Testing</a></li>
+                  <li><a href="http://django-rest-framework.org/api-guide/settings.html">Settings</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Topics <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="http://django-rest-framework.org/topics/documenting-your-api.html">Documenting your API</a></li>
+                  <li><a href="http://django-rest-framework.org/topics/ajax-csrf-cors.html">AJAX, CSRF & CORS</a></li>
+                  <li><a href="http://django-rest-framework.org/topics/browser-enhancements.html">Browser enhancements</a></li>
+                  <li><a href="http://django-rest-framework.org/topics/browsable-api.html">The Browsable API</a></li>
+                  <li><a href="http://django-rest-framework.org/topics/rest-hypermedia-hateoas.html">REST, Hypermedia & HATEOAS</a></li>
+                  <li><a href="http://django-rest-framework.org/topics/rest-framework-2-announcement.html">2.0 Announcement</a></li>
+                  <li><a href="http://django-rest-framework.org/topics/2.2-announcement.html">2.2 Announcement</a></li>
+                  <li><a href="http://django-rest-framework.org/topics/2.3-announcement.html">2.3 Announcement</a></li>
+                  <li><a href="http://django-rest-framework.org/topics/release-notes.html">Release Notes</a></li>
+                  <li><a href="http://django-rest-framework.org/topics/credits.html">Credits</a></li>
+                </ul>
+              </li>
+            </ul>
+            <ul class="nav pull-right">
+              <!-- TODO
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Version: 2.0.0 <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#">Trunk</a></li>
+                  <li><a href="#">2.0.0</a></li>
+                </ul>
+              </li>
+            -->
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="body-content">
+      <div class="container-fluid">
+
+<!-- Search Modal -->
+<div id="searchModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3 id="myModalLabel">Documentation search</h3>
+  </div>
+  <div class="modal-body">
+    <!-- Custom google search -->
+    <script>
+      (function() {
+        var cx = '015016005043623903336:rxraeohqk6w';
+        var gcse = document.createElement('script');
+        gcse.type = 'text/javascript';
+        gcse.async = true;
+        gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+            '//www.google.com/cse/cse.js?cx=' + cx;
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(gcse, s);
+      })();
+    </script>
+    <gcse:search></gcse:search>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
+
+        <div class="row-fluid">
+
+          <div class="span3">
+            <!-- TODO
+            <p style="margin-top: -12px">
+              <a class="btn btn-mini btn-primary" style="width: 60px">&laquo; previous</a>
+              <a class="btn btn-mini btn-primary" style="float: right; margin-right: 8px; width: 60px;">next &raquo;</a>
+            </p>
+          -->
+            <div id="table-of-contents">
+              <ul class="nav nav-list side-nav well sidebar-nav-fixed">
+                <li class="main"><a href="#django-rest-framework">Django REST framework</a></li>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#example">Example</a></li>
+<li><a href="#quickstart">Quickstart</a></li>
+<li><a href="#tutorial">Tutorial</a></li>
+<li><a href="#api-guide">API Guide</a></li>
+<li><a href="#topics">Topics</a></li>
+<li><a href="#development">Development</a></li>
+<li><a href="#support">Support</a></li>
+<li><a href="#security">Security</a></li>
+<li><a href="#license">License</a></li>
+
+              <div>
+              <hr>
+
+<p><strong>The team behind REST framework are launching a new API service.</strong></p>
+
+<p>If you want to be first in line when we start issuing invitations, please sign up here:</p>
+
+<!-- Begin MailChimp Signup Form -->
+<link href="//cdn-images.mailchimp.com/embedcode/slim-081711.css" rel="stylesheet" type="text/css">
+<style type="text/css">
+    #mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; }
+    /* Add your own MailChimp form style overrides in your site stylesheet or in this style block.
+       We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
+</style>
+<div id="mc_embed_signup" style="background: rgb(245, 245, 245)">
+<form action="http://dabapps.us1.list-manage1.com/subscribe/post?u=cf73a9994eb5b8d8d461b5dfb&amp;id=cb6af8e8bd" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank" novalidate>
+<!--     <label for="mce-EMAIL">Keep me posted!</label>
+ -->    <input style="width: 90%" type="email" value="" name="EMAIL" class="email" id="mce-EMAIL" placeholder="email address" required>
+    <div class="clear"><input class="btn btn-success" type="submit" value="Yes, keep me posted!" name="subscribe" id="mc-embedded-subscribe" class="button"></div>
+</form>
+</div>
+</style></div>
+              </ul>
+
+
+<!--End mc_embed_signup-->
+            </div>
+          </div>
+
+          <div id="main-content" class="span9">
+            <p class="badges">
+<iframe src="http://ghbtns.com/github-btn.html?user=tomchristie&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" class="github-star-button" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
+
+<a href="https://twitter.com/share" class="twitter-share-button" data-url="django-rest-framework.org" data-text="Checking out the totally awesome Django REST framework! http://django-rest-framework.org" data-count="none"></a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="http://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+
+<img src="https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master" class="travis-build-image">
+</p>
+
+<h1 id="django-rest-framework">Django REST framework</h1>
+<p><strong>Awesome web-browsable Web APIs.</strong></p>
+<p>Django REST framework is a powerful and flexible toolkit that makes it easy to build Web APIs.</p>
+<p>Some reasons you might want to use REST framework:</p>
+<ul>
+<li>The <a href="http://restframework.herokuapp.com/">Web browseable API</a> is a huge usability win for your developers.</li>
+<li><a href="api-guide/authentication.html">Authentication policies</a> including <a href="api-guide/authentication.html#oauthauthentication">OAuth1a</a> and <a href="api-guide/authentication.html#oauth2authentication">OAuth2</a> out of the box.</li>
+<li><a href="api-guide/serializers.html">Serialization</a> that supports both <a href="api-guide/serializers.html#modelserializer">ORM</a> and <a href="api-guide/serializers.html#serializers">non-ORM</a> data sources.</li>
+<li>Customizable all the way down - just use <a href="api-guide/views.html#function-based-views">regular function-based views</a> if you don't need the <a href="api-guide/generic-views.html">more</a> <a href="api-guide/viewsets.html">powerful</a> <a href="api-guide/routers.html">features</a>.</li>
+<li><a href=".">Extensive documentation</a>, and <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">great community support</a>.</li>
+</ul>
+<p>There is a live example API for testing purposes, <a href="http://restframework.herokuapp.com/">available here</a>.</p>
+<p><strong>Below</strong>: <em>Screenshot from the browsable API</em></p>
+<p><img alt="Screenshot" src="img/quickstart.png" /></p>
+<h2 id="requirements">Requirements</h2>
+<p>REST framework requires the following:</p>
+<ul>
+<li>Python (2.6.5+, 2.7, 3.2, 3.3)</li>
+<li>Django (1.3, 1.4, 1.5, 1.6)</li>
+</ul>
+<p>The following packages are optional:</p>
+<ul>
+<li><a href="http://pypi.python.org/pypi/Markdown/">Markdown</a> (2.1.0+) - Markdown support for the browsable API.</li>
+<li><a href="http://pypi.python.org/pypi/PyYAML">PyYAML</a> (3.10+) - YAML content-type support.</li>
+<li><a href="https://pypi.python.org/pypi/defusedxml">defusedxml</a> (0.3+) - XML content-type support.</li>
+<li><a href="http://pypi.python.org/pypi/django-filter">django-filter</a> (0.5.4+) - Filtering support.</li>
+<li><a href="https://bitbucket.org/david/django-oauth-plus/wiki/Home">django-oauth-plus</a> (2.0+) and <a href="https://github.com/simplegeo/python-oauth2">oauth2</a> (1.5.211+) - OAuth 1.0a support.</li>
+<li><a href="https://github.com/caffeinehit/django-oauth2-provider">django-oauth2-provider</a> (0.2.3+) - OAuth 2.0 support.</li>
+<li><a href="https://github.com/lukaszb/django-guardian">django-guardian</a> (1.1.1+) - Object level permissions support.</li>
+</ul>
+<p><strong>Note</strong>: The <code>oauth2</code> Python package is badly misnamed, and actually provides OAuth 1.0a support.  Also note that packages required for both OAuth 1.0a, and OAuth 2.0 are not yet Python 3 compatible.</p>
+<h2 id="installation">Installation</h2>
+<p>Install using <code>pip</code>, including any optional packages you want...</p>
+<pre class="prettyprint lang-py"><code>pip install djangorestframework
+pip install markdown       # Markdown support for the browsable API.
+pip install django-filter  # Filtering support
+</code></pre>
+<p>...or clone the project from github.</p>
+<pre class="prettyprint lang-py"><code>git clone git@github.com:tomchristie/django-rest-framework.git
+</code></pre>
+<p>Add <code>'rest_framework'</code> to your <code>INSTALLED_APPS</code> setting.</p>
+<pre class="prettyprint lang-py"><code>INSTALLED_APPS = (
+    ...
+    'rest_framework',        
+)
+</code></pre>
+<p>If you're intending to use the browsable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root <code>urls.py</code> file.</p>
+<pre class="prettyprint lang-py"><code>urlpatterns = patterns('',
+    ...
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+)
+</code></pre>
+<p>Note that the URL path can be whatever you want, but you must include <code>'rest_framework.urls'</code> with the <code>'rest_framework'</code> namespace.</p>
+<h2 id="example">Example</h2>
+<p>Let's take a look at a quick example of using REST framework to build a simple model-backed API.</p>
+<p>We'll create a read-write API for accessing users and groups.</p>
+<p>Any global settings for a REST framework API are kept in a single configuration dictionary named <code>REST_FRAMEWORK</code>.  Start off by adding the following to your <code>settings.py</code> module:</p>
+<pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
+    # Use hyperlinked styles by default.
+    # Only used if the `serializer_class` attribute is not set on a view.
+    'DEFAULT_MODEL_SERIALIZER_CLASS':
+        'rest_framework.serializers.HyperlinkedModelSerializer',
+
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
+</code></pre>
+<p>Don't forget to make sure you've also added <code>rest_framework</code> to your <code>INSTALLED_APPS</code>.</p>
+<p>We're ready to create our API now.
+Here's our project's root <code>urls.py</code> module:</p>
+<pre class="prettyprint lang-py"><code>from django.conf.urls.defaults import url, patterns, include
+from django.contrib.auth.models import User, Group
+from rest_framework import viewsets, routers
+
+# ViewSets define the view behavior.
+class UserViewSet(viewsets.ModelViewSet):
+    model = User
+
+class GroupViewSet(viewsets.ModelViewSet):
+    model = Group
+
+
+# Routers provide an easy way of automatically determining the URL conf
+router = routers.DefaultRouter()
+router.register(r'users', UserViewSet)
+router.register(r'groups', GroupViewSet)
+
+
+# Wire up our API using automatic URL routing.
+# Additionally, we include login URLs for the browseable API.
+urlpatterns = patterns('',
+    url(r'^', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+)
+</code></pre>
+<h2 id="quickstart">Quickstart</h2>
+<p>Can't wait to get started?  The <a href="tutorial/quickstart.html">quickstart guide</a> is the fastest way to get up and running, and building APIs with REST framework.</p>
+<h2 id="tutorial">Tutorial</h2>
+<p>The tutorial will walk you through the building blocks that make up REST framework.   It'll take a little while to get through, but it'll give you a comprehensive understanding of how everything fits together, and is highly recommended reading.</p>
+<ul>
+<li><a href="tutorial/1-serialization.html">1 - Serialization</a></li>
+<li><a href="tutorial/2-requests-and-responses.html">2 - Requests &amp; Responses</a></li>
+<li><a href="tutorial/3-class-based-views.html">3 - Class based views</a></li>
+<li><a href="tutorial/4-authentication-and-permissions.html">4 - Authentication &amp; permissions</a></li>
+<li><a href="tutorial/5-relationships-and-hyperlinked-apis.html">5 - Relationships &amp; hyperlinked APIs</a></li>
+<li><a href="tutorial/6-viewsets-and-routers.html">6 - Viewsets &amp; routers</a></li>
+</ul>
+<h2 id="api-guide">API Guide</h2>
+<p>The API guide is your complete reference manual to all the functionality provided by REST framework.</p>
+<ul>
+<li><a href="api-guide/requests.html">Requests</a></li>
+<li><a href="api-guide/responses.html">Responses</a></li>
+<li><a href="api-guide/views.html">Views</a></li>
+<li><a href="api-guide/generic-views.html">Generic views</a></li>
+<li><a href="api-guide/viewsets.html">Viewsets</a></li>
+<li><a href="api-guide/routers.html">Routers</a></li>
+<li><a href="api-guide/parsers.html">Parsers</a></li>
+<li><a href="api-guide/renderers.html">Renderers</a></li>
+<li><a href="api-guide/serializers.html">Serializers</a></li>
+<li><a href="api-guide/fields.html">Serializer fields</a></li>
+<li><a href="api-guide/relations.html">Serializer relations</a></li>
+<li><a href="api-guide/authentication.html">Authentication</a></li>
+<li><a href="api-guide/permissions.html">Permissions</a></li>
+<li><a href="api-guide/throttling.html">Throttling</a></li>
+<li><a href="api-guide/filtering.html">Filtering</a></li>
+<li><a href="api-guide/pagination.html">Pagination</a></li>
+<li><a href="api-guide/content-negotiation.html">Content negotiation</a></li>
+<li><a href="api-guide/format-suffixes.html">Format suffixes</a></li>
+<li><a href="api-guide/reverse.html">Returning URLs</a></li>
+<li><a href="api-guide/exceptions.html">Exceptions</a></li>
+<li><a href="api-guide/status-codes.html">Status codes</a></li>
+<li><a href="api-guide/testing.html">Testing</a></li>
+<li><a href="api-guide/settings.html">Settings</a></li>
+</ul>
+<h2 id="topics">Topics</h2>
+<p>General guides to using REST framework.</p>
+<ul>
+<li><a href="topics/documenting-your-api.html">Documenting your API</a></li>
+<li><a href="topics/ajax-csrf-cors.html">AJAX, CSRF &amp; CORS</a></li>
+<li><a href="topics/browser-enhancements.html">Browser enhancements</a></li>
+<li><a href="topics/browsable-api.html">The Browsable API</a></li>
+<li><a href="topics/rest-hypermedia-hateoas.html">REST, Hypermedia &amp; HATEOAS</a></li>
+<li><a href="topics/rest-framework-2-announcement.html">2.0 Announcement</a></li>
+<li><a href="topics/2.2-announcement.html">2.2 Announcement</a></li>
+<li><a href="topics/2.3-announcement.html">2.3 Announcement</a></li>
+<li><a href="topics/release-notes.html">Release Notes</a></li>
+<li><a href="topics/credits.html">Credits</a></li>
+</ul>
+<h2 id="development">Development</h2>
+<p>If you want to work on REST framework itself, clone the repository, then...</p>
+<p>Build the docs:</p>
+<pre class="prettyprint lang-py"><code>./mkdocs.py
+</code></pre>
+<p>Run the tests:</p>
+<pre class="prettyprint lang-py"><code>./rest_framework/runtests/runtests.py
+</code></pre>
+<p>To run the tests against all supported configurations, first install <a href="http://testrun.org/tox/latest/">the tox testing tool</a> globally, using <code>pip install tox</code>, then simply run <code>tox</code>: </p>
+<pre class="prettyprint lang-py"><code>tox
+</code></pre>
+<h2 id="support">Support</h2>
+<p>For support please see the <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">REST framework discussion group</a>, try the  <code>#restframework</code> channel on <code>irc.freenode.net</code>, search <a href="https://botbot.me/freenode/restframework/">the IRC archives</a>, or raise a  question on <a href="http://stackoverflow.com/">Stack Overflow</a>, making sure to include the <a href="http://stackoverflow.com/questions/tagged/django-rest-framework">'django-rest-framework'</a> tag.</p>
+<p><a href="http://dabapps.com/services/build/api-development/">Paid support is available</a> from <a href="http://dabapps.com">DabApps</a>, and can include work on REST framework core, or support with building your REST framework API.  Please <a href="http://dabapps.com/contact/">contact DabApps</a> if you'd like to discuss commercial support options.</p>
+<p>For updates on REST framework development, you may also want to follow <a href="https://twitter.com/_tomchristie">the author</a> on Twitter.</p>
+<p><a style="padding-top: 10px" href="https://twitter.com/_tomchristie" class="twitter-follow-button" data-show-count="false">Follow @_tomchristie</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
+<h2 id="security">Security</h2>
+<p>If you believe you’ve found something in Django REST framework which has security implications, please <strong>do not raise the issue in a public forum</strong>.</p>
+<p>Send a description of the issue via email to <a href="mailto:rest-framework-security@googlegroups.com">rest-framework-security@googlegroups.com</a>.  The project maintainers will then work with you to resolve any issues where required, prior to any public disclosure.</p>
+<h2 id="license">License</h2>
+<p>Copyright (c) 2011-2013, Tom Christie
+All rights reserved.</p>
+<p>Redistribution and use in source and binary forms, with or without 
+modification, are permitted provided that the following conditions are met:</p>
+<p>Redistributions of source code must retain the above copyright notice, this 
+list of conditions and the following disclaimer.
+Redistributions in binary form must reproduce the above copyright notice, this 
+list of conditions and the following disclaimer in the documentation and/or 
+other materials provided with the distribution.</p>
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
+          </div><!--/span-->
+        </div><!--/row-->
+      </div><!--/.fluid-container-->
+    </div><!--/.body content-->
+
+      <div id="push"></div>
+  </div><!--/.wrapper -->
+
+  <footer class="span12">
+    <p>Sponsored by <a href="http://dabapps.com/">DabApps</a>.</a></p>
+  </footer>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="http://django-rest-framework.org/js/jquery-1.8.1-min.js"></script>
+    <script src="http://django-rest-framework.org/js/prettify-1.0.js"></script>
+    <script src="http://django-rest-framework.org/js/bootstrap-2.1.1-min.js"></script>
+    <script>
+      //$('.side-nav').scrollspy()
+      var shiftWindow = function() { scrollBy(0, -50) };
+      if (location.hash) shiftWindow();
+      window.addEventListener("hashchange", shiftWindow);
+
+      $('.dropdown-menu').on('click touchstart', function(event) {
+        event.stopPropagation();
+      });
+
+      // Dynamically force sidenav to no higher than browser window
+      $('.side-nav').css('max-height', window.innerHeight - 130);
+
+      $(function(){
+        $(window).resize(function(){
+          $('.side-nav').css('max-height', window.innerHeight - 130);
+        });
+      });
+    </script>
+</body></html>

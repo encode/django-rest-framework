@@ -1,0 +1,309 @@
+/* Set the body padding-top when above 980px to push the content down from
+   below the navbar, which is fixed at >980px screen widths. */
+pre {
+  font-size: 12px;
+}
+
+.dropdown .dropdown-menu {
+    display: none;
+}
+
+.dropdown.open .dropdown-menu {
+    display: block;
+}
+
+@media (max-width: 480px) {
+  .repo-link {
+    display: none;
+  }
+}
+
+/* Header link to GitHub */
+.repo-link {
+    float: right;
+    margin-right: 10px;
+    margin-top: 9px;
+}
+
+body.index-page #main-content p.badges {
+  padding-bottom: 1px;
+}
+
+/* GitHub 'Star' badge */
+body.index-page #main-content iframe.github-star-button {
+    float: right;
+    margin-top: -12px;
+    margin-right: -15px;
+}
+
+/* Tweet button */
+body.index-page #main-content iframe.twitter-share-button {
+    float: right;
+    margin-top: -12px;
+    margin-right: 8px;
+}
+
+/* Travis CI badge */
+body.index-page #main-content img.travis-build-image {
+    float: right;
+    margin-right: 8px;
+    margin-top: -11px;
+    margin-bottom: 0px;
+}
+
+/* Github source file badges */
+a.github {
+  float: right;
+  margin-top: -12px;
+  margin-right: 12px;
+}
+
+a.github:hover {
+  text-decoration: none;
+}
+
+/* */
+body hr {
+  border-top: 1px dotted #A30000;
+}
+
+/* Force TOC text to not overrun */
+#table-of-contents {
+    overflow: hidden;
+    margin: 0 0 20px 0;
+}
+
+/* Code blocks should scroll horizontally */
+pre {
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
+}
+
+/* Preserve the spacing of the navbar across different screen sizes. */
+.navbar-inner {
+  /*padding: 5px 0;*/
+}
+
+@media (max-width: 979px) {
+  .navbar .brand {
+    margin-left: 0;
+    padding-left: 0;
+  }
+  .navbar-inner .container-fluid {
+    padding-left: 15px;
+  }
+}
+
+.nav-list li.main {
+  font-weight: bold;
+}
+
+.nav-list a {
+  overflow: hidden;
+}
+
+.nav-list > li > a {
+  padding: 2px 15px 3px;
+}
+
+/* Set the table of contents to static so it flows back into the content when
+   viewed on tablets and smaller. */
+@media (max-width: 767px) {
+  #table-of-contents {
+    position: static;
+  }
+}
+
+/* When the page is in two-column layout, give the main content some room
+   to breath on the left. */
+@media (min-width: 768px) {
+  #main-content {
+    padding-left: 1em;
+  }
+}
+
+/* Cutesy quote styling */
+blockquote {
+  font-family: Georgia, serif;
+  font-size: 18px;
+  font-style: italic;
+  margin: 0.25em 0;
+  padding: 0.25em 40px;
+  line-height: 1.45;
+  position: relative;
+  color: #383838;
+  border-left: none;
+}
+
+blockquote:before {
+  display: block;
+  content: "\201C";
+  font-size: 80px;
+  position: absolute;
+  left: -10px;
+  top: -20px;
+  color: #7a7a7a;
+}
+
+blockquote p:last-child {
+  color: #999999;
+  font-size: 14px;
+  display: block;
+  margin-top: 5px;
+}
+
+
+/*=== dabapps bootstrap styles ====*/
+
+html{
+  width:100%;
+  background: none;
+}
+
+body, .navbar .navbar-inner .container-fluid{
+  max-width: 1150px;
+  margin: 0 auto;
+}
+
+body{
+  background: url("../img/grid.png") repeat-x;
+  background-attachment: fixed;
+}
+
+/* custom navigation styles */
+
+.navbar .navbar-inner{
+  background: #2C2C2C;
+  color: white;
+  border: none;
+  border-top: 5px solid #A30000;
+}
+
+.navbar .navbar-inner .nav li, .navbar .navbar-inner .nav li a, .navbar .navbar-inner .brand{
+  color: white; 
+}
+
+.nav-list > .active > a, .navbar .navbar-inner .nav li a:hover {
+  background:#212121;
+  color:white;
+}
+
+.navbar .navbar-inner .dropdown-menu li a, .navbar .navbar-inner .dropdown-menu li{
+ color: #A30000; 
+}
+.navbar .navbar-inner .dropdown-menu li a:hover{
+  background: #eeeeee;
+  color: #c20000;
+}
+
+/* custom general page styles */
+.hero-unit h2, .hero-unit h1{
+  color: #A30000;
+}
+
+body a{
+  color: #A30000;
+}
+
+body a:hover{
+  color: #c20000;
+}
+
+/* subnavigation styles */
+
+@media (min-width: 767px) {
+     .sidebar-nav-fixed {
+         position:fixed;
+         width:19%;
+         max-width: 240px;
+     }
+
+     .navbar {
+      position: fixed;
+     }
+     .navbar .navbar-inner .container-fluid{
+      max-width: 1110px;
+     }
+}
+
+/* sticky footer and footer */
+html, body {
+  height: 100%;
+}
+.wrapper {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -60px;
+}
+
+.body-content{
+  padding-top: 70px;
+  padding-bottom: 70px;
+}
+
+@media (max-width: 979px) {
+  .navbar-fixed-top .navbar-inner {
+    padding: 0px;
+  }
+}
+
+@media (max-width: 767px) {
+  .body-content{
+    padding-top: 0px;
+  }
+}
+
+@media (min-width: 768px) {
+  footer.span12 {
+    width: 95%;
+  }
+}
+
+footer, .push {
+  height: 60px; /* .push must be the same height as .footer */
+}
+
+
+footer p {
+  text-align: center;
+  color: gray;
+  border-top: 1px solid #DDD;
+  padding-top: 10px;
+}
+
+footer a {
+  color: gray;
+  font-weight: bold;
+}
+
+footer a:hover {
+  color: gray;
+}
+
+.btn-inverse {
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#606060), to(#404040)) !important;
+  background-image: -webkit-linear-gradient(top, #606060, #404040) !important;
+}
+
+.modal-open .modal,.btn:focus{outline:none;}
+
+@media (max-width: 650px) {
+  .repo-link.btn-inverse {display: none;}
+}
+
+td, th {
+  padding: 0.25em;
+  background-color: #f7f7f9;
+  border-color: #e1e1e8;
+}
+
+table {
+  border-color: white;
+  margin-bottom: 0.6em;
+}
+
+.side-nav {
+  overflow-y: scroll;
+}
