@@ -872,7 +872,7 @@ class ModelSerializer(Serializer):
 
         # Reverse fk or one-to-one relations
         for (obj, model) in meta.get_all_related_objects_with_model():
-            field_name = obj.field.related_query_name()
+            field_name = obj.get_accessor_name()
             if field_name in attrs:
                 related_data[field_name] = attrs.pop(field_name)
 
