@@ -940,11 +940,12 @@ class ModelSerializer(Serializer):
             del(obj._m2m_data)
 
         if getattr(obj, '_related_data', None):
+            related_fields = dict(((f.get_accessor_name(), f) for f, m in obj._meta.get_all_related_objects_with_model()))
             for accessor_name, related in obj._related_data.items():
                 if isinstance(related, RelationsList):
                     # Nested reverse fk relationship
                     for related_item in related:
-                        fk_field = obj._meta.get_field_by_name(accessor_name)[0].field.name
+                        fk_field = related_fields[accessor_name].field.name
                         setattr(related_item, fk_field, obj)
                         self.save_object(related_item)
 
