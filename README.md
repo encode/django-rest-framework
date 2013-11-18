@@ -48,48 +48,51 @@ Let's take a look at a quick example of using REST framework to build a simple m
 
 Here's our project's root `urls.py` module:
 
-    from django.conf.urls.defaults import url, patterns, include
-    from django.contrib.auth.models import User, Group
-    from rest_framework import viewsets, routers
+```python
+from django.conf.urls.defaults import url, patterns, include
+from django.contrib.auth.models import User, Group
+from rest_framework import viewsets, routers
 
-    # ViewSets define the view behavior.
-    class UserViewSet(viewsets.ModelViewSet):
-        model = User
+# ViewSets define the view behavior.
+class UserViewSet(viewsets.ModelViewSet):
+    model = User
 
-    class GroupViewSet(viewsets.ModelViewSet):
-        model = Group
+class GroupViewSet(viewsets.ModelViewSet):
+    model = Group
 
     
-    # Routers provide an easy way of automatically determining the URL conf
-    router = routers.DefaultRouter()
-    router.register(r'users', UserViewSet)
-    router.register(r'groups', GroupViewSet)
+# Routers provide an easy way of automatically determining the URL conf
+router = routers.DefaultRouter()
+router.register(r'users', UserViewSet)
+router.register(r'groups', GroupViewSet)
 
 
-    # Wire up our API using automatic URL routing.
-    # Additionally, we include login URLs for the browseable API.
-    urlpatterns = patterns('',
-        url(r'^', include(router.urls)),
-        url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-    )
+# Wire up our API using automatic URL routing.
+# Additionally, we include login URLs for the browseable API.
+urlpatterns = patterns('',
+    url(r'^', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+)
+```
 
 We'd also like to configure a couple of settings for our API.
 
 Add the following to your `settings.py` module:
 
-    REST_FRAMEWORK = {
-        # Use hyperlinked styles by default.
-        # Only used if the `serializer_class` attribute is not set on a view.
-        'DEFAULT_MODEL_SERIALIZER_CLASS':
-            'rest_framework.serializers.HyperlinkedModelSerializer',
+```python
+REST_FRAMEWORK = {
+    # Use hyperlinked styles by default.
+    # Only used if the `serializer_class` attribute is not set on a view.
+    'DEFAULT_MODEL_SERIALIZER_CLASS':
+        'rest_framework.serializers.HyperlinkedModelSerializer',
 
-        # Use Django's standard `django.contrib.auth` permissions,
-        # or allow read-only access for unauthenticated users.
-        'DEFAULT_PERMISSION_CLASSES': [
-            'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-        ]
-    }
-
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
+```
 Don't forget to make sure you've also added `rest_framework` to your `INSTALLED_APPS` setting.
 
 That's it, we're done!
