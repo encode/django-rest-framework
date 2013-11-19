@@ -6,6 +6,7 @@ which allows mixin classes to be composed in interesting ways.
 """
 from __future__ import unicode_literals
 
+from django.core.exceptions import ValidationError
 from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
@@ -127,7 +128,12 @@ class UpdateModelMixin(object):
                                          files=request.FILES, partial=partial)
 
         if serializer.is_valid():
-            self.pre_save(serializer.object)
+            try:
+                self.pre_save(serializer.object)
+            except ValidationError as err:
+                # full_clean on model instance may be called in pre_save, so we
+                # have to handle eventual errors.
+                return Response(err.message_dict, status=status.HTTP_400_BAD_REQUEST)
             self.object = serializer.save(**save_kwargs)
             self.post_save(self.object, created=created)
             return Response(serializer.data, status=success_status_code)
