@@ -23,6 +23,10 @@ class InstanceView(generics.RetrieveUpdateDestroyAPIView):
     """
     model = BasicModel
 
+    def get_queryset(self):
+        queryset = super(InstanceView, self).get_queryset()
+        return queryset.exclude(text='filtered out')
+
 
 class SlugSerializer(serializers.ModelSerializer):
     slug = serializers.Field()  # read only
@@ -160,10 +164,10 @@ class TestInstanceView(TestCase):
         """
         Create 3 BasicModel intances.
         """
-        items = ['foo', 'bar', 'baz']
+        items = ['foo', 'bar', 'baz', 'filtered out']
         for item in items:
             BasicModel(text=item).save()
-        self.objects = BasicModel.objects
+        self.objects = BasicModel.objects.exclude(text='filtered out')
         self.data = [
             {'id': obj.id, 'text': obj.text}
             for obj in self.objects.all()
@@ -351,6 +355,17 @@ class TestInstanceView(TestCase):
         self.assertEqual(response.data, {'id': 1, 'text': 'foobar'})
         updated = self.objects.get(id=1)
         self.assertEqual(updated.text, 'foobar')
+
+    def test_put_to_filtered_out_instance(self):
+        """
+        PUT requests to an URL of instance which is filtered out should not be
+        able to create new objects.
+        """
+        data = {'text': 'foo'}
+        filtered_out_pk = BasicModel.objects.filter(text='filtered out')[0].pk
+        request = factory.put('/{0}'.format(filtered_out_pk), data, format='json')
+        response = self.view(request, pk=filtered_out_pk).render()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_put_as_create_on_id_based_url(self):
         """
