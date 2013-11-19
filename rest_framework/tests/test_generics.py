@@ -508,6 +508,25 @@ class ExclusiveFilterBackend(object):
         return queryset.filter(text='other')
 
 
+class TwoFieldModel(models.Model):
+    field_a = models.CharField(max_length=100)
+    field_b = models.CharField(max_length=100)
+
+
+class DynamicSerializerView(generics.ListCreateAPIView):
+    model = TwoFieldModel
+    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            class DynamicSerializer(serializers.ModelSerializer):
+                class Meta:
+                    model = TwoFieldModel
+                    fields = ('field_b',)
+            return DynamicSerializer
+        return super(DynamicSerializerView, self).get_serializer_class()
+
+
 class TestFilterBackendAppliedToViews(TestCase):
 
     def setUp(self):
@@ -563,28 +582,6 @@ class TestFilterBackendAppliedToViews(TestCase):
         response = instance_view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foo'})
-
-
-class TwoFieldModel(models.Model):
-    field_a = models.CharField(max_length=100)
-    field_b = models.CharField(max_length=100)
-
-
-class DynamicSerializerView(generics.ListCreateAPIView):
-    model = TwoFieldModel
-    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
-
-    def get_serializer_class(self):
-        if self.request.method == 'POST':
-            class DynamicSerializer(serializers.ModelSerializer):
-                class Meta:
-                    model = TwoFieldModel
-                    fields = ('field_b',)
-            return DynamicSerializer
-        return super(DynamicSerializerView, self).get_serializer_class()
-
-
-class TestFilterBackendAppliedToViews(TestCase):
 
     def test_dynamic_serializer_form_in_browsable_api(self):
         """
