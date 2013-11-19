@@ -40,6 +40,10 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
+### Master
+
+* Bugfix: Correctly handle validation errors in PUT-as-create case, responding with 400.
+
 ### 2.3.9
 
 **Date**: 15th November 2013
