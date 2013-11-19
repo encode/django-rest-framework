@@ -146,7 +146,10 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
         else:
             main_title = 'Django REST framework - ' + main_title
 
-        canonical_url = base_url + '/' + relative_path[:-3] + suffix
+        if relative_path == 'index.md':
+            canonical_url = base_url
+        else:
+            canonical_url = base_url + '/' + relative_path[:-3] + suffix
         prev_url = prev_url_map.get(relative_path)
         next_url = next_url_map.get(relative_path)
 
