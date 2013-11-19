@@ -255,11 +255,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [image]: img/quickstart.png
 [index]: .
-[oauth1-section]: api-guide/authentication.html#oauthauthentication
-[oauth2-section]: api-guide/authentication.html#oauth2authentication
-[serializer-section]: api-guide/serializers.html#serializers
-[modelserializer-section]: api-guide/serializers.html#modelserializer
-[functionview-section]: api-guide/views.html#function-based-views
+[oauth1-section]: api-guide/authentication#oauthauthentication
+[oauth2-section]: api-guide/authentication#oauth2authentication
+[serializer-section]: api-guide/serializers#serializers
+[modelserializer-section]: api-guide/serializers#modelserializer
+[functionview-section]: api-guide/views#function-based-views
 [sandbox]: http://restframework.herokuapp.com/
 
 [quickstart]: tutorial/quickstart.md
