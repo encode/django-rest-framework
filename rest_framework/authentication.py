@@ -150,6 +150,16 @@ class TokenAuthentication(BaseAuthentication):
     """
 
     def authenticate(self, request):
+        # Get the underlying HttpRequest object
+        request = request._request
+        user = getattr(request, 'user', None)
+
+        # If we have a logged-in user, skip checking and let the user pass
+        if user and user.is_active:
+            token = self.model.objects.get_or_create(user=user)[0]
+
+            return (user, token)
+            
         auth = get_authorization_header(request).split()
 
         if not auth or auth[0].lower() != b'token':
