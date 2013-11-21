@@ -110,6 +110,14 @@ class SimpleRouter(BaseRouter):
             name='{basename}-{methodnamehyphen}',
             initkwargs={}
         ),
+        Route(
+            url=r'^{prefix}/{methodname}{trailing_slash}$',
+            mapping={
+                '{httpmethod}': '{methodname}',
+            },
+            name='{basename}-{methodnamehyphen}',
+            initkwargs={}
+        ),
     ]
 
     def __init__(self, trailing_slash=True):
@@ -146,18 +154,23 @@ class SimpleRouter(BaseRouter):
         for methodname in dir(viewset):
             attr = getattr(viewset, methodname)
             httpmethods = getattr(attr, 'bind_to_methods', None)
-            if httpmethods:
-                if methodname in known_actions:
-                    raise ImproperlyConfigured('Cannot use @action or @link decorator on '
-                                               'method "%s" as it is an existing route' % methodname)
-                httpmethods = [method.lower() for method in httpmethods]
-                dynamic_routes.append((httpmethods, methodname))
+            has_lookup_field = getattr(attr, 'has_lookup_field', True)
+            if not httpmethods:
+                continue
+            if methodname in known_actions:
+                raise ImproperlyConfigured('Cannot use @action or @link decorator on '
+                                           'method "%s" as it is an existing route' % methodname)
+            httpmethods = [method.lower() for method in httpmethods]
+            dynamic_routes.append((httpmethods, methodname, has_lookup_field))
 
         ret = []
         for route in self.routes:
             if route.mapping == {'{httpmethod}': '{methodname}'}:
                 # Dynamic routes (@link or @action decorator)
-                for httpmethods, methodname in dynamic_routes:
+                is_lookup_route = '{lookup}' in route.url
+                for httpmethods, methodname, has_lookup_field in dynamic_routes:
+                    if has_lookup_field != is_lookup_route:
+                        continue
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
                     ret.append(Route(
