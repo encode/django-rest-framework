@@ -107,22 +107,24 @@ def permission_classes(permission_classes):
     return decorator
 
 
-def link(**kwargs):
+def link(has_lookup_field=True, **kwargs):
     """
     Used to mark a method on a ViewSet that should be routed for GET requests.
     """
     def decorator(func):
+        func.has_lookup_field = has_lookup_field
         func.bind_to_methods = ['get']
         func.kwargs = kwargs
         return func
     return decorator
 
 
-def action(methods=['post'], **kwargs):
+def action(methods=['post'], has_lookup_field=True, **kwargs):
     """
     Used to mark a method on a ViewSet that should be routed for POST requests.
     """
     def decorator(func):
+        func.has_lookup_field = has_lookup_field
         func.bind_to_methods = methods
         func.kwargs = kwargs
         return func
