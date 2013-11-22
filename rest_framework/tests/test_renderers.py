@@ -263,7 +263,7 @@ class JSONRendererTests(TestCase):
         x['a'] = 1
         x['b'] = "string value"
         ret = JSONRenderer().render(x)
-        self.assertEquals(json.loads(ret), {u'a': 1, u'b': u'string value'})
+        self.assertEquals(json.loads(ret), {'a': 1, 'b': 'string value'})
 
     def test_render_dict_abc_obj(self):
         class Dict(collections.MutableMapping):
@@ -284,7 +284,7 @@ class JSONRendererTests(TestCase):
         x['key'] = 'string value'
         x[2] = 3
         ret = JSONRenderer().render(x)
-        self.assertEquals(json.loads(ret), {u'key': 'string value', u'2': 3})
+        self.assertEquals(json.loads(ret), {'key': 'string value', '2': 3})
             
 
     def test_render_obj_with_getitem(self):
