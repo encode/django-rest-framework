@@ -185,6 +185,9 @@ class Field(object):
         Given and object and a field name, returns the value that should be
         serialized for that field.
         """
+        if obj is None and self.default is not None:
+            return self.default
+
         if obj is None:
             return self.empty
 
