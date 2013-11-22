@@ -25,7 +25,7 @@ class BaseThrottle(object):
         """
         num_proxies = api_settings.NUM_PROXIES
 
-        if 'HTTP_X_FORWARDED_FOR' in request.META and num_proxies > 0:
+        if 'HTTP_X_FORWARDED_FOR' in request.META and num_proxies:
             xff = request.META.get('HTTP_X_FORWARDED_FOR')
 
             return xff.split(',')[-min(num_proxies, len(xff))].strip()
@@ -222,7 +222,6 @@ class ScopedRateThrottle(SimpleRateThrottle):
         # the `__init__` call.
         self.rate = self.get_rate()
         self.num_requests, self.duration = self.parse_rate(self.rate)
-
         # We can now proceed as normal.
         return super(ScopedRateThrottle, self).allow_request(request, view)
 
