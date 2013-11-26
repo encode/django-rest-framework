@@ -514,6 +514,11 @@ class ChoiceField(WritableField):
 
     choices = property(_get_choices, _set_choices)
 
+    def metadata(self):
+        data = super(ChoiceField, self).metadata()
+        data['choices'] = self.choices
+        return data
+
     def validate(self, value):
         """
         Validates that the input is in self.choices.
