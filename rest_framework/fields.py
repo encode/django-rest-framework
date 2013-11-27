@@ -966,7 +966,7 @@ class ImageField(FileField):
             return None
 
         from rest_framework.compat import Image
-        assert Image is not None, 'PIL must be installed for ImageField support'
+        assert Image is not None, 'Either Pillow or PIL must be installed for ImageField support.'
 
         # We need to get a file object for PIL. We might have a path or we might
         # have to read the data into memory.
