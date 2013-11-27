@@ -286,7 +286,7 @@ An image representation.
 
 Corresponds to `django.forms.fields.ImageField`.
 
-Requires the `PIL` package.
+Requires either the `Pillow` package or `PIL` package. It is strongly recommends to use `Pillow` where possible. `PIL` is practically unmaintained and introduces [many problems][pilproblems].
 
 Signature and validation is the same as with `FileField`.
 
@@ -345,3 +345,4 @@ As an example, let's create a field that can be used represent the class name of
 [ecma262]: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
 [strftime]: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
 [iso8601]: http://www.w3.org/TR/NOTE-datetime
+[pilproblems]: http://pillow.readthedocs.org/en/latest/about.html
