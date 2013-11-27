@@ -286,7 +286,7 @@ An image representation.
 
 Corresponds to `django.forms.fields.ImageField`.
 
-Requires the `PIL` package.
+Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is recommended, as `PIL` is no longer actively maintained.
 
 Signature and validation is the same as with `FileField`.
 
