@@ -516,7 +516,7 @@ class ChoiceField(WritableField):
 
     def metadata(self):
         data = super(ChoiceField, self).metadata()
-        data['choices'] = [{'value': v, 'name': n} for v, n in self.choices]
+        data['choices'] = [{'value': v, 'display_name': n} for v, n in self.choices]
         return data
 
     def validate(self, value):
