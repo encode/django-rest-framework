@@ -1752,6 +1752,6 @@ class SerializerDefaultTrueBoolean(TestCase):
         self.assertEqual(serializer.data['dog'], True)
 
     def test_enabled_partial(self):
-	serializer = self.default_true_boolean_serializer({'cat': False})
+        serializer = self.default_true_boolean_serializer({'cat': False})
         self.assertEqual(serializer.data['cat'], False)
         self.assertEqual(serializer.data['dog'], False)
