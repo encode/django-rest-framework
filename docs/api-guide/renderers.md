@@ -167,14 +167,14 @@ The template name is determined by (in order of preference):
 
 An example of a view that uses `TemplateHTMLRenderer`:
 
-    class UserDetail(generics.RetrieveUserAPIView):
+    class UserDetail(generics.RetrieveAPIView):
         """
         A view that returns a templated HTML representations of a given user.
         """
         queryset = User.objects.all()
         renderer_classes = (TemplateHTMLRenderer,)
 
-        def get(self, request, *args, **kwargs)
+        def get(self, request, *args, **kwargs):
             self.object = self.get_object()
             return Response({'user': self.object}, template_name='user_detail.html')
  
