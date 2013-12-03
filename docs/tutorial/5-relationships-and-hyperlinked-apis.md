@@ -19,7 +19,14 @@ Right now we have endpoints for 'snippets' and 'users', but we don't have a sing
             'snippets': reverse('snippet-list', request=request, format=format)
         })
 
-Notice that we're using REST framework's `reverse` function in order to return fully-qualified URLs.
+Notice that we're using REST framework's `reverse` function in order to return fully-qualified URLs. We must add a `name=` parameter to urls.py so that Django can assosciate these URL routes. In your `urls.py` add the `name=` parameter to the Users and Snippets base url.
+
+    url(r'^snippets/$', views.SnippetList.as_view(), name='snippet-list'),
+    
+and
+
+    url(r'^users/$', views.UserList.as_view(), name='user-list'),
+    
 
 ## Creating an endpoint for the highlighted snippets
 
