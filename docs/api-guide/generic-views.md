@@ -163,12 +163,14 @@ For example:
             return 20
         return 100
 
-**Save hooks**:
+**Save / deletion hooks**:
 
 The following methods are provided as placeholder interfaces.  They contain empty implementations and are not called directly by `GenericAPIView`, but they are overridden and used by some of the mixin classes.
 
 * `pre_save(self, obj)` - A hook that is called before saving an object.
 * `post_save(self, obj, created=False)` - A hook that is called after saving an object.
+* `pre_delete(self, obj)` - A hook that is called before deleting an object.
+* `post_delete(self, obj)` - A hook that is called after deleting an object.
 
 The `pre_save` method in particular is a useful hook for setting attributes that are implicit in the request, but are not part of the request data.  For instance, you might set an attribute on the object based on the request user, or based on a URL keyword argument.
 

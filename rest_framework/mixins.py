@@ -192,5 +192,7 @@ class DestroyModelMixin(object):
     """
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
+        self.pre_delete(obj)
         obj.delete()
+        self.post_delete(obj)
         return Response(status=status.HTTP_204_NO_CONTENT)
