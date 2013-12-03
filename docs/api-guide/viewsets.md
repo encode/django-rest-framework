@@ -178,7 +178,7 @@ Because `ModelViewSet` extends `GenericAPIView`, you'll normally need to provide
         """
         queryset = Account.objects.all()
         serializer_class = AccountSerializer
-        permission_classes = [IsAccountAdminOrReadOnly]
+        permission_classes = [IsAdminOrReadOnly]
 
 Note that you can use any of the standard attributes or method overrides provided by `GenericAPIView`.  For example, to use a `ViewSet` that dynamically determines the queryset it should operate on, you might do something like this:
 
@@ -188,7 +188,7 @@ Note that you can use any of the standard attributes or method overrides provide
         associated with the user.
         """
         serializer_class = AccountSerializer
-        permission_classes = [IsAccountAdminOrReadOnly]
+        permission_classes = [IsAdminOrReadOnly]
 
         def get_queryset(self):
             return self.request.user.accounts.all()

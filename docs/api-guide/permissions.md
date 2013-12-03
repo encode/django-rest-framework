@@ -106,6 +106,12 @@ The `IsAuthenticatedOrReadOnly` will allow authenticated users to perform any re
 
 This permission is suitable if you want to your API to allow read permissions to anonymous users, and only allow write permissions to authenticated users.
 
+## IsAdminOrReadOnly 
+
+The `IsAdminOrReadOnly` will allow superusers to perform any request.  Requests for everyone else will only be permitted if the request method is one of the "safe" methods; `GET`, `HEAD` or `OPTIONS`.
+
+This permission is suitable if you want to your API to allow read permissions to everyone, and only allow write permissions to administrators.
+
 ## DjangoModelPermissions
 
 This permission class ties into Django's standard `django.contrib.auth` [model permissions][contribauth].  When applied to a view that has a `.model` property, authorization will only be granted if the user *is authenticated* and has the *relevant model permissions* assigned.
