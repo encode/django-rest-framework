@@ -88,6 +88,7 @@ urlpatterns = patterns('',
     url(r'^cache$', MockGETView.as_view()),
     url(r'^jsonp/jsonrenderer$', MockGETView.as_view(renderer_classes=[JSONRenderer, JSONPRenderer])),
     url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(renderer_classes=[JSONPRenderer])),
+    url(r'^parseerror$', MockGETView.as_view(renderer_classes=[JSONRenderer, BrowsableAPIRenderer])),
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
     url(r'^api', include('rest_framework.urls', namespace='rest_framework'))
@@ -219,6 +220,12 @@ class RendererEndToEndTests(TestCase):
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
 
+    def test_parse_error_renderers_browsable_api(self):
+        """Invalid data should still render the browsable API correctly."""
+        resp = self.client.post('/parseerror', data='foobar', content_type='application/json', HTTP_ACCEPT='text/html')
+        self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
+        self.assertContains(resp.content, 'Mock GET View')
+        self.assertEqual(resp.status_code, status.HTTP_400_)
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
 _indented_repr = '{\n  "foo": [\n    "bar",\n    "baz"\n  ]\n}'
