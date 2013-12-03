@@ -344,6 +344,18 @@ class GenericAPIView(views.APIView):
         """
         pass
 
+    def pre_delete(self, obj):
+        """
+        Placeholder method for calling before deleting an object.
+        """
+        pass
+
+    def post_delete(self, obj):
+        """
+        Placeholder method for calling after saving an object.
+        """
+        pass
+
     def metadata(self, request):
         """
         Return a dictionary of metadata about the view.
