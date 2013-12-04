@@ -10,11 +10,17 @@ import datetime
 import inspect
 import re
 import warnings
+import base64
+import imghdr
+import uuid
+
 from decimal import Decimal, DecimalException
 from django import forms
 from django.core import validators
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
 from django.conf import settings
+from django.contrib.gis.geos.geometry import GEOSGeometry
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.http import QueryDict
 from django.forms import widgets
@@ -1012,3 +1018,91 @@ class SerializerMethodField(Field):
     def field_to_native(self, obj, field_name):
         value = getattr(self.parent, self.method_name)(obj)
         return self.to_native(value)
+        
+
+DEFAULT_CONTENT_TYPE = "application/octet-stream"
+ALLOWED_IMAGE_TYPES = (
+    "jpeg",
+    "jpg",
+    "png"
+    )
+
+class Base64ImageField(ImageField):
+    """
+    A django-rest-framework field for handling image-uploads through raw post data.
+    It uses base64 for en-/decoding the contents of the file.
+    """
+    def from_native(self, base64_data):
+        # Check if this is a base64 string
+        if isinstance(base64_data, basestring):
+            # Try to decode the file. Return validation error if it fails.
+            try:
+                decoded_file = base64.b64decode(base64_data)
+            except TypeError:
+                raise serializers.ValidationError(_("Please upload a valid image."))
+
+            # Generate file name:
+            file_name = str(uuid.uuid4())[:12] # 12 characters are more than enough.
+            # Get the file name extension:
+            file_extension = self.get_file_extension(file_name, decoded_file)
+            if file_extension not in ALLOWED_IMAGE_TYPES:
+                raise serializers.ValidationError(_("The type of the image couldn't been determined."))
+            complete_file_name = file_name + "." + file_extension
+            data = ContentFile(decoded_file, name=complete_file_name)
+
+        return super(Base64ImageField, self).from_native(data)
+
+    def get_file_extension(self, filename, decoded_file):
+        extension = imghdr.what(filename, decoded_file)
+        extension = "jpg" if extension == "jpeg" else extension
+        return extension
+
+
+class PointField(WritableField):
+    """
+    A field for handling GeoDjango Point fields as a json format.
+    Expected input format:
+        {
+        "latitude": 49.8782482189424,
+         "longitude": 24.452545489
+        }
+
+    """
+    type_name = 'PointField'
+    type_label = 'point'
+
+    default_error_messages = {
+        'invalid': _('Location field has wrong format. Use {"latitude": 45.67294621, "longitude": 26.43156}'),
+        }
+
+    def from_native(self, value):
+        """
+        Parse json data and return a point object
+        """
+        try:
+            value = json.loads(value)
+        except ValueError:
+            value = None
+
+        if value:
+            latitude = value.get("latitude")
+            longitude = value.get("longitude")
+            if latitude and longitude:
+                point_object = GEOSGeometry('POINT(%(longitude)s %(latitude)s)' % {
+                    "longitude": longitude,
+                    "latitude": latitude,
+                    })
+                return point_object
+        msg = self.error_messages['invalid']
+        raise serializers.ValidationError(msg)
+
+
+    def to_native(self, value):
+        """
+        Transform POINT object to json.
+        """
+        bundle = {
+            "latitude": value.y,
+            "longitude": value.x
+        }
+        return json.dumps(bundle)
