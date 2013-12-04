@@ -44,6 +44,7 @@ You can determine your currently installed version using `pip freeze`:
 
 * Add in choices information for ChoiceFields in response to `OPTIONS` requests.
 * Added `pre_delete()` and `post_delete()` method hooks.
+* Bugfix: Responses without any content no longer include an HTTP `'Content-Type'` header.
 * Bugfix: Correctly handle validation errors in PUT-as-create case, responding with 400.
 
 ### 2.3.9
