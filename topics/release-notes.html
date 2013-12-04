@@ -102,6 +102,7 @@
                   <li><a href="http://django-rest-framework.org/topics/browser-enhancements">Browser enhancements</a></li>
                   <li><a href="http://django-rest-framework.org/topics/browsable-api">The Browsable API</a></li>
                   <li><a href="http://django-rest-framework.org/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
+                  <li><a href="http://django-rest-framework.org/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://django-rest-framework.org/topics/rest-framework-2-announcement">2.0 Announcement</a></li>
                   <li><a href="http://django-rest-framework.org/topics/2.2-announcement">2.2 Announcement</a></li>
                   <li><a href="http://django-rest-framework.org/topics/2.3-announcement">2.3 Announcement</a></li>
@@ -243,6 +244,13 @@
 </code></pre>
 <hr />
 <h2 id="23x-series">2.3.x series</h2>
+<h3 id="master">Master</h3>
+<ul>
+<li>Add in choices information for ChoiceFields in response to <code>OPTIONS</code> requests.</li>
+<li>Added <code>pre_delete()</code> and <code>post_delete()</code> method hooks.</li>
+<li>Bugfix: Responses without any content no longer include an HTTP <code>'Content-Type'</code> header.</li>
+<li>Bugfix: Correctly handle validation errors in PUT-as-create case, responding with 400.</li>
+</ul>
 <h3 id="239">2.3.9</h3>
 <p><strong>Date</strong>: 15th November 2013</p>
 <ul>

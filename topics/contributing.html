@@ -6,7 +6,7 @@
     <link href="http://django-rest-framework.org/img/favicon.ico" rel="icon" type="image/x-icon">
     <link rel="canonical" href="http://django-rest-framework.org/topics/contributing"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Django, API, REST, Contributing to REST framework, Community, Issues, Development, Testing, Documentation, Third party packages, Core committers">
+    <meta name="description" content="Django, API, REST, Contributing to REST framework, Issues, Development, Documentation">
     <meta name="author" content="Tom Christie">
 
     <!-- Le styles -->
@@ -102,6 +102,7 @@
                   <li><a href="http://django-rest-framework.org/topics/browser-enhancements">Browser enhancements</a></li>
                   <li><a href="http://django-rest-framework.org/topics/browsable-api">The Browsable API</a></li>
                   <li><a href="http://django-rest-framework.org/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
+                  <li><a href="http://django-rest-framework.org/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://django-rest-framework.org/topics/rest-framework-2-announcement">2.0 Announcement</a></li>
                   <li><a href="http://django-rest-framework.org/topics/2.2-announcement">2.2 Announcement</a></li>
                   <li><a href="http://django-rest-framework.org/topics/2.3-announcement">2.3 Announcement</a></li>
@@ -168,16 +169,18 @@
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
                 <li class="main"><a href="#contributing-to-rest-framework">Contributing to REST framework</a></li>
-<li class="main"><a href="#community">Community</a></li>
+<li><a href="#community">Community</a></li>
+<li><a href="#code-of-conduct">Code of conduct</a></li>
 <li class="main"><a href="#issues">Issues</a></li>
+<li><a href="#triaging-issues">Triaging issues</a></li>
 <li class="main"><a href="#development">Development</a></li>
-<li class="main"><a href="#testing">Testing</a></li>
+<li><a href="#testing">Testing</a></li>
+<li><a href="#pull-requests">Pull requests</a></li>
+<li><a href="#managing-compatibility-issues">Managing compatibility issues</a></li>
 <li class="main"><a href="#documentation">Documentation</a></li>
 <li><a href="#building-the-documentation">Building the documentation</a></li>
 <li><a href="#language-style">Language style</a></li>
 <li><a href="#markdown-style">Markdown style</a></li>
-<li class="main"><a href="#third-party-packages">Third party packages</a></li>
-<li class="main"><a href="#core-committers">Core committers</a></li>
 
               <div>
               <hr>
@@ -215,44 +218,61 @@
 <p>&mdash; <a href="http://www.w3.org/People/Berners-Lee/FAQ.html">Tim Berners-Lee</a></p>
 </blockquote>
 <p>There are many ways you can contribute to Django REST framework.  We'd like it to be a community-led project, so please get involved and help shape the future of the project.</p>
-<h1 id="community">Community</h1>
-<p>If you use and enjoy REST framework please consider <a href="https://github.com/tomchristie/django-rest-framework">staring the project on GitHub</a>, and <a href="https://www.djangopackages.com/grids/g/api/">upvoting it on Django packages</a>.  Doing so helps potential new users see that the project is well used, and help us continue to attract new users.</p>
-<p>You might also consider writing a blog post on your experience with using REST framework, writing a tutorial about using the project with a particular javascript framework, or simply sharing the love on Twitter.</p>
+<h2 id="community">Community</h2>
+<p>The most important thing you can do to help push the REST framework project forward is to be actively involved wherever possible.  Code contributions are often overvalued as being the primary way to get involved in a project, we don't believe that needs to be the case.</p>
+<p>If you use REST framework, we'd love you to be vocal about your experiances with it - you might consider writing a blog post on your experience with using REST framework, or publishing a tutorial about using the project with a particular javascript framework.  Experiances from beginners can be particularly helpful because you'll be in the best position to assess which bits of REST framework are and aren't easy to understand and work with.</p>
 <p>Other really great ways you can help move the community forward include helping answer questions on the <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">discussion group</a>, or setting up an <a href="http://stackexchange.com/filters/66475/rest-framework">email alert on StackOverflow</a> so that you get notified of any new questions with the <code>django-rest-framework</code> tag.</p>
 <p>When answering questions make sure to help future contributors find their way around by hyperlinking wherever possible to related threads and tickets, and include backlinks from those items if relevant. </p>
+<h2 id="code-of-conduct">Code of conduct</h2>
+<p>Please keep the tone polite &amp; professional.  For some users a discussion on the REST framework mailing list or ticket tracker may be their first engagement with the open source community.  First impressions count, so let's try to make everyone feel welcome.</p>
+<p>Be mindful in the language you choose.  As an example, in an environment that is heavily male-dominated, posts that start 'Hey guys,' can come across as unintentionally exclusive.  It's just as easy, and more inclusive to use gender neutral language in those situations.</p>
+<p>The <a href="https://www.djangoproject.com/conduct/">Django code of conduct</a> gives a fuller set of guidelines for participating in community forums.</p>
 <h1 id="issues">Issues</h1>
-<p>It's really helpful if you make sure you address issues to the correct channel.  Usage questions should be directed to the <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">discussion group</a>.  Feature requests, bug reports and other issues should be raised on the GitHub <a href="https://github.com/tomchristie/django-rest-framework/issues?state=open">issue tracker</a>.</p>
+<p>It's really helpful if you can make sure to address issues on the correct channel.  Usage questions should be directed to the <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">discussion group</a>.  Feature requests, bug reports and other issues should be raised on the GitHub <a href="https://github.com/tomchristie/django-rest-framework/issues?state=open">issue tracker</a>.</p>
 <p>Some tips on good issue reporting:</p>
 <ul>
 <li>When describing issues try to phrase your ticket in terms of the <em>behavior</em> you think needs changing rather than the <em>code</em> you think need changing.</li>
 <li>Search the issue list first for related items, and make sure you're running the latest version of REST framework before reporting an issue.</li>
-<li>
-<p>If reporting a bug, then try to include a pull request with a failing test case.  This will help us quickly identify if there is a valid issue, and make sure that it gets fixed more quickly if there is one.</p>
-</li>
-<li>
-<p>TODO: Triage</p>
-</li>
+<li>If reporting a bug, then try to include a pull request with a failing test case.  This will help us quickly identify if there is a valid issue, and make sure that it gets fixed more quickly if there is one.</li>
+</ul>
+<h2 id="triaging-issues">Triaging issues</h2>
+<p>Getting involved in triaging incoming issues is a good way to start contributing.  Every single ticket that comes into the ticket tracker needs to be reviewed in order to determine what the next steps should be.  Anyone can help out with this, you just need to be willing to </p>
+<ul>
+<li>Read through the ticket - does it make sense, is it missing any context that would help explain it better?</li>
+<li>Is the ticket reported in the correct place, would it be better suited as a discussion on the discussion group?</li>
+<li>If the ticket is a bug report, can you reproduce it? Are you able to write a failing test case that demonstrates the issue and that can be submitted as a pull request?</li>
+<li>If the ticket is a feature request, do you agree with it, and could the feature request instead be implemented as a third party package?</li>
 </ul>
 <h1 id="development">Development</h1>
-<ul>
-<li>git clone &amp; PYTHONPATH</li>
-<li>Pep8</li>
-<li>Recommend editor that runs pep8</li>
-</ul>
-<h3 id="pull-requests">Pull requests</h3>
-<ul>
-<li>Make pull requests early</li>
-<li>Describe branching</li>
-</ul>
-<h3 id="managing-compatibility-issues">Managing compatibility issues</h3>
-<ul>
-<li>Describe compat module</li>
-</ul>
-<h1 id="testing">Testing</h1>
-<ul>
-<li>Running the tests</li>
-<li>tox</li>
-</ul>
+<p>To start developing on Django REST framework, clone the repo:</p>
+<pre class="prettyprint lang-py"><code>git clone git@github.com:tomchristie/django-rest-framework.git
+</code></pre>
+<p>Changes should broadly follow the <a href="http://www.python.org/dev/peps/pep-0008/">PEP 8</a> style conventions, and we recommend you setup your editor to automatically indicated non-conforming styles.</p>
+<h2 id="testing">Testing</h2>
+<p>To run the tests, clone the repository, and then:</p>
+<pre class="prettyprint lang-py"><code># Setup the virtual environment
+virtualenv env
+env/bin/activate
+pip install -r requirements.txt
+pip install -r optionals.txt
+
+# Run the tests
+rest_framework/runtests/runtests.py
+</code></pre>
+<p>You can also use the excellent <code>[tox][tox]</code> testing tool to run the tests against all supported versions of Python and Django.  Install <code>tox</code> globally, and then simply run:</p>
+<pre class="prettyprint lang-py"><code>tox
+</code></pre>
+<h2 id="pull-requests">Pull requests</h2>
+<p>It's a good idea to make pull requests early on.  A pull request represents the start of a discussion, and doesn't necessarily need to be the final, finished submission.</p>
+<p>It's also always best to make a new branch before starting work on a pull request.  This means that you'll be able to later switch back to working on another seperate issue without interfering with an ongoing pull requests.</p>
+<p>It's also useful to remember that if you have an outstanding pull request then pushing new commits to your GitHub repo will also automatically update the pull requests.</p>
+<p>GitHub's documentation for working on pull requests is <a href="https://help.github.com/articles/using-pull-requests">available here</a>.</p>
+<p>Always run the tests before submitting pull requests, and ideally run <code>tox</code> in order to check that your modifications are compatible with both Python 2 and Python 3, and that they run properly on all supported versions of Django.</p>
+<p>Once you've made a pull request take a look at the travis build status in the GitHub interface and make sure the tests are runnning as you'd expect.</p>
+<p><img alt="Travis status" src="../img/travis-status.png" /></p>
+<p><em>Above: Travis build notifications</em></p>
+<h2 id="managing-compatibility-issues">Managing compatibility issues</h2>
+<p>Sometimes, in order to ensure your code works on various different versions of Django, Python or third party libraries, you'll need to run slightly different code depending on the environment.  Any code that branches in this way should be isolated into the <code>compat.py</code> module, and should provide a single common interface that the rest of the codebase can use.</p>
 <h1 id="documentation">Documentation</h1>
 <p>The documentation for REST framework is built from the <a href="http://daringfireball.net/projects/markdown/basics">Markdown</a> source files in <a href="https://github.com/tomchristie/django-rest-framework/tree/master/docs">the docs directory</a>.</p>
 <p>There are many great markdown editors that make working with the documentation really easy.  The <a href="http://mouapp.com/">Mou editor for Mac</a> is one such editor that comes highly recommended.</p>
@@ -270,7 +290,7 @@
 <ul>
 <li>Keep paragraphs reasonably short.</li>
 <li>Use double spacing after the end of sentences.</li>
-<li>Don't use the abbreviations such as 'e.g..' but instead use long form, such as 'For example'.</li>
+<li>Don't use the abbreviations such as 'e.g.' but instead use long form, such as 'For example'.</li>
 </ul>
 <h2 id="markdown-style">Markdown style</h2>
 <p>There are a couple of conventions you should follow when working on the documentation.</p>
@@ -299,19 +319,10 @@ More text...
 <p>If you want to draw attention to a note or warning, use a pair of enclosing lines, like so:</p>
 <pre class="prettyprint lang-py"><code>---
 
-**Note:** Make sure you do this thing.
+**Note:** A useful documentation note.
 
 ---
 </code></pre>
-<h1 id="third-party-packages">Third party packages</h1>
-<ul>
-<li>Django reusable app</li>
-</ul>
-<h1 id="core-committers">Core committers</h1>
-<ul>
-<li>Still use pull reqs</li>
-<li>Credits</li>
-</ul>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->

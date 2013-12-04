@@ -102,6 +102,7 @@
                   <li><a href="http://django-rest-framework.org/topics/browser-enhancements">Browser enhancements</a></li>
                   <li><a href="http://django-rest-framework.org/topics/browsable-api">The Browsable API</a></li>
                   <li><a href="http://django-rest-framework.org/topics/rest-hypermedia-hateoas">REST, Hypermedia & HATEOAS</a></li>
+                  <li><a href="http://django-rest-framework.org/topics/contributing">Contributing to REST framework</a></li>
                   <li><a href="http://django-rest-framework.org/topics/rest-framework-2-announcement">2.0 Announcement</a></li>
                   <li><a href="http://django-rest-framework.org/topics/2.2-announcement">2.2 Announcement</a></li>
                   <li><a href="http://django-rest-framework.org/topics/2.3-announcement">2.3 Announcement</a></li>
@@ -338,14 +339,14 @@ Unlike other renderers, the data passed to the <code>Response</code> does not ne
 <li>The return result of calling <code>view.get_template_names()</code>.</li>
 </ol>
 <p>An example of a view that uses <code>TemplateHTMLRenderer</code>:</p>
-<pre class="prettyprint lang-py"><code>class UserDetail(generics.RetrieveUserAPIView):
+<pre class="prettyprint lang-py"><code>class UserDetail(generics.RetrieveAPIView):
     """
     A view that returns a templated HTML representations of a given user.
     """
     queryset = User.objects.all()
     renderer_classes = (TemplateHTMLRenderer,)
 
-    def get(self, request, *args, **kwargs)
+    def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         return Response({'user': self.object}, template_name='user_detail.html')
 </code></pre>
