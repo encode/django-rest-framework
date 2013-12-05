@@ -18,11 +18,13 @@ class BaseThrottle(object):
         """
         raise NotImplementedError('.allow_request() must be overridden')
 
-    def get_ident(self, request):
+    def get_ident(self, request, default_to=None):
         """
         Identify the machine making the request using HTTP_X_FORWARDED_FOR if
-        present, if not use REMOTE_ADDR.
+        present and number of proxies is > 0. If not use default if it is set
+        and available, if not fall back to REMOTE_ADDR.
         """
+        default = request.META.get(default_to)
         num_proxies = api_settings.NUM_PROXIES
 
         if 'HTTP_X_FORWARDED_FOR' in request.META and num_proxies:
@@ -30,7 +32,7 @@ class BaseThrottle(object):
 
             return xff.split(',')[-min(num_proxies, len(xff))].strip()
 
-        return request.META.get('REMOTE_ADDR', None)
+        return default if default else request.META.get('REMOTE_ADDR')
 
     def wait(self):
         """
@@ -166,7 +168,7 @@ class AnonRateThrottle(SimpleRateThrottle):
         if request.user.is_authenticated():
             return None  # Only throttle unauthenticated requests.
 
-        ident = self.get_ident(request)
+        ident = self.get_ident(request, default_to='HTTP_X_FORWARDED_FOR')
 
         return self.cache_format % {
             'scope': self.scope,
