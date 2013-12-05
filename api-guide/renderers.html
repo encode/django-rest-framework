@@ -311,7 +311,10 @@ def user_count_view(request, format=None):
 <h2 id="jsonprenderer">JSONPRenderer</h2>
 <p>Renders the request data into <code>JSONP</code>.  The <code>JSONP</code> media type provides a mechanism of allowing cross-domain AJAX requests, by wrapping a <code>JSON</code> response in a javascript callback.</p>
 <p>The javascript callback function must be set by the client including a <code>callback</code> URL query parameter.  For example <code>http://example.com/api/users?callback=jsonpCallback</code>.  If the callback function is not explicitly set by the client it will default to <code>'callback'</code>.</p>
-<p><strong>Note</strong>: If you require cross-domain AJAX requests, you may want to consider using the more modern approach of <a href="http://www.w3.org/TR/cors/">CORS</a> as an alternative to <code>JSONP</code>.  See the <a href="../topics/ajax-csrf-cors">CORS documentation</a> for more details.</p>
+<hr />
+<p><strong>Warning</strong>: If you require cross-domain AJAX requests, you should almost certainly be using the more modern approach of <a href="http://www.w3.org/TR/cors/">CORS</a> as an alternative to <code>JSONP</code>.  See the <a href="../topics/ajax-csrf-cors">CORS documentation</a> for more details.</p>
+<p>The <code>jsonp</code> approach is essentially a browser hack, and is <a href="http://stackoverflow.com/questions/613962/is-jsonp-safe-to-use">only appropriate for globally  readable API endpoints</a>, where <code>GET</code> requests are unauthenticated and do not require any user permissions.</p>
+<hr />
 <p><strong>.media_type</strong>: <code>application/javascript</code></p>
 <p><strong>.format</strong>: <code>'.jsonp'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>
