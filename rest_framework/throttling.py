@@ -18,6 +18,21 @@ class BaseThrottle(object):
         """
         raise NotImplementedError('.allow_request() must be overridden')
 
+    def get_ident(self, request):
+        """
+        Identify the machine making the request by parsing HTTP_X_FORWARDED_FOR
+        if present and number of proxies is > 0. If not use all of
+        HTTP_X_FORWARDED_FOR if it is available, if not use REMOTE_ADDR.
+        """
+        xff = request.META.get('HTTP_X_FORWARDED_FOR')
+        remote_addr = request.META.get('REMOTE_ADDR')
+        num_proxies = api_settings.NUM_PROXIES
+
+        if xff and num_proxies:
+            return xff.split(',')[-min(num_proxies, len(xff))].strip()
+
+        return xff if xff else remote_addr
+
     def wait(self):
         """
         Optionally, return a recommended number of seconds to wait before
@@ -152,13 +167,9 @@ class AnonRateThrottle(SimpleRateThrottle):
         if request.user.is_authenticated():
             return None  # Only throttle unauthenticated requests.
 
-        ident = request.META.get('HTTP_X_FORWARDED_FOR')
-        if ident is None:
-            ident = request.META.get('REMOTE_ADDR')
-
         return self.cache_format % {
             'scope': self.scope,
-            'ident': ident
+            'ident': self.get_ident(request)
         }
 
 
@@ -176,7 +187,7 @@ class UserRateThrottle(SimpleRateThrottle):
         if request.user.is_authenticated():
             ident = request.user.id
         else:
-            ident = request.META.get('REMOTE_ADDR', None)
+            ident = self.get_ident(request)
 
         return self.cache_format % {
             'scope': self.scope,
@@ -224,7 +235,7 @@ class ScopedRateThrottle(SimpleRateThrottle):
         if request.user.is_authenticated():
             ident = request.user.id
         else:
-            ident = request.META.get('REMOTE_ADDR', None)
+            ident = self.get_ident(request)
 
         return self.cache_format % {
             'scope': self.scope,
