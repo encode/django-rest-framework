@@ -316,12 +316,6 @@ class IdWithXffBasicTests(XffTestingBase):
 
 
 class XffSpoofingTests(XffTestingBase):
-    def test_xff_spoofing_doesnt_change_machine_id_with_no_app_proxies(self):
-        self.config_proxy(0)
-        self.view(self.request)
-        self.request.META['HTTP_X_FORWARDED_FOR'] = '4.4.4.4, 5.5.5.5, 6.6.6.6'
-        self.assertEqual(429, self.view(self.request).status_code)
-
     def test_xff_spoofing_doesnt_change_machine_id_with_one_app_proxy(self):
         self.config_proxy(1)
         self.view(self.request)
@@ -336,12 +330,6 @@ class XffSpoofingTests(XffTestingBase):
 
 
 class XffUniqueMachinesTest(XffTestingBase):
-    def test_unique_clients_are_counted_independently_with_no_proxies(self):
-        self.config_proxy(0)
-        self.view(self.request)
-        self.request.META['REMOTE_ADDR'] = '7.7.7.7'
-        self.assertEqual(200, self.view(self.request).status_code)
-
     def test_unique_clients_are_counted_independently_with_one_proxy(self):
         self.config_proxy(1)
         self.view(self.request)
