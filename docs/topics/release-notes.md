@@ -40,10 +40,13 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
-### Master
+### 2.3.10
+
+**Date**: 6th December 2013
 
 * Add in choices information for ChoiceFields in response to `OPTIONS` requests.
 * Added `pre_delete()` and `post_delete()` method hooks.
+* Added status code category helper functions.
 * Bugfix: Partial updates which erronously set a related field to `None` now correctly fail validation instead of raising an exception.
 * Bugfix: Responses without any content no longer include an HTTP `'Content-Type'` header.
 * Bugfix: Correctly handle validation errors in PUT-as-create case, responding with 400.
