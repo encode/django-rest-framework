@@ -35,10 +35,15 @@ The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_C
         'DEFAULT_THROTTLE_RATES': {
             'anon': '100/day',
             'user': '1000/day'
-        }        
+        },
+        'NUM_PROXIES': 2,
     }
 
 The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `minute`, `hour` or `day` as the throttle period.
+
+By default Django REST Framework will try to use the `HTTP_X_FORWARDED_FOR` header to uniquely identify client machines for throttling. If HTTP_X_FORWARDED_FOR is not present `REMOTE_ADDR` header value will be used.
+
+To help Django REST Framework identify unique clients the number of application proxies can be set using `NUM_PROXIES`. This setting will allow the throttle to correctly identify unique requests whenthere are multiple application side proxies in front of the server. `NUM_PROXIES` should be set to an integer. It is important to understand that if you configure `NUM_PROXIES > 0` all clients behind a unique [NAT'd](http://en.wikipedia.org/wiki/Network_address_translation) gateway will be treated as a single client.
 
 You can also set the throttling policy on a per-view or per-viewset basis,
 using the `APIView` class based views.
