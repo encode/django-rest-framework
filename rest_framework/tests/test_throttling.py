@@ -277,6 +277,7 @@ class ScopedRateThrottleTests(TestCase):
             response = self.unscoped_view(request)
             self.assertEqual(200, response.status_code)
 
+
 class XffTestingBase(TestCase):
     def setUp(self):
 
