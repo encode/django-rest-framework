@@ -244,10 +244,13 @@
 </code></pre>
 <hr />
 <h2 id="23x-series">2.3.x series</h2>
-<h3 id="master">Master</h3>
+<h3 id="2310">2.3.10</h3>
+<p><strong>Date</strong>: 6th December 2013</p>
 <ul>
 <li>Add in choices information for ChoiceFields in response to <code>OPTIONS</code> requests.</li>
 <li>Added <code>pre_delete()</code> and <code>post_delete()</code> method hooks.</li>
+<li>Added status code category helper functions.</li>
+<li>Bugfix: Partial updates which erronously set a related field to <code>None</code> now correctly fail validation instead of raising an exception.</li>
 <li>Bugfix: Responses without any content no longer include an HTTP <code>'Content-Type'</code> header.</li>
 <li>Bugfix: Correctly handle validation errors in PUT-as-create case, responding with 400.</li>
 </ul>

@@ -174,6 +174,7 @@
 <li><a href="#redirection---3xx">Redirection - 3xx</a></li>
 <li><a href="#client-error---4xx">Client Error - 4xx</a></li>
 <li><a href="#server-error---5xx">Server Error - 5xx</a></li>
+<li><a href="#helper-functions">Helper functions</a></li>
 
               <div>
               <hr>
@@ -220,6 +221,16 @@ def empty_view(self):
     return Response(content, status=status.HTTP_404_NOT_FOUND)
 </code></pre>
 <p>The full set of HTTP status codes included in the <code>status</code> module is listed below.</p>
+<p>The module also includes a set of helper functions for testing if a status code is in a given range.</p>
+<pre class="prettyprint lang-py"><code>from rest_framework import status
+from rest_framework.test import APITestCase
+
+class ExampleTestCase(APITestCase):
+    def test_url_root(self):
+        url = reverse('index')
+        response = self.client.get(url)
+        self.assertTrue(status.is_success(response.status_code))
+</code></pre>
 <p>For more information on proper usage of HTTP status codes see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">RFC 2616</a>
 and <a href="http://tools.ietf.org/html/rfc6585">RFC 6585</a>.</p>
 <h2 id="informational-1xx">Informational - 1xx</h2>
@@ -281,6 +292,14 @@ HTTP_503_SERVICE_UNAVAILABLE
 HTTP_504_GATEWAY_TIMEOUT
 HTTP_505_HTTP_VERSION_NOT_SUPPORTED
 HTTP_511_NETWORK_AUTHENTICATION_REQUIRED
+</code></pre>
+<h2 id="helper-functions">Helper functions</h2>
+<p>The following helper functions are available for identifying the category of the response code.</p>
+<pre class="prettyprint lang-py"><code>is_informational()  # 1xx
+is_success()        # 2xx
+is_redirect()       # 3xx
+is_client_error()   # 4xx
+is_server_error()   # 5xx
 </code></pre>
           </div><!--/span-->
         </div><!--/row-->
