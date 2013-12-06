@@ -896,7 +896,10 @@ class ModelSerializer(Serializer):
         # Update an existing instance...
         if instance is not None:
             for key, val in attrs.items():
-                setattr(instance, key, val)
+                try:
+                    setattr(instance, key, val)
+                except ValueError:
+                    self._errors[key] = self.error_messages['required']
 
         # ...or create a new instance
         else:
