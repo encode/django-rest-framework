@@ -44,7 +44,7 @@ In order to explain the various types of relational fields, we'll use a couple o
 For example, the following serializer.
  
     class AlbumSerializer(serializers.ModelSerializer):
-        tracks = RelatedField(many=True)
+        tracks = serializers.RelatedField(many=True)
         
         class Meta:
             model = Album
