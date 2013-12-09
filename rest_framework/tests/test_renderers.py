@@ -18,6 +18,9 @@ from rest_framework.test import APIRequestFactory
 import datetime
 import pickle
 import re
+import UserDict
+import collections
+import json
 
 
 DUMMYSTATUS = status.HTTP_200_OK
@@ -274,6 +277,60 @@ class JSONRendererTests(TestCase):
         ret = JSONRenderer().render(_('test'))
         self.assertEqual(ret, b'"test"')
 
+    def test_render_userdict_obj(self):
+        class DictLike(UserDict.DictMixin):
+            def __init__(self):
+                self._dict = dict()
+            def __getitem__(self, key):
+                return self._dict.__getitem__(key)
+            def __setitem__(self, key, value):
+                return self._dict.__setitem__(key, value)
+            def __delitem__(self, key):
+                return self._dict.__delitem__(key)
+            def keys(self):
+                return self._dict.keys()
+        x = DictLike()
+        x['a'] = 1
+        x['b'] = "string value"
+        ret = JSONRenderer().render(x)
+        self.assertEquals(json.loads(ret), {'a': 1, 'b': 'string value'})
+
+    def test_render_dict_abc_obj(self):
+        class Dict(collections.MutableMapping):
+            def __init__(self):
+                self._dict = dict()
+            def __getitem__(self, key):
+                return self._dict.__getitem__(key)
+            def __setitem__(self, key, value):
+                return self._dict.__setitem__(key, value)
+            def __delitem__(self, key):
+                return self._dict.__delitem__(key)
+            def __iter__(self):
+                return self._dict.__iter__()
+            def __len__(self):
+                return self._dict.__len__()
+
+        x = Dict()
+        x['key'] = 'string value'
+        x[2] = 3
+        ret = JSONRenderer().render(x)
+        self.assertEquals(json.loads(ret), {'key': 'string value', '2': 3})
+            
+
+    def test_render_obj_with_getitem(self):
+        class DictLike(object):
+            def __init__(self):
+                self._dict = {}
+            def set(self, value):
+                self._dict = dict(value)
+            def __getitem__(self, key):
+                return self._dict[key]
+            
+        x = DictLike()
+        x.set({'a': 1, 'b': 'string'})
+        with self.assertRaises(TypeError):
+            JSONRenderer().render(x)
+        
     def test_without_content_type_args(self):
         """
         Test basic JSON rendering.
