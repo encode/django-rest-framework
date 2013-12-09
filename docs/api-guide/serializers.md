@@ -425,7 +425,7 @@ You can change the field that is used for object lookups by setting the `lookup_
             fields = ('url', 'account_name', 'users', 'created')
             lookup_field = 'slug'
 
-Not that the `lookup_field` will be used as the default on *all* hyperlinked fields, including both the URL identity, and any hyperlinked relationships.
+Note that the `lookup_field` will be used as the default on *all* hyperlinked fields, including both the URL identity, and any hyperlinked relationships.
 
 For more specific requirements such as specifying a different lookup for each field, you'll want to set the fields on the serializer explicitly.  For example:
 
