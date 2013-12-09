@@ -118,7 +118,13 @@ Renders the request data into `JSONP`.  The `JSONP` media type provides a mechan
 
 The javascript callback function must be set by the client including a `callback` URL query parameter.  For example `http://example.com/api/users?callback=jsonpCallback`.  If the callback function is not explicitly set by the client it will default to `'callback'`.
 
-**Note**: If you require cross-domain AJAX requests, you may want to consider using the more modern approach of [CORS][cors] as an alternative to `JSONP`.  See the [CORS documentation][cors-docs] for more details.
+---
+
+**Warning**: If you require cross-domain AJAX requests, you should almost certainly be using the more modern approach of [CORS][cors] as an alternative to `JSONP`.  See the [CORS documentation][cors-docs] for more details.
+
+The `jsonp` approach is essentially a browser hack, and is [only appropriate for globally  readable API endpoints][jsonp-security], where `GET` requests are unauthenticated and do not require any user permissions.
+
+---
 
 **.media_type**: `application/javascript`
 
@@ -419,6 +425,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [rfc4627]: http://www.ietf.org/rfc/rfc4627.txt
 [cors]: http://www.w3.org/TR/cors/
 [cors-docs]: ../topics/ajax-csrf-cors.md
+[jsonp-security]: http://stackoverflow.com/questions/613962/is-jsonp-safe-to-use
 [testing]: testing.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas
 [quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven

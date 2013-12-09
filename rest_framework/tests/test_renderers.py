@@ -64,15 +64,21 @@ class MockView(APIView):
 
 
 class MockGETView(APIView):
-
     def get(self, request, **kwargs):
         return Response({'foo': ['bar', 'baz']})
 
 
-class MockPOSTView(APIView):
 
+class MockPOSTView(APIView):
     def post(self, request, **kwargs):
         return Response({'foo': request.DATA})
+
+
+class EmptyGETView(APIView):
+    renderer_classes = (JSONRenderer,)
+
+    def get(self, request, **kwargs):
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class HTMLView(APIView):
@@ -97,6 +103,7 @@ urlpatterns = patterns('',
     url(r'^parseerror$', MockPOSTView.as_view(renderer_classes=[JSONRenderer, BrowsableAPIRenderer])),
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
+    url(r'^empty$', EmptyGETView.as_view()),
     url(r'^api', include('rest_framework.urls', namespace='rest_framework'))
 )
 
@@ -231,6 +238,17 @@ class RendererEndToEndTests(TestCase):
         resp = self.client.post('/parseerror', data='foobar', content_type='application/json', HTTP_ACCEPT='text/html')
         self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_204_no_content_responses_have_no_content_type_set(self):
+        """
+        Regression test for #1196
+
+        https://github.com/tomchristie/django-rest-framework/issues/1196
+        """
+        resp = self.client.get('/empty')
+        self.assertEqual(resp.get('Content-Type', None), None)
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
 _indented_repr = '{\n  "foo": [\n    "bar",\n    "baz"\n  ]\n}'
