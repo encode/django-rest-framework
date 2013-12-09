@@ -230,7 +230,6 @@ class RendererEndToEndTests(TestCase):
         """Invalid data should still render the browsable API correctly."""
         resp = self.client.post('/parseerror', data='foobar', content_type='application/json', HTTP_ACCEPT='text/html')
         self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
-        self.assertIn('Mock Post', resp.content)
         self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
