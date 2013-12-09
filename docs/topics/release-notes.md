@@ -40,6 +40,10 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
+### Master
+
+* JSON renderer now deals with objects that implement a dict-like interface.
+
 ### 2.3.10
 
 **Date**: 6th December 2013
