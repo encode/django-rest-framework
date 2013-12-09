@@ -33,6 +33,8 @@ Some tips on good issue reporting:
 * When describing issues try to phrase your ticket in terms of the *behavior* you think needs changing rather than the *code* you think need changing.
 * Search the issue list first for related items, and make sure you're running the latest version of REST framework before reporting an issue.
 * If reporting a bug, then try to include a pull request with a failing test case.  This will help us quickly identify if there is a valid issue, and make sure that it gets fixed more quickly if there is one.
+* Feature requests will often be closed with a recommendation that they be implemented outside of the core REST framework library.  Keeping new feature requests implemented as third party libraries allows us to keep down the maintainence overhead of REST framework, so that the focus can be on continued stability, bugfixes, and great documentation.
+* Closing an issue doesn't necessarily mean the end of a discussion.  If you believe your issue has been closed incorrectly, explain why and we'll consider if it needs to be reopened.
 
 ## Triaging issues
 
@@ -42,6 +44,7 @@ Getting involved in triaging incoming issues is a good way to start contributing
 * Is the ticket reported in the correct place, would it be better suited as a discussion on the discussion group?
 * If the ticket is a bug report, can you reproduce it? Are you able to write a failing test case that demonstrates the issue and that can be submitted as a pull request?
 * If the ticket is a feature request, do you agree with it, and could the feature request instead be implemented as a third party package?
+* If a ticket hasn't had much activity and it addresses something you need, then comment on the ticket and try to find out what's needed to get it moving again.
 
 # Development
 
