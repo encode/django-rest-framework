@@ -68,11 +68,18 @@ class MockGETView(APIView):
         return Response({'foo': ['bar', 'baz']})
 
 
+
+class MockPOSTView(APIView):
+    def post(self, request, **kwargs):
+        return Response({'foo': request.DATA})
+
+
 class EmptyGETView(APIView):
     renderer_classes = (JSONRenderer,)
 
     def get(self, request, **kwargs):
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 class HTMLView(APIView):
     renderer_classes = (BrowsableAPIRenderer, )
@@ -93,6 +100,7 @@ urlpatterns = patterns('',
     url(r'^cache$', MockGETView.as_view()),
     url(r'^jsonp/jsonrenderer$', MockGETView.as_view(renderer_classes=[JSONRenderer, JSONPRenderer])),
     url(r'^jsonp/nojsonrenderer$', MockGETView.as_view(renderer_classes=[JSONPRenderer])),
+    url(r'^parseerror$', MockPOSTView.as_view(renderer_classes=[JSONRenderer, BrowsableAPIRenderer])),
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
     url(r'^empty$', EmptyGETView.as_view()),
@@ -224,6 +232,12 @@ class RendererEndToEndTests(TestCase):
         self.assertEqual(resp['Content-Type'], RendererB.media_type + '; charset=utf-8')
         self.assertEqual(resp.content, RENDERER_B_SERIALIZER(DUMMYCONTENT))
         self.assertEqual(resp.status_code, DUMMYSTATUS)
+
+    def test_parse_error_renderers_browsable_api(self):
+        """Invalid data should still render the browsable API correctly."""
+        resp = self.client.post('/parseerror', data='foobar', content_type='application/json', HTTP_ACCEPT='text/html')
+        self.assertEqual(resp['Content-Type'], 'text/html; charset=utf-8')
+        self.assertEqual(resp.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_204_no_content_responses_have_no_content_type_set(self):
         """
