@@ -184,7 +184,7 @@
               <div>
               <hr>
 
-<p><strong>The team behind REST framework are launching a new API service.</strong></p>
+<p><strong>The team behind REST framework is launching a new API service.</strong></p>
 
 <p>If you want to be first in line when we start issuing invitations, please sign up here:</p>
 
@@ -293,7 +293,7 @@ pip install django-filter  # Filtering support
 <p>Don't forget to make sure you've also added <code>rest_framework</code> to your <code>INSTALLED_APPS</code>.</p>
 <p>We're ready to create our API now.
 Here's our project's root <code>urls.py</code> module:</p>
-<pre class="prettyprint lang-py"><code>from django.conf.urls.defaults import url, patterns, include
+<pre class="prettyprint lang-py"><code>from django.conf.urls import url, patterns, include
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets, routers
 

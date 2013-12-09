@@ -189,7 +189,7 @@
               <div>
               <hr>
 
-<p><strong>The team behind REST framework are launching a new API service.</strong></p>
+<p><strong>The team behind REST framework is launching a new API service.</strong></p>
 
 <p>If you want to be first in line when we start issuing invitations, please sign up here:</p>
 
@@ -250,7 +250,7 @@ class Track(models.Model):
 <p><code>RelatedField</code> may be used to represent the target of the relationship using its <code>__unicode__</code> method.</p>
 <p>For example, the following serializer.</p>
 <pre class="prettyprint lang-py"><code>class AlbumSerializer(serializers.ModelSerializer):
-    tracks = RelatedField(many=True)
+    tracks = serializers.RelatedField(many=True)
 
     class Meta:
         model = Album

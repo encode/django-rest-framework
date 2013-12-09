@@ -6,7 +6,7 @@
     <link href="http://django-rest-framework.org/img/favicon.ico" rel="icon" type="image/x-icon">
     <link rel="canonical" href="http://django-rest-framework.org/topics/contributing"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Django, API, REST, Contributing to REST framework, Issues, Development, Documentation">
+    <meta name="description" content="Django, API, REST, Contributing to REST framework, Issues, Development, Documentation, Third party packages">
     <meta name="author" content="Tom Christie">
 
     <!-- Le styles -->
@@ -181,11 +181,14 @@
 <li><a href="#building-the-documentation">Building the documentation</a></li>
 <li><a href="#language-style">Language style</a></li>
 <li><a href="#markdown-style">Markdown style</a></li>
+<li class="main"><a href="#third-party-packages">Third party packages</a></li>
+<li><a href="#getting-started">Getting started</a></li>
+<li><a href="#linking-to-your-package">Linking to your package</a></li>
 
               <div>
               <hr>
 
-<p><strong>The team behind REST framework are launching a new API service.</strong></p>
+<p><strong>The team behind REST framework is launching a new API service.</strong></p>
 
 <p>If you want to be first in line when we start issuing invitations, please sign up here:</p>
 
@@ -220,7 +223,7 @@
 <p>There are many ways you can contribute to Django REST framework.  We'd like it to be a community-led project, so please get involved and help shape the future of the project.</p>
 <h2 id="community">Community</h2>
 <p>The most important thing you can do to help push the REST framework project forward is to be actively involved wherever possible.  Code contributions are often overvalued as being the primary way to get involved in a project, we don't believe that needs to be the case.</p>
-<p>If you use REST framework, we'd love you to be vocal about your experiances with it - you might consider writing a blog post on your experience with using REST framework, or publishing a tutorial about using the project with a particular javascript framework.  Experiances from beginners can be particularly helpful because you'll be in the best position to assess which bits of REST framework are and aren't easy to understand and work with.</p>
+<p>If you use REST framework, we'd love you to be vocal about your experiences with it - you might consider writing a blog post about using REST framework, or publishing a tutorial about building a project with a particularJjavascript framework.  Experiences from beginners can be particularly helpful because you'll be in the best position to assess which bits of REST framework are more difficult to understand and work with.</p>
 <p>Other really great ways you can help move the community forward include helping answer questions on the <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">discussion group</a>, or setting up an <a href="http://stackexchange.com/filters/66475/rest-framework">email alert on StackOverflow</a> so that you get notified of any new questions with the <code>django-rest-framework</code> tag.</p>
 <p>When answering questions make sure to help future contributors find their way around by hyperlinking wherever possible to related threads and tickets, and include backlinks from those items if relevant. </p>
 <h2 id="code-of-conduct">Code of conduct</h2>
@@ -234,6 +237,8 @@
 <li>When describing issues try to phrase your ticket in terms of the <em>behavior</em> you think needs changing rather than the <em>code</em> you think need changing.</li>
 <li>Search the issue list first for related items, and make sure you're running the latest version of REST framework before reporting an issue.</li>
 <li>If reporting a bug, then try to include a pull request with a failing test case.  This will help us quickly identify if there is a valid issue, and make sure that it gets fixed more quickly if there is one.</li>
+<li>Feature requests will often be closed with a recommendation that they be implemented outside of the core REST framework library.  Keeping new feature requests implemented as third party libraries allows us to keep down the maintainence overhead of REST framework, so that the focus can be on continued stability, bugfixes, and great documentation.</li>
+<li>Closing an issue doesn't necessarily mean the end of a discussion.  If you believe your issue has been closed incorrectly, explain why and we'll consider if it needs to be reopened.</li>
 </ul>
 <h2 id="triaging-issues">Triaging issues</h2>
 <p>Getting involved in triaging incoming issues is a good way to start contributing.  Every single ticket that comes into the ticket tracker needs to be reviewed in order to determine what the next steps should be.  Anyone can help out with this, you just need to be willing to </p>
@@ -242,6 +247,7 @@
 <li>Is the ticket reported in the correct place, would it be better suited as a discussion on the discussion group?</li>
 <li>If the ticket is a bug report, can you reproduce it? Are you able to write a failing test case that demonstrates the issue and that can be submitted as a pull request?</li>
 <li>If the ticket is a feature request, do you agree with it, and could the feature request instead be implemented as a third party package?</li>
+<li>If a ticket hasn't had much activity and it addresses something you need, then comment on the ticket and try to find out what's needed to get it moving again.</li>
 </ul>
 <h1 id="development">Development</h1>
 <p>To start developing on Django REST framework, clone the repo:</p>
@@ -323,6 +329,13 @@ More text...
 
 ---
 </code></pre>
+<h1 id="third-party-packages">Third party packages</h1>
+<p>New features to REST framework are generally recommended to be implemented as third party libraries that are developed outside of the core framework.  Ideally third party libraries should be properly documented and packaged, and made available on PyPI.</p>
+<h2 id="getting-started">Getting started</h2>
+<p>If you have some functionality that you would like to implement as a third party package it's worth contacting the <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">discussion group</a> as others may be willing to get involved.  We strongly encourage third party package development and will always try to prioritize time spent helping their development, documentation and packaging.</p>
+<p>We recommend the <a href="https://github.com/dabapps/django-reusable-app"><code>django-reusable-app</code></a> template as a good resource for getting up and running with implementing a third party Django package.</p>
+<h2 id="linking-to-your-package">Linking to your package</h2>
+<p>Once your package is decently documented and available on PyPI open a pull request or issue, and we'll add a link to it from the main REST framework documentation.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->
