@@ -548,7 +548,7 @@ The <code>ModelSerializer</code> class lets you automatically create a Serialize
         fields = ('url', 'account_name', 'users', 'created')
         lookup_field = 'slug'
 </code></pre>
-<p>Not that the <code>lookup_field</code> will be used as the default on <em>all</em> hyperlinked fields, including both the URL identity, and any hyperlinked relationships.</p>
+<p>Note that the <code>lookup_field</code> will be used as the default on <em>all</em> hyperlinked fields, including both the URL identity, and any hyperlinked relationships.</p>
 <p>For more specific requirements such as specifying a different lookup for each field, you'll want to set the fields on the serializer explicitly.  For example:</p>
 <pre class="prettyprint lang-py"><code>class AccountSerializer(serializers.HyperlinkedModelSerializer):
     url = serializers.HyperlinkedIdentityField(
