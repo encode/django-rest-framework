@@ -10,7 +10,7 @@ There are many ways you can contribute to Django REST framework.  We'd like it t
 
 The most important thing you can do to help push the REST framework project forward is to be actively involved wherever possible.  Code contributions are often overvalued as being the primary way to get involved in a project, we don't believe that needs to be the case.
 
-If you use REST framework, we'd love you to be vocal about your experiances with it - you might consider writing a blog post on your experience with using REST framework, or publishing a tutorial about using the project with a particular javascript framework.  Experiances from beginners can be particularly helpful because you'll be in the best position to assess which bits of REST framework are and aren't easy to understand and work with.
+If you use REST framework, we'd love you to be vocal about your experiences with it - you might consider writing a blog post about using REST framework, or publishing a tutorial about building a project with a particularJjavascript framework.  Experiences from beginners can be particularly helpful because you'll be in the best position to assess which bits of REST framework are more difficult to understand and work with.
 
 Other really great ways you can help move the community forward include helping answer questions on the [discussion group][google-group], or setting up an [email alert on StackOverflow][so-filter] so that you get notified of any new questions with the `django-rest-framework` tag.
 
