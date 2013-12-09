@@ -47,8 +47,7 @@ class JSONEncoder(json.JSONEncoder):
         elif hasattr(o, '__getitem__'):
             try:
                 return dict(o)
-            except KeyError:
-                # Couldn't convert to a dict, fall through
+            except:
                 pass
         elif hasattr(o, '__iter__'):
             return [i for i in o]

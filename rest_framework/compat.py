@@ -69,6 +69,13 @@ try:
 except ImportError:
     import urlparse
 
+# UserDict moves in Python 3
+try:
+    from UserDict import UserDict
+    from UserDict import DictMixin
+except ImportError:
+    from collections import UserDict
+    from collections import MutableMapping as DictMixin
 
 # Try to import PIL in either of the two ways it can end up installed.
 try:
