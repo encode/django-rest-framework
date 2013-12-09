@@ -362,7 +362,7 @@ class Request(object):
             # If we get an exception during parsing, fill in empty data and
             # re-raise.  Ensures we don't simply repeat the error when
             # attempting to render the browsable renderer response, or when
-            # logging the request or similar. 
+            # logging the request or similar.
             self._data = QueryDict('', self._request._encoding)
             self._files = MultiValueDict()
             raise

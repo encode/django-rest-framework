@@ -20,6 +20,7 @@ from rest_framework.compat import StringIO
 from rest_framework.compat import six
 from rest_framework.compat import smart_text
 from rest_framework.compat import yaml
+from rest_framework.exceptions import ParseError
 from rest_framework.settings import api_settings
 from rest_framework.request import is_form_media_type, override_method
 from rest_framework.utils import encoders
@@ -420,8 +421,12 @@ class BrowsableAPIRenderer(BaseRenderer):
         In the absence of the View having an associated form then return None.
         """
         if request.method == method:
-            data = request.DATA
-            files = request.FILES
+            try:
+                data = request.DATA
+                files = request.FILES
+            except ParseError:
+                data = None
+                files = None        
         else:
             data = None
             files = None
