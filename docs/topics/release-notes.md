@@ -43,6 +43,7 @@ You can determine your currently installed version using `pip freeze`:
 ### Master
 
 * JSON renderer now deals with objects that implement a dict-like interface.
+* Bugfix: Refine behavior that call's model manager `all()` across nested serializer relationships, preventing erronous behavior with some non-ORM objects, and preventing unneccessary queryset re-evaluations.
 
 ### 2.3.10
 
