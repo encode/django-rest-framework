@@ -412,7 +412,13 @@ class BaseSerializer(WritableField):
 
         # Set the serializer object if it exists
         obj = get_component(self.parent.object, self.source or field_name) if self.parent.object else None
-        obj = obj.all() if is_simple_callable(getattr(obj, 'all', None)) else obj
+
+        # If we have a model manager or similar object then we need
+        # to iterate through each instance.
+        if (self.many and
+            not hasattr(obj, '__iter__') and
+            is_simple_callable(getattr(obj, 'all', None))):
+            obj = obj.all()
 
         if self.source == '*':
             if value:
