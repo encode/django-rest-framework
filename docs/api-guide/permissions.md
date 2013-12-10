@@ -232,7 +232,7 @@ The [Composed Permissions][composed-permissions] package provides a simple way t
 
 ## REST Condition
 
-The [REST Condition][rest-condition] yet another but simple and convenient extension for complex permissions tree. The extension allows to combine permissions with logical operators rules. Logical expressions can be used along with the usual permissions classes in api views.
+The [REST Condition][rest-condition] package is another extension for building complex permissions in a simple and convenient way.  The extension allows you to combine permissions with logical operators.
 
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
