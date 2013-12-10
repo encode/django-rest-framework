@@ -230,6 +230,10 @@ The [DRF Any Permissions][drf-any-permissions] packages provides a different per
 
 The [Composed Permissions][composed-permissions] package provides a simple way to define complex and multi-depth (with logic operators) permission objects, using small and reusable components.
 
+## REST Condition
+
+The [REST Condition][rest-condition] yet another but simple and convenient extension for complex permissions tree. The extension allows to combine permissions with logical operators rules. Logical expressions can be used along with the usual permissions classes in api views.
+
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
 [throttling]: throttling.md
@@ -243,3 +247,4 @@ The [Composed Permissions][composed-permissions] package provides a simple way t
 [filtering]: filtering.md
 [drf-any-permissions]: https://github.com/kevin-brown/drf-any-permissions
 [composed-permissions]: https://github.com/niwibe/djangorestframework-composed-permissions
+[rest-condition]: https://github.com/caxap/rest_condition
