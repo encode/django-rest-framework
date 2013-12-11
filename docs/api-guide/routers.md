@@ -12,7 +12,7 @@ REST framework adds support for automatic URL routing to Django, and provides yo
 
 ## Usage
 
-Here's an example of a simple URL conf, that uses `DefaultRouter`.
+Here's an example of a simple URL conf, that uses `SimpleRouter`.
 
     from rest_framework import routers
 
