@@ -40,12 +40,6 @@ class DjangoFilterBackend(BaseFilterBackend):
         filter_fields = getattr(view, 'filter_fields', None)
 
         if filter_class:
-            filter_model = filter_class.Meta.model
-
-            assert issubclass(filter_model, queryset.model), \
-                'FilterSet model %s does not match queryset model %s' % \
-                (filter_model, queryset.model)
-
             return filter_class
 
         if filter_fields:
