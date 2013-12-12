@@ -6,7 +6,7 @@
     <link href="http://django-rest-framework.org/img/favicon.ico" rel="icon" type="image/x-icon">
     <link rel="canonical" href="http://django-rest-framework.org/api-guide/routers"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Django, API, REST, Routers, API Guide, Custom Routers">
+    <meta name="description" content="Django, API, REST, Routers, API Guide, Custom Routers, Third Party Packages">
     <meta name="author" content="Tom Christie">
 
     <!-- Le styles -->
@@ -176,6 +176,8 @@
 <li class="main"><a href="#custom-routers">Custom Routers</a></li>
 <li><a href="#example">Example</a></li>
 <li><a href="#advanced-custom-routers">Advanced custom routers</a></li>
+<li class="main"><a href="#third-party-packages">Third Party Packages</a></li>
+<li><a href="#drf-nested-routers">DRF Nested Routers</a></li>
 
               <div>
               <hr>
@@ -216,7 +218,7 @@
 <p>Some Web frameworks such as Rails provide functionality for automatically determining how the URLs for an application should be mapped to the logic that deals with handling incoming requests.</p>
 <p>REST framework adds support for automatic URL routing to Django, and provides you with a simple, quick and consistent way of wiring your view logic to a set of URLs.</p>
 <h2 id="usage">Usage</h2>
-<p>Here's an example of a simple URL conf, that uses <code>DefaultRouter</code>.</p>
+<p>Here's an example of a simple URL conf, that uses <code>SimpleRouter</code>.</p>
 <pre class="prettyprint lang-py"><code>from rest_framework import routers
 
 router = routers.SimpleRouter()
@@ -331,6 +333,10 @@ class ReadOnlyRouter(SimpleRouter):
 <h2 id="advanced-custom-routers">Advanced custom routers</h2>
 <p>If you want to provide totally custom behavior, you can override <code>BaseRouter</code> and override the <code>get_urls(self)</code> method.  The method should inspect the registered viewsets and return a list of URL patterns.  The registered prefix, viewset and basename tuples may be inspected by accessing the <code>self.registry</code> attribute.  </p>
 <p>You may also want to override the <code>get_default_base_name(self, viewset)</code> method, or else always explicitly set the <code>base_name</code> argument when registering your viewsets with the router.</p>
+<h1 id="third-party-packages">Third Party Packages</h1>
+<p>The following third party packages provide router implementations that extend the default functionality provided by REST framework.</p>
+<h2 id="drf-nested-routers">DRF Nested Routers</h2>
+<p>The <a href="https://github.com/alanjds/drf-nested-routers">drf-nested-routers package</a> provides routers and relationship fields for working with nested resources.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->

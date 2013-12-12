@@ -247,6 +247,7 @@
 <h3 id="master">Master</h3>
 <ul>
 <li>JSON renderer now deals with objects that implement a dict-like interface.</li>
+<li>Bugfix: Refine behavior that calls model manager <code>all()</code> across nested serializer relationships, preventing erronous behavior with some non-ORM objects, and preventing unneccessary queryset re-evaluations.</li>
 </ul>
 <h3 id="2310">2.3.10</h3>
 <p><strong>Date</strong>: 6th December 2013</p>
