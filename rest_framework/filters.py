@@ -41,11 +41,23 @@ class DjangoFilterBackend(BaseFilterBackend):
 
         if filter_class:
             filter_model = filter_class.Meta.model
+            
+            # Haystack SearchQuerySet optional support
+            try:
+                from haystack.query import SearchQuerySet
+            except ImportError:
+                pass
+            else:
+                if isinstance(queryset, SearchQuerySet) and queryset.query.models != [filter_model]:
+                    raise TypeError('The search queryset must be filtered with the FilterSet model %s. Got %s instead' % (filter_model, queryset.query.models))
 
-            assert issubclass(filter_model, queryset.model), \
-                'FilterSet model %s does not match queryset model %s' % \
-                (filter_model, queryset.model)
+            # Django QuerySet support
+            from django.db.models.query import QuerySet
+            
+            if isinstance(queryset, QuerySet) and not issubclass(filter_model, queryset.model):
+                raise TypeError('FilterSet model %s does not match queryset model %s' % (filter_model, queryset.model))
 
+            # Other queryset-like objects
             return filter_class
 
         if filter_fields:
