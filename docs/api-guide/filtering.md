@@ -360,6 +360,14 @@ For example, you might need to restrict users to only being able to see objects 
 
 We could achieve the same behavior by overriding `get_queryset()` on the views, but using a filter backend allows you to more easily add this restriction to multiple views, or to apply it across the entire API.
 
+# Third party packages
+
+The following third party packages provide additional filter implementations.
+
+## Django REST framework chain
+
+The [django-rest-framework-chain package][django-rest-framework-chain] works together with the `DjangoFilterBackend` class, and allows you to easily create filters across relationships, or create multiple filter lookup types for a given field.
+
 [cite]: https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter
 [django-filter-docs]: https://django-filter.readthedocs.org/en/latest/index.html
@@ -368,3 +376,4 @@ We could achieve the same behavior by overriding `get_queryset()` on the views, 
 [view-permissions-blogpost]: http://blog.nyaruka.com/adding-a-view-permission-to-django-models
 [nullbooleanselect]: https://github.com/django/django/blob/master/django/forms/widgets.py
 [search-django-admin]: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
+[django-rest-framework-chain]: https://github.com/philipn/django-rest-framework-chain

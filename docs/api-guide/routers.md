@@ -150,4 +150,13 @@ If you want to provide totally custom behavior, you can override `BaseRouter` an
 
 You may also want to override the `get_default_base_name(self, viewset)` method, or else always explicitly set the `base_name` argument when registering your viewsets with the router.
 
+# Third Party Packages
+
+The following third party packages provide router implementations that extend the default functionality provided by REST framework.
+
+## DRF Nested Routers
+
+The [drf-nested-routers package][drf-nested-routers] provides routers and relationship fields for working with nested resources.
+
 [cite]: http://guides.rubyonrails.org/routing.html
+[drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
