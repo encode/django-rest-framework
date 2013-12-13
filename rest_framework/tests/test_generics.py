@@ -23,6 +23,10 @@ class InstanceView(generics.RetrieveUpdateDestroyAPIView):
     """
     model = BasicModel
 
+    def get_queryset(self):
+        queryset = super(InstanceView, self).get_queryset()
+        return queryset.exclude(text='filtered out')
+
 
 class SlugSerializer(serializers.ModelSerializer):
     slug = serializers.Field()  # read only
@@ -160,10 +164,10 @@ class TestInstanceView(TestCase):
         """
         Create 3 BasicModel intances.
         """
-        items = ['foo', 'bar', 'baz']
+        items = ['foo', 'bar', 'baz', 'filtered out']
         for item in items:
             BasicModel(text=item).save()
-        self.objects = BasicModel.objects
+        self.objects = BasicModel.objects.exclude(text='filtered out')
         self.data = [
             {'id': obj.id, 'text': obj.text}
             for obj in self.objects.all()
@@ -352,6 +356,17 @@ class TestInstanceView(TestCase):
         updated = self.objects.get(id=1)
         self.assertEqual(updated.text, 'foobar')
 
+    def test_put_to_filtered_out_instance(self):
+        """
+        PUT requests to an URL of instance which is filtered out should not be
+        able to create new objects.
+        """
+        data = {'text': 'foo'}
+        filtered_out_pk = BasicModel.objects.filter(text='filtered out')[0].pk
+        request = factory.put('/{0}'.format(filtered_out_pk), data, format='json')
+        response = self.view(request, pk=filtered_out_pk).render()
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_put_as_create_on_id_based_url(self):
         """
         PUT requests to RetrieveUpdateDestroyAPIView should create an object
@@ -508,6 +523,25 @@ class ExclusiveFilterBackend(object):
         return queryset.filter(text='other')
 
 
+class TwoFieldModel(models.Model):
+    field_a = models.CharField(max_length=100)
+    field_b = models.CharField(max_length=100)
+
+
+class DynamicSerializerView(generics.ListCreateAPIView):
+    model = TwoFieldModel
+    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
+
+    def get_serializer_class(self):
+        if self.request.method == 'POST':
+            class DynamicSerializer(serializers.ModelSerializer):
+                class Meta:
+                    model = TwoFieldModel
+                    fields = ('field_b',)
+            return DynamicSerializer
+        return super(DynamicSerializerView, self).get_serializer_class()
+
+
 class TestFilterBackendAppliedToViews(TestCase):
 
     def setUp(self):
@@ -563,28 +597,6 @@ class TestFilterBackendAppliedToViews(TestCase):
         response = instance_view(request, pk=1).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, {'id': 1, 'text': 'foo'})
-
-
-class TwoFieldModel(models.Model):
-    field_a = models.CharField(max_length=100)
-    field_b = models.CharField(max_length=100)
-
-
-class DynamicSerializerView(generics.ListCreateAPIView):
-    model = TwoFieldModel
-    renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
-
-    def get_serializer_class(self):
-        if self.request.method == 'POST':
-            class DynamicSerializer(serializers.ModelSerializer):
-                class Meta:
-                    model = TwoFieldModel
-                    fields = ('field_b',)
-            return DynamicSerializer
-        return super(DynamicSerializerView, self).get_serializer_class()
-
-
-class TestFilterBackendAppliedToViews(TestCase):
 
     def test_dynamic_serializer_form_in_browsable_api(self):
         """

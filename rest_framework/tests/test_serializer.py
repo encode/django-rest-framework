@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.db import models
 from django.db.models.fields import BLANK_CHOICE_DASH
@@ -136,6 +137,7 @@ class BasicTests(TestCase):
             'Happy new year!',
             datetime.datetime(2012, 1, 1)
         )
+        self.actionitem = ActionItem(title='Some to do item',)
         self.data = {
             'email': 'tom@example.com',
             'content': 'Happy new year!',
@@ -157,8 +159,7 @@ class BasicTests(TestCase):
         expected = {
             'email': '',
             'content': '',
-            'created': None,
-            'sub_comment': ''
+            'created': None
         }
         self.assertEqual(serializer.data, expected)
 
@@ -263,6 +264,20 @@ class BasicTests(TestCase):
         Regression test for #652.
         """
         self.assertRaises(AssertionError, PersonSerializerInvalidReadOnly, [])
+
+    def test_serializer_data_is_cleared_on_save(self):
+        """
+        Check _data attribute is cleared on `save()`
+
+        Regression test for #1116
+            — id field is not populated if `data` is accessed prior to `save()`
+        """
+        serializer = ActionItemSerializer(self.actionitem)
+        self.assertIsNone(serializer.data.get('id',None), 'New instance. `id` should not be set.')
+        serializer.save()
+        self.assertIsNotNone(serializer.data.get('id',None), 'Model is saved. `id` should be set.')
+
+
 
 
 class DictStyleSerializer(serializers.Serializer):
@@ -496,6 +511,33 @@ class CustomValidationTests(TestCase):
         self.assertFalse(serializer.is_valid())
         self.assertEqual(serializer.errors, {'email': ['Enter a valid email address.']})
 
+    def test_partial_update(self):
+        """
+        Make sure that validate_email isn't called when partial=True and email
+        isn't found in data.
+        """
+        initial_data = {
+            'email': 'tom@example.com',
+            'content': 'A test comment',
+            'created': datetime.datetime(2012, 1, 1)
+        }
+
+        serializer = self.CommentSerializerWithFieldValidator(data=initial_data)
+        self.assertEqual(serializer.is_valid(), True)
+        instance = serializer.object
+
+        new_content = 'An *updated* test comment'
+        partial_data = {
+            'content': new_content
+        }
+
+        serializer = self.CommentSerializerWithFieldValidator(instance=instance,
+                                                              data=partial_data,
+                                                              partial=True)
+        self.assertEqual(serializer.is_valid(), True)
+        instance = serializer.object
+        self.assertEqual(instance.content, new_content)
+
 
 class PositiveIntegerAsChoiceTests(TestCase):
     def test_positive_integer_in_json_is_correctly_parsed(self):
@@ -515,6 +557,29 @@ class ModelValidationTests(TestCase):
         second_serializer = AlbumsSerializer(data={'title': 'a'})
         self.assertFalse(second_serializer.is_valid())
         self.assertEqual(second_serializer.errors,  {'title': ['Album with this Title already exists.']})
+
+    def test_foreign_key_is_null_with_partial(self):
+        """
+        Test ModelSerializer validation with partial=True
+
+        Specifically test that a null foreign key does not pass validation
+        """
+        album = Album(title='test')
+        album.save()
+
+        class PhotoSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Photo
+
+        photo_serializer = PhotoSerializer(data={'description': 'test', 'album': album.pk})
+        self.assertTrue(photo_serializer.is_valid())
+        photo = photo_serializer.save()
+
+        # Updating only the album (foreign key)
+        photo_serializer = PhotoSerializer(instance=photo, data={'album': ''}, partial=True)
+        self.assertFalse(photo_serializer.is_valid())
+        self.assertTrue('album' in photo_serializer.errors)
+        self.assertEqual(photo_serializer.errors['album'], photo_serializer.error_messages['required'])
 
     def test_foreign_key_with_partial(self):
         """
@@ -1643,3 +1708,38 @@ class SerializerSupportsManyRelationships(TestCase):
         serializer = SimpleSlugSourceModelSerializer(data={'text': 'foo', 'targets': [1, 2]})
         self.assertTrue(serializer.is_valid())
         self.assertEqual(serializer.data, {'text': 'foo', 'targets': [1, 2]})
+
+
+class TransformMethodsSerializer(serializers.Serializer):
+    a = serializers.CharField()
+    b_renamed = serializers.CharField(source='b')
+
+    def transform_a(self, obj, value):
+        return value.lower()
+
+    def transform_b_renamed(self, obj, value):
+        if value is not None:
+            return 'and ' + value
+
+
+class TestSerializerTransformMethods(TestCase):
+    def setUp(self):
+        self.s = TransformMethodsSerializer()
+
+    def test_transform_methods(self):
+        self.assertEqual(
+            self.s.to_native({'a': 'GREEN EGGS', 'b': 'HAM'}),
+            {
+                'a': 'green eggs',
+                'b_renamed': 'and HAM',
+            }
+        )
+
+    def test_missing_fields(self):
+        self.assertEqual(
+            self.s.to_native({'a': 'GREEN EGGS'}),
+            {
+                'a': 'green eggs',
+                'b_renamed': None,
+            }
+        )

@@ -25,13 +25,13 @@ def strict_positive_int(integer_string, cutoff=None):
         ret = min(ret, cutoff)
     return ret
 
-def get_object_or_404(queryset, **filter_kwargs):
+def get_object_or_404(queryset, *filter_args, **filter_kwargs):
     """
     Same as Django's standard shortcut, but make sure to raise 404
     if the filter_kwargs don't match the required types.
     """
     try:
-        return _get_object_or_404(queryset, **filter_kwargs)
+        return _get_object_or_404(queryset, *filter_args, **filter_kwargs)
     except (TypeError, ValueError):
         raise Http404
 
@@ -54,6 +54,7 @@ class GenericAPIView(views.APIView):
     # If you want to use object lookups other than pk, set this attribute.
     # For more complex lookup requirements override `get_object()`.
     lookup_field = 'pk'
+    lookup_url_kwarg = None
 
     # Pagination settings
     paginate_by = api_settings.PAGINATE_BY
@@ -147,8 +148,8 @@ class GenericAPIView(views.APIView):
         page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
         page = page_kwarg or page_query_param or 1
         try:
-            page_number = strict_positive_int(page)
-        except ValueError:
+            page_number = paginator.validate_number(page)
+        except InvalidPage:
             if page == 'last':
                 page_number = paginator.num_pages
             else:
@@ -174,6 +175,14 @@ class GenericAPIView(views.APIView):
         method if you want to apply the configured filtering backend to the
         default queryset.
         """
+        for backend in self.get_filter_backends():
+            queryset = backend().filter_queryset(self.request, queryset, self)
+        return queryset
+
+    def get_filter_backends(self):
+        """
+        Returns the list of filter backends that this view requires.
+        """
         filter_backends = self.filter_backends or []
         if not filter_backends and self.filter_backend:
             warnings.warn(
@@ -184,10 +193,8 @@ class GenericAPIView(views.APIView):
                 DeprecationWarning, stacklevel=2
             )
             filter_backends = [self.filter_backend]
+        return filter_backends
 
-        for backend in filter_backends:
-            queryset = backend().filter_queryset(self.request, queryset, self)
-        return queryset
 
     ########################
     ### The following methods provide default implementations
@@ -278,9 +285,11 @@ class GenericAPIView(views.APIView):
             pass  # Deprecation warning
 
         # Perform the lookup filtering.
+        # Note that `pk` and `slug` are deprecated styles of lookup filtering.
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        lookup = self.kwargs.get(lookup_url_kwarg, None)
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         slug = self.kwargs.get(self.slug_url_kwarg, None)
-        lookup = self.kwargs.get(self.lookup_field, None)
 
         if lookup is not None:
             filter_kwargs = {self.lookup_field: lookup}
@@ -330,6 +339,18 @@ class GenericAPIView(views.APIView):
         pass
 
     def post_save(self, obj, created=False):
+        """
+        Placeholder method for calling after saving an object.
+        """
+        pass
+
+    def pre_delete(self, obj):
+        """
+        Placeholder method for calling before deleting an object.
+        """
+        pass
+
+    def post_delete(self, obj):
         """
         Placeholder method for calling after saving an object.
         """

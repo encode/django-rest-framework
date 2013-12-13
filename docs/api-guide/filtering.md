@@ -165,8 +165,8 @@ For more advanced filtering requirements you can specify a `FilterSet` class tha
     from rest_framework import generics
 
     class ProductFilter(django_filters.FilterSet):
-        min_price = django_filters.NumberFilter(lookup_type='gte')
-        max_price = django_filters.NumberFilter(lookup_type='lte')
+        min_price = django_filters.NumberFilter(name="price", lookup_type='gte')
+        max_price = django_filters.NumberFilter(name="price", lookup_type='lte')
         class Meta:
             model = Product
             fields = ['category', 'in_stock', 'min_price', 'max_price']
@@ -176,10 +176,49 @@ For more advanced filtering requirements you can specify a `FilterSet` class tha
         serializer_class = ProductSerializer
         filter_class = ProductFilter
 
+
 Which will allow you to make requests such as:
 
     http://example.com/api/products?category=clothing&max_price=10.00
 
+You can also span relationships using `django-filter`, let's assume that each
+product has foreign key to `Manufacturer` model, so we create filter that
+filters using `Manufacturer` name. For example:
+
+    import django_filters
+    from myapp.models import Product
+    from myapp.serializers import ProductSerializer
+    from rest_framework import generics
+
+    class ProductFilter(django_filters.FilterSet):
+        class Meta:
+            model = Product
+            fields = ['category', 'in_stock', 'manufacturer__name`]
+
+This enables us to make queries like:
+
+    http://example.com/api/products?manufacturer__name=foo
+
+This is nice, but it shows underlying model structure in REST API, which may
+be undesired, but you can use:
+
+    import django_filters
+    from myapp.models import Product
+    from myapp.serializers import ProductSerializer
+    from rest_framework import generics
+
+    class ProductFilter(django_filters.FilterSet):
+
+        manufacturer = django_filters.CharFilter(name="manufacturer__name")
+
+        class Meta:
+            model = Product
+            fields = ['category', 'in_stock', 'manufacturer`]
+
+And now you can execute:
+
+    http://example.com/api/products?manufacturer=foo
+    
 For more details on using filter sets see the [django-filter documentation][django-filter-docs].
 
 ---
@@ -195,9 +234,9 @@ For more details on using filter sets see the [django-filter documentation][djan
 
 ## SearchFilter
 
-The `SearchFilterBackend` class supports simple single query parameter based searching, and is based on the [Django admin's search functionality][search-django-admin].
+The `SearchFilter` class supports simple single query parameter based searching, and is based on the [Django admin's search functionality][search-django-admin].
 
-The `SearchFilterBackend` class will only be applied if the view has a `search_fields` attribute set.  The `search_fields` attribute should be a list of names of text type fields on the model, such as `CharField` or `TextField`.
+The `SearchFilter` class will only be applied if the view has a `search_fields` attribute set.  The `search_fields` attribute should be a list of names of text type fields on the model, such as `CharField` or `TextField`.
 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
@@ -321,6 +360,14 @@ For example, you might need to restrict users to only being able to see objects 
 
 We could achieve the same behavior by overriding `get_queryset()` on the views, but using a filter backend allows you to more easily add this restriction to multiple views, or to apply it across the entire API.
 
+# Third party packages
+
+The following third party packages provide additional filter implementations.
+
+## Django REST framework chain
+
+The [django-rest-framework-chain package][django-rest-framework-chain] works together with the `DjangoFilterBackend` class, and allows you to easily create filters across relationships, or create multiple filter lookup types for a given field.
+
 [cite]: https://docs.djangoproject.com/en/dev/topics/db/queries/#retrieving-specific-objects-with-filters
 [django-filter]: https://github.com/alex/django-filter
 [django-filter-docs]: https://django-filter.readthedocs.org/en/latest/index.html
@@ -329,3 +376,4 @@ We could achieve the same behavior by overriding `get_queryset()` on the views, 
 [view-permissions-blogpost]: http://blog.nyaruka.com/adding-a-view-permission-to-django-models
 [nullbooleanselect]: https://github.com/django/django/blob/master/django/forms/widgets.py
 [search-django-admin]: https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields
+[django-rest-framework-chain]: https://github.com/philipn/django-rest-framework-chain

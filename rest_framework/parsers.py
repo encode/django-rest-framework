@@ -83,7 +83,7 @@ class YAMLParser(BaseParser):
             data = stream.read().decode(encoding)
             return yaml.safe_load(data)
         except (ValueError, yaml.parser.ParserError) as exc:
-            raise ParseError('YAML parse error - %s' % six.u(exc))
+            raise ParseError('YAML parse error - %s' % six.text_type(exc))
 
 
 class FormParser(BaseParser):
@@ -153,7 +153,7 @@ class XMLParser(BaseParser):
         try:
             tree = etree.parse(stream, parser=parser, forbid_dtd=True)
         except (etree.ParseError, ValueError) as exc:
-            raise ParseError('XML parse error - %s' % six.u(exc))
+            raise ParseError('XML parse error - %s' % six.text_type(exc))
         data = self._xml_convert(tree.getroot())
 
         return data

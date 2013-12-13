@@ -334,7 +334,7 @@ class Request(object):
             self._CONTENT_PARAM in self._data and
             self._CONTENTTYPE_PARAM in self._data):
             self._content_type = self._data[self._CONTENTTYPE_PARAM]
-            self._stream = BytesIO(self._data[self._CONTENT_PARAM].encode(HTTP_HEADER_ENCODING))
+            self._stream = BytesIO(self._data[self._CONTENT_PARAM].encode(self.parser_context['encoding']))
             self._data, self._files = (Empty, Empty)
 
     def _parse(self):
@@ -356,7 +356,16 @@ class Request(object):
         if not parser:
             raise exceptions.UnsupportedMediaType(media_type)
 
-        parsed = parser.parse(stream, media_type, self.parser_context)
+        try:
+            parsed = parser.parse(stream, media_type, self.parser_context)
+        except:
+            # If we get an exception during parsing, fill in empty data and
+            # re-raise.  Ensures we don't simply repeat the error when
+            # attempting to render the browsable renderer response, or when
+            # logging the request or similar.
+            self._data = QueryDict('', self._request._encoding)
+            self._files = MultiValueDict()
+            raise
 
         # Parser classes may return the raw data, or a
         # DataAndFiles object.  Unpack the result as required.

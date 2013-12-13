@@ -67,6 +67,21 @@ At this point we've translated the model instance into Python native datatypes. 
     json
     # '{"email": "leila@example.com", "content": "foo bar", "created": "2012-08-22T16:20:09.822"}'
 
+### Customizing field representation
+
+Sometimes when serializing objects, you may not want to represent everything exactly the way it is in your model.
+
+If you need to customize the serialized value of a particular field, you can do this by creating a `transform_<fieldname>` method. For example if you needed to render some markdown from a text field:
+
+    description = serializers.TextField()
+    description_html = serializers.TextField(source='description', read_only=True)
+
+    def transform_description_html(self, obj, value):
+        from django.contrib.markup.templatetags.markup import markdown
+        return markdown(value)
+
+These methods are essentially the reverse of `validate_<fieldname>` (see *Validation* below.)
+
 ## Deserializing objects
         
 Deserialization is similar.  First we parse a stream into Python native datatypes... 
@@ -84,7 +99,6 @@ Deserialization is similar.  First we parse a stream into Python native datatype
     # True
     serializer.object
     # <Comment object at 0x10633b2d0>
-    >>> serializer.deserialize('json', stream)
 
 When deserializing data, we can either create a new instance, or update an existing instance.
 
@@ -411,7 +425,7 @@ You can change the field that is used for object lookups by setting the `lookup_
             fields = ('url', 'account_name', 'users', 'created')
             lookup_field = 'slug'
 
-Not that the `lookup_field` will be used as the default on *all* hyperlinked fields, including both the URL identity, and any hyperlinked relationships.
+Note that the `lookup_field` will be used as the default on *all* hyperlinked fields, including both the URL identity, and any hyperlinked relationships.
 
 For more specific requirements such as specifying a different lookup for each field, you'll want to set the fields on the serializer explicitly.  For example:
 

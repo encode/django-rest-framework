@@ -169,6 +169,18 @@ The following people have helped make REST framework great.
 * Edmond Wong - [edmondwong]
 * Ben Reilly - [bwreilly]
 * Tai Lee - [mrmachine]
+* Markus Kaiserswerth - [mkai]
+* Henry Clifford - [hcliff]
+* Thomas Badaud - [badale]
+* Colin Huang - [tamakisquare]
+* Ross McFarland - [ross]
+* Jacek Bzdak - [jbzdak]
+* Alexander Lukanin - [alexanderlukanin13]
+* Yamila Moreno - [yamila-moreno]
+* Rob Hudson - [robhudson]
+* Alex Good - [alexjg]
+* Ian Foote - [ian-foote]
+* Chuck Harmston - [chuckharmston]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -374,3 +386,15 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [edmondwong]: https://github.com/edmondwong
 [bwreilly]: https://github.com/bwreilly
 [mrmachine]: https://github.com/mrmachine
+[mkai]: https://github.com/mkai
+[hcliff]: https://github.com/hcliff
+[badale]: https://github.com/badale
+[tamakisquare]: https://github.com/tamakisquare
+[ross]: https://github.com/ross
+[jbzdak]: https://github.com/jbzdak
+[alexanderlukanin13]: https://github.com/alexanderlukanin13
+[yamila-moreno]: https://github.com/yamila-moreno
+[robhudson]: https://github.com/robhudson
+[alexjg]: https://github.com/alexjg
+[ian-foote]: https://github.com/ian-foote
+[chuckharmston]: https://github.com/chuckharmston

@@ -65,6 +65,13 @@ try:
 except ImportError:
     import urlparse
 
+# UserDict moves in Python 3
+try:
+    from UserDict import UserDict
+    from UserDict import DictMixin
+except ImportError:
+    from collections import UserDict
+    from collections import MutableMapping as DictMixin
 
 # Try to import PIL in either of the two ways it can end up installed.
 try:
@@ -74,6 +81,22 @@ except ImportError:
         import Image
     except ImportError:
         Image = None
+
+
+def get_model_name(model_cls):
+    try:
+        return model_cls._meta.model_name
+    except AttributeError:
+        # < 1.6 used module_name instead of model_name
+        return model_cls._meta.module_name
+
+
+def get_concrete_model(model_cls):
+    try:
+        return model_cls._meta.concrete_model
+    except AttributeError:
+        # 1.3 does not include concrete model
+        return model_cls
 
 
 # Django 1.5 add support for custom auth user model

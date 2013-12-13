@@ -118,7 +118,13 @@ Renders the request data into `JSONP`.  The `JSONP` media type provides a mechan
 
 The javascript callback function must be set by the client including a `callback` URL query parameter.  For example `http://example.com/api/users?callback=jsonpCallback`.  If the callback function is not explicitly set by the client it will default to `'callback'`.
 
-**Note**: If you require cross-domain AJAX requests, you may want to consider using the more modern approach of [CORS][cors] as an alternative to `JSONP`.  See the [CORS documentation][cors-docs] for more details.
+---
+
+**Warning**: If you require cross-domain AJAX requests, you should almost certainly be using the more modern approach of [CORS][cors] as an alternative to `JSONP`.  See the [CORS documentation][cors-docs] for more details.
+
+The `jsonp` approach is essentially a browser hack, and is [only appropriate for globally  readable API endpoints][jsonp-security], where `GET` requests are unauthenticated and do not require any user permissions.
+
+---
 
 **.media_type**: `application/javascript`
 
@@ -167,14 +173,14 @@ The template name is determined by (in order of preference):
 
 An example of a view that uses `TemplateHTMLRenderer`:
 
-    class UserDetail(generics.RetrieveUserAPIView):
+    class UserDetail(generics.RetrieveAPIView):
         """
         A view that returns a templated HTML representations of a given user.
         """
         queryset = User.objects.all()
         renderer_classes = (TemplateHTMLRenderer,)
 
-        def get(self, request, *args, **kwargs)
+        def get(self, request, *args, **kwargs):
             self.object = self.get_object()
             return Response({'user': self.object}, template_name='user_detail.html')
  
@@ -409,12 +415,17 @@ The following third party packages are also available.
 
 Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications.  [Mjumbe Poe][mjumbewu] maintains the [djangorestframework-csv][djangorestframework-csv] package which provides CSV renderer support for REST framework.
 
+## UltraJSON
+
+[UltraJSON][ultrajson] is an optimized C JSON encoder which can give significantly faster JSON rendering. [Jacob Haslehurst][hzy] maintains the [drf-ujson-renderer][drf-ujson-renderer] package which implements JSON rendering using the UJSON package.
+
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
 [rfc4627]: http://www.ietf.org/rfc/rfc4627.txt
 [cors]: http://www.w3.org/TR/cors/
 [cors-docs]: ../topics/ajax-csrf-cors.md
+[jsonp-security]: http://stackoverflow.com/questions/613962/is-jsonp-safe-to-use
 [testing]: testing.md
 [HATEOAS]: http://timelessrepo.com/haters-gonna-hateoas
 [quote]: http://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven
@@ -426,3 +437,6 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [mjumbewu]: https://github.com/mjumbewu
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv
+[ultrajson]: https://github.com/esnme/ultrajson
+[hzy]: https://github.com/hzy
+[drf-ujson-renderer]: https://github.com/gizmag/drf-ujson-renderer

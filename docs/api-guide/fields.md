@@ -41,7 +41,7 @@ Defaults to `True`.
 
 ### `default`
 
-If set, this gives the default value that will be used for the field if none is supplied.  If not set the default behavior is to not populate the attribute at all. 
+If set, this gives the default value that will be used for the field if no input value is supplied.  If not set the default behavior is to not populate the attribute at all. 
 
 May be set to a function or other callable, in which case the value will be evaluated each time it is used.
 
@@ -286,7 +286,7 @@ An image representation.
 
 Corresponds to `django.forms.fields.ImageField`.
 
-Requires the `PIL` package.
+Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is recommended, as `PIL` is no longer actively maintained.
 
 Signature and validation is the same as with `FileField`.
 
@@ -299,9 +299,9 @@ Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
 
 # Custom fields
 
-If you want to create a custom field, you'll probably want to override either one or both of the `.to_native()` and `.from_native()` methods.  These two methods are used to convert between the initial datatype, and a primative, serializable datatype.  Primative datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primative objects.
+If you want to create a custom field, you'll probably want to override either one or both of the `.to_native()` and `.from_native()` methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype.  Primitive datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primitive objects.
 
-The `.to_native()` method is called to convert the initial datatype into a primative, serializable datatype.  The `from_native()` method is called to restore a primative datatype into it's initial representation.
+The `.to_native()` method is called to convert the initial datatype into a primitive, serializable datatype.  The `from_native()` method is called to restore a primitive datatype into it's initial representation.
 
 ## Examples
 

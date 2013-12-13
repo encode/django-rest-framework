@@ -12,7 +12,7 @@ REST framework adds support for automatic URL routing to Django, and provides yo
 
 ## Usage
 
-Here's an example of a simple URL conf, that uses `DefaultRouter`.
+Here's an example of a simple URL conf, that uses `SimpleRouter`.
 
     from rest_framework import routers
 
@@ -214,5 +214,27 @@ If you want to provide totally custom behavior, you can override `BaseRouter` an
 
 You may also want to override the `get_default_base_name(self, viewset)` method, or else always explicitly set the `base_name` argument when registering your viewsets with the router.
 
+# Third Party Packages
+
+The following third party packages are also available.
+
+## DRF Nested Routers
+
+The [drf-nested-routers package][drf-nested-routers] provides routers and relationship fields for working with nested resources.
+
+[cite]: http://guides.rubyonrails.org/routing.html
+[drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
+
+## wq.db
+
+The [wq.db package][wq.db] provides an advanced [Router][wq.db-router] class (and singleton instance) that extends `DefaultRouter` with a `register_model()` API. Much like Django's `admin.site.register`, the only required argument to `app.router.register_model` is a model class.  Reasonable defaults for a url prefix and viewset will be inferred from the model and global configuration.
+
+    from wq.db.rest import app
+    from myapp.models import MyModel
+
+    app.router.register_model(MyModel)
+
 [cite]: http://guides.rubyonrails.org/routing.html
 [route-decorators]: viewsets.html#marking-extra-actions-for-routing
+[wq.db]: http://wq.io/wq.db
+[wq.db-router]: http://wq.io/docs/app.py

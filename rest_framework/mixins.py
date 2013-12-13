@@ -6,6 +6,7 @@ which allows mixin classes to be composed in interesting ways.
 """
 from __future__ import unicode_literals
 
+from django.core.exceptions import ValidationError
 from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
@@ -127,7 +128,12 @@ class UpdateModelMixin(object):
                                          files=request.FILES, partial=partial)
 
         if serializer.is_valid():
-            self.pre_save(serializer.object)
+            try:
+                self.pre_save(serializer.object)
+            except ValidationError as err:
+                # full_clean on model instance may be called in pre_save, so we
+                # have to handle eventual errors.
+                return Response(err.message_dict, status=status.HTTP_400_BAD_REQUEST)
             self.object = serializer.save(**save_kwargs)
             self.post_save(self.object, created=created)
             return Response(serializer.data, status=success_status_code)
@@ -158,7 +164,8 @@ class UpdateModelMixin(object):
         Set any attributes on the object that are implicit in the request.
         """
         # pk and/or slug attributes are implicit in the URL.
-        lookup = self.kwargs.get(self.lookup_field, None)
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        lookup = self.kwargs.get(lookup_url_kwarg, None)
         pk = self.kwargs.get(self.pk_url_kwarg, None)
         slug = self.kwargs.get(self.slug_url_kwarg, None)
         slug_field = slug and self.slug_field or None
@@ -185,5 +192,7 @@ class DestroyModelMixin(object):
     """
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
+        self.pre_delete(obj)
         obj.delete()
+        self.post_delete(obj)
         return Response(status=status.HTTP_204_NO_CONTENT)

@@ -45,6 +45,11 @@ class JSONEncoder(json.JSONEncoder):
             return str(o)
         elif hasattr(o, 'tolist'):
             return o.tolist()
+        elif hasattr(o, '__getitem__'):
+            try:
+                return dict(o)
+            except:
+                pass
         elif hasattr(o, '__iter__'):
             return [i for i in o]
         return super(JSONEncoder, self).default(o)
@@ -89,6 +94,9 @@ else:
                 else:
                     node.flow_style = best_style
             return node
+
+    SafeDumper.add_representer(decimal.Decimal,
+            SafeDumper.represent_decimal)
 
     SafeDumper.add_representer(SortedDict,
             yaml.representer.SafeRepresenter.represent_dict)

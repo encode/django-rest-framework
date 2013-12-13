@@ -61,6 +61,10 @@ class Response(SimpleTemplateResponse):
             assert charset, 'renderer returned unicode, and did not specify ' \
             'a charset value.'
             return bytes(ret.encode(charset))
+
+        if not ret:
+            del self['Content-Type']
+
         return ret
 
     @property

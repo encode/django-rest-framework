@@ -12,7 +12,7 @@ Currently our API doesn't have any restrictions on who can edit or delete code s
 We're going to make a couple of changes to our `Snippet` model class.
 First, let's add a couple of fields.  One of those fields will be used to represent the user who created the code snippet.  The other field will be used to store the highlighted HTML representation of the code.
 
-Add the following two fields to the model.
+Add the following two fields to the `Snippet` model in `models.py`.
 
     owner = models.ForeignKey('auth.User', related_name='snippets')
     highlighted = models.TextField()
@@ -52,7 +52,7 @@ You might also want to create a few different users, to use for testing the API.
 
 ## Adding endpoints for our User models
 
-Now that we've got some users to work with, we'd better add representations of those users to our API.  Creating a new serializer is easy:
+Now that we've got some users to work with, we'd better add representations of those users to our API.  Creating a new serializer is easy. In `serializers.py` add:
 
     from django.contrib.auth.models import User
 
@@ -65,7 +65,10 @@ Now that we've got some users to work with, we'd better add representations of t
 
 Because `'snippets'` is a *reverse* relationship on the User model, it will not be included by default when using the `ModelSerializer` class, so we needed to add an explicit field for it.
 
-We'll also add a couple of views.  We'd like to just use read-only views for the user representations, so we'll use the `ListAPIView` and `RetrieveAPIView` generic class based views.
+We'll also add a couple of views to `views.py`.  We'd like to just use read-only views for the user representations, so we'll use the `ListAPIView` and `RetrieveAPIView` generic class based views.
+
+    from django.contrib.auth.models import User
+
 
     class UserList(generics.ListAPIView):
         queryset = User.objects.all()
@@ -75,8 +78,12 @@ We'll also add a couple of views.  We'd like to just use read-only views for the
     class UserDetail(generics.RetrieveAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
+        
+Make sure to also import the `UserSerializer` class
 
-Finally we need to add those views into the API, by referencing them from the URL conf.
+	from snippets.serializers import UserSerializer
+
+Finally we need to add those views into the API, by referencing them from the URL conf. Add the following to the patterns in `urls.py`.
 
     url(r'^users/$', views.UserList.as_view()),
     url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
@@ -94,7 +101,7 @@ On **both** the `SnippetList` and `SnippetDetail` view classes, add the followin
 
 ## Updating our serializer
 
-Now that snippets are associated with the user that created them, let's update our `SnippetSerializer` to reflect that.  Add the following field to the serializer definition:
+Now that snippets are associated with the user that created them, let's update our `SnippetSerializer` to reflect that.  Add the following field to the serializer definition in `serializers.py`:
 
     owner = serializers.Field(source='owner.username')
 

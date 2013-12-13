@@ -6,6 +6,7 @@ Doesn't cover model serializers.
 from __future__ import unicode_literals
 from django.test import TestCase
 from rest_framework import serializers
+from . import models
 
 
 class WritableNestedSerializerBasicTests(TestCase):
@@ -244,3 +245,104 @@ class WritableNestedSerializerObjectTests(TestCase):
         serializer = self.AlbumSerializer(data=data, many=True)
         self.assertEqual(serializer.is_valid(), True)
         self.assertEqual(serializer.object, expected_object)
+
+
+class ForeignKeyNestedSerializerUpdateTests(TestCase):
+    def setUp(self):
+        class Artist(object):
+            def __init__(self, name):
+                self.name = name
+
+            def __eq__(self, other):
+                return self.name == other.name
+
+        class Album(object):
+            def __init__(self, name, artist):
+                self.name, self.artist = name, artist
+
+            def __eq__(self, other):
+                return self.name == other.name and self.artist == other.artist
+
+        class ArtistSerializer(serializers.Serializer):
+            name = serializers.CharField()
+
+            def restore_object(self, attrs, instance=None):
+                if instance:
+                    instance.name = attrs['name']
+                else:
+                    instance = Artist(attrs['name'])
+                return instance
+
+        class AlbumSerializer(serializers.Serializer):
+            name = serializers.CharField()
+            by = ArtistSerializer(source='artist')
+
+            def restore_object(self, attrs, instance=None):
+                if instance:
+                    instance.name = attrs['name']
+                    instance.artist = attrs['artist']
+                else:
+                    instance = Album(attrs['name'], attrs['artist'])
+                return instance
+
+        self.Artist = Artist
+        self.Album = Album
+        self.AlbumSerializer = AlbumSerializer
+
+    def test_create_via_foreign_key_with_source(self):
+        """
+        Check that we can both *create* and *update* into objects across
+        ForeignKeys that have a `source` specified.
+        Regression test for #1170
+        """
+        data = {
+            'name': 'Discovery',
+            'by': {'name': 'Daft Punk'},
+        }
+
+        expected = self.Album(artist=self.Artist('Daft Punk'), name='Discovery')
+
+        # create
+        serializer = self.AlbumSerializer(data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, expected)
+
+        # update
+        original = self.Album(artist=self.Artist('The Bats'), name='Free All the Monsters')
+        serializer = self.AlbumSerializer(instance=original, data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, expected)
+
+
+class NestedModelSerializerUpdateTests(TestCase):
+    def test_second_nested_level(self):
+        john = models.Person.objects.create(name="john")
+
+        post = john.blogpost_set.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        class BlogPostCommentSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = models.BlogPostComment
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            comments = BlogPostCommentSerializer(many=True, source='blogpostcomment_set')
+            class Meta:
+                model = models.BlogPost
+                fields = ('id', 'title', 'comments')
+
+        class PersonSerializer(serializers.ModelSerializer):
+            posts = BlogPostSerializer(many=True, source='blogpost_set')
+            class Meta:
+                model = models.Person
+                fields = ('id', 'name', 'age', 'posts')
+
+        serialize = PersonSerializer(instance=john)
+        deserialize = PersonSerializer(data=serialize.data, instance=john)
+        self.assertTrue(deserialize.is_valid())
+
+        result = deserialize.object
+        result.save()
+        self.assertEqual(result.id, john.id)
+

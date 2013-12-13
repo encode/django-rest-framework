@@ -100,7 +100,7 @@ Don't forget to make sure you've also added `rest_framework` to your `INSTALLED_
 We're ready to create our API now.
 Here's our project's root `urls.py` module:
 
-    from django.conf.urls.defaults import url, patterns, include
+    from django.conf.urls import url, patterns, include
     from django.contrib.auth.models import User, Group
     from rest_framework import viewsets, routers
 
@@ -112,7 +112,7 @@ Here's our project's root `urls.py` module:
         model = Group
 
     
-    # Routers provide an easy way of automatically determining the URL conf
+    # Routers provide an easy way of automatically determining the URL conf.
     router = routers.DefaultRouter()
     router.register(r'users', UserViewSet)
     router.register(r'groups', GroupViewSet)
@@ -177,6 +177,7 @@ General guides to using REST framework.
 * [Browser enhancements][browser-enhancements]
 * [The Browsable API][browsableapi]
 * [REST, Hypermedia & HATEOAS][rest-hypermedia-hateoas]
+* [Contributing to REST framework][contributing]
 * [2.0 Announcement][rest-framework-2-announcement]
 * [2.2 Announcement][2.2-announcement]
 * [2.3 Announcement][2.3-announcement]
@@ -255,11 +256,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [image]: img/quickstart.png
 [index]: .
-[oauth1-section]: api-guide/authentication.html#oauthauthentication
-[oauth2-section]: api-guide/authentication.html#oauth2authentication
-[serializer-section]: api-guide/serializers.html#serializers
-[modelserializer-section]: api-guide/serializers.html#modelserializer
-[functionview-section]: api-guide/views.html#function-based-views
+[oauth1-section]: api-guide/authentication#oauthauthentication
+[oauth2-section]: api-guide/authentication#oauth2authentication
+[serializer-section]: api-guide/serializers#serializers
+[modelserializer-section]: api-guide/serializers#modelserializer
+[functionview-section]: api-guide/views#function-based-views
 [sandbox]: http://restframework.herokuapp.com/
 
 [quickstart]: tutorial/quickstart.md

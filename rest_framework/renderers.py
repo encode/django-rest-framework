@@ -20,6 +20,7 @@ from rest_framework.compat import StringIO
 from rest_framework.compat import six
 from rest_framework.compat import smart_text
 from rest_framework.compat import yaml
+from rest_framework.exceptions import ParseError
 from rest_framework.settings import api_settings
 from rest_framework.request import is_form_media_type, override_method
 from rest_framework.utils import encoders
@@ -272,7 +273,9 @@ class TemplateHTMLRenderer(BaseRenderer):
             return [self.template_name]
         elif hasattr(view, 'get_template_names'):
             return view.get_template_names()
-        raise ImproperlyConfigured('Returned a template response with no template_name')
+        elif hasattr(view, 'template_name'):
+            return [view.template_name]
+        raise ImproperlyConfigured('Returned a template response with no `template_name` attribute set on either the view or response')
 
     def get_exception_template(self, response):
         template_names = [name % {'status_code': response.status_code}
@@ -334,71 +337,15 @@ class HTMLFormRenderer(BaseRenderer):
     template = 'rest_framework/form.html'
     charset = 'utf-8'
 
-    def data_to_form_fields(self, data):
-        fields = {}
-        for key, val in data.fields.items():
-            if getattr(val, 'read_only', True):
-                # Don't include read-only fields.
-                continue
-
-            if getattr(val, 'fields', None):
-                # Nested data not supported by HTML forms.
-                continue
-
-            kwargs = {}
-            kwargs['required'] = val.required
-
-            #if getattr(v, 'queryset', None):
-            #    kwargs['queryset'] = v.queryset
-
-            if getattr(val, 'choices', None) is not None:
-                kwargs['choices'] = val.choices
-
-            if getattr(val, 'regex', None) is not None:
-                kwargs['regex'] = val.regex
-
-            if getattr(val, 'widget', None):
-                widget = copy.deepcopy(val.widget)
-                kwargs['widget'] = widget
-
-            if getattr(val, 'default', None) is not None:
-                kwargs['initial'] = val.default
-
-            if getattr(val, 'label', None) is not None:
-                kwargs['label'] = val.label
-
-            if getattr(val, 'help_text', None) is not None:
-                kwargs['help_text'] = val.help_text
-
-            fields[key] = val.form_field_class(**kwargs)
-
-        return fields
-
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Render serializer data and return an HTML form, as a string.
         """
-        # The HTMLFormRenderer currently uses something of a hack to render
-        # the content, by translating each of the serializer fields into
-        # an html form field, creating a dynamic form using those fields,
-        # and then rendering that form.
-
-        # This isn't strictly neccessary, as we could render the serilizer
-        # fields to HTML directly.  The implementation is historical and will
-        # likely change at some point.
-
-        self.renderer_context = renderer_context or {}
+        renderer_context = renderer_context or {}
         request = renderer_context['request']
 
-        # Creating an on the fly form see:
-        # http://stackoverflow.com/questions/3915024/dynamically-creating-classes-python
-        fields = self.data_to_form_fields(data)
-        DynamicForm = type(str('DynamicForm'), (forms.Form,), fields)
-        data = None if data.empty else data
-
         template = loader.get_template(self.template)
-        context = RequestContext(request, {'form': DynamicForm(data)})
-
+        context = RequestContext(request, {'form': data})
         return template.render(context)
 
 
@@ -419,8 +366,13 @@ class BrowsableAPIRenderer(BaseRenderer):
         """
         renderers = [renderer for renderer in view.renderer_classes
                      if not issubclass(renderer, BrowsableAPIRenderer)]
+        non_template_renderers = [renderer for renderer in renderers
+                                  if not hasattr(renderer, 'get_template_names')]
+
         if not renderers:
             return None
+        elif non_template_renderers:
+            return non_template_renderers[0]()
         return renderers[0]()
 
     def get_content(self, renderer, data,
@@ -468,6 +420,17 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         In the absence of the View having an associated form then return None.
         """
+        if request.method == method:
+            try:
+                data = request.DATA
+                files = request.FILES
+            except ParseError:
+                data = None
+                files = None        
+        else:
+            data = None
+            files = None
+
         with override_method(view, request, method) as request:
             obj = getattr(view, 'object', None)
             if not self.show_form_for_method(view, method, request, obj):
@@ -480,9 +443,10 @@ class BrowsableAPIRenderer(BaseRenderer):
                 or not any(is_form_media_type(parser.media_type) for parser in view.parser_classes)):
                 return
 
-            serializer = view.get_serializer(instance=obj)
-
+            serializer = view.get_serializer(instance=obj, data=data, files=files)
+            serializer.is_valid()
             data = serializer.data
+
             form_renderer = self.form_renderer_class()
             return form_renderer.render(data, self.accepted_media_type, self.renderer_context)
 
@@ -574,6 +538,7 @@ class BrowsableAPIRenderer(BaseRenderer):
 
         renderer = self.get_default_renderer(view)
 
+        raw_data_post_form = self.get_raw_data_form(view, 'POST', request)
         raw_data_put_form = self.get_raw_data_form(view, 'PUT', request)
         raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
@@ -592,12 +557,11 @@ class BrowsableAPIRenderer(BaseRenderer):
 
             'put_form': self.get_rendered_html_form(view, 'PUT', request),
             'post_form': self.get_rendered_html_form(view, 'POST', request),
-            'patch_form': self.get_rendered_html_form(view, 'PATCH', request),
             'delete_form': self.get_rendered_html_form(view, 'DELETE', request),
             'options_form': self.get_rendered_html_form(view, 'OPTIONS', request),
 
             'raw_data_put_form': raw_data_put_form,
-            'raw_data_post_form': self.get_raw_data_form(view, 'POST', request),
+            'raw_data_post_form': raw_data_post_form,
             'raw_data_patch_form': raw_data_patch_form,
             'raw_data_put_or_patch_form': raw_data_put_or_patch_form,
 

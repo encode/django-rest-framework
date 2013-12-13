@@ -125,6 +125,7 @@ class Field(object):
     use_files = False
     form_field_class = forms.CharField
     type_label = 'field'
+    widget = None
 
     def __init__(self, source=None, label=None, help_text=None):
         self.parent = None
@@ -136,9 +137,29 @@ class Field(object):
 
         if label is not None:
             self.label = smart_text(label)
+        else:
+            self.label = None
 
         if help_text is not None:
             self.help_text = strip_multiple_choice_msg(smart_text(help_text))
+        else:
+            self.help_text = None
+
+        self._errors = []
+        self._value = None
+        self._name = None
+
+    @property
+    def errors(self):
+        return self._errors
+
+    def widget_html(self):
+        if not self.widget:
+            return ''
+        return self.widget.render(self._name, self._value)
+
+    def label_tag(self):
+        return '<label for="%s">%s:</label>' % (self._name, self.label)
 
     def initialize(self, parent, field_name):
         """
@@ -301,6 +322,7 @@ class WritableField(Field):
             return
 
         try:
+            data = data or {}
             if self.use_files:
                 files = files or {}
                 try:
@@ -470,6 +492,7 @@ class ChoiceField(WritableField):
     }
 
     def __init__(self, choices=(), *args, **kwargs):
+        self.empty = kwargs.pop('empty', '')
         super(ChoiceField, self).__init__(*args, **kwargs)
         self.choices = choices
         if not self.required:
@@ -485,6 +508,11 @@ class ChoiceField(WritableField):
         self._choices = self.widget.choices = list(value)
 
     choices = property(_get_choices, _set_choices)
+
+    def metadata(self):
+        data = super(ChoiceField, self).metadata()
+        data['choices'] = [{'value': v, 'display_name': n} for v, n in self.choices]
+        return data
 
     def validate(self, value):
         """
@@ -510,9 +538,10 @@ class ChoiceField(WritableField):
         return False
 
     def from_native(self, value):
-        if value in validators.EMPTY_VALUES:
-            return None
-        return super(ChoiceField, self).from_native(value)
+        value = super(ChoiceField, self).from_native(value)
+        if value == self.empty or value in validators.EMPTY_VALUES:
+            return self.empty
+        return value
 
 
 class EmailField(CharField):
@@ -751,6 +780,7 @@ class IntegerField(WritableField):
     type_name = 'IntegerField'
     type_label = 'integer'
     form_field_class = forms.IntegerField
+    empty = 0
 
     default_error_messages = {
         'invalid': _('Enter a whole number.'),
@@ -782,6 +812,7 @@ class FloatField(WritableField):
     type_name = 'FloatField'
     type_label = 'float'
     form_field_class = forms.FloatField
+    empty = 0
 
     default_error_messages = {
         'invalid': _("'%s' value must be a float."),
@@ -802,6 +833,7 @@ class DecimalField(WritableField):
     type_name = 'DecimalField'
     type_label = 'decimal'
     form_field_class = forms.DecimalField
+    empty = Decimal('0')
 
     default_error_messages = {
         'invalid': _('Enter a number.'),
@@ -934,7 +966,7 @@ class ImageField(FileField):
             return None
 
         from rest_framework.compat import Image
-        assert Image is not None, 'PIL must be installed for ImageField support'
+        assert Image is not None, 'Either Pillow or PIL must be installed for ImageField support.'
 
         # We need to get a file object for PIL. We might have a path or we might
         # have to read the data into memory.

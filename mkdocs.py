@@ -19,7 +19,7 @@ if local:
     index = 'index.html'
 else:
     base_url = 'http://django-rest-framework.org'
-    suffix = '.html'
+    suffix = ''
     index = ''
 
 
@@ -90,7 +90,10 @@ for idx in range(len(path_list)):
     path = path_list[idx]
     rel = '../' * path.count('/')
 
-    if idx > 0:
+    if idx == 1 and not local:
+        # Link back to '/', not '/index'
+        prev_url_map[path] = '/'
+    elif idx > 0:
         prev_url_map[path] = rel + path_list[idx - 1][:-3] + suffix
 
     if idx < len(path_list) - 1:
@@ -143,6 +146,10 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
         else:
             main_title = 'Django REST framework - ' + main_title
 
+        if relative_path == 'index.md':
+            canonical_url = base_url
+        else:
+            canonical_url = base_url + '/' + relative_path[:-3] + suffix
         prev_url = prev_url_map.get(relative_path)
         next_url = next_url_map.get(relative_path)
 
@@ -152,6 +159,7 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
         output = output.replace('{{ title }}', main_title)
         output = output.replace('{{ description }}', description)
         output = output.replace('{{ page_id }}', filename[:-3])
+        output = output.replace('{{ canonical_url }}', canonical_url)
 
         if prev_url:
             output = output.replace('{{ prev_url }}', prev_url)

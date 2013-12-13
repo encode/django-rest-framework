@@ -45,11 +45,43 @@ You can determine your currently installed version using `pip freeze`:
 * `@detail_route` and `@list_route` decorators replace `@action` and `@link`.
 * `six` no longer bundled.  For Django <= 1.4.1, install `six` package.
 * Support customizable view name and description functions, using the `VIEW_NAME_FUNCTION` and `VIEW_DESCRIPTION_FUNCTION` settings.
+* Added `NUM_PROXIES` setting for smarter client IP identification.
 * Added `MAX_PAGINATE_BY` setting and `max_paginate_by` generic view attribute.
 * Added `cache` attribute to throttles to allow overriding of default cache.
 * Bugfix: `?page_size=0` query parameter now falls back to default page size for view, instead of always turning pagination off.
+
+### Master
+
+* JSON renderer now deals with objects that implement a dict-like interface.
+* Bugfix: Refine behavior that calls model manager `all()` across nested serializer relationships, preventing erronous behavior with some non-ORM objects, and preventing unneccessary queryset re-evaluations.
+
+### 2.3.10
+
+**Date**: 6th December 2013
+
+* Add in choices information for ChoiceFields in response to `OPTIONS` requests.
+* Added `pre_delete()` and `post_delete()` method hooks.
+* Added status code category helper functions.
+* Bugfix: Partial updates which erronously set a related field to `None` now correctly fail validation instead of raising an exception.
+* Bugfix: Responses without any content no longer include an HTTP `'Content-Type'` header.
+* Bugfix: Correctly handle validation errors in PUT-as-create case, responding with 400.
+
+### 2.3.9
+
+**Date**: 15th November 2013
+
+* Fix Django 1.6 exception API compatibility issue caused by `ValidationError`.
+* Include errors in HTML forms in browsable API.
+>>>>>>> master
 * Added JSON renderer support for numpy scalars.
+* Added `transform_<fieldname>` hooks on serializers for easily modifying field output.
 * Added `get_context` hook in `BrowsableAPIRenderer`.
+* Allow serializers to be passed `files` but no `data`.
+* `HTMLFormRenderer` now renders serializers directly to HTML without needing to create an intermediate form object.
+* Added `get_filter_backends` hook.
+* Added queryset aggregates to allowed fields in `OrderingFilter`.
+* Bugfix: Fix decimal suppoprt with `YAMLRenderer`.
+* Bugfix: Fix submission of unicode in browsable API through raw data form.
 
 ### 2.3.8
 
@@ -64,7 +96,7 @@ You can determine your currently installed version using `pip freeze`:
 * 'Raw data' and 'HTML form' tab preference in browseable API now saved between page views.
 * Bugfix: `required=True` argument fixed for boolean serializer fields.
 * Bugfix: `client.force_authenticate(None)` should also clear session info if it exists.
-* Bugfix: Client sending emptry string instead of file now clears `FileField`.
+* Bugfix: Client sending empty string instead of file now clears `FileField`.
 * Bugfix: Empty values on ChoiceFields with `required=False` now consistently return `None`.
 
 ### 2.3.7
