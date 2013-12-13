@@ -152,7 +152,7 @@ You may also want to override the `get_default_base_name(self, viewset)` method,
 
 # Third Party Packages
 
-The following third party packages provide router implementations that extend the default functionality provided by REST framework.
+The following third party packages are also available.
 
 ## DRF Nested Routers
 
@@ -160,3 +160,16 @@ The [drf-nested-routers package][drf-nested-routers] provides routers and relati
 
 [cite]: http://guides.rubyonrails.org/routing.html
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
+
+## wq.db
+
+The [wq.db package][wq.db] provides an advanced [Router][wq.db-router] class (and singleton instance) that extends `DefaultRouter` with a `register_model()` API. Much like Django's `admin.site.register`, the only required argument to `app.router.register_model` is a model class.  Reasonable defaults for a url prefix and viewset will be inferred from the model and global configuration.
+
+    from wq.db.rest import app
+    from myapp.models import MyModel
+
+    app.router.register_model(MyModel)
+
+[cite]: http://guides.rubyonrails.org/routing.html
+[wq.db]: http://wq.io/wq.db
+[wq.db-router]: http://wq.io/docs/app.py
