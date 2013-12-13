@@ -158,9 +158,6 @@ The following third party packages are also available.
 
 The [drf-nested-routers package][drf-nested-routers] provides routers and relationship fields for working with nested resources.
 
-[cite]: http://guides.rubyonrails.org/routing.html
-[drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
-
 ## wq.db
 
 The [wq.db package][wq.db] provides an advanced [Router][wq.db-router] class (and singleton instance) that extends `DefaultRouter` with a `register_model()` API. Much like Django's `admin.site.register`, the only required argument to `app.router.register_model` is a model class.  Reasonable defaults for a url prefix and viewset will be inferred from the model and global configuration.
@@ -171,5 +168,6 @@ The [wq.db package][wq.db] provides an advanced [Router][wq.db-router] class (an
     app.router.register_model(MyModel)
 
 [cite]: http://guides.rubyonrails.org/routing.html
+[drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [wq.db]: http://wq.io/wq.db
 [wq.db-router]: http://wq.io/docs/app.py

@@ -442,7 +442,18 @@ In the 2.4 release, these parts of the API will be removed entirely.
 
 For more details see the [2.2 release announcement][2.2-announcement].
 
+---
+
+# Third Party Packages
+
+The following third party packages are also available.
+
+## DRF Nested Routers
+
+The [drf-nested-routers package][drf-nested-routers] provides routers and relationship fields for working with nested resources.
+
 [cite]: http://lwn.net/Articles/193245/
 [reverse-relationships]: https://docs.djangoproject.com/en/dev/topics/db/queries/#following-relationships-backward
 [generic-relations]: https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#id1
 [2.2-announcement]: ../topics/2.2-announcement.md
+[drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
