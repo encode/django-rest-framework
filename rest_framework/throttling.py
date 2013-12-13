@@ -28,8 +28,12 @@ class BaseThrottle(object):
         remote_addr = request.META.get('REMOTE_ADDR')
         num_proxies = api_settings.NUM_PROXIES
 
-        if xff and num_proxies:
-            return xff.split(',')[-min(num_proxies, len(xff))].strip()
+        if num_proxies is not None:
+            if num_proxies == 0 or xff is None:
+                return remote_addr
+            addrs = xff.split(',')
+            client_addr = addrs[-min(num_proxies, len(xff))]
+            return client_addr.strip()
 
         return xff if xff else remote_addr
 

@@ -35,15 +35,10 @@ The default throttling policy may be set globally, using the `DEFAULT_THROTTLE_C
         'DEFAULT_THROTTLE_RATES': {
             'anon': '100/day',
             'user': '1000/day'
-        },
-        'NUM_PROXIES': 2,
+        }
     }
 
 The rate descriptions used in `DEFAULT_THROTTLE_RATES` may include `second`, `minute`, `hour` or `day` as the throttle period.
-
-By default Django REST Framework will try to use the `HTTP_X_FORWARDED_FOR` header to uniquely identify client machines for throttling. If `HTTP_X_FORWARDED_FOR` is not present `REMOTE_ADDR` header value will be used.
-
-To help Django REST Framework identify unique clients the number of application proxies can be set using `NUM_PROXIES`. This setting will allow the throttle to correctly identify unique requests when there are multiple application side proxies in front of the server. `NUM_PROXIES` should be set to an integer. It is important to understand that if you configure `NUM_PROXIES > 0` all clients behind a unique [NAT'd](http://en.wikipedia.org/wiki/Network_address_translation) gateway will be treated as a single client.
 
 You can also set the throttling policy on a per-view or per-viewset basis,
 using the `APIView` class based views.
@@ -70,6 +65,16 @@ Or, if you're using the `@api_view` decorator with function based views.
             'status': 'request was permitted'
         }
         return Response(content)
+
+## How clients are identified
+
+By default the `X-Forwarded-For` HTTP header is used to uniquely identify client machines for throttling.  If the `X-Forwarded-For` header is not present, then the value of the `Remote-Addr` header will be used.
+
+If you need to more strictly identify unique clients, you'll need to configure the number of application proxies that the API runs behind by setting the `NUM_PROXIES` setting. This setting should be an integer of 0 or more, and will allow the throttle to identify the client IP as being the last IP address in the `X-Forwarded-For` header, once any application proxy IP addresses have first been excluded.
+
+It is important to understand that if you configure the `NUM_PROXIES` setting, then all clients behind a unique [NAT'd](http://en.wikipedia.org/wiki/Network_address_translation) gateway will be treated as a single client.
+
+Further context on how the `X-Forwarded-For` header works, and identifier a remote client IP can be [found here][identifing-clients].
 
 ## Setting up the cache
 
@@ -183,5 +188,6 @@ The following is an example of a rate throttle, that will randomly throttle 1 in
 
 [cite]: https://dev.twitter.com/docs/error-codes-responses
 [permissions]: permissions.md
+[identifing-clients]: http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster
 [cache-setting]: https://docs.djangoproject.com/en/dev/ref/settings/#caches
 [cache-docs]: https://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache
