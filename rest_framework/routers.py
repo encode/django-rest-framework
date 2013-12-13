@@ -188,6 +188,12 @@ class SimpleRouter(BaseRouter):
         """
         Given a viewset, return the portion of URL regex that is used
         to match against a single instance.
+
+        Note that lookup_prefix is not used directly inside REST rest_framework
+        itself, but is required in order to nicely support nested router
+        implementations, such as drf-nested-routers.
+
+        https://github.com/alanjds/drf-nested-routers
         """
         if self.trailing_slash:
             base_regex = '(?P<{lookup_prefix}{lookup_field}>[^/]+)'
