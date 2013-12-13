@@ -184,18 +184,18 @@ class SimpleRouter(BaseRouter):
                 bound_methods[method] = action
         return bound_methods
 
-    def get_lookup_regex(self, viewset):
+    def get_lookup_regex(self, viewset, lookup_prefix=''):
         """
         Given a viewset, return the portion of URL regex that is used
         to match against a single instance.
         """
         if self.trailing_slash:
-            base_regex = '(?P<{lookup_field}>[^/]+)'
+            base_regex = '(?P<{lookup_prefix}{lookup_field}>[^/]+)'
         else:
             # Don't consume `.json` style suffixes
-            base_regex = '(?P<{lookup_field}>[^/.]+)'
+            base_regex = '(?P<{lookup_prefix}{lookup_field}>[^/.]+)'
         lookup_field = getattr(viewset, 'lookup_field', 'pk')
-        return base_regex.format(lookup_field=lookup_field)
+        return base_regex.format(lookup_field=lookup_field, lookup_prefix=lookup_prefix)
 
     def get_urls(self):
         """
