@@ -112,7 +112,7 @@ Here's our project's root `urls.py` module:
         model = Group
 
     
-    # Routers provide an easy way of automatically determining the URL conf
+    # Routers provide an easy way of automatically determining the URL conf.
     router = routers.DefaultRouter()
     router.register(r'users', UserViewSet)
     router.register(r'groups', GroupViewSet)
