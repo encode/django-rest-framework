@@ -44,6 +44,7 @@ You can determine your currently installed version using `pip freeze`:
 
 * JSON renderer now deals with objects that implement a dict-like interface.
 * Bugfix: Refine behavior that calls model manager `all()` across nested serializer relationships, preventing erronous behavior with some non-ORM objects, and preventing unneccessary queryset re-evaluations.
+* Bugfix: Allow defaults on BooleanFields to be properly honored when values are not supplied.
 
 ### 2.3.10
 
