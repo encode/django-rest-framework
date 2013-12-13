@@ -331,7 +331,7 @@ class BaseSerializer(WritableField):
 
         return ret
 
-    def from_native(self, data, files=None):
+    def from_native(self, data, files):
         """
         Deserialize primitives -> objects.
         """
