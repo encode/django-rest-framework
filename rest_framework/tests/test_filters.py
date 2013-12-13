@@ -49,11 +49,6 @@ if django_filters:
             model = BasicModel
             fields = ['text']
 
-    class IncorrectlyConfiguredRootView(generics.ListCreateAPIView):
-        model = FilterableItem
-        filter_class = MisconfiguredFilter
-        filter_backends = (filters.DjangoFilterBackend,)
-
     class FilterClassDetailView(generics.RetrieveAPIView):
         model = FilterableItem
         filter_class = SeveralFieldsFilter
@@ -217,16 +212,6 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
         self.assertEqual(response.data, expected_data)
 
     @unittest.skipUnless(django_filters, 'django-filter not installed')
-    def test_incorrectly_configured_filter(self):
-        """
-        An error should be displayed when the filter class is misconfigured.
-        """
-        view = IncorrectlyConfiguredRootView.as_view()
-
-        request = factory.get('/')
-        self.assertRaises(AssertionError, view, request)
-
-    @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_unknown_filter(self):
         """
         GET requests with filters that aren't configured should return 200.
@@ -363,12 +348,6 @@ class OrdringFilterModel(models.Model):
     text = models.CharField(max_length=100)
 
 
-class OrderingFilterRelatedModel(models.Model):
-    related_object = models.ForeignKey(OrdringFilterModel,
-                                       related_name="relateds")
-
-
-
 class OrderingFilterTests(TestCase):
     def setUp(self):
         # Sequence of title/text is:
@@ -478,36 +457,3 @@ class OrderingFilterTests(TestCase):
                 {'id': 1, 'title': 'zyx', 'text': 'abc'},
             ]
         )
-
-    def test_ordering_by_aggregate_field(self):
-        # create some related models to aggregate order by
-        num_objs = [2, 5, 3]
-        for obj, num_relateds in zip(OrdringFilterModel.objects.all(),
-                                     num_objs):
-            for _ in range(num_relateds):
-                new_related = OrderingFilterRelatedModel(
-                    related_object=obj
-                )
-                new_related.save()
-
-        class OrderingListView(generics.ListAPIView):
-            model = OrdringFilterModel
-            filter_backends = (filters.OrderingFilter,)
-            ordering = 'title'
-            queryset = OrdringFilterModel.objects.all().annotate(
-                models.Count("relateds"))
-
-        view = OrderingListView.as_view()
-        request = factory.get('?ordering=relateds__count')
-        response = view(request)
-        self.assertEqual(
-            response.data,
-            [
-                {'id': 1, 'title': 'zyx', 'text': 'abc'},
-                {'id': 3, 'title': 'xwv', 'text': 'cde'},
-                {'id': 2, 'title': 'yxw', 'text': 'bcd'},
-            ]
-        )
-
-
-
