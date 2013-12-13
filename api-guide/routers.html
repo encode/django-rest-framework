@@ -178,6 +178,7 @@
 <li><a href="#advanced-custom-routers">Advanced custom routers</a></li>
 <li class="main"><a href="#third-party-packages">Third Party Packages</a></li>
 <li><a href="#drf-nested-routers">DRF Nested Routers</a></li>
+<li><a href="#wqdb">wq.db</a></li>
 
               <div>
               <hr>
@@ -334,9 +335,16 @@ class ReadOnlyRouter(SimpleRouter):
 <p>If you want to provide totally custom behavior, you can override <code>BaseRouter</code> and override the <code>get_urls(self)</code> method.  The method should inspect the registered viewsets and return a list of URL patterns.  The registered prefix, viewset and basename tuples may be inspected by accessing the <code>self.registry</code> attribute.  </p>
 <p>You may also want to override the <code>get_default_base_name(self, viewset)</code> method, or else always explicitly set the <code>base_name</code> argument when registering your viewsets with the router.</p>
 <h1 id="third-party-packages">Third Party Packages</h1>
-<p>The following third party packages provide router implementations that extend the default functionality provided by REST framework.</p>
+<p>The following third party packages are also available.</p>
 <h2 id="drf-nested-routers">DRF Nested Routers</h2>
 <p>The <a href="https://github.com/alanjds/drf-nested-routers">drf-nested-routers package</a> provides routers and relationship fields for working with nested resources.</p>
+<h2 id="wqdb">wq.db</h2>
+<p>The <a href="http://wq.io/wq.db">wq.db package</a> provides an advanced <a href="http://wq.io/docs/app.py">Router</a> class (and singleton instance) that extends <code>DefaultRouter</code> with a <code>register_model()</code> API. Much like Django's <code>admin.site.register</code>, the only required argument to <code>app.router.register_model</code> is a model class.  Reasonable defaults for a url prefix and viewset will be inferred from the model and global configuration.</p>
+<pre class="prettyprint lang-py"><code>from wq.db.rest import app
+from myapp.models import MyModel
+
+app.router.register_model(MyModel)
+</code></pre>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->
