@@ -247,7 +247,9 @@
 <h3 id="master">Master</h3>
 <ul>
 <li>JSON renderer now deals with objects that implement a dict-like interface.</li>
+<li>Fix compatiblity with newer versions of <code>django-oauth-plus</code>.</li>
 <li>Bugfix: Refine behavior that calls model manager <code>all()</code> across nested serializer relationships, preventing erronous behavior with some non-ORM objects, and preventing unneccessary queryset re-evaluations.</li>
+<li>Bugfix: Allow defaults on BooleanFields to be properly honored when values are not supplied.</li>
 </ul>
 <h3 id="2310">2.3.10</h3>
 <p><strong>Date</strong>: 6th December 2013</p>
@@ -288,7 +290,17 @@
 <li>Bugfix: <code>client.force_authenticate(None)</code> should also clear session info if it exists.</li>
 <li>Bugfix: Client sending empty string instead of file now clears <code>FileField</code>.</li>
 <li>Bugfix: Empty values on ChoiceFields with <code>required=False</code> now consistently return <code>None</code>.</li>
+<li>Bugfix: Clients setting <code>page=0</code> now simply returns the default page size, instead of disabling pagination. [*]</li>
 </ul>
+<hr />
+<p>[*] Note that the change in <code>page=0</code> behaviour fixes what is considered to be a bug in how clients can effect the pagination size.  However if you were relying on this behavior you will need to add the following mixin to your list views in order to preserve the existing behavior.</p>
+<pre class="prettyprint lang-py"><code>class DisablePaginationMixin(object):
+    def get_paginate_by(self, queryset=None):
+        if self.request.QUERY_PARAMS['self.paginate_by_param'] == '0':
+            return None
+        return super(DisablePaginationMixin, self).get_paginate_by(queryset)
+</code></pre>
+<hr />
 <h3 id="237">2.3.7</h3>
 <p><strong>Date</strong>: 16th August 2013</p>
 <ul>
