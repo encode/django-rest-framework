@@ -2,7 +2,10 @@
 
 # Note that we import as `DjangoRequestFactory` and `DjangoClient` in order
 # to make it harder for the user to import the wrong thing without realizing.
+
 from __future__ import unicode_literals
+
+from contextlib import contextmanager
 import django
 from django.conf import settings
 from django.test.client import Client as DjangoClient
@@ -126,6 +129,13 @@ class APIClient(APIRequestFactory, DjangoClient):
         Sets headers that will be used on every outgoing request.
         """
         self._credentials = kwargs
+
+    @contextmanager
+    def temporary_credentials(self, **kwargs):
+        original_credentials = self._credentials
+        self.credentials(**kwargs)
+        yield
+        self._credentials = original_credentials
 
     def force_authenticate(self, user=None, token=None):
         """

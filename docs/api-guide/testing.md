@@ -158,6 +158,16 @@ Note that calling `credentials` a second time overwrites any existing credential
 
 The `credentials` method is appropriate for testing APIs that require authentication headers, such as basic authentication, OAuth1a and OAuth2 authentication, and simple token authentication schemes.
 
+#### .temporary_credentials(**kwargs)
+
+The `temporary_credentials` method has the same behavior as the `credentials` method but as a context manager. It will
+set the credential for all the requests within the context and then set back the original ones.
+
+    client = APIClient()
+    client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+    with client.temporary_credentials(HTTP_AUTHORIZATION='Token ' + other_token.key)
+        # test code within context using this temporary credentials
+
 #### .force_authenticate(user=None, token=None)
 
 Sometimes you may want to bypass authentication, and simple force all requests by the test client to be automatically treated as authenticated.
