@@ -47,6 +47,19 @@ class TestAPITestClient(TestCase):
             response = self.client.get('/view/')
             self.assertEqual(response.data['auth'], 'example')
 
+    def test_temporary_credentials(self):
+        def assert_auth(expected):
+            response = self.client.get('/view/')
+            self.assertEqual(expected, response.data['auth'])
+
+        persistent_credentials = {'HTTP_AUTHORIZATION': 'persistent'}
+        temporal_credentials = {'HTTP_AUTHORIZATION': 'temporal'}
+        self.client.credentials(**persistent_credentials)
+        assert_auth('persistent')
+        with self.client.temporary_credentials(**temporal_credentials):
+            assert_auth('temporal')
+        assert_auth('persistent')
+
     def test_force_authenticate(self):
         """
         Setting `.force_authenticate()` forcibly authenticates each request.
