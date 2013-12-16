@@ -422,7 +422,9 @@ class BaseSerializer(WritableField):
 
         if self.source == '*':
             if value:
-                into.update(value)
+                reverted_data = self.restore_fields(value, {})
+                if not self._errors:
+                    into.update(reverted_data)
         else:
             if value in (None, ''):
                 into[(self.source or field_name)] = None

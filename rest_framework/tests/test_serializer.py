@@ -105,6 +105,17 @@ class ModelSerializerWithNestedSerializer(serializers.ModelSerializer):
         model = Person
 
 
+class NestedSerializerWithRenamedField(serializers.Serializer):
+    renamed_info = serializers.Field(source='info')
+
+
+class ModelSerializerWithNestedSerializerWithRenamedField(serializers.ModelSerializer):
+    nested = NestedSerializerWithRenamedField(source='*')
+
+    class Meta:
+        model = Person
+
+
 class PersonSerializerInvalidReadOnly(serializers.ModelSerializer):
     """
     Testing for #652.
@@ -455,6 +466,20 @@ class ValidationTests(TestCase):
             'nested': {'info': 'hi'}},
         )
         self.assertEqual(serializer.is_valid(), True)
+
+    def test_writable_star_source_with_inner_source_fields(self):
+        """
+        Tests that a serializer with source="*" correctly expands the
+        it's fields into the outer serializer even if they have their
+        own 'source' parameters.
+        """
+
+        serializer = ModelSerializerWithNestedSerializerWithRenamedField(data={
+            'name': 'marko',
+            'nested': {'renamed_info': 'hi'}},
+        )
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.errors, {})
 
 
 class CustomValidationTests(TestCase):
