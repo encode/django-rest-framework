@@ -183,6 +183,8 @@ At this point we've translated the model instance into Python native datatypes. 
 
 Deserialization is similar.  First we parse a stream into Python native datatypes... 
 
+    # This import will use either `StringIO.StringIO` or `io.BytesIO`
+    # as appropriate, depending on if we're running Python 2 or Python 3.
     from rest_framework.compat import BytesIO
 
     stream = BytesIO(content)
