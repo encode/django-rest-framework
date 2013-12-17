@@ -183,9 +183,9 @@ At this point we've translated the model instance into Python native datatypes. 
 
 Deserialization is similar.  First we parse a stream into Python native datatypes... 
 
-    import StringIO
+    from rest_framework.compat import BytesIO
 
-    stream = StringIO.StringIO(content)
+    stream = BytesIO(content)
     data = JSONParser().parse(stream)
 
 ...then we restore those native datatypes into to a fully populated object instance.
