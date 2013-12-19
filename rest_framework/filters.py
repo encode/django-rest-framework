@@ -155,7 +155,7 @@ class DjangoObjectPermissionsFilter(BaseFilterBackend):
     perm_format = '%(app_label)s.view_%(model_name)s'
 
     def filter_queryset(self, request, queryset, view):
-        user = request.user
+        user = request.user if request.user.is_authenticated() else guardian.utils.get_anonymous_user()
         model_cls = queryset.model
         kwargs = {
             'app_label': model_cls._meta.app_label,
