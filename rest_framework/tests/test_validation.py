@@ -47,6 +47,12 @@ class ShouldValidateModel(models.Model):
 class ShouldValidateModelSerializer(serializers.ModelSerializer):
     renamed = serializers.CharField(source='should_validate_field', required=False)
 
+    def validate_renamed(self, attrs, source):
+        value = attrs[source]
+        if len(value) < 3:
+            raise serializers.ValidationError('Minimum 3 characters.')
+        return attrs
+
     class Meta:
         model = ShouldValidateModel
         fields = ('renamed',)
@@ -61,6 +67,13 @@ class TestPreSaveValidationExclusions(TestCase):
         # does not have `blank=True`, so this serializer should not validate.
         serializer = ShouldValidateModelSerializer(data={'renamed': ''})
         self.assertEqual(serializer.is_valid(), False)
+
+
+class TestCustomValidationMethods(TestCase):
+    def test_custom_validation_method_is_executed(self):
+        serializer = ShouldValidateModelSerializer(data={'renamed': 'fo'})
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('renamed', serializer.errors)
 
 
 class ValidationSerializer(serializers.Serializer):
