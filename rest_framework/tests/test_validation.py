@@ -52,7 +52,7 @@ class ShouldValidateModelSerializer(serializers.ModelSerializer):
         fields = ('renamed',)
 
 
-class TestPreSaveValidationExclusions(TestCase):
+class TestPreSaveValidationExclusionsSerializer(TestCase):
     def test_renamed_fields_are_model_validated(self):
         """
         Ensure fields with 'source' applied do get still get model validation.
