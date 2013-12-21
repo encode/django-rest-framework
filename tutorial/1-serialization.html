@@ -363,9 +363,11 @@ content
 # '{"pk": 2, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
 </code></pre>
 <p>Deserialization is similar.  First we parse a stream into Python native datatypes... </p>
-<pre class="prettyprint lang-py"><code>import StringIO
+<pre class="prettyprint lang-py"><code># This import will use either `StringIO.StringIO` or `io.BytesIO`
+# as appropriate, depending on if we're running Python 2 or Python 3.
+from rest_framework.compat import BytesIO
 
-stream = StringIO.StringIO(content)
+stream = BytesIO(content)
 data = JSONParser().parse(stream)
 </code></pre>
 <p>...then we restore those native datatypes into to a fully populated object instance.</p>

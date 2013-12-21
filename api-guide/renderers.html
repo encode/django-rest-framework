@@ -195,6 +195,7 @@
 <li><a href="#messagepack">MessagePack</a></li>
 <li><a href="#csv">CSV</a></li>
 <li><a href="#ultrajson">UltraJSON</a></li>
+<li><a href="#camelcase-json">CamelCase JSON</a></li>
 
               <div>
               <hr>
@@ -508,6 +509,8 @@ In this case you can underspecify the media types it should respond to, by using
 <p>Comma-separated values are a plain-text tabular data format, that can be easily imported into spreadsheet applications.  <a href="https://github.com/mjumbewu">Mjumbe Poe</a> maintains the <a href="https://github.com/mjumbewu/django-rest-framework-csv">djangorestframework-csv</a> package which provides CSV renderer support for REST framework.</p>
 <h2 id="ultrajson">UltraJSON</h2>
 <p><a href="https://github.com/esnme/ultrajson">UltraJSON</a> is an optimized C JSON encoder which can give significantly faster JSON rendering. <a href="https://github.com/hzy">Jacob Haslehurst</a> maintains the <a href="https://github.com/gizmag/drf-ujson-renderer">drf-ujson-renderer</a> package which implements JSON rendering using the UJSON package.</p>
+<h2 id="camelcase-json">CamelCase JSON</h2>
+<p><a href="https://github.com/vbabiy/djangorestframework-camel-case">djangorestframework-camel-case</a> provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by <a href="https://github.com/vbabiy">Vitaly Babiy</a>.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->
