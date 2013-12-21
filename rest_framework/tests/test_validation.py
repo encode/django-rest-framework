@@ -67,6 +67,8 @@ class TestPreSaveValidationExclusionsSerializer(TestCase):
         # does not have `blank=True`, so this serializer should not validate.
         serializer = ShouldValidateModelSerializer(data={'renamed': ''})
         self.assertEqual(serializer.is_valid(), False)
+        self.assertIn('renamed', serializer.errors)
+        self.assertNotIn('should_validate_field', serializer.errors)
 
 
 class TestCustomValidationMethods(TestCase):
