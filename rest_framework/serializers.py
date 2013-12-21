@@ -142,6 +142,7 @@ class SerializerOptions(object):
         self.depth = getattr(meta, 'depth', 0)
         self.fields = getattr(meta, 'fields', ())
         self.exclude = getattr(meta, 'exclude', ())
+        self.write_only_fields = getattr(meta, 'write_only_fields', ())
 
 
 class BaseSerializer(WritableField):
@@ -320,14 +321,18 @@ class BaseSerializer(WritableField):
         for field_name, field in self.fields.items():
             if field.read_only and obj is None:
                continue
-            field.initialize(parent=self, field_name=field_name)
-            key = self.get_field_key(field_name)
-            value = field.field_to_native(obj, field_name)
-            method = getattr(self, 'transform_%s' % field_name, None)
-            if callable(method):
-                value = method(obj, value)
-            ret[key] = value
-            ret.fields[key] = self.augment_field(field, field_name, key, value)
+            elif field_name in getattr(self.opts, 'write_only_fields', ()):
+                key = self.get_field_key(field_name)
+                ret.fields[key] = self.augment_field(field, field_name, key, '')
+            else:
+                field.initialize(parent=self, field_name=field_name)
+                key = self.get_field_key(field_name)
+                value = field.field_to_native(obj, field_name)
+                method = getattr(self, 'transform_%s' % field_name, None)
+                if callable(method):
+                    value = method(obj, value)
+                ret[key] = value
+                ret.fields[key] = self.augment_field(field, field_name, key, value)
 
         return ret
 
@@ -874,6 +879,8 @@ class ModelSerializer(Serializer):
         """
         Restore the model instance.
         """
+        attrs = dict((k,v) for (k,v) in filter(
+            lambda x:x not in getattr(self.opts, 'write_only_fields', ()), attrs.items()))
         m2m_data = {}
         related_data = {}
         nested_forward_relations = {}
