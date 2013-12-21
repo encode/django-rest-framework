@@ -713,7 +713,9 @@ class ModelSerializer(Serializer):
             is_m2m = isinstance(relation.field,
                                 models.fields.related.ManyToManyField)
 
-            if is_m2m and not relation.field.rel.through._meta.auto_created:
+            if (is_m2m and
+                hasattr(relation.field.rel, 'through') and
+                not relation.field.rel.through._meta.auto_created):
                 has_through_model = True
 
             if nested:
