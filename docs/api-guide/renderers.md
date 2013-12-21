@@ -419,6 +419,11 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 
 [UltraJSON][ultrajson] is an optimized C JSON encoder which can give significantly faster JSON rendering. [Jacob Haslehurst][hzy] maintains the [drf-ujson-renderer][drf-ujson-renderer] package which implements JSON rendering using the UJSON package.
 
+## CamelCase JSON
+
+[djangorestframework-camel-case] provides a camelCase JSON render for django REST framework, its maintained by [vbabiy]
+
+
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
 [conneg]: content-negotiation.md
 [browser-accept-headers]: http://www.gethifi.com/blog/browser-rest-http-accept-headers
@@ -435,8 +440,10 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 [messagepack]: http://msgpack.org/
 [juanriaza]: https://github.com/juanriaza
 [mjumbewu]: https://github.com/mjumbewu
+[vbabiy]: https://github.com/vbabiy
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [djangorestframework-csv]: https://github.com/mjumbewu/django-rest-framework-csv
 [ultrajson]: https://github.com/esnme/ultrajson
 [hzy]: https://github.com/hzy
 [drf-ujson-renderer]: https://github.com/gizmag/drf-ujson-renderer
+[djangorestframework-camel-case]: https://github.com/vbabiy/djangorestframework-camel-case
