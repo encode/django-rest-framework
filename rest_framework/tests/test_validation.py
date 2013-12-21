@@ -75,6 +75,10 @@ class TestCustomValidationMethods(TestCase):
         self.assertFalse(serializer.is_valid())
         self.assertIn('renamed', serializer.errors)
 
+    def test_custom_validation_method_passing(self):
+        serializer = ShouldValidateModelSerializer(data={'renamed': 'foo'})
+        self.assertTrue(serializer.is_valid())
+
 
 class ValidationSerializer(serializers.Serializer):
     foo = serializers.CharField()
