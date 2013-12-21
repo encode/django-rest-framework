@@ -188,7 +188,7 @@ The following third party packages are also available.
 
 ## CamelCase JSON
 
-[djangorestframework-camel-case] provides a camelCase JSON parser for django REST framework, its maintained by [vbabiy]
+[djangorestframework-camel-case] provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by [Vitaly Babiy][vbabiy].
 
 [jquery-ajax]: http://api.jquery.com/jQuery.ajax/
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion

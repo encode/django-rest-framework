@@ -421,7 +421,7 @@ Comma-separated values are a plain-text tabular data format, that can be easily 
 
 ## CamelCase JSON
 
-[djangorestframework-camel-case] provides a camelCase JSON render for django REST framework, its maintained by [vbabiy]
+[djangorestframework-camel-case] provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by [Vitaly Babiy][vbabiy].
 
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/template-response/#the-rendering-process
