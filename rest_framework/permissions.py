@@ -54,9 +54,7 @@ class IsAuthenticated(BasePermission):
     """
 
     def has_permission(self, request, view):
-        if request.user and request.user.is_authenticated():
-            return True
-        return False
+        return request.user and request.user.is_authenticated()
 
 
 class IsAdminUser(BasePermission):
@@ -65,9 +63,7 @@ class IsAdminUser(BasePermission):
     """
 
     def has_permission(self, request, view):
-        if request.user and request.user.is_staff:
-            return True
-        return False
+        return request.user and request.user.is_staff
 
 
 class IsAuthenticatedOrReadOnly(BasePermission):
@@ -76,11 +72,9 @@ class IsAuthenticatedOrReadOnly(BasePermission):
     """
 
     def has_permission(self, request, view):
-        if (request.method in SAFE_METHODS or
-            request.user and
-            request.user.is_authenticated()):
-            return True
-        return False
+        return (request.method in SAFE_METHODS or 
+            request.user and 
+            request.user.is_authenticated())
 
 
 class DjangoModelPermissions(BasePermission):
@@ -138,11 +132,9 @@ class DjangoModelPermissions(BasePermission):
 
         perms = self.get_required_permissions(request.method, model_cls)
 
-        if (request.user and
+        return (request.user and
             (request.user.is_authenticated() or not self.authenticated_users_only) and
-            request.user.has_perms(perms)):
-            return True
-        return False
+            request.user.has_perms(perms))
 
 
 class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
