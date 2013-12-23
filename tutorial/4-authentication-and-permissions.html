@@ -2,7 +2,7 @@
 <html lang="en">
 <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>Django REST framework - Tutorial 4: Authentication & Permissions</title>
+    <title>Tutorial 4: Authentication & Permissions - Django REST framework</title>
     <link href="http://django-rest-framework.org/img/favicon.ico" rel="icon" type="image/x-icon">
     <link rel="canonical" href="http://django-rest-framework.org/tutorial/4-authentication-and-permissions"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -337,10 +337,10 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests.
-        if request.method in permissions.SAFE_METHODS:            
+        if request.method in permissions.SAFE_METHODS:
             return True
 
-        # Write permissions are only allowed to the owner of the snippet
+        # Write permissions are only allowed to the owner of the snippet.
         return obj.owner == request.user
 </code></pre>
 <p>Now we can add that custom permission to our snippet instance endpoint, by editing the <code>permission_classes</code> property on the <code>SnippetDetail</code> class:</p>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>Django REST framework - Exceptions</title>
+    <title>Exceptions - Django REST framework</title>
     <link href="http://django-rest-framework.org/img/favicon.ico" rel="icon" type="image/x-icon">
     <link rel="canonical" href="http://django-rest-framework.org/api-guide/exceptions"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -279,6 +279,13 @@ def custom_exception_handler(exc):
 <p><strong>Signature:</strong> <code>APIException()</code></p>
 <p>The <strong>base class</strong> for all exceptions raised inside REST framework.</p>
 <p>To provide a custom exception, subclass <code>APIException</code> and set the <code>.status_code</code> and <code>.detail</code> properties on the class.</p>
+<p>For example, if your API relies on a third party service that may sometimes be unreachable, you might want to implement an exception for the "503 Service Unavailable" HTTP response code.  You could do this like so:</p>
+<pre class="prettyprint lang-py"><code>from rest_framework.exceptions import APIException
+
+class ServiceUnavailable(APIException):
+    status_code = 503
+    detail = 'Service temporarily unavailable, try again later.'
+</code></pre>
 <h2 id="parseerror">ParseError</h2>
 <p><strong>Signature:</strong> <code>ParseError(detail=None)</code></p>
 <p>Raised if the request contains malformed data when accessing <code>request.DATA</code> or <code>request.FILES</code>.</p>

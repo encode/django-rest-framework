@@ -2,7 +2,7 @@
 <html lang="en">
 <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>Django REST framework - Release Notes</title>
+    <title>Release Notes - Django REST framework</title>
     <link href="http://django-rest-framework.org/img/favicon.ico" rel="icon" type="image/x-icon">
     <link rel="canonical" href="http://django-rest-framework.org/topics/release-notes"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -250,6 +250,7 @@
 <li>Fix compatiblity with newer versions of <code>django-oauth-plus</code>.</li>
 <li>Bugfix: Refine behavior that calls model manager <code>all()</code> across nested serializer relationships, preventing erronous behavior with some non-ORM objects, and preventing unneccessary queryset re-evaluations.</li>
 <li>Bugfix: Allow defaults on BooleanFields to be properly honored when values are not supplied.</li>
+<li>Bugfix: Prevent double-escaping of non-latin1 URL query params when appending <code>format=json</code> params.</li>
 </ul>
 <h3 id="2310">2.3.10</h3>
 <p><strong>Date</strong>: 6th December 2013</p>

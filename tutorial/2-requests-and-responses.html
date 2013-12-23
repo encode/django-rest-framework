@@ -2,7 +2,7 @@
 <html lang="en">
 <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>Django REST framework - Tutorial 2: Requests and Responses</title>
+    <title>Tutorial 2: Requests and Responses - Django REST framework</title>
     <link href="http://django-rest-framework.org/img/favicon.ico" rel="icon" type="image/x-icon">
     <link rel="canonical" href="http://django-rest-framework.org/tutorial/2-requests-and-responses"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -255,8 +255,7 @@ def snippet_list(request):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 </code></pre>
 <p>Our instance view is an improvement over the previous example.  It's a little more concise, and the code now feels very similar to if we were working with the Forms API.  We're also using named status codes, which makes the response meanings more obvious.</p>
 <p>Here is the view for an individual snippet, in the <code>views.py</code> module.</p>
@@ -279,8 +278,7 @@ def snippet_detail(request, pk):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
         snippet.delete()
