@@ -10,9 +10,10 @@ factory = APIRequestFactory()
 class TemplateTagTests(TestCase):
 
     def test_add_query_param_with_non_latin_charactor(self):
-        request = factory.get("/?q=查询")
+        # Ensure we don't double-escape non-latin characters
+        # that are present in the querystring.
+        # https://github.com/tomchristie/django-rest-framework/pull/1314
+        request = factory.get("/", {'q': '查询'})
         json_url = add_query_param(request, "format", "json")
-        self.assertIn(json_url, [
-            "http://testserver/?format=json&q=%E6%9F%A5%E8%AF%A2",
-            "http://testserver/?q=%E6%9F%A5%E8%AF%A2&format=json",
-        ])
+        self.assertIn("q=%E6%9F%A5%E8%AF%A2", json_url)
+        self.assertIn("format=json")

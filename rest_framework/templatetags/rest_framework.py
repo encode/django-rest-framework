@@ -2,6 +2,7 @@ from __future__ import unicode_literals, absolute_import
 from django import template
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.http import QueryDict
+from django.utils.encoding import iri_to_uri
 from django.utils.html import escape
 from django.utils.safestring import SafeData, mark_safe
 from rest_framework.compat import urlparse, force_text, six, smart_urlquote
@@ -144,7 +145,9 @@ def add_query_param(request, key, val):
     """
     Add a query parameter to the current request url, and return the new url.
     """
-    return replace_query_param(request.build_absolute_uri(), key, val)
+    iri = request.get_full_path()
+    uri = iri_to_uri(iri)
+    return replace_query_param(uri, key, val)
 
 
 @register.filter
