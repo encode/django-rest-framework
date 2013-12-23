@@ -144,7 +144,7 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
         if filename == 'index.md':
             main_title = 'Django REST framework - APIs made easy'
         else:
-            main_title = 'Django REST framework - ' + main_title
+            main_title = main_title + ' - Django REST framework'
 
         if relative_path == 'index.md':
             canonical_url = base_url
