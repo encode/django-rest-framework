@@ -37,6 +37,18 @@ The example above would generate the following URL patterns:
 * URL pattern: `^accounts/$`  Name: `'account-list'`
 * URL pattern: `^accounts/{pk}/$`  Name: `'account-detail'`
 
+---
+
+**Note**: The `base_name` argument is used to specify the initial part of the view name pattern.  In the example above, that's the `user` or `account` part.
+
+Typically you won't *need* to specify the `base-name` argument, but if you have a viewset where you've defined a custom `get_queryset` method, then the viewset may not have any `.model` or `.queryset` attribute set.  If you try to register that viewset you'll see an error like this:
+
+    'base_name' argument not specified, and could not automatically determine the name from the viewset, as it does not have a '.model' or '.queryset' attribute.
+
+This means you'll need to explicitly set the `base_name` argument when registering the viewset, as it could not be automatically determined from the model name.
+
+---
+
 ### Extra link and actions
 
 Any methods on the viewset decorated with `@link` or `@action` will also be routed.
