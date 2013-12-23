@@ -163,12 +163,15 @@ In the snippets app, create a new file, `permissions.py`
         """
         Custom permission to only allow owners of an object to edit it.
         """
-    
+
         def has_object_permission(self, request, view, obj):
             # Read permissions are allowed to any request,
             # so we'll always allow GET, HEAD or OPTIONS requests.
-            # Write permissions are only allowed to the owner of the snippet
-            return request.method in permissions.SAFE_METHODS or obj.owner == request.user
+            if request.method in permissions.SAFE_METHODS:
+                return True
+
+            # Write permissions are only allowed to the owner of the snippet.
+            return obj.owner == request.user
 
 Now we can add that custom permission to our snippet instance endpoint, by editing the `permission_classes` property on the `SnippetDetail` class:
 
