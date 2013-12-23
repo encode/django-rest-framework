@@ -144,7 +144,7 @@ def add_query_param(request, key, val):
     """
     Add a query parameter to the current request url, and return the new url.
     """
-    return replace_query_param(request.get_full_path(), key, val)
+    return replace_query_param(request.build_absolute_uri(), key, val)
 
 
 @register.filter
