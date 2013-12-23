@@ -186,9 +186,15 @@ The following third party packages are also available.
 
 [MessagePack][messagepack] is a fast, efficient binary serialization format.  [Juan Riaza][juanriaza] maintains the [djangorestframework-msgpack][djangorestframework-msgpack] package which provides MessagePack renderer and parser support for REST framework.
 
+## CamelCase JSON
+
+[djangorestframework-camel-case] provides camel case JSON renderers and parsers for REST framework.  This allows serializers to use Python-style underscored field names, but be exposed in the API as Javascript-style camel case field names.  It is maintained by [Vitaly Babiy][vbabiy].
+
 [jquery-ajax]: http://api.jquery.com/jQuery.ajax/
 [cite]: https://groups.google.com/d/topic/django-developers/dxI4qVzrBY4/discussion
 [upload-handlers]: https://docs.djangoproject.com/en/dev/topics/http/file-uploads/#upload-handlers
 [messagepack]: https://github.com/juanriaza/django-rest-framework-msgpack
 [juanriaza]: https://github.com/juanriaza
+[vbabiy]: https://github.com/vbabiy
 [djangorestframework-msgpack]: https://github.com/juanriaza/django-rest-framework-msgpack
+[djangorestframework-camel-case]: https://github.com/vbabiy/djangorestframework-camel-case

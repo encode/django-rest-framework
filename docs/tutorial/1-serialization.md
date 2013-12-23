@@ -183,9 +183,11 @@ At this point we've translated the model instance into Python native datatypes. 
 
 Deserialization is similar.  First we parse a stream into Python native datatypes... 
 
-    import StringIO
+    # This import will use either `StringIO.StringIO` or `io.BytesIO`
+    # as appropriate, depending on if we're running Python 2 or Python 3.
+    from rest_framework.compat import BytesIO
 
-    stream = StringIO.StringIO(content)
+    stream = BytesIO(content)
     data = JSONParser().parse(stream)
 
 ...then we restore those native datatypes into to a fully populated object instance.
@@ -261,8 +263,7 @@ The root of our API is going to be a view that supports listing all the existing
             if serializer.is_valid():
                 serializer.save()
                 return JSONResponse(serializer.data, status=201)
-            else:
-                return JSONResponse(serializer.errors, status=400)
+            return JSONResponse(serializer.errors, status=400)
 
 Note that because we want to be able to POST to this view from clients that won't have a CSRF token we need to mark the view as `csrf_exempt`.  This isn't something that you'd normally want to do, and REST framework views actually use more sensible behavior than this, but it'll do for our purposes right now. 
 
@@ -288,8 +289,7 @@ We'll also need a view which corresponds to an individual snippet, and can be us
             if serializer.is_valid():
                 serializer.save()
                 return JSONResponse(serializer.data)
-            else:
-                return JSONResponse(serializer.errors, status=400)
+            return JSONResponse(serializer.errors, status=400)
 
         elif request.method == 'DELETE':
             snippet.delete()

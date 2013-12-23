@@ -88,6 +88,14 @@ The **base class** for all exceptions raised inside REST framework.
 
 To provide a custom exception, subclass `APIException` and set the `.status_code` and `.detail` properties on the class.
 
+For example, if your API relies on a third party service that may sometimes be unreachable, you might want to implement an exception for the "503 Service Unavailable" HTTP response code.  You could do this like so:
+
+    from rest_framework.exceptions import APIException
+
+    class ServiceUnavailable(APIException):
+        status_code = 503
+        detail = 'Service temporarily unavailable, try again later.'
+
 ## ParseError
 
 **Signature:** `ParseError(detail=None)`

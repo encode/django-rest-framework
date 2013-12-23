@@ -423,7 +423,7 @@ class BooleanField(WritableField):
     def field_from_native(self, data, files, field_name, into):
         # HTML checkboxes do not explicitly represent unchecked as `False`
         # we deal with that here...
-        if isinstance(data, QueryDict):
+        if isinstance(data, QueryDict) and self.default is None:
             self.default = False
 
         return super(BooleanField, self).field_from_native(

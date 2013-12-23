@@ -416,7 +416,9 @@ class BaseSerializer(WritableField):
 
         if self.source == '*':
             if value:
-                into.update(value)
+                reverted_data = self.restore_fields(value, {})
+                if not self._errors:
+                    into.update(reverted_data)
         else:
             if value in (None, ''):
                 into[(self.source or field_name)] = None
@@ -602,6 +604,7 @@ class ModelSerializer(Serializer):
         models.TextField: CharField,
         models.CommaSeparatedIntegerField: CharField,
         models.BooleanField: BooleanField,
+        models.NullBooleanField: BooleanField,
         models.FileField: FileField,
         models.ImageField: ImageField,
     }
@@ -695,7 +698,9 @@ class ModelSerializer(Serializer):
             is_m2m = isinstance(relation.field,
                                 models.fields.related.ManyToManyField)
 
-            if is_m2m and not relation.field.rel.through._meta.auto_created:
+            if (is_m2m and
+                hasattr(relation.field.rel, 'through') and
+                not relation.field.rel.through._meta.auto_created):
                 has_through_model = True
 
             if nested:

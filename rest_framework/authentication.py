@@ -9,7 +9,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.middleware.csrf import CsrfViewMiddleware
 from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.compat import oauth, oauth_provider, oauth_provider_store
-from rest_framework.compat import oauth2_provider, provider_now
+from rest_framework.compat import oauth2_provider, provider_now, check_nonce
 from rest_framework.authtoken.models import Token
 
 
@@ -281,7 +281,9 @@ class OAuthAuthentication(BaseAuthentication):
         """
         Checks nonce of request, and return True if valid.
         """
-        return oauth_provider_store.check_nonce(request, oauth_request, oauth_request['oauth_nonce'])
+        oauth_nonce = oauth_request['oauth_nonce']
+        oauth_timestamp = oauth_request['oauth_timestamp']
+        return check_nonce(request, oauth_request, oauth_nonce, oauth_timestamp)
 
 
 class OAuth2Authentication(BaseAuthentication):

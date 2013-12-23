@@ -184,7 +184,7 @@ Once your package is decently documented and available on PyPI open a pull reque
 [so-filter]: http://stackexchange.com/filters/66475/rest-framework
 [issues]: https://github.com/tomchristie/django-rest-framework/issues?state=open
 [pep-8]: http://www.python.org/dev/peps/pep-0008/
-[travis-status]: ../img/travis-status.png
+[travis-status]: https://raw.github.com/tomchristie/django-rest-framework/master/docs/img/travis-status.png
 [pull-requests]: https://help.github.com/articles/using-pull-requests
 [tox]: http://tox.readthedocs.org/en/latest/
 [markdown]: http://daringfireball.net/projects/markdown/basics

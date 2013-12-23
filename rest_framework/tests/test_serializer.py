@@ -105,6 +105,17 @@ class ModelSerializerWithNestedSerializer(serializers.ModelSerializer):
         model = Person
 
 
+class NestedSerializerWithRenamedField(serializers.Serializer):
+    renamed_info = serializers.Field(source='info')
+
+
+class ModelSerializerWithNestedSerializerWithRenamedField(serializers.ModelSerializer):
+    nested = NestedSerializerWithRenamedField(source='*')
+
+    class Meta:
+        model = Person
+
+
 class PersonSerializerInvalidReadOnly(serializers.ModelSerializer):
     """
     Testing for #652.
@@ -455,6 +466,20 @@ class ValidationTests(TestCase):
             'nested': {'info': 'hi'}},
         )
         self.assertEqual(serializer.is_valid(), True)
+
+    def test_writable_star_source_with_inner_source_fields(self):
+        """
+        Tests that a serializer with source="*" correctly expands the
+        it's fields into the outer serializer even if they have their
+        own 'source' parameters.
+        """
+
+        serializer = ModelSerializerWithNestedSerializerWithRenamedField(data={
+            'name': 'marko',
+            'nested': {'renamed_info': 'hi'}},
+        )
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.errors, {})
 
 
 class CustomValidationTests(TestCase):
@@ -1743,3 +1768,75 @@ class TestSerializerTransformMethods(TestCase):
                 'b_renamed': None,
             }
         )
+
+
+class DefaultTrueBooleanModel(models.Model):
+    cat = models.BooleanField(default=True)
+    dog = models.BooleanField(default=False)
+
+
+class SerializerDefaultTrueBoolean(TestCase):
+
+    def setUp(self):
+        super(SerializerDefaultTrueBoolean, self).setUp()
+
+        class DefaultTrueBooleanSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = DefaultTrueBooleanModel
+                fields = ('cat', 'dog')
+
+        self.default_true_boolean_serializer = DefaultTrueBooleanSerializer
+
+    def test_enabled_as_false(self):
+        serializer = self.default_true_boolean_serializer(data={'cat': False,
+                                                                'dog': False})
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.data['cat'], False)
+        self.assertEqual(serializer.data['dog'], False)
+
+    def test_enabled_as_true(self):
+        serializer = self.default_true_boolean_serializer(data={'cat': True,
+                                                                'dog': True})
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.data['cat'], True)
+        self.assertEqual(serializer.data['dog'], True)
+
+    def test_enabled_partial(self):
+        serializer = self.default_true_boolean_serializer(data={'cat': False},
+                                                          partial=True)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.data['cat'], False)
+        self.assertEqual(serializer.data['dog'], False)
+
+        
+class BoolenFieldTypeTest(TestCase):
+    '''
+    Ensure the various Boolean based model fields are rendered as the proper
+    field type
+    
+    '''
+    
+    def setUp(self):
+        '''
+        Setup an ActionItemSerializer for BooleanTesting
+        '''
+        data = {
+            'title': 'b' * 201,
+        }
+        self.serializer = ActionItemSerializer(data=data)
+
+    def test_booleanfield_type(self):
+        '''
+        Test that BooleanField is infered from models.BooleanField
+        '''
+        bfield = self.serializer.get_fields()['done']
+        self.assertEqual(type(bfield), fields.BooleanField)
+    
+    def test_nullbooleanfield_type(self):
+        '''
+        Test that BooleanField is infered from models.NullBooleanField 
+        
+        https://groups.google.com/forum/#!topic/django-rest-framework/D9mXEftpuQ8
+        '''
+        bfield = self.serializer.get_fields()['started']
+        self.assertEqual(type(bfield), fields.BooleanField)

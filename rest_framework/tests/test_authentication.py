@@ -249,7 +249,7 @@ class OAuthTests(TestCase):
     def setUp(self):
         # these imports are here because oauth is optional and hiding them in try..except block or compat
         # could obscure problems if something breaks
-        from oauth_provider.models import Consumer, Resource
+        from oauth_provider.models import Consumer, Scope
         from oauth_provider.models import Token as OAuthToken
         from oauth_provider import consts
 
@@ -269,8 +269,8 @@ class OAuthTests(TestCase):
         self.consumer = Consumer.objects.create(key=self.CONSUMER_KEY, secret=self.CONSUMER_SECRET,
             name='example', user=self.user, status=self.consts.ACCEPTED)
 
-        self.resource = Resource.objects.create(name="resource name", url="api/")
-        self.token = OAuthToken.objects.create(user=self.user, consumer=self.consumer, resource=self.resource,
+        self.scope = Scope.objects.create(name="resource name", url="api/")
+        self.token = OAuthToken.objects.create(user=self.user, consumer=self.consumer, scope=self.scope,
             token_type=OAuthToken.ACCESS, key=self.TOKEN_KEY, secret=self.TOKEN_SECRET, is_approved=True
         )
 
@@ -362,7 +362,8 @@ class OAuthTests(TestCase):
     def test_post_form_with_urlencoded_parameters(self):
         """Ensure POSTing with x-www-form-urlencoded auth parameters passes"""
         params = self._create_authorization_url_parameters()
-        response = self.csrf_client.post('/oauth/', params)
+        auth = self._create_authorization_header()
+        response = self.csrf_client.post('/oauth/', params, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
     @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
@@ -397,10 +398,10 @@ class OAuthTests(TestCase):
     @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
     @unittest.skipUnless(oauth, 'oauth2 not installed')
     def test_get_form_with_readonly_resource_passing_auth(self):
-        """Ensure POSTing with a readonly resource instead of a write scope fails"""
+        """Ensure POSTing with a readonly scope instead of a write scope fails"""
         read_only_access_token = self.token
-        read_only_access_token.resource.is_readonly = True
-        read_only_access_token.resource.save()
+        read_only_access_token.scope.is_readonly = True
+        read_only_access_token.scope.save()
         params = self._create_authorization_url_parameters()
         response = self.csrf_client.get('/oauth-with-scope/', params)
         self.assertEqual(response.status_code, 200)
@@ -410,8 +411,8 @@ class OAuthTests(TestCase):
     def test_post_form_with_readonly_resource_failing_auth(self):
         """Ensure POSTing with a readonly resource instead of a write scope fails"""
         read_only_access_token = self.token
-        read_only_access_token.resource.is_readonly = True
-        read_only_access_token.resource.save()
+        read_only_access_token.scope.is_readonly = True
+        read_only_access_token.scope.save()
         params = self._create_authorization_url_parameters()
         response = self.csrf_client.post('/oauth-with-scope/', params)
         self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
@@ -421,10 +422,11 @@ class OAuthTests(TestCase):
     def test_post_form_with_write_resource_passing_auth(self):
         """Ensure POSTing with a write resource succeed"""
         read_write_access_token = self.token
-        read_write_access_token.resource.is_readonly = False
-        read_write_access_token.resource.save()
+        read_write_access_token.scope.is_readonly = False
+        read_write_access_token.scope.save()
         params = self._create_authorization_url_parameters()
-        response = self.csrf_client.post('/oauth-with-scope/', params)
+        auth = self._create_authorization_header()
+        response = self.csrf_client.post('/oauth-with-scope/', params, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
     @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
