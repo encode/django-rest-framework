@@ -74,3 +74,30 @@ class FormatSuffixTests(TestCase):
             URLTestPath('/test/path.asdf', (), {'foo': 'bar', 'format': 'asdf'}),
         ]
         self._resolve_urlpatterns(urlpatterns, test_paths)
+
+    def test_trailing_slash(self):
+        urlpatterns = patterns(
+            '',
+            url(r'^test/$', dummy_view),
+        )
+        test_paths = [
+            URLTestPath('/test/', (), {}),
+            URLTestPath('/test.api/', (), {'format': 'api'}),
+            URLTestPath('/test.asdf/', (), {'format': 'asdf'}),
+        ]
+        self._resolve_urlpatterns(urlpatterns, test_paths)
+
+    def test_optional_trailing_slash(self):
+        urlpatterns = patterns(
+            '',
+            url(r'^test/?$', dummy_view),
+        )
+        test_paths = [
+            URLTestPath('/test', (), {}),
+            URLTestPath('/test/', (), {}),
+            URLTestPath('/test.api', (), {'format': 'api'}),
+            URLTestPath('/test.api/', (), {'format': 'api'}),
+            URLTestPath('/test.asdf', (), {'format': 'asdf'}),
+            URLTestPath('/test.asdf/', (), {'format': 'asdf'}),
+        ]
+        self._resolve_urlpatterns(urlpatterns, test_paths)
