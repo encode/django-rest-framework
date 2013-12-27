@@ -3,7 +3,6 @@ Compound fields for processing values that are lists and dicts of values describ
 fields.
 """
 from .fields import WritableField
-from .serializers import BaseSerializer
 
 
 class ListField(WritableField):
