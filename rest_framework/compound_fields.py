@@ -39,14 +39,15 @@ class DictField(WritableField):
     can be another field type (e.g., CharField) or a serializer.
     """
 
-    def __init__(self, value_field=None, *args, **kwargs):
+    def __init__(self, value_field=None, unicode_options=None, *args, **kwargs):
         super(DictField, self).__init__(*args, **kwargs)
         self.value_field = value_field
+        self.unicode_options = unicode_options or {}
 
     def to_native(self, obj):
         if self.value_field and obj:
             return dict(
-                (unicode(key), self.value_field.to_native(value))
+                (unicode(key, **self.unicode_options), self.value_field.to_native(value))
                 for key, value in obj.items()
             )
         return obj
@@ -54,7 +55,7 @@ class DictField(WritableField):
     def from_native(self, data):
         if self.value_field and data:
             return dict(
-                (unicode(key), self.value_field.from_native(value))
+                (unicode(key, **self.unicode_options), self.value_field.from_native(value))
                 for key, value in data.items()
             )
         return data
