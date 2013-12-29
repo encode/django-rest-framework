@@ -68,16 +68,14 @@ class ListFieldTests(unittest.TestCase):
         (None) value.
         """
         field = ListField()
-        with self.assertRaises(ValidationError):
-            field.validate(None)
+        self.assertRaises(ValidationError, field.validate, None)
 
     def test_validate_non_list(self):
         """
         When a ListField is given a non-list value, then validate will raise a ValidationError.
         """
         field = ListField()
-        with self.assertRaises(ValidationError):
-            field.validate('notAList')
+        self.assertRaises(ValidationError, field.validate, 'notAList')
 
     def test_validate_empty_list(self):
         """
@@ -85,8 +83,7 @@ class ListFieldTests(unittest.TestCase):
         value.
         """
         field = ListField()
-        with self.assertRaises(ValidationError):
-            field.validate([])
+        self.assertRaises(ValidationError, field.validate, [])
 
     def test_validate_elements_valid(self):
         """
@@ -105,8 +102,7 @@ class ListFieldTests(unittest.TestCase):
         then validate will raise a ValidationError.
         """
         field = ListField(CharField(max_length=5))
-        with self.assertRaises(ValidationError):
-            field.validate(["012345", "012345"])
+        self.assertRaises(ValidationError, field.validate, ["012345", "012345"])
 
 
 class DictFieldTests(unittest.TestCase):
@@ -162,16 +158,14 @@ class DictFieldTests(unittest.TestCase):
         (None) value.
         """
         field = DictField()
-        with self.assertRaises(ValidationError):
-            field.validate(None)
+        self.assertRaises(ValidationError, field.validate, None)
 
     def test_validate_non_dict(self):
         """
         When a DictField is given a non-dict value, then validate will raise a ValidationError.
         """
         field = DictField()
-        with self.assertRaises(ValidationError):
-            field.validate('notADict')
+        self.assertRaises(ValidationError, field.validate, 'notADict')
 
     def test_validate_empty_dict(self):
         """
@@ -179,8 +173,7 @@ class DictFieldTests(unittest.TestCase):
         value.
         """
         field = DictField()
-        with self.assertRaises(ValidationError):
-            field.validate({})
+        self.assertRaises(ValidationError, field.validate, {})
 
     def test_validate_elements_valid(self):
         """
@@ -199,5 +192,4 @@ class DictFieldTests(unittest.TestCase):
         then validate will raise a ValidationError.
         """
         field = DictField(CharField(max_length=5))
-        with self.assertRaises(ValidationError):
-            field.validate({"a": "012345", "b": "012345"})
+        self.assertRaises(ValidationError, field.validate, {"a": "012345", "b": "012345"})

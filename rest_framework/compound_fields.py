@@ -76,7 +76,7 @@ class DictField(WritableField):
     def to_native(self, obj):
         if self.value_field and obj:
             return dict(
-                (unicode(key, **self.unicode_options), self.value_field.to_native(value))
+                (six.text_type(key, **self.unicode_options), self.value_field.to_native(value))
                 for key, value in obj.items()
             )
         return obj
@@ -84,7 +84,7 @@ class DictField(WritableField):
     def from_native(self, data):
         if self.value_field and data:
             return dict(
-                (unicode(key, **self.unicode_options), self.value_field.from_native(value))
+                (six.text_type(key, **self.unicode_options), self.value_field.from_native(value))
                 for key, value in data.items()
             )
         return data
