@@ -69,6 +69,35 @@ class TestGenericRelations(TestCase):
         }
         self.assertEqual(serializer.data, expected)
 
+    def test_generic_nested_relation(self):
+        """
+        Test saving a GenericRelation field via a nested serializer.
+        """
+
+        class TagSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Tag
+                exclude = ('content_type', 'object_id')
+
+        class BookmarkSerializer(serializers.ModelSerializer):
+            tags = TagSerializer()
+
+            class Meta:
+                model = Bookmark
+                exclude = ('id',)
+
+        data = {
+            'url': 'https://docs.djangoproject.com/',
+            'tags': [
+                {'tag': 'contenttypes'},
+                {'tag': 'genericrelations'},
+            ]
+        }
+        serializer = BookmarkSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+        self.assertEqual(serializer.object.tags.count(), 2)
+
     def test_generic_fk(self):
         """
         Test a relationship that spans a GenericForeignKey field.
