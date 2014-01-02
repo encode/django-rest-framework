@@ -53,7 +53,8 @@ class CreateModelMixin(object):
             self.object = serializer.save(force_insert=True)
             self.post_save(self.object, created=True)
             headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED,
+            data = self.get_create_response_data(serializer)
+            return Response(data, status=status.HTTP_201_CREATED,
                             headers=headers)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -63,6 +64,9 @@ class CreateModelMixin(object):
             return {'Location': data['url']}
         except (TypeError, KeyError):
             return {}
+
+    def get_create_response_data(self, serializer):
+        return serializer.data
 
 
 class ListModelMixin(object):
@@ -136,7 +140,8 @@ class UpdateModelMixin(object):
                 return Response(err.message_dict, status=status.HTTP_400_BAD_REQUEST)
             self.object = serializer.save(**save_kwargs)
             self.post_save(self.object, created=created)
-            return Response(serializer.data, status=success_status_code)
+            data = self.get_update_response_data(serializer)
+            return Response(data, status=success_status_code)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -158,6 +163,9 @@ class UpdateModelMixin(object):
                 # PATCH requests where the object does not exist should still
                 # return a 404 response.
                 raise
+
+    def get_update_response_data(self, serializer):
+        return serializer.data
 
     def pre_save(self, obj):
         """
