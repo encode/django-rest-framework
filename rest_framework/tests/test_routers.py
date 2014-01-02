@@ -121,6 +121,27 @@ class TestCustomLookupFields(TestCase):
         )
 
 
+class TestLookupValueRegex(TestCase):
+    """
+    Ensure the router honors lookup_value_regex when applied
+    to the viewset.
+    """
+    def setUp(self):
+        class NoteViewSet(viewsets.ModelViewSet):
+            queryset = RouterTestModel.objects.all()
+            lookup_field = 'uuid'
+            lookup_value_regex = '[0-9a-f]{32}'
+
+        self.router = SimpleRouter()
+        self.router.register(r'notes', NoteViewSet)
+        self.urls = self.router.urls
+
+    def test_urls_limited_by_lookup_value_regex(self):
+        expected = ['^notes/$', '^notes/(?P<uuid>[0-9a-f]{32})/$']
+        for idx in range(len(expected)):
+            self.assertEqual(expected[idx], self.urls[idx].regex.pattern)
+
+
 class TestTrailingSlashIncluded(TestCase):
     def setUp(self):
         class NoteViewSet(viewsets.ModelViewSet):
