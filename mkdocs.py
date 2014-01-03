@@ -161,6 +161,12 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
         output = output.replace('{{ page_id }}', filename[:-3])
         output = output.replace('{{ canonical_url }}', canonical_url)
 
+        if filename =='index.md':
+            output = output.replace('{{ ad_block }}', """<hr><p><strong>The team behind REST framework is launching a new API service.</strong></p>
+<p>If you want to be first in line when we start issuing invitations, please <a href="http://brightapi.com">sign up here</a>.</p>""")
+        else:
+            output = output.replace('{{ ad_block }}', '')
+
         if prev_url:
             output = output.replace('{{ prev_url }}', prev_url)
             output = output.replace('{{ prev_url_disabled }}', '')

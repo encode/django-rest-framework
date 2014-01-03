@@ -331,7 +331,7 @@ class BaseSerializer(WritableField):
 
         return ret
 
-    def from_native(self, data, files):
+    def from_native(self, data, files=None):
         """
         Deserialize primitives -> objects.
         """
@@ -894,7 +894,7 @@ class ModelSerializer(Serializer):
                 m2m_data[field_name] = attrs.pop(field_name)
 
         # Forward m2m relations
-        for field in meta.many_to_many:
+        for field in meta.many_to_many + meta.virtual_fields:
             if field.name in attrs:
                 m2m_data[field.name] = attrs.pop(field.name)
 
