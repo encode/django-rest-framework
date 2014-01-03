@@ -98,7 +98,7 @@ You can determine your currently installed version using `pip freeze`:
 
     class DisablePaginationMixin(object):
         def get_paginate_by(self, queryset=None):
-            if self.request.QUERY_PARAMS['self.paginate_by_param'] == '0':
+            if self.request.QUERY_PARAMS[self.paginate_by_param] == '0':
                 return None
             return super(DisablePaginationMixin, self).get_paginate_by(queryset)
 
