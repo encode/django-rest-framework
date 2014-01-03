@@ -313,10 +313,11 @@ A string representing the function that should be used when generating view name
 
 This should be a function with the following signature:
 
-    view_name(cls, suffix=None)
+    view_name(cls, suffix=None, request=None)
 
 * `cls`: The view class.  Typically the name function would inspect the name of the class when generating a descriptive name, by accessing `cls.__name__`.
 * `suffix`: The optional suffix used when differentiating individual views in a viewset.
+* `request`: The request object (if exists).  The name function can inspect the request to decide how to generate the name.
 
 Default: `'rest_framework.views.get_view_name'`
 
@@ -328,10 +329,11 @@ This setting can be changed to support markup styles other than the default mark
 
 This should be a function with the following signature:
 
-    view_description(cls, html=False)
+    view_description(cls, html=False, request=None)
 
 * `cls`: The view class.  Typically the description function would inspect the docstring of the class when generating a description, by accessing `cls.__doc__`
 * `html`: A boolean indicating if HTML output is required.  `True` when used in the browsable API, and `False` when used in generating `OPTIONS` responses.
+* `request`: The request object (if exists).  The description function can inspect the request to decide how to generate the description.
 
 Default: `'rest_framework.views.get_view_description'`
 
