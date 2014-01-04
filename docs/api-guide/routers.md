@@ -83,7 +83,7 @@ This behavior can be modified by setting the `trailing_slash` argument to `False
 
 Trailing slashes are conventional in Django, but are not used by default in some other frameworks such as Rails.  Which style you choose to use is largely a matter of preference, although some javascript frameworks may expect a particular routing style.
 
-With `trailing_slash` set to True, the router will match lookup values containing any characters except slashes and dots. When set to False, dots are allowed.  To restrict the lookup pattern, set the `lookup_field_regex` attribute on the viewset.  For example, you can limit the lookup to valid UUIDs:
+The router will match lookup values containing any characters except slashes and period characters.  For a more restrictive (or lenient) lookup pattern, set the `lookup_field_regex` attribute on the viewset.  For example, you can limit the lookup to valid UUIDs:
 
     class MyModelViewSet(mixins.RetrieveModelMixin, viewsets.GenericViewSet):
         lookup_field = 'my_model_id'

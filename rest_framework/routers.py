@@ -224,11 +224,8 @@ class SimpleRouter(BaseRouter):
         try:
             lookup_value = viewset.lookup_value_regex
         except AttributeError:
-            if self.trailing_slash:
-                lookup_value = '[^/]+'
-            else:
-                # Don't consume `.json` style suffixes
-                lookup_value = '[^/.]+'
+            # Don't consume `.json` style suffixes
+            lookup_value = '[^/.]+'
         return base_regex.format(
             lookup_prefix=lookup_prefix,
             lookup_field=lookup_field,
