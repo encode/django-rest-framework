@@ -126,13 +126,20 @@ class APIView(View):
         """
         raise exceptions.MethodNotAllowed(request.method)
 
-    def permission_denied(self, request):
+    def permission_denied(self, request, throw_404_not_403=False):
         """
         If request is not permitted, determine what kind of exception to raise.
         """
         if not self.request.successful_authenticator:
             raise exceptions.NotAuthenticated()
-        raise exceptions.PermissionDenied()
+
+        if throw_404_not_403:
+            # throw a 404 error instead of a 403 to avoid 'information leakage'
+            # similar to how Github handles errors when viewing objects that
+            # the user does not have access
+            raise Http404()
+        else:
+            raise exceptions.PermissionDenied()
 
     def throttled(self, request, wait):
         """
@@ -281,7 +288,14 @@ class APIView(View):
         """
         for permission in self.get_permissions():
             if not permission.has_object_permission(request, self, obj):
-                self.permission_denied(request)
+                if hasattr(permission, 'throw_404_not_403'):
+                    # if the permission object has an attribute setting to
+                    # control the exception, pass that along into the method
+                    # that throws the error exception
+                    self.permission_denied(
+                        request, permission.throw_404_not_403)
+                else:
+                    self.permission_denied(request)
 
     def check_throttles(self, request):
         """
