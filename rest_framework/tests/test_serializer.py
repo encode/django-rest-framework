@@ -1124,6 +1124,20 @@ class BlankFieldTests(TestCase):
         serializer = self.model_serializer_class(data={})
         self.assertEqual(serializer.is_valid(), True)
 
+    def test_create_model_null_field_save(self):
+        """
+        Regression test for #1330.
+
+        https://github.com/tomchristie/django-rest-framework/pull/1330
+        """
+        serializer = self.model_serializer_class(data={'title': None})
+        self.assertEqual(serializer.is_valid(), True)
+
+        try:
+            serializer.save()
+        except Exception:
+            self.fail('Exception raised on save() after validation passes')
+
 
 #test for issue #460
 class SerializerPickleTests(TestCase):
