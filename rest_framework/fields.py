@@ -443,8 +443,9 @@ class CharField(WritableField):
     type_label = 'string'
     form_field_class = forms.CharField
 
-    def __init__(self, max_length=None, min_length=None, *args, **kwargs):
+    def __init__(self, max_length=None, min_length=None, allow_none=False, *args, **kwargs):
         self.max_length, self.min_length = max_length, min_length
+        self.allow_none = allow_none
         super(CharField, self).__init__(*args, **kwargs)
         if min_length is not None:
             self.validators.append(validators.MinLengthValidator(min_length))
@@ -452,7 +453,7 @@ class CharField(WritableField):
             self.validators.append(validators.MaxLengthValidator(max_length))
 
     def from_native(self, value):
-        if value is None:
+        if value is None and not self.allow_none:
             return ''
         if isinstance(value, six.string_types):
             return value
