@@ -821,9 +821,14 @@ class ModelSerializer(Serializer):
                 kwargs.update({attribute: getattr(model_field, attribute)})
 
         try:
-            return self.field_mapping[model_field.__class__](**kwargs)
+            field_class = self.field_mapping[model_field.__class__]
         except KeyError:
             return ModelField(model_field=model_field, **kwargs)
+
+        if issubclass(field_class, CharField) and model_field.null:
+            kwargs['allow_none'] = True
+
+        return field_class(**kwargs)
 
     def get_validation_exclusions(self):
         """
