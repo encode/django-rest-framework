@@ -1,4 +1,4 @@
-<p class="badges">
+<p class="badges" height=20px>
 <iframe src="http://ghbtns.com/github-btn.html?user=tomchristie&amp;repo=django-rest-framework&amp;type=watch&amp;count=true" class="github-star-button" allowtransparency="true" frameborder="0" scrolling="0" width="110px" height="20px"></iframe>
 
 <a href="https://twitter.com/share" class="twitter-share-button" data-url="django-rest-framework.org" data-text="Checking out the totally awesome Django REST framework! http://django-rest-framework.org" data-count="none"></a>
@@ -7,9 +7,15 @@
 <img src="https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master" class="travis-build-image">
 </p>
 
-# Django REST framework
+---
 
-**Awesome web-browsable Web APIs.**
+<p>
+<img src="img/logo.png" width=600px style="display: block; margin: 0 auto 0 auto">
+</p>
+
+<!--
+# Django REST framework
+-->
 
 Django REST framework is a powerful and flexible toolkit that makes it easy to build Web APIs.
 
@@ -20,12 +26,15 @@ Some reasons you might want to use REST framework:
 * [Serialization][serializers] that supports both [ORM][modelserializer-section] and [non-ORM][serializer-section] data sources.
 * Customizable all the way down - just use [regular function-based views][functionview-section] if you don't need the [more][generic-views] [powerful][viewsets] [features][routers].
 * [Extensive documentation][index], and [great community support][group].
+* Used and trusted by large companies such as [Mozilla][mozilla] and [Eventbrite][eventbrite].
 
-There is a live example API for testing purposes, [available here][sandbox].
-
-**Below**: *Screenshot from the browsable API*
+---
 
 ![Screenshot][image]
+
+**Above**: *Screenshot from the browsable API*
+
+----
 
 ## Requirements
 
@@ -140,6 +149,8 @@ The tutorial will walk you through the building blocks that make up REST framewo
 * [5 - Relationships & hyperlinked APIs][tut-5]
 * [6 - Viewsets & routers][tut-6]
 
+There is a live example API of the finished tutorial API for testing purposes, [available here][sandbox].
+
 ## API Guide
 
 The API guide is your complete reference manual to all the functionality provided by REST framework.
@@ -244,7 +255,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
 [travis-build-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master
-[urlobject]: https://github.com/zacharyvoase/urlobject
+[mozilla]: http://www.mozilla.org/en-US/about/
+[eventbrite]: https://www.eventbrite.co.uk/about/
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [yaml]: http://pypi.python.org/pypi/PyYAML
 [defusedxml]: https://pypi.python.org/pypi/defusedxml

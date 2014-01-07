@@ -1,8 +1,8 @@
-# Django REST framework
-
-**Awesome web-browseable Web APIs.**
+<img src="docs/img/logo.png" style="display: block; margin: 0 auto 0 auto">
 
 [![build-status-image]][travis]
+
+**Awesome web-browseable Web APIs.**
 
 **Note**: Full documentation for the project is available at [http://django-rest-framework.org][docs].
 
