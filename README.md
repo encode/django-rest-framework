@@ -1,6 +1,4 @@
-<p style="text-align: center">
-<img src="docs/img/logo.png" style="display: block; margin: 0 auto 0 auto">
-</p>
+# Django REST framework
 
 [![build-status-image]][travis]
 
