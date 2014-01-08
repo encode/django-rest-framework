@@ -4,7 +4,7 @@
 
 **Awesome web-browseable Web APIs.**
 
-**Note**: Full documentation for the project is available at [http://django-rest-framework.org][docs].
+**Note**: Full documentation for the project is available at [http://www.django-rest-framework.org][docs].
 
 # Overview
 
@@ -99,7 +99,7 @@ That's it, we're done!
 
 # Documentation & Support
 
-Full documentation for the project is available at [http://django-rest-framework.org][docs].
+Full documentation for the project is available at [http://www.django-rest-framework.org][docs].
 
 For questions and support, use the [REST framework discussion group][group], or `#restframework` on freenode IRC.
 
@@ -143,21 +143,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [0.4]: https://github.com/tomchristie/django-rest-framework/tree/0.4.X
 [sandbox]: http://restframework.herokuapp.com/
 
-[index]: http://django-rest-framework.org/
-[oauth1-section]: http://django-rest-framework.org/api-guide/authentication.html#oauthauthentication
-[oauth2-section]: http://django-rest-framework.org/api-guide/authentication.html#oauth2authentication
-[serializer-section]: http://django-rest-framework.org/api-guide/serializers.html#serializers
-[modelserializer-section]: http://django-rest-framework.org/api-guide/serializers.html#modelserializer
-[functionview-section]: http://django-rest-framework.org/api-guide/views.html#function-based-views
-[generic-views]: http://django-rest-framework.org/api-guide/generic-views.html
-[viewsets]: http://django-rest-framework.org/api-guide/viewsets.html
-[routers]: http://django-rest-framework.org/api-guide/routers.html
-[serializers]: http://django-rest-framework.org/api-guide/serializers.html
-[authentication]: http://django-rest-framework.org/api-guide/authentication.html
+[index]: http://www.django-rest-framework.org/
+[oauth1-section]: http://www.django-rest-framework.org/api-guide/authentication.html#oauthauthentication
+[oauth2-section]: http://www.django-rest-framework.org/api-guide/authentication.html#oauth2authentication
+[serializer-section]: http://www.django-rest-framework.org/api-guide/serializers.html#serializers
+[modelserializer-section]: http://www.django-rest-framework.org/api-guide/serializers.html#modelserializer
+[functionview-section]: http://www.django-rest-framework.org/api-guide/views.html#function-based-views
+[generic-views]: http://www.django-rest-framework.org/api-guide/generic-views.html
+[viewsets]: http://www.django-rest-framework.org/api-guide/viewsets.html
+[routers]: http://www.django-rest-framework.org/api-guide/routers.html
+[serializers]: http://www.django-rest-framework.org/api-guide/serializers.html
+[authentication]: http://www.django-rest-framework.org/api-guide/authentication.html
 
-[rest-framework-2-announcement]: http://django-rest-framework.org/topics/rest-framework-2-announcement.html
+[rest-framework-2-announcement]: http://www.django-rest-framework.org/topics/rest-framework-2-announcement.html
 [2.1.0-notes]: https://groups.google.com/d/topic/django-rest-framework/Vv2M0CMY9bg/discussion
-[image]: http://django-rest-framework.org/img/quickstart.png
+[image]: http://www.django-rest-framework.org/img/quickstart.png
 
 [tox]: http://testrun.org/tox/latest/
 
@@ -165,7 +165,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [wlonk]: https://twitter.com/wlonk/status/261689665952833536
 [laserllama]: https://twitter.com/laserllama/status/328688333750407168
 
-[docs]: http://django-rest-framework.org/
+[docs]: http://www.django-rest-framework.org/
 [urlobject]: https://github.com/zacharyvoase/urlobject
 [markdown]: http://pypi.python.org/pypi/Markdown/
 [pyyaml]: http://pypi.python.org/pypi/PyYAML
