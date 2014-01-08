@@ -454,7 +454,7 @@ The [drf-nested-routers package][drf-nested-routers] provides routers and relati
 
 [cite]: http://lwn.net/Articles/193245/
 [reverse-relationships]: https://docs.djangoproject.com/en/dev/topics/db/queries/#following-relationships-backward
-[routers]: http://django-rest-framework.org/api-guide/routers#defaultrouter
+[routers]: http://www.django-rest-framework.org/api-guide/routers#defaultrouter
 [generic-relations]: https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#id1
 [2.2-announcement]: ../topics/2.2-announcement.md
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
