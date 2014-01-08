@@ -346,3 +346,8 @@ class NestedModelSerializerUpdateTests(TestCase):
         result.save()
         self.assertEqual(result.id, john.id)
 
+
+class ImportingModelSerializerWithStrForeignKeys(TestCase):
+    def test_import_model_serializer(self):
+        from rest_framework.tests.accounts.serializers import AccountSerializer
+        self.assertIsInstance(AccountSerializer(), serializers.ModelSerializer)
