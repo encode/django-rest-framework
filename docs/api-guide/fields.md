@@ -167,13 +167,13 @@ or `django.db.models.fields.TextField`.
 
 Corresponds to `django.db.models.fields.URLField`.  Uses Django's `django.core.validators.URLValidator` for validation.
 
-**Signature:** `CharField(max_length=200, min_length=None)`
+**Signature:** `URLField(max_length=200, min_length=None)`
 
 ## SlugField
 
 Corresponds to `django.db.models.fields.SlugField`.
 
-**Signature:** `CharField(max_length=50, min_length=None)`
+**Signature:** `SlugField(max_length=50, min_length=None)`
 
 ## ChoiceField
 
