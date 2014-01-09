@@ -98,3 +98,23 @@ class RelatedFieldSourceTests(TestCase):
         obj = ClassWithQuerysetMethod()
         value = field.field_to_native(obj, 'field_name')
         self.assertEqual(value, ['BlogPost object'])
+
+    # Regression for #1129
+    def test_exception_for_incorect_fk(self):
+        """
+        Check that the exception message are correct if the source field
+        doesn't exist.
+        """
+        from rest_framework.tests.models import ManyToManySource
+        class Meta:
+            model = ManyToManySource
+        attrs = {
+            'name': serializers.SlugRelatedField(
+                slug_field='name', source='banzai'),
+            'Meta': Meta,
+        }
+
+        TestSerializer = type(str('TestSerializer'),
+            (serializers.ModelSerializer,), attrs)
+        with self.assertRaises(AttributeError):
+            TestSerializer(data={'name': 'foo'})
