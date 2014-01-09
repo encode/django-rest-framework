@@ -223,7 +223,7 @@ class Request(object):
     def user(self, value):
         """
         Sets the user on the current request. This is necessary to maintain
-        compatilbility with django.contrib.auth where the user proprety is
+        compatibility with django.contrib.auth where the user property is
         set in the login and logout functions.
         """
         self._user = value
