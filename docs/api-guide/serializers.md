@@ -103,11 +103,11 @@ Deserialization is similar.  First we parse a stream into Python native datatype
 When deserializing data, we can either create a new instance, or update an existing instance.
 
     serializer = CommentSerializer(data=data)           # Create new instance
-    serializer = CommentSerializer(comment, data=data)  # Update `instance`
+    serializer = CommentSerializer(comment, data=data)  # Update `comment`
 
 By default, serializers must be passed values for all required fields or they will throw validation errors.  You can use the `partial` argument in order to allow partial updates.
 
-    serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)  # Update `instance` with partial data
+    serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)  # Update `comment` with partial data
 
 ## Validation
 
@@ -208,7 +208,7 @@ Similarly if a nested representation should be a list of items, you should pass 
 
 Validation of nested objects will work the same as before.  Errors with nested objects will be nested under the field name of the nested object.
 
-    serializer = CommentSerializer(comment, data={'user': {'email': 'foobar', 'username': 'doe'}, 'content': 'baz'})
+    serializer = CommentSerializer(data={'user': {'email': 'foobar', 'username': 'doe'}, 'content': 'baz'})
     serializer.is_valid()
     # False
     serializer.errors
