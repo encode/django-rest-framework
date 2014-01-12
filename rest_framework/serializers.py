@@ -804,6 +804,10 @@ class ModelSerializer(Serializer):
                 issubclass(model_field.__class__, models.PositiveSmallIntegerField):
             kwargs['min_value'] = 0
 
+        if model_field.null and \
+                issubclass(model_field.__class__, (models.CharField, models.TextField)):
+            kwargs['allow_none'] = True
+
         attribute_dict = {
             models.CharField: ['max_length'],
             models.CommaSeparatedIntegerField: ['max_length'],
