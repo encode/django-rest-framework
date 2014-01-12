@@ -90,6 +90,11 @@ class GenericAPIView(views.APIView):
             'view': self
         }
 
+    def get_serializer_kwargs(self, **kwargs):
+        kwargs["context"] = self.get_serializer_context()
+
+        return kwargs
+
     def get_serializer(self, instance=None, data=None,
                        files=None, many=False, partial=False):
         """
@@ -97,9 +102,18 @@ class GenericAPIView(views.APIView):
         deserializing input, and for serializing output.
         """
         serializer_class = self.get_serializer_class()
-        context = self.get_serializer_context()
-        return serializer_class(instance, data=data, files=files,
-                                many=many, partial=partial, context=context)
+
+        kwargs_dict = {
+            "instance": instance,
+            "data": data,
+            "files": files,
+            "many": many,
+            "partial": partial,
+        }
+
+        kwargs = self.get_serializer_kwargs(**kwargs_dict)
+
+        return serializer_class(**kwargs)
 
     def get_pagination_serializer(self, page):
         """
