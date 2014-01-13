@@ -182,6 +182,7 @@ The following people have helped make REST framework great.
 * Ian Foote - [ian-foote]
 * Chuck Harmston - [chuckharmston]
 * Philip Forget - [philipforget]
+* Miroslav Shubernetskiy - [miki725]
 
 Many thanks to everyone who's contributed to the project.
 
@@ -400,3 +401,4 @@ You can also contact [@_tomchristie][twitter] directly on twitter.
 [ian-foote]: https://github.com/ian-foote
 [chuckharmston]: https://github.com/chuckharmston
 [philipforget]: https://github.com/philipforget
+[miki725]: https://github.com/miki725
