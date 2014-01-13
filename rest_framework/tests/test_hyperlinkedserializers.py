@@ -3,6 +3,7 @@ import json
 from django.test import TestCase
 from rest_framework import generics, status, serializers
 from rest_framework.compat import patterns, url
+from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from rest_framework.tests.models import (
     Anchor, BasicModel, ManyToManyModel, BlogPost, BlogPostComment,
@@ -331,3 +332,51 @@ class TestOverriddenURLField(TestCase):
             serializer.data,
             {'title': 'New blog post', 'url': 'foo bar'}
         )
+
+
+class TestGlobalURLOverrides(TestCase):
+    urls = 'rest_framework.tests.test_hyperlinkedserializers'
+
+    def setUp(self):
+        self.old_url_fname = api_settings.URL_FIELD_NAME
+        self.old_relative_urls = api_settings.RELATIVE_URLS
+        api_settings.URL_FIELD_NAME = 'global_url_field'
+        api_settings.RELATIVE_URLS = True
+
+        class StandardSerializer(serializers.HyperlinkedModelSerializer):
+            class Meta:
+                model = BlogPost
+                fields = ('title', 'global_url_field')
+        self.Serializer = StandardSerializer
+        self.obj = BlogPost.objects.create(title="New blog post")
+        self.context = {'request': factory.get('/basic/')}
+
+    def tearDown(self):
+        api_settings.URL_FIELD_NAME = self.old_url_fname
+        api_settings.RELATIVE_URLS = self.old_relative_urls
+
+    def test_serializer_overridden_url_field_name(self):
+        """
+        The url field name should respect overriding at the serializer level.
+        """
+        class URLFieldNameSerializer(serializers.HyperlinkedModelSerializer):
+            class Meta:
+                model = BlogPost
+                fields = ('title', 'serializer_url_field')
+                url_field_name = "serializer_url_field"
+        serializer = URLFieldNameSerializer(self.obj, context=self.context)
+        self.assertIn('serializer_url_field', serializer.data)
+
+    def test_globally_overridden_url_field_name(self):
+        """
+        The url field name should respect overriding for all serializers.
+        """
+        serializer = self.Serializer(self.obj, context=self.context)
+        self.assertIn('global_url_field', serializer.data)
+
+    def test_relative_urls(self):
+        """
+        Test whether url fields can be made relative across the board.
+        """
+        serializer = self.Serializer(self.obj, context=self.context)
+        self.assertTrue(serializer.data['global_url_field'].startswith('/'))
