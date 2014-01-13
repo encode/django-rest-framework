@@ -20,6 +20,7 @@ from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
 from rest_framework.compat import get_concrete_model, six
+from rest_framework.models import resolve_model
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -656,7 +657,7 @@ class ModelSerializer(Serializer):
             if model_field.rel:
                 to_many = isinstance(model_field,
                                      models.fields.related.ManyToManyField)
-                related_model = model_field.rel.to
+                related_model = resolve_model(model_field.rel.to)
 
                 if to_many and not model_field.rel.through._meta.auto_created:
                     has_through_model = True
