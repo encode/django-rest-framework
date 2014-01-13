@@ -163,6 +163,7 @@ class UpdateModelMixin(object):
         """
         Set any attributes on the object that are implicit in the request.
         """
+        super(UpdateModelMixin, self).pre_save(obj)
         # pk and/or slug attributes are implicit in the URL.
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
         lookup = self.kwargs.get(lookup_url_kwarg, None)
