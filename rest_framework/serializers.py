@@ -16,7 +16,6 @@ import datetime
 import inspect
 import types
 from decimal import Decimal
-from django.core.exceptions import ImproperlyConfigured
 from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
@@ -679,10 +678,7 @@ class ModelSerializer(Serializer):
             if model_field.rel:
                 to_many = isinstance(model_field,
                                      models.fields.related.ManyToManyField)
-                try:
-                    related_model = _resolve_model(model_field.rel.to)
-                except ValueError as error_message:
-                    raise ImproperlyConfigured(error_message)
+                related_model = _resolve_model(model_field.rel.to)
 
                 if to_many and not model_field.rel.through._meta.auto_created:
                     has_through_model = True
