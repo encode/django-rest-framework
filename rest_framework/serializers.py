@@ -990,6 +990,7 @@ class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
         super(HyperlinkedModelSerializerOptions, self).__init__(meta)
         self.view_name = getattr(meta, 'view_name', None)
         self.lookup_field = getattr(meta, 'lookup_field', None)
+        self.url_field_name = getattr(meta, 'url_field_name', 'url')
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
@@ -1008,13 +1009,13 @@ class HyperlinkedModelSerializer(ModelSerializer):
         if self.opts.view_name is None:
             self.opts.view_name = self._get_default_view_name(self.opts.model)
 
-        if 'url' not in fields:
+        if self.opts.url_field_name not in fields:
             url_field = self._hyperlink_identify_field_class(
                 view_name=self.opts.view_name,
                 lookup_field=self.opts.lookup_field
             )
             ret = self._dict_class()
-            ret['url'] = url_field
+            ret[self.opts.url_field_name] = url_field
             ret.update(fields)
             fields = ret
 
@@ -1050,7 +1051,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
         We need to override the default, to use the url as the identity.
         """
         try:
-            return data.get('url', None)
+            return data.get(self.opts.url_field_name, None)
         except AttributeError:
             return None
 
