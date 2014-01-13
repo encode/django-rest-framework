@@ -219,13 +219,18 @@ class SimpleRouter(BaseRouter):
 
         https://github.com/alanjds/drf-nested-routers
         """
-        if self.trailing_slash:
-            base_regex = '(?P<{lookup_prefix}{lookup_field}>[^/]+)'
-        else:
-            # Don't consume `.json` style suffixes
-            base_regex = '(?P<{lookup_prefix}{lookup_field}>[^/.]+)'
+        base_regex = '(?P<{lookup_prefix}{lookup_field}>{lookup_value})'
         lookup_field = getattr(viewset, 'lookup_field', 'pk')
-        return base_regex.format(lookup_field=lookup_field, lookup_prefix=lookup_prefix)
+        try:
+            lookup_value = viewset.lookup_value_regex
+        except AttributeError:
+            # Don't consume `.json` style suffixes
+            lookup_value = '[^/.]+'
+        return base_regex.format(
+            lookup_prefix=lookup_prefix,
+            lookup_field=lookup_field,
+            lookup_value=lookup_value
+        )
 
     def get_urls(self):
         """
