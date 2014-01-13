@@ -65,16 +65,11 @@ class RelatedField(WritableField):
     def initialize(self, parent, field_name):
         super(RelatedField, self).initialize(parent, field_name)
         if self.queryset is None and not self.read_only:
-            try:
-                manager = getattr(self.parent.opts.model, self.source or field_name)
-                if hasattr(manager, 'related'):  # Forward
-                    self.queryset = manager.related.model._default_manager.all()
-                else:  # Reverse
-                    self.queryset = manager.field.rel.to._default_manager.all()
-            except Exception:
-                msg = ('Serializer related fields must include a `queryset`' +
-                       ' argument or set `read_only=True')
-                raise Exception(msg)
+            manager = getattr(self.parent.opts.model, self.source or field_name)
+            if hasattr(manager, 'related'):  # Forward
+                self.queryset = manager.related.model._default_manager.all()
+            else:  # Reverse
+                self.queryset = manager.field.rel.to._default_manager.all()
 
     ### We need this stuff to make form choices work...
 
