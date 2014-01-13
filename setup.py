@@ -63,7 +63,15 @@ setup(
     packages=get_packages('rest_framework'),
     package_data=get_package_data('rest_framework'),
     test_suite='rest_framework.runtests.runtests.main',
-    install_requires=[],
+    install_requires=['Django>=1.3'],
+    extras_require=['markdown>=2.1.0',
+                    'PyYAML>=3.10',
+                    'defusedxml>=0.3',
+                    'django-filter>=0.5.4',
+                    'django-oauth-plus>=2.2.1',
+                    'oauth2>=1.5.211',
+                    'django-oauth2-provider>=0.2.4'],
+    setup_requires
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
