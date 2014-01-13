@@ -6,7 +6,6 @@ Doesn't cover model serializers.
 from __future__ import unicode_literals
 from django.test import TestCase
 from rest_framework import serializers
-from rest_framework.tests.accounts.serializers import AccountSerializer
 from . import models
 
 
@@ -346,8 +345,3 @@ class NestedModelSerializerUpdateTests(TestCase):
         result = deserialize.object
         result.save()
         self.assertEqual(result.id, john.id)
-
-
-class ImportingModelSerializerWithStrForeignKeys(TestCase):
-    def test_import_model_serializer(self):
-        self.assertIsInstance(AccountSerializer(), serializers.ModelSerializer)
