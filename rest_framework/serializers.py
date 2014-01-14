@@ -349,6 +349,9 @@ class BaseSerializer(WritableField):
             try:
                 value = field.field_to_native(obj, field_name)
             except IgnoreFieldException:
+                if field.write_only:
+                    ret.fields[key] = self.augment_field(field, field_name,
+                                                         key, '')
                 continue
             method = getattr(self, 'transform_%s' % field_name, None)
             if callable(method):
