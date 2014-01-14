@@ -28,7 +28,13 @@ Defaults to the name of the field.
 
 ### `read_only`
 
-Set this to `True` to ensure that the field is used when serializing a representation, but is not used when updating an instance during deserialization.
+Set this to `True` to ensure that the field is used when serializing a representation, but is not used when creating or updating an instance during deserialization.
+
+Defaults to `False`
+
+### `write_only`
+
+Set this to `True` to ensure that the field may be used when updating or creating an instance, but is not included when serializing the representation.
 
 Defaults to `False`
 

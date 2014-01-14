@@ -40,8 +40,12 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
-### Master
+### 2.3.11
 
+**Date**: 14th January 2014
+
+* Added `write_only` serializer field argument.
+* Added `write_only_fields` option to `ModelSerializer` classes.
 * JSON renderer now deals with objects that implement a dict-like interface.
 * Fix compatiblity with newer versions of `django-oauth-plus`.
 * Bugfix: Refine behavior that calls model manager `all()` across nested serializer relationships, preventing erronous behavior with some non-ORM objects, and preventing unneccessary queryset re-evaluations.

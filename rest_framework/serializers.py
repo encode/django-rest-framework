@@ -344,7 +344,10 @@ class BaseSerializer(WritableField):
                continue
             field.initialize(parent=self, field_name=field_name)
             key = self.get_field_key(field_name)
-            value = field.field_to_native(obj, field_name)
+            try:
+                value = field.field_to_native(obj, field_name)
+            except IgnoreFieldException:
+                continue
             method = getattr(self, 'transform_%s' % field_name, None)
             if callable(method):
                 value = method(obj, value)
@@ -383,6 +386,9 @@ class BaseSerializer(WritableField):
         Override default so that the serializer can be used as a nested field
         across relationships.
         """
+        if self.write_only:
+            raise IgnoreFieldException()
+
         if self.source == '*':
             return self.to_native(obj)
 
@@ -615,6 +621,7 @@ class ModelSerializerOptions(SerializerOptions):
         super(ModelSerializerOptions, self).__init__(meta)
         self.model = getattr(meta, 'model', None)
         self.read_only_fields = getattr(meta, 'read_only_fields', ())
+        self.write_only_fields = getattr(meta, 'write_only_fields', ())
 
 
 class ModelSerializer(Serializer):
@@ -754,16 +761,28 @@ class ModelSerializer(Serializer):
         # Add the `read_only` flag to any fields that have bee specified
         # in the `read_only_fields` option
         for field_name in self.opts.read_only_fields:
-            assert field_name not in self.base_fields.keys(), \
-                "field '%s' on serializer '%s' specified in " \
-                "`read_only_fields`, but also added " \
-                "as an explicit field.  Remove it from `read_only_fields`." % \
-                (field_name, self.__class__.__name__)
-            assert field_name in ret, \
-                "Non-existant field '%s' specified in `read_only_fields` " \
-                "on serializer '%s'." % \
-                (field_name, self.__class__.__name__)
+            assert field_name not in self.base_fields.keys(), (
+                "field '%s' on serializer '%s' specified in "
+                "`read_only_fields`, but also added "
+                "as an explicit field.  Remove it from `read_only_fields`." %
+                (field_name, self.__class__.__name__))
+            assert field_name in ret, (
+                "Non-existant field '%s' specified in `read_only_fields` "
+                "on serializer '%s'." %
+                (field_name, self.__class__.__name__))
             ret[field_name].read_only = True
+
+        for field_name in self.opts.write_only_fields:
+            assert field_name not in self.base_fields.keys(), (
+                "field '%s' on serializer '%s' specified in "
+                "`write_only_fields`, but also added "
+                "as an explicit field.  Remove it from `write_only_fields`." %
+                (field_name, self.__class__.__name__))
+            assert field_name in ret, (
+                "Non-existant field '%s' specified in `write_only_fields` "
+                "on serializer '%s'." %
+                (field_name, self.__class__.__name__))
+            ret[field_name].write_only = True            
 
         return ret
 

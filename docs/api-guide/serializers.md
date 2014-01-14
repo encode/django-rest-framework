@@ -373,6 +373,25 @@ You may wish to specify multiple fields as read-only.  Instead of adding each fi
 
 Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option. 
 
+## Specifying which fields should be write-only 
+
+You may wish to specify multiple fields as write-only.  Instead of adding each field explicitly with the `write_only=True` attribute, you may use the `write_only_fields` Meta option, like so:
+
+    class CreateUserSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = User
+            fields = ('email', 'username', 'password')
+            write_only_fields = ('password',)  # Note: Password field is write-only
+
+    def restore_object(self, attrs, instance=None):
+        """
+        Instantiate a new User instance.
+        """
+        assert instance is None, 'Cannot update users with CreateUserSerializer'                                
+        user = User(email=attrs['email'], username=attrs['username'])
+        user.set_password(attrs['password'])
+        return user
+ 
 ## Specifying fields explicitly 
 
 You can add extra fields to a `ModelSerializer` or override the default fields by declaring fields on the class, just as you would for a `Serializer` class.

@@ -114,6 +114,10 @@ def strip_multiple_choice_msg(help_text):
     return help_text.replace(multiple_choice_msg, '')
 
 
+class IgnoreFieldException(Exception):
+    pass
+
+
 class Field(object):
     read_only = True
     creation_counter = 0
@@ -246,6 +250,7 @@ class WritableField(Field):
     """
     Base for read/write fields.
     """
+    write_only = False
     default_validators = []
     default_error_messages = {
         'required': _('This field is required.'),
@@ -255,7 +260,7 @@ class WritableField(Field):
     default = None
 
     def __init__(self, source=None, label=None, help_text=None,
-                 read_only=False, required=None,
+                 read_only=False, write_only=False, required=None,
                  validators=[], error_messages=None, widget=None,
                  default=None, blank=None):
 
@@ -269,6 +274,10 @@ class WritableField(Field):
         super(WritableField, self).__init__(source=source, label=label, help_text=help_text)
 
         self.read_only = read_only
+        self.write_only = write_only
+
+        assert not (read_only and write_only), "Cannot set read_only=True and write_only=True"
+
         if required is None:
             self.required = not(read_only)
         else:
@@ -317,6 +326,11 @@ class WritableField(Field):
                     errors.extend(e.messages)
         if errors:
             raise ValidationError(errors)
+
+    def field_to_native(self, obj, field_name):
+        if self.write_only:
+            raise IgnoreFieldException()
+        return super(WritableField, self).field_to_native(obj, field_name)
 
     def field_from_native(self, data, files, field_name, into):
         """
