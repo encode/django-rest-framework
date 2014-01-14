@@ -20,6 +20,8 @@ from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
 from rest_framework.compat import get_concrete_model, six
+from rest_framework.settings import api_settings
+
 
 # Note: We do the following so that users of the framework can use this style:
 #
@@ -990,7 +992,7 @@ class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
         super(HyperlinkedModelSerializerOptions, self).__init__(meta)
         self.view_name = getattr(meta, 'view_name', None)
         self.lookup_field = getattr(meta, 'lookup_field', None)
-        self.url_field_name = getattr(meta, 'url_field_name', 'url')
+        self.url_field_name = getattr(meta, 'url_field_name', api_settings.URL_FIELD_NAME)
 
 
 class HyperlinkedModelSerializer(ModelSerializer):
