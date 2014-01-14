@@ -181,6 +181,7 @@
 <li><a href="#specifying-which-fields-should-be-included">Specifying which fields should be included</a></li>
 <li><a href="#specifying-nested-serialization">Specifying nested serialization</a></li>
 <li><a href="#specifying-which-fields-should-be-read-only">Specifying which fields should be read-only</a></li>
+<li><a href="#specifying-which-fields-should-be-write-only">Specifying which fields should be write-only</a></li>
 <li><a href="#specifying-fields-explicitly">Specifying fields explicitly</a></li>
 <li><a href="#relational-fields">Relational fields</a></li>
 <li class="main"><a href="#hyperlinkedmodelserializer">HyperlinkedModelSerializer</a></li>
@@ -284,10 +285,10 @@ serializer.object
 </code></pre>
 <p>When deserializing data, we can either create a new instance, or update an existing instance.</p>
 <pre class="prettyprint lang-py"><code>serializer = CommentSerializer(data=data)           # Create new instance
-serializer = CommentSerializer(comment, data=data)  # Update `instance`
+serializer = CommentSerializer(comment, data=data)  # Update `comment`
 </code></pre>
 <p>By default, serializers must be passed values for all required fields or they will throw validation errors.  You can use the <code>partial</code> argument in order to allow partial updates.</p>
-<pre class="prettyprint lang-py"><code>serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)  # Update `instance` with partial data
+<pre class="prettyprint lang-py"><code>serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)  # Update `comment` with partial data
 </code></pre>
 <h2 id="validation">Validation</h2>
 <p>When deserializing data, you always need to call <code>is_valid()</code> before attempting to access the deserialized object.  If any validation errors occur, the <code>.errors</code> property will contain a dictionary representing the resulting error messages.  For example:</p>
@@ -368,7 +369,7 @@ class CommentSerializer(serializers.Serializer):
     created = serializers.DateTimeField()
 </code></pre>
 <p>Validation of nested objects will work the same as before.  Errors with nested objects will be nested under the field name of the nested object.</p>
-<pre class="prettyprint lang-py"><code>serializer = CommentSerializer(comment, data={'user': {'email': 'foobar', 'username': 'doe'}, 'content': 'baz'})
+<pre class="prettyprint lang-py"><code>serializer = CommentSerializer(data={'user': {'email': 'foobar', 'username': 'doe'}, 'content': 'baz'})
 serializer.is_valid()
 # False
 serializer.errors
@@ -494,6 +495,23 @@ The <code>ModelSerializer</code> class lets you automatically create a Serialize
         read_only_fields = ('account_name',)
 </code></pre>
 <p>Model fields which have <code>editable=False</code> set, and <code>AutoField</code> fields will be set to read-only by default, and do not need to be added to the <code>read_only_fields</code> option. </p>
+<h2 id="specifying-which-fields-should-be-write-only">Specifying which fields should be write-only</h2>
+<p>You may wish to specify multiple fields as write-only.  Instead of adding each field explicitly with the <code>write_only=True</code> attribute, you may use the <code>write_only_fields</code> Meta option, like so:</p>
+<pre class="prettyprint lang-py"><code>class CreateUserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('email', 'username', 'password')
+        write_only_fields = ('password',)  # Note: Password field is write-only
+
+def restore_object(self, attrs, instance=None):
+    """
+    Instantiate a new User instance.
+    """
+    assert instance is None, 'Cannot update users with CreateUserSerializer'                                
+    user = User(email=attrs['email'], username=attrs['username'])
+    user.set_password(attrs['password'])
+    return user
+</code></pre>
 <h2 id="specifying-fields-explicitly">Specifying fields explicitly</h2>
 <p>You can add extra fields to a <code>ModelSerializer</code> or override the default fields by declaring fields on the class, just as you would for a <code>Serializer</code> class.</p>
 <pre class="prettyprint lang-py"><code>class AccountSerializer(serializers.ModelSerializer):

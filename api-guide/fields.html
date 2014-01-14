@@ -222,7 +222,10 @@
 <p>The value <code>source='*'</code> has a special meaning, and is used to indicate that the entire object should be passed through to the field.  This can be useful for creating nested representations.  (See the implementation of the <code>PaginationSerializer</code> class for an example.)</p>
 <p>Defaults to the name of the field.</p>
 <h3 id="read_only"><code>read_only</code></h3>
-<p>Set this to <code>True</code> to ensure that the field is used when serializing a representation, but is not used when updating an instance during deserialization.</p>
+<p>Set this to <code>True</code> to ensure that the field is used when serializing a representation, but is not used when creating or updating an instance during deserialization.</p>
+<p>Defaults to <code>False</code></p>
+<h3 id="write_only"><code>write_only</code></h3>
+<p>Set this to <code>True</code> to ensure that the field may be used when updating or creating an instance, but is not included when serializing the representation.</p>
 <p>Defaults to <code>False</code></p>
 <h3 id="required"><code>required</code></h3>
 <p>Normally an error will be raised if a field is not supplied during deserialization.
@@ -313,10 +316,10 @@ or <code>django.db.models.fields.TextField</code>.</p>
 <p><strong>Signature:</strong> <code>CharField(max_length=None, min_length=None)</code></p>
 <h2 id="urlfield">URLField</h2>
 <p>Corresponds to <code>django.db.models.fields.URLField</code>.  Uses Django's <code>django.core.validators.URLValidator</code> for validation.</p>
-<p><strong>Signature:</strong> <code>CharField(max_length=200, min_length=None)</code></p>
+<p><strong>Signature:</strong> <code>URLField(max_length=200, min_length=None)</code></p>
 <h2 id="slugfield">SlugField</h2>
 <p>Corresponds to <code>django.db.models.fields.SlugField</code>.</p>
-<p><strong>Signature:</strong> <code>CharField(max_length=50, min_length=None)</code></p>
+<p><strong>Signature:</strong> <code>SlugField(max_length=50, min_length=None)</code></p>
 <h2 id="choicefield">ChoiceField</h2>
 <p>A field that can accept a value out of a limited set of choices.</p>
 <h2 id="emailfield">EmailField</h2>
