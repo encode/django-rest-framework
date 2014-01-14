@@ -11,6 +11,7 @@ from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.request import clone_request
+from rest_framework.settings import api_settings
 import warnings
 
 
@@ -60,7 +61,7 @@ class CreateModelMixin(object):
 
     def get_success_headers(self, data):
         try:
-            return {'Location': data['url']}
+            return {'Location': data[api_settings.URL_FIELD_NAME]}
         except (TypeError, KeyError):
             return {}
 
