@@ -204,7 +204,16 @@
 
 <hr />
 <p>
-<img src="img/logo.png" width=600px style="display: block; margin: 0 auto 0 auto">
+<h1 style="position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;">Django REST Framework</h1>
+
+<img alt="Django REST Framework" title="Logo by Jake 'Sid' Smith" src="img/logo.png" width="600px" style="display: block; margin: 0 auto 0 auto">
 </p>
 
 <!--
@@ -254,7 +263,7 @@ pip install django-filter  # Filtering support
 <p>Add <code>'rest_framework'</code> to your <code>INSTALLED_APPS</code> setting.</p>
 <pre class="prettyprint lang-py"><code>INSTALLED_APPS = (
     ...
-    'rest_framework',        
+    'rest_framework',
 )
 </code></pre>
 <p>If you're intending to use the browsable API you'll probably also want to add REST framework's login and logout views.  Add the following to your root <code>urls.py</code> file.</p>
@@ -372,7 +381,7 @@ urlpatterns = patterns('',
 <p>Run the tests:</p>
 <pre class="prettyprint lang-py"><code>./rest_framework/runtests/runtests.py
 </code></pre>
-<p>To run the tests against all supported configurations, first install <a href="http://testrun.org/tox/latest/">the tox testing tool</a> globally, using <code>pip install tox</code>, then simply run <code>tox</code>: </p>
+<p>To run the tests against all supported configurations, first install <a href="http://testrun.org/tox/latest/">the tox testing tool</a> globally, using <code>pip install tox</code>, then simply run <code>tox</code>:</p>
 <pre class="prettyprint lang-py"><code>tox
 </code></pre>
 <h2 id="support">Support</h2>
@@ -387,22 +396,22 @@ urlpatterns = patterns('',
 <h2 id="license">License</h2>
 <p>Copyright (c) 2011-2014, Tom Christie
 All rights reserved.</p>
-<p>Redistribution and use in source and binary forms, with or without 
+<p>Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:</p>
-<p>Redistributions of source code must retain the above copyright notice, this 
+<p>Redistributions of source code must retain the above copyright notice, this
 list of conditions and the following disclaimer.
-Redistributions in binary form must reproduce the above copyright notice, this 
-list of conditions and the following disclaimer in the documentation and/or 
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
 other materials provided with the distribution.</p>
-<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE 
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE 
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL 
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR 
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER 
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+<p>THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
           </div><!--/span-->
         </div><!--/row-->
