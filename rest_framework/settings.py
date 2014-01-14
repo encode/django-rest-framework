@@ -95,6 +95,7 @@ DEFAULTS = {
     'URL_FORMAT_OVERRIDE': 'format',
 
     'FORMAT_SUFFIX_KWARG': 'format',
+    'URL_FIELD_NAME': 'url',
 
     # Input and output formats
     'DATE_INPUT_FORMATS': (
