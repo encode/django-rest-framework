@@ -565,6 +565,24 @@ def restore_object(self, attrs, instance=None):
         model = Account
         fields = ('url', 'account_name', 'users', 'created')
 </code></pre>
+<h2 id="overiding-the-url-field-behavior">Overiding the URL field behavior</h2>
+<p>The name of the URL field defaults to 'url'.  You can override this globally, by using the <code>URL_FIELD_NAME</code> setting.</p>
+<p>You can also override this on a per-serializer basis by using the <code>url_field_name</code> option on the serializer, like so:</p>
+<pre class="prettyprint lang-py"><code>class AccountSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Account
+        fields = ('account_url', 'account_name', 'users', 'created')
+        url_field_name = 'account_url'
+</code></pre>
+<p><strong>Note</strong>: The generic view implementations normally generate a <code>Location</code> header in response to successful <code>POST</code> requests.  Serializers using <code>url_field_name</code> option will not have this header automatically included by the view.  If you need to do so you will ned to also override the view's <code>get_success_headers()</code> method.</p>
+<p>You can also overide the URL field's view name and lookup field without overriding the field explicitly, by using the <code>view_name</code> and <code>lookup_field</code> options, like so:</p>
+<pre class="prettyprint lang-py"><code>class AccountSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Account
+        fields = ('account_url', 'account_name', 'users', 'created')
+        view_name = 'account_detail'
+        lookup_field='account_name'
+</code></pre>
 <hr />
 <h1 id="advanced-serializer-usage">Advanced serializer usage</h1>
 <p>You can create customized subclasses of <code>ModelSerializer</code> or <code>HyperlinkedModelSerializer</code> that use a different set of default fields.</p>

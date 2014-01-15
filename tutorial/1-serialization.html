@@ -201,9 +201,8 @@
 <h2 id="setting-up-a-new-environment">Setting up a new environment</h2>
 <p>Before we do anything else we'll create a new virtual environment, using <a href="http://www.virtualenv.org/en/latest/index.html">virtualenv</a>.  This will make sure our package configuration is kept nicely isolated from any other projects we're working on.</p>
 <pre class="prettyprint lang-bsh">
-mkdir ~/env
-virtualenv ~/env/tutorial
-source ~/env/tutorial/bin/activate
+virtualenv env
+source env/bin/activate
 </code></pre>
 <p>Now that we're inside a virtualenv environment, we can install our package requirements.</p>
 <pre class="prettyprint lang-py"><code>pip install django

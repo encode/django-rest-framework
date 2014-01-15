@@ -225,6 +225,12 @@
 </code></pre>
 <hr />
 <h2 id="23x-series">2.3.x series</h2>
+<h3 id="2312">2.3.12</h3>
+<p><strong>Date</strong>: 15th January 2014</p>
+<ul>
+<li><strong>Security fix</strong>: <code>OrderingField</code> now only allows ordering on readable serializer fields, or on fields explicitly specified using <code>ordering_fields</code>. This prevents users being able to order by fields that are not visible in the API, and exploiting the ordering of sensitive data such as password hashes.</li>
+<li>Bugfix: <code>write_only = True</code> fields now display in the browsable API.</li>
+</ul>
 <h3 id="2311">2.3.11</h3>
 <p><strong>Date</strong>: 14th January 2014</p>
 <ul>

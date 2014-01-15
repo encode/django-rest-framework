@@ -420,11 +420,29 @@ class ProductFilter(django_filters.FilterSet):
 <p>Multiple orderings may also be specified:</p>
 <pre class="prettyprint lang-py"><code>http://example.com/api/users?ordering=account,username
 </code></pre>
+<h3 id="specifying-which-fields-may-be-ordered-against">Specifying which fields may be ordered against</h3>
+<p>It's recommended that you explicitly specify which fields the API should allowing in the ordering filter.  You can do this by setting an <code>ordering_fields</code> attribute on the view, like so:</p>
+<pre class="prettyprint lang-py"><code>class UserListView(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    filter_backends = (filters.OrderingFilter,)
+    ordering_fields = ('username', 'email')
+</code></pre>
+<p>This helps prevent unexpected data leakage, such as allowing users to order against a password hash field or other sensitive data.</p>
+<p>If you <em>don't</em> specify an <code>ordering_fields</code> attribute on the view, the filter class will default to allowing the user to filter on any readable fields on the serializer specified by the <code>serializer_class</code> attribute.</p>
+<p>If you are confident that the queryset being used by the view doesn't contain any sensitive data, you can also explicitly specify that a view should allow ordering on <em>any</em> model field or queryset aggregate, by using the special value <code>'__all__'</code>.</p>
+<pre class="prettyprint lang-py"><code>class BookingsListView(generics.ListAPIView):
+    queryset = Booking.objects.all()
+    serializer_class = BookingSerializer
+    filter_backends = (filters.OrderingFilter,)
+    ordering_fields = '__all__'
+</code></pre>
+<h3 id="specifying-a-default-ordering">Specifying a default ordering</h3>
 <p>If an <code>ordering</code> attribute is set on the view, this will be used as the default ordering.</p>
 <p>Typically you'd instead control this by setting <code>order_by</code> on the initial queryset, but using the <code>ordering</code> parameter on the view allows you to specify the ordering in a way that it can then be passed automatically as context to a rendered template.  This makes it possible to automatically render column headers differently if they are being used to order the results.</p>
 <pre class="prettyprint lang-py"><code>class UserListView(generics.ListAPIView):
     queryset = User.objects.all()
-    serializer = UserSerializer
+    serializer_class = UserSerializer
     filter_backends = (filters.OrderingFilter,)
     ordering = ('username',)
 </code></pre>
