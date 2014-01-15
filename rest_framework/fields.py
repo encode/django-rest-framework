@@ -114,10 +114,6 @@ def strip_multiple_choice_msg(help_text):
     return help_text.replace(multiple_choice_msg, '')
 
 
-class IgnoreFieldException(Exception):
-    pass
-
-
 class Field(object):
     read_only = True
     creation_counter = 0
@@ -329,7 +325,7 @@ class WritableField(Field):
 
     def field_to_native(self, obj, field_name):
         if self.write_only:
-            raise IgnoreFieldException()
+            return None
         return super(WritableField, self).field_to_native(obj, field_name)
 
     def field_from_native(self, data, files, field_name, into):
