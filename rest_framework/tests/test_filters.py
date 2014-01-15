@@ -368,7 +368,6 @@ class OrderingFilterRelatedModel(models.Model):
                                        related_name="relateds")
 
 
-
 class OrderingFilterTests(TestCase):
     def setUp(self):
         # Sequence of title/text is:
@@ -394,6 +393,7 @@ class OrderingFilterTests(TestCase):
             model = OrdringFilterModel
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
+            ordering_fields = ('text',)
 
         view = OrderingListView.as_view()
         request = factory.get('?ordering=text')
@@ -412,6 +412,7 @@ class OrderingFilterTests(TestCase):
             model = OrdringFilterModel
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
+            ordering_fields = ('text',)
 
         view = OrderingListView.as_view()
         request = factory.get('?ordering=-text')
@@ -430,6 +431,7 @@ class OrderingFilterTests(TestCase):
             model = OrdringFilterModel
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
+            ordering_fields = ('text',)
 
         view = OrderingListView.as_view()
         request = factory.get('?ordering=foobar')
@@ -448,6 +450,7 @@ class OrderingFilterTests(TestCase):
             model = OrdringFilterModel
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
+            oredering_fields = ('text',)
 
         view = OrderingListView.as_view()
         request = factory.get('')
@@ -466,6 +469,7 @@ class OrderingFilterTests(TestCase):
             model = OrdringFilterModel
             filter_backends = (filters.OrderingFilter,)
             ordering = 'title'
+            ordering_fields = ('text',)
 
         view = OrderingListView.as_view()
         request = factory.get('')
@@ -494,6 +498,7 @@ class OrderingFilterTests(TestCase):
             model = OrdringFilterModel
             filter_backends = (filters.OrderingFilter,)
             ordering = 'title'
+            ordering_fields = '__all__'
             queryset = OrdringFilterModel.objects.all().annotate(
                 models.Count("relateds"))
 
@@ -510,4 +515,101 @@ class OrderingFilterTests(TestCase):
         )
 
 
+class SensitiveOrderingFilterModel(models.Model):
+    username = models.CharField(max_length=20)
+    password = models.CharField(max_length=100)
 
+
+# Three different styles of serializer.
+# All should allow ordering by username, but not by password.
+class SensitiveDataSerializer1(serializers.ModelSerializer):
+    username = serializers.CharField()
+
+    class Meta:
+        model = SensitiveOrderingFilterModel
+        fields = ('id', 'username')
+
+
+class SensitiveDataSerializer2(serializers.ModelSerializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = SensitiveOrderingFilterModel
+        fields = ('id', 'username', 'password')
+
+
+class SensitiveDataSerializer3(serializers.ModelSerializer):
+    user = serializers.CharField(source='username')
+
+    class Meta:
+        model = SensitiveOrderingFilterModel
+        fields = ('id', 'user')
+
+
+class SensitiveOrderingFilterTests(TestCase):
+    def setUp(self):
+        for idx in range(3):
+            username = {0: 'userA', 1: 'userB', 2: 'userC'}[idx]
+            password = {0: 'passA', 1: 'passC', 2: 'passB'}[idx]
+            SensitiveOrderingFilterModel(username=username, password=password).save()
+
+    def test_order_by_serializer_fields(self):
+        for serializer_cls in [
+            SensitiveDataSerializer1,
+            SensitiveDataSerializer2,
+            SensitiveDataSerializer3
+        ]:
+            class OrderingListView(generics.ListAPIView):
+                queryset = SensitiveOrderingFilterModel.objects.all().order_by('username')
+                filter_backends = (filters.OrderingFilter,)
+                serializer_class = serializer_cls
+
+            view = OrderingListView.as_view()
+            request = factory.get('?ordering=-username')
+            response = view(request)
+
+            if serializer_cls == SensitiveDataSerializer3:
+                username_field = 'user'
+            else:
+                username_field = 'username'
+
+            # Note: Inverse username ordering correctly applied.
+            self.assertEqual(
+                response.data,
+                [
+                    {'id': 3, username_field: 'userC'},
+                    {'id': 2, username_field: 'userB'},
+                    {'id': 1, username_field: 'userA'},
+                ]
+            )
+
+    def test_cannot_order_by_non_serializer_fields(self):
+        for serializer_cls in [
+            SensitiveDataSerializer1,
+            SensitiveDataSerializer2,
+            SensitiveDataSerializer3
+        ]:
+            class OrderingListView(generics.ListAPIView):
+                queryset = SensitiveOrderingFilterModel.objects.all().order_by('username')
+                filter_backends = (filters.OrderingFilter,)
+                serializer_class = serializer_cls
+
+            view = OrderingListView.as_view()
+            request = factory.get('?ordering=password')
+            response = view(request)
+
+            if serializer_cls == SensitiveDataSerializer3:
+                username_field = 'user'
+            else:
+                username_field = 'username'
+
+            # Note: The passwords are not in order.  Default ordering is used.
+            self.assertEqual(
+                response.data,
+                [
+                    {'id': 1, username_field: 'userA'}, # PassB
+                    {'id': 2, username_field: 'userB'}, # PassC
+                    {'id': 3, username_field: 'userC'}, # PassA
+                ]
+            )

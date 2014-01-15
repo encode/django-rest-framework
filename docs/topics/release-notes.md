@@ -40,6 +40,13 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
+### 2.3.12
+
+**Date**: 15th January 2014
+
+* **Security fix**: `OrderingField` now only allows ordering on readable serializer fields, or on fields explicitly specified using `ordering_fields`. This prevents users being able to order by fields that are not visible in the API, and exploiting the ordering of sensitive data such as password hashes.
+* Bugfix: `write_only = True` fields now display in the browsable API.
+
 ### 2.3.11
 
 **Date**: 14th January 2014

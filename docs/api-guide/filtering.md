@@ -282,13 +282,37 @@ Multiple orderings may also be specified:
 
     http://example.com/api/users?ordering=account,username
 
+### Specifying which fields may be ordered against
+
+It's recommended that you explicitly specify which fields the API should allowing in the ordering filter.  You can do this by setting an `ordering_fields` attribute on the view, like so:
+
+    class UserListView(generics.ListAPIView):
+        queryset = User.objects.all()
+        serializer_class = UserSerializer
+        filter_backends = (filters.OrderingFilter,)
+        ordering_fields = ('username', 'email')
+
+This helps prevent unexpected data leakage, such as allowing users to order against a password hash field or other sensitive data.
+
+If you *don't* specify an `ordering_fields` attribute on the view, the filter class will default to allowing the user to filter on any readable fields on the serializer specified by the `serializer_class` attribute.
+
+If you are confident that the queryset being used by the view doesn't contain any sensitive data, you can also explicitly specify that a view should allow ordering on *any* model field or queryset aggregate, by using the special value `'__all__'`.
+
+    class BookingsListView(generics.ListAPIView):
+        queryset = Booking.objects.all()
+        serializer_class = BookingSerializer
+        filter_backends = (filters.OrderingFilter,)
+        ordering_fields = '__all__'
+
+### Specifying a default ordering
+
 If an `ordering` attribute is set on the view, this will be used as the default ordering.
 
 Typically you'd instead control this by setting `order_by` on the initial queryset, but using the `ordering` parameter on the view allows you to specify the ordering in a way that it can then be passed automatically as context to a rendered template.  This makes it possible to automatically render column headers differently if they are being used to order the results.
 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
-        serializer = UserSerializer
+        serializer_class = UserSerializer
         filter_backends = (filters.OrderingFilter,)
         ordering = ('username',) 
 
