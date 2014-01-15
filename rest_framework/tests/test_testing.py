@@ -1,12 +1,17 @@
 # -- coding: utf-8 --
 
 from __future__ import unicode_literals
+import tempfile
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.compat import patterns, url
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory, force_authenticate
+
+
+BOUNDARY = 'BoUnDaRyStRiNg'
+MULTIPART_CONTENT = 'multipart/form-data; boundary=%s' % BOUNDARY
 
 
 @api_view(['GET', 'POST'])
@@ -26,9 +31,18 @@ def session_view(request):
     })
 
 
+@api_view(['GET', 'POST'])
+def echo(request):
+    return Response({
+        'data': request.DATA.dict(),
+        'files': request.FILES.dict()
+    })
+
+
 urlpatterns = patterns('',
     url(r'^view/$', view),
     url(r'^session-view/$', session_view),
+    url(r'^echo/$', echo),
 )
 
 
@@ -96,6 +110,37 @@ class TestAPITestClient(TestCase):
         expected = {'detail': 'CSRF Failed: CSRF cookie not set.'}
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, expected)
+
+    def test_echo(self):
+        """
+        The echo test view returns the request data as-is.
+        """
+        example_data = {'foo': 'bar'}
+        response = self.client.post('/echo/', example_data)
+        self.assertEqual(response.data['data'], example_data)
+        self.assertEqual(response.data['files'], {})
+
+    def test_echo_multipart(self):
+        """
+        The test client sends data correctly with multipart content type.
+        """
+        example_data = {'foo': 'bar'}
+        response = self.client.post('/echo/', example_data, content_type=MULTIPART_CONTENT)
+        self.assertEqual(response.data['data'], example_data)
+        self.assertEqual(response.data['files'], {})
+
+    def test_fileupload(self):
+        """
+        The test client is capable of uploading a file.
+        """
+        with tempfile.NamedTemporaryFile(suffix='.txt') as example_file:
+            example_file.write(b'This is a dummy file.')
+            example_file.seek(0)
+            response = self.client.post(
+                '/echo/',
+                {'file': example_file},
+            )
+        self.assertEqual(list(response.data['files'].keys()), [u'file'])
 
 
 class TestAPIRequestFactory(TestCase):
