@@ -90,6 +90,8 @@ The client may additionally include an `'indent'` media type parameter, in which
 
 **.charset**: `None`
 
+**.separators**: `None`
+
 ## UnicodeJSONRenderer
 
 Renders the request data into `JSON`, using utf-8 encoding.
