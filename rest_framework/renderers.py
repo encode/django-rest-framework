@@ -62,9 +62,6 @@ class JSONRenderer(BaseRenderer):
         """
         Render `data` into JSON.
         """
-        if data is None:
-            return bytes()
-
         # If 'indent' is provided in the context, then pretty print the result.
         # E.g. If we're being called by the BrowsableAPIRenderer.
         renderer_context = renderer_context or {}
