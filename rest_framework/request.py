@@ -279,10 +279,9 @@ class Request(object):
         if not _hasattr(self, '_method'):
             self._method = self._request.method
 
-            if self._method == 'POST':
-                # Allow X-HTTP-METHOD-OVERRIDE header
-                self._method = self.META.get('HTTP_X_HTTP_METHOD_OVERRIDE',
-                                             self._method)
+            # Allow X-HTTP-METHOD-OVERRIDE header
+            self._method = self.META.get('HTTP_X_HTTP_METHOD_OVERRIDE',
+                                         self._method)
 
     def _load_stream(self):
         """

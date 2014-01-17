@@ -68,6 +68,9 @@ class TestMethodOverloading(TestCase):
         request = Request(factory.post('/', {'foo': 'bar'}, HTTP_X_HTTP_METHOD_OVERRIDE='DELETE'))
         self.assertEqual(request.method, 'DELETE')
 
+        request = Request(factory.get('/', {'foo': 'bar'}, HTTP_X_HTTP_METHOD_OVERRIDE='DELETE'))
+        self.assertEqual(request.method, 'DELETE')
+
 
 class TestContentParsing(TestCase):
     def test_standard_behaviour_determines_no_content_GET(self):
