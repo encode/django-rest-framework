@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from decimal import Decimal
 from django.core.cache import cache
+from django.db import models
 from django.test import TestCase
 from django.utils import unittest
 from django.utils.translation import ugettext_lazy as _
@@ -32,6 +33,10 @@ RENDERER_B_SERIALIZER = lambda x: ('Renderer B: %s' % x).encode('ascii')
 expected_results = [
     ((elem for elem in [1, 2, 3]), JSONRenderer, b'[1, 2, 3]')  # Generator
 ]
+
+
+class DummyTestModel(models.Model):
+    name = models.CharField(max_length=42, default='')
 
 
 class BasicRendererTests(TestCase):
@@ -275,6 +280,20 @@ class JSONRendererTests(TestCase):
         """
         ret = JSONRenderer().render(_('test'))
         self.assertEqual(ret, b'"test"')
+
+    def test_render_queryset_values(self):
+        o = DummyTestModel.objects.create(name='dummy')
+        qs = DummyTestModel.objects.values('id', 'name')
+        ret = JSONRenderer().render(qs)
+        data = json.loads(ret.decode('utf-8'))
+        self.assertEquals(data, [{'id': o.id, 'name': o.name}])
+
+    def test_render_queryset_values_list(self):
+        o = DummyTestModel.objects.create(name='dummy')
+        qs = DummyTestModel.objects.values_list('id', 'name')
+        ret = JSONRenderer().render(qs)
+        data = json.loads(ret.decode('utf-8'))
+        self.assertEquals(data, [[o.id, o.name]])
 
     def test_render_dict_abc_obj(self):
         class Dict(MutableMapping):

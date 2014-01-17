@@ -2,6 +2,7 @@
 Helper classes for parsers.
 """
 from __future__ import unicode_literals
+from django.db.models.query import QuerySet
 from django.utils.datastructures import SortedDict
 from django.utils.functional import Promise
 from rest_framework.compat import timezone, force_text
@@ -42,6 +43,8 @@ class JSONEncoder(json.JSONEncoder):
             return str(o.total_seconds())
         elif isinstance(o, decimal.Decimal):
             return str(o)
+        elif isinstance(o, QuerySet):
+            return list(o)
         elif hasattr(o, 'tolist'):
             return o.tolist()
         elif hasattr(o, '__getitem__'):
