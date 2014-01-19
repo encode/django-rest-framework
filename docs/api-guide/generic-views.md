@@ -362,6 +362,54 @@ If you are using a mixin across multiple views, you can take this a step further
 
 Using custom base classes is a good option if you have custom behavior that consistently needs to be repeated across a large number of views throughout your project.
 
+# Third party packages
+
+The following third party packages provide additional generic view implementations.
+
+## Django REST Framework bulk
+
+The [django-rest-framework-bulk package][django-rest-framework-bulk] implements generic view mixins as well as some common concrete generic views to allow to apply bulk operations via API requests.
+
+### Mixins
+
+As with Django Rest Framework standard mixins, each mixin defines a specific behavior which allows to composite multiple mixins (either with other bulk mixins or standard mixins) for more functionality.
+
+#### BulkCreateModelMixin
+
+Provides a `.create(request, *args, **kwargs)` method, that implements creating either a single or multiple objects depending on the `request.DATA` data-type (list or object).
+
+If any object(s) is/are created, as with the standard `CreateModelMixin`, `201 Created` response is returned with the serialization of created object(s). If any errors occur while validating the provided data, `400 Bad Request` is returned with error details for each attempted creation object.
+
+#### BulkUpdateModelMixin
+
+Provides a `.bulk_update(request, *args, **kwargs)` method, that implements updating multiple objects at the same time. Since each object needs to be identified, each object within `request.DATA` must provide its identity as per serializer's `.get_identity()`.
+
+Also provides a `.partial_bulk_update(request, *args, **kwargs)` method, which is similar to the `bulk_update`, except that all fields for all resources will be optional.
+
+If all objects are updated, `200 OK` response is returned with the serialized representation of all updated objects. If any validation errors occur, `400 Bad Request` is returned.
+
+#### BulkDestroyModelMixin
+
+Provides a `.bulk_destroy(request, *args, **kwargs)` method, that implements deletion of all objects within a queryset. Since that can potentially be very dangerous, this mixin also provides an `.allow_bulk_destroy(queryset, filtered)` hook to determine if the bulk delete should be allowed. By default it allows the request if the queryset was filtered.
+
+If the objects are deleted this returns `204 No Content` response or `400 Bad Request` if the request is not allowed as per `allow_bulk_destroy`.
+
+### Concrete View Classes
+
+In addition to the bulk mixins, this package also implements some of the most common bulk concrete view classes. Those include:
+
+* `BulkCreateAPIView`
+* `BulkUpdateAPIView`
+* `BulkDestroyAPIView`
+* `ListBulkCreateAPIView`
+* `ListCreateBulkUpdateAPIView`
+* `ListCreateBulkUpdateDestroyAPIView`
+* `ListBulkCreateUpdateAPIView`
+* `ListBulkCreateUpdateDestroyAPIView`
+
+To create custom concrete view classes, you can also composite the mixins manually as explained in **Creating custom base classes** of Django Rest Framework documentation.
+
+
 [cite]: https://docs.djangoproject.com/en/dev/ref/class-based-views/#base-vs-generic-views
 
 [GenericAPIView]: #genericapiview
@@ -370,3 +418,4 @@ Using custom base classes is a good option if you have custom behavior that cons
 [RetrieveModelMixin]: #retrievemodelmixin
 [UpdateModelMixin]: #updatemodelmixin
 [DestroyModelMixin]: #destroymodelmixin
+[django-rest-framework-bulk]: https://github.com/miki725/django-rest-framework-bulk
