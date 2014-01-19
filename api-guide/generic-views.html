@@ -6,7 +6,7 @@
     <link href="http://www.django-rest-framework.org/img/favicon.ico" rel="icon" type="image/x-icon">
     <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/generic-views"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Django, API, REST, Generic views, API Reference, Mixins, Concrete View Classes, Customizing the generic views">
+    <meta name="description" content="Django, API, REST, Generic views, API Reference, Mixins, Concrete View Classes, Customizing the generic views, Third party packages">
     <meta name="author" content="Tom Christie">
 
     <!-- Le styles -->
@@ -191,6 +191,8 @@
 <li class="main"><a href="#customizing-the-generic-views">Customizing the generic views</a></li>
 <li><a href="#creating-custom-mixins">Creating custom mixins</a></li>
 <li><a href="#creating-custom-base-classes">Creating custom base classes</a></li>
+<li class="main"><a href="#third-party-packages">Third party packages</a></li>
+<li><a href="#django-rest-framework-bulk">Django REST Framework bulk</a></li>
 
               <div>
 
@@ -451,6 +453,10 @@ class BaseRetrieveUpdateDestroyView(MultipleFieldLookupMixin,
     pass
 </code></pre>
 <p>Using custom base classes is a good option if you have custom behavior that consistently needs to be repeated across a large number of views throughout your project.</p>
+<h1 id="third-party-packages">Third party packages</h1>
+<p>The following third party packages provide additional generic view implementations.</p>
+<h2 id="django-rest-framework-bulk">Django REST Framework bulk</h2>
+<p>The <a href="https://github.com/miki725/django-rest-framework-bulk">django-rest-framework-bulk package</a> implements generic view mixins as well as some common concrete generic views to allow to apply bulk operations via API requests.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->

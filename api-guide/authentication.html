@@ -185,6 +185,7 @@
 <li><a href="#digest-authentication">Digest Authentication</a></li>
 <li><a href="#django-oauth-toolkit">Django OAuth Toolkit</a></li>
 <li><a href="#django-oauth2-consumer">Django OAuth2 Consumer</a></li>
+<li><a href="#json-web-token-authentication">JSON Web Token Authentication</a></li>
 
               <div>
 
@@ -478,6 +479,8 @@ class ExampleAuthentication(authentication.BaseAuthentication):
 <p>The <a href="https://github.com/evonove/django-oauth-toolkit">Django OAuth Toolkit</a> package provides OAuth 2.0 support, and works with Python 2.7 and Python 3.3+.  The package is maintained by <a href="https://github.com/evonove/">Evonove</a> and uses the excelllent <a href="https://github.com/idan/oauthlib">OAuthLib</a>.  The package is well documented, and comes as a recommended alternative for OAuth 2.0 support.</p>
 <h2 id="django-oauth2-consumer">Django OAuth2 Consumer</h2>
 <p>The <a href="https://github.com/Rediker-Software/doac">Django OAuth2 Consumer</a> library from <a href="https://github.com/Rediker-Software">Rediker Software</a> is another package that provides <a href="https://github.com/Rediker-Software/doac/blob/master/docs/integrations.md#">OAuth 2.0 support for REST framework</a>.  The package includes token scoping permissions on tokens, which allows finer-grained access to your API.</p>
+<h2 id="json-web-token-authentication">JSON Web Token Authentication</h2>
+<p>JSON Web Token is a fairly new standard which can be used for token-based authentication. Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token. <a href="https://github.com/GetBlimp">Blimp</a> maintains the <a href="https://github.com/GetBlimp/django-rest-framework-jwt">djangorestframework-jwt</a> package which provides a JWT Authentication class as well as a mechanism for clients to obtain a JWT given the username and password.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->
