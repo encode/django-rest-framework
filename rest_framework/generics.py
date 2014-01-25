@@ -352,7 +352,7 @@ class GenericAPIView(views.APIView):
 
     def post_delete(self, obj):
         """
-        Placeholder method for calling after saving an object.
+        Placeholder method for calling after deleting an object.
         """
         pass
 
