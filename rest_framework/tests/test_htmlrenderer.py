@@ -50,7 +50,7 @@ class TemplateHTMLRendererTests(TestCase):
         """
         self.get_template = django.template.loader.get_template
 
-        def get_template(template_name):
+        def get_template(template_name, dirs=None):
             if template_name == 'example.html':
                 return Template("example: {{ object }}")
             raise TemplateDoesNotExist(template_name)
