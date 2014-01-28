@@ -1,6 +1,8 @@
 # -- coding: utf-8 --
 
 from __future__ import unicode_literals
+from io import BytesIO
+
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.compat import patterns, url
@@ -143,3 +145,10 @@ class TestAPIRequestFactory(TestCase):
         force_authenticate(request, user=user)
         response = view(request)
         self.assertEqual(response.data['user'], 'example')
+
+    def test_upload_file(self):
+        # This is a 1x1 black png
+        simple_png = BytesIO(b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\rIDATx\x9cc````\x00\x00\x00\x05\x00\x01\xa5\xf6E@\x00\x00\x00\x00IEND\xaeB`\x82')
+        simple_png.name = 'test.png'
+        factory = APIRequestFactory()
+        factory.post('/', data={'image': simple_png})
