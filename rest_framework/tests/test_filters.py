@@ -9,14 +9,9 @@ from rest_framework import generics, serializers, status, filters
 from rest_framework.compat import django_filters, patterns, url
 from rest_framework.test import APIRequestFactory
 from rest_framework.tests.models import BasicModel
+from .models import FilterableItem
 
 factory = APIRequestFactory()
-
-
-class FilterableItem(models.Model):
-    text = models.CharField(max_length=100)
-    decimal = models.DecimalField(max_digits=4, decimal_places=2)
-    date = models.DateField()
 
 
 if django_filters:
