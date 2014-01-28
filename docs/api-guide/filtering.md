@@ -294,7 +294,7 @@ It's recommended that you explicitly specify which fields the API should allowin
 
 This helps prevent unexpected data leakage, such as allowing users to order against a password hash field or other sensitive data.
 
-If you *don't* specify an `ordering_fields` attribute on the view, the filter class will default to allowing the user to filter on any readable fields on the serializer specified by the `serializer_class` attribute.
+If you *don't* specify an `ordering_fields` attribute on the view, the filter class will default to allowing the user to filter on any readable fields on the serializer specified by the `serializer_class` attribute, or the `get_serializer` or `get_serializer_class` method.
 
 If you are confident that the queryset being used by the view doesn't contain any sensitive data, you can also explicitly specify that a view should allow ordering on *any* model field or queryset aggregate, by using the special value `'__all__'`.
 
