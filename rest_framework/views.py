@@ -112,7 +112,6 @@ class APIView(View):
 
     @property
     def default_response_headers(self):
-        # TODO: deprecate?
         # TODO: Only vary by accept if multiple renderers
         return {
             'Allow': ', '.join(self.allowed_methods),
