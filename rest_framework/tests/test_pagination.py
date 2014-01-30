@@ -13,6 +13,15 @@ from .models import FilterableItem
 
 factory = APIRequestFactory()
 
+# Helper function to split arguments out of an url
+def split_arguments_from_url(url):
+    if '?' not in url:
+        return url
+
+    path, args = url.split('?')
+    args = dict(r.split('=') for r in args.split('&'))
+    return path, args
+
 
 class RootView(generics.ListCreateAPIView):
     """
@@ -79,7 +88,7 @@ class IntegrationTestPagination(TestCase):
         self.assertNotEqual(response.data['next'], None)
         self.assertEqual(response.data['previous'], None)
 
-        request = factory.get(response.data['next'])
+        request = factory.get(*split_arguments_from_url(response.data['next']))
         with self.assertNumQueries(2):
             response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -88,7 +97,7 @@ class IntegrationTestPagination(TestCase):
         self.assertNotEqual(response.data['next'], None)
         self.assertNotEqual(response.data['previous'], None)
 
-        request = factory.get(response.data['next'])
+        request = factory.get(*split_arguments_from_url(response.data['next']))
         with self.assertNumQueries(2):
             response = self.view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -141,7 +150,7 @@ class IntegrationTestPaginationAndFiltering(TestCase):
 
         EXPECTED_NUM_QUERIES = 2
 
-        request = factory.get('/?decimal=15.20')
+        request = factory.get('/', {'decimal': '15.20'})
         with self.assertNumQueries(EXPECTED_NUM_QUERIES):
             response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -150,7 +159,7 @@ class IntegrationTestPaginationAndFiltering(TestCase):
         self.assertNotEqual(response.data['next'], None)
         self.assertEqual(response.data['previous'], None)
 
-        request = factory.get(response.data['next'])
+        request = factory.get(*split_arguments_from_url(response.data['next']))
         with self.assertNumQueries(EXPECTED_NUM_QUERIES):
             response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -159,7 +168,7 @@ class IntegrationTestPaginationAndFiltering(TestCase):
         self.assertEqual(response.data['next'], None)
         self.assertNotEqual(response.data['previous'], None)
 
-        request = factory.get(response.data['previous'])
+        request = factory.get(*split_arguments_from_url(response.data['previous']))
         with self.assertNumQueries(EXPECTED_NUM_QUERIES):
             response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -186,7 +195,7 @@ class IntegrationTestPaginationAndFiltering(TestCase):
 
         view = BasicFilterFieldsRootView.as_view()
 
-        request = factory.get('/?decimal=15.20')
+        request = factory.get('/', {'decimal': '15.20'})
         with self.assertNumQueries(2):
             response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -195,7 +204,7 @@ class IntegrationTestPaginationAndFiltering(TestCase):
         self.assertNotEqual(response.data['next'], None)
         self.assertEqual(response.data['previous'], None)
 
-        request = factory.get(response.data['next'])
+        request = factory.get(*split_arguments_from_url(response.data['next']))
         with self.assertNumQueries(2):
             response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -204,7 +213,7 @@ class IntegrationTestPaginationAndFiltering(TestCase):
         self.assertEqual(response.data['next'], None)
         self.assertNotEqual(response.data['previous'], None)
 
-        request = factory.get(response.data['previous'])
+        request = factory.get(*split_arguments_from_url(response.data['previous']))
         with self.assertNumQueries(2):
             response = view(request).render()
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -312,7 +321,7 @@ class TestCustomPaginateByParam(TestCase):
         """
         If paginate_by_param is set, the new kwarg should limit per view requests.
         """
-        request = factory.get('/?page_size=5')
+        request = factory.get('/', {'page_size': 5})
         response = self.view(request).render()
         self.assertEqual(response.data['count'], 13)
         self.assertEqual(response.data['results'], self.data[:5])
@@ -340,7 +349,7 @@ class TestMaxPaginateByParam(TestCase):
         """
         If max_paginate_by is set, it should limit page size for the view.
         """
-        request = factory.get('/?page_size=10')
+        request = factory.get('/', data={'page_size': 10})
         response = self.view(request).render()
         self.assertEqual(response.data['count'], 13)
         self.assertEqual(response.data['results'], self.data[:5])
