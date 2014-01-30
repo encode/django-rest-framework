@@ -5,7 +5,27 @@ from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
 
+try:
+    from django.utils.encoding import python_2_unicode_compatible
+except ImportError:
+    def python_2_unicode_compatible(klass):
+        """
+        A decorator that defines __unicode__ and __str__ methods under Python 2.
+        Under Python 3 it does nothing.
 
+        To support Python 2 and 3 with a single code base, define a __str__ method
+        returning text and apply this decorator to the class.
+        """
+        if '__str__' not in klass.__dict__:
+            raise ValueError("@python_2_unicode_compatible cannot be applied "
+                             "to %s because it doesn't define __str__()." %
+                             klass.__name__)
+        klass.__unicode__ = klass.__str__
+        klass.__str__ = lambda self: self.__unicode__().encode('utf-8')
+        return klass
+
+
+@python_2_unicode_compatible
 class Tag(models.Model):
     """
     Tags have a descriptive slug, and are attached to an arbitrary object.
@@ -15,10 +35,11 @@ class Tag(models.Model):
     object_id = models.PositiveIntegerField()
     tagged_item = GenericForeignKey('content_type', 'object_id')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.tag
 
 
+@python_2_unicode_compatible
 class Bookmark(models.Model):
     """
     A URL bookmark that may have multiple tags attached.
@@ -26,10 +47,11 @@ class Bookmark(models.Model):
     url = models.URLField()
     tags = GenericRelation(Tag)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Bookmark: %s' % self.url
 
 
+@python_2_unicode_compatible
 class Note(models.Model):
     """
     A textual note that may have multiple tags attached.
@@ -37,7 +59,7 @@ class Note(models.Model):
     text = models.TextField()
     tags = GenericRelation(Tag)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Note: %s' % self.text
 
 
