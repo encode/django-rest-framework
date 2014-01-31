@@ -170,26 +170,6 @@ class BasicModelSerializer(serializers.ModelSerializer):
         model = BasicModel
 
 
-# Models to test the serializers
-class AMOAFModel(RESTFrameworkModel):
-    char_field = models.CharField(max_length=1024, blank=True)
-    comma_separated_integer_field = models.CommaSeparatedIntegerField(max_length=1024, blank=True)
-    decimal_field = models.DecimalField(max_digits=64, decimal_places=32, blank=True)
-    email_field = models.EmailField(max_length=1024, blank=True)
-    file_field = models.FileField(upload_to='test', max_length=1024, blank=True)
-    image_field = models.ImageField(upload_to='test', max_length=1024, blank=True)
-    slug_field = models.SlugField(max_length=1024, blank=True)
-    url_field = models.URLField(max_length=1024, blank=True)
-
-class DVOAFModel(RESTFrameworkModel):
-    positive_integer_field = models.PositiveIntegerField(blank=True)
-    positive_small_integer_field = models.PositiveSmallIntegerField(blank=True)
-    email_field = models.EmailField(blank=True)
-    file_field = models.FileField(upload_to='test', blank=True)
-    image_field = models.ImageField(upload_to='test', blank=True)
-    slug_field = models.SlugField(blank=True)
-    url_field = models.URLField(blank=True)
-
 # Models to test filters
 class FilterableItem(models.Model):
     text = models.CharField(max_length=100)
