@@ -94,7 +94,7 @@ For example, if your API relies on a third party service that may sometimes be u
 
     class ServiceUnavailable(APIException):
         status_code = 503
-        detail = 'Service temporarily unavailable, try again later.'
+        default_detail = 'Service temporarily unavailable, try again later.'
 
 ## ParseError
 
