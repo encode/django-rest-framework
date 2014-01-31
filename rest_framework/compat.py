@@ -457,7 +457,7 @@ from django.test.client import RequestFactory as DjangoRequestFactory
 from django.test.client import FakePayload
 try:
     # In 1.5 the test client uses force_bytes
-    from django.utils.encoding import force_bytes_or_smart_bytes
+    from django.utils.encoding import force_bytes as force_bytes_or_smart_bytes
 except ImportError:
     # In 1.3 and 1.4 the test client just uses smart_str
     from django.utils.encoding import smart_str as force_bytes_or_smart_bytes
