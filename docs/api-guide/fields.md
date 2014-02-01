@@ -104,6 +104,7 @@ A serializer definition that looked like this:
         expired = serializers.Field(source='has_expired')
         
         class Meta:
+            model = Account
             fields = ('url', 'owner', 'name', 'expired')
 
 Would produce output similar to:
