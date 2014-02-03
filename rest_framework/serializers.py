@@ -20,6 +20,7 @@ from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
+from django.utils.translation import ugettext_lazy as _
 from rest_framework.compat import get_concrete_model, six
 from rest_framework.settings import api_settings
 
@@ -919,6 +920,7 @@ class ModelSerializer(Serializer):
         """
         m2m_data = {}
         related_data = {}
+        related_models_to_save = {}
         nested_forward_relations = {}
         meta = self.opts.model._meta
 
@@ -948,11 +950,22 @@ class ModelSerializer(Serializer):
         # Update an existing instance...
         if instance is not None:
             for key, val in attrs.items():
-                # TODO: check whether we need to do something about dotted paths
+                # Follow relations if needed
                 dest = instance
                 keys = key.split('.')
-                for related_instance in keys[:-1]:
-                    dest = getattr(dest, related_instance)
+                try:
+                    for related_instance in keys[:-1]:
+                        dest = getattr(dest, related_instance)
+
+                except AttributeError:
+                    self._errors[key] = self.error_messages['missing']
+                    continue
+
+                # If there's a relation, mark the object to save
+                if len(keys) > 1:
+                    related_models_to_save[key] = dest
+
+                # Assign the value
                 try:
                     setattr(dest, keys[-1], val)
                 except ValueError:
@@ -960,8 +973,11 @@ class ModelSerializer(Serializer):
 
         # ...or create a new instance
         else:
+            for key, value in ((k, v) for k, v in attrs.items() if '.' in k):
+                self._errors[key] = 'You can not set dotted sources during creation.'
+                del attrs[key]
+                print value
             instance = self.opts.model(**attrs)
-            # TODO: check whether we need to do something about dotted paths
 
         # Any relations that cannot be set until we've
         # saved the model get hidden away on these
@@ -970,6 +986,7 @@ class ModelSerializer(Serializer):
         instance._related_data = related_data
         instance._m2m_data = m2m_data
         instance._nested_forward_relations = nested_forward_relations
+        instance._related_models_to_save = related_models_to_save
 
         return instance
 
@@ -1027,6 +1044,10 @@ class ModelSerializer(Serializer):
                     # Reverse FK or reverse one-one
                     setattr(obj, accessor_name, related)
             del(obj._related_data)
+
+        if getattr(obj, '_related_models_to_save', None):
+            for related in obj._related_models_to_save.values():
+                self.save_object(related)
 
 
 class HyperlinkedModelSerializerOptions(ModelSerializerOptions):

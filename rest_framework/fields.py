@@ -251,6 +251,7 @@ class WritableField(Field):
     default_error_messages = {
         'required': _('This field is required.'),
         'invalid': _('Invalid value.'),
+        'missing': _('Related object does not exist.'),
     }
     widget = widgets.TextInput
     default = None

@@ -1843,9 +1843,41 @@ class BoolenFieldTypeTest(TestCase):
 
 
 class RelationSpanningSerializerTest(TestCase):
-    def test_regular_field_can_span_a_relation(self):
+    def test_model_traversal_creation(self):
+        """Update a field through a foreign key during a creation."""
         class TicketSerializer(serializers.ModelSerializer):
             name = fields.CharField(source='assigned.name')
+
+            class Meta:
+                model = Ticket
+                fields = ('name',)
+
+        serializer = TicketSerializer(data={'name': 'doe'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors, {'name': 'You can not set dotted sources during creation.'})
+
+    def test_model_traversal_update(self):
+        """Update a field through a foreign key during an update."""
+        class TicketSerializer(serializers.ModelSerializer):
+            name = fields.CharField(source='assigned.name')
+
+            class Meta:
+                model = Ticket
+                fields = ('name',)
+
+        owner = Person.objects.create(name='john')
+        reviewer = Person.objects.create(name='reviewer')
+        ticket = Ticket.objects.create(assigned=owner, reviewer=reviewer)
+        serializer = TicketSerializer(ticket, data={'name': 'doe'})
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.object.assigned.name, 'doe')
+        serializer.save()
+        self.assertEqual(Person.objects.get(id=owner.id).name, 'doe')
+
+    def test_failing_model_traversal(self):
+        """Update a field through an unknown relation."""
+        class TicketSerializer(serializers.ModelSerializer):
+            name = fields.CharField(source='demo.name')
 
             class Meta:
                 model = Ticket
@@ -1855,5 +1887,5 @@ class RelationSpanningSerializerTest(TestCase):
         reviewer = Person(name='reviewer')
         ticket = Ticket(assigned=owner, reviewer=reviewer)
         serializer = TicketSerializer(ticket, data={'name': 'doe'})
-        self.assertTrue(serializer.is_valid())
-        self.assertEqual(serializer.object.assigned.name, 'doe')
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors, {'name': 'Related object does not exist.'})
