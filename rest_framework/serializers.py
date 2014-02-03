@@ -948,14 +948,20 @@ class ModelSerializer(Serializer):
         # Update an existing instance...
         if instance is not None:
             for key, val in attrs.items():
+                # TODO: check whether we need to do something about dotted paths
+                dest = instance
+                keys = key.split('.')
+                for related_instance in keys[:-1]:
+                    dest = getattr(dest, related_instance)
                 try:
-                    setattr(instance, key, val)
+                    setattr(dest, keys[-1], val)
                 except ValueError:
                     self._errors[key] = self.error_messages['required']
 
         # ...or create a new instance
         else:
             instance = self.opts.model(**attrs)
+            # TODO: check whether we need to do something about dotted paths
 
         # Any relations that cannot be set until we've
         # saved the model get hidden away on these
