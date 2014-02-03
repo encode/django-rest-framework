@@ -1840,3 +1840,20 @@ class BoolenFieldTypeTest(TestCase):
         '''
         bfield = self.serializer.get_fields()['started']
         self.assertEqual(type(bfield), fields.BooleanField)
+
+
+class RelationSpanningSerializerTest(TestCase):
+    def test_regular_field_can_span_a_relation(self):
+        class TicketSerializer(serializers.ModelSerializer):
+            name = fields.CharField(source='assigned.name')
+
+            class Meta:
+                model = Ticket
+                fields = ('name',)
+
+        owner = Person(name='john')
+        reviewer = Person(name='reviewer')
+        ticket = Ticket(assigned=owner, reviewer=reviewer)
+        serializer = TicketSerializer(ticket, data={'name': 'doe'})
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.object.assigned.name, 'doe')
