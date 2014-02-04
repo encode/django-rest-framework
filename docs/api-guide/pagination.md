@@ -102,7 +102,7 @@ You can also set the pagination style on a per-view basis, using the `ListAPIVie
         paginate_by_param = 'page_size'
         max_paginate_by = 100
 
-Note that using a `paginate_by` value of `None` will turn off pagination for the view.
+Note that using a `paginate_by` value of `None` will turn off pagination for the view. But if you specified `PAGINATE_BY` and `PAGINATE_BY_PARAM` in your settings file then you have to set both `paginate_by` and `paginate_by_param` to a `None` value in order to turn off pagination for the view.
 
 For more complex requirements such as serialization that differs depending on the requested media type you can override the `.get_paginate_by()` and `.get_pagination_serializer_class()` methods.
 
