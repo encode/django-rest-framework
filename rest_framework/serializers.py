@@ -501,7 +501,7 @@ class BaseSerializer(WritableField):
             else:
                 many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict, six.text_type))
                 if many:
-                    warnings.warn('Implict list/queryset serialization is deprecated. '
+                    warnings.warn('Implicit list/queryset serialization is deprecated. '
                                   'Use the `many=True` flag when instantiating the serializer.',
                                   DeprecationWarning, stacklevel=3)
 
@@ -563,7 +563,7 @@ class BaseSerializer(WritableField):
             else:
                 many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict))
                 if many:
-                    warnings.warn('Implict list/queryset serialization is deprecated. '
+                    warnings.warn('Implicit list/queryset serialization is deprecated. '
                                   'Use the `many=True` flag when instantiating the serializer.',
                                   DeprecationWarning, stacklevel=2)
 
