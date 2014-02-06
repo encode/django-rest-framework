@@ -7,10 +7,12 @@ from django.db import models
 from django.test import TestCase
 from django.utils import unittest
 from django.utils.translation import ugettext_lazy as _
-from rest_framework import status, permissions
+from rest_framework import serializers, status, permissions
 from rest_framework.compat import yaml, etree, patterns, url, include, six, StringIO
+from rest_framework.tests.models import Album, Photo
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
     XMLRenderer, JSONPRenderer, BrowsableAPIRenderer, UnicodeJSONRenderer
 from rest_framework.parsers import YAMLParser, XMLParser
@@ -101,6 +103,31 @@ class HTMLView1(APIView):
     def get(self, request, **kwargs):
         return Response('text')
 
+
+class ReadOnlySerializer(serializers.ModelSerializer):
+    this = serializers.HyperlinkedRelatedField(source="album",
+                                               queryset=Album.objects,
+                                               view_name="nothing")
+    that = serializers.HyperlinkedRelatedField(source="album", read_only=True,
+                                               queryset=Album.objects,
+                                               view_name="nothing")
+
+    class Meta:
+        model = Photo
+        fields = ("this", "that", )
+
+
+class ReadOnlyView(GenericAPIView):
+    renderer_classes = (BrowsableAPIRenderer, )
+    serializer_class = ReadOnlySerializer
+
+    def get(self, request, **kwargs):
+        return Response("text")
+
+    def post(self, request, **kwargs):
+        return Response("text")
+
+
 urlpatterns = patterns('',
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
     url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
@@ -111,6 +138,7 @@ urlpatterns = patterns('',
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
     url(r'^empty$', EmptyGETView.as_view()),
+    url(r"^read_only$", ReadOnlyView.as_view()),
     url(r'^api', include('rest_framework.urls', namespace='rest_framework'))
 )
 
@@ -255,6 +283,13 @@ class RendererEndToEndTests(TestCase):
         resp = self.client.get('/empty')
         self.assertEqual(resp.get('Content-Type', None), None)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_read_only_fields_browsable_api(self):
+        # An album must exist for the exception to be raised
+        album = Album(title="test")
+        album.save()
+
+        resp = self.client.get("/read_only")
 
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
