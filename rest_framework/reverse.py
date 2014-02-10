@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse as django_reverse
 from django.utils.functional import lazy
 
 
-def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra):
+def reverse(viewname, args=None, kwargs=None, request=None, format=None):
     """
     Same as `django.core.urlresolvers.reverse`, but optionally takes a request
     and returns a fully qualified URL, using the request to get the base URL.
@@ -14,7 +14,8 @@ def reverse(viewname, args=None, kwargs=None, request=None, format=None, **extra
     if format is not None:
         kwargs = kwargs or {}
         kwargs['format'] = format
-    url = django_reverse(viewname, args=args, kwargs=kwargs, **extra)
+
+    url = django_reverse(viewname, args=args, kwargs=kwargs)
     if request:
         return request.build_absolute_uri(url)
     return url
