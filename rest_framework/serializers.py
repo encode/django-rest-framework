@@ -1074,7 +1074,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
         # .using(db).complex_filter(self.rel.limit_choices_to)
         kwargs = {
             'queryset': related_model._default_manager,
-            'view_name': self._get_default_view_name(related_model),
+            'view_name': self._get_view_name(related_model),
             'many': to_many
         }
 
@@ -1106,3 +1106,14 @@ class HyperlinkedModelSerializer(ModelSerializer):
             'model_name': model_meta.object_name.lower()
         }
         return self._default_view_name % format_kwargs
+
+    def _get_view_name(self, model):
+        """
+        Return the view name to use for a model. Uses the one defined in 'Meta',
+        or default view name.
+        """
+        try:
+            return model._meta.view_name
+        except AttributeError:
+            pass
+        return self._get_default_view_name(model)
