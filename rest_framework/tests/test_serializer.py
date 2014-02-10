@@ -1808,14 +1808,14 @@ class SerializerDefaultTrueBoolean(TestCase):
         self.assertEqual(serializer.data['cat'], False)
         self.assertEqual(serializer.data['dog'], False)
 
-        
-class BoolenFieldTypeTest(TestCase):
+
+class BooleanFieldTypeTest(TestCase):
     '''
     Ensure the various Boolean based model fields are rendered as the proper
     field type
-    
+
     '''
-    
+
     def setUp(self):
         '''
         Setup an ActionItemSerializer for BooleanTesting
@@ -1831,12 +1831,29 @@ class BoolenFieldTypeTest(TestCase):
         '''
         bfield = self.serializer.get_fields()['done']
         self.assertEqual(type(bfield), fields.BooleanField)
-    
+
     def test_nullbooleanfield_type(self):
         '''
-        Test that BooleanField is infered from models.NullBooleanField 
-        
+        Test that BooleanField is infered from models.NullBooleanField
+
         https://groups.google.com/forum/#!topic/django-rest-framework/D9mXEftpuQ8
         '''
         bfield = self.serializer.get_fields()['started']
         self.assertEqual(type(bfield), fields.BooleanField)
+
+
+class SerializerMixin(object):
+    data = serializers.SerializerMethodField('get_data')
+
+    def get_data(self, obj):
+        return 'My data'
+
+
+class SerializerWithMixin(SerializerMixin, serializers.Serializer):
+    pass
+
+
+class SerializerMixinTest(TestCase):
+    def test_mixin_field(self):
+        serializer = SerializerWithMixin()
+        self.assertIn('data', serializer.base_fields)
