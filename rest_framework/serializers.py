@@ -893,6 +893,7 @@ class ModelSerializer(Serializer):
             field_name = field.source or field_name
             if field_name in exclusions \
                 and not field.read_only \
+                and field.required \
                 and not isinstance(field, Serializer):
                 exclusions.remove(field_name)
         return exclusions
