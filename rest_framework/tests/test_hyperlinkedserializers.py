@@ -104,6 +104,7 @@ urlpatterns = patterns('',
     url(r'^comments/$', BlogPostCommentListCreate.as_view(), name='blogpostcomment-list'),
     url(r'^comments/(?P<pk>\d+)/$', BlogPostCommentDetail.as_view(), name='blogpostcomment-detail'),
     url(r'^albums/(?P<title>\w[\w-]*)/$', AlbumDetail.as_view(), name='album-detail'),
+    url(r'^(?P<scope>\w[\w-]*)/albums/(?P<title>\w[\w-]*)/$', AlbumDetail.as_view(), name='album-detail'),
     url(r'^photos/$', PhotoListCreate.as_view(), name='photo-list'),
     url(r'^optionalrelation/(?P<pk>\d+)/$', OptionalRelationDetail.as_view(), name='optionalrelationmodel-detail'),
 )
@@ -211,6 +212,11 @@ class TestHyperlinkedIdentityFieldLookup(TestCase):
             'bar': {'title': 'bar', 'url': 'http://testserver/albums/bar/'},
             'baz': {'title': 'baz', 'url': 'http://testserver/albums/baz/'}
         }
+        self.data_scoped = {
+            'foo': {'title': 'foo', 'url': 'http://testserver/scope/albums/foo/'},
+            'bar': {'title': 'bar', 'url': 'http://testserver/can-be/albums/bar/'},
+            'baz': {'title': 'baz', 'url': 'http://testserver/random/albums/baz/'}
+        }
 
     def test_lookup_field(self):
         """
@@ -222,6 +228,13 @@ class TestHyperlinkedIdentityFieldLookup(TestCase):
             response = self.detail_view(request, title=album.title)
             self.assertEqual(response.status_code, status.HTTP_200_OK)
             self.assertEqual(response.data, self.data[album.title])
+
+    def test_lookup_field_scoped(self):
+        for album, scope in zip(Album.objects.all(),('scope', 'can-be', 'random')):
+            request = factory.get('/{0}/albums/{1}/'.format(scope, album.title))
+            response = self.detail_view(request, title=album.title, scope=scope)
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+            self.assertEqual(response.data, self.data_scoped[album.title])
 
 
 class TestCreateWithForeignKeys(TestCase):
