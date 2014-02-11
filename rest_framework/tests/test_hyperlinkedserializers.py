@@ -202,7 +202,7 @@ class TestManyToManyHyperlinkedView(TestCase):
         Scoped GET requests to ListCreateAPIView should return list of objects
         with scoped url properties.
         """
-        request = factory.get('scope/manytomany/')
+        request = factory.get('/scope/manytomany/')
         response = self.list_view(request, scope='scope')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, self.data_scoped)
@@ -221,7 +221,7 @@ class TestManyToManyHyperlinkedView(TestCase):
         Scoped GET requests to ListCreateAPIView should return list of objects
         with scoped url properties
         """
-        request = factory.get('scope/manytomany/1/')
+        request = factory.get('/scope/manytomany/1/')
         response = self.detail_view(request, pk=1, scope='scope')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, self.data_scoped[0])
