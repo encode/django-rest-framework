@@ -363,7 +363,7 @@ class HyperlinkedRelatedField(RelatedField):
             view_kwargs = self.context['view'].kwargs
 
         lookup_field = getattr(obj, self.lookup_field)
-        kwargs = dict(view_kwargs.items() + {self.lookup_field: lookup_field}.items())
+        kwargs = dict(view_kwargs, **{self.lookup_field: lookup_field})
 
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
@@ -374,7 +374,7 @@ class HyperlinkedRelatedField(RelatedField):
             # Only try pk if it has been explicitly set.
             # Otherwise, the default `lookup_field = 'pk'` has us covered.
             pk = obj.pk
-            kwargs = dict(view_kwargs.items() + {self.pk_url_kwarg: pk}.items())
+            kwargs = dict(view_kwargs, **{self.pk_url_kwarg: pk})
 
             try:
                 return reverse(view_name, kwargs=kwargs, request=request, format=format)
@@ -384,7 +384,7 @@ class HyperlinkedRelatedField(RelatedField):
         slug = getattr(obj, self.slug_field, None)
         if slug is not None:
             # Only try slug if it corresponds to an attribute on the object.
-            kwargs = dict(view_kwargs.items() + {self.slug_url_kwarg: slug}.items())
+            kwargs = dict(view_kwargs, **{self.slug_url_kwarg: slug})
 
             try:
                 ret = reverse(view_name, kwargs=kwargs, request=request, format=format)
@@ -582,7 +582,7 @@ class HyperlinkedIdentityField(Field):
         if self.context.get('view'):
             view_kwargs = self.context['view'].kwargs
 
-        kwargs = dict(view_kwargs.items() + {self.lookup_field: lookup_field}.items())
+        kwargs = dict(view_kwargs, **{self.lookup_field: lookup_field})
 
         try:
             return reverse(view_name, kwargs=kwargs, request=request, format=format)
@@ -592,7 +592,7 @@ class HyperlinkedIdentityField(Field):
         if self.pk_url_kwarg != 'pk':
             # Only try pk lookup if it has been explicitly set.
             # Otherwise, the default `lookup_field = 'pk'` has us covered.
-            kwargs = dict(view_kwargs.items() + {self.pk_url_kwarg: obj.pk}.items())
+            kwargs = dict(view_kwargs, **{self.pk_url_kwarg: obj.pk})
 
             try:
                 return reverse(view_name, kwargs=kwargs, request=request, format=format)
@@ -602,7 +602,7 @@ class HyperlinkedIdentityField(Field):
         slug = getattr(obj, self.slug_field, None)
         if slug:
             # Only use slug lookup if a slug field exists on the model
-            kwargs = dict(view_kwargs.items() + {self.slug_url_kwarg: slug}.items())
+            kwargs = dict(view_kwargs, **{self.slug_url_kwarg: slug})
 
             try:
                 return reverse(view_name, kwargs=kwargs, request=request, format=format)
