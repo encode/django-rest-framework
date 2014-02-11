@@ -98,8 +98,11 @@ urlpatterns = patterns('',
     url(r'^basic/$', BasicList.as_view(), name='basicmodel-list'),
     url(r'^basic/(?P<pk>\d+)/$', BasicDetail.as_view(), name='basicmodel-detail'),
     url(r'^anchor/(?P<pk>\d+)/$', AnchorDetail.as_view(), name='anchor-detail'),
+    url(r'^(?P<scope>\w[\w-]*)/anchor/(?P<pk>\d+)/$', AnchorDetail.as_view(), name='anchor-detail'),
     url(r'^manytomany/$', ManyToManyList.as_view(), name='manytomanymodel-list'),
     url(r'^manytomany/(?P<pk>\d+)/$', ManyToManyDetail.as_view(), name='manytomanymodel-detail'),
+    url(r'^(?P<scope>\w[\w-]*)/manytomany/$', ManyToManyList.as_view(), name='manytomanymodel-list'),
+    url(r'^(?P<scope>\w[\w-]*)/manytomany/(?P<pk>\d+)/$', ManyToManyDetail.as_view(), name='manytomanymodel-detail'),
     url(r'^posts/(?P<pk>\d+)/$', BlogPostDetail.as_view(), name='blogpost-detail'),
     url(r'^comments/$', BlogPostCommentListCreate.as_view(), name='blogpostcomment-list'),
     url(r'^comments/(?P<pk>\d+)/$', BlogPostCommentDetail.as_view(), name='blogpostcomment-detail'),
@@ -173,6 +176,15 @@ class TestManyToManyHyperlinkedView(TestCase):
                 'http://testserver/anchor/3/',
             ]
         }]
+
+        self.data_scoped = [{
+            'url': 'http://testserver/scope/manytomany/1/',
+            'rel': [
+                'http://testserver/scope/anchor/1/',
+                'http://testserver/scope/anchor/2/',
+                'http://testserver/scope/anchor/3/',
+            ]
+        }]
         self.list_view = ManyToManyList.as_view()
         self.detail_view = ManyToManyDetail.as_view()
 
@@ -185,6 +197,16 @@ class TestManyToManyHyperlinkedView(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, self.data)
 
+    def test_get_list_view_scoped(self):
+        """
+        Scoped GET requests to ListCreateAPIView should return list of objects
+        with scoped url properties.
+        """
+        request = factory.get('scope/manytomany/')
+        response = self.list_view(request, scope='scope')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, self.data_scoped)
+
     def test_get_detail_view(self):
         """
         GET requests to ListCreateAPIView should return list of objects.
@@ -193,6 +215,16 @@ class TestManyToManyHyperlinkedView(TestCase):
         response = self.detail_view(request, pk=1)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, self.data[0])
+
+    def test_get_detail_view_scoped(self):
+        """
+        Scoped GET requests to ListCreateAPIView should return list of objects
+        with scoped url properties
+        """
+        request = factory.get('scope/manytomany/1/')
+        response = self.detail_view(request, pk=1, scope='scope')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, self.data_scoped[0])
 
 
 class TestHyperlinkedIdentityFieldLookup(TestCase):
