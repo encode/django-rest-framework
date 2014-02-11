@@ -71,6 +71,15 @@ class ActionItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ActionItem
 
+class ActionItemSerializerOptionalFields(serializers.ModelSerializer):
+    """
+    Intended to test that fields with `required=False` are excluded from validation.
+    """
+    title = serializers.CharField(required=False)
+
+    class Meta:
+        model = ActionItem
+        fields = ('title',)
 
 class ActionItemSerializerCustomRestore(serializers.ModelSerializer):
 
@@ -288,7 +297,13 @@ class BasicTests(TestCase):
         serializer.save()
         self.assertIsNotNone(serializer.data.get('id',None), 'Model is saved. `id` should be set.')
 
-
+    def test_fields_marked_as_not_required_are_excluded_from_validation(self):
+        """
+        Check that fields with `required=False` are included in list of exclusions.
+        """
+        serializer = ActionItemSerializerOptionalFields(self.actionitem)
+        exclusions = serializer.get_validation_exclusions()
+        self.assertTrue('title' in exclusions, '`title` field was marked `required=False` and should be excluded')
 
 
 class DictStyleSerializer(serializers.Serializer):
@@ -1808,14 +1823,14 @@ class SerializerDefaultTrueBoolean(TestCase):
         self.assertEqual(serializer.data['cat'], False)
         self.assertEqual(serializer.data['dog'], False)
 
-        
+
 class BoolenFieldTypeTest(TestCase):
     '''
     Ensure the various Boolean based model fields are rendered as the proper
     field type
-    
+
     '''
-    
+
     def setUp(self):
         '''
         Setup an ActionItemSerializer for BooleanTesting
@@ -1831,11 +1846,11 @@ class BoolenFieldTypeTest(TestCase):
         '''
         bfield = self.serializer.get_fields()['done']
         self.assertEqual(type(bfield), fields.BooleanField)
-    
+
     def test_nullbooleanfield_type(self):
         '''
-        Test that BooleanField is infered from models.NullBooleanField 
-        
+        Test that BooleanField is infered from models.NullBooleanField
+
         https://groups.google.com/forum/#!topic/django-rest-framework/D9mXEftpuQ8
         '''
         bfield = self.serializer.get_fields()['started']
