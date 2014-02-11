@@ -860,7 +860,9 @@ class SlugFieldTests(TestCase):
 
 class URLFieldTests(TestCase):
     """
-    Tests for URLField attribute values
+    Tests for URLField attribute values.
+
+    (Includes test for #1210, checking that validators can be overridden.)
     """
 
     class URLFieldModel(RESTFrameworkModel):
@@ -901,6 +903,11 @@ class URLFieldTests(TestCase):
         self.assertEqual(serializer.is_valid(), True)
         self.assertEqual(getattr(serializer.fields['url_field'],
                          'max_length'), 20)
+
+    def test_validators_can_be_overridden(self):
+        url_field = serializers.URLField(validators=[])
+        validators = url_field.validators
+        self.assertEqual([], validators, 'Passing `validators` kwarg should have overridden default validators')
 
 
 class FieldMetadata(TestCase):
