@@ -865,7 +865,7 @@ class DecimalField(WritableField):
         self.max_digits, self.decimal_places = max_digits, decimal_places
         
         if self.decimal_places:
-            self.empty = Decimal('0').quantize(Decimal('.%s1' % ('0' * self.decimal_places - 1)))
+            self.empty = Decimal('0').quantize(Decimal('.%s1' % ('0' * (self.decimal_places - 1))))
         
         super(DecimalField, self).__init__(*args, **kwargs)
 
