@@ -182,6 +182,7 @@ The following people have helped make REST framework great.
 * Ian Foote - [ian-foote]
 * Chuck Harmston - [chuckharmston]
 * Philip Forget - [philipforget]
+* Adrián Matellanes - [amatellanes]
 
 Many thanks to everyone who's contributed to the project.
 
