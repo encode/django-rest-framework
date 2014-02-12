@@ -155,6 +155,8 @@ class AnonRateThrottle(SimpleRateThrottle):
         ident = request.META.get('HTTP_X_FORWARDED_FOR')
         if ident is None:
             ident = request.META.get('REMOTE_ADDR')
+        else:
+            ident = u''.join(ident.split())
 
         return self.cache_format % {
             'scope': self.scope,
