@@ -626,7 +626,23 @@ class DecimalFieldTest(TestCase):
         self.assertFalse(DecimalSerializer(data={'decimal_field': '8000'}).is_valid())
         self.assertFalse(DecimalSerializer(data={'decimal_field': '9900'}).is_valid())
         self.assertFalse(DecimalSerializer(data={'decimal_field': '9001.234'}).is_valid())
-
+    
+    def test_decimal_is_not_quantized_when_decimal_places_is_none(self):
+        class DecimalSerializer(serializers.Serializer):
+            decimal_field = serializers.DecimalField(required=False)
+        serializer = DecimalSerializer(data={})
+        
+        self.assertTrue(serializer.is_valid())
+        self.assertTrue(serializer.data['decimal_field'].as_tuple().exponent, 0)
+        
+    def test_decimal_is_quantized_when_decimal_places_is_provided(self):
+        class DecimalSerializer(serializers.Serializer):
+            decimal_field = serializers.DecimalField(required=False, decimal_places=2)
+        serializer = DecimalSerializer(data={})
+        
+        self.assertTrue(serializer.is_valid())
+        self.assertTrue(serializer.data['decimal_field'].as_tuple().exponent, -2)
+    
     def test_raise_max_value(self):
         """
         Make sure max_value violations raises ValidationError
