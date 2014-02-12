@@ -849,6 +849,7 @@ class DecimalField(WritableField):
     type_name = 'DecimalField'
     type_label = 'decimal'
     form_field_class = forms.DecimalField
+    empty = Decimal('0')
 
     default_error_messages = {
         'invalid': _('Enter a number.'),
@@ -862,7 +863,10 @@ class DecimalField(WritableField):
     def __init__(self, max_value=None, min_value=None, max_digits=None, decimal_places=None, *args, **kwargs):
         self.max_value, self.min_value = max_value, min_value
         self.max_digits, self.decimal_places = max_digits, decimal_places
-        self.empty = Decimal('0').quantize(Decimal('.%s1' % ('0' * self.decimal_places)))
+        
+        if self.decimal_places:
+            self.empty = Decimal('0').quantize(Decimal('.%s1' % ('0' * self.decimal_places or 0)))
+        
         super(DecimalField, self).__init__(*args, **kwargs)
 
         if max_value is not None:
