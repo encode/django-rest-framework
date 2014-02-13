@@ -1889,3 +1889,19 @@ class RelationSpanningSerializerTest(TestCase):
         serializer = TicketSerializer(ticket, data={'username': 'doe'})
         self.assertFalse(serializer.is_valid())
         self.assertEqual(serializer.errors, {'username': 'Related object does not exist.'})
+
+    def test_multiple_model_traversal_update(self):
+        """Update a field through a foreign key during an update."""
+        class TicketSerializer(serializers.ModelSerializer):
+            username = fields.CharField(source='assigned.demo.name')
+
+            class Meta:
+                model = Ticket
+                fields = ('username',)
+
+        owner = Person.objects.create(name='john')
+        reviewer = Person.objects.create(name='reviewer')
+        ticket = Ticket.objects.create(assigned=owner, reviewer=reviewer)
+        serializer = TicketSerializer(ticket, data={'username': 'doe'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors, {'username': 'Can not span more than a relation.'})

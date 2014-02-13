@@ -957,7 +957,7 @@ class ModelSerializer(Serializer):
 
                 # Raise an error if we span more than one relation
                 if len(keys) > 2:
-                    self._errors[key] = 'Can not span more than a relation'
+                    self._errors[key] = 'Can not span more than a relation.'
                     continue
 
                 # Mark the related instance as the one to save
