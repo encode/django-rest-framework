@@ -32,7 +32,7 @@ script:
 matrix:
   exclude:
     - python: "2.6"
-      env: DJANGO="https://www.djangoproject.com/download/1.7a1/tarball/"
+      env: DJANGO="https://www.djangoproject.com/download/1.7a2/tarball/"
     - python: "3.2"
       env: DJANGO="django==1.4.10"
     - python: "3.2"
