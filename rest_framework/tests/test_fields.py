@@ -636,6 +636,8 @@ class DecimalFieldTest(TestCase):
                 model = LongDecimalFieldModel
             decimal_field = serializers.DecimalField(required=False, decimal_places=2)
         
+        serializer = DecimalSerializer(data={})
+        
         self.assertTrue(serializer.is_valid())
         self.assertTrue(serializer.data['decimal_field'].as_tuple().exponent, 0)
         
