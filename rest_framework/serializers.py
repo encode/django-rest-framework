@@ -1107,3 +1107,16 @@ class HyperlinkedModelSerializer(ModelSerializer):
             'model_name': model_meta.object_name.lower()
         }
         return self._default_view_name % format_kwargs
+        
+    def get_nested_field(self, model_field, related_model, to_many):
+        """
+        Creates a default instance of a hyperlinked nested relational field.
+
+        Note that model_field will be `None` for reverse relationships.
+        """
+        class NestedHyperlinkedModelSerializer(HyperlinkedModelSerializer):
+            class Meta:
+                model = related_model
+                depth = self.opts.depth - 1
+
+        return NestedHyperlinkedModelSerializer(many=to_many)
