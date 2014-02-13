@@ -185,7 +185,7 @@ WRAPPING_PUNCTUATION = [('(', ')'), ('<', '>'), ('[', ']'), ('&lt;', '&gt;'),
                         ('"', '"'), ("'", "'")]
 word_split_re = re.compile(r'(\s+)')
 simple_url_re = re.compile(r'^https?://\[?\w', re.IGNORECASE)
-simple_url_2_re = re.compile(r'^\w[^@\[\]\:\/,]+\.(com|edu|gov|int|mil|net|org)(:\d{2,5})?(/(\w[^@\[\]\:\,]+)?)?$', re.IGNORECASE)
+simple_url_2_re = re.compile(r'^www\.|^(?!http)\w[^@]+\.(com|edu|gov|int|mil|net|org)$', re.IGNORECASE)
 simple_email_re = re.compile(r'^\S+@\S+\.\S+$')
 
 
@@ -234,7 +234,11 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
             if simple_url_re.match(middle):
                 url = smart_urlquote(middle)
             elif simple_url_2_re.match(middle):
-                url = smart_urlquote('http://%s' % middle)
+                # ValueError("Invalid IPv6 URL") can be raised here, see issue #1386
+                try:
+                    url = smart_urlquote('http://%s' % middle)
+                except ValueError:
+                    pass
             elif not ':' in middle and simple_email_re.match(middle):
                 local, domain = middle.rsplit('@', 1)
                 try:

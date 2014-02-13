@@ -29,26 +29,20 @@ class Issue1386Tests(TestCase):
         Test function urlize_quoted_links with different args
         """
         correct_urls = [
-            "asdf.com/zxvc",
+            "asdf.com",
             "asdf.net",
             "www.as_df.org",
             "as.d8f.ghj8.gov",
-            "www.a-op.s.d.edu/asdf/dfff_908/",
-            "cd8fr.com:80/hello",
-            "cdfr.com:808/hello",
-            "cdfr.com:8080/hello",
-            "cdfr.com:44808/hello/asdf/",
         ]
         for i in correct_urls:
             res = urlize_quoted_links(i)
-            self.assertGreater(len(res), len(i))
+            self.assertNotEqual(res, i)
             self.assertIn(i, res)
 
         incorrect_urls = [
             "mailto://asdf@fdf.com",
-            "asdf://asdf.com",
             "asdf.netnet",
-            "asdf:[/p]zxcv.com" # example from issue #1386
+            "asdf:[/p]zxcv.com", # example from issue #1386
         ]
         for i in incorrect_urls:
             res = urlize_quoted_links(i)
