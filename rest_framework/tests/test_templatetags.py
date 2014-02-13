@@ -42,8 +42,10 @@ class Issue1386Tests(TestCase):
         incorrect_urls = [
             "mailto://asdf@fdf.com",
             "asdf.netnet",
-            "asdf:[/p]zxcv.com", # example from issue #1386
         ]
         for i in incorrect_urls:
             res = urlize_quoted_links(i)
             self.assertEqual(i, res)
+
+        # example from issue #1386, this shouldn't raise an exception
+        _ = urlize_quoted_links("asdf:[/p]zxcv.com")
