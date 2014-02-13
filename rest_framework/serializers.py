@@ -950,24 +950,28 @@ class ModelSerializer(Serializer):
         # Update an existing instance...
         if instance is not None:
             for key, val in attrs.items():
-                # Follow relations if needed
-                dest = instance
                 keys = key.split('.')
-                try:
-                    for related_instance in keys[:-1]:
-                        dest = getattr(dest, related_instance)
 
-                except AttributeError:
-                    self._errors[key] = self.error_messages['missing']
+                # Work on the current instance for this attribute
+                attr_instance = instance
+
+                # Raise an error if we span more than one relation
+                if len(keys) > 2:
+                    self._errors[key] = 'Can not span more than a relation'
                     continue
 
-                # If there's a relation, mark the object to save
-                if len(keys) > 1:
-                    related_models_to_save[key] = dest
+                # Mark the related instance as the one to save
+                if len(keys) == 2:
+                    try:
+                        attr_instance = getattr(instance, keys[0])
+                        related_models_to_save[key] = attr_instance
+                    except AttributeError:
+                        self._errors[key] = self.error_messages['missing']
+                        continue
 
                 # Assign the value
                 try:
-                    setattr(dest, keys[-1], val)
+                    setattr(attr_instance, keys[-1], val)
                 except ValueError:
                     self._errors[key] = self.error_messages['required']
 
@@ -976,7 +980,6 @@ class ModelSerializer(Serializer):
             for key, value in ((k, v) for k, v in attrs.items() if '.' in k):
                 self._errors[key] = 'You can not set dotted sources during creation.'
                 del attrs[key]
-                print value
             instance = self.opts.model(**attrs)
 
         # Any relations that cannot be set until we've
