@@ -631,9 +631,9 @@ class DecimalFieldTest(TestCase):
         class LongDecimalFieldModel(models.Model):
             decimal_field = models.DecimalField(max_digits=20, decimal_places=10, default=0)
             
-        class DecimalSerializer((serializers.ModelSerializer):
+        class DecimalSerializer(serializers.ModelSerializer):
             class Meta:
-                model = LongDecimalFieldMode
+                model = LongDecimalFieldModel
             decimal_field = serializers.DecimalField(required=False, decimal_places=2)
         
         self.assertTrue(serializer.is_valid())
@@ -643,9 +643,9 @@ class DecimalFieldTest(TestCase):
         class LongDecimalFieldModel(models.Model):
             decimal_field = models.DecimalField(max_digits=20, decimal_places=10, default=0)
             
-        class DecimalSerializer((serializers.ModelSerializer):
+        class DecimalSerializer(serializers.ModelSerializer):
             class Meta:
-                model = LongDecimalFieldMode
+                model = LongDecimalFieldModel
             decimal_field = serializers.DecimalField(required=False, decimal_places=2)
         
         serializer = DecimalSerializer(data={})
