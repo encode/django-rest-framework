@@ -904,7 +904,8 @@ class ModelSerializer(Serializer):
 
         if getattr(obj, '_m2m_data', None):
             for accessor_name, object_list in obj._m2m_data.items():
-                setattr(obj, accessor_name, object_list)
+                field = obj._meta.get_field_by_name(accessor_name)[0]
+                field.save_serializer_data(obj, accessor_name, object_list)
             del(obj._m2m_data)
 
         if getattr(obj, '_related_data', None):
