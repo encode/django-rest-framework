@@ -196,13 +196,15 @@ class BaseSerializer(WritableField):
         self.partial = partial
         self.many = many
 
-        # Handle allow_add_remove depreaction 
+        # Handle allow_add_remove depreaction
         if hasattr(self, 'allow_add_remove'):
+            # If we already have allow_add_remove, it's a class argument.
+            # By reassigning it we'll trigger the batch_mode configuration
             warnings.warn('The `allow_add_remove` keyword argument is deprecated. '
                           'Use the `batch_mode` keyword argument instead.',
                           DeprecationWarning, stacklevel=2)
             self.allow_add_remove = self.allow_add_remove
-        if 'allow_add_remove' in kwargs:
+        if allow_add_remove:
             warnings.warn('The `allow_add_remove` keyword argument is deprecated. '
                           'Use the `batch_mode` keyword argument instead.',
                           DeprecationWarning, stacklevel=2)
