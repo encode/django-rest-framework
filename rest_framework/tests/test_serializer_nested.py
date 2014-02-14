@@ -351,7 +351,7 @@ class ForeignKeyNestedSerializerUpdateTests(TestCase):
 
 
 class NestedModelSerializerUpdateTests(TestCase):
-    def test_second_nested_level(self):
+    def test_allows_second_nesting_level(self):
         """
         Make sure we can span relations for nested representations
         """
@@ -368,6 +368,9 @@ class NestedModelSerializerUpdateTests(TestCase):
         result = deserialize.object
         result.save()
         self.assertEqual(result.id, john.id)
+        self.assertEqual(
+            [i.id for i in result.blogpost_set.all()],
+            [i.id for i in john.blogpost_set.all()])
 
     def test_nested_creation_in_update_only_mode(self):
         """
