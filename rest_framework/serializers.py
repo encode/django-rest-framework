@@ -34,6 +34,11 @@ from rest_framework.settings import api_settings
 from rest_framework.relations import *
 from rest_framework.fields import *
 
+# nested mode constants
+BATCH_ADD = 1
+BATCH_UPDATE = 2
+BATCH_DELETE = 4
+
 
 def _resolve_model(obj):
     """
@@ -178,17 +183,33 @@ class BaseSerializer(WritableField):
 
     _options_class = SerializerOptions
     _dict_class = SortedDictWithMetadata
+    batch_mode = BATCH_UPDATE
 
     def __init__(self, instance=None, data=None, files=None,
                  context=None, partial=False, many=None,
-                 allow_add_remove=False, **kwargs):
+                 batch_mode=None, **kwargs):
+        allow_add_remove = kwargs.pop('allow_add_remove', None)
         super(BaseSerializer, self).__init__(**kwargs)
         self.opts = self._options_class(self.Meta)
         self.parent = None
         self.root = None
         self.partial = partial
         self.many = many
-        self.allow_add_remove = allow_add_remove
+
+        # Handle allow_add_remove depreaction 
+        if hasattr(self, 'allow_add_remove'):
+            warnings.warn('The `allow_add_remove` keyword argument is deprecated. '
+                          'Use the `batch_mode` keyword argument instead.',
+                          DeprecationWarning, stacklevel=2)
+            self.allow_add_remove = self.allow_add_remove
+        if 'allow_add_remove' in kwargs:
+            warnings.warn('The `allow_add_remove` keyword argument is deprecated. '
+                          'Use the `batch_mode` keyword argument instead.',
+                          DeprecationWarning, stacklevel=2)
+            self.allow_add_remove = allow_add_remove
+
+        if batch_mode:
+            self.batch_mode = batch_mode
 
         self.context = context or {}
 
@@ -204,8 +225,22 @@ class BaseSerializer(WritableField):
         if many and instance is not None and not hasattr(instance, '__iter__'):
             raise ValueError('instance should be a queryset or other iterable with many=True')
 
-        if allow_add_remove and not many:
+        if 'allow_add_remove' in kwargs and not many:
             raise ValueError('allow_add_remove should only be used for bulk updates, but you have not set many=True')
+
+    # Compatibility between allow_add_remove and batch_mode
+    def set_allow_add_remove(self, value):
+        self.batch_mode = BATCH_UPDATE
+        if value:
+            self.batch_mode = BATCH_ADD | BATCH_UPDATE | BATCH_DELETE
+
+    def get_allow_add_remove(self):
+        if self.batch_mode == BATCH_ADD | BATCH_UPDATE | BATCH_DELETE:
+            return True
+        if self.batch_mode == BATCH_UPDATE:
+            return False
+
+    allow_add_remove = property(get_allow_add_remove, set_allow_add_remove)
 
     #####
     # Methods to determine which fields to use when (de)serializing objects.
@@ -463,7 +498,8 @@ class BaseSerializer(WritableField):
                     'context': self.context,
                     'partial': self.partial,
                     'many': self.many,
-                    'allow_add_remove': self.allow_add_remove
+                    'allow_add_remove': self.allow_add_remove,
+                    'batch_mode': self.batch_mode
                 }
                 serializer = self.__class__(**kwargs)
 
@@ -525,7 +561,7 @@ class BaseSerializer(WritableField):
                             # Determine which object we're updating
                             identity = self.get_identity(item)
                             self.object = identity_to_objects.pop(identity, None)
-                            if self.object is None and not self.allow_add_remove:
+                            if self.object is None and not (self.batch_mode & BATCH_ADD):
                                 ret.append(None)
                                 errors.append({'non_field_errors': ['Cannot create a new item, only existing items may be updated.']})
                                 continue
@@ -533,7 +569,7 @@ class BaseSerializer(WritableField):
                         ret.append(self.from_native(item, None))
                         errors.append(self._errors)
 
-                    if update and self.allow_add_remove:
+                    if update and (self.batch_mode & BATCH_DELETE):
                         ret._deleted = identity_to_objects.values()
 
                     self._errors = any(errors) and errors or []
