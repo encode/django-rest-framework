@@ -567,6 +567,10 @@ class BaseSerializer(WritableField):
                                 ret.append(None)
                                 errors.append({'non_field_errors': ['Cannot create a new item, only existing items may be updated.']})
                                 continue
+                            if self.object is not None and not (self.batch_mode & BATCH_UPDATE):
+                                ret.append(None)
+                                errors.append({'non_field_errors': ['Cannot update an item.']})
+                                continue
 
                         ret.append(self.from_native(item, None))
                         errors.append(self._errors)
