@@ -1824,7 +1824,7 @@ class SerializerDefaultTrueBoolean(TestCase):
         self.assertEqual(serializer.data['dog'], False)
 
 
-class BoolenFieldTypeTest(TestCase):
+class BooleanFieldTypeTest(TestCase):
     '''
     Ensure the various Boolean based model fields are rendered as the proper
     field type
@@ -1855,3 +1855,73 @@ class BoolenFieldTypeTest(TestCase):
         '''
         bfield = self.serializer.get_fields()['started']
         self.assertEqual(type(bfield), fields.BooleanField)
+
+
+class NullBooleanFieldModel(models.Model):
+    """
+    A model for use in the NullBooleanFieldSerializer test.
+    """
+    cat = models.NullBooleanField(default=True)
+    dog = models.NullBooleanField(default=False)
+    rat = models.NullBooleanField()
+
+
+class NullBooleanFieldSerializerTest(TestCase):
+    """
+    Tests that the default serializer field for Django's NullBooleanField
+    works as expected.
+    """
+
+    def setUp(self):
+        super(NullBooleanFieldSerializerTest, self).setUp()
+
+        class NullBooleanFieldSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = NullBooleanFieldModel
+                fields = ('cat', 'dog', 'rat')
+
+        self.serializer = NullBooleanFieldSerializer
+
+    def test_false(self):
+        data = {
+            'cat': False,
+            'dog': False,
+            'rat': False
+        }
+        serializer = self.serializer(data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.data['cat'], False)
+        self.assertEqual(serializer.data['dog'], False)
+        self.assertEqual(serializer.data['rat'], False)
+
+    def test_true(self):
+        data = {
+            'cat': True,
+            'dog': True,
+            'rat': True
+        }
+
+        serializer = self.serializer(data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.data['cat'], True)
+        self.assertEqual(serializer.data['dog'], True)
+        self.assertEqual(serializer.data['rat'], True)
+
+    def test_none(self):
+        data = {
+            'cat': None,
+            'dog': None,
+            'rat': None
+        }
+        serializer = self.serializer(data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.data['cat'], None)
+        self.assertEqual(serializer.data['dog'], None)
+        self.assertEqual(serializer.data['rat'], None)
+
+    def test_partial(self):
+        serializer = self.serializer(data={'rat': None}, partial=True)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.data['cat'], True)
+        self.assertEqual(serializer.data['dog'], False)
+        self.assertEqual(serializer.data['rat'], None)
