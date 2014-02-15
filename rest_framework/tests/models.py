@@ -1,4 +1,7 @@
 from __future__ import unicode_literals
+
+import json
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers
@@ -13,6 +16,20 @@ class CustomField(models.CharField):
     def __init__(self, *args, **kwargs):
         kwargs['max_length'] = 12
         super(CustomField, self).__init__(*args, **kwargs)
+
+
+class BasicJSONField(models.Field):
+    def to_python(self, value):
+        try:
+            return json.loads(value)
+        except:
+            return value
+
+    def get_db_prep_value(self, value, *args, **kwargs):
+        return json.dumps(value)
+
+    def get_internal_type(self):
+        return 'TextField'
 
 
 class RESTFrameworkModel(models.Model):
@@ -162,6 +179,12 @@ class NullableOneToOneSource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
     target = models.OneToOneField(OneToOneTarget, null=True, blank=True,
                                   related_name='nullable_source')
+
+
+class Project(RESTFrameworkModel):
+    """A model with a JSON field to test nested serializers."""
+    name = models.CharField(max_length=100)
+    milestones = BasicJSONField()
 
 
 # Serializer used to test BasicModel
