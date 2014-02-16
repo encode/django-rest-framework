@@ -35,7 +35,7 @@ class Token(models.Model):
 
     def generate_key(self):
         if hasattr(settings, 'SECRET_KEY') and len(settings.SECRET_KEY):
-            return sha1('%s%s' % (settings.SECRET_KEY, binascii.hexlify(os.urandom(20))).hexdigest())
+            return sha1('%s%s' % (settings.SECRET_KEY, binascii.hexlify(os.urandom(20)))).hexdigest()
 
         return binascii.hexlify(os.urandom(20))
 
