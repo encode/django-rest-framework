@@ -10,6 +10,7 @@ from rest_framework import serializers, fields, relations
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo, RESTFrameworkModel)
+from rest_framework.compat import six
 from rest_framework.tests.models import BasicModelSerializer
 import datetime
 import pickle
@@ -1944,5 +1945,5 @@ class NullBooleanFieldSerializerTest(TestCase):
         widget for DRF's NullBooleanField.
         """
         serializer = self.serializer()
-        for field_name, field in serializer.fields.iteritems():
+        for field in six.itervalues(serializer.fields):
             self.assertEqual(type(field.widget), forms.NullBooleanSelect)
