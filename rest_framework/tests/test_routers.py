@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
-from rest_framework import serializers, viewsets, permissions
+from rest_framework import serializers, viewsets, permissions, status
 from rest_framework.compat import include, patterns, url
 from rest_framework.decorators import link, action
 from rest_framework.response import Response
@@ -163,6 +163,26 @@ class TestNameableRoot(TestCase):
     def test_router_has_custom_name(self):
         expected = 'nameable-root'
         self.assertEqual(expected, self.urls[0].name)
+
+class TestScopedRoot(TestCase):
+    class NoteViewSet(viewsets.ModelViewSet):
+        model = RouterTestModel
+
+    router = DefaultRouter()
+    router.register(r'notes', NoteViewSet)
+
+    urls = patterns(
+        '',
+        url(r'^(?P<scope>\w[\w-]*)/', include(router.urls)),
+    )
+
+    def setUp(self):
+        self.view = self.router.get_api_root_view()
+
+    def test_api_root_is_accessible(self):
+        request = factory.get('/scope/') # get the api-root
+        response = self.view(request, scope='scope')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
 class TestActionKeywordArgs(TestCase):
