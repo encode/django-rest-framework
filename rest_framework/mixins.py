@@ -133,10 +133,10 @@ class UpdateModelMixin(object):
             self.object = serializer.save(force_insert=True)
             self.post_save(self.object, created=True)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            self.object = serializer.save(force_update=True)
-            self.post_save(self.object, created=False)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        self.object = serializer.save(force_update=True)
+        self.post_save(self.object, created=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
