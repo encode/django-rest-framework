@@ -125,8 +125,8 @@ class UpdateModelMixin(object):
         try:
             self.pre_save(serializer.object)
         except ValidationError as err:
-            # full_clean on model instance may be called in pre_save, so we
-            # have to handle eventual errors.
+            # full_clean on model instance may be called in pre_save,
+            # so we have to handle eventual errors.
             return Response(err.message_dict, status=status.HTTP_400_BAD_REQUEST)
 
         if self.object is None:
