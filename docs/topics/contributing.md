@@ -60,7 +60,7 @@ To run the tests, clone the repository, and then:
 
     # Setup the virtual environment
     virtualenv env
-    env/bin/activate
+    source env/bin/activate
     pip install -r requirements.txt
     pip install -r optionals.txt
 

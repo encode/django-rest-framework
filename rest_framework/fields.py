@@ -477,7 +477,8 @@ class URLField(CharField):
     type_label = 'url'
 
     def __init__(self, **kwargs):
-        kwargs['validators'] = [validators.URLValidator()]
+        if not 'validators' in kwargs:
+            kwargs['validators'] = [validators.URLValidator()]
         super(URLField, self).__init__(**kwargs)
 
 

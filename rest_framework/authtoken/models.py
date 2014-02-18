@@ -1,5 +1,5 @@
-import uuid
-import hmac
+import binascii
+import os
 from hashlib import sha1
 from django.conf import settings
 from django.db import models
@@ -34,8 +34,7 @@ class Token(models.Model):
         return super(Token, self).save(*args, **kwargs)
 
     def generate_key(self):
-        unique = uuid.uuid4()
-        return hmac.new(unique.bytes, digestmod=sha1).hexdigest()
+        return binascii.hexlify(os.urandom(20))
 
     def __unicode__(self):
         return self.key

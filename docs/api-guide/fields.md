@@ -104,6 +104,7 @@ A serializer definition that looked like this:
         expired = serializers.Field(source='has_expired')
         
         class Meta:
+            model = Account
             fields = ('url', 'owner', 'name', 'expired')
 
 Would produce output similar to:
@@ -125,7 +126,7 @@ A field that supports both read and write operations.  By itself `WritableField`
 
 ## ModelField
 
-A generic field that can be tied to any arbitrary model field.  The `ModelField` class delegates the task of serialization/deserialization to it's associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.
+A generic field that can be tied to any arbitrary model field.  The `ModelField` class delegates the task of serialization/deserialization to its associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.
 
 The `ModelField` class is generally intended for internal use, but can be used by your API if needed.  In order to properly instantiate a `ModelField`, it must be passed a field that is attached to an instantiated model.  For example: `ModelField(model_field=MyModel()._meta.get_field('custom_field'))`
 
@@ -307,7 +308,7 @@ Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
 
 If you want to create a custom field, you'll probably want to override either one or both of the `.to_native()` and `.from_native()` methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype.  Primitive datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primitive objects.
 
-The `.to_native()` method is called to convert the initial datatype into a primitive, serializable datatype.  The `from_native()` method is called to restore a primitive datatype into it's initial representation.
+The `.to_native()` method is called to convert the initial datatype into a primitive, serializable datatype.  The `from_native()` method is called to restore a primitive datatype into its initial representation.
 
 ## Examples
 

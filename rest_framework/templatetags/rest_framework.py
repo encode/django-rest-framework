@@ -6,7 +6,7 @@ from django.utils.encoding import iri_to_uri
 from django.utils.html import escape
 from django.utils.safestring import SafeData, mark_safe
 from rest_framework.compat import urlparse, force_text, six, smart_urlquote
-import re, string
+import re
 
 register = template.Library()
 
@@ -189,6 +189,17 @@ simple_url_2_re = re.compile(r'^www\.|^(?!http)\w[^@]+\.(com|edu|gov|int|mil|net
 simple_email_re = re.compile(r'^\S+@\S+\.\S+$')
 
 
+def smart_urlquote_wrapper(matched_url):
+    """
+    Simple wrapper for smart_urlquote. ValueError("Invalid IPv6 URL") can
+    be raised here, see issue #1386
+    """
+    try:
+        return smart_urlquote(matched_url)
+    except ValueError:
+        return None
+
+
 @register.filter
 def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=True):
     """
@@ -211,7 +222,6 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
     safe_input = isinstance(text, SafeData)
     words = word_split_re.split(force_text(text))
     for i, word in enumerate(words):
-        match = None
         if '.' in word or '@' in word or ':' in word:
             # Deal with punctuation.
             lead, middle, trail = '', word, ''
@@ -233,9 +243,9 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
             url = None
             nofollow_attr = ' rel="nofollow"' if nofollow else ''
             if simple_url_re.match(middle):
-                url = smart_urlquote(middle)
+                url = smart_urlquote_wrapper(middle)
             elif simple_url_2_re.match(middle):
-                url = smart_urlquote('http://%s' % middle)
+                url = smart_urlquote_wrapper('http://%s' % middle)
             elif not ':' in middle and simple_email_re.match(middle):
                 local, domain = middle.rsplit('@', 1)
                 try:

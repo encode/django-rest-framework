@@ -218,12 +218,12 @@ You can use any of REST framework's test case classes as you would for the regul
 
 When checking the validity of test responses it's often more convenient to inspect the data that the response was created with, rather than inspecting the fully rendered response.
 
-For example, it's easier to inspect `request.data`:
+For example, it's easier to inspect `response.data`:
 
     response = self.client.get('/users/4/')
     self.assertEqual(response.data, {'id': 4, 'username': 'lauren'})
 
-Instead of inspecting the result of parsing `request.content`:
+Instead of inspecting the result of parsing `response.content`:
 
     response = self.client.get('/users/4/')
     self.assertEqual(json.loads(response.content), {'id': 4, 'username': 'lauren'})
