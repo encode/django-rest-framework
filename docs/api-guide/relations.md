@@ -132,6 +132,17 @@ Would serialize to a representation like this:
 
 By default this field is read-write, although you can change this behavior using the `read_only` flag.
 
+**View Name**:
+
+The view name of your target must be specified using the `view_name` argument. The standard naming is `<model_name>-detail`. 
+
+
+`<model_name>` : Corresponds to the name of the model, forced to lowercase. In this example `Track` becomes `track`
+
+`-detail` : Relates to either the detail view `-detail` or the list view `-list` of the related model.
+
+Note however: When you define a Serialiser, you can customise the `view_name` argument by specifing a custom one in the `Meta:` section of the serialiser definition.
+
 **Arguments**:
 
 * `view_name` - The view name that should be used as the target of the relationship.  If you're using [the standard router classes][routers] this wil be a string with the format `<modelname>-detail`. **required**.
