@@ -404,10 +404,10 @@ class NestedModelSerializerCreationsTests(TestCase):
         serializer = BlogPostSerializer(data=data, instance=post)
         self.assertFalse(serializer.is_valid())
         self.assertEqual(serializer.errors, {
-            u'comments': [{
-                u'non_field_errors': [u'Cannot create a new item, only existing items may be updated.']
+            'comments': [{
+                'non_field_errors': ['Cannot create a new item, only existing items may be updated.']
             }, {
-                u'non_field_errors': [u'Cannot create a new item, only existing items may be updated.']
+                'non_field_errors': ['Cannot create a new item, only existing items may be updated.']
             }]
         })
 
@@ -434,10 +434,10 @@ class NestedModelSerializerCreationsTests(TestCase):
         serializer = LocalSerializer(data=data, instance=post)
         self.assertFalse(serializer.is_valid())
         self.assertEqual(serializer.errors, {
-            u'comments': [{
-                u'non_field_errors': [u'Cannot create a new item, only existing items may be updated.']
+            'comments': [{
+                'non_field_errors': ['Cannot create a new item, only existing items may be updated.']
             }, {
-                u'non_field_errors': [u'Cannot create a new item, only existing items may be updated.']
+                'non_field_errors': ['Cannot create a new item, only existing items may be updated.']
             }]
         })
 
@@ -470,10 +470,10 @@ class NestedModelSerializerUpdatesTests(TestCase):
         serializer = LocalSerializer(data=data, instance=post)
         self.assertFalse(serializer.is_valid())
         self.assertEqual(serializer.errors, {
-            u'comments': [{
-                u'non_field_errors': [u'Cannot update an item.']
+            'comments': [{
+                'non_field_errors': ['Cannot update an item.']
             }, {
-                u'non_field_errors': [u'Cannot update an item.']
+                'non_field_errors': ['Cannot update an item.']
             }]
         })
 
@@ -534,10 +534,10 @@ class NestedModelSerializerUpdatesTests(TestCase):
         serializer = LocalSerializer(data=data, instance=post)
         self.assertFalse(serializer.is_valid())
         self.assertEqual(serializer.errors, {
-            u'comments': [{
-                u'non_field_errors': [u'Cannot update an item.']
+            'comments': [{
+                'non_field_errors': ['Cannot update an item.']
             }, {
-                u'non_field_errors': [u'Cannot update an item.']
+                'non_field_errors': ['Cannot update an item.']
             }]
         })
 
