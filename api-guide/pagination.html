@@ -6,7 +6,7 @@
     <link href="http://www.django-rest-framework.org/img/favicon.ico" rel="icon" type="image/x-icon">
     <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/pagination"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Django, API, REST, Pagination, Custom pagination serializers">
+    <meta name="description" content="Django, API, REST, Pagination, Custom pagination serializers, Third party packages">
     <meta name="author" content="Tom Christie">
 
     <!-- Le styles -->
@@ -175,6 +175,8 @@
 <li class="main"><a href="#custom-pagination-serializers">Custom pagination serializers</a></li>
 <li><a href="#example">Example</a></li>
 <li><a href="#using-your-custom-pagination-serializer">Using your custom pagination serializer</a></li>
+<li class="main"><a href="#third-party-packages">Third party packages</a></li>
+<li><a href="#drf-extensions">DRF-extensions</a></li>
 
               <div>
 
@@ -309,6 +311,10 @@ class CustomPaginationSerializer(pagination.BasePaginationSerializer):
     pagination_serializer_class = CustomPaginationSerializer
     paginate_by = 10
 </code></pre>
+<h1 id="third-party-packages">Third party packages</h1>
+<p>The following third party packages are also available.</p>
+<h2 id="drf-extensions">DRF-extensions</h2>
+<p>The <a href="http://chibisov.github.io/drf-extensions/docs/"><code>DRF-extensions</code> package</a> includes a <a href="http://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin"><code>PaginateByMaxMixin</code> mixin class</a> that allows your API clients to specify <code>?page_size=max</code> to obtain the maximum allowed page size.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->

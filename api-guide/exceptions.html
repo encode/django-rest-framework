@@ -207,7 +207,7 @@
 <li>Django's <code>PermissionDenied</code> exception.</li>
 </ul>
 <p>In each case, REST framework will return a response with an appropriate status code and content-type.  The body of the response will include any additional details regarding the nature of the error.</p>
-<p>By default all error responses will include a key <code>details</code> in the body of the response, but other keys may also be included.</p>
+<p>By default all error responses will include a key <code>detail</code> in the body of the response, but other keys may also be included.</p>
 <p>For example, the following request:</p>
 <pre class="prettyprint lang-py"><code>DELETE http://api.example.com/foo/bar HTTP/1.1
 Accept: application/json
@@ -259,13 +259,13 @@ def custom_exception_handler(exc):
 <h2 id="apiexception">APIException</h2>
 <p><strong>Signature:</strong> <code>APIException()</code></p>
 <p>The <strong>base class</strong> for all exceptions raised inside REST framework.</p>
-<p>To provide a custom exception, subclass <code>APIException</code> and set the <code>.status_code</code> and <code>.detail</code> properties on the class.</p>
+<p>To provide a custom exception, subclass <code>APIException</code> and set the <code>.status_code</code> and <code>.default_detail</code> properties on the class.</p>
 <p>For example, if your API relies on a third party service that may sometimes be unreachable, you might want to implement an exception for the "503 Service Unavailable" HTTP response code.  You could do this like so:</p>
 <pre class="prettyprint lang-py"><code>from rest_framework.exceptions import APIException
 
 class ServiceUnavailable(APIException):
     status_code = 503
-    detail = 'Service temporarily unavailable, try again later.'
+    default_detail = 'Service temporarily unavailable, try again later.'
 </code></pre>
 <h2 id="parseerror">ParseError</h2>
 <p><strong>Signature:</strong> <code>ParseError(detail=None)</code></p>

@@ -299,7 +299,7 @@ class UserList(generics.ListCreateAPIView):
     self.check_object_permissions(self.request, obj)
     return obj
 </code></pre>
-<p>Note that if your API doesn't include any object level permissions, you may optionally exclude the <code>`self.check_object_permissions, and simply return the object from the</code>get_object_or_404` lookup.</p>
+<p>Note that if your API doesn't include any object level permissions, you may optionally exclude the <code>self.check_object_permissions</code>, and simply return the object from the <code>get_object_or_404</code> lookup.</p>
 <h4 id="get_filter_backendsself"><code>get_filter_backends(self)</code></h4>
 <p>Returns the classes that should be used to filter the queryset. Defaults to returning the <code>filter_backends</code> attribute.</p>
 <p>May be override to provide more complex behavior with filters, as using different (or even exlusive) lists of filter_backends depending on different criteria.</p>

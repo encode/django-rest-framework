@@ -270,6 +270,7 @@ class AccountSerializer(serializers.HyperlinkedModelSerializer):
     expired = serializers.Field(source='has_expired')
 
     class Meta:
+        model = Account
         fields = ('url', 'owner', 'name', 'expired')
 </code></pre>
 <p>Would produce output similar to:</p>
@@ -285,7 +286,7 @@ class AccountSerializer(serializers.HyperlinkedModelSerializer):
 <h2 id="writablefield">WritableField</h2>
 <p>A field that supports both read and write operations.  By itself <code>WritableField</code> does not perform any translation of input values into a given type.  You won't typically use this field directly, but you may want to override it and implement the <code>.to_native(self, value)</code> and <code>.from_native(self, value)</code> methods.</p>
 <h2 id="modelfield">ModelField</h2>
-<p>A generic field that can be tied to any arbitrary model field.  The <code>ModelField</code> class delegates the task of serialization/deserialization to it's associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.</p>
+<p>A generic field that can be tied to any arbitrary model field.  The <code>ModelField</code> class delegates the task of serialization/deserialization to its associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.</p>
 <p>The <code>ModelField</code> class is generally intended for internal use, but can be used by your API if needed.  In order to properly instantiate a <code>ModelField</code>, it must be passed a field that is attached to an instantiated model.  For example: <code>ModelField(model_field=MyModel()._meta.get_field('custom_field'))</code></p>
 <p><strong>Signature:</strong> <code>ModelField(model_field=&lt;Django ModelField instance&gt;)</code></p>
 <h2 id="serializermethodfield">SerializerMethodField</h2>
@@ -400,7 +401,7 @@ Django's regular <a href="https://docs.djangoproject.com/en/dev/ref/settings/#st
 <hr />
 <h1 id="custom-fields">Custom fields</h1>
 <p>If you want to create a custom field, you'll probably want to override either one or both of the <code>.to_native()</code> and <code>.from_native()</code> methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype.  Primitive datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primitive objects.</p>
-<p>The <code>.to_native()</code> method is called to convert the initial datatype into a primitive, serializable datatype.  The <code>from_native()</code> method is called to restore a primitive datatype into it's initial representation.</p>
+<p>The <code>.to_native()</code> method is called to convert the initial datatype into a primitive, serializable datatype.  The <code>from_native()</code> method is called to restore a primitive datatype into its initial representation.</p>
 <h2 id="examples">Examples</h2>
 <p>Let's look at an example of serializing a class that represents an RGB color value:</p>
 <pre class="prettyprint lang-py"><code>class Color(object):
