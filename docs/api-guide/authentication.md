@@ -393,6 +393,10 @@ The [Django OAuth2 Consumer][doac] library from [Rediker Software][rediker] is a
 
 JSON Web Token is a fairly new standard which can be used for token-based authentication. Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token. [Blimp][blimp] maintains the [djangorestframework-jwt][djangorestframework-jwt] package which provides a JWT Authentication class as well as a mechanism for clients to obtain a JWT given the username and password.
 
+## HTTP Signature Authentication
+
+HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a way to achieve origin authentication and message integrity for HTTP messages. Similar to [Amazon's HTTP Signature scheme][amazon-http-signature], used by many of its services, it permits stateless, per-request authentication. [Elvio Toccalino][etoccalino] maintains the [djangorestframework-httpsignature][djangorestframework-httpsignature] package which provides an easy to use HTTP Signature Authentication mechanism.
+
 [cite]: http://jacobian.org/writing/rest-worst-practices/
 [http401]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
 [http403]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
@@ -419,3 +423,7 @@ JSON Web Token is a fairly new standard which can be used for token-based authen
 [doac-rest-framework]: https://github.com/Rediker-Software/doac/blob/master/docs/integrations.md#
 [blimp]: https://github.com/GetBlimp
 [djangorestframework-jwt]: https://github.com/GetBlimp/django-rest-framework-jwt
+[etoccalino]: https://github.com/etoccalino/
+[djangorestframework-httpsignature]: https://github.com/etoccalino/django-rest-framework-httpsignature
+[amazon-http-signature]: http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
+[http-signature-ietf-draft]: https://datatracker.ietf.org/doc/draft-cavage-http-signatures/
