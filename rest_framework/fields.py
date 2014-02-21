@@ -275,10 +275,10 @@ class WritableField(Field):
         assert not (read_only and write_only), "Cannot set read_only=True and write_only=True"
 
         if required is None:
-            self.required = not(read_only)
+            self.disallow_empty = self.required = not(read_only)
         else:
             assert not (read_only and required), "Cannot set required=True and read_only=True"
-            self.required = required
+            self.disallow_empty = self.required = required
 
         messages = {}
         for c in reversed(self.__class__.__mro__):
@@ -302,7 +302,7 @@ class WritableField(Field):
         return result
 
     def validate(self, value):
-        if value in validators.EMPTY_VALUES and self.required:
+        if self.disallow_empty and value in validators.EMPTY_VALUES:
             raise ValidationError(self.error_messages['required'])
 
     def run_validators(self, value):
