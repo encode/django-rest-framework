@@ -256,6 +256,18 @@ class RendererEndToEndTests(TestCase):
         self.assertEqual(resp.get('Content-Type', None), None)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
+    def test_contains_headers_of_api_response(self):
+        """
+        Issue #1437
+
+        Test we display the headers of the API response and not those from the
+        HTML response
+        """
+        resp = self.client.get('/html1')
+        self.assertContains(resp, '>GET, HEAD, OPTIONS<')
+        self.assertContains(resp, '>application/json<')
+        self.assertNotContains(resp, '>text/html; charset=utf-8<')
+
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
 _indented_repr = '{\n  "foo": [\n    "bar",\n    "baz"\n  ]\n}'
