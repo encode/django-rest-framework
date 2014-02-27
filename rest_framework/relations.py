@@ -118,6 +118,13 @@ class RelatedField(WritableField):
 
     choices = property(_get_choices, _set_choices)
 
+    ### Default value handling
+
+    def get_default_value(self):
+        default = super(RelatedField, self).get_default_value()
+        return default or \
+            [] if self.many else None
+
     ### Regular serializer stuff...
 
     def field_to_native(self, obj, field_name):
@@ -166,7 +173,7 @@ class RelatedField(WritableField):
         except KeyError:
             if self.partial:
                 return
-            value = [] if self.many else None
+            value = self.get_default_value()
 
         if value in (None, '') and self.required:
             raise ValidationError(self.error_messages['required'])

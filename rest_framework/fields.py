@@ -301,6 +301,11 @@ class WritableField(Field):
         result.validators = self.validators[:]
         return result
 
+    def get_default_value(self):
+        if is_simple_callable(self.default):
+            return self.default()
+        return self.default
+
     def validate(self, value):
         if value in validators.EMPTY_VALUES and self.required:
             raise ValidationError(self.error_messages['required'])
@@ -349,10 +354,7 @@ class WritableField(Field):
         except KeyError:
             if self.default is not None and not self.partial:
                 # Note: partial updates shouldn't set defaults
-                if is_simple_callable(self.default):
-                    native = self.default()
-                else:
-                    native = self.default
+                native = self.get_default_value()
             else:
                 if self.required:
                     raise ValidationError(self.error_messages['required'])
