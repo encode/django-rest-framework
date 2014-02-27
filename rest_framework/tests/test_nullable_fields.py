@@ -15,12 +15,12 @@ urlpatterns = patterns(
 
 class NullableForeignKeyTests(APITestCase):
     """
-    DRF should be able to handle nullable fields when a TestClient
-    POST/PUT request is made with its own serialized object.
+    DRF should be able to handle nullable foreign keys when a test
+    Client POST/PUT request is made with its own serialized object.
     """
     urls = 'rest_framework.tests.test_nullable_fields'
 
-    def test_updating_object_with_null_field_value(self):
+    def test_updating_object_with_null_fk(self):
         obj = NullableForeignKeySource(name='example', target=None)
         obj.save()
         serialized_data = NullableFKSourceSerializer(obj).data

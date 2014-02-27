@@ -33,6 +33,7 @@ class RelatedField(WritableField):
     many_widget = widgets.SelectMultiple
     form_field_class = forms.ChoiceField
     many_form_field_class = forms.MultipleChoiceField
+    null_values = (None, '', 'None')
 
     cache_choices = False
     empty_label = None
@@ -168,9 +169,9 @@ class RelatedField(WritableField):
                 return
             value = [] if self.many else None
 
-        if value in (None, '') and self.required:
-            raise ValidationError(self.error_messages['required'])
-        elif value in (None, ''):
+        if value in self.null_values:
+            if self.required:
+                raise ValidationError(self.error_messages['required'])
             into[(self.source or field_name)] = None
         elif self.many:
             into[(self.source or field_name)] = [self.from_native(item) for item in value]
