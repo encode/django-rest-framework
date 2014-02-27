@@ -136,6 +136,8 @@ class SimpleRateThrottle(BaseThrottle):
             remaining_duration = self.duration
 
         available_requests = self.num_requests - len(self.history) + 1
+        if available_requests <= 0:
+            return None
 
         return remaining_duration / float(available_requests)
 
