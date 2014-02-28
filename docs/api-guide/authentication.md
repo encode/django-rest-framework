@@ -93,7 +93,7 @@ Note that if deploying to [Apache using mod_wsgi][mod_wsgi_official], the author
 
 If you are deploying to Apache, and using any non-session based authentication, you will need to explicitly configure mod_wsgi to pass the required headers through to the application.  This can be done by specifying the `WSGIPassAuthorization` directive in the appropriate context and setting it to `'On'`.
 
-    # this can go in either server config, virtual host, directory or .htaccess 
+    # this can go in either server config, virtual host, directory or .htaccess
     WSGIPassAuthorization On
 
 ---
@@ -117,7 +117,7 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
 ## TokenAuthentication
 
-This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients. 
+This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.
 
 To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in your `INSTALLED_APPS` setting:
 
@@ -125,7 +125,7 @@ To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in y
         ...
         'rest_framework.authtoken'
     )
-    
+
 Make sure to run `manage.py syncdb` after changing your settings. The `authtoken` database tables are managed by south (see [Schema migrations](#schema-migrations) below).
 
 You'll also need to create tokens for your users.
@@ -209,7 +209,7 @@ You can do so by inserting a `needed_by` attribute in your user migration:
         needed_by = (
             ('authtoken', '0001_initial'),
         )
-        
+
         def forwards(self):
             ...
 
@@ -282,7 +282,7 @@ Note that the `namespace='oauth2'` argument is required.
 Finally, sync your database.
 
     python manage.py syncdb
-    python manage.py migrate 
+    python manage.py migrate
 
 ---
 
@@ -368,7 +368,7 @@ The following example will authenticate any incoming request as the user given b
                 user = User.objects.get(username=username)
             except User.DoesNotExist:
                 raise exceptions.AuthenticationFailed('No such user')
-            
+
             return (user, None)
 
 ---
