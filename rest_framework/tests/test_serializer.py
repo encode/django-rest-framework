@@ -847,37 +847,89 @@ class DefaultValueTests(TestCase):
         self.objects = DefaultValueModel.objects
 
     def test_create_using_default(self):
-        data = {}
+        data = {'required_field': 'required_field_value'}
         serializer = self.serializer_class(data=data)
         self.assertEqual(serializer.is_valid(), True)
         instance = serializer.save()
         self.assertEqual(len(self.objects.all()), 1)
         self.assertEqual(instance.pk, 1)
         self.assertEqual(instance.text, 'foobar')
+        self.assertEqual(instance.required_field, 'required_field_value')
+        self.assertEqual(instance.extra, None)
+        self.assertEqual(instance.extra_not_nullable, '')
 
     def test_create_overriding_default(self):
-        data = {'text': 'overridden'}
+        data = {'required_field': 'required_field_value', 'text': 'overridden'}
         serializer = self.serializer_class(data=data)
         self.assertEqual(serializer.is_valid(), True)
         instance = serializer.save()
         self.assertEqual(len(self.objects.all()), 1)
         self.assertEqual(instance.pk, 1)
         self.assertEqual(instance.text, 'overridden')
+        self.assertEqual(instance.required_field, 'required_field_value')
+        self.assertEqual(instance.extra, None)
+        self.assertEqual(instance.extra_not_nullable, '')
 
     def test_partial_update_default(self):
-        """ Regression test for issue #532 """
-        data = {'text': 'overridden'}
+        """
+        Regression test for issue #532. Ensure a partial update does not modify omitted
+        fields to their default values.
+        """
+        data = {
+            'required_field': 'required_field_value',
+            'text': 'overridden',
+            'extra': 'extra_value',
+            'extra_not_nullable': 'extra_not_nullable_value',
+        }
         serializer = self.serializer_class(data=data, partial=True)
         self.assertEqual(serializer.is_valid(), True)
         instance = serializer.save()
+        self.assertEqual(instance.required_field, 'required_field_value')
+        self.assertEqual(instance.text, 'overridden')
+        self.assertEqual(instance.extra, 'extra_value')
+        self.assertEqual(instance.extra_not_nullable, 'extra_not_nullable_value')
 
-        data = {'extra': 'extra_value'}
+        data = {'extra': 'extra_updated'}
         serializer = self.serializer_class(instance=instance, data=data, partial=True)
         self.assertEqual(serializer.is_valid(), True)
         instance = serializer.save()
-
-        self.assertEqual(instance.extra, 'extra_value')
+        self.assertEqual(instance.extra, 'extra_updated')
         self.assertEqual(instance.text, 'overridden')
+        self.assertEqual(instance.required_field, 'required_field_value')
+        self.assertEqual(instance.extra_not_nullable, 'extra_not_nullable_value')
+
+    def test_non_partial_update_default(self):
+        """
+        Omitted values in a full update should be reset.
+        """
+        data = {
+            'required_field': 'required_field_value',
+            'text': 'overridden',
+            'extra': 'extra_value',
+            'extra_not_nullable': 'extra_not_nullable_value',
+        }
+        serializer = self.serializer_class(data=data)
+        self.assertTrue(serializer.is_valid())
+        instance = serializer.save()
+        self.assertEqual(instance.required_field, 'required_field_value')
+        self.assertEqual(instance.text, 'overridden')
+        self.assertEqual(instance.extra, 'extra_value')
+        self.assertEqual(instance.extra_not_nullable, 'extra_not_nullable_value')
+
+        # Omitting a required field is not valid.
+        data = {'text': 'text_updated'}
+        serializer = self.serializer_class(instance=instance, data=data)
+        self.assertFalse(serializer.is_valid())
+
+        # The field with a default value should be reset to default when omitted, and those
+        # without a default value should be set to None or a blank value when omitted.
+        data = {'required_field': 'required_field_updated'}
+        serializer = self.serializer_class(instance=instance, data=data)
+        self.assertTrue(serializer.is_valid())
+        instance = serializer.save()
+        self.assertEqual(instance.text, 'foobar')
+        self.assertEqual(instance.extra, None)
+        self.assertEqual(instance.extra_not_nullable, '')
 
 
 class CallableDefaultValueTests(TestCase):
