@@ -427,7 +427,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                 files = request.FILES
             except ParseError:
                 data = None
-                files = None        
+                files = None
         else:
             data = None
             files = None
@@ -544,6 +544,14 @@ class BrowsableAPIRenderer(BaseRenderer):
         raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
+        response_headers = dict(response.items())
+        renderer_content_type = ''
+        if renderer:
+            renderer_content_type = '%s' % renderer.media_type
+            if renderer.charset:
+                renderer_content_type += ' ;%s' % renderer.charset
+        response_headers['Content-Type'] = renderer_content_type
+
         context = {
             'content': self.get_content(renderer, data, accepted_media_type, renderer_context),
             'view': view,
@@ -555,6 +563,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             'breadcrumblist': self.get_breadcrumbs(request),
             'allowed_methods': view.allowed_methods,
             'available_formats': [renderer.format for renderer in view.renderer_classes],
+            'response_headers': response_headers,
 
             'put_form': self.get_rendered_html_form(view, 'PUT', request),
             'post_form': self.get_rendered_html_form(view, 'POST', request),
