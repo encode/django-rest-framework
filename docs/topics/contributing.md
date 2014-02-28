@@ -14,7 +14,7 @@ If you use REST framework, we'd love you to be vocal about your experiences with
 
 Other really great ways you can help move the community forward include helping answer questions on the [discussion group][google-group], or setting up an [email alert on StackOverflow][so-filter] so that you get notified of any new questions with the `django-rest-framework` tag.
 
-When answering questions make sure to help future contributors find their way around by hyperlinking wherever possible to related threads and tickets, and include backlinks from those items if relevant. 
+When answering questions make sure to help future contributors find their way around by hyperlinking wherever possible to related threads and tickets, and include backlinks from those items if relevant.
 
 ## Code of conduct
 
@@ -38,7 +38,7 @@ Some tips on good issue reporting:
 
 ## Triaging issues
 
-Getting involved in triaging incoming issues is a good way to start contributing.  Every single ticket that comes into the ticket tracker needs to be reviewed in order to determine what the next steps should be.  Anyone can help out with this, you just need to be willing to 
+Getting involved in triaging incoming issues is a good way to start contributing.  Every single ticket that comes into the ticket tracker needs to be reviewed in order to determine what the next steps should be.  Anyone can help out with this, you just need to be willing to
 
 * Read through the ticket - does it make sense, is it missing any context that would help explain it better?
 * Is the ticket reported in the correct place, would it be better suited as a discussion on the discussion group?
@@ -130,8 +130,8 @@ There are a couple of conventions you should follow when working on the document
 Headers should use the hash style.  For example:
 
     ### Some important topic
-    
-The underline style should not be used.  **Don't do this:** 
+
+The underline style should not be used.  **Don't do this:**
 
     Some important topic
     ====================
@@ -141,9 +141,9 @@ The underline style should not be used.  **Don't do this:**
 Links should always use the reference style, with the referenced hyperlinks kept at the end of the document.
 
     Here is a link to [some other thing][other-thing].
-    
+
     More text...
-    
+
     [other-thing]: http://example.com/other/thing
 
 This style helps keep the documentation source consistent and readable.
@@ -159,9 +159,9 @@ Linking in this style means you'll be able to click the hyperlink in your markdo
 If you want to draw attention to a note or warning, use a pair of enclosing lines, like so:
 
     ---
-    
+
     **Note:** A useful documentation note.
-    
+
     ---
 
 # Third party packages
