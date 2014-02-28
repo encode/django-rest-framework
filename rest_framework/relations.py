@@ -122,8 +122,9 @@ class RelatedField(WritableField):
 
     def get_default_value(self):
         default = super(RelatedField, self).get_default_value()
-        return default or \
-            [] if self.many else None
+        if self.many and default is None:
+            return []
+        return default
 
     ### Regular serializer stuff...
 
