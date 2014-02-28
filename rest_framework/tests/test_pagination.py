@@ -8,15 +8,9 @@ from django.utils import unittest
 from rest_framework import generics, status, pagination, filters, serializers
 from rest_framework.compat import django_filters
 from rest_framework.test import APIRequestFactory
-from rest_framework.tests.models import BasicModel
+from rest_framework.tests.models import BasicModel, FilterableItem
 
 factory = APIRequestFactory()
-
-
-class FilterableItem(models.Model):
-    text = models.CharField(max_length=100)
-    decimal = models.DecimalField(max_digits=4, decimal_places=2)
-    date = models.DateField()
 
 
 class RootView(generics.ListCreateAPIView):
