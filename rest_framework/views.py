@@ -131,7 +131,7 @@ class APIView(View):
         """
         If request is not permitted, determine what kind of exception to raise.
         """
-        if not self.request.successful_authenticator:
+        if not request.successful_authenticator:
             raise exceptions.NotAuthenticated()
         raise exceptions.PermissionDenied()
 
