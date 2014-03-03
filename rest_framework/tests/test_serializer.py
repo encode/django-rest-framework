@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from django import forms
 from django.db import models
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.test import TestCase
@@ -9,6 +10,7 @@ from rest_framework import serializers, fields, relations
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo, RESTFrameworkModel)
+from rest_framework.compat import six
 from rest_framework.tests.models import BasicModelSerializer
 import datetime
 import pickle
@@ -1824,7 +1826,7 @@ class SerializerDefaultTrueBoolean(TestCase):
         self.assertEqual(serializer.data['dog'], False)
 
 
-class BoolenFieldTypeTest(TestCase):
+class BooleanFieldTypeTest(TestCase):
     '''
     Ensure the various Boolean based model fields are rendered as the proper
     field type
@@ -1847,11 +1849,101 @@ class BoolenFieldTypeTest(TestCase):
         bfield = self.serializer.get_fields()['done']
         self.assertEqual(type(bfield), fields.BooleanField)
 
-    def test_nullbooleanfield_type(self):
-        '''
-        Test that BooleanField is infered from models.NullBooleanField
 
-        https://groups.google.com/forum/#!topic/django-rest-framework/D9mXEftpuQ8
-        '''
-        bfield = self.serializer.get_fields()['started']
-        self.assertEqual(type(bfield), fields.BooleanField)
+class NullBooleanFieldModel(models.Model):
+    """
+    A model for use in the NullBooleanFieldSerializer test. Showcases
+    all variations of the 'default' parameter (which is allowed to be
+    unset unlike models.BooleanField.
+    """
+    cat = models.NullBooleanField(default=True)
+    dog = models.NullBooleanField(default=False)
+    rat = models.NullBooleanField()
+
+
+class NullBooleanFieldSerializerTest(TestCase):
+    """
+    Tests that the default serializer field for Django's NullBooleanField
+    works as expected.
+    """
+
+    def setUp(self):
+        super(NullBooleanFieldSerializerTest, self).setUp()
+
+        class NullBooleanFieldSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = NullBooleanFieldModel
+                fields = ('cat', 'dog', 'rat')
+
+        self.serializer = NullBooleanFieldSerializer
+        # For ease we save a reference to the fields we need.
+        self.fields = self.serializer.Meta.fields
+
+    def test_false(self):
+        """
+        Check that all 'falsy' inputs result in the correct output
+        to the data dictionary across all our variations of NullBooleanField.
+        """
+        falsy_values = ['false', 'f', 'False', '0', False, 0, '']
+        for val in falsy_values:
+            # For each falsy value, we create a data dictionary where all
+            # fields are set to that falsy value and then check for the
+            # desired serializer output: False.
+            data = dict([(field, val) for field in self.fields])
+            serializer = self.serializer(data=data)
+            self.assertEqual(serializer.is_valid(), True)
+            for field in self.fields:
+                self.assertEqual(serializer.data[field], False)
+
+    def test_true(self):
+        """
+        Check that all 'truthy' inputs result in the correct output
+        to the data dictionary across all our variations of NullBooleanField.
+        """
+        truthy_values = ['true', 't', 'True', '1', True, 1, 'truthy-string']
+        for val in truthy_values:
+            # For each truthy value, we create a data dictionary where all
+            # fields are set to that falsy value and then check for the
+            # desired serializer output: True.
+            data = dict([(field, val) for field in self.fields])
+            serializer = self.serializer(data=data)
+            self.assertEqual(serializer.is_valid(), True)
+            for field in self.fields:
+                self.assertEqual(serializer.data[field], True)
+
+    def test_none(self):
+        """
+        Check that all 'None' input result in the correct output
+        to the data dictionary across all our variations of NullBooleanField.
+        """
+        data = dict([(field, None) for field in self.fields])
+        serializer = self.serializer(data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        for field in self.fields:
+            self.assertEqual(serializer.data[field], None)
+
+    def test_partial(self):
+        serializer = self.serializer(data={'rat': None}, partial=True)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.data['cat'], True)
+        self.assertEqual(serializer.data['dog'], False)
+        self.assertEqual(serializer.data['rat'], None)
+
+    def test_nullbooleanfield_type(self):
+        """
+        Test that DRF's NullBooleanField is selected by default for
+        Django's NullBooleanFields.
+        """
+        serializer = self.serializer()
+        for field in self.fields:
+            bfield = serializer.get_fields()[field]
+            self.assertEqual(type(bfield), fields.NullBooleanField)
+
+    def test_nullbooleanfield_widget_type(self):
+        """
+        Test that Django's NullBooleanSelect widget is used as the default
+        widget for DRF's NullBooleanField.
+        """
+        serializer = self.serializer()
+        for field in six.itervalues(serializer.fields):
+            self.assertEqual(type(field.widget), forms.NullBooleanSelect)

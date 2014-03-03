@@ -453,6 +453,26 @@ class BooleanField(WritableField):
         return bool(value)
 
 
+class NullBooleanField(WritableField):
+    type_name = 'NullBooleanField'
+    type_label = 'null boolean'
+    form_field_class = forms.NullBooleanField
+    widget = widgets.NullBooleanSelect
+    default_error_messages = {
+        'invalid': _("'%s' value must be either None, True or False."),
+    }
+    empty = None
+
+    def from_native(self, value):
+        if value is None:
+            return None
+        if value in ('true', 't', 'True', '1'):
+            return True
+        if value in ('false', 'f', 'False', '0'):
+            return False
+        return bool(value)
+
+
 class CharField(WritableField):
     type_name = 'CharField'
     type_label = 'string'
