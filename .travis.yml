@@ -8,7 +8,7 @@ python:
 
 env:
   - DJANGO="https://www.djangoproject.com/download/1.7a2/tarball/"
-  - DJANGO="django==1.6"
+  - DJANGO="django==1.6.2"
   - DJANGO="django==1.5.5"
   - DJANGO="django==1.4.10"
   - DJANGO="django==1.3.7"
