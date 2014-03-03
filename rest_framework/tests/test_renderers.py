@@ -613,6 +613,10 @@ class CacheRenderTest(TestCase):
         method = getattr(self.client, http_method)
         resp = method(url)
         del resp.client, resp.request
+        try:
+            del resp.wsgi_request
+        except AttributeError:
+            pass
         return resp
 
     def test_obj_pickling(self):

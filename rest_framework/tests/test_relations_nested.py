@@ -3,9 +3,7 @@ from django.db import models
 from django.test import TestCase
 from rest_framework import serializers
 
-
-class OneToOneTarget(models.Model):
-    name = models.CharField(max_length=100)
+from .models import OneToOneTarget
 
 
 class OneToOneSource(models.Model):

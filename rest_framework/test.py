@@ -8,6 +8,7 @@ from django.conf import settings
 from django.test.client import Client as DjangoClient
 from django.test.client import ClientHandler
 from django.test import testcases
+from django.utils.http import urlencode
 from rest_framework.settings import api_settings
 from rest_framework.compat import RequestFactory as DjangoRequestFactory
 from rest_framework.compat import force_bytes_or_smart_bytes, six
@@ -70,6 +71,13 @@ class APIRequestFactory(DjangoRequestFactory):
                 ret = bytes(ret.encode(renderer.charset))
 
         return ret, content_type
+
+    def get(self, path, data=None, **extra):
+        r = {
+            'QUERY_STRING': urlencode(data or {}, doseq=True),
+        }
+        r.update(extra)
+        return self.generic('GET', path, **r)
 
     def post(self, path, data=None, format=None, content_type=None, **extra):
         data, content_type = self._encode_data(data, format, content_type)
