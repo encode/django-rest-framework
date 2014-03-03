@@ -921,15 +921,36 @@ class DefaultValueTests(TestCase):
         serializer = self.serializer_class(instance=instance, data=data)
         self.assertFalse(serializer.is_valid())
 
-        # The field with a default value should be reset to default when omitted, and those
-        # without a default value should be set to None or a blank value when omitted.
-        data = {'required_field': 'required_field_updated'}
+        # Omitting an optional field with no default value is not valid
+        data = {
+            'text': 'text_updated',
+            'required_field': 'required_field_updated',
+            'extra': 'extra_updated',
+        }
+        serializer = self.serializer_class(instance=instance, data=data)
+        self.assertFalse(serializer.is_valid())
+
+        data = {
+            'text': 'text_updated',
+            'required_field': 'required_field_updated',
+            'extra_not_nullable': 'extra_not_nullable_updated',
+        }
+        serializer = self.serializer_class(instance=instance, data=data)
+        self.assertFalse(serializer.is_valid())
+
+        # A field with a default value should be reset to default when omitted
+        data = {
+            'required_field': 'required_field_updated',
+            'extra': 'extra_updated',
+            'extra_not_nullable': 'extra_not_nullable_updated',
+        }
         serializer = self.serializer_class(instance=instance, data=data)
         self.assertTrue(serializer.is_valid())
         instance = serializer.save()
         self.assertEqual(instance.text, 'foobar')
-        self.assertEqual(instance.extra, None)
-        self.assertEqual(instance.extra_not_nullable, '')
+        self.assertEqual(instance.required_field, 'required_field_updated')
+        self.assertEqual(instance.extra, 'extra_updated')
+        self.assertEqual(instance.extra_not_nullable, 'extra_not_nullable_updated')
 
 
 class CallableDefaultValueTests(TestCase):
