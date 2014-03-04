@@ -146,7 +146,7 @@ class XMLRenderer(BaseRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
-        Renders *obj* into serialized XML.
+        Renders `data` into serialized XML.
         """
         if data is None:
             return ''
@@ -196,7 +196,7 @@ class YAMLRenderer(BaseRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
-        Renders *obj* into serialized YAML.
+        Renders `data` into serialized YAML.
         """
         assert yaml, 'YAMLRenderer requires pyyaml to be installed'
 
