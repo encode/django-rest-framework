@@ -105,7 +105,9 @@ When deserializing data, we can either create a new instance, or update an exist
     serializer = CommentSerializer(data=data)           # Create new instance
     serializer = CommentSerializer(comment, data=data)  # Update `comment`
 
-By default, serializers must be passed values for all required fields or they will throw validation errors.  You can use the `partial` argument in order to allow partial updates.
+When creating a new instance, serializers must be passed values for all required fields or they will throw validation errors.
+
+When updating an existing instance, serializers must be passed values for every field that does not have a default specified, or they will throw validation errors.  Omitted fields will be reset to their default values.  You can use the `partial` argument in order to allow partial updates, in which case omitted fields will not be changed.
 
     serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)  # Update `comment` with partial data
 

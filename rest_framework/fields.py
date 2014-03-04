@@ -356,7 +356,8 @@ class WritableField(Field):
                 # Note: partial updates shouldn't set defaults
                 native = self.get_default_value()
             else:
-                if self.required:
+                incomplete_update = self.root.object is not None and not self.partial
+                if self.required or incomplete_update:
                     raise ValidationError(self.error_messages['required'])
                 return
 
