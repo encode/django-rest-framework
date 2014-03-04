@@ -900,6 +900,58 @@ class DefaultValueTests(TestCase):
         self.assertEqual(instance.text, 'overridden')
 
 
+class WritableFieldDefaultValueTests(TestCase):
+
+    def setUp(self):
+        self.expected = {'default': 'value'}
+        self.create_field = fields.WritableField
+
+    def test_get_default_value_with_noncallable(self):
+        field = self.create_field(default=self.expected)
+        got = field.get_default_value()
+        self.assertEqual(got, self.expected)
+
+    def test_get_default_value_with_callable(self):
+        field = self.create_field(default=lambda : self.expected)
+        got = field.get_default_value()
+        self.assertEqual(got, self.expected)
+
+    def test_get_default_value_when_not_required(self):
+        field = self.create_field(default=self.expected, required=False)
+        got = field.get_default_value()
+        self.assertEqual(got, self.expected)
+
+    def test_get_default_value_returns_None(self):
+        field = self.create_field()
+        got = field.get_default_value()
+        self.assertIsNone(got)
+
+    def test_get_default_value_returns_non_True_values(self):
+        values = [None, '', False, 0, [], (), {}] # values that assumed as 'False' in the 'if' clause
+        for expected in values:
+            field = self.create_field(default=expected)
+            got = field.get_default_value()
+            self.assertEqual(got, expected)
+
+
+class RelatedFieldDefaultValueTests(WritableFieldDefaultValueTests):
+
+    def setUp(self):
+        self.expected = {'foo': 'bar'}
+        self.create_field = relations.RelatedField
+
+    def test_get_default_value_returns_empty_list(self):
+        field = self.create_field(many=True)
+        got = field.get_default_value()
+        self.assertListEqual(got, [])
+
+    def test_get_default_value_returns_expected(self):
+        expected = [1, 2, 3]
+        field = self.create_field(many=True, default=expected)
+        got = field.get_default_value()
+        self.assertListEqual(got, expected)
+
+
 class CallableDefaultValueTests(TestCase):
     def setUp(self):
         class CallableDefaultValueSerializer(serializers.ModelSerializer):
