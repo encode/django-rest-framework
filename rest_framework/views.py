@@ -295,7 +295,7 @@ class APIView(View):
 
     # Dispatch methods
 
-    def initialize_request(self, request, *args, **kargs):
+    def initialize_request(self, request, *args, **kwargs):
         """
         Returns the initial request object.
         """
