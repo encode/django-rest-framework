@@ -1060,6 +1060,34 @@ class ManyRelatedTests(TestCase):
         }
         self.assertEqual(serializer.data, expected)
 
+    def test_default_value(self):
+        writer = Person()
+        writer.save()
+
+        def callable_default():
+            return writer.id
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            title = serializers.CharField(default=callable_default)
+            writer = serializers.PrimaryKeyRelatedField(many=False, read_only=False, required=False, default=callable_default)
+
+            class Meta:
+                model = BlogPost
+                fields = ('id', 'title', 'writer')
+
+        serializer = BlogPostSerializer(data={})
+
+        self.assertTrue(serializer.is_valid())
+
+        serializer.save()
+
+        expected = {
+            'id': 1,
+            'title': str(callable_default()),
+            'writer': callable_default()
+        }
+        self.assertEqual(serializer.data, expected)
+
 
 class RelatedTraversalTest(TestCase):
     def test_nested_traversal(self):
