@@ -43,8 +43,10 @@ class SlugBasedModel(RESTFrameworkModel):
 
 
 class DefaultValueModel(RESTFrameworkModel):
+    required_field = models.CharField(max_length=100)
     text = models.CharField(default='foobar', max_length=100)
     extra = models.CharField(blank=True, null=True, max_length=100)
+    extra_not_nullable = models.CharField(blank=True, max_length=100)
 
 
 class CallableDefaultValueModel(RESTFrameworkModel):
