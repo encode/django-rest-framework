@@ -19,7 +19,7 @@ from rest_framework.authentication import (
 )
 from rest_framework.authtoken.models import Token
 from rest_framework.compat import patterns, url, include
-from rest_framework.compat import oauth2_provider, oauth2_provider_models, oauth2_provider_scope
+from rest_framework.compat import oauth2_provider
 from rest_framework.compat import oauth, oauth_provider
 from rest_framework.test import APIRequestFactory, APIClient
 from rest_framework.views import APIView
@@ -488,7 +488,7 @@ class OAuth2Tests(TestCase):
         self.ACCESS_TOKEN = "access_token"
         self.REFRESH_TOKEN = "refresh_token"
 
-        self.oauth2_client = oauth2_provider_models.Client.objects.create(
+        self.oauth2_client = oauth2_provider.oauth2.models.Client.objects.create(
                 client_id=self.CLIENT_ID,
                 client_secret=self.CLIENT_SECRET,
                 redirect_uri='',
@@ -497,12 +497,12 @@ class OAuth2Tests(TestCase):
                 user=None,
             )
 
-        self.access_token = oauth2_provider_models.AccessToken.objects.create(
+        self.access_token = oauth2_provider.oauth2.models.AccessToken.objects.create(
                 token=self.ACCESS_TOKEN,
                 client=self.oauth2_client,
                 user=self.user,
             )
-        self.refresh_token = oauth2_provider_models.RefreshToken.objects.create(
+        self.refresh_token = oauth2_provider.oauth2.models.RefreshToken.objects.create(
                 user=self.user,
                 access_token=self.access_token,
                 client=self.oauth2_client
@@ -581,7 +581,7 @@ class OAuth2Tests(TestCase):
     def test_post_form_with_invalid_scope_failing_auth(self):
         """Ensure POSTing with a readonly scope instead of a write scope fails"""
         read_only_access_token = self.access_token
-        read_only_access_token.scope = oauth2_provider_scope.SCOPE_NAME_DICT['read']
+        read_only_access_token.scope = oauth2_provider.scope.SCOPE_NAME_DICT['read']
         read_only_access_token.save()
         auth = self._create_authorization_header(token=read_only_access_token.token)
         response = self.csrf_client.get('/oauth2-with-scope-test/', HTTP_AUTHORIZATION=auth)
@@ -593,7 +593,7 @@ class OAuth2Tests(TestCase):
     def test_post_form_with_valid_scope_passing_auth(self):
         """Ensure POSTing with a write scope succeed"""
         read_write_access_token = self.access_token
-        read_write_access_token.scope = oauth2_provider_scope.SCOPE_NAME_DICT['write']
+        read_write_access_token.scope = oauth2_provider.scope.SCOPE_NAME_DICT['write']
         read_write_access_token.save()
         auth = self._create_authorization_header(token=read_write_access_token.token)
         response = self.csrf_client.post('/oauth2-with-scope-test/', HTTP_AUTHORIZATION=auth)

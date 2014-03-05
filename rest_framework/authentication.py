@@ -326,11 +326,11 @@ class OAuth2Authentication(BaseAuthentication):
         """
 
         try:
-            token = oauth2_provider.models.AccessToken.objects.select_related('user')
+            token = oauth2_provider.oauth2.models.AccessToken.objects.select_related('user')
             # provider_now switches to timezone aware datetime when
             # the oauth2_provider version supports to it.
             token = token.get(token=access_token, expires__gt=provider_now())
-        except oauth2_provider.models.AccessToken.DoesNotExist:
+        except oauth2_provider.oauth2.models.AccessToken.DoesNotExist:
             raise exceptions.AuthenticationFailed('Invalid token')
 
         user = token.user
