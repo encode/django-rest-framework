@@ -758,7 +758,7 @@ class ModelSerializer(Serializer):
 
                 ret[accessor_name] = field
 
-        # Add the `read_only` flag to any fields that have bee specified
+        # Add the `read_only` flag to any fields that have been specified
         # in the `read_only_fields` option
         for field_name in self.opts.read_only_fields:
             assert field_name not in self.base_fields.keys(), (
