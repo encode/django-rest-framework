@@ -611,12 +611,15 @@ class ModelValidationTests(TestCase):
         """
         Just check if serializers.ModelSerializer handles unique checks via .full_clean()
         """
-        serializer = AlbumsSerializer(data={'title': 'a'})
+        serializer = AlbumsSerializer(data={'title': 'a', 'ref': '1'})
         serializer.is_valid()
         serializer.save()
         second_serializer = AlbumsSerializer(data={'title': 'a'})
         self.assertFalse(second_serializer.is_valid())
-        self.assertEqual(second_serializer.errors,  {'title': ['Album with this Title already exists.']})
+        self.assertEqual(second_serializer.errors,  {'title': ['Album with this Title already exists.'],})
+        third_serializer = AlbumsSerializer(data={'title': 'b', 'ref': '1'})
+        self.assertFalse(third_serializer.is_valid())
+        self.assertEqual(third_serializer.errors,  {'ref': ['Album with this Ref already exists.'],})
 
     def test_foreign_key_is_null_with_partial(self):
         """
