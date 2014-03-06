@@ -881,7 +881,7 @@ class ModelSerializer(Serializer):
         except KeyError:
             return ModelField(model_field=model_field, **kwargs)
 
-    def get_validation_exclusions(self):
+    def get_validation_exclusions(self, instance=None):
         """
         Return a list of field names to exclude from model validation.
         """
@@ -893,7 +893,7 @@ class ModelSerializer(Serializer):
             field_name = field.source or field_name
             if field_name in exclusions \
                 and not field.read_only \
-                and field.required \
+                and (field.required or hasattr(instance, field_name)) \
                 and not isinstance(field, Serializer):
                 exclusions.remove(field_name)
         return exclusions
@@ -908,7 +908,7 @@ class ModelSerializer(Serializer):
         the full_clean validation checking.
         """
         try:
-            instance.full_clean(exclude=self.get_validation_exclusions())
+            instance.full_clean(exclude=self.get_validation_exclusions(instance))
         except ValidationError as err:
             self._errors = err.message_dict
             return None
