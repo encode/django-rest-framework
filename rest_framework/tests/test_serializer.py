@@ -617,9 +617,9 @@ class ModelValidationTests(TestCase):
         second_serializer = AlbumsSerializer(data={'title': 'a'})
         self.assertFalse(second_serializer.is_valid())
         self.assertEqual(second_serializer.errors,  {'title': ['Album with this Title already exists.'],})
-        third_serializer = AlbumsSerializer(data={'title': 'b', 'ref': '1'})
+        third_serializer = AlbumsSerializer(data=[{'title': 'b', 'ref': '1'}, {'title': 'c'}])
         self.assertFalse(third_serializer.is_valid())
-        self.assertEqual(third_serializer.errors,  {'ref': ['Album with this Ref already exists.'],})
+        self.assertEqual(third_serializer.errors,  [{'ref': ['Album with this Ref already exists.']}, {}])
 
     def test_foreign_key_is_null_with_partial(self):
         """
