@@ -40,6 +40,17 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
+### 2.3.13
+
+**Date**: 6th March 2014
+
+* Django 1.7 Support.
+* Fix `default` argument when used with serializer relation fields.
+* Display the media type of the content that is being displayed in the browsable API, rather than 'text/html'.
+* Bugfix for `urlize` template failure when URL regex is matched, but value does not `urlparse`.
+* Use `urandom` for token generation.
+* Only use `Vary: Accept` when more than one renderer exists.
+
 ### 2.3.12
 
 **Date**: 15th January 2014
