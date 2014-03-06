@@ -161,7 +161,7 @@ class AlbumsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Album
-        fields = ['title']  # lists are also valid options
+        fields = ['title', 'ref']  # lists are also valid options
 
 
 class PositiveIntegerAsChoiceSerializer(serializers.ModelSerializer):
