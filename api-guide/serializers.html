@@ -332,7 +332,7 @@ class EventSerializer(serializers.Serializer):
         """
         Check that the start is before the stop.
         """
-        if attrs['start'] &lt; attrs['finish']:
+        if attrs['start'] &gt; attrs['finish']:
             raise serializers.ValidationError("finish must occur after start")
         return attrs
 </code></pre>

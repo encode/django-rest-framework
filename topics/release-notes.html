@@ -225,6 +225,16 @@
 </code></pre>
 <hr />
 <h2 id="23x-series">2.3.x series</h2>
+<h3 id="2313">2.3.13</h3>
+<p><strong>Date</strong>: 6th March 2014</p>
+<ul>
+<li>Django 1.7 Support.</li>
+<li>Fix <code>default</code> argument when used with serializer relation fields.</li>
+<li>Display the media type of the content that is being displayed in the browsable API, rather than 'text/html'.</li>
+<li>Bugfix for <code>urlize</code> template failure when URL regex is matched, but value does not <code>urlparse</code>.</li>
+<li>Use <code>urandom</code> for token generation.</li>
+<li>Only use <code>Vary: Accept</code> when more than one renderer exists.</li>
+</ul>
 <h3 id="2312">2.3.12</h3>
 <p><strong>Date</strong>: 15th January 2014</p>
 <ul>
