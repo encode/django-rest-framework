@@ -8,7 +8,8 @@ import warnings
 SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
 from django.http import Http404
-from rest_framework.compat import (get_model_name, oauth2_provider)
+from rest_framework.compat import (get_model_name, oauth2_provider_scope,
+                                   oauth2_constants)
 
 
 class BasePermission(object):
@@ -218,8 +219,8 @@ class TokenHasReadWriteScope(BasePermission):
         if hasattr(token, 'resource'):  # OAuth 1
             return read_only or not request.auth.resource.is_readonly
         elif hasattr(token, 'scope'):  # OAuth 2
-            required = oauth2_provider.constants.READ if read_only else oauth2_provider.constants.WRITE
-            return oauth2_provider.scope.check(required, request.auth.scope)
+            required = oauth2_constants.READ if read_only else oauth2_constants.WRITE
+            return oauth2_provider_scope.check(required, request.auth.scope)
 
         assert False, ('TokenHasReadWriteScope requires either the'
         '`OAuthAuthentication` or `OAuth2Authentication` authentication '
