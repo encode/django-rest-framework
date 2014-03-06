@@ -992,6 +992,7 @@ class ModelSerializer(Serializer):
 
         if getattr(obj, '_m2m_data', None):
             for accessor_name, object_list in obj._m2m_data.items():
+                [self.save_object(o) for o in object_list]
                 setattr(obj, accessor_name, object_list)
             del(obj._m2m_data)
 
