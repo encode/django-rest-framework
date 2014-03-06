@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from rest_framework.compat import six
 from rest_framework.settings import api_settings
 
 
@@ -14,11 +15,11 @@ def temporary_setting(setting, value, module=None):
     setattr(api_settings, setting, value)
 
     if module is not None:
-        reload(module)
+        six.moves.reload_module(module)
 
     yield
 
     setattr(api_settings, setting, original_value)
 
     if module is not None:
-        reload(module)
+        six.moves.reload_module(module)
