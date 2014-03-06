@@ -550,13 +550,10 @@ except (ImportError, ImproperlyConfigured):
 
 # OAuth 2 support is optional
 try:
-    import provider.oauth2 as oauth2_provider
-    from provider.oauth2 import models as oauth2_provider_models
-    from provider.oauth2 import forms as oauth2_provider_forms
+    import provider as oauth2_provider
     from provider import scope as oauth2_provider_scope
     from provider import constants as oauth2_constants
-    from provider import __version__ as provider_version
-    if provider_version in ('0.2.3', '0.2.4'):
+    if oauth2_provider.__version__ in ('0.2.3', '0.2.4'):
         # 0.2.3 and 0.2.4 are supported version that do not support
         # timezone aware datetimes
         import datetime
@@ -566,8 +563,6 @@ try:
         from django.utils.timezone import now as provider_now
 except ImportError:
     oauth2_provider = None
-    oauth2_provider_models = None
-    oauth2_provider_forms = None
     oauth2_provider_scope = None
     oauth2_constants = None
     provider_now = None
