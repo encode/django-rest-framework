@@ -15,7 +15,7 @@ env:
 
 install:
   - pip install $DJANGO
-  - pip install defusedxml==0.3 Pillow
+  - pip install defusedxml==0.3 Pillow==2.3.0
   - "if [[ ${TRAVIS_PYTHON_VERSION::1} != '3' ]]; then pip install oauth2==1.5.211; fi"
   - "if [[ ${TRAVIS_PYTHON_VERSION::1} != '3' ]]; then pip install django-oauth-plus==2.2.4; fi"
   - "if [[ ${TRAVIS_PYTHON_VERSION::1} != '3' ]]; then pip install django-oauth2-provider==0.2.4; fi"
