@@ -76,6 +76,10 @@ class APIRequestFactory(DjangoRequestFactory):
         r = {
             'QUERY_STRING': urlencode(data or {}, doseq=True),
         }
+        # Fix to support old behavior where you have the arguments in the url
+        # See #1461
+        if not data and '?' in path:
+            r['QUERY_STRING'] = path.split('?')[1]
         r.update(extra)
         return self.generic('GET', path, **r)
 
