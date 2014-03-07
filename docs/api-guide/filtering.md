@@ -264,13 +264,17 @@ For example:
 
     search_fields = ('=username', '=email')
 
+By default, the search parameter is named `'search`', but this may be overridden with the `SEARCH_PARAM` setting.
+
 For more details, see the [Django documentation][search-django-admin].
 
 ---
 
 ## OrderingFilter
 
-The `OrderingFilter` class supports simple query parameter controlled ordering of results.  To specify the result order, set a query parameter named `'ordering'` to the required field name.  For example:
+The `OrderingFilter` class supports simple query parameter controlled ordering of results.  By default, the query parameter is named `'ordering'`, but this may by overridden with the `ORDERING_PARAM` setting.
+
+For example, to order users by username:
 
     http://example.com/api/users?ordering=username
 

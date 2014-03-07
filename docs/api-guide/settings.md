@@ -158,6 +158,18 @@ A client request like the following would return a paginated list of up to 100 i
 
 Default: `None`
 
+### SEARCH_PARAM
+
+The name of a query paramater, which can be used to specify the search term used by `SearchFilter`.
+
+Default: `search`
+
+#### ORDERING_PARAM
+
+The name of a query paramater, which can be used to specify the ordering of results returned by `OrderingFilter`.
+
+Default: `ordering`
+
 ---
 
 ## Authentication settings
