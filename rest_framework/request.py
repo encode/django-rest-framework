@@ -227,6 +227,7 @@ class Request(object):
         set in the login and logout functions.
         """
         self._user = value
+        self._request.user = value
 
     @property
     def auth(self):
@@ -390,6 +391,7 @@ class Request(object):
             if not user_auth_tuple is None:
                 self._authenticator = authenticator
                 self._user, self._auth = user_auth_tuple
+                self._request.user = self._user
                 return
 
         self._not_authenticated()
