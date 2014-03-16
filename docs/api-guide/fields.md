@@ -2,7 +2,7 @@
 
 # Serializer fields
 
-> Each field in a Form class is responsible not only for validating data, but also for "cleaning" it &mdash; normalizing it to a consistent format. 
+> Each field in a Form class is responsible not only for validating data, but also for "cleaning" it &mdash; normalizing it to a consistent format.
 >
 > &mdash; [Django documentation][cite]
 
@@ -47,7 +47,7 @@ Defaults to `True`.
 
 ### `default`
 
-If set, this gives the default value that will be used for the field if no input value is supplied.  If not set the default behavior is to not populate the attribute at all. 
+If set, this gives the default value that will be used for the field if no input value is supplied.  If not set the default behavior is to not populate the attribute at all.
 
 May be set to a function or other callable, in which case the value will be evaluated each time it is used.
 
@@ -92,7 +92,7 @@ For example, using the following model.
         name = models.CharField(max_length=100)
         created = models.DateTimeField(auto_now_add=True)
         payment_expiry = models.DateTimeField()
-        
+
         def has_expired(self):
             return now() > self.payment_expiry
 
@@ -102,7 +102,7 @@ A serializer definition that looked like this:
 
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         expired = serializers.Field(source='has_expired')
-        
+
         class Meta:
             model = Account
             fields = ('url', 'owner', 'name', 'expired')
@@ -112,7 +112,7 @@ Would produce output similar to:
     {
         'url': 'http://example.com/api/accounts/3/',
         'owner': 'http://example.com/api/users/12/',
-        'name': 'FooCorp business account', 
+        'name': 'FooCorp business account',
         'expired': True
     }
 
@@ -224,7 +224,7 @@ In the case of JSON this means the default datetime representation uses the [ECM
 
 **Signature:** `DateTimeField(format=None, input_formats=None)`
 
-* `format` - A string representing the output format.  If not specified, this defaults to `None`, which indicates that Python `datetime` objects should be returned by `to_native`.  In this case the datetime encoding will be determined by the renderer. 
+* `format` - A string representing the output format.  If not specified, this defaults to `None`, which indicates that Python `datetime` objects should be returned by `to_native`.  In this case the datetime encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
 
 DateTime format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style datetimes should be used. (eg `'2013-01-29T12:34:56.000000Z'`)
@@ -284,7 +284,7 @@ Corresponds to `django.forms.fields.FileField`.
 **Signature:** `FileField(max_length=None, allow_empty_file=False)`
 
  - `max_length` designates the maximum length for the file name.
-  
+
  - `allow_empty_file` designates if empty files are allowed.
 
 ## ImageField
@@ -329,12 +329,12 @@ Let's look at an example of serializing a class that represents an RGB color val
         """
         def to_native(self, obj):
             return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)
-      
+
         def from_native(self, data):
             data = data.strip('rgb(').rstrip(')')
             red, green, blue = [int(col) for col in data.split(',')]
             return Color(red, green, blue)
-            
+
 
 By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override `.field_to_native()` and/or `.field_from_native()`.
 
@@ -346,6 +346,14 @@ As an example, let's create a field that can be used represent the class name of
             Serialize the object's class name.
             """
             return obj.__class__
+
+# More fields from 3rd-party packages
+
+## [drf-compound-fields](http://drf-compound-fields.readthedocs.org)
+
+Provides "compound" serializer fields, such as lists of simple values, which can be described by
+other fields rather than serializers with the `many=True` option. Also provided are fields for
+typed dictionaries and values that can be either a specific type or a list of items of that type.
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
