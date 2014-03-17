@@ -408,10 +408,12 @@ class ProductFilter(django_filters.FilterSet):
 <p>For example:</p>
 <pre class="prettyprint lang-py"><code>search_fields = ('=username', '=email')
 </code></pre>
+<p>By default, the search parameter is named <code>'search</code>', but this may be overridden with the <code>SEARCH_PARAM</code> setting.</p>
 <p>For more details, see the <a href="https://docs.djangoproject.com/en/dev/ref/contrib/admin/#django.contrib.admin.ModelAdmin.search_fields">Django documentation</a>.</p>
 <hr />
 <h2 id="orderingfilter">OrderingFilter</h2>
-<p>The <code>OrderingFilter</code> class supports simple query parameter controlled ordering of results.  To specify the result order, set a query parameter named <code>'ordering'</code> to the required field name.  For example:</p>
+<p>The <code>OrderingFilter</code> class supports simple query parameter controlled ordering of results.  By default, the query parameter is named <code>'ordering'</code>, but this may by overridden with the <code>ORDERING_PARAM</code> setting.</p>
+<p>For example, to order users by username:</p>
 <pre class="prettyprint lang-py"><code>http://example.com/api/users?ordering=username
 </code></pre>
 <p>The client may also specify reverse orderings by prefixing the field name with '-', like so:</p>

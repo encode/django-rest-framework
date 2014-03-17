@@ -6,7 +6,7 @@
     <link href="http://www.django-rest-framework.org/img/favicon.ico" rel="icon" type="image/x-icon">
     <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/fields"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Django, API, REST, Serializer fields, Generic Fields, Typed Fields, Custom fields">
+    <meta name="description" content="Django, API, REST, Serializer fields, Generic Fields, Typed Fields, Custom fields, Third party packages">
     <meta name="author" content="Tom Christie">
 
     <!-- Le styles -->
@@ -193,6 +193,8 @@
 <li><a href="#imagefield">ImageField</a></li>
 <li class="main"><a href="#custom-fields">Custom fields</a></li>
 <li><a href="#examples">Examples</a></li>
+<li class="main"><a href="#third-party-packages">Third party packages</a></li>
+<li><a href="#drf-compound-fields">DRF Compound Fields</a></li>
 
               <div>
 
@@ -208,7 +210,7 @@
             <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/fields.py"><span class="label label-info">fields.py</span></a></p>
 <h1 id="serializer-fields">Serializer fields</h1>
 <blockquote>
-<p>Each field in a Form class is responsible not only for validating data, but also for "cleaning" it &mdash; normalizing it to a consistent format. </p>
+<p>Each field in a Form class is responsible not only for validating data, but also for "cleaning" it &mdash; normalizing it to a consistent format.</p>
 <p>&mdash; <a href="https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data">Django documentation</a></p>
 </blockquote>
 <p>Serializer fields handle converting between primitive values and internal datatypes.  They also deal with validating input values, as well as retrieving and setting the values from their parent objects.</p>
@@ -232,7 +234,7 @@
 Set to false if this field is not required to be present during deserialization.</p>
 <p>Defaults to <code>True</code>.</p>
 <h3 id="default"><code>default</code></h3>
-<p>If set, this gives the default value that will be used for the field if no input value is supplied.  If not set the default behavior is to not populate the attribute at all. </p>
+<p>If set, this gives the default value that will be used for the field if no input value is supplied.  If not set the default behavior is to not populate the attribute at all.</p>
 <p>May be set to a function or other callable, in which case the value will be evaluated each time it is used.</p>
 <h3 id="validators"><code>validators</code></h3>
 <p>A list of Django validators that should be used to validate deserialized values.</p>
@@ -277,7 +279,7 @@ class AccountSerializer(serializers.HyperlinkedModelSerializer):
 <pre class="prettyprint lang-py"><code>{
     'url': 'http://example.com/api/accounts/3/',
     'owner': 'http://example.com/api/users/12/',
-    'name': 'FooCorp business account', 
+    'name': 'FooCorp business account',
     'expired': True
 }
 </code></pre>
@@ -346,7 +348,7 @@ or <code>django.db.models.fields.TextField</code>.</p>
 <p>In the case of JSON this means the default datetime representation uses the <a href="http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15">ECMA 262 date time string specification</a>.  This is a subset of ISO 8601 which uses millisecond precision, and includes the 'Z' suffix for the UTC timezone, for example: <code>2013-01-29T12:34:56.123Z</code>.</p>
 <p><strong>Signature:</strong> <code>DateTimeField(format=None, input_formats=None)</code></p>
 <ul>
-<li><code>format</code> - A string representing the output format.  If not specified, this defaults to <code>None</code>, which indicates that Python <code>datetime</code> objects should be returned by <code>to_native</code>.  In this case the datetime encoding will be determined by the renderer. </li>
+<li><code>format</code> - A string representing the output format.  If not specified, this defaults to <code>None</code>, which indicates that Python <code>datetime</code> objects should be returned by <code>to_native</code>.  In this case the datetime encoding will be determined by the renderer.</li>
 <li><code>input_formats</code> - A list of strings representing the input formats which may be used to parse the date.  If not specified, the <code>DATETIME_INPUT_FORMATS</code> setting will be used, which defaults to <code>['iso-8601']</code>.</li>
 </ul>
 <p>DateTime format strings may either be <a href="http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior">Python strftime formats</a> which explicitly specify the format, or the special string <code>'iso-8601'</code>, which indicates that <a href="http://www.w3.org/TR/NOTE-datetime">ISO 8601</a> style datetimes should be used. (eg <code>'2013-01-29T12:34:56.000000Z'</code>)</p>
@@ -434,6 +436,9 @@ class ColourField(serializers.WritableField):
         """
         return obj.__class__
 </code></pre>
+<h1 id="third-party-packages">Third party packages</h1>
+<h2 id="drf-compound-fields">DRF Compound Fields</h2>
+<p>The <a href="http://drf-compound-fields.readthedocs.org">drf-compound-fields</a> package provides "compound" serializer fields, such as lists of simple values, which can be described by other fields rather than serializers with the <code>many=True</code> option. Also provided are fields for typed dictionaries and values that can be either a specific type or a list of items of that type.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->
