@@ -347,16 +347,15 @@ As an example, let's create a field that can be used represent the class name of
             """
             return obj.__class__
 
-# More fields from 3rd-party packages
+# Third party packages
 
-## [drf-compound-fields](http://drf-compound-fields.readthedocs.org)
+## DRF Compound Fields
 
-Provides "compound" serializer fields, such as lists of simple values, which can be described by
-other fields rather than serializers with the `many=True` option. Also provided are fields for
-typed dictionaries and values that can be either a specific type or a list of items of that type.
+The [drf-compound-fields][drf-compound-fields] package provides "compound" serializer fields, such as lists of simple values, which can be described by other fields rather than serializers with the `many=True` option. Also provided are fields for typed dictionaries and values that can be either a specific type or a list of items of that type.
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
 [ecma262]: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
 [strftime]: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
 [iso8601]: http://www.w3.org/TR/NOTE-datetime
+[drf-compound-fields]: http://drf-compound-fields.readthedocs.org
