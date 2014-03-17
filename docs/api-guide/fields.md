@@ -349,6 +349,8 @@ As an example, let's create a field that can be used represent the class name of
 
 # Third party packages
 
+The following third party packages are also available.
+
 ## DRF Compound Fields
 
 The [drf-compound-fields][drf-compound-fields] package provides "compound" serializer fields, such as lists of simple values, which can be described by other fields rather than serializers with the `many=True` option. Also provided are fields for typed dictionaries and values that can be either a specific type or a list of items of that type.
