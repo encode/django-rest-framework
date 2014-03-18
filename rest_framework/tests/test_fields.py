@@ -639,7 +639,7 @@ class DecimalFieldTest(TestCase):
         serializer = DecimalSerializer(data={})
         
         self.assertTrue(serializer.is_valid())
-        self.assertTrue(serializer.data['decimal_field'].as_tuple().exponent, 0)
+        self.assertEqual(serializer.data['decimal_field'].as_tuple().exponent, 0)
         
     def test_decimal_is_quantized_when_decimal_places_is_provided(self):
         class LongDecimalFieldModel(models.Model):
@@ -653,7 +653,7 @@ class DecimalFieldTest(TestCase):
         serializer = DecimalSerializer(data={})
         
         self.assertTrue(serializer.is_valid())
-        self.assertTrue(serializer.data['decimal_field'].as_tuple().exponent, -2)
+        self.assertEqual(serializer.data['decimal_field'].as_tuple().exponent, -2)
     
     def test_raise_max_value(self):
         """
