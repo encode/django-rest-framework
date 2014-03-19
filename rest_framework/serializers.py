@@ -776,7 +776,7 @@ class ModelSerializer(Serializer):
             ret[field_name].read_only = True
         
         # Ensure that 'write_only_fields' is an iterable
-        assert isinstance(self.opts.write_only_fields, (list, tuple)), '`read_only_fields` must be a list or tuple' 
+        assert isinstance(self.opts.write_only_fields, (list, tuple)), '`write_only_fields` must be a list or tuple' 
         
         for field_name in self.opts.write_only_fields:
             assert field_name not in self.base_fields.keys(), (
