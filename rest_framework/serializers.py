@@ -758,7 +758,7 @@ class ModelSerializer(Serializer):
 
                 ret[accessor_name] = field
         
-        #Ensure that 'read_only_fields is an iterable
+        # Ensure that 'read_only_fields' is an iterable
         assert isinstance(self.opts.read_only_fields, (list, tuple)), '`read_only_fields` must be a list or tuple' 
 
         # Add the `read_only` flag to any fields that have bee specified
@@ -775,7 +775,7 @@ class ModelSerializer(Serializer):
                 (field_name, self.__class__.__name__))
             ret[field_name].read_only = True
         
-        # Ensure that 'write_only_fields' is an iterabe
+        # Ensure that 'write_only_fields' is an iterable
         assert isinstance(self.opts.write_only_fields, (list, tuple)), '`read_only_fields` must be a list or tuple' 
         
         for field_name in self.opts.write_only_fields:
