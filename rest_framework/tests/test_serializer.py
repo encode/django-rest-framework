@@ -509,11 +509,11 @@ class ValidationTests(TestCase):
         self.assertEqual(serializer.is_valid(), True)
 
     def test_writable_star_source_on_nested_serializer_with_parent_object(self):
-        class Serializer(serializers.Serializer):
+        class TitleSerializer(serializers.Serializer):
             title = serializers.WritableField(source='title')
 
         class AlbumSerializer(serializers.ModelSerializer):
-            nested = Serializer(source='*')
+            nested = TitleSerializer(source='*')
 
             class Meta:
                 model = Album
