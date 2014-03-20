@@ -346,7 +346,16 @@ class BaseSerializer(WritableField):
                continue
             field.initialize(parent=self, field_name=field_name)
             key = self.get_field_key(field_name)
-            value = field.field_to_native(obj, field_name)
+            
+            try:
+                value = field.field_to_native(obj, field_name)
+            except AttributeError as e:
+                # non_native_fields check is done only in ModelSerializer
+                if field_name in getattr(self.opts, 'non_native_fields', []):
+                    continue
+                else:
+                    raise e
+                
             method = getattr(self, 'transform_%s' % field_name, None)
             if callable(method):
                 value = method(obj, value)
@@ -622,6 +631,7 @@ class ModelSerializerOptions(SerializerOptions):
         self.model = getattr(meta, 'model', None)
         self.read_only_fields = getattr(meta, 'read_only_fields', ())
         self.write_only_fields = getattr(meta, 'write_only_fields', ())
+        self.non_native_fields = getattr(meta, 'non_native_fields', ())
 
 
 class ModelSerializer(Serializer):
@@ -782,7 +792,7 @@ class ModelSerializer(Serializer):
                 "Non-existant field '%s' specified in `write_only_fields` "
                 "on serializer '%s'." %
                 (field_name, self.__class__.__name__))
-            ret[field_name].write_only = True            
+            ret[field_name].write_only = True
 
         return ret
 
@@ -897,6 +907,15 @@ class ModelSerializer(Serializer):
                 and not isinstance(field, Serializer):
                 exclusions.remove(field_name)
         return exclusions
+    
+    def field_to_native(self, obj, field_name):
+        """
+        Add support to non_native_fields
+        """
+        if field_name in self.opts.non_native_fields:
+            return None
+        
+        return super(ModelSerializer, self).field_to_native(obj, field_name)
 
     def full_clean(self, instance):
         """
@@ -922,6 +941,10 @@ class ModelSerializer(Serializer):
         related_data = {}
         nested_forward_relations = {}
         meta = self.opts.model._meta
+
+        for field_name in self.opts.non_native_fields:
+            if field_name in attrs:
+                attrs.pop(field_name)
 
         # Reverse fk or one-to-one relations
         for (obj, model) in meta.get_all_related_objects_with_model():

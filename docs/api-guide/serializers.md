@@ -405,6 +405,36 @@ You can add extra fields to a `ModelSerializer` or override the default fields b
 
 Extra fields can correspond to any property or callable on the model.
 
+## Specifying non native (extra) fields
+
+You can add extra fields to a `ModelSerializer` which do not correspond to any particular property on the model on which you can do custom processing with the `non_native_fields` Meta option.
+
+A common example of this case is to be able to specify a `password_confirmation` field:
+
+    class UserSerializer(serializers.ModelSerializer):
+        password_confirmation = serializers.CharField()
+        
+        def validate_password_confirmation(self, attrs, source):
+            password_confirmation = attrs[source]
+            password = attrs['password']
+            
+            if password_confirmation != password:
+                raise serializers.ValidationError('Password confirmation mismatch')
+                attrs.pop(source)
+            
+            return attrs
+        
+        class Meta:
+            model = User
+            fields = ('email', 'password', 'password_confirmation',)
+            write_only_fields = ('password',)
+            non_native_fields = ('password_confirmation',)
+
+In this case the `password_confirmation` field will be shown in the browsable API form but if a POST request is done
+it won't be automatically saved into the database but will be available for custom processing, which in this case is just a simple check to compare the two password fields.
+
+The peculiarity of `non_native_fields` is that the fields specified in that list will be visible in the browsable API form and in the OPTIONS http response of the view.
+
 ## Relational fields
 
 When serializing model instances, there are a number of different ways you might choose to represent relationships.  The default representation for `ModelSerializer` is to use the primary keys of the related instances.
