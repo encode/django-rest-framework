@@ -346,13 +346,16 @@ class BaseSerializer(WritableField):
                continue
             field.initialize(parent=self, field_name=field_name)
             key = self.get_field_key(field_name)
+            
             try:
                 value = field.field_to_native(obj, field_name)
-            except AttributeError:
-                if field_name in self.opts.non_native_fields:
+            except AttributeError as e:
+                # non_native_fields check is done only in ModelSerializer
+                if field_name in getattr(self.opts, 'non_native_fields', []):
                     continue
                 else:
-                    raise
+                    raise e
+                
             method = getattr(self, 'transform_%s' % field_name, None)
             if callable(method):
                 value = method(obj, value)
@@ -392,9 +395,6 @@ class BaseSerializer(WritableField):
         Override default so that the serializer can be used as a nested field
         across relationships.
         """
-        if field_name in self.opts.non_native_fields:
-            return None
-
         if self.write_only:
             return None
 
@@ -907,6 +907,15 @@ class ModelSerializer(Serializer):
                 and not isinstance(field, Serializer):
                 exclusions.remove(field_name)
         return exclusions
+    
+    def field_to_native(self, obj, field_name):
+        """
+        Add support to non_native_fields
+        """
+        if field_name in self.opts.non_native_fields:
+            return None
+        
+        return super(ModelSerializer, self).field_to_native(obj, field_name)
 
     def full_clean(self, instance):
         """
