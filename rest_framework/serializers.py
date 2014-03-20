@@ -438,6 +438,11 @@ class BaseSerializer(WritableField):
                     raise ValidationError(self.error_messages['required'])
                 return
 
+        if self.source == '*':
+            if value:
+                reverted_data = self.restore_fields(value, {})
+                if not self._errors:
+                    into.update(reverted_data)
         else:
             if value in (None, ''):
                 into[(self.source or field_name)] = None
@@ -451,12 +456,6 @@ class BaseSerializer(WritableField):
                     not hasattr(obj, '__iter__') and
                     is_simple_callable(getattr(obj, 'all', None))):
                     obj = obj.all()
-
-                if self.source == '*':
-                    if value:
-                        reverted_data = self.restore_fields(value, {})
-                        if not self._errors:
-                            into.update(reverted_data)
 
                 kwargs = {
                     'instance': obj,
