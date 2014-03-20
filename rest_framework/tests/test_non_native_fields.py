@@ -6,12 +6,12 @@ from rest_framework import generics
 from rest_framework.compat import patterns, url
 
 
-class ExampleModel(models.Model):
+class NonNativeExampleModel(models.Model):
     email = models.EmailField(max_length=100)
     password = models.CharField(max_length=100)
 
 
-class ExampleSerializer(serializers.ModelSerializer):
+class NonNativeExampleSerializer(serializers.ModelSerializer):
     password_confirmation = serializers.CharField()
     
     def validate_password_confirmation(self, attrs, source):
@@ -23,20 +23,20 @@ class ExampleSerializer(serializers.ModelSerializer):
         return attrs
     
     class Meta:
-        model = ExampleModel
+        model = NonNativeExampleModel
         fields = ('email', 'password', 'password_confirmation',)
         write_only_fields = ('password',)
         non_native_fields = ('password_confirmation',)
 
 
-class ExampleView(generics.ListCreateAPIView):
+class NonNativeExampleView(generics.ListCreateAPIView):
     """
-    ExampleView
+    NonNativeExampleView
     """
-    model = ExampleModel
-    serializer_class = ExampleSerializer
+    model = NonNativeExampleModel
+    serializer_class = NonNativeExampleSerializer
 
-example_view = ExampleView.as_view()
+example_view = NonNativeExampleView.as_view()
 
 
 urlpatterns = patterns('',
@@ -53,9 +53,9 @@ class NonNativeFieldTests(TestCase):
             'password': '123',
             'password_confirmation': '123',
         }
-        serializer = ExampleSerializer(data=data)
+        serializer = NonNativeExampleSerializer(data=data)
         self.assertTrue(serializer.is_valid())
-        self.assertTrue(isinstance(serializer.object, ExampleModel))
+        self.assertTrue(isinstance(serializer.object, NonNativeExampleModel))
         self.assertEquals(serializer.object.email, data['email'])
         self.assertEquals(serializer.object.password, data['password'])
         self.assertEquals(serializer.data, {'email': 'foo@example.com'})
@@ -66,7 +66,7 @@ class NonNativeFieldTests(TestCase):
             'password': '123',
             'password_confirmation': 'abc',
         }
-        serializer = ExampleSerializer(data=data)
+        serializer = NonNativeExampleSerializer(data=data)
         self.assertFalse(serializer.is_valid())
         self.assertEquals(len(serializer.errors), 1)
         self.assertEquals(serializer.errors['password_confirmation'],
