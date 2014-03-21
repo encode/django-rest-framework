@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import TestCase
 from django.utils import unittest
+from django.utils.http import urlencode
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
 from rest_framework import permissions
@@ -53,10 +54,14 @@ urlpatterns = patterns('',
         permission_classes=[permissions.TokenHasReadWriteScope]))
 )
 
+class OAuth2AuthenticationDebug(OAuth2Authentication):
+    allow_query_params_token = True
+
 if oauth2_provider is not None:
     urlpatterns += patterns('',
         url(r'^oauth2/', include('provider.oauth2.urls', namespace='oauth2')),
         url(r'^oauth2-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication])),
+        url(r'^oauth2-test-debug/$', MockView.as_view(authentication_classes=[OAuth2AuthenticationDebug])),
         url(r'^oauth2-with-scope-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication],
             permission_classes=[permissions.TokenHasReadWriteScope])),
     )
@@ -544,6 +549,27 @@ class OAuth2Tests(TestCase):
         auth = self._create_authorization_header()
         response = self.csrf_client.get('/oauth2-test/', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
+
+    @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
+    def test_post_form_passing_auth_url_transport(self):
+        """Ensure GETing form over OAuth with correct client credentials in form data succeed"""
+        response = self.csrf_client.post('/oauth2-test/',
+                data={'access_token': self.access_token.token})
+        self.assertEqual(response.status_code, 200)
+
+    @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
+    def test_get_form_passing_auth_url_transport(self):
+        """Ensure GETing form over OAuth with correct client credentials in query succeed when DEBUG is True"""
+        query = urlencode({'access_token': self.access_token.token})
+        response = self.csrf_client.get('/oauth2-test-debug/?%s' % query)
+        self.assertEqual(response.status_code, 200)
+
+    @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
+    def test_get_form_failing_auth_url_transport(self):
+        """Ensure GETing form over OAuth with correct client credentials in query fails when DEBUG is False"""
+        query = urlencode({'access_token': self.access_token.token})
+        response = self.csrf_client.get('/oauth2-test/?%s' % query)
+        self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
 
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
     def test_post_form_passing_auth(self):
