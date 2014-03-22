@@ -346,7 +346,7 @@ class Request(object):
         media_type = self.content_type
 
         if stream is None or media_type is None:
-            empty_data = QueryDict('', self._request._encoding)
+            empty_data = QueryDict('', encoding=self._request._encoding)
             empty_files = MultiValueDict()
             return (empty_data, empty_files)
 
@@ -362,7 +362,7 @@ class Request(object):
             # re-raise.  Ensures we don't simply repeat the error when
             # attempting to render the browsable renderer response, or when
             # logging the request or similar.
-            self._data = QueryDict('', self._request._encoding)
+            self._data = QueryDict('', encoding=self._request._encoding)
             self._files = MultiValueDict()
             raise
 
