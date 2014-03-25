@@ -411,9 +411,7 @@ You can add extra non-native `validation only` fields to a `ModelSerializer` pro
 
 **A)** The extra `validation only` fields are removed from the `attrs` parameter prior to invoking the `restore_object()` method on the `parent` serializer class.
 
-**B)** The extra `validation only` fields are removed from the `fields` attribute prior to invoking the `to_native()` method on the `parent` serializer class during the `object attribute` validations.
-
-**Note:** You should `not` remove the extra `validation only` fields from the `fields` attribute prior to invoking the `to_native()` method on the `parent` serializer class during the `form creation` process if you are using the built-in browsable API.
+**B)** The extra `validation only` fields are removed from the `fields` attribute prior to invoking the `to_native()` method on the `parent` serializer class when `obj` is None.
 
     # Example of overriding restore_object() and to_native() attributes
 
@@ -443,21 +441,15 @@ You can add extra non-native `validation only` fields to a `ModelSerializer` pro
             model = User
             fields = ('username', 'email', 'password', 'password_confirmation', 'accept_our_terms_and_conditions',)
             write_only_fields = ('password',)
-            validation_only_fields = ('password_confirmation', 'accept_our_terms_and_conditions',)
 
         def restore_object(self, attrs, instance=None):
-            # Flow: south-bound -- object creation: model instance
-            for attr in self.Meta.validation_only_fields:
+            for attr in ('password_confirmation', 'accept_our_terms_and_conditions'):
                 attrs.pop(attr)
             return super(CreateUserSerializer, self).restore_object(attrs, instance)
 
         def to_native(self, obj):
-            try:
-                # Flow: north-bound -- form creation: browser API
-                return super(CreateUserSerializer, self).to_native(obj)
-            except AttributeError as e:
-                # Flow: south-bound -- object validation: model class
-                for field in self.Meta.validation_only_fields:
+            if obj is not None:
+                for field in ('password_confirmation', 'accept_our_terms_and_conditions'):
                     self.fields.pop(field)
             return super(CreateUserSerializer, self).to_native(obj)
 

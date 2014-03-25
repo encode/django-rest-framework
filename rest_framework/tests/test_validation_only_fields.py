@@ -40,21 +40,15 @@ class ValidationOnlyFieldsExampleSerializer(serializers.ModelSerializer):
         model = ValidationOnlyFieldsExampleModel
         fields = ('email', 'password', 'password_confirmation', 'accept_our_terms_and_conditions',)
         write_only_fields = ('password',)
-        validation_only_fields = ('password_confirmation', 'accept_our_terms_and_conditions',)
 
     def restore_object(self, attrs, instance=None):
-        # Flow: south-bound -- object creation: model instance
-        for attr in self.Meta.validation_only_fields:
+        for attr in ('password_confirmation', 'accept_our_terms_and_conditions'):
             attrs.pop(attr)
         return super(ValidationOnlyFieldsExampleSerializer, self).restore_object(attrs, instance)
 
     def to_native(self, obj):
-        try:
-            # Flow: north-bound -- form creation: browser API
-            return super(ValidationOnlyFieldsExampleSerializer, self).to_native(obj)
-        except AttributeError as e:
-            # Flow: south-bound -- object validation: model class
-            for field in self.Meta.validation_only_fields:
+        if obj is not None:
+            for field in ('password_confirmation', 'accept_our_terms_and_conditions'):
                 self.fields.pop(field)
         return super(ValidationOnlyFieldsExampleSerializer, self).to_native(obj)
 
