@@ -417,7 +417,7 @@ You can add extra non-native `validation only` fields to a `ModelSerializer` pro
 
     # Example of overriding restore_object() and to_native() attributes
 
-    class UserCreationSerializer(serializers.ModelSerializer):
+    class CreateUserSerializer(serializers.ModelSerializer):
         password_confirmation = serializers.CharField()
         accept_our_terms_and_conditions = serializers.BooleanField()
 
@@ -440,8 +440,8 @@ You can add extra non-native `validation only` fields to a `ModelSerializer` pro
             return attrs
 
         class Meta:
-            model = ValidationOnlyFieldsExampleModel
-            fields = ('email', 'password', 'password_confirmation', 'accept_our_terms_and_conditions',)
+            model = User
+            fields = ('username', 'email', 'password', 'password_confirmation', 'accept_our_terms_and_conditions',)
             write_only_fields = ('password',)
             validation_only_fields = ('password_confirmation', 'accept_our_terms_and_conditions',)
 
@@ -449,17 +449,17 @@ You can add extra non-native `validation only` fields to a `ModelSerializer` pro
             # Flow: south-bound -- object creation: model instance
             for attr in self.Meta.validation_only_fields:
                 attrs.pop(attr)
-            return super(UserCreationSerializer, self).restore_object(attrs, instance)
+            return super(CreateUserSerializer, self).restore_object(attrs, instance)
 
         def to_native(self, obj):
             try:
                 # Flow: north-bound -- form creation: browser API
-                return super(UserCreationSerializer, self).to_native(obj)
+                return super(CreateUserSerializer, self).to_native(obj)
             except AttributeError as e:
                 # Flow: south-bound -- object validation: model class
                 for field in self.Meta.validation_only_fields:
                     self.fields.pop(field)
-            return super(UserCreationSerializer, self).to_native(obj)
+            return super(CreateUserSerializer, self).to_native(obj)
 
 ## Relational fields
 
