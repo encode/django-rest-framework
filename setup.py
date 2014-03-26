@@ -51,6 +51,12 @@ if sys.argv[-1] == 'publish':
     print("  git push --tags")
     sys.exit()
 
+requirements = []
+try:
+    from collections import OrderedDict
+except ImportError:
+    # Back-port for Python < 2.7
+    requirements.append('ordereddict')
 
 setup(
     name='djangorestframework',
@@ -63,7 +69,7 @@ setup(
     packages=get_packages('rest_framework'),
     package_data=get_package_data('rest_framework'),
     test_suite='rest_framework.runtests.runtests.main',
-    install_requires=[],
+    install_requires=requirements,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
