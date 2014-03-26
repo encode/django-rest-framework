@@ -10,6 +10,7 @@ import datetime
 import inspect
 import re
 import warnings
+from collections import OrderedDict
 from decimal import Decimal, DecimalException
 from django import forms
 from django.core import validators
@@ -20,7 +21,6 @@ from django.http import QueryDict
 from django.forms import widgets
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
-from django.utils.datastructures import SortedDict
 from rest_framework import ISO_8601
 from rest_framework.compat import (
     timezone, parse_date, parse_datetime, parse_time, BytesIO, six, smart_text,
@@ -220,7 +220,7 @@ class Field(object):
             return [self.to_native(item) for item in value]
         elif isinstance(value, dict):
             # Make sure we preserve field ordering, if it exists
-            ret = SortedDict()
+            ret = OrderedDict()
             for key, val in value.items():
                 ret[key] = self.to_native(val)
             return ret
@@ -235,7 +235,7 @@ class Field(object):
         return {}
 
     def metadata(self):
-        metadata = SortedDict()
+        metadata = OrderedDict()
         metadata['type'] = self.type_label
         metadata['required'] = getattr(self, 'required', False)
         optional_attrs = ['read_only', 'label', 'help_text',
