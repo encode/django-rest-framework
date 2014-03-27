@@ -507,12 +507,21 @@ class BaseSerializer(WritableField):
                               'Use the `many=True` flag when instantiating the serializer.',
                               DeprecationWarning, stacklevel=3)
 
-        if not many:
-            ret = self.from_native(data, files)
+        if many:
+            return self._errors_many(data)
 
-            if not self._errors:
-                self.object = ret
+        ret = self.from_native(data, files)
 
+        if not self._errors:
+            self.object = ret
+
+        return self._errors
+
+    def _errors_many(self, data):
+        """Run deserialization of bulk data."""
+
+        if not hasattr(data, '__iter__') or isinstance(data, (dict, six.text_type)):
+            self._errors = {'non_field_errors': ['Expected a list of items.']}
             return self._errors
 
         ret = RelationsList()
@@ -528,27 +537,24 @@ class BaseSerializer(WritableField):
             identities = [self.get_identity(self.to_native(obj)) for obj in objects]
             identity_to_objects = dict(zip(identities, objects))
 
-        if hasattr(data, '__iter__') and not isinstance(data, (dict, six.text_type)):
-            for item in data:
-                if update:
-                    # Determine which object we're updating
-                    identity = self.get_identity(item)
-                    self.object = identity_to_objects.pop(identity, None)
-                    if self.object is None and not self.allow_add_remove:
-                        ret.append(None)
-                        errors.append({'non_field_errors': [
-                            'Cannot create a new item, only existing items may be updated.']})
-                        continue
+        for item in data:
+            if update:
+                # Determine which object we're updating
+                identity = self.get_identity(item)
+                self.object = identity_to_objects.pop(identity, None)
+                if self.object is None and not self.allow_add_remove:
+                    ret.append(None)
+                    errors.append({'non_field_errors': [
+                        'Cannot create a new item, only existing items may be updated.']})
+                    continue
 
-                ret.append(self.from_native(item, None))
-                errors.append(self._errors)
+            ret.append(self.from_native(item, None))
+            errors.append(self._errors)
 
-            if update and self.allow_add_remove:
-                ret._deleted = identity_to_objects.values()
+        if update and self.allow_add_remove:
+            ret._deleted = identity_to_objects.values()
 
-            self._errors = any(errors) and errors or []
-        else:
-            self._errors = {'non_field_errors': ['Expected a list of items.']}
+        self._errors = any(errors) and errors or []
 
         if not self._errors:
             self.object = ret
