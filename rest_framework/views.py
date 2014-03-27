@@ -3,12 +3,11 @@ Provides an APIView class that is the base of all views in REST framework.
 """
 from __future__ import unicode_literals
 
-from collections import OrderedDict
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
-from rest_framework.compat import smart_text, HttpResponseBase, View
+from rest_framework.compat import smart_text, HttpResponseBase, OrderedDict, View
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings

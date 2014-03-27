@@ -10,7 +10,6 @@ import datetime
 import inspect
 import re
 import warnings
-from collections import OrderedDict
 from decimal import Decimal, DecimalException
 from django import forms
 from django.core import validators
@@ -24,7 +23,7 @@ from django.utils.translation import ugettext_lazy as _
 from rest_framework import ISO_8601
 from rest_framework.compat import (
     timezone, parse_date, parse_datetime, parse_time, BytesIO, six, smart_text,
-    force_text, is_non_str_iterable
+    force_text, is_non_str_iterable, OrderedDict
 )
 from rest_framework.settings import api_settings
 
