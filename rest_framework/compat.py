@@ -601,6 +601,10 @@ except ImportError:
         return klass
 
 if django.VERSION >= (1, 7):
-    from collections import OrderedDict
+    try:
+        from collections import OrderedDict
+    except ImportError:
+        # Fall-back to OrderedDict from ordereddict module
+        from ordereddict import OrderedDict
 else:
     from django.utils.datastructures import SortedDict as OrderedDict
