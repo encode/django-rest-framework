@@ -828,14 +828,14 @@ class ModelSerializer(Serializer):
         if model_field:
             kwargs['required'] = not(model_field.null or model_field.blank)
 
-        if not model_field.editable:
-            kwargs['read_only'] = True
+            if not model_field.editable:
+                kwargs['read_only'] = True
 
-        if model_field.verbose_name is not None:
-            kwargs['label'] = model_field.verbose_name
+            if model_field.verbose_name is not None:
+                kwargs['label'] = model_field.verbose_name
 
-        if model_field.help_text is not None:
-            kwargs['help_text'] = model_field.help_text
+            if model_field.help_text is not None:
+                kwargs['help_text'] = model_field.help_text
 
         return PrimaryKeyRelatedField(**kwargs)
 
