@@ -143,14 +143,16 @@ class ForeignKeyTarget(RESTFrameworkModel):
 
 class ForeignKeySource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
-    target = models.ForeignKey(ForeignKeyTarget, related_name='sources')
+    target = models.ForeignKey(ForeignKeyTarget, related_name='sources',
+                               verbose_name='Target object')
 
 
 # Nullable ForeignKey
 class NullableForeignKeySource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
     target = models.ForeignKey(ForeignKeyTarget, null=True, blank=True,
-                               related_name='nullable_sources')
+                               related_name='nullable_sources',
+                               verbose_name='Optional target object')
 
 
 # OneToOne
