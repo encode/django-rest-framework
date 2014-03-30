@@ -458,7 +458,7 @@ class TestFKInstanceView(TestCase):
                         'type': 'integer',
                         'required': False,
                         'read_only': True,
-                        'label': u'ID'
+                        'label': 'ID'
                     },
                     'name': {
                         'type': 'string',
