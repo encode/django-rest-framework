@@ -438,16 +438,6 @@ class BaseSerializer(WritableField):
                     raise ValidationError(self.error_messages['required'])
                 return
 
-        # Set the serializer object if it exists
-        obj = get_component(self.parent.object, self.source or field_name) if self.parent.object else None
-
-        # If we have a model manager or similar object then we need
-        # to iterate through each instance.
-        if (self.many and
-            not hasattr(obj, '__iter__') and
-            is_simple_callable(getattr(obj, 'all', None))):
-            obj = obj.all()
-
         if self.source == '*':
             if value:
                 reverted_data = self.restore_fields(value, {})
@@ -457,6 +447,16 @@ class BaseSerializer(WritableField):
             if value in (None, ''):
                 into[(self.source or field_name)] = None
             else:
+                # Set the serializer object if it exists
+                obj = get_component(self.parent.object, self.source or field_name) if self.parent.object else None
+
+                # If we have a model manager or similar object then we need
+                # to iterate through each instance.
+                if (self.many and
+                    not hasattr(obj, '__iter__') and
+                    is_simple_callable(getattr(obj, 'all', None))):
+                    obj = obj.all()
+
                 kwargs = {
                     'instance': obj,
                     'data': value,

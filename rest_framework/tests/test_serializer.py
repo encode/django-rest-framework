@@ -508,6 +508,32 @@ class ValidationTests(TestCase):
         )
         self.assertEqual(serializer.is_valid(), True)
 
+    def test_writable_star_source_on_nested_serializer_with_parent_object(self):
+        class TitleSerializer(serializers.Serializer):
+            title = serializers.WritableField(source='title')
+
+        class AlbumSerializer(serializers.ModelSerializer):
+            nested = TitleSerializer(source='*')
+
+            class Meta:
+                model = Album
+                fields = ('nested',)
+
+        class PhotoSerializer(serializers.ModelSerializer):
+            album = AlbumSerializer(source='album')
+
+            class Meta:
+                model = Photo
+                fields = ('album', )
+
+        photo = Photo(album=Album())
+
+        data = {'album': {'nested': {'title': 'test'}}}
+
+        serializer = PhotoSerializer(photo, data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.data, data)
+
     def test_writable_star_source_with_inner_source_fields(self):
         """
         Tests that a serializer with source="*" correctly expands the
