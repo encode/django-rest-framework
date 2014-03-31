@@ -26,6 +26,10 @@ def usage():
 
 
 def main():
+    try:
+        django.setup()
+    except AttributeError:
+        pass
     TestRunner = get_runner(settings)
 
     test_runner = TestRunner()

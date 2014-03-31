@@ -6,6 +6,7 @@ Doesn't cover model serializers.
 from __future__ import unicode_literals
 from django.test import TestCase
 from rest_framework import serializers
+from . import models
 
 
 class WritableNestedSerializerBasicTests(TestCase):
@@ -311,3 +312,36 @@ class ForeignKeyNestedSerializerUpdateTests(TestCase):
         serializer = self.AlbumSerializer(instance=original, data=data)
         self.assertEqual(serializer.is_valid(), True)
         self.assertEqual(serializer.object, expected)
+
+
+class NestedModelSerializerUpdateTests(TestCase):
+    def test_second_nested_level(self):
+        john = models.Person.objects.create(name="john")
+
+        post = john.blogpost_set.create(title="Test blog post")
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+
+        class BlogPostCommentSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = models.BlogPostComment
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            comments = BlogPostCommentSerializer(many=True, source='blogpostcomment_set')
+            class Meta:
+                model = models.BlogPost
+                fields = ('id', 'title', 'comments')
+
+        class PersonSerializer(serializers.ModelSerializer):
+            posts = BlogPostSerializer(many=True, source='blogpost_set')
+            class Meta:
+                model = models.Person
+                fields = ('id', 'name', 'age', 'posts')
+
+        serialize = PersonSerializer(instance=john)
+        deserialize = PersonSerializer(data=serialize.data, instance=john)
+        self.assertTrue(deserialize.is_valid())
+
+        result = deserialize.object
+        result.save()
+        self.assertEqual(result.id, john.id)

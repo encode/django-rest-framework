@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.test import TestCase
 from django.utils import unittest
+from django.utils.http import urlencode
 from rest_framework import HTTP_HEADER_ENCODING
 from rest_framework import exceptions
 from rest_framework import permissions
@@ -19,7 +20,7 @@ from rest_framework.authentication import (
 )
 from rest_framework.authtoken.models import Token
 from rest_framework.compat import patterns, url, include
-from rest_framework.compat import oauth2_provider, oauth2_provider_models, oauth2_provider_scope
+from rest_framework.compat import oauth2_provider, oauth2_provider_scope
 from rest_framework.compat import oauth, oauth_provider
 from rest_framework.test import APIRequestFactory, APIClient
 from rest_framework.views import APIView
@@ -53,10 +54,14 @@ urlpatterns = patterns('',
         permission_classes=[permissions.TokenHasReadWriteScope]))
 )
 
+class OAuth2AuthenticationDebug(OAuth2Authentication):
+    allow_query_params_token = True
+
 if oauth2_provider is not None:
     urlpatterns += patterns('',
         url(r'^oauth2/', include('provider.oauth2.urls', namespace='oauth2')),
         url(r'^oauth2-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication])),
+        url(r'^oauth2-test-debug/$', MockView.as_view(authentication_classes=[OAuth2AuthenticationDebug])),
         url(r'^oauth2-with-scope-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication],
             permission_classes=[permissions.TokenHasReadWriteScope])),
     )
@@ -249,7 +254,7 @@ class OAuthTests(TestCase):
     def setUp(self):
         # these imports are here because oauth is optional and hiding them in try..except block or compat
         # could obscure problems if something breaks
-        from oauth_provider.models import Consumer, Resource
+        from oauth_provider.models import Consumer, Scope
         from oauth_provider.models import Token as OAuthToken
         from oauth_provider import consts
 
@@ -269,8 +274,8 @@ class OAuthTests(TestCase):
         self.consumer = Consumer.objects.create(key=self.CONSUMER_KEY, secret=self.CONSUMER_SECRET,
             name='example', user=self.user, status=self.consts.ACCEPTED)
 
-        self.resource = Resource.objects.create(name="resource name", url="api/")
-        self.token = OAuthToken.objects.create(user=self.user, consumer=self.consumer, resource=self.resource,
+        self.scope = Scope.objects.create(name="resource name", url="api/")
+        self.token = OAuthToken.objects.create(user=self.user, consumer=self.consumer, scope=self.scope,
             token_type=OAuthToken.ACCESS, key=self.TOKEN_KEY, secret=self.TOKEN_SECRET, is_approved=True
         )
 
@@ -362,7 +367,8 @@ class OAuthTests(TestCase):
     def test_post_form_with_urlencoded_parameters(self):
         """Ensure POSTing with x-www-form-urlencoded auth parameters passes"""
         params = self._create_authorization_url_parameters()
-        response = self.csrf_client.post('/oauth/', params)
+        auth = self._create_authorization_header()
+        response = self.csrf_client.post('/oauth/', params, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
     @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
@@ -397,10 +403,10 @@ class OAuthTests(TestCase):
     @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
     @unittest.skipUnless(oauth, 'oauth2 not installed')
     def test_get_form_with_readonly_resource_passing_auth(self):
-        """Ensure POSTing with a readonly resource instead of a write scope fails"""
+        """Ensure POSTing with a readonly scope instead of a write scope fails"""
         read_only_access_token = self.token
-        read_only_access_token.resource.is_readonly = True
-        read_only_access_token.resource.save()
+        read_only_access_token.scope.is_readonly = True
+        read_only_access_token.scope.save()
         params = self._create_authorization_url_parameters()
         response = self.csrf_client.get('/oauth-with-scope/', params)
         self.assertEqual(response.status_code, 200)
@@ -410,8 +416,8 @@ class OAuthTests(TestCase):
     def test_post_form_with_readonly_resource_failing_auth(self):
         """Ensure POSTing with a readonly resource instead of a write scope fails"""
         read_only_access_token = self.token
-        read_only_access_token.resource.is_readonly = True
-        read_only_access_token.resource.save()
+        read_only_access_token.scope.is_readonly = True
+        read_only_access_token.scope.save()
         params = self._create_authorization_url_parameters()
         response = self.csrf_client.post('/oauth-with-scope/', params)
         self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
@@ -421,10 +427,11 @@ class OAuthTests(TestCase):
     def test_post_form_with_write_resource_passing_auth(self):
         """Ensure POSTing with a write resource succeed"""
         read_write_access_token = self.token
-        read_write_access_token.resource.is_readonly = False
-        read_write_access_token.resource.save()
+        read_write_access_token.scope.is_readonly = False
+        read_write_access_token.scope.save()
         params = self._create_authorization_url_parameters()
-        response = self.csrf_client.post('/oauth-with-scope/', params)
+        auth = self._create_authorization_header()
+        response = self.csrf_client.post('/oauth-with-scope/', params, HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
     @unittest.skipUnless(oauth_provider, 'django-oauth-plus not installed')
@@ -486,7 +493,7 @@ class OAuth2Tests(TestCase):
         self.ACCESS_TOKEN = "access_token"
         self.REFRESH_TOKEN = "refresh_token"
 
-        self.oauth2_client = oauth2_provider_models.Client.objects.create(
+        self.oauth2_client = oauth2_provider.oauth2.models.Client.objects.create(
                 client_id=self.CLIENT_ID,
                 client_secret=self.CLIENT_SECRET,
                 redirect_uri='',
@@ -495,12 +502,12 @@ class OAuth2Tests(TestCase):
                 user=None,
             )
 
-        self.access_token = oauth2_provider_models.AccessToken.objects.create(
+        self.access_token = oauth2_provider.oauth2.models.AccessToken.objects.create(
                 token=self.ACCESS_TOKEN,
                 client=self.oauth2_client,
                 user=self.user,
             )
-        self.refresh_token = oauth2_provider_models.RefreshToken.objects.create(
+        self.refresh_token = oauth2_provider.oauth2.models.RefreshToken.objects.create(
                 user=self.user,
                 access_token=self.access_token,
                 client=self.oauth2_client
@@ -542,6 +549,27 @@ class OAuth2Tests(TestCase):
         auth = self._create_authorization_header()
         response = self.csrf_client.get('/oauth2-test/', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
+
+    @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
+    def test_post_form_passing_auth_url_transport(self):
+        """Ensure GETing form over OAuth with correct client credentials in form data succeed"""
+        response = self.csrf_client.post('/oauth2-test/',
+                data={'access_token': self.access_token.token})
+        self.assertEqual(response.status_code, 200)
+
+    @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
+    def test_get_form_passing_auth_url_transport(self):
+        """Ensure GETing form over OAuth with correct client credentials in query succeed when DEBUG is True"""
+        query = urlencode({'access_token': self.access_token.token})
+        response = self.csrf_client.get('/oauth2-test-debug/?%s' % query)
+        self.assertEqual(response.status_code, 200)
+
+    @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
+    def test_get_form_failing_auth_url_transport(self):
+        """Ensure GETing form over OAuth with correct client credentials in query fails when DEBUG is False"""
+        query = urlencode({'access_token': self.access_token.token})
+        response = self.csrf_client.get('/oauth2-test/?%s' % query)
+        self.assertIn(response.status_code, (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN))
 
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
     def test_post_form_passing_auth(self):

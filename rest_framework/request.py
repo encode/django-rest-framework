@@ -223,7 +223,7 @@ class Request(object):
     def user(self, value):
         """
         Sets the user on the current request. This is necessary to maintain
-        compatilbility with django.contrib.auth where the user proprety is
+        compatibility with django.contrib.auth where the user property is
         set in the login and logout functions.
         """
         self._user = value
@@ -279,10 +279,9 @@ class Request(object):
         if not _hasattr(self, '_method'):
             self._method = self._request.method
 
-            if self._method == 'POST':
-                # Allow X-HTTP-METHOD-OVERRIDE header
-                self._method = self.META.get('HTTP_X_HTTP_METHOD_OVERRIDE',
-                                             self._method)
+            # Allow X-HTTP-METHOD-OVERRIDE header
+            self._method = self.META.get('HTTP_X_HTTP_METHOD_OVERRIDE',
+                                         self._method)
 
     def _load_stream(self):
         """
@@ -347,7 +346,7 @@ class Request(object):
         media_type = self.content_type
 
         if stream is None or media_type is None:
-            empty_data = QueryDict('', self._request._encoding)
+            empty_data = QueryDict('', encoding=self._request._encoding)
             empty_files = MultiValueDict()
             return (empty_data, empty_files)
 
@@ -356,7 +355,16 @@ class Request(object):
         if not parser:
             raise exceptions.UnsupportedMediaType(media_type)
 
-        parsed = parser.parse(stream, media_type, self.parser_context)
+        try:
+            parsed = parser.parse(stream, media_type, self.parser_context)
+        except:
+            # If we get an exception during parsing, fill in empty data and
+            # re-raise.  Ensures we don't simply repeat the error when
+            # attempting to render the browsable renderer response, or when
+            # logging the request or similar.
+            self._data = QueryDict('', encoding=self._request._encoding)
+            self._files = MultiValueDict()
+            raise
 
         # Parser classes may return the raw data, or a
         # DataAndFiles object.  Unpack the result as required.

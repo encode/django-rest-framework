@@ -184,18 +184,24 @@ class SimpleRouter(BaseRouter):
                 bound_methods[method] = action
         return bound_methods
 
-    def get_lookup_regex(self, viewset):
+    def get_lookup_regex(self, viewset, lookup_prefix=''):
         """
         Given a viewset, return the portion of URL regex that is used
         to match against a single instance.
+
+        Note that lookup_prefix is not used directly inside REST rest_framework
+        itself, but is required in order to nicely support nested router
+        implementations, such as drf-nested-routers.
+
+        https://github.com/alanjds/drf-nested-routers
         """
         if self.trailing_slash:
-            base_regex = '(?P<{lookup_field}>[^/]+)'
+            base_regex = '(?P<{lookup_prefix}{lookup_field}>[^/]+)'
         else:
             # Don't consume `.json` style suffixes
-            base_regex = '(?P<{lookup_field}>[^/.]+)'
+            base_regex = '(?P<{lookup_prefix}{lookup_field}>[^/.]+)'
         lookup_field = getattr(viewset, 'lookup_field', 'pk')
-        return base_regex.format(lookup_field=lookup_field)
+        return base_regex.format(lookup_field=lookup_field, lookup_prefix=lookup_prefix)
 
     def get_urls(self):
         """

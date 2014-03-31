@@ -69,6 +69,10 @@ DEFAULTS = {
     'PAGINATE_BY_PARAM': None,
     'MAX_PAGINATE_BY': None,
 
+    # Filtering
+    'SEARCH_PARAM': 'search',
+    'ORDERING_PARAM': 'ordering',
+
     # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,
@@ -95,6 +99,7 @@ DEFAULTS = {
     'URL_FORMAT_OVERRIDE': 'format',
 
     'FORMAT_SUFFIX_KWARG': 'format',
+    'URL_FIELD_NAME': 'url',
 
     # Input and output formats
     'DATE_INPUT_FORMATS': (

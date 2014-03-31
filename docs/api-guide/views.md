@@ -168,5 +168,5 @@ Each of these decorators takes a single argument which must be a list or tuple o
 
 [cite]: http://reinout.vanrees.org/weblog/2011/08/24/class-based-views-usage.html
 [cite2]: http://www.boredomandlaziness.org/2012/05/djangos-cbvs-are-not-mistake-but.html
-[settings]: api-guide/settings.md
-[throttling]: api-guide/throttling.md
+[settings]: settings.md
+[throttling]: throttling.md

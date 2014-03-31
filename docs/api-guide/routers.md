@@ -12,7 +12,7 @@ REST framework adds support for automatic URL routing to Django, and provides yo
 
 ## Usage
 
-Here's an example of a simple URL conf, that uses `DefaultRouter`.
+Here's an example of a simple URL conf, that uses `SimpleRouter`.
 
     from rest_framework import routers
 
@@ -36,6 +36,18 @@ The example above would generate the following URL patterns:
 * URL pattern: `^users/{pk}/$`  Name: `'user-detail'`
 * URL pattern: `^accounts/$`  Name: `'account-list'`
 * URL pattern: `^accounts/{pk}/$`  Name: `'account-detail'`
+
+---
+
+**Note**: The `base_name` argument is used to specify the initial part of the view name pattern.  In the example above, that's the `user` or `account` part.
+
+Typically you won't *need* to specify the `base-name` argument, but if you have a viewset where you've defined a custom `get_queryset` method, then the viewset may not have any `.model` or `.queryset` attribute set.  If you try to register that viewset you'll see an error like this:
+
+    'base_name' argument not specified, and could not automatically determine the name from the viewset, as it does not have a '.model' or '.queryset' attribute.
+
+This means you'll need to explicitly set the `base_name` argument when registering the viewset, as it could not be automatically determined from the model name.
+
+---
 
 ### Extra link and actions
 
@@ -150,4 +162,24 @@ If you want to provide totally custom behavior, you can override `BaseRouter` an
 
 You may also want to override the `get_default_base_name(self, viewset)` method, or else always explicitly set the `base_name` argument when registering your viewsets with the router.
 
+# Third Party Packages
+
+The following third party packages are also available.
+
+## DRF Nested Routers
+
+The [drf-nested-routers package][drf-nested-routers] provides routers and relationship fields for working with nested resources.
+
+## wq.db
+
+The [wq.db package][wq.db] provides an advanced [Router][wq.db-router] class (and singleton instance) that extends `DefaultRouter` with a `register_model()` API. Much like Django's `admin.site.register`, the only required argument to `app.router.register_model` is a model class.  Reasonable defaults for a url prefix and viewset will be inferred from the model and global configuration.
+
+    from wq.db.rest import app
+    from myapp.models import MyModel
+
+    app.router.register_model(MyModel)
+
 [cite]: http://guides.rubyonrails.org/routing.html
+[drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
+[wq.db]: http://wq.io/wq.db
+[wq.db-router]: http://wq.io/docs/app.py

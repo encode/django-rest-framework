@@ -1,4 +1,5 @@
 from __future__ import unicode_literals
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.test import TestCase
 from rest_framework import generics, serializers, status
@@ -47,12 +48,18 @@ class ShouldValidateModel(models.Model):
 class ShouldValidateModelSerializer(serializers.ModelSerializer):
     renamed = serializers.CharField(source='should_validate_field', required=False)
 
+    def validate_renamed(self, attrs, source):
+        value = attrs[source]
+        if len(value) < 3:
+            raise serializers.ValidationError('Minimum 3 characters.')
+        return attrs
+
     class Meta:
         model = ShouldValidateModel
         fields = ('renamed',)
 
 
-class TestPreSaveValidationExclusions(TestCase):
+class TestPreSaveValidationExclusionsSerializer(TestCase):
     def test_renamed_fields_are_model_validated(self):
         """
         Ensure fields with 'source' applied do get still get model validation.
@@ -61,6 +68,19 @@ class TestPreSaveValidationExclusions(TestCase):
         # does not have `blank=True`, so this serializer should not validate.
         serializer = ShouldValidateModelSerializer(data={'renamed': ''})
         self.assertEqual(serializer.is_valid(), False)
+        self.assertIn('renamed', serializer.errors)
+        self.assertNotIn('should_validate_field', serializer.errors)
+
+
+class TestCustomValidationMethods(TestCase):
+    def test_custom_validation_method_is_executed(self):
+        serializer = ShouldValidateModelSerializer(data={'renamed': 'fo'})
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('renamed', serializer.errors)
+
+    def test_custom_validation_method_passing(self):
+        serializer = ShouldValidateModelSerializer(data={'renamed': 'foo'})
+        self.assertTrue(serializer.is_valid())
 
 
 class ValidationSerializer(serializers.Serializer):
@@ -83,3 +103,46 @@ class TestAvoidValidation(TestCase):
         self.assertFalse(serializer.is_valid())
         self.assertDictEqual(serializer.errors,
                              {'non_field_errors': ['Invalid data']})
+
+
+# regression tests for issue: 1493
+
+class ValidationMaxValueValidatorModel(models.Model):
+    number_value = models.PositiveIntegerField(validators=[MaxValueValidator(100)])
+
+
+class ValidationMaxValueValidatorModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ValidationMaxValueValidatorModel
+
+
+class UpdateMaxValueValidationModel(generics.RetrieveUpdateDestroyAPIView):
+    model = ValidationMaxValueValidatorModel
+    serializer_class = ValidationMaxValueValidatorModelSerializer
+
+
+class TestMaxValueValidatorValidation(TestCase):
+
+    def test_max_value_validation_serializer_success(self):
+        serializer = ValidationMaxValueValidatorModelSerializer(data={'number_value': 99})
+        self.assertTrue(serializer.is_valid())
+
+    def test_max_value_validation_serializer_fails(self):
+        serializer = ValidationMaxValueValidatorModelSerializer(data={'number_value': 101})
+        self.assertFalse(serializer.is_valid())
+        self.assertDictEqual({'number_value': ['Ensure this value is less than or equal to 100.']}, serializer.errors)
+
+    def test_max_value_validation_success(self):
+        obj = ValidationMaxValueValidatorModel.objects.create(number_value=100)
+        request = factory.patch('/{0}'.format(obj.pk), {'number_value': 98}, format='json')
+        view = UpdateMaxValueValidationModel().as_view()
+        response = view(request, pk=obj.pk).render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_max_value_validation_fail(self):
+        obj = ValidationMaxValueValidatorModel.objects.create(number_value=100)
+        request = factory.patch('/{0}'.format(obj.pk), {'number_value': 101}, format='json')
+        view = UpdateMaxValueValidationModel().as_view()
+        response = view(request, pk=obj.pk).render()
+        self.assertEqual(response.content, b'{"number_value": ["Ensure this value is less than or equal to 100."]}')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

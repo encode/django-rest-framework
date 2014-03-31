@@ -6,46 +6,39 @@ In addition Django's built in 403 and 404 exceptions are handled.
 """
 from __future__ import unicode_literals
 from rest_framework import status
+import math
 
 
 class APIException(Exception):
     """
     Base class for REST framework exceptions.
-    Subclasses should provide `.status_code` and `.detail` properties.
+    Subclasses should provide `.status_code` and `.default_detail` properties.
     """
-    pass
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    default_detail = ''
+
+    def __init__(self, detail=None):
+        self.detail = detail or self.default_detail
 
 
 class ParseError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
     default_detail = 'Malformed request.'
 
-    def __init__(self, detail=None):
-        self.detail = detail or self.default_detail
-
 
 class AuthenticationFailed(APIException):
     status_code = status.HTTP_401_UNAUTHORIZED
     default_detail = 'Incorrect authentication credentials.'
-
-    def __init__(self, detail=None):
-        self.detail = detail or self.default_detail
 
 
 class NotAuthenticated(APIException):
     status_code = status.HTTP_401_UNAUTHORIZED
     default_detail = 'Authentication credentials were not provided.'
 
-    def __init__(self, detail=None):
-        self.detail = detail or self.default_detail
-
 
 class PermissionDenied(APIException):
     status_code = status.HTTP_403_FORBIDDEN
     default_detail = 'You do not have permission to perform this action.'
-
-    def __init__(self, detail=None):
-        self.detail = detail or self.default_detail
 
 
 class MethodNotAllowed(APIException):
@@ -75,14 +68,14 @@ class UnsupportedMediaType(APIException):
 
 class Throttled(APIException):
     status_code = status.HTTP_429_TOO_MANY_REQUESTS
-    default_detail = "Request was throttled."
+    default_detail = 'Request was throttled.'
     extra_detail = "Expected available in %d second%s."
 
     def __init__(self, wait=None, detail=None):
-        import math
-        self.wait = wait and math.ceil(wait) or None
-        if wait is not None:
-            format = detail or self.default_detail + self.extra_detail
-            self.detail = format % (self.wait, self.wait != 1 and 's' or '')
-        else:
+        if wait is None:
             self.detail = detail or self.default_detail
+            self.wait = None
+        else:
+            format = (detail or self.default_detail) + self.extra_detail
+            self.detail = format % (wait, wait != 1 and 's' or '')
+            self.wait = math.ceil(wait)

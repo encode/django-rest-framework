@@ -7,6 +7,7 @@ versions of django/python, and compatibility wrappers around optional packages.
 from __future__ import unicode_literals
 
 import django
+import inspect
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
 
@@ -69,6 +70,13 @@ try:
 except ImportError:
     import urlparse
 
+# UserDict moves in Python 3
+try:
+    from UserDict import UserDict
+    from UserDict import DictMixin
+except ImportError:
+    from collections import UserDict
+    from collections import MutableMapping as DictMixin
 
 # Try to import PIL in either of the two ways it can end up installed.
 try:
@@ -94,13 +102,6 @@ def get_concrete_model(model_cls):
     except AttributeError:
         # 1.3 does not include concrete model
         return model_cls
-
-
-# Django 1.5 add support for custom auth user model
-if django.VERSION >= (1, 5):
-    AUTH_USER_MODEL = settings.AUTH_USER_MODEL
-else:
-    AUTH_USER_MODEL = 'auth.User'
 
 
 if django.VERSION >= (1, 5):
@@ -456,7 +457,7 @@ from django.test.client import RequestFactory as DjangoRequestFactory
 from django.test.client import FakePayload
 try:
     # In 1.5 the test client uses force_bytes
-    from django.utils.encoding import force_bytes_or_smart_bytes
+    from django.utils.encoding import force_bytes as force_bytes_or_smart_bytes
 except ImportError:
     # In 1.3 and 1.4 the test client just uses smart_str
     from django.utils.encoding import smart_str as force_bytes_or_smart_bytes
@@ -529,19 +530,30 @@ except ImportError:
 try:
     import oauth_provider
     from oauth_provider.store import store as oauth_provider_store
+
+    # check_nonce's calling signature in django-oauth-plus changes sometime
+    # between versions 2.0 and 2.2.1
+    def check_nonce(request, oauth_request, oauth_nonce, oauth_timestamp):
+        check_nonce_args = inspect.getargspec(oauth_provider_store.check_nonce).args
+        if 'timestamp' in check_nonce_args:
+            return oauth_provider_store.check_nonce(
+                request, oauth_request, oauth_nonce, oauth_timestamp
+            )
+        return oauth_provider_store.check_nonce(
+            request, oauth_request, oauth_nonce
+        )
+
 except (ImportError, ImproperlyConfigured):
     oauth_provider = None
     oauth_provider_store = None
+    check_nonce = None
 
 # OAuth 2 support is optional
 try:
-    import provider.oauth2 as oauth2_provider
-    from provider.oauth2 import models as oauth2_provider_models
-    from provider.oauth2 import forms as oauth2_provider_forms
+    import provider as oauth2_provider
     from provider import scope as oauth2_provider_scope
     from provider import constants as oauth2_constants
-    from provider import __version__ as provider_version
-    if provider_version in ('0.2.3', '0.2.4'):
+    if oauth2_provider.__version__ in ('0.2.3', '0.2.4'):
         # 0.2.3 and 0.2.4 are supported version that do not support
         # timezone aware datetimes
         import datetime
@@ -551,8 +563,6 @@ try:
         from django.utils.timezone import now as provider_now
 except ImportError:
     oauth2_provider = None
-    oauth2_provider_models = None
-    oauth2_provider_forms = None
     oauth2_provider_scope = None
     oauth2_constants = None
     provider_now = None
@@ -569,3 +579,23 @@ if six.PY3:
 else:
     def is_non_str_iterable(obj):
         return hasattr(obj, '__iter__')
+
+
+try:
+    from django.utils.encoding import python_2_unicode_compatible
+except ImportError:
+    def python_2_unicode_compatible(klass):
+        """
+        A decorator that defines __unicode__ and __str__ methods under Python 2.
+        Under Python 3 it does nothing.
+
+        To support Python 2 and 3 with a single code base, define a __str__ method
+        returning text and apply this decorator to the class.
+        """
+        if '__str__' not in klass.__dict__:
+            raise ValueError("@python_2_unicode_compatible cannot be applied "
+                             "to %s because it doesn't define __str__()." %
+                             klass.__name__)
+        klass.__unicode__ = klass.__str__
+        klass.__str__ = lambda self: self.__unicode__().encode('utf-8')
+        return klass
