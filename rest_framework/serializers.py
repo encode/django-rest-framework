@@ -264,6 +264,15 @@ class BaseSerializer(WritableField):
         """
         return field_name
 
+    def get_field_name_map(self):
+        """
+        Return a map of serialized->python field names
+        """
+        ret = SortedDict()
+        for name, value in list(self.fields.items()):
+            ret[self.get_field_key(name)] = name
+        return ret
+
     def restore_fields(self, data, files):
         """
         Core of deserialization, together with `restore_object`.
@@ -275,10 +284,20 @@ class BaseSerializer(WritableField):
             self._errors['non_field_errors'] = ['Invalid data']
             return None
 
+        translated_data = SortedDict()
+        field_name_map = self.get_field_name_map()
+        for k,v in data.items():
+            try:
+                python_field = field_name_map[k]
+            except KeyError:
+                pass
+            else:
+                translated_data[python_field] = v
+
         for field_name, field in self.fields.items():
             field.initialize(parent=self, field_name=field_name)
             try:
-                field.field_from_native(data, files, field_name, reverted_data)
+                field.field_from_native(translated_data, files, field_name, reverted_data)
             except ValidationError as err:
                 self._errors[field_name] = list(err.messages)
 
@@ -757,9 +776,9 @@ class ModelSerializer(Serializer):
                     field.read_only = True
 
                 ret[accessor_name] = field
-        
+
         # Ensure that 'read_only_fields' is an iterable
-        assert isinstance(self.opts.read_only_fields, (list, tuple)), '`read_only_fields` must be a list or tuple' 
+        assert isinstance(self.opts.read_only_fields, (list, tuple)), '`read_only_fields` must be a list or tuple'
 
         # Add the `read_only` flag to any fields that have been specified
         # in the `read_only_fields` option
@@ -774,10 +793,10 @@ class ModelSerializer(Serializer):
                 "on serializer '%s'." %
                 (field_name, self.__class__.__name__))
             ret[field_name].read_only = True
-        
+
         # Ensure that 'write_only_fields' is an iterable
-        assert isinstance(self.opts.write_only_fields, (list, tuple)), '`write_only_fields` must be a list or tuple' 
-        
+        assert isinstance(self.opts.write_only_fields, (list, tuple)), '`write_only_fields` must be a list or tuple'
+
         for field_name in self.opts.write_only_fields:
             assert field_name not in self.base_fields.keys(), (
                 "field '%s' on serializer '%s' specified in "
@@ -788,7 +807,7 @@ class ModelSerializer(Serializer):
                 "Non-existant field '%s' specified in `write_only_fields` "
                 "on serializer '%s'." %
                 (field_name, self.__class__.__name__))
-            ret[field_name].write_only = True            
+            ret[field_name].write_only = True
 
         return ret
 
