@@ -130,6 +130,34 @@ def _is_protected_type(obj):
     )
 
 
+def _convert_fields(data, mapping):
+    """
+    Takes data as dict or none and str->str map of keys and
+    returns None or dictionary with converted keys
+    """
+    # Handle translation of serialized fields into non serailzed fields
+    if data is not None:
+        translated_data = copy.deepcopy(data)
+        for key in mapping.keys():
+            if key not in translated_data:
+                continue
+            newkey = mapping.get(key)
+            try:  # MultiValueDict
+                value = translated_data.getlist(key)
+                del translated_data[key]
+                translated_data.setlist(newkey, value)
+            except AttributeError:
+                value = translated_data.pop(key)
+                translated_data[newkey] = value
+
+#         for key in translated_data.keys():
+#             if key in mapping:
+    else:  # Data can be None so translated_data is too
+        translated_data = None
+
+    return translated_data
+
+
 def _get_declared_fields(bases, attrs):
     """
     Create a list of serializer field instances from the passed in 'attrs',
@@ -166,6 +194,7 @@ class SerializerOptions(object):
         self.depth = getattr(meta, 'depth', 0)
         self.fields = getattr(meta, 'fields', ())
         self.exclude = getattr(meta, 'exclude', ())
+        self.convert_fields = getattr(meta, 'convert_fields', False)
 
 
 class BaseSerializer(WritableField):
@@ -287,27 +316,14 @@ class BaseSerializer(WritableField):
             self._errors['non_field_errors'] = ['Invalid data']
             return None
 
-        # Handle translation of serialized fields into non serailzed fields
-        if data is not None:
-            translated_data = copy.deepcopy(data)
-            field_name_map = self.get_field_name_map()
-            for key in translated_data.keys():
-                if key in field_name_map:
-                    newkey = field_name_map.get(key)
-                    try:  # MultiValueDict
-                        value = translated_data.getlist(key)
-                        del translated_data[key]
-                        translated_data.setlist(newkey, value)
-                    except AttributeError:
-                        value = translated_data.pop(key)
-                        translated_data[newkey] = value
-        else:  # Data can be None so translated_data is too
-            translated_data = None
+        if self.opts.convert_fields:
+            key_map = self.get_field_name_map()
+            data = _convert_fields(data, key_map)
 
         for field_name, field in self.fields.items():
             field.initialize(parent=self, field_name=field_name)
             try:
-                field.field_from_native(translated_data, files, field_name, reverted_data)
+                field.field_from_native(data, files, field_name, reverted_data)
             except ValidationError as err:
                 self._errors[field_name] = list(err.messages)
 
