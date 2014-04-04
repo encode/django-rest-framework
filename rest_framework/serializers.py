@@ -270,7 +270,10 @@ class BaseSerializer(WritableField):
         """
         ret = SortedDict()
         for name, value in list(self.fields.items()):
-            ret[self.get_field_key(name)] = name
+            key = self.get_field_key(name)
+            if key in ret:
+                raise Warning()
+            ret[key] = name
         return ret
 
     def restore_fields(self, data, files):
@@ -284,15 +287,22 @@ class BaseSerializer(WritableField):
             self._errors['non_field_errors'] = ['Invalid data']
             return None
 
-        translated_data = SortedDict()
-        field_name_map = self.get_field_name_map()
-        for k,v in data.items():
-            try:
-                python_field = field_name_map[k]
-            except KeyError:
-                pass
-            else:
-                translated_data[python_field] = v
+        # Handle translation of serialized fields into non serailzed fields
+        if data is not None:
+            translated_data = copy.deepcopy(data)
+            field_name_map = self.get_field_name_map()
+            for key in translated_data.keys():
+                if key in field_name_map:
+                    newkey = field_name_map.get(key)
+                    try:  # MultiValueDict
+                        value = translated_data.getlist(key)
+                        del translated_data[key]
+                        translated_data.setlist(newkey, value)
+                    except AttributeError:
+                        value = translated_data.pop(key)
+                        translated_data[newkey] = value
+        else:  # Data can be None so translated_data is too
+            translated_data = None
 
         for field_name, field in self.fields.items():
             field.initialize(parent=self, field_name=field_name)
