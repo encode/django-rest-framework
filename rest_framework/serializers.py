@@ -133,7 +133,7 @@ def _is_protected_type(obj):
 def _convert_fields(data, mapping):
     """
     Takes data as dict or none and str->str map of keys and
-    returns None or dictionary with converted keys
+    returns None or new dictionary with converted keys
     """
     # Handle translation of serialized fields into non serailzed fields
     if data is not None:
@@ -149,9 +149,6 @@ def _convert_fields(data, mapping):
             except AttributeError:
                 value = translated_data.pop(key)
                 translated_data[newkey] = value
-
-#         for key in translated_data.keys():
-#             if key in mapping:
     else:  # Data can be None so translated_data is too
         translated_data = None
 
