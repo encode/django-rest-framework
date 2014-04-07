@@ -154,6 +154,10 @@ class APIClient(APIRequestFactory, DjangoClient):
         kwargs.update(self._credentials)
         return super(APIClient, self).request(**kwargs)
 
+    def logout(self):
+        self._credentials = {}
+        return super(APIClient, self).logout()
+
 
 class APITransactionTestCase(testcases.TransactionTestCase):
     client_class = APIClient
