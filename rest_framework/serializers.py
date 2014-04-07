@@ -15,6 +15,7 @@ import copy
 import datetime
 import inspect
 import types
+import warnings
 from decimal import Decimal
 from django.core.paginator import Page
 from django.db import models
@@ -298,7 +299,9 @@ class BaseSerializer(WritableField):
         for name, value in list(self.fields.items()):
             key = self.get_field_key(name)
             if key in ret:
-                raise Warning()
+                warnings.warn("Duplicate key found in fields. This can happen if `get_field_key`"
+                " can return the same string for two different inputs!  Ensure your keys are unique"
+                " after running them all through `get_field_key`", Warning, stacklevel=3)
             ret[key] = name
         return ret
 
