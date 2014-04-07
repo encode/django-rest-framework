@@ -371,10 +371,11 @@ class GenericAPIView(views.APIView):
             if method not in self.allowed_methods:
                 continue
 
-            cloned_request = clone_request(request, method)
+            original_request = clone_request(request, request.method)
+            self.request = clone_request(request, method)
             try:
                 # Test global permissions
-                self.check_permissions(cloned_request)
+                self.check_permissions(self.request)
                 # Test object permissions
                 if method == 'PUT':
                     try:
@@ -392,6 +393,7 @@ class GenericAPIView(views.APIView):
                 # appropriate metadata about the fields that should be supplied.
                 serializer = self.get_serializer()
                 actions[method] = serializer.metadata()
+                self.request = original_request
 
         if actions:
             ret['actions'] = actions
