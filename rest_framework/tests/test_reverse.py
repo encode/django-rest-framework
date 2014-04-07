@@ -13,6 +13,7 @@ def null_view(request):
 
 v0_urlpatterns = patterns('',
     url(r'^view$', null_view, name='view'),
+    url(r'^other-view', null_view, name="other-view"),
 )
 
 v1_urlpatterns = patterns('',
@@ -51,6 +52,12 @@ class ReverseTests(TestCase):
         request = factory.get('/v2/view')
         url = reverse('view', request=request)
         self.assertEqual(url, 'http://testserver/v2/view')
+
+    def test_namespaced_request_to_non_namespaced_view_not_in_namespace(self):
+        request = factory.get('/v2/view')
+        url = reverse('other-view', request=request)
+        self.assertEqual(url, 'http://testserver/other-view')
+
 
     # Additional tests for #1143
     # Covering cases mentioned
