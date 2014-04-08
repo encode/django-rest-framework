@@ -607,3 +607,31 @@ class TestFilterBackendAppliedToViews(TestCase):
         response = view(request).render()
         self.assertContains(response, 'field_b')
         self.assertNotContains(response, 'field_a')
+
+    def test_options_with_dynamic_serializer(self):
+        """
+        Ensure that OPTIONS returns correct POST json schema: DynamicSerializer with single field 'field_b'
+        """
+        request = factory.options('/')
+        view = DynamicSerializerView.as_view()
+        with self.assertNumQueries(0):
+            response = view(request).render()
+        expected = {
+            u'name': u'Dynamic Serializer',
+            u'description': u'',
+            u'renders': [u'text/html', u'application/json'],
+            u'parses': [u'application/json', u'application/x-www-form-urlencoded', u'multipart/form-data'],
+            u'actions': {
+                u'POST': {
+                    u'field_b': {
+                        u'type': u'string',
+                        u'required': True,
+                        u'read_only': False,
+                        u'label': u'field b',
+                        u'max_length': 100
+                    }
+                }
+            }
+        }
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected)
