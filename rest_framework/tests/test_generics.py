@@ -617,18 +617,18 @@ class TestFilterBackendAppliedToViews(TestCase):
         with self.assertNumQueries(0):
             response = view(request).render()
         expected = {
-            u'name': u'Dynamic Serializer',
-            u'description': u'',
-            u'renders': [u'text/html', u'application/json'],
-            u'parses': [u'application/json', u'application/x-www-form-urlencoded', u'multipart/form-data'],
-            u'actions': {
-                u'POST': {
-                    u'field_b': {
-                        u'type': u'string',
-                        u'required': True,
-                        u'read_only': False,
-                        u'label': u'field b',
-                        u'max_length': 100
+            'name': 'Dynamic Serializer',
+            'description': '',
+            'renders': ['text/html', 'application/json'],
+            'parses': ['application/json', 'application/x-www-form-urlencoded', 'multipart/form-data'],
+            'actions': {
+                'POST': {
+                    'field_b': {
+                        'type': 'string',
+                        'required': True,
+                        'read_only': False,
+                        'label': 'field b',
+                        'max_length': 100
                     }
                 }
             }
