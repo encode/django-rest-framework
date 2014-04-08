@@ -334,7 +334,22 @@ class BaseSerializer(WritableField):
             return instance
         return attrs
 
-    def to_native(self, obj):
+    def _skip_field(self, obj, field_name, field, *args, **kwargs):
+        """ Whether to skip serializing the field; return True to skip"""
+        return field.read_only and obj is None
+
+    def _get_field_value(self, obj, field_name, field, *args, **kwargs):
+        """
+        call subfield's field_to_native. First try with args and kwargs,
+        fallback to without for serializers/fields without support.
+        """
+        try:
+            value = field.field_to_native(obj, field_name, *args, **kwargs)
+        except TypeError:
+            value = field.field_to_native(obj, field_name)
+        return value
+
+    def to_native(self, obj, *args, **kwargs):
         """
         Serialize objects -> primitives.
         """
@@ -342,11 +357,11 @@ class BaseSerializer(WritableField):
         ret.fields = self._dict_class()
 
         for field_name, field in self.fields.items():
-            if field.read_only and obj is None:
+            if self._skip_field(obj, field_name, field, *args, **kwargs):
                continue
             field.initialize(parent=self, field_name=field_name)
             key = self.get_field_key(field_name)
-            value = field.field_to_native(obj, field_name)
+            value = self._get_field_value(obj, field_name, field, *args, **kwargs)
             method = getattr(self, 'transform_%s' % field_name, None)
             if callable(method):
                 value = method(obj, value)
@@ -381,7 +396,7 @@ class BaseSerializer(WritableField):
             field.label = pretty_name(key)
         return field
 
-    def field_to_native(self, obj, field_name):
+    def field_to_native(self, obj, field_name, *args, **kwargs):
         """
         Override default so that the serializer can be used as a nested field
         across relationships.
@@ -390,7 +405,7 @@ class BaseSerializer(WritableField):
             return None
 
         if self.source == '*':
-            return self.to_native(obj)
+            return self.to_native(obj, *args, **kwargs)
 
         # Get the raw field value
         try:
@@ -405,7 +420,7 @@ class BaseSerializer(WritableField):
             return None
 
         if is_simple_callable(getattr(value, 'all', None)):
-            return [self.to_native(item) for item in value.all()]
+            return [self.to_native(item, *args, **kwargs) for item in value.all()]
 
         if value is None:
             return None
@@ -416,8 +431,8 @@ class BaseSerializer(WritableField):
             many = hasattr(value, '__iter__') and not isinstance(value, (Page, dict, six.text_type))
 
         if many:
-            return [self.to_native(item) for item in value]
-        return self.to_native(value)
+            return [self.to_native(item, *args, **kwargs) for item in value]
+        return self.to_native(value, *args, **kwargs)
 
     def field_from_native(self, data, files, field_name, into):
         """

@@ -180,7 +180,7 @@ class Field(object):
         """
         return
 
-    def field_to_native(self, obj, field_name):
+    def field_to_native(self, obj, field_name, *args, **kwargs):
         """
         Given and object and a field name, returns the value that should be
         serialized for that field.
@@ -328,10 +328,10 @@ class WritableField(Field):
         if errors:
             raise ValidationError(errors)
 
-    def field_to_native(self, obj, field_name):
+    def field_to_native(self, obj, field_name, *args, **kwargs):
         if self.write_only:
             return None
-        return super(WritableField, self).field_to_native(obj, field_name)
+        return super(WritableField, self).field_to_native(obj, field_name, *args, **kwargs)
 
     def field_from_native(self, data, files, field_name, into):
         """
@@ -413,7 +413,7 @@ class ModelField(WritableField):
         else:
             return self.model_field.to_python(value)
 
-    def field_to_native(self, obj, field_name):
+    def field_to_native(self, obj, field_name, *args, **kwargs):
         value = self.model_field._get_val_from_obj(obj)
         if is_protected_type(value):
             return value
@@ -1022,6 +1022,6 @@ class SerializerMethodField(Field):
         self.method_name = method_name
         super(SerializerMethodField, self).__init__()
 
-    def field_to_native(self, obj, field_name):
-        value = getattr(self.parent, self.method_name)(obj)
+    def field_to_native(self, obj, field_name, *args, **kwargs):
+        value = getattr(self.parent, self.method_name)(obj, *args, **kwargs)
         return self.to_native(value)
