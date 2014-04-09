@@ -2,8 +2,10 @@
 General tests for relational fields.
 """
 from __future__ import unicode_literals
+from django import get_version
 from django.db import models
 from django.test import TestCase
+from django.utils import unittest
 from rest_framework import serializers
 from rest_framework.tests.models import BlogPost
 
@@ -119,7 +121,7 @@ class RelatedFieldSourceTests(TestCase):
         with self.assertRaises(AttributeError):
             TestSerializer(data={'name': 'foo'})
 
-
+@unittest.skipIf(get_version() < '1.6.0', 'Upstream behaviour changed in v1.6')
 class RelatedFieldChoicesTests(TestCase):
     """
     Tests for #1408 "Web browseable API doesn't have blank option on drop down list box"
