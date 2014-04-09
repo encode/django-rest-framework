@@ -164,7 +164,7 @@ class Field(object):
         Called to set up a field prior to field_to_native or field_from_native.
 
         parent - The parent serializer.
-        model_field - The model field this field corresponds to, if one exists.
+        field_name - The name of the field being initialized.
         """
         self.parent = parent
         self.root = parent.root or parent
