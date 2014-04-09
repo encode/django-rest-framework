@@ -118,3 +118,25 @@ class RelatedFieldSourceTests(TestCase):
             (serializers.ModelSerializer,), attrs)
         with self.assertRaises(AttributeError):
             TestSerializer(data={'name': 'foo'})
+
+
+class RelatedFieldChoicesTests(TestCase):
+    """
+    Tests for #1408 "Web browseable API doesn't have blank option on drop down list box"
+    https://github.com/tomchristie/django-rest-framework/issues/1408
+    """
+    def test_blank_option_is_added_to_choice_if_required_equals_false(self):
+        """
+
+        """
+        post = BlogPost(title="Checking blank option is added")
+        post.save()
+
+        queryset = BlogPost.objects.all()
+        field = serializers.RelatedField(required=False, queryset=queryset)
+
+        choice_count = BlogPost.objects.count()
+        widget_count = len(field.widget.choices)
+
+        self.assertEqual(widget_count, choice_count + 1, 'BLANK_CHOICE_DASH option should have been added')
+
