@@ -919,6 +919,7 @@ class ModelSerializer(Serializer):
         Restore the model instance.
         """
         m2m_data = {}
+        virtual_m2m_data = {}
         related_data = {}
         nested_forward_relations = {}
         meta = self.opts.model._meta
@@ -936,9 +937,15 @@ class ModelSerializer(Serializer):
                 m2m_data[field_name] = attrs.pop(field_name)
 
         # Forward m2m relations
-        for field in meta.many_to_many + meta.virtual_fields:
+        for field in meta.many_to_many:
             if field.name in attrs:
                 m2m_data[field.name] = attrs.pop(field.name)
+
+        # Virtual m2m relations
+        # This is mostly for GenericRelations
+        for field in meta.virtual_fields:
+            if field.name in attrs:
+                virtual_m2m_data[field.name] = attrs.pop(field.name)
 
         # Nested forward relations - These need to be marked so we can save
         # them before saving the parent model instance.
@@ -964,6 +971,7 @@ class ModelSerializer(Serializer):
         # at the point of save.
         instance._related_data = related_data
         instance._m2m_data = m2m_data
+        instance._virtual_m2m_data = virtual_m2m_data
         instance._nested_forward_relations = nested_forward_relations
 
         return instance
@@ -992,8 +1000,16 @@ class ModelSerializer(Serializer):
 
         if getattr(obj, '_m2m_data', None):
             for accessor_name, object_list in obj._m2m_data.items():
+                # We need to save m2m data before linking the objects together
                 [self.save_object(o) for o in object_list]
                 setattr(obj, accessor_name, object_list)
+            del(obj._m2m_data)
+
+        if getattr(obj, '_virtual_m2m_data', None):
+            for accessor_name, object_list in obj._virtual_m2m_data.items():
+                # In case of GenericRelation, we have a FK as constraint
+                setattr(obj, accessor_name, object_list)
+                [self.save_object(o) for o in object_list]
             del(obj._m2m_data)
 
         if getattr(obj, '_related_data', None):
