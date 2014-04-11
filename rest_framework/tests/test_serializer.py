@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.test import TestCase
+from django.utils import unittest
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers, fields, relations
@@ -12,26 +13,31 @@ from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, Acti
 from rest_framework.tests.models import BasicModelSerializer
 import datetime
 import pickle
+try:
+    import PIL
+except:
+    PIL = None
 
 
-class AMOAFModel(RESTFrameworkModel):
-    char_field = models.CharField(max_length=1024, blank=True)
-    comma_separated_integer_field = models.CommaSeparatedIntegerField(max_length=1024, blank=True)
-    decimal_field = models.DecimalField(max_digits=64, decimal_places=32, blank=True)
-    email_field = models.EmailField(max_length=1024, blank=True)
-    file_field = models.FileField(upload_to='test', max_length=1024, blank=True)
-    image_field = models.ImageField(upload_to='test', max_length=1024, blank=True)
-    slug_field = models.SlugField(max_length=1024, blank=True)
-    url_field = models.URLField(max_length=1024, blank=True)
+if PIL is not None:
+    class AMOAFModel(RESTFrameworkModel):
+        char_field = models.CharField(max_length=1024, blank=True)
+        comma_separated_integer_field = models.CommaSeparatedIntegerField(max_length=1024, blank=True)
+        decimal_field = models.DecimalField(max_digits=64, decimal_places=32, blank=True)
+        email_field = models.EmailField(max_length=1024, blank=True)
+        file_field = models.FileField(upload_to='test', max_length=1024, blank=True)
+        image_field = models.ImageField(upload_to='test', max_length=1024, blank=True)
+        slug_field = models.SlugField(max_length=1024, blank=True)
+        url_field = models.URLField(max_length=1024, blank=True)
 
-class DVOAFModel(RESTFrameworkModel):
-    positive_integer_field = models.PositiveIntegerField(blank=True)
-    positive_small_integer_field = models.PositiveSmallIntegerField(blank=True)
-    email_field = models.EmailField(blank=True)
-    file_field = models.FileField(upload_to='test', blank=True)
-    image_field = models.ImageField(upload_to='test', blank=True)
-    slug_field = models.SlugField(blank=True)
-    url_field = models.URLField(blank=True)
+    class DVOAFModel(RESTFrameworkModel):
+        positive_integer_field = models.PositiveIntegerField(blank=True)
+        positive_small_integer_field = models.PositiveSmallIntegerField(blank=True)
+        email_field = models.EmailField(blank=True)
+        file_field = models.FileField(upload_to='test', blank=True)
+        image_field = models.ImageField(upload_to='test', blank=True)
+        slug_field = models.SlugField(blank=True)
+        url_field = models.URLField(blank=True)
 
 
 class SubComment(object):
@@ -161,7 +167,7 @@ class AlbumsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Album
-        fields = ['title']  # lists are also valid options
+        fields = ['title', 'ref']  # lists are also valid options
 
 
 class PositiveIntegerAsChoiceSerializer(serializers.ModelSerializer):
@@ -502,6 +508,32 @@ class ValidationTests(TestCase):
         )
         self.assertEqual(serializer.is_valid(), True)
 
+    def test_writable_star_source_on_nested_serializer_with_parent_object(self):
+        class TitleSerializer(serializers.Serializer):
+            title = serializers.WritableField(source='title')
+
+        class AlbumSerializer(serializers.ModelSerializer):
+            nested = TitleSerializer(source='*')
+
+            class Meta:
+                model = Album
+                fields = ('nested',)
+
+        class PhotoSerializer(serializers.ModelSerializer):
+            album = AlbumSerializer(source='album')
+
+            class Meta:
+                model = Photo
+                fields = ('album', )
+
+        photo = Photo(album=Album())
+
+        data = {'album': {'nested': {'title': 'test'}}}
+
+        serializer = PhotoSerializer(photo, data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.data, data)
+
     def test_writable_star_source_with_inner_source_fields(self):
         """
         Tests that a serializer with source="*" correctly expands the
@@ -611,12 +643,15 @@ class ModelValidationTests(TestCase):
         """
         Just check if serializers.ModelSerializer handles unique checks via .full_clean()
         """
-        serializer = AlbumsSerializer(data={'title': 'a'})
+        serializer = AlbumsSerializer(data={'title': 'a', 'ref': '1'})
         serializer.is_valid()
         serializer.save()
         second_serializer = AlbumsSerializer(data={'title': 'a'})
         self.assertFalse(second_serializer.is_valid())
-        self.assertEqual(second_serializer.errors,  {'title': ['Album with this Title already exists.']})
+        self.assertEqual(second_serializer.errors,  {'title': ['Album with this Title already exists.'],})
+        third_serializer = AlbumsSerializer(data=[{'title': 'b', 'ref': '1'}, {'title': 'c'}])
+        self.assertFalse(third_serializer.is_valid())
+        self.assertEqual(third_serializer.errors,  [{'ref': ['Album with this Ref already exists.']}, {}])
 
     def test_foreign_key_is_null_with_partial(self):
         """
@@ -1565,6 +1600,7 @@ class ManyFieldHelpTextTest(TestCase):
         self.assertEqual('Some help text.', rel_field.help_text)
 
 
+@unittest.skipUnless(PIL is not None, 'PIL is not installed')
 class AttributeMappingOnAutogeneratedFieldsTests(TestCase):
 
     def setUp(self):
@@ -1637,6 +1673,7 @@ class AttributeMappingOnAutogeneratedFieldsTests(TestCase):
         self.field_test('url_field')
 
 
+@unittest.skipUnless(PIL is not None, 'PIL is not installed')
 class DefaultValuesOnAutogeneratedFieldsTests(TestCase):
 
     def setUp(self):

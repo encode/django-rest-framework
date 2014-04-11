@@ -40,6 +40,17 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
+### 2.3.13
+
+**Date**: 6th March 2014
+
+* Django 1.7 Support.
+* Fix `default` argument when used with serializer relation fields.
+* Display the media type of the content that is being displayed in the browsable API, rather than 'text/html'.
+* Bugfix for `urlize` template failure when URL regex is matched, but value does not `urlparse`.
+* Use `urandom` for token generation.
+* Only use `Vary: Accept` when more than one renderer exists.
+
 ### 2.3.12
 
 **Date**: 15th January 2014
@@ -101,11 +112,11 @@ You can determine your currently installed version using `pip freeze`:
 * Bugfix: `client.force_authenticate(None)` should also clear session info if it exists.
 * Bugfix: Client sending empty string instead of file now clears `FileField`.
 * Bugfix: Empty values on ChoiceFields with `required=False` now consistently return `None`.
-* Bugfix: Clients setting `page=0` now simply returns the default page size, instead of disabling pagination. [*]
+* Bugfix: Clients setting `page_size=0` now simply returns the default page size, instead of disabling pagination. [*]
 
 ---
 
-[*] Note that the change in `page=0` behaviour fixes what is considered to be a bug in how clients can effect the pagination size.  However if you were relying on this behavior you will need to add the following mixin to your list views in order to preserve the existing behavior.
+[*] Note that the change in `page_size=0` behaviour fixes what is considered to be a bug in how clients can effect the pagination size.  However if you were relying on this behavior you will need to add the following mixin to your list views in order to preserve the existing behavior.
 
     class DisablePaginationMixin(object):
         def get_paginate_by(self, queryset=None):

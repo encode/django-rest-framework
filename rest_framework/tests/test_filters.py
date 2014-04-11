@@ -7,9 +7,11 @@ from django.test import TestCase
 from django.utils import unittest
 from rest_framework import generics, serializers, status, filters
 from rest_framework.compat import django_filters, patterns, url
+from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from rest_framework.tests.models import BasicModel
 from .models import FilterableItem
+from .utils import temporary_setting
 
 factory = APIRequestFactory()
 
@@ -363,6 +365,24 @@ class SearchFilterTests(TestCase):
             ]
         )
 
+    def test_search_with_nonstandard_search_param(self):
+        with temporary_setting('SEARCH_PARAM', 'query', module=filters):
+            class SearchListView(generics.ListAPIView):
+                model = SearchFilterModel
+                filter_backends = (filters.SearchFilter,)
+                search_fields = ('title', 'text')
+
+            view = SearchListView.as_view()
+            request = factory.get('/', {'query': 'b'})
+            response = view(request)
+            self.assertEqual(
+                response.data,
+                [
+                    {'id': 1, 'title': 'z', 'text': 'abc'},
+                    {'id': 2, 'title': 'zz', 'text': 'bcd'}
+                ]
+            )
+
 
 class OrdringFilterModel(models.Model):
     title = models.CharField(max_length=20)
@@ -519,6 +539,26 @@ class OrderingFilterTests(TestCase):
                 {'id': 2, 'title': 'yxw', 'text': 'bcd'},
             ]
         )
+
+    def test_ordering_with_nonstandard_ordering_param(self):
+        with temporary_setting('ORDERING_PARAM', 'order', filters):
+            class OrderingListView(generics.ListAPIView):
+                model = OrdringFilterModel
+                filter_backends = (filters.OrderingFilter,)
+                ordering = ('title',)
+                ordering_fields = ('text',)
+
+            view = OrderingListView.as_view()
+            request = factory.get('/', {'order': 'text'})
+            response = view(request)
+            self.assertEqual(
+                response.data,
+                [
+                    {'id': 1, 'title': 'zyx', 'text': 'abc'},
+                    {'id': 2, 'title': 'yxw', 'text': 'bcd'},
+                    {'id': 3, 'title': 'xwv', 'text': 'cde'},
+                ]
+            )
 
 
 class SensitiveOrderingFilterModel(models.Model):
