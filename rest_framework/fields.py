@@ -146,6 +146,8 @@ class Field(object):
         self._errors = []
         self._value = None
         self._name = None
+        
+        super(Field, self).__init__()
 
     @property
     def errors(self):
