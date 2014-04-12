@@ -16,6 +16,7 @@ import datetime
 import inspect
 import types
 from decimal import Decimal
+from django.contrib.contenttypes.generic import GenericForeignKey
 from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
@@ -943,6 +944,8 @@ class ModelSerializer(Serializer):
 
         # Forward m2m relations
         for field in meta.many_to_many + meta.virtual_fields:
+            if isinstance(field, GenericForeignKey):
+                continue
             if field.name in attrs:
                 m2m_data[field.name] = attrs.pop(field.name)
 
