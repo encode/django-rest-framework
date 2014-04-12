@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.test import TestCase
+from django.utils import unittest
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers, fields, relations
@@ -12,6 +13,31 @@ from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, Acti
 from rest_framework.tests.models import BasicModelSerializer
 import datetime
 import pickle
+try:
+    import PIL
+except:
+    PIL = None
+
+
+if PIL is not None:
+    class AMOAFModel(RESTFrameworkModel):
+        char_field = models.CharField(max_length=1024, blank=True)
+        comma_separated_integer_field = models.CommaSeparatedIntegerField(max_length=1024, blank=True)
+        decimal_field = models.DecimalField(max_digits=64, decimal_places=32, blank=True)
+        email_field = models.EmailField(max_length=1024, blank=True)
+        file_field = models.FileField(upload_to='test', max_length=1024, blank=True)
+        image_field = models.ImageField(upload_to='test', max_length=1024, blank=True)
+        slug_field = models.SlugField(max_length=1024, blank=True)
+        url_field = models.URLField(max_length=1024, blank=True)
+
+    class DVOAFModel(RESTFrameworkModel):
+        positive_integer_field = models.PositiveIntegerField(blank=True)
+        positive_small_integer_field = models.PositiveSmallIntegerField(blank=True)
+        email_field = models.EmailField(blank=True)
+        file_field = models.FileField(upload_to='test', blank=True)
+        image_field = models.ImageField(upload_to='test', blank=True)
+        slug_field = models.SlugField(blank=True)
+        url_field = models.URLField(blank=True)
 
 
 class SubComment(object):
@@ -71,6 +97,15 @@ class ActionItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ActionItem
 
+class ActionItemSerializerOptionalFields(serializers.ModelSerializer):
+    """
+    Intended to test that fields with `required=False` are excluded from validation.
+    """
+    title = serializers.CharField(required=False)
+
+    class Meta:
+        model = ActionItem
+        fields = ('title',)
 
 class ActionItemSerializerCustomRestore(serializers.ModelSerializer):
 
@@ -132,7 +167,7 @@ class AlbumsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Album
-        fields = ['title']  # lists are also valid options
+        fields = ['title', 'ref']  # lists are also valid options
 
 
 class PositiveIntegerAsChoiceSerializer(serializers.ModelSerializer):
@@ -288,7 +323,13 @@ class BasicTests(TestCase):
         serializer.save()
         self.assertIsNotNone(serializer.data.get('id',None), 'Model is saved. `id` should be set.')
 
-
+    def test_fields_marked_as_not_required_are_excluded_from_validation(self):
+        """
+        Check that fields with `required=False` are included in list of exclusions.
+        """
+        serializer = ActionItemSerializerOptionalFields(self.actionitem)
+        exclusions = serializer.get_validation_exclusions()
+        self.assertTrue('title' in exclusions, '`title` field was marked `required=False` and should be excluded')
 
 
 class DictStyleSerializer(serializers.Serializer):
@@ -467,6 +508,32 @@ class ValidationTests(TestCase):
         )
         self.assertEqual(serializer.is_valid(), True)
 
+    def test_writable_star_source_on_nested_serializer_with_parent_object(self):
+        class TitleSerializer(serializers.Serializer):
+            title = serializers.WritableField(source='title')
+
+        class AlbumSerializer(serializers.ModelSerializer):
+            nested = TitleSerializer(source='*')
+
+            class Meta:
+                model = Album
+                fields = ('nested',)
+
+        class PhotoSerializer(serializers.ModelSerializer):
+            album = AlbumSerializer(source='album')
+
+            class Meta:
+                model = Photo
+                fields = ('album', )
+
+        photo = Photo(album=Album())
+
+        data = {'album': {'nested': {'title': 'test'}}}
+
+        serializer = PhotoSerializer(photo, data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.data, data)
+
     def test_writable_star_source_with_inner_source_fields(self):
         """
         Tests that a serializer with source="*" correctly expands the
@@ -576,12 +643,15 @@ class ModelValidationTests(TestCase):
         """
         Just check if serializers.ModelSerializer handles unique checks via .full_clean()
         """
-        serializer = AlbumsSerializer(data={'title': 'a'})
+        serializer = AlbumsSerializer(data={'title': 'a', 'ref': '1'})
         serializer.is_valid()
         serializer.save()
         second_serializer = AlbumsSerializer(data={'title': 'a'})
         self.assertFalse(second_serializer.is_valid())
-        self.assertEqual(second_serializer.errors,  {'title': ['Album with this Title already exists.']})
+        self.assertEqual(second_serializer.errors,  {'title': ['Album with this Title already exists.'],})
+        third_serializer = AlbumsSerializer(data=[{'title': 'b', 'ref': '1'}, {'title': 'c'}])
+        self.assertFalse(third_serializer.is_valid())
+        self.assertEqual(third_serializer.errors,  [{'ref': ['Album with this Ref already exists.']}, {}])
 
     def test_foreign_key_is_null_with_partial(self):
         """
@@ -863,6 +933,58 @@ class DefaultValueTests(TestCase):
 
         self.assertEqual(instance.extra, 'extra_value')
         self.assertEqual(instance.text, 'overridden')
+
+
+class WritableFieldDefaultValueTests(TestCase):
+
+    def setUp(self):
+        self.expected = {'default': 'value'}
+        self.create_field = fields.WritableField
+
+    def test_get_default_value_with_noncallable(self):
+        field = self.create_field(default=self.expected)
+        got = field.get_default_value()
+        self.assertEqual(got, self.expected)
+
+    def test_get_default_value_with_callable(self):
+        field = self.create_field(default=lambda : self.expected)
+        got = field.get_default_value()
+        self.assertEqual(got, self.expected)
+
+    def test_get_default_value_when_not_required(self):
+        field = self.create_field(default=self.expected, required=False)
+        got = field.get_default_value()
+        self.assertEqual(got, self.expected)
+
+    def test_get_default_value_returns_None(self):
+        field = self.create_field()
+        got = field.get_default_value()
+        self.assertIsNone(got)
+
+    def test_get_default_value_returns_non_True_values(self):
+        values = [None, '', False, 0, [], (), {}] # values that assumed as 'False' in the 'if' clause
+        for expected in values:
+            field = self.create_field(default=expected)
+            got = field.get_default_value()
+            self.assertEqual(got, expected)
+
+
+class RelatedFieldDefaultValueTests(WritableFieldDefaultValueTests):
+
+    def setUp(self):
+        self.expected = {'foo': 'bar'}
+        self.create_field = relations.RelatedField
+
+    def test_get_default_value_returns_empty_list(self):
+        field = self.create_field(many=True)
+        got = field.get_default_value()
+        self.assertListEqual(got, [])
+
+    def test_get_default_value_returns_expected(self):
+        expected = [1, 2, 3]
+        field = self.create_field(many=True, default=expected)
+        got = field.get_default_value()
+        self.assertListEqual(got, expected)
 
 
 class CallableDefaultValueTests(TestCase):
@@ -1492,19 +1614,10 @@ class ManyFieldHelpTextTest(TestCase):
         self.assertEqual('Some help text.', rel_field.help_text)
 
 
+@unittest.skipUnless(PIL is not None, 'PIL is not installed')
 class AttributeMappingOnAutogeneratedFieldsTests(TestCase):
 
     def setUp(self):
-        class AMOAFModel(RESTFrameworkModel):
-            char_field = models.CharField(max_length=1024, blank=True)
-            comma_separated_integer_field = models.CommaSeparatedIntegerField(max_length=1024, blank=True)
-            decimal_field = models.DecimalField(max_digits=64, decimal_places=32, blank=True)
-            email_field = models.EmailField(max_length=1024, blank=True)
-            file_field = models.FileField(max_length=1024, blank=True)
-            image_field = models.ImageField(max_length=1024, blank=True)
-            slug_field = models.SlugField(max_length=1024, blank=True)
-            url_field = models.URLField(max_length=1024, blank=True)
-            nullable_char_field = models.CharField(max_length=1024, blank=True, null=True)
 
         class AMOAFSerializer(serializers.ModelSerializer):
             class Meta:
@@ -1581,17 +1694,10 @@ class AttributeMappingOnAutogeneratedFieldsTests(TestCase):
         self.field_test('nullable_char_field')
 
 
+@unittest.skipUnless(PIL is not None, 'PIL is not installed')
 class DefaultValuesOnAutogeneratedFieldsTests(TestCase):
 
     def setUp(self):
-        class DVOAFModel(RESTFrameworkModel):
-            positive_integer_field = models.PositiveIntegerField(blank=True)
-            positive_small_integer_field = models.PositiveSmallIntegerField(blank=True)
-            email_field = models.EmailField(blank=True)
-            file_field = models.FileField(blank=True)
-            image_field = models.ImageField(blank=True)
-            slug_field = models.SlugField(blank=True)
-            url_field = models.URLField(blank=True)
 
         class DVOAFSerializer(serializers.ModelSerializer):
             class Meta:
@@ -1830,14 +1936,14 @@ class SerializerDefaultTrueBoolean(TestCase):
         self.assertEqual(serializer.data['cat'], False)
         self.assertEqual(serializer.data['dog'], False)
 
-        
+
 class BoolenFieldTypeTest(TestCase):
     '''
     Ensure the various Boolean based model fields are rendered as the proper
     field type
-    
+
     '''
-    
+
     def setUp(self):
         '''
         Setup an ActionItemSerializer for BooleanTesting
@@ -1853,11 +1959,11 @@ class BoolenFieldTypeTest(TestCase):
         '''
         bfield = self.serializer.get_fields()['done']
         self.assertEqual(type(bfield), fields.BooleanField)
-    
+
     def test_nullbooleanfield_type(self):
         '''
-        Test that BooleanField is infered from models.NullBooleanField 
-        
+        Test that BooleanField is infered from models.NullBooleanField
+
         https://groups.google.com/forum/#!topic/django-rest-framework/D9mXEftpuQ8
         '''
         bfield = self.serializer.get_fields()['started']

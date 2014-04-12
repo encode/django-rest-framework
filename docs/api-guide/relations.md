@@ -134,7 +134,7 @@ By default this field is read-write, although you can change this behavior using
 
 **Arguments**:
 
-* `view_name` - The view name that should be used as the target of the relationship.  **required**.
+* `view_name` - The view name that should be used as the target of the relationship.  If you're using [the standard router classes][routers] this wil be a string with the format `<modelname>-detail`. **required**.
 * `many` - If applied to a to-many relationship, you should set this argument to `True`.
 * `required` - If set to `False`, the field will accept values of `None` or the empty-string for nullable relationships.
 * `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
@@ -202,7 +202,7 @@ This field is always read-only.
 
 **Arguments**:
 
-* `view_name` - The view name that should be used as the target of the relationship.  **required**.
+* `view_name` - The view name that should be used as the target of the relationship.  If you're using [the standard router classes][routers] this wil be a string with the format `<model_name>-detail`.  **required**.
 * `lookup_field` - The field on the target that should be used for the lookup.  Should correspond to a URL keyword argument on the referenced view.  Default is `'pk'`.
 * `format` - If using format suffixes, hyperlinked fields will use the same format suffix for the target unless overridden by using the `format` argument.
 
@@ -454,6 +454,7 @@ The [drf-nested-routers package][drf-nested-routers] provides routers and relati
 
 [cite]: http://lwn.net/Articles/193245/
 [reverse-relationships]: https://docs.djangoproject.com/en/dev/topics/db/queries/#following-relationships-backward
+[routers]: http://www.django-rest-framework.org/api-guide/routers#defaultrouter
 [generic-relations]: https://docs.djangoproject.com/en/dev/ref/contrib/contenttypes/#id1
 [2.2-announcement]: ../topics/2.2-announcement.md
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers

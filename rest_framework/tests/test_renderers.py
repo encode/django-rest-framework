@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from decimal import Decimal
 from django.conf.urls import patterns, url, include
 from django.core.cache import cache
+from django.db import models
 from django.test import TestCase
 from django.utils import unittest
 from django.utils.translation import ugettext_lazy as _
@@ -33,6 +34,10 @@ RENDERER_B_SERIALIZER = lambda x: ('Renderer B: %s' % x).encode('ascii')
 expected_results = [
     ((elem for elem in [1, 2, 3]), JSONRenderer, b'[1, 2, 3]')  # Generator
 ]
+
+
+class DummyTestModel(models.Model):
+    name = models.CharField(max_length=42, default='')
 
 
 class BasicRendererTests(TestCase):
@@ -252,6 +257,18 @@ class RendererEndToEndTests(TestCase):
         self.assertEqual(resp.get('Content-Type', None), None)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
+    def test_contains_headers_of_api_response(self):
+        """
+        Issue #1437
+
+        Test we display the headers of the API response and not those from the
+        HTML response
+        """
+        resp = self.client.get('/html1')
+        self.assertContains(resp, '>GET, HEAD, OPTIONS<')
+        self.assertContains(resp, '>application/json<')
+        self.assertNotContains(resp, '>text/html; charset=utf-8<')
+
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
 _indented_repr = '{\n  "foo": [\n    "bar",\n    "baz"\n  ]\n}'
@@ -276,6 +293,20 @@ class JSONRendererTests(TestCase):
         """
         ret = JSONRenderer().render(_('test'))
         self.assertEqual(ret, b'"test"')
+
+    def test_render_queryset_values(self):
+        o = DummyTestModel.objects.create(name='dummy')
+        qs = DummyTestModel.objects.values('id', 'name')
+        ret = JSONRenderer().render(qs)
+        data = json.loads(ret.decode('utf-8'))
+        self.assertEquals(data, [{'id': o.id, 'name': o.name}])
+
+    def test_render_queryset_values_list(self):
+        o = DummyTestModel.objects.create(name='dummy')
+        qs = DummyTestModel.objects.values_list('id', 'name')
+        ret = JSONRenderer().render(qs)
+        data = json.loads(ret.decode('utf-8'))
+        self.assertEquals(data, [[o.id, o.name]])
 
     def test_render_dict_abc_obj(self):
         class Dict(MutableMapping):
@@ -583,6 +614,10 @@ class CacheRenderTest(TestCase):
         method = getattr(self.client, http_method)
         resp = method(url)
         del resp.client, resp.request
+        try:
+            del resp.wsgi_request
+        except AttributeError:
+            pass
         return resp
 
     def test_obj_pickling(self):

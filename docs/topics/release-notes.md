@@ -38,8 +38,6 @@ You can determine your currently installed version using `pip freeze`:
 
 ---
 
-## 2.3.x series
-
 ### 2.4.0
 
 * `@detail_route` and `@list_route` decorators replace `@action` and `@link`.
@@ -50,12 +48,40 @@ You can determine your currently installed version using `pip freeze`:
 * Added `cache` attribute to throttles to allow overriding of default cache.
 * Bugfix: `?page_size=0` query parameter now falls back to default page size for view, instead of always turning pagination off.
 
-### Master
 
+## 2.3.x series
+
+### 2.3.13
+## 2.3.x series
+
+
+**Date**: 6th March 2014
+
+* Django 1.7 Support.
+* Fix `default` argument when used with serializer relation fields.
+* Display the media type of the content that is being displayed in the browsable API, rather than 'text/html'.
+* Bugfix for `urlize` template failure when URL regex is matched, but value does not `urlparse`.
+* Use `urandom` for token generation.
+* Only use `Vary: Accept` when more than one renderer exists.
+
+### 2.3.12
+
+**Date**: 15th January 2014
+
+* **Security fix**: `OrderingField` now only allows ordering on readable serializer fields, or on fields explicitly specified using `ordering_fields`. This prevents users being able to order by fields that are not visible in the API, and exploiting the ordering of sensitive data such as password hashes.
+* Bugfix: `write_only = True` fields now display in the browsable API.
+
+### 2.3.11
+
+**Date**: 14th January 2014
+
+* Added `write_only` serializer field argument.
+* Added `write_only_fields` option to `ModelSerializer` classes.
 * JSON renderer now deals with objects that implement a dict-like interface.
 * Fix compatiblity with newer versions of `django-oauth-plus`.
 * Bugfix: Refine behavior that calls model manager `all()` across nested serializer relationships, preventing erronous behavior with some non-ORM objects, and preventing unneccessary queryset re-evaluations.
 * Bugfix: Allow defaults on BooleanFields to be properly honored when values are not supplied.
+* Bugfix: Prevent double-escaping of non-latin1 URL query params when appending `format=json` params.
 
 ### 2.3.10
 
@@ -74,7 +100,6 @@ You can determine your currently installed version using `pip freeze`:
 
 * Fix Django 1.6 exception API compatibility issue caused by `ValidationError`.
 * Include errors in HTML forms in browsable API.
->>>>>>> master
 * Added JSON renderer support for numpy scalars.
 * Added `transform_<fieldname>` hooks on serializers for easily modifying field output.
 * Added `get_context` hook in `BrowsableAPIRenderer`.
@@ -100,15 +125,15 @@ You can determine your currently installed version using `pip freeze`:
 * Bugfix: `client.force_authenticate(None)` should also clear session info if it exists.
 * Bugfix: Client sending empty string instead of file now clears `FileField`.
 * Bugfix: Empty values on ChoiceFields with `required=False` now consistently return `None`.
-* Bugfix: Clients setting `page=0` now simply returns the default page size, instead of disabling pagination. [*]
+* Bugfix: Clients setting `page_size=0` now simply returns the default page size, instead of disabling pagination. [*]
 
 ---
 
-[*] Note that the change in `page=0` behaviour fixes what is considered to be a bug in how clients can effect the pagination size.  However if you were relying on this behavior you will need to add the following mixin to your list views in order to preserve the existing behavior.
+[*] Note that the change in `page_size=0` behaviour fixes what is considered to be a bug in how clients can effect the pagination size.  However if you were relying on this behavior you will need to add the following mixin to your list views in order to preserve the existing behavior.
 
     class DisablePaginationMixin(object):
         def get_paginate_by(self, queryset=None):
-            if self.request.QUERY_PARAMS['self.paginate_by_param'] == '0':
+            if self.request.QUERY_PARAMS[self.paginate_by_param] == '0':
                 return None
             return super(DisablePaginationMixin, self).get_paginate_by(queryset)
 

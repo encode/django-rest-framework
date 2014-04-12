@@ -166,7 +166,7 @@ class Field(object):
         Called to set up a field prior to field_to_native or field_from_native.
 
         parent - The parent serializer.
-        model_field - The model field this field corresponds to, if one exists.
+        field_name - The name of the field being initialized.
         """
         self.parent = parent
         self.root = parent.root or parent
@@ -248,6 +248,7 @@ class WritableField(Field):
     """
     Base for read/write fields.
     """
+    write_only = False
     default_validators = []
     default_error_messages = {
         'required': _('This field is required.'),
@@ -257,13 +258,17 @@ class WritableField(Field):
     default = None
 
     def __init__(self, source=None, label=None, help_text=None,
-                 read_only=False, required=None,
+                 read_only=False, write_only=False, required=None,
                  validators=[], error_messages=None, widget=None,
                  default=None, blank=None):
 
         super(WritableField, self).__init__(source=source, label=label, help_text=help_text)
 
         self.read_only = read_only
+        self.write_only = write_only
+
+        assert not (read_only and write_only), "Cannot set read_only=True and write_only=True"
+
         if required is None:
             self.required = not(read_only)
         else:
@@ -291,6 +296,11 @@ class WritableField(Field):
         result.validators = self.validators[:]
         return result
 
+    def get_default_value(self):
+        if is_simple_callable(self.default):
+            return self.default()
+        return self.default
+
     def validate(self, value):
         if value in validators.EMPTY_VALUES and self.required:
             raise ValidationError(self.error_messages['required'])
@@ -313,6 +323,11 @@ class WritableField(Field):
         if errors:
             raise ValidationError(errors)
 
+    def field_to_native(self, obj, field_name):
+        if self.write_only:
+            return None
+        return super(WritableField, self).field_to_native(obj, field_name)
+
     def field_from_native(self, data, files, field_name, into):
         """
         Given a dictionary and a field name, updates the dictionary `into`,
@@ -334,10 +349,7 @@ class WritableField(Field):
         except KeyError:
             if self.default is not None and not self.partial:
                 # Note: partial updates shouldn't set defaults
-                if is_simple_callable(self.default):
-                    native = self.default()
-                else:
-                    native = self.default
+                native = self.get_default_value()
             else:
                 if self.required:
                     raise ValidationError(self.error_messages['required'])
@@ -465,7 +477,8 @@ class URLField(CharField):
     type_label = 'url'
 
     def __init__(self, **kwargs):
-        kwargs['validators'] = [validators.URLValidator()]
+        if not 'validators' in kwargs:
+            kwargs['validators'] = [validators.URLValidator()]
         super(URLField, self).__init__(**kwargs)
 
 

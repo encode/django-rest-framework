@@ -17,9 +17,8 @@ The tutorial is fairly in-depth, so you should probably get a cookie and a cup o
 Before we do anything else we'll create a new virtual environment, using [virtualenv].  This will make sure our package configuration is kept nicely isolated from any other projects we're working on.
 
     :::bash
-    mkdir ~/env
-    virtualenv ~/env/tutorial
-    source ~/env/tutorial/bin/activate
+    virtualenv env
+    source env/bin/activate
 
 Now that we're inside a virtualenv environment, we can install our package requirements.
 

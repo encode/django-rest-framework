@@ -112,12 +112,13 @@ class APIView(View):
 
     @property
     def default_response_headers(self):
-        # TODO: deprecate?
-        # TODO: Only vary by accept if multiple renderers
-        return {
+        headers = {
             'Allow': ', '.join(self.allowed_methods),
-            'Vary': 'Accept'
         }
+        if len(self.renderer_classes) > 1:
+            headers['Vary'] = 'Accept'
+        return headers
+
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
@@ -130,7 +131,7 @@ class APIView(View):
         """
         If request is not permitted, determine what kind of exception to raise.
         """
-        if not self.request.successful_authenticator:
+        if not request.successful_authenticator:
             raise exceptions.NotAuthenticated()
         raise exceptions.PermissionDenied()
 
@@ -294,7 +295,7 @@ class APIView(View):
 
     # Dispatch methods
 
-    def initialize_request(self, request, *args, **kargs):
+    def initialize_request(self, request, *args, **kwargs):
         """
         Returns the initial request object.
         """

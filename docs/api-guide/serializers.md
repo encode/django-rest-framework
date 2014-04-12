@@ -103,11 +103,11 @@ Deserialization is similar.  First we parse a stream into Python native datatype
 When deserializing data, we can either create a new instance, or update an existing instance.
 
     serializer = CommentSerializer(data=data)           # Create new instance
-    serializer = CommentSerializer(comment, data=data)  # Update `instance`
+    serializer = CommentSerializer(comment, data=data)  # Update `comment`
 
 By default, serializers must be passed values for all required fields or they will throw validation errors.  You can use the `partial` argument in order to allow partial updates.
 
-    serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)  # Update `instance` with partial data
+    serializer = CommentSerializer(comment, data={'content': u'foo bar'}, partial=True)  # Update `comment` with partial data
 
 ## Validation
 
@@ -161,7 +161,7 @@ To do any other validation that requires access to multiple fields, add a method
             """
             Check that the start is before the stop.
             """
-            if attrs['start'] < attrs['finish']:
+            if attrs['start'] > attrs['finish']:
                 raise serializers.ValidationError("finish must occur after start")
             return attrs
 
@@ -208,7 +208,7 @@ Similarly if a nested representation should be a list of items, you should pass 
 
 Validation of nested objects will work the same as before.  Errors with nested objects will be nested under the field name of the nested object.
 
-    serializer = CommentSerializer(comment, data={'user': {'email': 'foobar', 'username': 'doe'}, 'content': 'baz'})
+    serializer = CommentSerializer(data={'user': {'email': 'foobar', 'username': 'doe'}, 'content': 'baz'})
     serializer.is_valid()
     # False
     serializer.errors
@@ -373,6 +373,25 @@ You may wish to specify multiple fields as read-only.  Instead of adding each fi
 
 Model fields which have `editable=False` set, and `AutoField` fields will be set to read-only by default, and do not need to be added to the `read_only_fields` option. 
 
+## Specifying which fields should be write-only 
+
+You may wish to specify multiple fields as write-only.  Instead of adding each field explicitly with the `write_only=True` attribute, you may use the `write_only_fields` Meta option, like so:
+
+    class CreateUserSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = User
+            fields = ('email', 'username', 'password')
+            write_only_fields = ('password',)  # Note: Password field is write-only
+
+        def restore_object(self, attrs, instance=None):
+            """
+            Instantiate a new User instance.
+            """
+            assert instance is None, 'Cannot update users with CreateUserSerializer'                                
+            user = User(email=attrs['email'], username=attrs['username'])
+            user.set_password(attrs['password'])
+            return user
+ 
 ## Specifying fields explicitly 
 
 You can add extra fields to a `ModelSerializer` or override the default fields by declaring fields on the class, just as you would for a `Serializer` class.
@@ -444,6 +463,29 @@ For more specific requirements such as specifying a different lookup for each fi
         class Meta:
             model = Account
             fields = ('url', 'account_name', 'users', 'created')
+
+## Overiding the URL field behavior
+
+The name of the URL field defaults to 'url'.  You can override this globally, by using the `URL_FIELD_NAME` setting.
+
+You can also override this on a per-serializer basis by using the `url_field_name` option on the serializer, like so:
+
+    class AccountSerializer(serializers.HyperlinkedModelSerializer):
+        class Meta:
+            model = Account
+            fields = ('account_url', 'account_name', 'users', 'created')
+            url_field_name = 'account_url'
+
+**Note**: The generic view implementations normally generate a `Location` header in response to successful `POST` requests.  Serializers using `url_field_name` option will not have this header automatically included by the view.  If you need to do so you will ned to also override the view's `get_success_headers()` method.
+
+You can also overide the URL field's view name and lookup field without overriding the field explicitly, by using the `view_name` and `lookup_field` options, like so:
+
+    class AccountSerializer(serializers.HyperlinkedModelSerializer):
+        class Meta:
+            model = Account
+            fields = ('account_url', 'account_name', 'users', 'created')
+            view_name = 'account_detail'
+            lookup_field='account_name'
 
 ---
 

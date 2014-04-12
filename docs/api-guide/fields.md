@@ -2,7 +2,7 @@
 
 # Serializer fields
 
-> Each field in a Form class is responsible not only for validating data, but also for "cleaning" it &mdash; normalizing it to a consistent format. 
+> Each field in a Form class is responsible not only for validating data, but also for "cleaning" it &mdash; normalizing it to a consistent format.
 >
 > &mdash; [Django documentation][cite]
 
@@ -28,7 +28,13 @@ Defaults to the name of the field.
 
 ### `read_only`
 
-Set this to `True` to ensure that the field is used when serializing a representation, but is not used when updating an instance during deserialization.
+Set this to `True` to ensure that the field is used when serializing a representation, but is not used when creating or updating an instance during deserialization.
+
+Defaults to `False`
+
+### `write_only`
+
+Set this to `True` to ensure that the field may be used when updating or creating an instance, but is not included when serializing the representation.
 
 Defaults to `False`
 
@@ -41,7 +47,7 @@ Defaults to `True`.
 
 ### `default`
 
-If set, this gives the default value that will be used for the field if no input value is supplied.  If not set the default behavior is to not populate the attribute at all. 
+If set, this gives the default value that will be used for the field if no input value is supplied.  If not set the default behavior is to not populate the attribute at all.
 
 May be set to a function or other callable, in which case the value will be evaluated each time it is used.
 
@@ -86,7 +92,7 @@ For example, using the following model.
         name = models.CharField(max_length=100)
         created = models.DateTimeField(auto_now_add=True)
         payment_expiry = models.DateTimeField()
-        
+
         def has_expired(self):
             return now() > self.payment_expiry
 
@@ -96,8 +102,9 @@ A serializer definition that looked like this:
 
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         expired = serializers.Field(source='has_expired')
-        
+
         class Meta:
+            model = Account
             fields = ('url', 'owner', 'name', 'expired')
 
 Would produce output similar to:
@@ -105,7 +112,7 @@ Would produce output similar to:
     {
         'url': 'http://example.com/api/accounts/3/',
         'owner': 'http://example.com/api/users/12/',
-        'name': 'FooCorp business account', 
+        'name': 'FooCorp business account',
         'expired': True
     }
 
@@ -119,7 +126,7 @@ A field that supports both read and write operations.  By itself `WritableField`
 
 ## ModelField
 
-A generic field that can be tied to any arbitrary model field.  The `ModelField` class delegates the task of serialization/deserialization to it's associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.
+A generic field that can be tied to any arbitrary model field.  The `ModelField` class delegates the task of serialization/deserialization to its associated model field.  This field can be used to create serializer fields for custom model fields, without having to create a new custom serializer field.
 
 The `ModelField` class is generally intended for internal use, but can be used by your API if needed.  In order to properly instantiate a `ModelField`, it must be passed a field that is attached to an instantiated model.  For example: `ModelField(model_field=MyModel()._meta.get_field('custom_field'))`
 
@@ -168,13 +175,13 @@ or `django.db.models.fields.TextField`.
 
 Corresponds to `django.db.models.fields.URLField`.  Uses Django's `django.core.validators.URLValidator` for validation.
 
-**Signature:** `CharField(max_length=200, min_length=None, allow_none=False)`
+**Signature:** `URLField(max_length=200, min_length=None)`
 
 ## SlugField
 
 Corresponds to `django.db.models.fields.SlugField`.
 
-**Signature:** `CharField(max_length=50, min_length=None, allow_none=False)`
+**Signature:** `SlugField(max_length=50, min_length=None)`
 
 ## ChoiceField
 
@@ -218,7 +225,7 @@ In the case of JSON this means the default datetime representation uses the [ECM
 
 **Signature:** `DateTimeField(format=None, input_formats=None)`
 
-* `format` - A string representing the output format.  If not specified, this defaults to `None`, which indicates that Python `datetime` objects should be returned by `to_native`.  In this case the datetime encoding will be determined by the renderer. 
+* `format` - A string representing the output format.  If not specified, this defaults to `None`, which indicates that Python `datetime` objects should be returned by `to_native`.  In this case the datetime encoding will be determined by the renderer.
 * `input_formats` - A list of strings representing the input formats which may be used to parse the date.  If not specified, the `DATETIME_INPUT_FORMATS` setting will be used, which defaults to `['iso-8601']`.
 
 DateTime format strings may either be [Python strftime formats][strftime] which explicitly specify the format, or the special string `'iso-8601'`, which indicates that [ISO 8601][iso8601] style datetimes should be used. (eg `'2013-01-29T12:34:56.000000Z'`)
@@ -278,7 +285,7 @@ Corresponds to `django.forms.fields.FileField`.
 **Signature:** `FileField(max_length=None, allow_empty_file=False)`
 
  - `max_length` designates the maximum length for the file name.
-  
+
  - `allow_empty_file` designates if empty files are allowed.
 
 ## ImageField
@@ -302,7 +309,7 @@ Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
 
 If you want to create a custom field, you'll probably want to override either one or both of the `.to_native()` and `.from_native()` methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype.  Primitive datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primitive objects.
 
-The `.to_native()` method is called to convert the initial datatype into a primitive, serializable datatype.  The `from_native()` method is called to restore a primitive datatype into it's initial representation.
+The `.to_native()` method is called to convert the initial datatype into a primitive, serializable datatype.  The `from_native()` method is called to restore a primitive datatype into its initial representation.
 
 ## Examples
 
@@ -323,12 +330,12 @@ Let's look at an example of serializing a class that represents an RGB color val
         """
         def to_native(self, obj):
             return "rgb(%d, %d, %d)" % (obj.red, obj.green, obj.blue)
-      
+
         def from_native(self, data):
             data = data.strip('rgb(').rstrip(')')
             red, green, blue = [int(col) for col in data.split(',')]
             return Color(red, green, blue)
-            
+
 
 By default field values are treated as mapping to an attribute on the object.  If you need to customize how the field value is accessed and set you need to override `.field_to_native()` and/or `.field_from_native()`.
 
@@ -341,8 +348,17 @@ As an example, let's create a field that can be used represent the class name of
             """
             return obj.__class__
 
+# Third party packages
+
+The following third party packages are also available.
+
+## DRF Compound Fields
+
+The [drf-compound-fields][drf-compound-fields] package provides "compound" serializer fields, such as lists of simple values, which can be described by other fields rather than serializers with the `many=True` option. Also provided are fields for typed dictionaries and values that can be either a specific type or a list of items of that type.
+
 [cite]: https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
 [ecma262]: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
 [strftime]: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
 [iso8601]: http://www.w3.org/TR/NOTE-datetime
+[drf-compound-fields]: http://drf-compound-fields.readthedocs.org

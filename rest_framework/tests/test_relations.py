@@ -2,8 +2,10 @@
 General tests for relational fields.
 """
 from __future__ import unicode_literals
+from django import get_version
 from django.db import models
 from django.test import TestCase
+from django.utils import unittest
 from rest_framework import serializers
 from rest_framework.tests.models import BlogPost
 
@@ -98,3 +100,45 @@ class RelatedFieldSourceTests(TestCase):
         obj = ClassWithQuerysetMethod()
         value = field.field_to_native(obj, 'field_name')
         self.assertEqual(value, ['BlogPost object'])
+
+    # Regression for #1129
+    def test_exception_for_incorect_fk(self):
+        """
+        Check that the exception message are correct if the source field
+        doesn't exist.
+        """
+        from rest_framework.tests.models import ManyToManySource
+        class Meta:
+            model = ManyToManySource
+        attrs = {
+            'name': serializers.SlugRelatedField(
+                slug_field='name', source='banzai'),
+            'Meta': Meta,
+        }
+
+        TestSerializer = type(str('TestSerializer'),
+            (serializers.ModelSerializer,), attrs)
+        with self.assertRaises(AttributeError):
+            TestSerializer(data={'name': 'foo'})
+
+@unittest.skipIf(get_version() < '1.6.0', 'Upstream behaviour changed in v1.6')
+class RelatedFieldChoicesTests(TestCase):
+    """
+    Tests for #1408 "Web browseable API doesn't have blank option on drop down list box"
+    https://github.com/tomchristie/django-rest-framework/issues/1408
+    """
+    def test_blank_option_is_added_to_choice_if_required_equals_false(self):
+        """
+
+        """
+        post = BlogPost(title="Checking blank option is added")
+        post.save()
+
+        queryset = BlogPost.objects.all()
+        field = serializers.RelatedField(required=False, queryset=queryset)
+
+        choice_count = BlogPost.objects.count()
+        widget_count = len(field.widget.choices)
+
+        self.assertEqual(widget_count, choice_count + 1, 'BLANK_CHOICE_DASH option should have been added')
+

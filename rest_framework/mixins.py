@@ -11,6 +11,7 @@ from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.request import clone_request
+from rest_framework.settings import api_settings
 import warnings
 
 
@@ -60,7 +61,7 @@ class CreateModelMixin(object):
 
     def get_success_headers(self, data):
         try:
-            return {'Location': data['url']}
+            return {'Location': data[api_settings.URL_FIELD_NAME]}
         except (TypeError, KeyError):
             return {}
 
@@ -115,30 +116,27 @@ class UpdateModelMixin(object):
         partial = kwargs.pop('partial', False)
         self.object = self.get_object_or_none()
 
-        if self.object is None:
-            created = True
-            save_kwargs = {'force_insert': True}
-            success_status_code = status.HTTP_201_CREATED
-        else:
-            created = False
-            save_kwargs = {'force_update': True}
-            success_status_code = status.HTTP_200_OK
-
         serializer = self.get_serializer(self.object, data=request.DATA,
                                          files=request.FILES, partial=partial)
 
-        if serializer.is_valid():
-            try:
-                self.pre_save(serializer.object)
-            except ValidationError as err:
-                # full_clean on model instance may be called in pre_save, so we
-                # have to handle eventual errors.
-                return Response(err.message_dict, status=status.HTTP_400_BAD_REQUEST)
-            self.object = serializer.save(**save_kwargs)
-            self.post_save(self.object, created=created)
-            return Response(serializer.data, status=success_status_code)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            self.pre_save(serializer.object)
+        except ValidationError as err:
+            # full_clean on model instance may be called in pre_save,
+            # so we have to handle eventual errors.
+            return Response(err.message_dict, status=status.HTTP_400_BAD_REQUEST)
+
+        if self.object is None:
+            self.object = serializer.save(force_insert=True)
+            self.post_save(self.object, created=True)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        self.object = serializer.save(force_update=True)
+        self.post_save(self.object, created=False)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True

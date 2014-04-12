@@ -147,4 +147,14 @@ Alternatively, to set your custom pagination serializer on a per-view basis, use
         pagination_serializer_class = CustomPaginationSerializer
         paginate_by = 10
 
+# Third party packages
+
+The following third party packages are also available.
+
+## DRF-extensions
+
+The [`DRF-extensions` package][drf-extensions] includes a [`PaginateByMaxMixin` mixin class][paginate-by-max-mixin] that allows your API clients to specify `?page_size=max` to obtain the maximum allowed page size.
+
 [cite]: https://docs.djangoproject.com/en/dev/topics/pagination/
+[drf-extensions]: http://chibisov.github.io/drf-extensions/docs/
+[paginate-by-max-mixin]: http://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin

@@ -121,7 +121,7 @@ from django.test.client import RequestFactory as DjangoRequestFactory
 from django.test.client import FakePayload
 try:
     # In 1.5 the test client uses force_bytes
-    from django.utils.encoding import force_bytes_or_smart_bytes
+    from django.utils.encoding import force_bytes as force_bytes_or_smart_bytes
 except ImportError:
     # In 1.4 the test client just uses smart_str
     from django.utils.encoding import smart_str as force_bytes_or_smart_bytes
@@ -216,13 +216,10 @@ except (ImportError, ImproperlyConfigured):
 
 # OAuth 2 support is optional
 try:
-    import provider.oauth2 as oauth2_provider
-    from provider.oauth2 import models as oauth2_provider_models
-    from provider.oauth2 import forms as oauth2_provider_forms
+    import provider as oauth2_provider
     from provider import scope as oauth2_provider_scope
     from provider import constants as oauth2_constants
-    from provider import __version__ as provider_version
-    if provider_version in ('0.2.3', '0.2.4'):
+    if oauth2_provider.__version__ in ('0.2.3', '0.2.4'):
         # 0.2.3 and 0.2.4 are supported version that do not support
         # timezone aware datetimes
         import datetime
@@ -232,8 +229,6 @@ try:
         from django.utils.timezone import now as provider_now
 except ImportError:
     oauth2_provider = None
-    oauth2_provider_models = None
-    oauth2_provider_forms = None
     oauth2_provider_scope = None
     oauth2_constants = None
     provider_now = None
@@ -251,3 +246,23 @@ if six.PY3:
 else:
     def is_non_str_iterable(obj):
         return hasattr(obj, '__iter__')
+
+
+try:
+    from django.utils.encoding import python_2_unicode_compatible
+except ImportError:
+    def python_2_unicode_compatible(klass):
+        """
+        A decorator that defines __unicode__ and __str__ methods under Python 2.
+        Under Python 3 it does nothing.
+
+        To support Python 2 and 3 with a single code base, define a __str__ method
+        returning text and apply this decorator to the class.
+        """
+        if '__str__' not in klass.__dict__:
+            raise ValueError("@python_2_unicode_compatible cannot be applied "
+                             "to %s because it doesn't define __str__()." %
+                             klass.__name__)
+        klass.__unicode__ = klass.__str__
+        klass.__str__ = lambda self: self.__unicode__().encode('utf-8')
+        return klass

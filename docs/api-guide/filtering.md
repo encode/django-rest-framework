@@ -24,7 +24,7 @@ For example:
     from myapp.serializers import PurchaseSerializer
     from rest_framework import generics
 
-    class PurchaseList(generics.ListAPIView)
+    class PurchaseList(generics.ListAPIView):
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -46,7 +46,7 @@ For example if your URL config contained an entry like this:
 
 You could then write a view that returned a purchase queryset filtered by the username portion of the URL:
 
-    class PurchaseList(generics.ListAPIView)
+    class PurchaseList(generics.ListAPIView):
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -63,7 +63,7 @@ A final example of filtering the initial queryset would be to determine the init
 
 We can override `.get_queryset()` to deal with URLs such as `http://example.com/api/purchases?username=denvercoder9`, and filter the queryset only if the `username` parameter is included in the URL:
 
-    class PurchaseList(generics.ListAPIView)
+    class PurchaseList(generics.ListAPIView):
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -264,13 +264,17 @@ For example:
 
     search_fields = ('=username', '=email')
 
+By default, the search parameter is named `'search`', but this may be overridden with the `SEARCH_PARAM` setting.
+
 For more details, see the [Django documentation][search-django-admin].
 
 ---
 
 ## OrderingFilter
 
-The `OrderingFilter` class supports simple query parameter controlled ordering of results.  To specify the result order, set a query parameter named `'ordering'` to the required field name.  For example:
+The `OrderingFilter` class supports simple query parameter controlled ordering of results.  By default, the query parameter is named `'ordering'`, but this may by overridden with the `ORDERING_PARAM` setting.
+
+For example, to order users by username:
 
     http://example.com/api/users?ordering=username
 
@@ -282,13 +286,37 @@ Multiple orderings may also be specified:
 
     http://example.com/api/users?ordering=account,username
 
+### Specifying which fields may be ordered against
+
+It's recommended that you explicitly specify which fields the API should allowing in the ordering filter.  You can do this by setting an `ordering_fields` attribute on the view, like so:
+
+    class UserListView(generics.ListAPIView):
+        queryset = User.objects.all()
+        serializer_class = UserSerializer
+        filter_backends = (filters.OrderingFilter,)
+        ordering_fields = ('username', 'email')
+
+This helps prevent unexpected data leakage, such as allowing users to order against a password hash field or other sensitive data.
+
+If you *don't* specify an `ordering_fields` attribute on the view, the filter class will default to allowing the user to filter on any readable fields on the serializer specified by the `serializer_class` attribute.
+
+If you are confident that the queryset being used by the view doesn't contain any sensitive data, you can also explicitly specify that a view should allow ordering on *any* model field or queryset aggregate, by using the special value `'__all__'`.
+
+    class BookingsListView(generics.ListAPIView):
+        queryset = Booking.objects.all()
+        serializer_class = BookingSerializer
+        filter_backends = (filters.OrderingFilter,)
+        ordering_fields = '__all__'
+
+### Specifying a default ordering
+
 If an `ordering` attribute is set on the view, this will be used as the default ordering.
 
 Typically you'd instead control this by setting `order_by` on the initial queryset, but using the `ordering` parameter on the view allows you to specify the ordering in a way that it can then be passed automatically as context to a rendered template.  This makes it possible to automatically render column headers differently if they are being used to order the results.
 
     class UserListView(generics.ListAPIView):
         queryset = User.objects.all()
-        serializer = UserSerializer
+        serializer_class = UserSerializer
         filter_backends = (filters.OrderingFilter,)
         ordering = ('username',) 
 
