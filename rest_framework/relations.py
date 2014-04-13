@@ -33,7 +33,7 @@ class RelatedField(WritableField):
     many_widget = widgets.SelectMultiple
     form_field_class = forms.ChoiceField
     many_form_field_class = forms.MultipleChoiceField
-    null_values = (None, '', 'None')
+    null_values = (None, '', 'None',[])
 
     cache_choices = False
     empty_label = None
