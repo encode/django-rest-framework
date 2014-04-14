@@ -113,3 +113,27 @@ class TestFileUploadParser(TestCase):
         parser = FileUploadParser()
         filename = parser.get_filename(self.stream, None, self.parser_context)
         self.assertEqual(filename, 'file.txt')
+
+    def test_get_encoded_filename(self):
+        parser = FileUploadParser()
+
+        self.__replace_content_disposition('inline; filename*=utf-8\'\'ÀĥƦ.txt')
+        filename = parser.get_filename(self.stream, None, self.parser_context)
+        self.assertEqual(filename, 'ÀĥƦ.txt')
+
+        self.__replace_content_disposition('inline; filename=fallback.txt; filename*=utf-8\'\'ÀĥƦ.txt')
+        filename = parser.get_filename(self.stream, None, self.parser_context)
+        self.assertEqual(filename, 'ÀĥƦ.txt')
+
+        self.__replace_content_disposition('inline; filename=fallback.txt; filename*=utf-8--ÀĥƦ.txt')
+        filename = parser.get_filename(self.stream, None, self.parser_context)
+        self.assertEqual(filename, 'fallback.txt')
+
+        self.__replace_content_disposition('inline; filename=fallback.txt; filename*=WRONG\'\'ÀĥƦ.txt')
+        filename = parser.get_filename(self.stream, None, self.parser_context)
+        self.assertEqual(filename, 'fallback.txt')
+
+    def __replace_content_disposition(self, disposition):
+        self.parser_context['request'].META['HTTP_CONTENT_DISPOSITION'] = disposition
+
+
