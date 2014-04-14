@@ -291,15 +291,15 @@ class FileUploadParser(BaseParser):
             meta = parser_context['request'].META
             disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'].encode('utf-8'))
 
-            filename = force_text(disposition[1]['filename'])
-
             if 'filename*' in disposition[1]:
                 filename_encoded = force_text(disposition[1]['filename*'])
                 try:
                     charset, filename_encoded = filename_encoded.split('\'\'', 1)
-                    filename = urlparse.unquote(filename_encoded, charset)
+                    filename = urlparse.unquote(filename_encoded)
                 except (ValueError, LookupError):
-                    pass
+                    filename = force_text(disposition[1]['filename'])
+            else:
+                filename = force_text(disposition[1]['filename'])
 
             return filename
         except (AttributeError, KeyError):
