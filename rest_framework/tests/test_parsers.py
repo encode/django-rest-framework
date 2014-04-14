@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 from __future__ import unicode_literals
 from rest_framework.compat import StringIO
 from django import forms
@@ -126,10 +128,6 @@ class TestFileUploadParser(TestCase):
         self.assertEqual(filename, 'ÀĥƦ.txt')
 
         self.__replace_content_disposition('inline; filename=fallback.txt; filename*=utf-8--ÀĥƦ.txt')
-        filename = parser.get_filename(self.stream, None, self.parser_context)
-        self.assertEqual(filename, 'fallback.txt')
-
-        self.__replace_content_disposition('inline; filename=fallback.txt; filename*=WRONG\'\'ÀĥƦ.txt')
         filename = parser.get_filename(self.stream, None, self.parser_context)
         self.assertEqual(filename, 'fallback.txt')
 
