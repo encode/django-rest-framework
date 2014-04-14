@@ -271,7 +271,7 @@ class FileUploadParser(BaseParser):
 
         for i, handler in enumerate(upload_handlers):
             file_obj = handler.file_complete(counters[i])
-            if file_obj:
+            if file_obj is not None:
                 return DataAndFiles(None, {'file': file_obj})
         raise ParseError("FileUpload parse error - "
                          "none of upload handlers can handle the stream")
