@@ -288,7 +288,7 @@ class FileUploadParser(BaseParser):
 
         try:
             meta = parser_context['request'].META
-            disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'])
+            disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'].encode('utf-8'))
             return disposition[1]['filename']
         except (AttributeError, KeyError):
             pass
