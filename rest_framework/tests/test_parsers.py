@@ -112,4 +112,4 @@ class TestFileUploadParser(TestCase):
     def test_get_filename(self):
         parser = FileUploadParser()
         filename = parser.get_filename(self.stream, None, self.parser_context)
-        self.assertEqual(filename, 'file.txt'.encode('utf-8'))
+        self.assertEqual(filename, 'file.txt')
