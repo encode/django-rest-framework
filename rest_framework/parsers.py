@@ -10,8 +10,7 @@ from django.core.files.uploadhandler import StopFutureHandlers
 from django.http import QueryDict
 from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from django.http.multipartparser import MultiPartParserError, parse_header, ChunkIter
-from django.utils.encoding import force_str
-from rest_framework.compat import etree, six, yaml
+from rest_framework.compat import etree, six, yaml, force_text
 from rest_framework.exceptions import ParseError
 from rest_framework import renderers
 import json
@@ -290,6 +289,6 @@ class FileUploadParser(BaseParser):
         try:
             meta = parser_context['request'].META
             disposition = parse_header(meta['HTTP_CONTENT_DISPOSITION'].encode('utf-8'))
-            return force_str(disposition[1]['filename'])
+            return force_text(disposition[1]['filename'])
         except (AttributeError, KeyError):
             pass
