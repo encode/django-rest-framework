@@ -16,6 +16,7 @@ import datetime
 import inspect
 import types
 from decimal import Decimal
+from django.contrib.contenttypes.generic import GenericForeignKey
 from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
@@ -943,6 +944,8 @@ class ModelSerializer(Serializer):
 
         # Forward m2m relations
         for field in meta.many_to_many + meta.virtual_fields:
+            if isinstance(field, GenericForeignKey):
+                continue
             if field.name in attrs:
                 m2m_data[field.name] = attrs.pop(field.name)
 
@@ -952,17 +955,15 @@ class ModelSerializer(Serializer):
             if isinstance(self.fields.get(field_name, None), Serializer):
                 nested_forward_relations[field_name] = attrs[field_name]
 
-        # Update an existing instance...
-        if instance is not None:
-            for key, val in attrs.items():
-                try:
-                    setattr(instance, key, val)
-                except ValueError:
-                    self._errors[key] = self.error_messages['required']
+        # Create an empty instance of the model
+        if instance is None:
+            instance = self.opts.model()
 
-        # ...or create a new instance
-        else:
-            instance = self.opts.model(**attrs)
+        for key, val in attrs.items():
+            try:
+                setattr(instance, key, val)
+            except ValueError:
+                self._errors[key] = self.error_messages['required']
 
         # Any relations that cannot be set until we've
         # saved the model get hidden away on these
