@@ -509,12 +509,16 @@ class ChoiceField(WritableField):
                             'the available choices.'),
     }
 
-    def __init__(self, choices=(), *args, **kwargs):
+    def __init__(self, choices=(), blank_display_value=None, *args, **kwargs):
         self.empty = kwargs.pop('empty', '')
         super(ChoiceField, self).__init__(*args, **kwargs)
         self.choices = choices
         if not self.required:
-            self.choices = BLANK_CHOICE_DASH + self.choices
+            if blank_display_value is None:
+                blank_choice = BLANK_CHOICE_DASH
+            else:
+                blank_choice = [('', blank_display_value)]
+            self.choices = blank_choice + self.choices
 
     def _get_choices(self):
         return self._choices
