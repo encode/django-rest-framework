@@ -79,7 +79,3 @@ def pytest_configure():
         settings.INSTALLED_APPS += (
             'guardian',
         )
-
-    # Force Django to load all models
-    from django.db.models import get_models
-    get_models()
