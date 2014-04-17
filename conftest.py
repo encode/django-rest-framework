@@ -79,3 +79,9 @@ def pytest_configure():
         settings.INSTALLED_APPS += (
             'guardian',
         )
+
+    try:
+        import django
+        django.setup()
+    except AttributeError:
+        pass
