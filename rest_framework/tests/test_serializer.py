@@ -7,9 +7,12 @@ from django.utils import unittest
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers, fields, relations
-from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
-    BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel, DefaultValueModel,
-    ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo, RESTFrameworkModel)
+from rest_framework.tests.models import (
+    HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
+    BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel,
+    DefaultValueModel, ManyToManyModel, Person, ReadOnlyManyToManyModel,
+    Photo, RESTFrameworkModel, ModelWithUnderscoreFields
+    )
 from rest_framework.tests.models import BasicModelSerializer
 import datetime
 import pickle
@@ -176,6 +179,16 @@ class PositiveIntegerAsChoiceSerializer(serializers.ModelSerializer):
         fields = ['some_integer']
 
 
+class ModelFieldConversionSerializer(serializers.ModelSerializer):
+
+    def get_field_key(self, field_name):
+        return field_name.replace('_','').capitalize()
+
+    class Meta:
+        convert_fields = True
+        model = ModelWithUnderscoreFields
+
+
 class BasicTests(TestCase):
     def setUp(self):
         self.comment = Comment(
@@ -330,6 +343,23 @@ class BasicTests(TestCase):
         serializer = ActionItemSerializerOptionalFields(self.actionitem)
         exclusions = serializer.get_validation_exclusions()
         self.assertTrue('title' in exclusions, '`title` field was marked `required=False` and should be excluded')
+
+    def test_serialize_with_conversion(self):
+        """
+        Verify keys get converted from serialized value to deserialized value
+        """
+
+        underscore = ModelWithUnderscoreFields(char_field='slartibartfast', number_field=42)
+        underscore.save()
+        serializer = ModelFieldConversionSerializer(underscore)
+        serialized = {'Id': 1, 'Numberfield': 42, 'Charfield':'slartibartfast'}
+        self.assertEqual(serialized, serializer.data, "Validate that serialing data with conversion works")
+
+        serializer = ModelFieldConversionSerializer(data=serialized)
+        self.assertTrue(serializer.is_valid(),
+            'Data should get converted from serialized value into deserialized value')
+        self.assertEqual('slartibartfast', serializer.object.char_field)
+        self.assertEqual(42, serializer.object.number_field)
 
 
 class DictStyleSerializer(serializers.Serializer):
@@ -829,6 +859,22 @@ class ManyToManyTests(TestCase):
         """
         data = MultiValueDict()
         data.setlist('rel', [''])
+        serializer = self.serializer_class(data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        instance = serializer.save()
+        self.assertEqual(len(ManyToManyModel.objects.all()), 2)
+        self.assertEqual(instance.pk, 2)
+        self.assertEqual(list(instance.rel.all()), [])
+
+    def test_create_empty_relationship_flat_data_field_convert(self):
+        """
+        Create an instance of a model with a ManyToMany relationship,
+        containing no items, using a representation that does not support
+        lists (eg form data).
+        """
+        data = MultiValueDict()
+        data.setlist('rel', [''])
+        self.serializer_class.Meta.convert_fields = True
         serializer = self.serializer_class(data=data)
         self.assertEqual(serializer.is_valid(), True)
         instance = serializer.save()

@@ -175,3 +175,8 @@ class FilterableItem(models.Model):
     text = models.CharField(max_length=100)
     decimal = models.DecimalField(max_digits=4, decimal_places=2)
     date = models.DateField()
+
+
+class ModelWithUnderscoreFields(RESTFrameworkModel):
+    char_field = models.CharField(max_length=100)
+    number_field = models.IntegerField()
