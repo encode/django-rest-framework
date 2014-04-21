@@ -167,16 +167,11 @@ class GenericAPIView(views.APIView):
 
         paginator = self.paginator_class(queryset, page_size,
                                          allow_empty_first_page=self.allow_empty)
-        page_kwarg = self.kwargs.get(self.page_kwarg)
-        page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
-        page = page_kwarg or page_query_param or 1
-        try:
-            page_number = paginator.validate_number(page)
-        except InvalidPage:
-            if page == 'last':
-                page_number = paginator.num_pages
-            else:
-                raise Http404(_("Page is not 'last', nor can it be converted to an int."))
+
+        page_number = self.parse_page_number()
+        if page_number == -1:
+            page_number = paginator.num_pages
+
         try:
             page = paginator.page(page_number)
         except InvalidPage as e:
