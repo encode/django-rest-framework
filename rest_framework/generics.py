@@ -113,6 +113,29 @@ class GenericAPIView(views.APIView):
         context = self.get_serializer_context()
         return pagination_serializer_class(instance=page, context=context)
 
+    def parse_page_number(self):
+        """
+        Parse request parameters and return a valid integer
+        page number.
+
+        Additionally it, parses "last" shortcut and returns -1
+        when it's received.
+
+        In case of invalid data received, ParseError is raised.
+        """
+
+        page_kwarg = self.kwargs.get(self.page_kwarg)
+        page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
+        page = page_kwarg or page_query_param or 1
+
+        if page == "last":
+            page = -1
+
+        try:
+            return int(page)
+        except (TypeError, ValueError):
+            raise exceptions.ParseError(_("Page is not 'last', nor can it be converted to an int."))
+
     def paginate_queryset(self, queryset, page_size=None):
         """
         Paginate a queryset if required, either returning a page object,
