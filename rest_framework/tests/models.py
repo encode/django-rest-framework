@@ -143,7 +143,8 @@ class ForeignKeyTarget(RESTFrameworkModel):
 
 class ForeignKeySource(RESTFrameworkModel):
     name = models.CharField(max_length=100)
-    target = models.ForeignKey(ForeignKeyTarget, related_name='sources')
+    target = models.ForeignKey(ForeignKeyTarget, related_name='sources',
+                               help_text='Target', verbose_name='Target')
 
 
 # Nullable ForeignKey
