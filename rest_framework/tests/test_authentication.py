@@ -199,7 +199,13 @@ class TokenAuthTests(TestCase):
         """Ensure generate_key returns a string"""
         token = Token()
         key = token.generate_key()
-        self.assertTrue(isinstance(key, str))
+        try:
+            # added in Python < 3
+            base = unicode
+        except NameError:
+            # added in Python >= 3
+            base = str
+        self.assertTrue(isinstance(key, base))
 
     def test_token_login_json(self):
         """Ensure token login view using JSON POST works."""
