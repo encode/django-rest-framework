@@ -120,7 +120,13 @@ Here's our project's root `urls.py` module:
 
     from django.conf.urls import url, patterns, include
     from django.contrib.auth.models import User, Group
-    from rest_framework import viewsets, routers
+    from rest_framework import viewsets, routers, serializers
+
+    # When implemented, Serializers customize how and what data is managed
+    class UserSerializer(serializers.HyperlinkedModelSerializer):
+      class Meta:
+        # Specify which fields to expose in the API
+        fields = ('username', 'email',)
 
     # ViewSets define the view behavior.
     class UserViewSet(viewsets.ModelViewSet):
