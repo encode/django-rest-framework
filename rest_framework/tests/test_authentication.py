@@ -195,6 +195,12 @@ class TokenAuthTests(TestCase):
         token = Token.objects.create(user=self.user)
         self.assertTrue(bool(token.key))
 
+    def test_generate_key_returns_string(self):
+        """Ensure generate_key returns a string"""
+        token = Token()
+        key = token.generate_key()
+        self.assertTrue(isinstance(key, str))
+
     def test_token_login_json(self):
         """Ensure token login view using JSON POST works."""
         client = APIClient(enforce_csrf_checks=True)
