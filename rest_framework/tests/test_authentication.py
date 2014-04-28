@@ -19,7 +19,7 @@ from rest_framework.authentication import (
     OAuth2Authentication
 )
 from rest_framework.authtoken.models import Token
-from rest_framework.compat import patterns, url, include
+from rest_framework.compat import patterns, url, include, six
 from rest_framework.compat import oauth2_provider, oauth2_provider_scope
 from rest_framework.compat import oauth, oauth_provider
 from rest_framework.test import APIRequestFactory, APIClient
@@ -199,13 +199,7 @@ class TokenAuthTests(TestCase):
         """Ensure generate_key returns a string"""
         token = Token()
         key = token.generate_key()
-        try:
-            # added in Python < 3
-            base = unicode
-        except NameError:
-            # added in Python >= 3
-            base = str
-        self.assertTrue(isinstance(key, base))
+        self.assertTrue(isinstance(key, six.string_types))
 
     def test_token_login_json(self):
         """Ensure token login view using JSON POST works."""
