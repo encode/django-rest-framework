@@ -471,7 +471,8 @@ class TestFKInstanceView(TestCase):
                         'type': 'field',
                         'required': True,
                         'read_only': False,
-                        'label': 'Target'
+                        'label': 'Target',
+                        'help_text': 'Target'
                     }
                 }
             }
