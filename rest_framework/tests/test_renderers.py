@@ -12,7 +12,7 @@ from rest_framework.compat import yaml, etree, patterns, url, include, six, Stri
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
-    XMLRenderer, JSONPRenderer, BrowsableAPIRenderer, UnicodeJSONRenderer
+    XMLRenderer, JSONPRenderer, BrowsableAPIRenderer, UnicodeJSONRenderer, UnicodeYAMLRenderer
 from rest_framework.parsers import YAMLParser, XMLParser
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
@@ -465,6 +465,17 @@ if yaml:
 
         def assertYAMLContains(self, content, string):
             self.assertTrue(string in content, '%r not in %r' % (string, content))
+
+
+    class UnicodeYAMLRendererTests(TestCase):
+        """
+        Tests specific for the Unicode YAML Renderer
+        """
+        def test_proper_encoding(self):
+            obj = {'countries': ['United Kingdom', 'France', 'España']}
+            renderer = UnicodeYAMLRenderer()
+            content = renderer.render(obj, 'application/yaml')
+            self.assertEqual(content.strip(), 'countries: [United Kingdom, France, España]'.encode('utf-8'))
 
 
 class XMLRendererTestCase(TestCase):

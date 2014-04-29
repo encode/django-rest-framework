@@ -24,7 +24,7 @@ For example:
     from myapp.serializers import PurchaseSerializer
     from rest_framework import generics
 
-    class PurchaseList(generics.ListAPIView)
+    class PurchaseList(generics.ListAPIView):
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -46,7 +46,7 @@ For example if your URL config contained an entry like this:
 
 You could then write a view that returned a purchase queryset filtered by the username portion of the URL:
 
-    class PurchaseList(generics.ListAPIView)
+    class PurchaseList(generics.ListAPIView):
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -63,7 +63,7 @@ A final example of filtering the initial queryset would be to determine the init
 
 We can override `.get_queryset()` to deal with URLs such as `http://example.com/api/purchases?username=denvercoder9`, and filter the queryset only if the `username` parameter is included in the URL:
 
-    class PurchaseList(generics.ListAPIView)
+    class PurchaseList(generics.ListAPIView):
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):

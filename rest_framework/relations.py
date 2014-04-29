@@ -59,6 +59,8 @@ class RelatedField(WritableField):
         super(RelatedField, self).__init__(*args, **kwargs)
 
         if not self.required:
+            # Accessed in ModelChoiceIterator django/forms/models.py:1034
+            # If set adds empty choice.
             self.empty_label = BLANK_CHOICE_DASH[0][1]
 
         self.queryset = queryset

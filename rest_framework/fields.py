@@ -164,7 +164,7 @@ class Field(object):
         Called to set up a field prior to field_to_native or field_from_native.
 
         parent - The parent serializer.
-        model_field - The model field this field corresponds to, if one exists.
+        field_name - The name of the field being initialized.
         """
         self.parent = parent
         self.root = parent.root or parent
@@ -289,7 +289,7 @@ class WritableField(Field):
         self.validators = self.default_validators + validators
         self.default = default if default is not None else self.default
 
-        # Widgets are ony used for HTML forms.
+        # Widgets are only used for HTML forms.
         widget = widget or self.widget
         if isinstance(widget, type):
             widget = widget()

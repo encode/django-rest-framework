@@ -40,6 +40,25 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
+### 2.3.x
+
+**Date**: April 2014
+
+* Fix nested serializers linked through a backward foreign key relation
+* Fix bad links for the `BrowsableAPIRenderer` with `YAMLRenderer`
+* Add `UnicodeYAMLRenderer` that extends `YAMLRenderer` with unicode
+* Fix `parse_header` argument convertion
+* Fix mediatype detection under Python3
+* Web browseable API now offers blank option on dropdown when the field is not required
+* `APIException` representation improved for logging purposes
+* Allow source="*" within nested serializers
+* Better support for custom oauth2 provider backends
+* Fix field validation if it's optional and has no value
+* Add `SEARCH_PARAM` and `ORDERING_PARAM`
+* Fix `APIRequestFactory` to support arguments within the url string for GET
+* Allow three transport modes for access tokens when accessing a protected resource
+* Fix `Request`'s `QueryDict` encoding
+
 ### 2.3.13
 
 **Date**: 6th March 2014
@@ -112,11 +131,11 @@ You can determine your currently installed version using `pip freeze`:
 * Bugfix: `client.force_authenticate(None)` should also clear session info if it exists.
 * Bugfix: Client sending empty string instead of file now clears `FileField`.
 * Bugfix: Empty values on ChoiceFields with `required=False` now consistently return `None`.
-* Bugfix: Clients setting `page=0` now simply returns the default page size, instead of disabling pagination. [*]
+* Bugfix: Clients setting `page_size=0` now simply returns the default page size, instead of disabling pagination. [*]
 
 ---
 
-[*] Note that the change in `page=0` behaviour fixes what is considered to be a bug in how clients can effect the pagination size.  However if you were relying on this behavior you will need to add the following mixin to your list views in order to preserve the existing behavior.
+[*] Note that the change in `page_size=0` behaviour fixes what is considered to be a bug in how clients can effect the pagination size.  However if you were relying on this behavior you will need to add the following mixin to your list views in order to preserve the existing behavior.
 
     class DisablePaginationMixin(object):
         def get_paginate_by(self, queryset=None):
