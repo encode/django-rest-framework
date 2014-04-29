@@ -418,3 +418,9 @@ class Request(object):
         Proxy other attributes to the underlying HttpRequest object.
         """
         return getattr(self._request, attr)
+    
+    def __setattr__(self, attr, value):
+        """
+        Proxy other attributes to the underlying HttpRequest object.
+        """
+        return setattr(self._request, attr, value)
