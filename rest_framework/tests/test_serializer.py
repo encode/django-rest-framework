@@ -661,7 +661,7 @@ class ModelValidationTests(TestCase):
         second_serializer = AlbumsSerializer(data={'title': 'a'})
         self.assertFalse(second_serializer.is_valid())
         self.assertEqual(second_serializer.errors,  {'title': ['Album with this Title already exists.'],})
-        third_serializer = AlbumsSerializer(data=[{'title': 'b', 'ref': '1'}, {'title': 'c'}])
+        third_serializer = AlbumsSerializer(data=[{'title': 'b', 'ref': '1'}, {'title': 'c'}], many=True)
         self.assertFalse(third_serializer.is_valid())
         self.assertEqual(third_serializer.errors,  [{'ref': ['Album with this Ref already exists.']}, {}])
 
