@@ -30,6 +30,7 @@ if PIL is not None:
         image_field = models.ImageField(upload_to='test', max_length=1024, blank=True)
         slug_field = models.SlugField(max_length=1024, blank=True)
         url_field = models.URLField(max_length=1024, blank=True)
+        nullable_char_field = models.CharField(max_length=1024, blank=True, null=True)
 
     class DVOAFModel(RESTFrameworkModel):
         positive_integer_field = models.PositiveIntegerField(blank=True)
