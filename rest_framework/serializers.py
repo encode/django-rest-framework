@@ -930,7 +930,6 @@ class ModelSerializer(Serializer):
         Restore the model instance.
         """
         m2m_data = {}
-        virtual_m2m_data = {}
         related_data = {}
         nested_forward_relations = {}
         meta = self.opts.model._meta
