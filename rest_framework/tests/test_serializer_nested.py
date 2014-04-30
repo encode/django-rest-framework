@@ -6,7 +6,28 @@ Doesn't cover model serializers.
 from __future__ import unicode_literals
 from django.test import TestCase
 from rest_framework import serializers
+from rest_framework.serializers import BATCH_ADD, BATCH_UPDATE, BATCH_DELETE
 from . import models
+
+
+class BlogPostCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.BlogPostComment
+        fields = ('id', 'text')
+
+
+class BlogPostSerializer(serializers.ModelSerializer):
+    comments = BlogPostCommentSerializer(many=True, source='blogpostcomment_set')
+    class Meta:
+        model = models.BlogPost
+        fields = ('id', 'title', 'comments')
+
+
+class PersonSerializer(serializers.ModelSerializer):
+    posts = BlogPostSerializer(many=True, source='blogpost_set')
+    class Meta:
+        model = models.Person
+        fields = ('id', 'name', 'age', 'posts')
 
 
 class WritableNestedSerializerBasicTests(TestCase):
@@ -315,33 +336,273 @@ class ForeignKeyNestedSerializerUpdateTests(TestCase):
 
 
 class NestedModelSerializerUpdateTests(TestCase):
-    def test_second_nested_level(self):
+    def test_allows_second_nesting_level(self):
+        """
+        Make sure we can span relations for nested representations
+        """
         john = models.Person.objects.create(name="john")
 
         post = john.blogpost_set.create(title="Test blog post")
         post.blogpostcomment_set.create(text="I hate this blog post")
         post.blogpostcomment_set.create(text="I love this blog post")
 
-        class BlogPostCommentSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = models.BlogPostComment
-
-        class BlogPostSerializer(serializers.ModelSerializer):
-            comments = BlogPostCommentSerializer(many=True, source='blogpostcomment_set')
-            class Meta:
-                model = models.BlogPost
-                fields = ('id', 'title', 'comments')
-
-        class PersonSerializer(serializers.ModelSerializer):
-            posts = BlogPostSerializer(many=True, source='blogpost_set')
-            class Meta:
-                model = models.Person
-                fields = ('id', 'name', 'age', 'posts')
-
         serialize = PersonSerializer(instance=john)
         deserialize = PersonSerializer(data=serialize.data, instance=john)
-        self.assertTrue(deserialize.is_valid())
+        self.assertTrue(deserialize.is_valid(), deserialize.errors)
 
         result = deserialize.object
         result.save()
         self.assertEqual(result.id, john.id)
+        self.assertEqual(
+            [i.id for i in result.blogpost_set.all()],
+            [i.id for i in john.blogpost_set.all()])
+
+
+class NestedModelSerializerCreationsTests(TestCase):
+    def test_works_in_batch_add_mode(self):
+        """
+        Create nested while being in BATCH_ADD mode works.
+        """
+        class LocalSerializer(BlogPostSerializer):
+            comments = BlogPostCommentSerializer(many=True,
+                source='blogpostcomment_set', batch_mode=BATCH_ADD)
+
+        post = models.BlogPost(title='Test blog post')
+        post.save()
+        data = {
+            'id': post.id,
+            'title': 'Test blog post',
+            'comments': [{
+                    'text': 'I hate this blog post',
+                }, {
+                    'text': 'I love this blog post',
+            }],
+        }
+
+        serializer = LocalSerializer(data=data, instance=post)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        post = serializer.save()
+        self.assertTrue(post.id)
+        self.assertEqual(post.blogpostcomment_set.count(), 2)
+
+    def test_fails_in_batch_update_mode(self):
+        """
+        Create nested while being in BATCH_UPDATE mode fails.
+        """
+        post = models.BlogPost(title='Test blog post')
+        post.save()
+        data = {
+            'id': post.id,
+            'title': 'Test blog post',
+            'comments': [{
+                    'text': 'I hate this blog post',
+                }, {
+                    'text': 'I love this blog post',
+            }],
+        }
+
+        serializer = BlogPostSerializer(data=data, instance=post)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors, {
+            'comments': [{
+                'non_field_errors': ['Cannot create a new item, only existing items may be updated.']
+            }, {
+                'non_field_errors': ['Cannot create a new item, only existing items may be updated.']
+            }]
+        })
+
+    def test_fails_in_batch_delete_mode(self):
+        """
+        Create nested while being in BATCH_DELETE mode fails.
+        """
+        class LocalSerializer(BlogPostSerializer):
+            comments = BlogPostCommentSerializer(many=True,
+                source='blogpostcomment_set', batch_mode=BATCH_DELETE)
+
+        post = models.BlogPost(title='Test blog post')
+        post.save()
+        data = {
+            'id': post.id,
+            'title': 'Test blog post',
+            'comments': [{
+                    'text': 'I hate this blog post',
+                }, {
+                    'text': 'I love this blog post',
+            }],
+        }
+
+        serializer = LocalSerializer(data=data, instance=post)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors, {
+            'comments': [{
+                'non_field_errors': ['Cannot create a new item, only existing items may be updated.']
+            }, {
+                'non_field_errors': ['Cannot create a new item, only existing items may be updated.']
+            }]
+        })
+
+
+class NestedModelSerializerUpdatesTests(TestCase):
+    def test_fails_in_batch_add_mode(self):
+        """
+        Update nested while being in BATCH_ADD mode fails.
+        """
+        class LocalSerializer(BlogPostSerializer):
+            comments = BlogPostCommentSerializer(many=True,
+                source='blogpostcomment_set', batch_mode=BATCH_ADD)
+
+        post = models.BlogPost(title='Test blog post')
+        post.save()
+        comment1 = post.blogpostcomment_set.create(text="I hate this blog post")
+        comment2 = post.blogpostcomment_set.create(text="I love this blog post")
+        data = {
+            'id': post.id,
+            'title': 'Test blog post',
+            'comments': [{
+                    'id': comment1.id,
+                    'text': 'I hate this blog post :p',
+                }, {
+                    'id': comment2.id,
+                    'text': 'I love this blog post :p',
+            }],
+        }
+
+        serializer = LocalSerializer(data=data, instance=post)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors, {
+            'comments': [{
+                'non_field_errors': ['Cannot update an item.']
+            }, {
+                'non_field_errors': ['Cannot update an item.']
+            }]
+        })
+
+    def test_fails_in_batch_update_mode(self):
+        """
+        Update nested while being in BATCH_UPDATE mode works.
+        """
+        post = models.BlogPost(title='Test blog post')
+        post.save()
+        comment1 = post.blogpostcomment_set.create(text="I hate this blog post")
+        comment2 = post.blogpostcomment_set.create(text="I love this blog post")
+        data = {
+            'id': post.id,
+            'title': 'Test blog post',
+            'comments': [{
+                    'id': comment1.id,
+                    'text': 'I hate this blog post :p',
+                }, {
+                    'id': comment2.id,
+                    'text': 'I love this blog post :p',
+            }],
+        }
+
+        serializer = BlogPostSerializer(data=data, instance=post)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        post = serializer.save()
+        self.assertTrue(post.id)
+        self.assertEqual(post.blogpostcomment_set.count(), 2)
+        self.assertEqual(
+            set(i['text'] for i in data['comments']),
+            set(i.text for i in post.blogpostcomment_set.all().order_by('id'))
+        )
+
+    def test_fails_in_batch_delete_mode(self):
+        """
+        Update nested while being in BATCH_DELETE mode fails.
+        """
+        class LocalSerializer(BlogPostSerializer):
+            comments = BlogPostCommentSerializer(many=True,
+                source='blogpostcomment_set', batch_mode=BATCH_DELETE)
+
+        post = models.BlogPost(title='Test blog post')
+        post.save()
+        comment1 = post.blogpostcomment_set.create(text="I hate this blog post")
+        comment2 = post.blogpostcomment_set.create(text="I love this blog post")
+        data = {
+            'id': post.id,
+            'title': 'Test blog post',
+            'comments': [{
+                    'id': comment1.id,
+                    'text': 'I hate this blog post :p',
+                }, {
+                    'id': comment2.id,
+                    'text': 'I love this blog post :p',
+            }],
+        }
+
+        serializer = LocalSerializer(data=data, instance=post)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors, {
+            'comments': [{
+                'non_field_errors': ['Cannot update an item.']
+            }, {
+                'non_field_errors': ['Cannot update an item.']
+            }]
+        })
+
+class NestedModelSerializerDeletesTests(TestCase):
+    def test_fails_in_batch_add_mode(self):
+        """
+        Delete nested while being in BATCH_ADD mode doesn't delete.
+        """
+        class LocalSerializer(BlogPostSerializer):
+            comments = BlogPostCommentSerializer(many=True,
+                source='blogpostcomment_set', batch_mode=BATCH_ADD)
+
+        post = models.BlogPost(title='Test blog post')
+        post.save()
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+        data = {
+            'id': post.id,
+            'title': 'Test blog post',
+            'comments': [],
+        }
+
+        serializer = LocalSerializer(data=data, instance=post)
+        self.assertTrue(serializer.is_valid())
+        post = serializer.save()
+        self.assertEqual(post.blogpostcomment_set.count(), 2)
+
+    def test_fails_in_batch_update_mode(self):
+        """
+        Delete nested while being in BATCH_UPDATE mode doesn't delete.
+        """
+        post = models.BlogPost(title='Test blog post')
+        post.save()
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+        data = {
+            'id': post.id,
+            'title': 'Test blog post',
+            'comments': [],
+        }
+
+        serializer = BlogPostSerializer(data=data, instance=post)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        post = serializer.save()
+        self.assertEqual(post.blogpostcomment_set.count(), 2)
+
+    def test_fails_in_batch_delete_mode(self):
+        """
+        Delete nested while being in BATCH_DELETE mode works.
+        """
+        class LocalSerializer(BlogPostSerializer):
+            comments = BlogPostCommentSerializer(many=True,
+                source='blogpostcomment_set', batch_mode=BATCH_DELETE)
+
+        post = models.BlogPost(title='Test blog post')
+        post.save()
+        post.blogpostcomment_set.create(text="I hate this blog post")
+        post.blogpostcomment_set.create(text="I love this blog post")
+        data = {
+            'id': post.id,
+            'title': 'Test blog post',
+            'comments': [],
+        }
+
+        serializer = LocalSerializer(data=data, instance=post)
+        self.assertTrue(serializer.is_valid(), serializer.errors)
+        post = serializer.save()
+        self.assertEqual(post.blogpostcomment_set.count(), 0)
