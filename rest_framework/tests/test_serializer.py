@@ -1971,3 +1971,30 @@ class BoolenFieldTypeTest(TestCase):
         '''
         bfield = self.serializer.get_fields()['started']
         self.assertEqual(type(bfield), fields.BooleanField)
+
+
+class IntegerFieldWithSourceTest(TestCase):
+    '''
+    Ensure that IntegerFields with a source kwarg are returned as integers not strings
+
+    '''
+
+    def setUp(self):
+
+        class Obj(object):
+            pass
+
+        obj = Obj()
+        obj.pk = '1'
+
+        class IntegerWithSourceSerializer(serializers.Serializer):
+            id = serializers.IntegerField(source='pk')
+
+        self.serializer = IntegerWithSourceSerializer(instance=obj)
+
+    def test_integerfield_type(self):
+        '''
+        Test that id field is an integer
+        '''
+        data = self.serializer.data
+        self.assertEqual(type(data['id']), int)
