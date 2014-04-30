@@ -16,6 +16,7 @@ import datetime
 import inspect
 import types
 from decimal import Decimal
+from django.contrib.contenttypes.generic import GenericForeignKey
 from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
@@ -827,6 +828,10 @@ class ModelSerializer(Serializer):
 
         if model_field:
             kwargs['required'] = not(model_field.null or model_field.blank)
+            if model_field.help_text is not None:
+                kwargs['help_text'] = model_field.help_text
+            if model_field.verbose_name is not None:
+                kwargs['label'] = model_field.verbose_name
 
         return PrimaryKeyRelatedField(**kwargs)
 
@@ -943,15 +948,11 @@ class ModelSerializer(Serializer):
                 m2m_data[field_name] = attrs.pop(field_name)
 
         # Forward m2m relations
-        for field in meta.many_to_many:
+        for field in meta.many_to_many + meta.virtual_fields:
+            if isinstance(field, GenericForeignKey):
+                continue
             if field.name in attrs:
                 m2m_data[field.name] = attrs.pop(field.name)
-
-        # Virtual m2m relations
-        # This is mostly for GenericRelations
-        for field in meta.virtual_fields:
-            if field.name in attrs:
-                virtual_m2m_data[field.name] = attrs.pop(field.name)
 
         # Nested forward relations - These need to be marked so we can save
         # them before saving the parent model instance.
@@ -959,17 +960,15 @@ class ModelSerializer(Serializer):
             if isinstance(self.fields.get(field_name, None), Serializer):
                 nested_forward_relations[field_name] = attrs[field_name]
 
-        # Update an existing instance...
-        if instance is not None:
-            for key, val in attrs.items():
-                try:
-                    setattr(instance, key, val)
-                except ValueError:
-                    self._errors[key] = self.error_messages['required']
+        # Create an empty instance of the model
+        if instance is None:
+            instance = self.opts.model()
 
-        # ...or create a new instance
-        else:
-            instance = self.opts.model(**attrs)
+        for key, val in attrs.items():
+            try:
+                setattr(instance, key, val)
+            except ValueError:
+                self._errors[key] = self.error_messages['required']
 
         # Any relations that cannot be set until we've
         # saved the model get hidden away on these
@@ -977,7 +976,6 @@ class ModelSerializer(Serializer):
         # at the point of save.
         instance._related_data = related_data
         instance._m2m_data = m2m_data
-        instance._virtual_m2m_data = virtual_m2m_data
         instance._nested_forward_relations = nested_forward_relations
 
         return instance
@@ -1009,13 +1007,6 @@ class ModelSerializer(Serializer):
                 # We need to save m2m data before linking the objects together
                 [self.save_object(o) for o in object_list]
                 setattr(obj, accessor_name, object_list)
-            del(obj._m2m_data)
-
-        if getattr(obj, '_virtual_m2m_data', None):
-            for accessor_name, object_list in obj._virtual_m2m_data.items():
-                # In case of GenericRelation, we have a FK as constraint
-                setattr(obj, accessor_name, object_list)
-                [self.save_object(o) for o in object_list]
             del(obj._m2m_data)
 
         if getattr(obj, '_related_data', None):
@@ -1104,6 +1095,10 @@ class HyperlinkedModelSerializer(ModelSerializer):
 
         if model_field:
             kwargs['required'] = not(model_field.null or model_field.blank)
+            if model_field.help_text is not None:
+                kwargs['help_text'] = model_field.help_text
+            if model_field.verbose_name is not None:
+                kwargs['label'] = model_field.verbose_name
 
         if self.opts.lookup_field:
             kwargs['lookup_field'] = self.opts.lookup_field

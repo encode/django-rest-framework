@@ -131,3 +131,21 @@ class TestGenericRelations(TestCase):
         }
         ]
         self.assertEqual(serializer.data, expected)
+
+    def test_restore_object_generic_fk(self):
+        """
+        Ensure an object with a generic foreign key can be restored.
+        """
+
+        class TagSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Tag
+                exclude = ('content_type', 'object_id')
+
+        serializer = TagSerializer()
+
+        bookmark = Bookmark(url='http://example.com')
+        attrs = {'tagged_item': bookmark, 'tag': 'example'}
+
+        tag = serializer.restore_object(attrs)
+        self.assertEqual(tag.tagged_item, bookmark)
