@@ -161,7 +161,7 @@ To do any other validation that requires access to multiple fields, add a method
             """
             Check that the start is before the stop.
             """
-            if attrs['start'] < attrs['finish']:
+            if attrs['start'] > attrs['finish']:
                 raise serializers.ValidationError("finish must occur after start")
             return attrs
 
@@ -383,14 +383,14 @@ You may wish to specify multiple fields as write-only.  Instead of adding each f
             fields = ('email', 'username', 'password')
             write_only_fields = ('password',)  # Note: Password field is write-only
 
-    def restore_object(self, attrs, instance=None):
-        """
-        Instantiate a new User instance.
-        """
-        assert instance is None, 'Cannot update users with CreateUserSerializer'                                
-        user = User(email=attrs['email'], username=attrs['username'])
-        user.set_password(attrs['password'])
-        return user
+        def restore_object(self, attrs, instance=None):
+            """
+            Instantiate a new User instance.
+            """
+            assert instance is None, 'Cannot update users with CreateUserSerializer'                                
+            user = User(email=attrs['email'], username=attrs['username'])
+            user.set_password(attrs['password'])
+            return user
  
 ## Specifying fields explicitly 
 

@@ -152,3 +152,13 @@ class TestAPIRequestFactory(TestCase):
         simple_png.name = 'test.png'
         factory = APIRequestFactory()
         factory.post('/', data={'image': simple_png})
+
+    def test_request_factory_url_arguments(self):
+        """
+        This is a non regression test against #1461
+        """
+        factory = APIRequestFactory()
+        request = factory.get('/view/?demo=test')
+        self.assertEqual(dict(request.GET), {'demo': ['test']})
+        request = factory.get('/view/', {'demo': 'test'})
+        self.assertEqual(dict(request.GET), {'demo': ['test']})

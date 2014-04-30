@@ -96,7 +96,7 @@ class TestFileUploadParser(TestCase):
         request = MockRequest()
         request.upload_handlers = (MemoryFileUploadHandler(),)
         request.META = {
-            'HTTP_CONTENT_DISPOSITION': 'Content-Disposition: inline; filename=file.txt'.encode('utf-8'),
+            'HTTP_CONTENT_DISPOSITION': 'Content-Disposition: inline; filename=file.txt',
             'HTTP_CONTENT_LENGTH': 14,
         }
         self.parser_context = {'request': request, 'kwargs': {}}
@@ -112,4 +112,4 @@ class TestFileUploadParser(TestCase):
     def test_get_filename(self):
         parser = FileUploadParser()
         filename = parser.get_filename(self.stream, None, self.parser_context)
-        self.assertEqual(filename, 'file.txt'.encode('utf-8'))
+        self.assertEqual(filename, 'file.txt')

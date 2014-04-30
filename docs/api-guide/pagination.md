@@ -103,6 +103,7 @@ You can also set the pagination style on a per-view basis, using the `ListAPIVie
         max_paginate_by = 100
 
 Note that using a `paginate_by` value of `None` will turn off pagination for the view.
+Note if you use the `PAGINATE_BY_PARAM` settings, you also have to set the `paginate_by_param` attribute in your view to `None` in order to turn off pagination for those requests that contain the `paginate_by_param` parameter.
 
 For more complex requirements such as serialization that differs depending on the requested media type you can override the `.get_paginate_by()` and `.get_pagination_serializer_class()` methods.
 
@@ -147,4 +148,14 @@ Alternatively, to set your custom pagination serializer on a per-view basis, use
         pagination_serializer_class = CustomPaginationSerializer
         paginate_by = 10
 
+# Third party packages
+
+The following third party packages are also available.
+
+## DRF-extensions
+
+The [`DRF-extensions` package][drf-extensions] includes a [`PaginateByMaxMixin` mixin class][paginate-by-max-mixin] that allows your API clients to specify `?page_size=max` to obtain the maximum allowed page size.
+
 [cite]: https://docs.djangoproject.com/en/dev/topics/pagination/
+[drf-extensions]: http://chibisov.github.io/drf-extensions/docs/
+[paginate-by-max-mixin]: http://chibisov.github.io/drf-extensions/docs/#paginatebymaxmixin

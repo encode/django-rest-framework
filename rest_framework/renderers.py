@@ -146,7 +146,7 @@ class XMLRenderer(BaseRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
-        Renders *obj* into serialized XML.
+        Renders `data` into serialized XML.
         """
         if data is None:
             return ''
@@ -193,17 +193,26 @@ class YAMLRenderer(BaseRenderer):
     format = 'yaml'
     encoder = encoders.SafeDumper
     charset = 'utf-8'
+    ensure_ascii = True
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
-        Renders *obj* into serialized YAML.
+        Renders `data` into serialized YAML.
         """
         assert yaml, 'YAMLRenderer requires pyyaml to be installed'
 
         if data is None:
             return ''
 
-        return yaml.dump(data, stream=None, encoding=self.charset, Dumper=self.encoder)
+        return yaml.dump(data, stream=None, encoding=self.charset, Dumper=self.encoder, allow_unicode=not self.ensure_ascii)
+
+
+class UnicodeYAMLRenderer(YAMLRenderer):
+    """
+    Renderer which serializes to YAML.
+    Does *not* apply character escaping for non-ascii characters.
+    """
+    ensure_ascii = False
 
 
 class TemplateHTMLRenderer(BaseRenderer):
@@ -427,7 +436,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                 files = request.FILES
             except ParseError:
                 data = None
-                files = None        
+                files = None
         else:
             data = None
             files = None
@@ -544,6 +553,14 @@ class BrowsableAPIRenderer(BaseRenderer):
         raw_data_patch_form = self.get_raw_data_form(view, 'PATCH', request)
         raw_data_put_or_patch_form = raw_data_put_form or raw_data_patch_form
 
+        response_headers = dict(response.items())
+        renderer_content_type = ''
+        if renderer:
+            renderer_content_type = '%s' % renderer.media_type
+            if renderer.charset:
+                renderer_content_type += ' ;%s' % renderer.charset
+        response_headers['Content-Type'] = renderer_content_type
+
         context = {
             'content': self.get_content(renderer, data, accepted_media_type, renderer_context),
             'view': view,
@@ -555,6 +572,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             'breadcrumblist': self.get_breadcrumbs(request),
             'allowed_methods': view.allowed_methods,
             'available_formats': [renderer.format for renderer in view.renderer_classes],
+            'response_headers': response_headers,
 
             'put_form': self.get_rendered_html_form(view, 'PUT', request),
             'post_form': self.get_rendered_html_form(view, 'POST', request),

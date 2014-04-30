@@ -74,7 +74,7 @@ class _MediaType(object):
             return 0
         elif self.sub_type == '*':
             return 1
-        elif not self.params or self.params.keys() == ['q']:
+        elif not self.params or list(self.params.keys()) == ['q']:
             return 2
         return 3
 

@@ -12,7 +12,7 @@ from rest_framework.compat import yaml, etree, patterns, url, include, six, Stri
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import BaseRenderer, JSONRenderer, YAMLRenderer, \
-    XMLRenderer, JSONPRenderer, BrowsableAPIRenderer, UnicodeJSONRenderer
+    XMLRenderer, JSONPRenderer, BrowsableAPIRenderer, UnicodeJSONRenderer, UnicodeYAMLRenderer
 from rest_framework.parsers import YAMLParser, XMLParser
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
@@ -256,6 +256,18 @@ class RendererEndToEndTests(TestCase):
         self.assertEqual(resp.get('Content-Type', None), None)
         self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
 
+    def test_contains_headers_of_api_response(self):
+        """
+        Issue #1437
+
+        Test we display the headers of the API response and not those from the
+        HTML response
+        """
+        resp = self.client.get('/html1')
+        self.assertContains(resp, '>GET, HEAD, OPTIONS<')
+        self.assertContains(resp, '>application/json<')
+        self.assertNotContains(resp, '>text/html; charset=utf-8<')
+
 
 _flat_repr = '{"foo": ["bar", "baz"]}'
 _indented_repr = '{\n  "foo": [\n    "bar",\n    "baz"\n  ]\n}'
@@ -455,6 +467,17 @@ if yaml:
             self.assertTrue(string in content, '%r not in %r' % (string, content))
 
 
+    class UnicodeYAMLRendererTests(TestCase):
+        """
+        Tests specific for the Unicode YAML Renderer
+        """
+        def test_proper_encoding(self):
+            obj = {'countries': ['United Kingdom', 'France', 'España']}
+            renderer = UnicodeYAMLRenderer()
+            content = renderer.render(obj, 'application/yaml')
+            self.assertEqual(content.strip(), 'countries: [United Kingdom, France, España]'.encode('utf-8'))
+
+
 class XMLRendererTestCase(TestCase):
     """
     Tests specific to the XML Renderer
@@ -601,6 +624,10 @@ class CacheRenderTest(TestCase):
         method = getattr(self.client, http_method)
         resp = method(url)
         del resp.client, resp.request
+        try:
+            del resp.wsgi_request
+        except AttributeError:
+            pass
         return resp
 
     def test_obj_pickling(self):
