@@ -16,10 +16,12 @@ import datetime
 import inspect
 import types
 from decimal import Decimal
+from django.contrib.contenttypes.generic import GenericForeignKey
+from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
-from rest_framework.compat import get_concrete_model, six
+from rest_framework.compat import six
 from rest_framework.settings import api_settings
 
 
@@ -821,6 +823,10 @@ class ModelSerializer(Serializer):
 
         if model_field:
             kwargs['required'] = not(model_field.null or model_field.blank)
+            if model_field.help_text is not None:
+                kwargs['help_text'] = model_field.help_text
+            if model_field.verbose_name is not None:
+                kwargs['label'] = model_field.verbose_name
 
         return PrimaryKeyRelatedField(**kwargs)
 
@@ -941,6 +947,8 @@ class ModelSerializer(Serializer):
 
         # Forward m2m relations
         for field in meta.many_to_many + meta.virtual_fields:
+            if isinstance(field, GenericForeignKey):
+                continue
             if field.name in attrs:
                 m2m_data[field.name] = attrs.pop(field.name)
 
@@ -950,17 +958,15 @@ class ModelSerializer(Serializer):
             if isinstance(self.fields.get(field_name, None), Serializer):
                 nested_forward_relations[field_name] = attrs[field_name]
 
-        # Update an existing instance...
-        if instance is not None:
-            for key, val in attrs.items():
-                try:
-                    setattr(instance, key, val)
-                except ValueError:
-                    self._errors[key] = self.error_messages['required']
+        # Create an empty instance of the model
+        if instance is None:
+            instance = self.opts.model()
 
-        # ...or create a new instance
-        else:
-            instance = self.opts.model(**attrs)
+        for key, val in attrs.items():
+            try:
+                setattr(instance, key, val)
+            except ValueError:
+                self._errors[key] = self.error_messages['required']
 
         # Any relations that cannot be set until we've
         # saved the model get hidden away on these
@@ -1085,6 +1091,10 @@ class HyperlinkedModelSerializer(ModelSerializer):
 
         if model_field:
             kwargs['required'] = not(model_field.null or model_field.blank)
+            if model_field.help_text is not None:
+                kwargs['help_text'] = model_field.help_text
+            if model_field.verbose_name is not None:
+                kwargs['label'] = model_field.verbose_name
 
         if self.opts.lookup_field:
             kwargs['lookup_field'] = self.opts.lookup_field

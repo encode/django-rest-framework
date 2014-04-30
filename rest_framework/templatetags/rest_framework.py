@@ -98,7 +98,7 @@ def add_class(value, css_class):
 
 
 # Bunch of stuff cloned from urlize
-TRAILING_PUNCTUATION = ['.', ',', ':', ';', '.)', '"', "'"]
+TRAILING_PUNCTUATION = ['.', ',', ':', ';', '.)', '"', "']", "'}", "'"]
 WRAPPING_PUNCTUATION = [('(', ')'), ('<', '>'), ('[', ']'), ('&lt;', '&gt;'),
                         ('"', '"'), ("'", "'")]
 word_split_re = re.compile(r'(\s+)')

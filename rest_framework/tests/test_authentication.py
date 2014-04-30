@@ -20,6 +20,7 @@ from rest_framework.authentication import (
     OAuth2Authentication
 )
 from rest_framework.authtoken.models import Token
+from rest_framework.compat import patterns, url, include, six
 from rest_framework.compat import oauth2_provider, oauth2_provider_scope
 from rest_framework.compat import oauth, oauth_provider
 from rest_framework.test import APIRequestFactory, APIClient
@@ -194,6 +195,12 @@ class TokenAuthTests(TestCase):
         self.token.delete()
         token = Token.objects.create(user=self.user)
         self.assertTrue(bool(token.key))
+
+    def test_generate_key_returns_string(self):
+        """Ensure generate_key returns a string"""
+        token = Token()
+        key = token.generate_key()
+        self.assertTrue(isinstance(key, six.string_types))
 
     def test_token_login_json(self):
         """Ensure token login view using JSON POST works."""
