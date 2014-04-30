@@ -40,6 +40,25 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
+### 2.3.x
+
+**Date**: April 2014
+
+* Fix nested serializers linked through a backward foreign key relation
+* Fix bad links for the `BrowsableAPIRenderer` with `YAMLRenderer`
+* Add `UnicodeYAMLRenderer` that extends `YAMLRenderer` with unicode
+* Fix `parse_header` argument convertion
+* Fix mediatype detection under Python3
+* Web browseable API now offers blank option on dropdown when the field is not required
+* `APIException` representation improved for logging purposes
+* Allow source="*" within nested serializers
+* Better support for custom oauth2 provider backends
+* Fix field validation if it's optional and has no value
+* Add `SEARCH_PARAM` and `ORDERING_PARAM`
+* Fix `APIRequestFactory` to support arguments within the url string for GET
+* Allow three transport modes for access tokens when accessing a protected resource
+* Fix `Request`'s `QueryDict` encoding
+
 ### 2.3.13
 
 **Date**: 6th March 2014

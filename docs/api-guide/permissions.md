@@ -56,7 +56,7 @@ You can also set the authentication policy on a per-view, or per-viewset basis,
 using the `APIView` class based views.
 
     from rest_framework.permissions import IsAuthenticated
-	from rest_framework.responses import Response
+	from rest_framework.response import Response
 	from rest_framework.views import APIView
 
     class ExampleView(APIView):
