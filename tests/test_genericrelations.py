@@ -84,7 +84,7 @@ class TestGenericRelations(TestCase):
                 exclude = ('content_type', 'object_id')
 
         class BookmarkSerializer(serializers.ModelSerializer):
-            tags = TagSerializer()
+            tags = TagSerializer(many=True)
 
             class Meta:
                 model = Bookmark

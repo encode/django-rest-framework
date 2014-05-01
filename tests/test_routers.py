@@ -1,10 +1,10 @@
 from __future__ import unicode_literals
+from django.conf.urls import patterns, url, include
 from django.db import models
 from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import serializers, viewsets, permissions
-from rest_framework.compat import include, patterns, url
-from rest_framework.decorators import link, action
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework.routers import SimpleRouter, DefaultRouter
 from rest_framework.test import APIRequestFactory
@@ -18,23 +18,23 @@ class BasicViewSet(viewsets.ViewSet):
     def list(self, request, *args, **kwargs):
         return Response({'method': 'list'})
 
-    @action()
+    @detail_route(methods=['post'])
     def action1(self, request, *args, **kwargs):
         return Response({'method': 'action1'})
 
-    @action()
+    @detail_route(methods=['post'])
     def action2(self, request, *args, **kwargs):
         return Response({'method': 'action2'})
 
-    @action(methods=['post', 'delete'])
+    @detail_route(methods=['post', 'delete'])
     def action3(self, request, *args, **kwargs):
         return Response({'method': 'action2'})
 
-    @link()
+    @detail_route()
     def link1(self, request, *args, **kwargs):
         return Response({'method': 'link1'})
 
-    @link()
+    @detail_route()
     def link2(self, request, *args, **kwargs):
         return Response({'method': 'link2'})
 
@@ -121,6 +121,27 @@ class TestCustomLookupFields(TestCase):
         )
 
 
+class TestLookupValueRegex(TestCase):
+    """
+    Ensure the router honors lookup_value_regex when applied
+    to the viewset.
+    """
+    def setUp(self):
+        class NoteViewSet(viewsets.ModelViewSet):
+            queryset = RouterTestModel.objects.all()
+            lookup_field = 'uuid'
+            lookup_value_regex = '[0-9a-f]{32}'
+
+        self.router = SimpleRouter()
+        self.router.register(r'notes', NoteViewSet)
+        self.urls = self.router.urls
+
+    def test_urls_limited_by_lookup_value_regex(self):
+        expected = ['^notes/$', '^notes/(?P<uuid>[0-9a-f]{32})/$']
+        for idx in range(len(expected)):
+            self.assertEqual(expected[idx], self.urls[idx].regex.pattern)
+
+
 class TestTrailingSlashIncluded(TestCase):
     def setUp(self):
         class NoteViewSet(viewsets.ModelViewSet):
@@ -131,7 +152,7 @@ class TestTrailingSlashIncluded(TestCase):
         self.urls = self.router.urls
 
     def test_urls_have_trailing_slash_by_default(self):
-        expected = ['^notes/$', '^notes/(?P<pk>[^/]+)/$']
+        expected = ['^notes/$', '^notes/(?P<pk>[^/.]+)/$']
         for idx in range(len(expected)):
             self.assertEqual(expected[idx], self.urls[idx].regex.pattern)
 
@@ -175,7 +196,7 @@ class TestActionKeywordArgs(TestCase):
         class TestViewSet(viewsets.ModelViewSet):
             permission_classes = []
 
-            @action(permission_classes=[permissions.AllowAny])
+            @detail_route(methods=['post'], permission_classes=[permissions.AllowAny])
             def custom(self, request, *args, **kwargs):
                 return Response({
                     'permission_classes': self.permission_classes
@@ -196,14 +217,14 @@ class TestActionKeywordArgs(TestCase):
 
 class TestActionAppliedToExistingRoute(TestCase):
     """
-    Ensure `@action` decorator raises an except when applied
+    Ensure `@detail_route` decorator raises an except when applied
     to an existing route
     """
 
     def test_exception_raised_when_action_applied_to_existing_route(self):
         class TestViewSet(viewsets.ModelViewSet):
 
-            @action()
+            @detail_route(methods=['post'])
             def retrieve(self, request, *args, **kwargs):
                 return Response({
                     'hello': 'world'
@@ -214,3 +235,49 @@ class TestActionAppliedToExistingRoute(TestCase):
 
         with self.assertRaises(ImproperlyConfigured):
             self.router.urls
+
+
+class DynamicListAndDetailViewSet(viewsets.ViewSet):
+    def list(self, request, *args, **kwargs):
+        return Response({'method': 'list'})
+
+    @list_route(methods=['post'])
+    def list_route_post(self, request, *args, **kwargs):
+        return Response({'method': 'action1'})
+
+    @detail_route(methods=['post'])
+    def detail_route_post(self, request, *args, **kwargs):
+        return Response({'method': 'action2'})
+
+    @list_route()
+    def list_route_get(self, request, *args, **kwargs):
+        return Response({'method': 'link1'})
+
+    @detail_route()
+    def detail_route_get(self, request, *args, **kwargs):
+        return Response({'method': 'link2'})
+
+
+class TestDynamicListAndDetailRouter(TestCase):
+    def setUp(self):
+        self.router = SimpleRouter()
+
+    def test_list_and_detail_route_decorators(self):
+        routes = self.router.get_routes(DynamicListAndDetailViewSet)
+        decorator_routes = [r for r in routes if not (r.name.endswith('-list') or r.name.endswith('-detail'))]
+        # Make sure all these endpoints exist and none have been clobbered
+        for i, endpoint in enumerate(['list_route_get', 'list_route_post', 'detail_route_get', 'detail_route_post']):
+            route = decorator_routes[i]
+            # check url listing
+            if endpoint.startswith('list_'):
+                self.assertEqual(route.url,
+                                 '^{{prefix}}/{0}{{trailing_slash}}$'.format(endpoint))
+            else:
+                self.assertEqual(route.url,
+                                 '^{{prefix}}/{{lookup}}/{0}{{trailing_slash}}$'.format(endpoint))
+            # check method to function mapping
+            if endpoint.endswith('_post'):
+                method_map = 'post'
+            else:
+                method_map = 'get'
+            self.assertEqual(route.mapping[method_map], endpoint)

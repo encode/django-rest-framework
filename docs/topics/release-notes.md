@@ -38,6 +38,17 @@ You can determine your currently installed version using `pip freeze`:
 
 ---
 
+### 2.4.0
+
+* `@detail_route` and `@list_route` decorators replace `@action` and `@link`.
+* `six` no longer bundled.  For Django <= 1.4.1, install `six` package.
+* Support customizable view name and description functions, using the `VIEW_NAME_FUNCTION` and `VIEW_DESCRIPTION_FUNCTION` settings.
+* Added `NUM_PROXIES` setting for smarter client IP identification.
+* Added `MAX_PAGINATE_BY` setting and `max_paginate_by` generic view attribute.
+* Added `cache` attribute to throttles to allow overriding of default cache.
+* Bugfix: `?page_size=0` query parameter now falls back to default page size for view, instead of always turning pagination off.
+
+
 ## 2.3.x series
 
 ### 2.3.x
@@ -60,6 +71,8 @@ You can determine your currently installed version using `pip freeze`:
 * Fix `Request`'s `QueryDict` encoding
 
 ### 2.3.13
+## 2.3.x series
+
 
 **Date**: 6th March 2014
 

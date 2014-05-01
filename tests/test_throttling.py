@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
 from rest_framework.throttling import BaseThrottle, UserRateThrottle, ScopedRateThrottle
@@ -275,3 +276,68 @@ class ScopedRateThrottleTests(TestCase):
             self.increment_timer()
             response = self.unscoped_view(request)
             self.assertEqual(200, response.status_code)
+
+
+class XffTestingBase(TestCase):
+    def setUp(self):
+
+        class Throttle(ScopedRateThrottle):
+            THROTTLE_RATES = {'test_limit': '1/day'}
+            TIMER_SECONDS = 0
+            timer = lambda self: self.TIMER_SECONDS
+
+        class View(APIView):
+            throttle_classes = (Throttle,)
+            throttle_scope = 'test_limit'
+
+            def get(self, request):
+                return Response('test_limit')
+
+        cache.clear()
+        self.throttle = Throttle()
+        self.view = View.as_view()
+        self.request = APIRequestFactory().get('/some_uri')
+        self.request.META['REMOTE_ADDR'] = '3.3.3.3'
+        self.request.META['HTTP_X_FORWARDED_FOR'] = '0.0.0.0, 1.1.1.1, 2.2.2.2'
+
+    def config_proxy(self, num_proxies):
+        setattr(api_settings, 'NUM_PROXIES', num_proxies)
+
+
+class IdWithXffBasicTests(XffTestingBase):
+    def test_accepts_request_under_limit(self):
+        self.config_proxy(0)
+        self.assertEqual(200, self.view(self.request).status_code)
+
+    def test_denies_request_over_limit(self):
+        self.config_proxy(0)
+        self.view(self.request)
+        self.assertEqual(429, self.view(self.request).status_code)
+
+
+class XffSpoofingTests(XffTestingBase):
+    def test_xff_spoofing_doesnt_change_machine_id_with_one_app_proxy(self):
+        self.config_proxy(1)
+        self.view(self.request)
+        self.request.META['HTTP_X_FORWARDED_FOR'] = '4.4.4.4, 5.5.5.5, 2.2.2.2'
+        self.assertEqual(429, self.view(self.request).status_code)
+
+    def test_xff_spoofing_doesnt_change_machine_id_with_two_app_proxies(self):
+        self.config_proxy(2)
+        self.view(self.request)
+        self.request.META['HTTP_X_FORWARDED_FOR'] = '4.4.4.4, 1.1.1.1, 2.2.2.2'
+        self.assertEqual(429, self.view(self.request).status_code)
+
+
+class XffUniqueMachinesTest(XffTestingBase):
+    def test_unique_clients_are_counted_independently_with_one_proxy(self):
+        self.config_proxy(1)
+        self.view(self.request)
+        self.request.META['HTTP_X_FORWARDED_FOR'] = '0.0.0.0, 1.1.1.1, 7.7.7.7'
+        self.assertEqual(200, self.view(self.request).status_code)
+
+    def test_unique_clients_are_counted_independently_with_two_proxies(self):
+        self.config_proxy(2)
+        self.view(self.request)
+        self.request.META['HTTP_X_FORWARDED_FOR'] = '0.0.0.0, 7.7.7.7, 2.2.2.2'
+        self.assertEqual(200, self.view(self.request).status_code)

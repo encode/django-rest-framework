@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
+from django.conf.urls import patterns, url
 from django.test import TestCase
-from rest_framework.compat import patterns, url
 from rest_framework.reverse import reverse
 from rest_framework.test import APIRequestFactory
 

@@ -2,14 +2,11 @@
 Provides a set of pluggable permission policies.
 """
 from __future__ import unicode_literals
-import inspect
-import warnings
-
-SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
-
 from django.http import Http404
 from rest_framework.compat import (get_model_name, oauth2_provider_scope,
                                    oauth2_constants)
+
+SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
 
 class BasePermission(object):
@@ -27,13 +24,6 @@ class BasePermission(object):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
-        if len(inspect.getargspec(self.has_permission).args) == 4:
-            warnings.warn(
-                'The `obj` argument in `has_permission` is deprecated. '
-                'Use `has_object_permission()` instead for object permissions.',
-                DeprecationWarning, stacklevel=2
-            )
-            return self.has_permission(request, view, obj)
         return True
 
 

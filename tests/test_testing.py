@@ -1,11 +1,11 @@
 # -- coding: utf-8 --
 
 from __future__ import unicode_literals
+from django.conf.urls import patterns, url
 from io import BytesIO
 
 from django.contrib.auth.models import User
 from django.test import TestCase
-from rest_framework.compat import patterns, url
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.test import APIClient, APIRequestFactory, force_authenticate
