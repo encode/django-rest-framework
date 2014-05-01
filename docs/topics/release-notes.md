@@ -40,6 +40,7 @@ You can determine your currently installed version using `pip freeze`:
 
 ### 2.4.0
 
+* Use py.test
 * `@detail_route` and `@list_route` decorators replace `@action` and `@link`.
 * `six` no longer bundled.  For Django <= 1.4.1, install `six` package.
 * Support customizable view name and description functions, using the `VIEW_NAME_FUNCTION` and `VIEW_DESCRIPTION_FUNCTION` settings.
