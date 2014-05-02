@@ -489,6 +489,32 @@ You can also overide the URL field's view name and lookup field without overridi
 
 ---
 
+#MongoengineModelSerializer
+The `MongoengineModelSerializer` class is extension of `ModelSerializer` class. Supports Mongoengine Documents serialization instead of Django Models.
+
+By default the serializer will include a id field which corresponds MongoDB's ObjectID.
+##Referenced and Embedded Fields
+Mongoengine Model Serializer uses ReferenceFields to embed or reference Documents.
+
+    class CommentSerializer(MongoEngineModelSerializer):
+        class Meta:
+            model = Comment
+            depth = 2
+            related_model_validations = {'owner': User, 'post': Post}
+            exclude = ('isApproved',)
+            
+Referencing or embedding is done regarding serializer's `depth` attribute.
+
+##Object Level Validation
+Object level validation can be automated by adding `related_model_validations = {'key': value}` , field as key and model as value.
+
+---
+**Note**: You can use all Model Serializer features such as `validate_<fieldname>` and `transform_<fieldname>` to override or extend Mongoengine Model Serializer subclasses.
+
+For **installation** and full **documentation**, see [3rd Party Libraries and Extensions].
+
+---
+
 # Advanced serializer usage
 
 You can create customized subclasses of `ModelSerializer` or `HyperlinkedModelSerializer` that use a different set of default fields.
@@ -584,3 +610,4 @@ The following custom model serializer could be used as a base class for model se
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
+[3rd Party Libraries and Extensions]: https://github.com/tomchristie/django-rest-framework/wiki/3rd-Party-Libraries-and-Extensions
