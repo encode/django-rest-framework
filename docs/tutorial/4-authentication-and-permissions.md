@@ -44,11 +44,11 @@ When that's all done we'll need to update our database tables.
 Normally we'd create a database migration in order to do that, but for the purposes of this tutorial, let's just delete the database and start again.
 
     rm tmp.db
-    python ./manage.py syncdb
+    python manage.py syncdb
 
 You might also want to create a few different users, to use for testing the API.  The quickest way to do this will be with the `createsuperuser` command.
 
-    python ./manage.py createsuperuser
+    python manage.py createsuperuser
 
 ## Adding endpoints for our User models
 
