@@ -85,7 +85,7 @@ In the `urls.py` file we bind our `ViewSet` classes into a set of concrete views
 
 Notice how we're creating multiple views from each `ViewSet` class, by binding the http methods to the required action for each view.
 
-Now that we've bound our resources into concrete views, that we can register the views with the URL conf as usual.
+Now that we've bound our resources into concrete views, we can register the views with the URL conf as usual.
 
     urlpatterns = format_suffix_patterns(patterns('snippets.views',
         url(r'^$', 'api_root'),
