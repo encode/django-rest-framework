@@ -138,7 +138,7 @@ You can review the final [tutorial code][repo] on GitHub, or try out a live exam
 
 ## Onwards and upwards
 
-We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here's a few places you can start:
+We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here are a few places you can start:
 
 * Contribute on [GitHub][github] by reviewing and submitting issues, and making pull requests.
 * Join the [REST framework discussion group][group], and help build the community.
