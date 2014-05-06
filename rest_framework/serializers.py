@@ -50,7 +50,11 @@ def _resolve_model(obj):
     """
     if type(obj) == str and len(obj.split('.')) == 2:
         app_name, model_name = obj.split('.')
-        return models.get_model(app_name, model_name)
+        model =  models.get_model(app_name, model_name)
+        if model is None:
+            raise ValueError("{0} is not a Django model".format(obj))
+        else:
+            return model
     elif inspect.isclass(obj) and issubclass(obj, models.Model):
         return obj
     else:
