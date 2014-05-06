@@ -387,7 +387,7 @@ class NestedModelSerializerUpdateTests(TestCase):
         source = models.ManyToManySource.objects.create(name='source')
         target1 = models.ManyToManyTarget.objects.create(name='target1')
         target2 = models.ManyToManyTarget.objects.create(name='target2')
-        source.targets = [target1, target2]
+        source.targets = [target1]
 
         data = {
             'id': source.id,
