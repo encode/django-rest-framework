@@ -5,6 +5,7 @@ from django.test import TestCase
 from rest_framework import generics, renderers, serializers, status
 from rest_framework.test import APIRequestFactory
 from rest_framework.tests.models import BasicModel, Comment, SlugBasedModel
+from rest_framework.tests.models import ForeignKeySource, ForeignKeyTarget
 from rest_framework.compat import six
 
 factory = APIRequestFactory()
@@ -26,6 +27,13 @@ class InstanceView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         queryset = super(InstanceView, self).get_queryset()
         return queryset.exclude(text='filtered out')
+
+
+class FKInstanceView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    FK: example description for OPTIONS.
+    """
+    model = ForeignKeySource
 
 
 class SlugSerializer(serializers.ModelSerializer):
@@ -405,6 +413,72 @@ class TestInstanceView(TestCase):
             response = self.view(request, pk=999).render()
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertFalse(self.objects.filter(id=999).exists())
+
+
+class TestFKInstanceView(TestCase):
+    def setUp(self):
+        """
+        Create 3 BasicModel instances.
+        """
+        items = ['foo', 'bar', 'baz']
+        for item in items:
+            t = ForeignKeyTarget(name=item)
+            t.save()
+            ForeignKeySource(name='source_' + item, target=t).save()
+
+        self.objects = ForeignKeySource.objects
+        self.data = [
+            {'id': obj.id, 'name': obj.name}
+            for obj in self.objects.all()
+        ]
+        self.view = FKInstanceView.as_view()
+
+    def test_options_root_view(self):
+        """
+        OPTIONS requests to ListCreateAPIView should return metadata
+        """
+        request = factory.options('/999')
+        with self.assertNumQueries(1):
+            response = self.view(request, pk=999).render()
+        expected = {
+            'name': 'Fk Instance',
+            'description': 'FK: example description for OPTIONS.',
+            'renders': [
+                'application/json',
+                'text/html'
+            ],
+            'parses': [
+                'application/json',
+                'application/x-www-form-urlencoded',
+                'multipart/form-data'
+            ],
+            'actions': {
+                'PUT': {
+                    'id': {
+                        'type': 'integer',
+                        'required': False,
+                        'read_only': True,
+                        'label': 'ID'
+                    },
+                    'name': {
+                        'type': 'string',
+                        'required': True,
+                        'read_only': False,
+                        'label': 'name',
+                        'max_length': 100
+                    },
+                    'target': {
+                        'type': 'field',
+                        'required': True,
+                        'read_only': False,
+                        'label': 'Target',
+                        'help_text': 'Target'
+                    }
+                }
+            }
+        }
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, expected)
 
 
 class TestOverriddenGetObject(TestCase):
