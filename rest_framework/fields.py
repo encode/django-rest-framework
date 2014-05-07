@@ -62,7 +62,7 @@ def get_component(obj, attr_name):
 
 def readable_datetime_formats(formats):
     format = ', '.join(formats).replace(ISO_8601,
-             'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]')
+             'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]')
     return humanize_strptime(format)
 
 
