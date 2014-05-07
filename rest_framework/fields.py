@@ -473,10 +473,7 @@ class CharField(WritableField):
             return value
 
         if value is None:
-            if self.default:
-                return self.default
-            else:
-                value
+            return ''
 
         return smart_text(value)
 
