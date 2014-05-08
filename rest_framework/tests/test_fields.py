@@ -312,7 +312,7 @@ class DateTimeFieldTest(TestCase):
             f.from_native('04:61:59')
         except validators.ValidationError as e:
             self.assertEqual(e.messages, ["Datetime has wrong format. Use one of these formats instead: "
-                                          "YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]"])
+                                          "YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]"])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -326,7 +326,7 @@ class DateTimeFieldTest(TestCase):
             f.from_native('04 -- 31')
         except validators.ValidationError as e:
             self.assertEqual(e.messages, ["Datetime has wrong format. Use one of these formats instead: "
-                                          "YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]"])
+                                          "YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]"])
         else:
             self.fail("ValidationError was not properly raised")
 
