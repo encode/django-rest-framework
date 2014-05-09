@@ -4,6 +4,7 @@ General serializer field tests.
 from __future__ import unicode_literals
 
 import datetime
+import re
 from decimal import Decimal
 from uuid import uuid4
 from django.core import validators
@@ -102,6 +103,16 @@ class BasicFieldTests(TestCase):
         field = serializers.Field()
         keys = list(field.to_native(ret).keys())
         self.assertEqual(keys, ['c', 'b', 'a', 'z'])
+
+    def test_widget_html_attributes(self):
+        """
+        Make sure widget_html() renders the correct attributes
+        """
+        r = re.compile('(\S+)=["\']?((?:.(?!["\']?\s+(?:\S+)=|[>"\']))+.)["\']?')
+        form = TimeFieldModelSerializer().data
+        attributes = r.findall(form.fields['clock'].widget_html())
+        self.assertIn(('name', 'clock'), attributes)
+        self.assertIn(('id', 'clock'), attributes)
 
 
 class DateFieldTest(TestCase):

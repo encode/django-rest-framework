@@ -154,7 +154,12 @@ class Field(object):
     def widget_html(self):
         if not self.widget:
             return ''
-        return self.widget.render(self._name, self._value)
+
+        attrs = {}
+        if 'id' not in self.widget.attrs:
+            attrs['id'] = self._name
+
+        return self.widget.render(self._name, self._value, attrs=attrs)
 
     def label_tag(self):
         return '<label for="%s">%s:</label>' % (self._name, self.label)
