@@ -16,7 +16,7 @@ import datetime
 import inspect
 import types
 from decimal import Decimal
-from django.contrib.contenttypes.generic import GenericForeignKey
+from django.contrib.contenttypes.generic import GenericForeignKey, GenericRelation
 from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
@@ -833,6 +833,15 @@ class ModelSerializer(Serializer):
             if model_field.verbose_name is not None:
                 kwargs['label'] = model_field.verbose_name
 
+            if not model_field.editable:
+                kwargs['read_only'] = True
+
+            if model_field.verbose_name is not None:
+                kwargs['label'] = model_field.verbose_name
+
+            if model_field.help_text is not None:
+                kwargs['help_text'] = model_field.help_text
+
         return PrimaryKeyRelatedField(**kwargs)
 
     def get_field(self, model_field):
@@ -932,6 +941,7 @@ class ModelSerializer(Serializer):
         m2m_data = {}
         related_data = {}
         nested_forward_relations = {}
+        generic_fk = []
         meta = self.opts.model._meta
 
         # Reverse fk or one-to-one relations
@@ -950,6 +960,8 @@ class ModelSerializer(Serializer):
         for field in meta.many_to_many + meta.virtual_fields:
             if isinstance(field, GenericForeignKey):
                 continue
+            if isinstance(field, GenericRelation):
+                generic_fk.append(field.name)
             if field.name in attrs:
                 m2m_data[field.name] = attrs.pop(field.name)
 
@@ -973,6 +985,7 @@ class ModelSerializer(Serializer):
         # saved the model get hidden away on these
         # private attributes, so we can deal with them
         # at the point of save.
+        instance._generic_fk = generic_fk
         instance._related_data = related_data
         instance._m2m_data = m2m_data
         instance._nested_forward_relations = nested_forward_relations
@@ -1003,7 +1016,13 @@ class ModelSerializer(Serializer):
 
         if getattr(obj, '_m2m_data', None):
             for accessor_name, object_list in obj._m2m_data.items():
-                setattr(obj, accessor_name, object_list)
+                if accessor_name in getattr(obj, '_generic_fk', []):
+                    # We are dealing with a reversed generic FK
+                    setattr(obj, accessor_name, object_list)
+                [self.save_object(o) for o in object_list if not isinstance(o, GenericRelation)]
+                if accessor_name not in getattr(obj, '_generic_fk', []):
+                    # We need to save m2m data before linking the objects together
+                    setattr(obj, accessor_name, object_list)
             del(obj._m2m_data)
 
         if getattr(obj, '_related_data', None):
