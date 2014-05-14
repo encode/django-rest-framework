@@ -43,8 +43,9 @@ class DefaultObjectSerializer(serializers.Field):
     as the default.
     """
 
-    def __init__(self, source=None, context=None):
+    def __init__(self, source=None, context=None, many=False):
         # Note: Swallow context kwarg - only required for eg. ModelSerializer.
+        # Note: Swallow many kwarg - required for eg. serializing a list.
         super(DefaultObjectSerializer, self).__init__(source=source)
 
 
@@ -82,7 +83,8 @@ class BasePaginationSerializer(serializers.Serializer):
         else:
             context_kwarg = {}
 
-        self.fields[results_field] = object_serializer(source='object_list', **context_kwarg)
+        # we expect an array-like data structure here
+        self.fields[results_field] = object_serializer(source='object_list', many=True, **context_kwarg)
 
 
 class PaginationSerializer(BasePaginationSerializer):
