@@ -464,7 +464,7 @@ For more specific requirements such as specifying a different lookup for each fi
             model = Account
             fields = ('url', 'account_name', 'users', 'created')
 
-## Overiding the URL field behavior
+## Overriding the URL field behavior
 
 The name of the URL field defaults to 'url'.  You can override this globally, by using the `URL_FIELD_NAME` setting.
 
@@ -478,7 +478,7 @@ You can also override this on a per-serializer basis by using the `url_field_nam
 
 **Note**: The generic view implementations normally generate a `Location` header in response to successful `POST` requests.  Serializers using `url_field_name` option will not have this header automatically included by the view.  If you need to do so you will ned to also override the view's `get_success_headers()` method.
 
-You can also overide the URL field's view name and lookup field without overriding the field explicitly, by using the `view_name` and `lookup_field` options, like so:
+You can also override the URL field's view name and lookup field without overriding the field explicitly, by using the `view_name` and `lookup_field` options, like so:
 
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
