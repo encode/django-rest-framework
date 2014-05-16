@@ -990,7 +990,7 @@ class ModelSerializer(Serializer):
                 try:
                     attr_instance = getattr(instance, keys[0])
                     related_models_to_save[key] = attr_instance
-                except AttributeError:
+                except (AttributeError, ObjectDoesNotExist):
                     self._errors[key] = self.error_messages['missing']
                     continue
 
