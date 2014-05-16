@@ -93,7 +93,7 @@ Note that if deploying to [Apache using mod_wsgi][mod_wsgi_official], the author
 
 If you are deploying to Apache, and using any non-session based authentication, you will need to explicitly configure mod_wsgi to pass the required headers through to the application.  This can be done by specifying the `WSGIPassAuthorization` directive in the appropriate context and setting it to `'On'`.
 
-    # this can go in either server config, virtual host, directory or .htaccess 
+    # this can go in either server config, virtual host, directory or .htaccess
     WSGIPassAuthorization On
 
 ---
@@ -117,7 +117,7 @@ Unauthenticated responses that are denied permission will result in an `HTTP 401
 
 ## TokenAuthentication
 
-This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients. 
+This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.
 
 To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in your `INSTALLED_APPS` setting:
 
@@ -125,7 +125,7 @@ To use the `TokenAuthentication` scheme, include `rest_framework.authtoken` in y
         ...
         'rest_framework.authtoken'
     )
-    
+
 Make sure to run `manage.py syncdb` after changing your settings. The `authtoken` database tables are managed by south (see [Schema migrations](#schema-migrations) below).
 
 You'll also need to create tokens for your users.
@@ -209,7 +209,7 @@ You can do so by inserting a `needed_by` attribute in your user migration:
         needed_by = (
             ('authtoken', '0001_initial'),
         )
-        
+
         def forwards(self):
             ...
 
@@ -282,7 +282,7 @@ Note that the `namespace='oauth2'` argument is required.
 Finally, sync your database.
 
     python manage.py syncdb
-    python manage.py migrate 
+    python manage.py migrate
 
 ---
 
@@ -368,7 +368,7 @@ The following example will authenticate any incoming request as the user given b
                 user = User.objects.get(username=username)
             except User.DoesNotExist:
                 raise exceptions.AuthenticationFailed('No such user')
-            
+
             return (user, None)
 
 ---
@@ -392,6 +392,14 @@ The [Django OAuth2 Consumer][doac] library from [Rediker Software][rediker] is a
 ## JSON Web Token Authentication
 
 JSON Web Token is a fairly new standard which can be used for token-based authentication. Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token. [Blimp][blimp] maintains the [djangorestframework-jwt][djangorestframework-jwt] package which provides a JWT Authentication class as well as a mechanism for clients to obtain a JWT given the username and password.
+
+## Hawk HTTP Authentication
+
+The [HawkREST][hawkrest] library builds on the [Mohawk][mohawk] library to let you work with [Hawk][hawk] signed requests and responses in your API. [Hawk][hawk] lets two parties securely communicate with each other using messages signed by a shared key. It is based on [HTTP MAC access authentication][mac] (which was based on parts of [OAuth 1.0][oauth-1.0a]).
+
+## HTTP Signature Authentication
+
+HTTP Signature (currently a [IETF draft][http-signature-ietf-draft]) provides a way to achieve origin authentication and message integrity for HTTP messages. Similar to [Amazon's HTTP Signature scheme][amazon-http-signature], used by many of its services, it permits stateless, per-request authentication. [Elvio Toccalino][etoccalino] maintains the [djangorestframework-httpsignature][djangorestframework-httpsignature] package which provides an easy to use HTTP Signature Authentication mechanism.
 
 [cite]: http://jacobian.org/writing/rest-worst-practices/
 [http401]: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.2
@@ -419,3 +427,11 @@ JSON Web Token is a fairly new standard which can be used for token-based authen
 [doac-rest-framework]: https://github.com/Rediker-Software/doac/blob/master/docs/integrations.md#
 [blimp]: https://github.com/GetBlimp
 [djangorestframework-jwt]: https://github.com/GetBlimp/django-rest-framework-jwt
+[etoccalino]: https://github.com/etoccalino/
+[djangorestframework-httpsignature]: https://github.com/etoccalino/django-rest-framework-httpsignature
+[amazon-http-signature]: http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
+[http-signature-ietf-draft]: https://datatracker.ietf.org/doc/draft-cavage-http-signatures/
+[hawkrest]: http://hawkrest.readthedocs.org/en/latest/
+[hawk]: https://github.com/hueniverse/hawk
+[mohawk]: http://mohawk.readthedocs.org/en/latest/
+[mac]: http://tools.ietf.org/html/draft-hammer-oauth-v2-mac-token-05

@@ -161,7 +161,7 @@ To do any other validation that requires access to multiple fields, add a method
             """
             Check that the start is before the stop.
             """
-            if attrs['start'] < attrs['finish']:
+            if attrs['start'] > attrs['finish']:
                 raise serializers.ValidationError("finish must occur after start")
             return attrs
 
@@ -383,14 +383,14 @@ You may wish to specify multiple fields as write-only.  Instead of adding each f
             fields = ('email', 'username', 'password')
             write_only_fields = ('password',)  # Note: Password field is write-only
 
-    def restore_object(self, attrs, instance=None):
-        """
-        Instantiate a new User instance.
-        """
-        assert instance is None, 'Cannot update users with CreateUserSerializer'                                
-        user = User(email=attrs['email'], username=attrs['username'])
-        user.set_password(attrs['password'])
-        return user
+        def restore_object(self, attrs, instance=None):
+            """
+            Instantiate a new User instance.
+            """
+            assert instance is None, 'Cannot update users with CreateUserSerializer'                                
+            user = User(email=attrs['email'], username=attrs['username'])
+            user.set_password(attrs['password'])
+            return user
  
 ## Specifying fields explicitly 
 
@@ -464,7 +464,7 @@ For more specific requirements such as specifying a different lookup for each fi
             model = Account
             fields = ('url', 'account_name', 'users', 'created')
 
-## Overiding the URL field behavior
+## Overriding the URL field behavior
 
 The name of the URL field defaults to 'url'.  You can override this globally, by using the `URL_FIELD_NAME` setting.
 
@@ -478,7 +478,7 @@ You can also override this on a per-serializer basis by using the `url_field_nam
 
 **Note**: The generic view implementations normally generate a `Location` header in response to successful `POST` requests.  Serializers using `url_field_name` option will not have this header automatically included by the view.  If you need to do so you will ned to also override the view's `get_success_headers()` method.
 
-You can also overide the URL field's view name and lookup field without overriding the field explicitly, by using the `view_name` and `lookup_field` options, like so:
+You can also override the URL field's view name and lookup field without overriding the field explicitly, by using the `view_name` and `lookup_field` options, like so:
 
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:

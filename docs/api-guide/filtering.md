@@ -24,7 +24,7 @@ For example:
     from myapp.serializers import PurchaseSerializer
     from rest_framework import generics
 
-    class PurchaseList(generics.ListAPIView)
+    class PurchaseList(generics.ListAPIView):
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -46,7 +46,7 @@ For example if your URL config contained an entry like this:
 
 You could then write a view that returned a purchase queryset filtered by the username portion of the URL:
 
-    class PurchaseList(generics.ListAPIView)
+    class PurchaseList(generics.ListAPIView):
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -63,7 +63,7 @@ A final example of filtering the initial queryset would be to determine the init
 
 We can override `.get_queryset()` to deal with URLs such as `http://example.com/api/purchases?username=denvercoder9`, and filter the queryset only if the `username` parameter is included in the URL:
 
-    class PurchaseList(generics.ListAPIView)
+    class PurchaseList(generics.ListAPIView):
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -264,13 +264,17 @@ For example:
 
     search_fields = ('=username', '=email')
 
+By default, the search parameter is named `'search`', but this may be overridden with the `SEARCH_PARAM` setting.
+
 For more details, see the [Django documentation][search-django-admin].
 
 ---
 
 ## OrderingFilter
 
-The `OrderingFilter` class supports simple query parameter controlled ordering of results.  To specify the result order, set a query parameter named `'ordering'` to the required field name.  For example:
+The `OrderingFilter` class supports simple query parameter controlled ordering of results.  By default, the query parameter is named `'ordering'`, but this may by overridden with the `ORDERING_PARAM` setting.
+
+For example, to order users by username:
 
     http://example.com/api/users?ordering=username
 

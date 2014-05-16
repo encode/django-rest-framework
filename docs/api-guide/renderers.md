@@ -138,6 +138,26 @@ Renders the request data into `YAML`.
 
 Requires the `pyyaml` package to be installed.
 
+Note that non-ascii characters will be rendered using `\uXXXX` character escape.  For example:
+
+    unicode black star: "\u2605"
+
+**.media_type**: `application/yaml`
+
+**.format**: `'.yaml'`
+
+**.charset**: `utf-8`
+
+## UnicodeYAMLRenderer
+
+Renders the request data into `YAML`. 
+
+Requires the `pyyaml` package to be installed.
+
+Note that non-ascii characters will not be character escaped.  For example:
+
+    unicode black star: ★
+
 **.media_type**: `application/yaml`
 
 **.format**: `'.yaml'`

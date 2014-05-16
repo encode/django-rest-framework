@@ -44,11 +44,11 @@ When that's all done we'll need to update our database tables.
 Normally we'd create a database migration in order to do that, but for the purposes of this tutorial, let's just delete the database and start again.
 
     rm tmp.db
-    python ./manage.py syncdb
+    python manage.py syncdb
 
 You might also want to create a few different users, to use for testing the API.  The quickest way to do this will be with the `createsuperuser` command.
 
-    python ./manage.py createsuperuser
+    python manage.py createsuperuser
 
 ## Adding endpoints for our User models
 
@@ -129,7 +129,7 @@ Then, add the following property to **both** the `SnippetList` and `SnippetDetai
 
 If you open a browser and navigate to the browsable API at the moment, you'll find that you're no longer able to create new code snippets.  In order to do so we'd need to be able to login as a user.
 
-We can add a login view for use with the browsable API, by editing our URLconf once more.
+We can add a login view for use with the browsable API, by editing the URLconf in our project-level urls.py file.
 
 Add the following import at the top of the file:
 

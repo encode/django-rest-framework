@@ -69,6 +69,10 @@ DEFAULTS = {
     'PAGINATE_BY_PARAM': None,
     'MAX_PAGINATE_BY': None,
 
+    # Filtering
+    'SEARCH_PARAM': 'search',
+    'ORDERING_PARAM': 'ordering',
+
     # Authentication
     'UNAUTHENTICATED_USER': 'django.contrib.auth.models.AnonymousUser',
     'UNAUTHENTICATED_TOKEN': None,

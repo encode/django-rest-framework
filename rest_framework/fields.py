@@ -62,7 +62,7 @@ def get_component(obj, attr_name):
 
 def readable_datetime_formats(formats):
     format = ', '.join(formats).replace(ISO_8601,
-             'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]')
+             'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]')
     return humanize_strptime(format)
 
 
@@ -154,7 +154,12 @@ class Field(object):
     def widget_html(self):
         if not self.widget:
             return ''
-        return self.widget.render(self._name, self._value)
+
+        attrs = {}
+        if 'id' not in self.widget.attrs:
+            attrs['id'] = self._name
+
+        return self.widget.render(self._name, self._value, attrs=attrs)
 
     def label_tag(self):
         return '<label for="%s">%s:</label>' % (self._name, self.label)
@@ -164,7 +169,7 @@ class Field(object):
         Called to set up a field prior to field_to_native or field_from_native.
 
         parent - The parent serializer.
-        model_field - The model field this field corresponds to, if one exists.
+        field_name - The name of the field being initialized.
         """
         self.parent = parent
         self.root = parent.root or parent
@@ -290,7 +295,7 @@ class WritableField(Field):
         self.validators = self.default_validators + validators
         self.default = default if default is not None else self.default
 
-        # Widgets are ony used for HTML forms.
+        # Widgets are only used for HTML forms.
         widget = widget or self.widget
         if isinstance(widget, type):
             widget = widget()
@@ -301,6 +306,11 @@ class WritableField(Field):
         memo[id(self)] = result
         result.validators = self.validators[:]
         return result
+
+    def get_default_value(self):
+        if is_simple_callable(self.default):
+            return self.default()
+        return self.default
 
     def validate(self, value):
         if value in validators.EMPTY_VALUES and self.required:
@@ -350,10 +360,7 @@ class WritableField(Field):
         except KeyError:
             if self.default is not None and not self.partial:
                 # Note: partial updates shouldn't set defaults
-                if is_simple_callable(self.default):
-                    native = self.default()
-                else:
-                    native = self.default
+                native = self.get_default_value()
             else:
                 if self.required:
                     raise ValidationError(self.error_messages['required'])
@@ -478,7 +485,8 @@ class URLField(CharField):
     type_label = 'url'
 
     def __init__(self, **kwargs):
-        kwargs['validators'] = [validators.URLValidator()]
+        if not 'validators' in kwargs:
+            kwargs['validators'] = [validators.URLValidator()]
         super(URLField, self).__init__(**kwargs)
 
 

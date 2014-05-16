@@ -4,6 +4,7 @@ General serializer field tests.
 from __future__ import unicode_literals
 
 import datetime
+import re
 from decimal import Decimal
 from uuid import uuid4
 from django.core import validators
@@ -102,6 +103,16 @@ class BasicFieldTests(TestCase):
         field = serializers.Field()
         keys = list(field.to_native(ret).keys())
         self.assertEqual(keys, ['c', 'b', 'a', 'z'])
+
+    def test_widget_html_attributes(self):
+        """
+        Make sure widget_html() renders the correct attributes
+        """
+        r = re.compile('(\S+)=["\']?((?:.(?!["\']?\s+(?:\S+)=|[>"\']))+.)["\']?')
+        form = TimeFieldModelSerializer().data
+        attributes = r.findall(form.fields['clock'].widget_html())
+        self.assertIn(('name', 'clock'), attributes)
+        self.assertIn(('id', 'clock'), attributes)
 
 
 class DateFieldTest(TestCase):
@@ -312,7 +323,7 @@ class DateTimeFieldTest(TestCase):
             f.from_native('04:61:59')
         except validators.ValidationError as e:
             self.assertEqual(e.messages, ["Datetime has wrong format. Use one of these formats instead: "
-                                          "YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]"])
+                                          "YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]"])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -326,7 +337,7 @@ class DateTimeFieldTest(TestCase):
             f.from_native('04 -- 31')
         except validators.ValidationError as e:
             self.assertEqual(e.messages, ["Datetime has wrong format. Use one of these formats instead: "
-                                          "YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]"])
+                                          "YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]"])
         else:
             self.fail("ValidationError was not properly raised")
 
@@ -860,7 +871,9 @@ class SlugFieldTests(TestCase):
 
 class URLFieldTests(TestCase):
     """
-    Tests for URLField attribute values
+    Tests for URLField attribute values.
+
+    (Includes test for #1210, checking that validators can be overridden.)
     """
 
     class URLFieldModel(RESTFrameworkModel):
@@ -901,6 +914,11 @@ class URLFieldTests(TestCase):
         self.assertEqual(serializer.is_valid(), True)
         self.assertEqual(getattr(serializer.fields['url_field'],
                          'max_length'), 20)
+
+    def test_validators_can_be_overridden(self):
+        url_field = serializers.URLField(validators=[])
+        validators = url_field.validators
+        self.assertEqual([], validators, 'Passing `validators` kwarg should have overridden default validators')
 
 
 class FieldMetadata(TestCase):

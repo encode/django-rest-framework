@@ -33,6 +33,7 @@ class RelatedField(WritableField):
     many_widget = widgets.SelectMultiple
     form_field_class = forms.ChoiceField
     many_form_field_class = forms.MultipleChoiceField
+    null_values = (None, '', 'None')
 
     cache_choices = False
     empty_label = None
@@ -58,6 +59,8 @@ class RelatedField(WritableField):
         super(RelatedField, self).__init__(*args, **kwargs)
 
         if not self.required:
+            # Accessed in ModelChoiceIterator django/forms/models.py:1034
+            # If set adds empty choice.
             self.empty_label = BLANK_CHOICE_DASH[0][1]
 
         self.queryset = queryset
@@ -118,6 +121,14 @@ class RelatedField(WritableField):
 
     choices = property(_get_choices, _set_choices)
 
+    ### Default value handling
+
+    def get_default_value(self):
+        default = super(RelatedField, self).get_default_value()
+        if self.many and default is None:
+            return []
+        return default
+
     ### Regular serializer stuff...
 
     def field_to_native(self, obj, field_name):
@@ -166,11 +177,11 @@ class RelatedField(WritableField):
         except KeyError:
             if self.partial:
                 return
-            value = [] if self.many else None
+            value = self.get_default_value()
 
-        if value in (None, '') and self.required:
-            raise ValidationError(self.error_messages['required'])
-        elif value in (None, ''):
+        if value in self.null_values:
+            if self.required:
+                raise ValidationError(self.error_messages['required'])
             into[(self.source or field_name)] = None
         elif self.many:
             into[(self.source or field_name)] = [self.from_native(item) for item in value]

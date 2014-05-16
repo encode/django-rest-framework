@@ -16,6 +16,7 @@ import datetime
 import inspect
 import types
 from decimal import Decimal
+from django.contrib.contenttypes.generic import GenericForeignKey
 from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
@@ -439,16 +440,6 @@ class BaseSerializer(WritableField):
                     raise ValidationError(self.error_messages['required'])
                 return
 
-        # Set the serializer object if it exists
-        obj = get_component(self.parent.object, self.source or field_name) if self.parent.object else None
-
-        # If we have a model manager or similar object then we need
-        # to iterate through each instance.
-        if (self.many and
-            not hasattr(obj, '__iter__') and
-            is_simple_callable(getattr(obj, 'all', None))):
-            obj = obj.all()
-
         if self.source == '*':
             if value:
                 reverted_data = self.restore_fields(value, {})
@@ -458,6 +449,16 @@ class BaseSerializer(WritableField):
             if value in (None, ''):
                 into[(self.source or field_name)] = None
             else:
+                # Set the serializer object if it exists
+                obj = get_component(self.parent.object, self.source or field_name) if self.parent.object else None
+
+                # If we have a model manager or similar object then we need
+                # to iterate through each instance.
+                if (self.many and
+                    not hasattr(obj, '__iter__') and
+                    is_simple_callable(getattr(obj, 'all', None))):
+                    obj = obj.all()
+
                 kwargs = {
                     'instance': obj,
                     'data': value,
@@ -502,7 +503,7 @@ class BaseSerializer(WritableField):
             else:
                 many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict, six.text_type))
                 if many:
-                    warnings.warn('Implict list/queryset serialization is deprecated. '
+                    warnings.warn('Implicit list/queryset serialization is deprecated. '
                                   'Use the `many=True` flag when instantiating the serializer.',
                                   DeprecationWarning, stacklevel=3)
 
@@ -564,7 +565,7 @@ class BaseSerializer(WritableField):
             else:
                 many = hasattr(obj, '__iter__') and not isinstance(obj, (Page, dict))
                 if many:
-                    warnings.warn('Implict list/queryset serialization is deprecated. '
+                    warnings.warn('Implicit list/queryset serialization is deprecated. '
                                   'Use the `many=True` flag when instantiating the serializer.',
                                   DeprecationWarning, stacklevel=2)
 
@@ -758,8 +759,11 @@ class ModelSerializer(Serializer):
                     field.read_only = True
 
                 ret[accessor_name] = field
+        
+        # Ensure that 'read_only_fields' is an iterable
+        assert isinstance(self.opts.read_only_fields, (list, tuple)), '`read_only_fields` must be a list or tuple' 
 
-        # Add the `read_only` flag to any fields that have bee specified
+        # Add the `read_only` flag to any fields that have been specified
         # in the `read_only_fields` option
         for field_name in self.opts.read_only_fields:
             assert field_name not in self.base_fields.keys(), (
@@ -772,7 +776,10 @@ class ModelSerializer(Serializer):
                 "on serializer '%s'." %
                 (field_name, self.__class__.__name__))
             ret[field_name].read_only = True
-
+        
+        # Ensure that 'write_only_fields' is an iterable
+        assert isinstance(self.opts.write_only_fields, (list, tuple)), '`write_only_fields` must be a list or tuple' 
+        
         for field_name in self.opts.write_only_fields:
             assert field_name not in self.base_fields.keys(), (
                 "field '%s' on serializer '%s' specified in "
@@ -822,6 +829,19 @@ class ModelSerializer(Serializer):
 
         if model_field:
             kwargs['required'] = not(model_field.null or model_field.blank)
+            if model_field.help_text is not None:
+                kwargs['help_text'] = model_field.help_text
+            if model_field.verbose_name is not None:
+                kwargs['label'] = model_field.verbose_name
+
+            if not model_field.editable:
+                kwargs['read_only'] = True
+
+            if model_field.verbose_name is not None:
+                kwargs['label'] = model_field.verbose_name
+
+            if model_field.help_text is not None:
+                kwargs['help_text'] = model_field.help_text
 
         return PrimaryKeyRelatedField(**kwargs)
 
@@ -882,7 +902,7 @@ class ModelSerializer(Serializer):
         except KeyError:
             return ModelField(model_field=model_field, **kwargs)
 
-    def get_validation_exclusions(self):
+    def get_validation_exclusions(self, instance=None):
         """
         Return a list of field names to exclude from model validation.
         """
@@ -894,6 +914,7 @@ class ModelSerializer(Serializer):
             field_name = field.source or field_name
             if field_name in exclusions \
                 and not field.read_only \
+                and (field.required or hasattr(instance, field_name)) \
                 and not isinstance(field, Serializer):
                 exclusions.remove(field_name)
         return exclusions
@@ -908,7 +929,7 @@ class ModelSerializer(Serializer):
         the full_clean validation checking.
         """
         try:
-            instance.full_clean(exclude=self.get_validation_exclusions())
+            instance.full_clean(exclude=self.get_validation_exclusions(instance))
         except ValidationError as err:
             self._errors = err.message_dict
             return None
@@ -938,6 +959,8 @@ class ModelSerializer(Serializer):
 
         # Forward m2m relations
         for field in meta.many_to_many + meta.virtual_fields:
+            if isinstance(field, GenericForeignKey):
+                continue
             if field.name in attrs:
                 m2m_data[field.name] = attrs.pop(field.name)
 
@@ -948,39 +971,34 @@ class ModelSerializer(Serializer):
                 nested_forward_relations[field_name] = attrs[field_name]
 
         # Update an existing instance...
-        if instance is not None:
-            for key, val in attrs.items():
-                keys = key.split('.')
+        if instance is None:
+            instance = self.opts.model()
 
-                # Work on the current instance for this attribute
-                attr_instance = instance
+        for key, val in attrs.items():
+            keys = key.split('.')
 
-                # Raise an error if we span more than one relation
-                if len(keys) > 2:
-                    self._errors[key] = 'Can not span more than a relation.'
+            # Work on the current instance for this attribute
+            attr_instance = instance
+
+            # Raise an error if we span more than one relation
+            if len(keys) > 2:
+                self._errors[key] = 'Can not span more than a relation.'
+                continue
+
+            # Mark the related instance as the one to save
+            if len(keys) == 2:
+                try:
+                    attr_instance = getattr(instance, keys[0])
+                    related_models_to_save[key] = attr_instance
+                except AttributeError:
+                    self._errors[key] = self.error_messages['missing']
                     continue
 
-                # Mark the related instance as the one to save
-                if len(keys) == 2:
-                    try:
-                        attr_instance = getattr(instance, keys[0])
-                        related_models_to_save[key] = attr_instance
-                    except AttributeError:
-                        self._errors[key] = self.error_messages['missing']
-                        continue
-
-                # Assign the value
-                try:
-                    setattr(attr_instance, keys[-1], val)
-                except ValueError:
-                    self._errors[key] = self.error_messages['required']
-
-        # ...or create a new instance
-        else:
-            for key, value in ((k, v) for k, v in attrs.items() if '.' in k):
-                self._errors[key] = 'You can not set dotted sources during creation.'
-                del attrs[key]
-            instance = self.opts.model(**attrs)
+            # Assign the value
+            try:
+                setattr(attr_instance, keys[-1], val)
+            except ValueError:
+                self._errors[key] = self.error_messages['required']
 
         # Any relations that cannot be set until we've
         # saved the model get hidden away on these
@@ -1110,6 +1128,10 @@ class HyperlinkedModelSerializer(ModelSerializer):
 
         if model_field:
             kwargs['required'] = not(model_field.null or model_field.blank)
+            if model_field.help_text is not None:
+                kwargs['help_text'] = model_field.help_text
+            if model_field.verbose_name is not None:
+                kwargs['label'] = model_field.verbose_name
 
         if self.opts.lookup_field:
             kwargs['lookup_field'] = self.opts.lookup_field
