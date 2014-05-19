@@ -33,8 +33,8 @@ from rest_framework.settings import api_settings
 # This helps keep the separation between model fields, form fields, and
 # serializer fields more explicit.
 
-from rest_framework.relations import *
-from rest_framework.fields import *
+from rest_framework.relations import *  # NOQA
+from rest_framework.fields import *  # NOQA
 
 
 def _resolve_model(obj):
@@ -345,7 +345,7 @@ class BaseSerializer(WritableField):
 
         for field_name, field in self.fields.items():
             if field.read_only and obj is None:
-               continue
+                continue
             field.initialize(parent=self, field_name=field_name)
             key = self.get_field_key(field_name)
             value = field.field_to_native(obj, field_name)
