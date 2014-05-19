@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Tests for content parsing, and form-overloaded content parsing.
 """
@@ -19,7 +20,7 @@ from rest_framework.parsers import (
 from rest_framework.request import Request, Empty
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
-from rest_framework.test import APIRequestFactory, APIClient
+from rest_framework.test import APIRequestFactory, APIClient, IETestCase
 from rest_framework.views import APIView
 from rest_framework.compat import six
 from io import BytesIO
@@ -272,6 +273,9 @@ class MockView(APIView):
 
         return Response(status=status.INTERNAL_SERVER_ERROR)
 
+    def get(self, request):
+        return Response({})
+
 urlpatterns = patterns('',
     (r'^$', MockView.as_view()),
 )
@@ -345,3 +349,12 @@ class TestAuthSetter(TestCase):
         request = Request(factory.get('/'))
         request.auth = 'DUMMY'
         self.assertEqual(request.auth, 'DUMMY')
+
+
+class TestQueryString(IETestCase):
+    urls = 'rest_framework.tests.test_request'
+
+    def test_query_string_utf8(self):
+        qs = {'q': u'pølse'}
+        response = self.client.get('/', qs)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
