@@ -10,7 +10,11 @@ from django.conf import settings
 from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.compat import CsrfViewMiddleware
 from rest_framework.compat import oauth, oauth_provider, oauth_provider_store
-from rest_framework.compat import oauth2_provider, provider_now, check_nonce
+from rest_framework.compat import (oauth2_provider,
+                                   provider_now,
+                                   check_nonce,
+                                   oauth2_constants,
+                                   )
 from rest_framework.authtoken.models import Token
 
 
@@ -293,6 +297,7 @@ class OAuth2Authentication(BaseAuthentication):
     """
     www_authenticate_realm = 'api'
     allow_query_params_token = settings.DEBUG
+    token_type = getattr(oauth2_constants, 'TOKEN_TYPE', b'Bearer')
 
     def __init__(self, *args, **kwargs):
         super(OAuth2Authentication, self).__init__(*args, **kwargs)
@@ -310,7 +315,7 @@ class OAuth2Authentication(BaseAuthentication):
 
         auth = get_authorization_header(request).split()
 
-        if auth and auth[0].lower() == b'bearer':
+        if auth and auth[0].lower() == self.token_type.lower():
             access_token = auth[1]
         elif 'access_token' in request.POST:
             access_token = request.POST['access_token']
@@ -355,4 +360,4 @@ class OAuth2Authentication(BaseAuthentication):
 
         Check details on the `OAuth2Authentication.authenticate` method
         """
-        return 'Bearer realm="%s"' % self.www_authenticate_realm
+        return '%s realm="%s"' % (self.token_type, self.www_authenticate_realm)

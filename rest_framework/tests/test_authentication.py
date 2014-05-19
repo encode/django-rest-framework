@@ -57,10 +57,16 @@ urlpatterns = patterns('',
 class OAuth2AuthenticationDebug(OAuth2Authentication):
     allow_query_params_token = True
 
+
+class OAuth2AuthenticationCustomTokenType(OAuth2Authentication):
+    token_type = 'Custom'
+
+
 if oauth2_provider is not None:
     urlpatterns += patterns('',
         url(r'^oauth2/', include('provider.oauth2.urls', namespace='oauth2')),
         url(r'^oauth2-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication])),
+        url(r'^oauth2-test-token-type/$', MockView.as_view(authentication_classes=[OAuth2AuthenticationCustomTokenType])),
         url(r'^oauth2-test-debug/$', MockView.as_view(authentication_classes=[OAuth2AuthenticationDebug])),
         url(r'^oauth2-with-scope-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication],
             permission_classes=[permissions.TokenHasReadWriteScope])),
@@ -554,6 +560,14 @@ class OAuth2Tests(TestCase):
         """Ensure GETing form over OAuth with correct client credentials succeed"""
         auth = self._create_authorization_header()
         response = self.csrf_client.get('/oauth2-test/', HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 200)
+
+    @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
+    def test_get_form_passing_authi_with_custom_token_type(self):
+        """Ensure GETing form over OAuth with correct client credentials
+        and custom TOKEN_TYPE succeed"""
+        auth = "Custom {0}".format(self.access_token.token)
+        response = self.csrf_client.get('/oauth2-test-token-type/', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
 
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
