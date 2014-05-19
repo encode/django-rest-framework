@@ -355,6 +355,6 @@ class TestQueryString(IETestCase):
     urls = 'rest_framework.tests.test_request'
 
     def test_query_string_utf8(self):
-        qs = {'q': u'pølse'}
+        qs = {'q': 'pølse'}
         response = self.client.get('/', qs)
         self.assertEqual(status.HTTP_200_OK, response.status_code)

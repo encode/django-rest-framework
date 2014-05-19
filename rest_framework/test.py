@@ -3,13 +3,16 @@
 # Note that we import as `DjangoRequestFactory` and `DjangoClient` in order
 # to make it harder for the user to import the wrong thing without realizing.
 from __future__ import unicode_literals
+try:
+    from urllib import unquote
+except ImportError:
+    from urllib.parse import unquote
 import django
 from django.conf import settings
 from django.test.client import Client as DjangoClient
 from django.test.client import ClientHandler
 from django.test import testcases
 from django.utils.http import urlencode
-from django.utils.six.moves.urllib.parse import unquote
 from rest_framework.settings import api_settings
 from rest_framework.compat import RequestFactory as DjangoRequestFactory
 from rest_framework.compat import force_bytes_or_smart_bytes, six
