@@ -49,7 +49,7 @@ def _resolve_model(obj):
     String representations should have the format:
         'appname.ModelName'
     """
-    if type(obj) == str and len(obj.split('.')) == 2:
+    if isinstance(obj, six.string_types) and len(obj.split('.')) == 2:
         app_name, model_name = obj.split('.')
         return models.get_model(app_name, model_name)
     elif inspect.isclass(obj) and issubclass(obj, models.Model):
@@ -759,9 +759,9 @@ class ModelSerializer(Serializer):
                     field.read_only = True
 
                 ret[accessor_name] = field
-        
+
         # Ensure that 'read_only_fields' is an iterable
-        assert isinstance(self.opts.read_only_fields, (list, tuple)), '`read_only_fields` must be a list or tuple' 
+        assert isinstance(self.opts.read_only_fields, (list, tuple)), '`read_only_fields` must be a list or tuple'
 
         # Add the `read_only` flag to any fields that have been specified
         # in the `read_only_fields` option
@@ -776,10 +776,10 @@ class ModelSerializer(Serializer):
                 "on serializer '%s'." %
                 (field_name, self.__class__.__name__))
             ret[field_name].read_only = True
-        
+
         # Ensure that 'write_only_fields' is an iterable
-        assert isinstance(self.opts.write_only_fields, (list, tuple)), '`write_only_fields` must be a list or tuple' 
-        
+        assert isinstance(self.opts.write_only_fields, (list, tuple)), '`write_only_fields` must be a list or tuple'
+
         for field_name in self.opts.write_only_fields:
             assert field_name not in self.base_fields.keys(), (
                 "field '%s' on serializer '%s' specified in "
@@ -790,7 +790,7 @@ class ModelSerializer(Serializer):
                 "Non-existant field '%s' specified in `write_only_fields` "
                 "on serializer '%s'." %
                 (field_name, self.__class__.__name__))
-            ret[field_name].write_only = True            
+            ret[field_name].write_only = True
 
         return ret
 
