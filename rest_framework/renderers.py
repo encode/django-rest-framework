@@ -353,7 +353,8 @@ class HTMLFormRenderer(BaseRenderer):
         """
         renderer_context = renderer_context or {}
         request = renderer_context['request']
-
+        view = renderer_context['view']
+        data = view.get_serializer(instance=getattr(view, 'object', None)).data
         template = loader.get_template(self.template)
         context = RequestContext(request, {'form': data})
         return template.render(context)
