@@ -1027,9 +1027,9 @@ class SerializerMethodField(Field):
     A field that gets its value by calling a method on the serializer it's attached to.
     """
 
-    def __init__(self, method_name):
+    def __init__(self, method_name, *args, **kwargs):
         self.method_name = method_name
-        super(SerializerMethodField, self).__init__()
+        super(SerializerMethodField, self).__init__(*args, **kwargs)
 
     def field_to_native(self, obj, field_name):
         value = getattr(self.parent, self.method_name)(obj)
