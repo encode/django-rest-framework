@@ -526,6 +526,11 @@ class BaseSerializer(WritableField):
                             # Determine which object we're updating
                             identity = self.get_identity(item)
                             self.object = identity_to_objects.pop(identity, None)
+                            if not self.object and getattr(self.opts, 'model', None):
+                                try:
+                                    self.object = self.opts.model.objects.get(id=self.get_identity(item))
+                                except ObjectDoesNotExist:
+                                    pass
                             if self.object is None and not self.allow_add_remove:
                                 ret.append(None)
                                 errors.append({'non_field_errors': ['Cannot create a new item, only existing items may be updated.']})
