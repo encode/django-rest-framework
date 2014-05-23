@@ -47,5 +47,9 @@ class TestPrimaryKeyRelatedRelation(TestCase):
         self.assertTrue(serializer.is_valid())
 
         obj = serializer.object
+        serializer.save_object(obj)
 
-        self.assertEqual(obj.members, [person])
+        self.assertEquals(obj.members.count(), 1)
+
+        member = obj.members.all()[0]
+        self.assertEqual(member, person)
