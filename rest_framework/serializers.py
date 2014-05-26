@@ -624,7 +624,7 @@ class ModelSerializerOptions(SerializerOptions):
         self.model = getattr(meta, 'model', None)
         self.read_only_fields = getattr(meta, 'read_only_fields', ())
         self.write_only_fields = getattr(meta, 'write_only_fields', ())
-
+        self.error_messages = getattr(meta, 'error_messages', {})
 
 class ModelSerializer(Serializer):
     """
@@ -842,6 +842,9 @@ class ModelSerializer(Serializer):
 
             if model_field.help_text is not None:
                 kwargs['help_text'] = model_field.help_text
+                
+            if model_field.name in self.opts.error_messages:
+                kwargs['error_messages'] = self.opts.error_messages[model_field.name]
 
         return PrimaryKeyRelatedField(**kwargs)
 
@@ -868,6 +871,9 @@ class ModelSerializer(Serializer):
 
         if model_field.help_text is not None:
             kwargs['help_text'] = model_field.help_text
+            
+        if model_field.name in self.opts.error_messages:
+                kwargs['error_messages'] = self.opts.error_messages[model_field.name]
 
         # TODO: TypedChoiceField?
         if model_field.flatchoices:  # This ModelField contains choices
