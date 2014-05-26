@@ -626,6 +626,7 @@ class ModelSerializerOptions(SerializerOptions):
         self.write_only_fields = getattr(meta, 'write_only_fields', ())
         self.error_messages = getattr(meta, 'error_messages', {})
 
+
 class ModelSerializer(Serializer):
     """
     A serializer that deals with model instances and querysets.
