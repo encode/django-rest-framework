@@ -46,6 +46,11 @@ class GenericAPIView(views.APIView):
     queryset = None
     serializer_class = None
 
+    # You may set this attribute to use a different serializer for
+    # deserializing objects. You can override
+    # `get_serializer_class_for_output()` instead of setting it.
+    serializer_class_for_output = None
+
     # This shortcut may be used instead of setting either or both
     # of the `queryset`/`serializer_class` attributes, although using
     # the explicit style is generally preferred.
@@ -94,12 +99,22 @@ class GenericAPIView(views.APIView):
                        files=None, many=False, partial=False):
         """
         Return the serializer instance that should be used for validating and
-        deserializing input, and for serializing output.
+        deserializing input.
         """
         serializer_class = self.get_serializer_class()
         context = self.get_serializer_context()
         return serializer_class(instance, data=data, files=files,
                                 many=many, partial=partial, context=context)
+
+    def get_serializer_for_output(self, instance=None, many=False):
+        """
+        Return the serializer instance that should be used for
+        serializing output. Defaults to the serializer instance used
+        for deserializing input.
+        """
+        serializer_class = self.get_serializer_class_for_output()
+        context = self.get_serializer_context()
+        return serializer_class(instance, context=context, many=many)
 
     def get_pagination_serializer(self, page):
         """
@@ -107,7 +122,7 @@ class GenericAPIView(views.APIView):
         """
         class SerializerClass(self.pagination_serializer_class):
             class Meta:
-                object_serializer_class = self.get_serializer_class()
+                object_serializer_class = self.get_serializer_class_for_output()
 
         pagination_serializer_class = SerializerClass
         context = self.get_serializer_context()
@@ -249,6 +264,19 @@ class GenericAPIView(views.APIView):
             class Meta:
                 model = self.model
         return DefaultSerializer
+
+    def get_serializer_class_for_output(self):
+        """
+        Return the class to use for the serializer when deserializing
+        objects.
+
+        Defaults to using `self.serializer_class_for_output`, if None,
+        defaults to `self.get_serializer()`.
+        """
+        serializer_class = self.serializer_class_for_output
+        if serializer_class is None:
+            return self.get_serializer_class()
+        return serializer_class
 
     def get_queryset(self):
         """
