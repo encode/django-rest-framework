@@ -131,6 +131,17 @@ class GenericAPIView(views.APIView):
             # Determine the required page size.
             # If pagination is not configured, simply return None.
             page_size = self.get_paginate_by()
+            if page_size == 0:
+                from django.core.paginator import Page
+                class Paginator():
+                    def __init__(self, queryset):
+                        self.count = queryset.count()
+                        self.num_pages = 0
+                    def validate_number(self, number):
+                        return number
+                paginator = Paginator(queryset)
+                return Page(None, 0, paginator)
+                
             if not page_size:
                 return None
 
@@ -216,6 +227,9 @@ class GenericAPIView(views.APIView):
 
         if self.paginate_by_param:
             try:
+                if self.request.QUERY_PARAMS[self.paginate_by_param] == '0':
+                    return 0
+            
                 return strict_positive_int(
                     self.request.QUERY_PARAMS[self.paginate_by_param],
                     cutoff=self.max_paginate_by
