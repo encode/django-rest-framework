@@ -3,6 +3,10 @@
 # Note that we import as `DjangoRequestFactory` and `DjangoClient` in order
 # to make it harder for the user to import the wrong thing without realizing.
 from __future__ import unicode_literals
+try:
+    from urllib import unquote
+except ImportError:
+    from urllib.parse import unquote
 import django
 from django.conf import settings
 from django.test.client import Client as DjangoClient
@@ -169,3 +173,16 @@ if django.VERSION >= (1, 4):
 
     class APILiveServerTestCase(testcases.LiveServerTestCase):
         client_class = APIClient
+
+
+class IEClient(DjangoClient):
+    def request(self, **kwargs):
+        try:
+            kwargs['QUERY_STRING'] = unquote(kwargs['QUERY_STRING'])
+        except:
+            pass
+        return super(IEClient, self).request(**kwargs)
+
+
+class IETestCase(testcases.TestCase):
+    client_class = IEClient
