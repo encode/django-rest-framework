@@ -7,6 +7,7 @@ which allows mixin classes to be composed in interesting ways.
 from __future__ import unicode_literals
 
 from django.core.exceptions import ValidationError
+from django.db.models import ProtectedError
 from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
@@ -191,6 +192,9 @@ class DestroyModelMixin(object):
     def destroy(self, request, *args, **kwargs):
         obj = self.get_object()
         self.pre_delete(obj)
-        obj.delete()
+        try:
+            obj.delete()
+        except ProtectedError:
+            return Response('Cannot delete object because of protected foreign key relation', status=status.HTTP_409_CONFLICT)
         self.post_delete(obj)
         return Response(status=status.HTTP_204_NO_CONTENT)
