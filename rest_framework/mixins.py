@@ -53,8 +53,9 @@ class CreateModelMixin(object):
             self.pre_save(serializer.object)
             self.object = serializer.save(force_insert=True)
             self.post_save(self.object, created=True)
+            out_serializer = self.get_serializer_for_output(self.object)
             headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED,
+            return Response(out_serializer.data, status=status.HTTP_201_CREATED,
                             headers=headers)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -93,7 +94,8 @@ class ListModelMixin(object):
         if page is not None:
             serializer = self.get_pagination_serializer(page)
         else:
-            serializer = self.get_serializer(self.object_list, many=True)
+            serializer = self.get_serializer_for_output(
+                self.object_list, many=True)
 
         return Response(serializer.data)
 
@@ -104,7 +106,7 @@ class RetrieveModelMixin(object):
     """
     def retrieve(self, request, *args, **kwargs):
         self.object = self.get_object()
-        serializer = self.get_serializer(self.object)
+        serializer = self.get_serializer_for_output(self.object)
         return Response(serializer.data)
 
 
@@ -136,7 +138,8 @@ class UpdateModelMixin(object):
 
         self.object = serializer.save(force_update=True)
         self.post_save(self.object, created=False)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        out_serializer = self.get_serializer_for_output(self.object)
+        return Response(out_serializer.data, status=status.HTTP_200_OK)
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True

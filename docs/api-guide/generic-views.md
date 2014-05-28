@@ -64,7 +64,8 @@ Each of the concrete generic views provided is built by combining `GenericAPIVie
 The following attributes control the basic view behavior.
 
 * `queryset` - The queryset that should be used for returning objects from this view.  Typically, you must either set this attribute, or override the `get_queryset()` method.
-* `serializer_class` - The serializer class that should be used for validating and deserializing input, and for serializing output.  Typically, you must either set this attribute, or override the `get_serializer_class()` method.
+* `serializer_class` - The serializer class that should be used for validating and deserializing input.  Typically, you must either set this attribute, or override the `get_serializer_class()` method.
+* `serializer_class_for_output` - The serializer class that should be used for deserializing input, and for serializing output.  You don't have to set this, if it is unset, `serializer_class` is used instead by default. You can override `get_serializer_class_for_output()` to change this behavior.
 * `lookup_field` - The model field that should be used to for performing object lookup of individual model instances.  Defaults to `'pk'`.  Note that when using hyperlinked APIs you'll need to ensure that *both* the API views *and* the serializer classes set the lookup fields if you need to use a custom value.
 * `lookup_url_kwarg` - The URL keyword argument that should be used for object lookup.  The URL conf should include a keyword argument corresponding to this value.  If unset this defaults to using the same value as `lookup_field`.
 
@@ -141,7 +142,7 @@ For example:
 
 Returns the class that should be used for the serializer.  Defaults to returning the `serializer_class` attribute, or dynamically generating a serializer class if the `model` shortcut is being used.
 
-May be override to provide dynamic behavior such as using different serializers for read and write operations, or providing different serializers to different types of users.
+May be override to provide dynamic behavior such as providing different serializers to different types of users. To usie different serializers for read and write operations, see `get_serializer_class_for_output`.
 
 For example:
 
@@ -149,6 +150,36 @@ For example:
         if self.request.user.is_staff:
             return FullAccountSerializer
         return BasicAccountSerializer
+
+#### `get_serializer_class_for_output(self)`
+
+Returns the class that should be used for the serializer when deserializing objects. By default this returns the `serializer_class_for_output` attribute. If this attribute is not set, this is identical to `get_serializer_class`.
+
+This method allows you to use a different serializer for read and write operations on objects. For example:
+
+    class Album(Model):
+        title = CharField(max_length=127)
+
+    class Track(Model):
+        title = CharField(max_length=127)
+        album = ForeignKey(Album, related_name='tracks')
+
+    class TrackSerializer(ModelSerializer):
+        class Meta:
+            fields = ('title', 'album')
+
+    class TrackSerializerWithDetails(ModelSerializer):
+        album = AlbumSerializer()
+
+        class Meta:
+            fields = ('title', 'album')
+
+In this situation you may wish to display the full album information in the Track view, but you want the album field to be editable, and you don't want to supply a full Album object when updating or creating a Track. This is easily done by creating your ModelViewSet as such:
+
+    class TrackViewSet(ModelViewSet):
+        queryset = Track.objects.all()
+        serializer_class = TrackSerializer
+        serializer_class_for_output = TrackSerializerWithDetails
 
 #### `get_paginate_by(self)`
 
