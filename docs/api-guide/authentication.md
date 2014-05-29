@@ -126,6 +126,15 @@ To use the `TokenAuthentication` scheme you'll need to [configure the authentica
         'rest_framework.authtoken'
     )
 
+Also you need to enable `TokenAuthentication` from `rest_framework.authentication`in the `REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES` list:
+
+    REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        ...
+        'rest_framework.authentication.TokenAuthentication',
+        ...
+    )}
+    
 Make sure to run `manage.py syncdb` after changing your settings. The `authtoken` database tables are managed by south (see [Schema migrations](#schema-migrations) below).
 
 You'll also need to create tokens for your users.
