@@ -147,8 +147,10 @@ class APIView(View):
         header to use for 401 responses, if any.
         """
         authenticators = self.get_authenticators()
-        if authenticators:
-            return authenticators[0].authenticate_header(request)
+        for authenticator in authenticators:
+            header = authenticator.authenticate_header(request)
+            if header:
+                return header
 
     def get_parser_context(self, http_request):
         """
