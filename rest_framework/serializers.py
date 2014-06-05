@@ -450,7 +450,11 @@ class BaseSerializer(WritableField):
                 into[(self.source or field_name)] = None
             else:
                 # Set the serializer object if it exists
-                obj = get_component(self.parent.object, self.source or field_name) if self.parent.object else None
+                try:
+                    obj = get_component(self.parent.object, self.source or field_name) if self.parent.object else None
+                except:
+                    # this can happen when updating a 1-to-1 field
+                    obj = None
 
                 # If we have a model manager or similar object then we need
                 # to iterate through each instance.
