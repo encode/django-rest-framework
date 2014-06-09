@@ -62,10 +62,11 @@ def exception_handler(exc):
         if getattr(exc, 'wait', None):
             headers['X-Throttle-Wait-Seconds'] = '%d' % exc.wait
 
-        return Response({'detail': exc.detail},
+        return Response({exc.detail_key: exc.detail},
                         status=exc.status_code,
                         headers=headers)
 
+    # if using django's default exceptions, use detail as expected
     elif isinstance(exc, Http404):
         return Response({'detail': 'Not found'},
                         status=status.HTTP_404_NOT_FOUND)

@@ -13,15 +13,20 @@ class APIException(Exception):
     """
     Base class for REST framework exceptions.
     Subclasses should provide `.status_code` and `.default_detail` properties.
+    Subclases can also override detail_key to provide a custom error key.
+    By default, django exceptions keep using 'detail' so if you want to be
+    consistent you'll need to also override them.
     """
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     default_detail = ''
+    detail_key = 'detail'
 
     def __init__(self, detail=None):
         self.detail = detail or self.default_detail
 
     def __str__(self):
         return self.detail
+
 
 class ParseError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
