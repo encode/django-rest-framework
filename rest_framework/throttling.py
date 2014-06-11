@@ -83,7 +83,7 @@ class SimpleRateThrottle(BaseThrottle):
             return (None, None)
         num, period = rate.split('/')
         num_requests = int(num)
-        duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400}[period[0]]
+        duration = {'s': 1, 'm': 60, 'h': 3600, 'd': 86400, 'y': 31536000}[period[0]]
         return (num_requests, duration)
 
     def allow_request(self, request, view):
