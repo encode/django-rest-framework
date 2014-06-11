@@ -112,7 +112,7 @@ The first thing we need to get started on our Web API is to provide a way of ser
 
 
     class SnippetSerializer(serializers.Serializer):
-        pk = serializers.Field()  # Note: `Field` is an untyped read-only field.
+        id = serializers.Field()  # Note: `Field` is an untyped read-only field.
         title = serializers.CharField(required=False,
                                       max_length=100)
         code = serializers.CharField(widget=widgets.Textarea,
