@@ -40,24 +40,28 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.3.x series
 
-### 2.3.x
+### 2.3.14
 
-**Date**: April 2014
+**Date**: 12th June 2014
 
-* Fix nested serializers linked through a backward foreign key relation
-* Fix bad links for the `BrowsableAPIRenderer` with `YAMLRenderer`
-* Add `UnicodeYAMLRenderer` that extends `YAMLRenderer` with unicode
-* Fix `parse_header` argument convertion
-* Fix mediatype detection under Python3
-* Web browseable API now offers blank option on dropdown when the field is not required
-* `APIException` representation improved for logging purposes
-* Allow source="*" within nested serializers
-* Better support for custom oauth2 provider backends
-* Fix field validation if it's optional and has no value
-* Add `SEARCH_PARAM` and `ORDERING_PARAM`
-* Fix `APIRequestFactory` to support arguments within the url string for GET
-* Allow three transport modes for access tokens when accessing a protected resource
-* Fix `Request`'s `QueryDict` encoding
+* **Security fix**: Escape request path when it is include as part of the login and logout links in the browsable API.
+* `help_text` and `verbose_name` automatically set for related fields on `ModelSerializer`.
+* Fix nested serializers linked through a backward foreign key relation.
+* Fix bad links for the `BrowsableAPIRenderer` with `YAMLRenderer`.
+* Add `UnicodeYAMLRenderer` that extends `YAMLRenderer` with unicode.
+* Fix `parse_header` argument convertion.
+* Fix mediatype detection under Python 3.
+* Web browseable API now offers blank option on dropdown when the field is not required.
+* `APIException` representation improved for logging purposes.
+* Allow source="*" within nested serializers.
+* Better support for custom oauth2 provider backends.
+* Fix field validation if it's optional and has no value.
+* Add `SEARCH_PARAM` and `ORDERING_PARAM`.
+* Fix `APIRequestFactory` to support arguments within the url string for GET.
+* Allow three transport modes for access tokens when accessing a protected resource.
+* Fix `QueryDict` encoding on request objects.
+* Ensure throttle keys do not contain spaces, as those are invalid if using `memcached`.
+* Support `blank_display_value` on `ChoiceField`.
 
 ### 2.3.13
 
