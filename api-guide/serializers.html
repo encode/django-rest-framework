@@ -186,6 +186,7 @@
 <li><a href="#relational-fields">Relational fields</a></li>
 <li class="main"><a href="#hyperlinkedmodelserializer">HyperlinkedModelSerializer</a></li>
 <li><a href="#how-hyperlinked-views-are-determined">How hyperlinked views are determined</a></li>
+<li><a href="#overriding-the-url-field-behavior">Overriding the URL field behavior</a></li>
 <li class="main"><a href="#advanced-serializer-usage">Advanced serializer usage</a></li>
 <li><a href="#dynamically-modifying-fields">Dynamically modifying fields</a></li>
 <li><a href="#customising-the-default-fields">Customising the default fields</a></li>
@@ -260,8 +261,8 @@ json
 <h3 id="customizing-field-representation">Customizing field representation</h3>
 <p>Sometimes when serializing objects, you may not want to represent everything exactly the way it is in your model.</p>
 <p>If you need to customize the serialized value of a particular field, you can do this by creating a <code>transform_&lt;fieldname&gt;</code> method. For example if you needed to render some markdown from a text field:</p>
-<pre class="prettyprint lang-py"><code>description = serializers.TextField()
-description_html = serializers.TextField(source='description', read_only=True)
+<pre class="prettyprint lang-py"><code>description = serializers.CharField()
+description_html = serializers.CharField(source='description', read_only=True)
 
 def transform_description_html(self, obj, value):
     from django.contrib.markup.templatetags.markup import markdown
@@ -565,7 +566,7 @@ The <code>ModelSerializer</code> class lets you automatically create a Serialize
         model = Account
         fields = ('url', 'account_name', 'users', 'created')
 </code></pre>
-<h2 id="overiding-the-url-field-behavior">Overiding the URL field behavior</h2>
+<h2 id="overriding-the-url-field-behavior">Overriding the URL field behavior</h2>
 <p>The name of the URL field defaults to 'url'.  You can override this globally, by using the <code>URL_FIELD_NAME</code> setting.</p>
 <p>You can also override this on a per-serializer basis by using the <code>url_field_name</code> option on the serializer, like so:</p>
 <pre class="prettyprint lang-py"><code>class AccountSerializer(serializers.HyperlinkedModelSerializer):
@@ -575,7 +576,7 @@ The <code>ModelSerializer</code> class lets you automatically create a Serialize
         url_field_name = 'account_url'
 </code></pre>
 <p><strong>Note</strong>: The generic view implementations normally generate a <code>Location</code> header in response to successful <code>POST</code> requests.  Serializers using <code>url_field_name</code> option will not have this header automatically included by the view.  If you need to do so you will ned to also override the view's <code>get_success_headers()</code> method.</p>
-<p>You can also overide the URL field's view name and lookup field without overriding the field explicitly, by using the <code>view_name</code> and <code>lookup_field</code> options, like so:</p>
+<p>You can also override the URL field's view name and lookup field without overriding the field explicitly, by using the <code>view_name</code> and <code>lookup_field</code> options, like so:</p>
 <pre class="prettyprint lang-py"><code>class AccountSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Account

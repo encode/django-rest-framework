@@ -239,7 +239,7 @@ or if you override the <code>get_object</code> method on a generic view, then yo
 <p>You can also set the authentication policy on a per-view, or per-viewset basis,
 using the <code>APIView</code> class based views.</p>
 <pre class="prettyprint lang-py"><code>from rest_framework.permissions import IsAuthenticated
-from rest_framework.responses import Response
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 class ExampleView(APIView):

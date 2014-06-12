@@ -225,6 +225,28 @@
 </code></pre>
 <hr />
 <h2 id="23x-series">2.3.x series</h2>
+<h3 id="2314">2.3.14</h3>
+<p><strong>Date</strong>: 12th June 2014</p>
+<ul>
+<li><strong>Security fix</strong>: Escape request path when it is include as part of the login and logout links in the browsable API.</li>
+<li><code>help_text</code> and <code>verbose_name</code> automatically set for related fields on <code>ModelSerializer</code>.</li>
+<li>Fix nested serializers linked through a backward foreign key relation.</li>
+<li>Fix bad links for the <code>BrowsableAPIRenderer</code> with <code>YAMLRenderer</code>.</li>
+<li>Add <code>UnicodeYAMLRenderer</code> that extends <code>YAMLRenderer</code> with unicode.</li>
+<li>Fix <code>parse_header</code> argument convertion.</li>
+<li>Fix mediatype detection under Python 3.</li>
+<li>Web browseable API now offers blank option on dropdown when the field is not required.</li>
+<li><code>APIException</code> representation improved for logging purposes.</li>
+<li>Allow source="*" within nested serializers.</li>
+<li>Better support for custom oauth2 provider backends.</li>
+<li>Fix field validation if it's optional and has no value.</li>
+<li>Add <code>SEARCH_PARAM</code> and <code>ORDERING_PARAM</code>.</li>
+<li>Fix <code>APIRequestFactory</code> to support arguments within the url string for GET.</li>
+<li>Allow three transport modes for access tokens when accessing a protected resource.</li>
+<li>Fix <code>QueryDict</code> encoding on request objects.</li>
+<li>Ensure throttle keys do not contain spaces, as those are invalid if using <code>memcached</code>.</li>
+<li>Support <code>blank_display_value</code> on <code>ChoiceField</code>.</li>
+</ul>
 <h3 id="2313">2.3.13</h3>
 <p><strong>Date</strong>: 6th March 2014</p>
 <ul>
@@ -291,10 +313,10 @@
 <li>Bugfix: <code>client.force_authenticate(None)</code> should also clear session info if it exists.</li>
 <li>Bugfix: Client sending empty string instead of file now clears <code>FileField</code>.</li>
 <li>Bugfix: Empty values on ChoiceFields with <code>required=False</code> now consistently return <code>None</code>.</li>
-<li>Bugfix: Clients setting <code>page=0</code> now simply returns the default page size, instead of disabling pagination. [*]</li>
+<li>Bugfix: Clients setting <code>page_size=0</code> now simply returns the default page size, instead of disabling pagination. [*]</li>
 </ul>
 <hr />
-<p>[*] Note that the change in <code>page=0</code> behaviour fixes what is considered to be a bug in how clients can effect the pagination size.  However if you were relying on this behavior you will need to add the following mixin to your list views in order to preserve the existing behavior.</p>
+<p>[*] Note that the change in <code>page_size=0</code> behaviour fixes what is considered to be a bug in how clients can effect the pagination size.  However if you were relying on this behavior you will need to add the following mixin to your list views in order to preserve the existing behavior.</p>
 <pre class="prettyprint lang-py"><code>class DisablePaginationMixin(object):
     def get_paginate_by(self, queryset=None):
         if self.request.QUERY_PARAMS[self.paginate_by_param] == '0':

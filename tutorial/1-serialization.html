@@ -275,7 +275,7 @@ class Snippet(models.Model):
 <pre class="prettyprint lang-py"><code>python manage.py syncdb
 </code></pre>
 <h2 id="creating-a-serializer-class">Creating a Serializer class</h2>
-<p>The first thing we need to get started on our Web API is provide a way of serializing and deserializing the snippet instances into representations such as <code>json</code>.  We can do this by declaring serializers that work very similar to Django's forms.  Create a file in the <code>snippets</code> directory named <code>serializers.py</code> and add the following.</p>
+<p>The first thing we need to get started on our Web API is to provide a way of serializing and deserializing the snippet instances into representations such as <code>json</code>.  We can do this by declaring serializers that work very similar to Django's forms.  Create a file in the <code>snippets</code> directory named <code>serializers.py</code> and add the following.</p>
 <pre class="prettyprint lang-py"><code>from django.forms import widgets
 from rest_framework import serializers
 from snippets.models import Snippet, LANGUAGE_CHOICES, STYLE_CHOICES
@@ -313,7 +313,7 @@ class SnippetSerializer(serializers.Serializer):
         # Create new instance
         return Snippet(**attrs)
 </code></pre>
-<p>The first part of serializer class defines the fields that get serialized/deserialized.  The <code>restore_object</code> method defines how fully fledged instances get created when deserializing data.</p>
+<p>The first part of the serializer class defines the fields that get serialized/deserialized.  The <code>restore_object</code> method defines how fully fledged instances get created when deserializing data.</p>
 <p>Notice that we can also use various attributes that would typically be used on form fields, such as <code>widget=widgets.Textarea</code>.  These can be used to control how the serializer should render when displayed as an HTML form.  This is particularly useful for controlling how the browsable API should be displayed, as we'll see later in the tutorial.</p>
 <p>We can actually also save ourselves some time by using the <code>ModelSerializer</code> class, as we'll see later, but for now we'll keep our serializer definition explicit.  </p>
 <h2 id="working-with-serializers">Working with Serializers</h2>

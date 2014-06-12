@@ -287,7 +287,7 @@ WSGIPassAuthorization On
 <p><strong>Note:</strong> If you use <code>BasicAuthentication</code> in production you must ensure that your API is only available over <code>https</code>.  You should also ensure that your API clients will always re-request the username and password at login, and will never store those details to persistent storage.</p>
 <h2 id="tokenauthentication">TokenAuthentication</h2>
 <p>This authentication scheme uses a simple token-based HTTP Authentication scheme.  Token authentication is appropriate for client-server setups, such as native desktop and mobile clients.</p>
-<p>To use the <code>TokenAuthentication</code> scheme, include <code>rest_framework.authtoken</code> in your <code>INSTALLED_APPS</code> setting:</p>
+<p>To use the <code>TokenAuthentication</code> scheme you'll need to <a href="#setting-the-authentication-scheme">configure the authentication classes</a> to include <code>TokenAuthentication</code>, and additionally include <code>rest_framework.authtoken</code> in your <code>INSTALLED_APPS</code> setting:</p>
 <pre class="prettyprint lang-py"><code>INSTALLED_APPS = (
     ...
     'rest_framework.authtoken'

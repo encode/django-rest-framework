@@ -228,10 +228,10 @@ from pygments import highlight
 <p>When that's all done we'll need to update our database tables.
 Normally we'd create a database migration in order to do that, but for the purposes of this tutorial, let's just delete the database and start again.</p>
 <pre class="prettyprint lang-py"><code>rm tmp.db
-python ./manage.py syncdb
+python manage.py syncdb
 </code></pre>
 <p>You might also want to create a few different users, to use for testing the API.  The quickest way to do this will be with the <code>createsuperuser</code> command.</p>
-<pre class="prettyprint lang-py"><code>python ./manage.py createsuperuser
+<pre class="prettyprint lang-py"><code>python manage.py createsuperuser
 </code></pre>
 <h2 id="adding-endpoints-for-our-user-models">Adding endpoints for our User models</h2>
 <p>Now that we've got some users to work with, we'd better add representations of those users to our API.  Creating a new serializer is easy. In <code>serializers.py</code> add:</p>

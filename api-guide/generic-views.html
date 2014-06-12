@@ -261,7 +261,7 @@ class UserList(generics.ListCreateAPIView):
 </ul>
 <p><strong>Shortcuts</strong>:</p>
 <ul>
-<li><code>model</code> - This shortcut may be used instead of setting either (or both) of the <code>queryset</code>/<code>serializer_class</code> attributes, although using the explicit style is generally preferred.  If used instead of <code>serializer_class</code>, then then <code>DEFAULT_MODEL_SERIALIZER_CLASS</code> setting will determine the base serializer class.  Note that <code>model</code> is only ever used for generating a default queryset or serializer class - the <code>queryset</code> and <code>serializer_class</code> attributes are always preferred if provided.</li>
+<li><code>model</code> - This shortcut may be used instead of setting either (or both) of the <code>queryset</code>/<code>serializer_class</code> attributes, although using the explicit style is generally preferred.  If used instead of <code>serializer_class</code>, then <code>DEFAULT_MODEL_SERIALIZER_CLASS</code> setting will determine the base serializer class.  Note that <code>model</code> is only ever used for generating a default queryset or serializer class - the <code>queryset</code> and <code>serializer_class</code> attributes are always preferred if provided.</li>
 </ul>
 <p><strong>Pagination</strong>:</p>
 <p>The following attributes are used to control pagination when used with list views.</p>
@@ -350,7 +350,7 @@ class UserList(generics.ListCreateAPIView):
 <p>You won't typically need to override the following methods, although you might need to call into them if you're writing custom views using <code>GenericAPIView</code>.</p>
 <ul>
 <li><code>get_serializer_context(self)</code> - Returns a dictionary containing any extra context that should be supplied to the serializer.  Defaults to including <code>'request'</code>, <code>'view'</code> and <code>'format'</code> keys.</li>
-<li><code>get_serializer(self, instance=None, data=None, files=None, many=False, partial=False)</code> - Returns a serializer instance.</li>
+<li><code>get_serializer(self, instance=None, data=None, files=None, many=False, partial=False, allow_add_remove=False)</code> - Returns a serializer instance.</li>
 <li><code>get_pagination_serializer(self, page)</code> - Returns a serializer instance to use with paginated data.</li>
 <li><code>paginate_queryset(self, queryset)</code> - Paginate a queryset if required, either returning a page object, or <code>None</code> if pagination is not configured for this view.</li>
 <li><code>filter_queryset(self, queryset)</code> - Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.</li>

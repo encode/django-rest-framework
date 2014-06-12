@@ -177,6 +177,7 @@
 <li><a href="#unicodejsonrenderer">UnicodeJSONRenderer</a></li>
 <li><a href="#jsonprenderer">JSONPRenderer</a></li>
 <li><a href="#yamlrenderer">YAMLRenderer</a></li>
+<li><a href="#unicodeyamlrenderer">UnicodeYAMLRenderer</a></li>
 <li><a href="#xmlrenderer">XMLRenderer</a></li>
 <li><a href="#templatehtmlrenderer">TemplateHTMLRenderer</a></li>
 <li><a href="#statichtmlrenderer">StaticHTMLRenderer</a></li>
@@ -303,6 +304,18 @@ def user_count_view(request, format=None):
 <h2 id="yamlrenderer">YAMLRenderer</h2>
 <p>Renders the request data into <code>YAML</code>. </p>
 <p>Requires the <code>pyyaml</code> package to be installed.</p>
+<p>Note that non-ascii characters will be rendered using <code>\uXXXX</code> character escape.  For example:</p>
+<pre class="prettyprint lang-py"><code>unicode black star: "\u2605"
+</code></pre>
+<p><strong>.media_type</strong>: <code>application/yaml</code></p>
+<p><strong>.format</strong>: <code>'.yaml'</code></p>
+<p><strong>.charset</strong>: <code>utf-8</code></p>
+<h2 id="unicodeyamlrenderer">UnicodeYAMLRenderer</h2>
+<p>Renders the request data into <code>YAML</code>. </p>
+<p>Requires the <code>pyyaml</code> package to be installed.</p>
+<p>Note that non-ascii characters will not be character escaped.  For example:</p>
+<pre class="prettyprint lang-py"><code>unicode black star: ★
+</code></pre>
 <p><strong>.media_type</strong>: <code>application/yaml</code></p>
 <p><strong>.format</strong>: <code>'.yaml'</code></p>
 <p><strong>.charset</strong>: <code>utf-8</code></p>

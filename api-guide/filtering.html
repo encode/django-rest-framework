@@ -214,7 +214,7 @@
 from myapp.serializers import PurchaseSerializer
 from rest_framework import generics
 
-class PurchaseList(generics.ListAPIView)
+class PurchaseList(generics.ListAPIView):
     serializer_class = PurchaseSerializer
 
     def get_queryset(self):
@@ -231,7 +231,7 @@ class PurchaseList(generics.ListAPIView)
 <pre class="prettyprint lang-py"><code>url('^purchases/(?P&lt;username&gt;.+)/$', PurchaseList.as_view()),
 </code></pre>
 <p>You could then write a view that returned a purchase queryset filtered by the username portion of the URL:</p>
-<pre class="prettyprint lang-py"><code>class PurchaseList(generics.ListAPIView)
+<pre class="prettyprint lang-py"><code>class PurchaseList(generics.ListAPIView):
     serializer_class = PurchaseSerializer
 
     def get_queryset(self):
@@ -245,7 +245,7 @@ class PurchaseList(generics.ListAPIView)
 <h2 id="filtering-against-query-parameters">Filtering against query parameters</h2>
 <p>A final example of filtering the initial queryset would be to determine the initial queryset based on query parameters in the url.</p>
 <p>We can override <code>.get_queryset()</code> to deal with URLs such as <code>http://example.com/api/purchases?username=denvercoder9</code>, and filter the queryset only if the <code>username</code> parameter is included in the URL:</p>
-<pre class="prettyprint lang-py"><code>class PurchaseList(generics.ListAPIView)
+<pre class="prettyprint lang-py"><code>class PurchaseList(generics.ListAPIView):
     serializer_class = PurchaseSerializer
 
     def get_queryset(self):

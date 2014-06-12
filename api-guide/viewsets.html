@@ -311,7 +311,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def set_password(self, request, pk=None):
        ...
 </code></pre>
-<p>The <code>@action</code> decorator will route <code>POST</code> requests by default, but may also accept other HTTP methods, by using the <code>method</code> argument.  For example:</p>
+<p>The <code>@action</code> decorator will route <code>POST</code> requests by default, but may also accept other HTTP methods, by using the <code>methods</code> argument.  For example:</p>
 <pre class="prettyprint lang-py"><code>    @action(methods=['POST', 'DELETE'])
     def unset_password(self, request, pk=None):
        ...

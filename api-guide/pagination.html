@@ -277,7 +277,8 @@ def user_list(request):
     paginate_by_param = 'page_size'
     max_paginate_by = 100
 </code></pre>
-<p>Note that using a <code>paginate_by</code> value of <code>None</code> will turn off pagination for the view.</p>
+<p>Note that using a <code>paginate_by</code> value of <code>None</code> will turn off pagination for the view.
+Note if you use the <code>PAGINATE_BY_PARAM</code> settings, you also have to set the <code>paginate_by_param</code> attribute in your view to <code>None</code> in order to turn off pagination for those requests that contain the <code>paginate_by_param</code> parameter.</p>
 <p>For more complex requirements such as serialization that differs depending on the requested media type you can override the <code>.get_paginate_by()</code> and <code>.get_pagination_serializer_class()</code> methods.</p>
 <hr />
 <h1 id="custom-pagination-serializers">Custom pagination serializers</h1>

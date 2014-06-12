@@ -203,7 +203,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 </code></pre>
-<p>Here we've used <code>ReadOnlyModelViewSet</code> class to automatically provide the default 'read-only' operations.  We're still setting the <code>queryset</code> and <code>serializer_class</code> attributes exactly as we did when we were using regular views, but we no longer need to provide the same information to two separate classes.</p>
+<p>Here we've used the <code>ReadOnlyModelViewSet</code> class to automatically provide the default 'read-only' operations.  We're still setting the <code>queryset</code> and <code>serializer_class</code> attributes exactly as we did when we were using regular views, but we no longer need to provide the same information to two separate classes.</p>
 <p>Next we're going to replace the <code>SnippetList</code>, <code>SnippetDetail</code> and <code>SnippetHighlight</code> view classes.  We can remove the three views, and again replace them with a single class.</p>
 <pre class="prettyprint lang-py"><code>from rest_framework.decorators import link
 
@@ -258,7 +258,7 @@ user_detail = UserViewSet.as_view({
 })
 </code></pre>
 <p>Notice how we're creating multiple views from each <code>ViewSet</code> class, by binding the http methods to the required action for each view.</p>
-<p>Now that we've bound our resources into concrete views, that we can register the views with the URL conf as usual.</p>
+<p>Now that we've bound our resources into concrete views, we can register the views with the URL conf as usual.</p>
 <pre class="prettyprint lang-py"><code>urlpatterns = format_suffix_patterns(patterns('snippets.views',
     url(r'^$', 'api_root'),
     url(r'^snippets/$', snippet_list, name='snippet-list'),
@@ -297,7 +297,7 @@ urlpatterns = patterns('',
 <p>We've walked through each step of the design process, and seen how if we need to customize anything we can gradually work our way down to simply using regular Django views.</p>
 <p>You can review the final <a href="https://github.com/tomchristie/rest-framework-tutorial">tutorial code</a> on GitHub, or try out a live example in <a href="http://restframework.herokuapp.com/">the sandbox</a>.</p>
 <h2 id="onwards-and-upwards">Onwards and upwards</h2>
-<p>We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here's a few places you can start:</p>
+<p>We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here are a few places you can start:</p>
 <ul>
 <li>Contribute on <a href="https://github.com/tomchristie/django-rest-framework">GitHub</a> by reviewing and submitting issues, and making pull requests.</li>
 <li>Join the <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">REST framework discussion group</a>, and help build the community.</li>
