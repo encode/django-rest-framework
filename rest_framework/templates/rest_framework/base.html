@@ -24,6 +24,7 @@
     {% endblock %}
     </head>
 
+  {% block body %}
   <body class="{% block bodyclass %}{% endblock %} container">
 
     <div class="wrapper">
@@ -230,4 +231,5 @@
     <script src="{% static "rest_framework/js/default.js" %}"></script>
     {% endblock %}
   </body>
+  {% endblock %}
 </html>

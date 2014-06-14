@@ -69,6 +69,7 @@ For more specific CSS tweaks than simply overriding the default bootstrap theme 
 
 All of the blocks available in the browsable API base template that can be used in your `api.html`.
 
+* `body`                       - The entire html `<body>`.
 * `bodyclass`                  - Class attribute for the `<body>` tag, empty by default.
 * `bootstrap_theme`            - CSS for the Bootstrap theme.
 * `bootstrap_navbar_variant`   - CSS class for the navbar.
