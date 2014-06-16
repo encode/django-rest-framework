@@ -288,7 +288,7 @@ class ReverseNestedOneToManyTests(TestCase):
         instance = OneToManyTarget.objects.get(pk=1)
         serializer = self.Serializer(instance, data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertEqual(serializer.errors, {'sources': [{u'non_field_errors': [u'Expected a list of items.']}]})
+        self.assertEqual(serializer.errors, {'sources': [{'non_field_errors': ['Expected a list of items.']}]})
 
     def test_one_to_many_update(self):
         data = {'id': 1, 'name': 'target-1-updated', 'sources': [{'id': 1, 'name': 'source-1-updated'},
