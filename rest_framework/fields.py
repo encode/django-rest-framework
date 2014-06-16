@@ -187,7 +187,7 @@ class Field(object):
 
     def field_to_native(self, obj, field_name):
         """
-        Given and object and a field name, returns the value that should be
+        Given an object and a field name, returns the value that should be
         serialized for that field.
         """
         if obj is None:
