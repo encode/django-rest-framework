@@ -5,6 +5,9 @@ from __future__ import unicode_literals
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.status import HTTP_429_TOO_MANY_REQUESTS
 from rest_framework.test import APIRequestFactory
 from rest_framework.views import APIView
 from rest_framework.throttling import BaseThrottle, UserRateThrottle, ScopedRateThrottle
@@ -26,7 +29,12 @@ class NonTimeThrottle(BaseThrottle):
         if not hasattr(self.__class__, 'called'):
             self.__class__.called = True
             return True
-        return False 
+        return False
+
+
+class AlwaysThrottle(BaseThrottle):
+    def allow_request(self, request, view):
+        return False
 
 
 class MockView(APIView):
@@ -45,6 +53,15 @@ class MockView_MinuteThrottling(APIView):
 
 class MockView_NonTimeThrottling(APIView):
     throttle_classes = (NonTimeThrottle,)
+
+    def get(self, request):
+        return Response('foo')
+
+
+class MockView_PermissionThrotting(APIView):
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+    throttle_classes = (AlwaysThrottle,)
 
     def get(self, request):
         return Response('foo')
@@ -169,7 +186,18 @@ class ThrottlingTests(TestCase):
         self.assertTrue(MockView_NonTimeThrottling.throttle_classes[0].called)
 
         response = MockView_NonTimeThrottling.as_view()(request)
-        self.assertFalse('X-Throttle-Wait-Seconds' in response) 
+        self.assertFalse('X-Throttle-Wait-Seconds' in response)
+
+    def test_throttle_failed_authentication(self):
+        authentication_header = {
+            'Authorization': 'Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b',
+        }
+        request = self.factory.get('/')
+        request.META.update(authentication_header)
+
+        view = MockView_PermissionThrotting.as_view()
+        response = view(request)
+        self.assertEqual(response.status_code, HTTP_429_TOO_MANY_REQUESTS)
 
 
 class ScopedRateThrottleTests(TestCase):
