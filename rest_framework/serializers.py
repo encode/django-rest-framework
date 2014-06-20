@@ -495,57 +495,71 @@ class BaseSerializer(WritableField):
         Run deserialization and return error data,
         setting self.object if no errors occurred.
         """
-        if self._errors is None:
-            data, files = self.init_data, self.init_files
+        if self._errors is not None:
+            return self._errors
 
-            if self.many is not None:
-                many = self.many
-            else:
-                many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict, six.text_type))
-                if many:
-                    warnings.warn('Implicit list/queryset serialization is deprecated. '
-                                  'Use the `many=True` flag when instantiating the serializer.',
-                                  DeprecationWarning, stacklevel=3)
+        data, files = self.init_data, self.init_files
 
+        if self.many is not None:
+            many = self.many
+        else:
+            many = hasattr(data, '__iter__') and not isinstance(data, (Page, dict, six.text_type))
             if many:
-                ret = RelationsList()
-                errors = []
-                update = self.object is not None
+                warnings.warn('Implicit list/queryset serialization is deprecated. '
+                              'Use the `many=True` flag when instantiating the serializer.',
+                              DeprecationWarning, stacklevel=3)
 
-                if update:
-                    # If this is a bulk update we need to map all the objects
-                    # to a canonical identity so we can determine which
-                    # individual object is being updated for each item in the
-                    # incoming data
-                    objects = self.object
-                    identities = [self.get_identity(self.to_native(obj)) for obj in objects]
-                    identity_to_objects = dict(zip(identities, objects))
+        if many:
+            return self._errors_many(data)
 
-                if hasattr(data, '__iter__') and not isinstance(data, (dict, six.text_type)):
-                    for item in data:
-                        if update:
-                            # Determine which object we're updating
-                            identity = self.get_identity(item)
-                            self.object = identity_to_objects.pop(identity, None)
-                            if self.object is None and not self.allow_add_remove:
-                                ret.append(None)
-                                errors.append({'non_field_errors': ['Cannot create a new item, only existing items may be updated.']})
-                                continue
+        ret = self.from_native(data, files)
 
-                        ret.append(self.from_native(item, None))
-                        errors.append(self._errors)
+        if not self._errors:
+            self.object = ret
 
-                    if update and self.allow_add_remove:
-                        ret._deleted = identity_to_objects.values()
+        return self._errors
 
-                    self._errors = any(errors) and errors or []
-                else:
-                    self._errors = {'non_field_errors': ['Expected a list of items.']}
-            else:
-                ret = self.from_native(data, files)
+    def _errors_many(self, data):
+        """Run deserialization of bulk data."""
 
-            if not self._errors:
-                self.object = ret
+        if not hasattr(data, '__iter__') or isinstance(data, (dict, six.text_type)):
+            self._errors = {'non_field_errors': ['Expected a list of items.']}
+            return self._errors
+
+        ret = RelationsList()
+        errors = []
+        update = self.object is not None
+
+        if update:
+            # If this is a bulk update we need to map all the objects
+            # to a canonical identity so we can determine which
+            # individual object is being updated for each item in the
+            # incoming data
+            objects = self.object
+            identities = [self.get_identity(self.to_native(obj)) for obj in objects]
+            identity_to_objects = dict(zip(identities, objects))
+
+        for item in data:
+            if update:
+                # Determine which object we're updating
+                identity = self.get_identity(item)
+                self.object = identity_to_objects.pop(identity, None)
+                if self.object is None and not self.allow_add_remove:
+                    ret.append(None)
+                    errors.append({'non_field_errors': [
+                        'Cannot create a new item, only existing items may be updated.']})
+                    continue
+
+            ret.append(self.from_native(item, None))
+            errors.append(self._errors)
+
+        if update and self.allow_add_remove:
+            ret._deleted = identity_to_objects.values()
+
+        self._errors = any(errors) and errors or []
+
+        if not self._errors:
+            self.object = ret
 
         return self._errors
 
