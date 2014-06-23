@@ -21,7 +21,7 @@ First of all let's refactor our `UserList` and `UserDetail` views into a single 
         queryset = User.objects.all()
         serializer_class = UserSerializer
 
-Here we've used `ReadOnlyModelViewSet` class to automatically provide the default 'read-only' operations.  We're still setting the `queryset` and `serializer_class` attributes exactly as we did when we were using regular views, but we no longer need to provide the same information to two separate classes.
+Here we've used the `ReadOnlyModelViewSet` class to automatically provide the default 'read-only' operations.  We're still setting the `queryset` and `serializer_class` attributes exactly as we did when we were using regular views, but we no longer need to provide the same information to two separate classes.
 
 Next we're going to replace the `SnippetList`, `SnippetDetail` and `SnippetHighlight` view classes.  We can remove the three views, and again replace them with a single class.
 
@@ -85,7 +85,7 @@ In the `urls.py` file we bind our `ViewSet` classes into a set of concrete views
 
 Notice how we're creating multiple views from each `ViewSet` class, by binding the http methods to the required action for each view.
 
-Now that we've bound our resources into concrete views, that we can register the views with the URL conf as usual.
+Now that we've bound our resources into concrete views, we can register the views with the URL conf as usual.
 
     urlpatterns = format_suffix_patterns(patterns('snippets.views',
         url(r'^$', 'api_root'),
@@ -138,7 +138,7 @@ You can review the final [tutorial code][repo] on GitHub, or try out a live exam
 
 ## Onwards and upwards
 
-We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here's a few places you can start:
+We've reached the end of our tutorial.  If you want to get more involved in the REST framework project, here are a few places you can start:
 
 * Contribute on [GitHub][github] by reviewing and submitting issues, and making pull requests.
 * Join the [REST framework discussion group][group], and help build the community.

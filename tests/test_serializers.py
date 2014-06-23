@@ -3,6 +3,7 @@ from django.test import TestCase
 
 from rest_framework.serializers import _resolve_model
 from tests.models import BasicModel
+from rest_framework.compat import six
 
 
 class ResolveModelTests(TestCase):
@@ -17,6 +18,10 @@ class ResolveModelTests(TestCase):
 
     def test_resolve_string_representation(self):
         resolved_model = _resolve_model('tests.BasicModel')
+        self.assertEqual(resolved_model, BasicModel)
+
+    def test_resolve_unicode_representation(self):
+        resolved_model = _resolve_model(six.text_type('tests.BasicModel'))
         self.assertEqual(resolved_model, BasicModel)
 
     def test_resolve_non_django_model(self):

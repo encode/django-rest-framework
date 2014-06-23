@@ -185,7 +185,9 @@ Corresponds to `django.db.models.fields.SlugField`.
 
 ## ChoiceField
 
-A field that can accept a value out of a limited set of choices.
+A field that can accept a value out of a limited set of choices. Optionally takes a `blank_display_value` parameter that customizes the display value of an empty choice.
+
+**Signature:** `ChoiceField(choices=(), blank_display_value=None)`
 
 ## EmailField
 

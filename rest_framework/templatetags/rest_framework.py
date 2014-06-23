@@ -40,7 +40,7 @@ def optional_login(request):
     except NoReverseMatch:
         return ''
 
-    snippet = "<a href='%s?next=%s'>Log in</a>" % (login_url, request.path)
+    snippet = "<a href='%s?next=%s'>Log in</a>" % (login_url, escape(request.path))
     return snippet
 
 
@@ -54,7 +54,7 @@ def optional_logout(request):
     except NoReverseMatch:
         return ''
 
-    snippet = "<a href='%s?next=%s'>Log out</a>" % (logout_url, request.path)
+    snippet = "<a href='%s?next=%s'>Log out</a>" % (logout_url, escape(request.path))
     return snippet
 
 
