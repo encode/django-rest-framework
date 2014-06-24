@@ -90,8 +90,8 @@ class GenericAPIView(views.APIView):
             'view': self
         }
 
-    def get_serializer(self, instance=None, data=None,
-                       files=None, many=False, partial=False):
+    def get_serializer(self, instance=None, data=None, files=None, many=False,
+                       partial=False, allow_add_remove=False):
         """
         Return the serializer instance that should be used for validating and
         deserializing input, and for serializing output.
@@ -99,7 +99,9 @@ class GenericAPIView(views.APIView):
         serializer_class = self.get_serializer_class()
         context = self.get_serializer_context()
         return serializer_class(instance, data=data, files=files,
-                                many=many, partial=partial, context=context)
+                                many=many, partial=partial,
+                                allow_add_remove=allow_add_remove,
+                                context=context)
 
     def get_pagination_serializer(self, page):
         """
@@ -121,11 +123,11 @@ class GenericAPIView(views.APIView):
         deprecated_style = False
         if page_size is not None:
             warnings.warn('The `page_size` parameter to `paginate_queryset()` '
-                          'is due to be deprecated. '
+                          'is deprecated. '
                           'Note that the return style of this method is also '
                           'changed, and will simply return a page object '
                           'when called without a `page_size` argument.',
-                          PendingDeprecationWarning, stacklevel=2)
+                          DeprecationWarning, stacklevel=2)
             deprecated_style = True
         else:
             # Determine the required page size.
@@ -136,10 +138,10 @@ class GenericAPIView(views.APIView):
 
         if not self.allow_empty:
             warnings.warn(
-                'The `allow_empty` parameter is due to be deprecated. '
+                'The `allow_empty` parameter is deprecated. '
                 'To use `allow_empty=False` style behavior, You should override '
                 '`get_queryset()` and explicitly raise a 404 on empty querysets.',
-                PendingDeprecationWarning, stacklevel=2
+                DeprecationWarning, stacklevel=2
             )
 
         paginator = self.paginator_class(queryset, page_size,
@@ -187,10 +189,10 @@ class GenericAPIView(views.APIView):
         if not filter_backends and self.filter_backend:
             warnings.warn(
                 'The `filter_backend` attribute and `FILTER_BACKEND` setting '
-                'are due to be deprecated in favor of a `filter_backends` '
+                'are deprecated in favor of a `filter_backends` '
                 'attribute and `DEFAULT_FILTER_BACKENDS` setting, that take '
                 'a *list* of filter backend classes.',
-                PendingDeprecationWarning, stacklevel=2
+                DeprecationWarning, stacklevel=2
             )
             filter_backends = [self.filter_backend]
         return filter_backends
@@ -211,8 +213,8 @@ class GenericAPIView(views.APIView):
         """
         if queryset is not None:
             warnings.warn('The `queryset` parameter to `get_paginate_by()` '
-                          'is due to be deprecated.',
-                          PendingDeprecationWarning, stacklevel=2)
+                          'is deprecated.',
+                          DeprecationWarning, stacklevel=2)
 
         if self.paginate_by_param:
             try:
@@ -295,16 +297,16 @@ class GenericAPIView(views.APIView):
             filter_kwargs = {self.lookup_field: lookup}
         elif pk is not None and self.lookup_field == 'pk':
             warnings.warn(
-                'The `pk_url_kwarg` attribute is due to be deprecated. '
+                'The `pk_url_kwarg` attribute is deprecated. '
                 'Use the `lookup_field` attribute instead',
-                PendingDeprecationWarning
+                DeprecationWarning
             )
             filter_kwargs = {'pk': pk}
         elif slug is not None and self.lookup_field == 'pk':
             warnings.warn(
-                'The `slug_url_kwarg` attribute is due to be deprecated. '
+                'The `slug_url_kwarg` attribute is deprecated. '
                 'Use the `lookup_field` attribute instead',
-                PendingDeprecationWarning
+                DeprecationWarning
             )
             filter_kwargs = {self.slug_field: slug}
         else:
@@ -524,9 +526,9 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
 class MultipleObjectAPIView(GenericAPIView):
     def __init__(self, *args, **kwargs):
         warnings.warn(
-            'Subclassing `MultipleObjectAPIView` is due to be deprecated. '
+            'Subclassing `MultipleObjectAPIView` is deprecated. '
             'You should simply subclass `GenericAPIView` instead.',
-            PendingDeprecationWarning, stacklevel=2
+            DeprecationWarning, stacklevel=2
         )
         super(MultipleObjectAPIView, self).__init__(*args, **kwargs)
 
@@ -534,8 +536,8 @@ class MultipleObjectAPIView(GenericAPIView):
 class SingleObjectAPIView(GenericAPIView):
     def __init__(self, *args, **kwargs):
         warnings.warn(
-            'Subclassing `SingleObjectAPIView` is due to be deprecated. '
+            'Subclassing `SingleObjectAPIView` is deprecated. '
             'You should simply subclass `GenericAPIView` instead.',
-            PendingDeprecationWarning, stacklevel=2
+            DeprecationWarning, stacklevel=2
         )
         super(SingleObjectAPIView, self).__init__(*args, **kwargs)

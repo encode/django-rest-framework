@@ -26,14 +26,14 @@ def _get_validation_exclusions(obj, pk=None, slug_field=None, lookup_field=None)
     include = []
 
     if pk:
-        # Pending deprecation
+        # Deprecated
         pk_field = obj._meta.pk
         while pk_field.rel:
             pk_field = pk_field.rel.to._meta.pk
         include.append(pk_field.name)
 
     if slug_field:
-        # Pending deprecation
+        # Deprecated
         include.append(slug_field)
 
     if lookup_field and lookup_field != 'pk':
@@ -79,10 +79,10 @@ class ListModelMixin(object):
         # `.allow_empty = False`, to raise 404 errors on empty querysets.
         if not self.allow_empty and not self.object_list:
             warnings.warn(
-                'The `allow_empty` parameter is due to be deprecated. '
+                'The `allow_empty` parameter is deprecated. '
                 'To use `allow_empty=False` style behavior, You should override '
                 '`get_queryset()` and explicitly raise a 404 on empty querysets.',
-                PendingDeprecationWarning
+                DeprecationWarning
             )
             class_name = self.__class__.__name__
             error_msg = self.empty_error % {'class_name': class_name}
