@@ -120,12 +120,6 @@ DEFAULTS = {
     # Pending deprecation
     'FILTER_BACKEND': None,
 
-
-    # 1.7 Migration Compatibility
-
-    'SOUTH_MIGRATION_MODULES': {
-        'authtoken': 'rest_framework.authtoken.south_migrations',
-    }
 }
 
 

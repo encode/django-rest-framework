@@ -43,6 +43,14 @@ You can determine your currently installed version using `pip freeze`:
 ### 2.3.x
 
 **Date**: April 2014
+* Added compatibility with Django 1.7's native migrations.
+
+  **IMPORTANT**: In order to continue to use south with Django <1.7 you **must** provide
+  the `SOUTH_MIGRATION_MODULES` option in your `settings.py`:
+
+        SOUTH_MIGRATION_MODULES = {
+                'authtoken': 'rest_framework.authtoken.south_migrations',
+        }
 
 * Fix nested serializers linked through a backward foreign key relation
 * Fix bad links for the `BrowsableAPIRenderer` with `YAMLRenderer`
@@ -165,9 +173,9 @@ You can determine your currently installed version using `pip freeze`:
 * Added `trailing_slash` option to routers.
 * Include support for `HttpStreamingResponse`.
 * Support wider range of default serializer validation when used with custom model fields.
-* UTF-8 Support for browsable API descriptions.  
+* UTF-8 Support for browsable API descriptions.
 * OAuth2 provider uses timezone aware datetimes when supported.
-* Bugfix: Return error correctly when OAuth non-existent consumer occurs. 
+* Bugfix: Return error correctly when OAuth non-existent consumer occurs.
 * Bugfix: Allow `FileUploadParser` to correctly filename if provided as URL kwarg.
 * Bugfix: Fix `ScopedRateThrottle`.
 
@@ -208,7 +216,7 @@ You can determine your currently installed version using `pip freeze`:
 * Added SearchFilter
 * Added OrderingFilter
 * Added GenericViewSet
-* Bugfix: Multiple `@action` and `@link` methods now allowed on viewsets. 
+* Bugfix: Multiple `@action` and `@link` methods now allowed on viewsets.
 * Bugfix: Fix API Root view issue with DjangoModelPermissions
 
 ### 2.3.2
@@ -261,7 +269,7 @@ You can determine your currently installed version using `pip freeze`:
 * Long HTTP headers in browsable API are broken in multiple lines when possible.
 * Bugfix: Fix regression with DjangoFilterBackend not worthing correctly with single object views.
 * Bugfix: OAuth should fail hard when invalid token used.
-* Bugfix: Fix serializer potentially returning `None` object for models that define `__bool__` or `__len__`. 
+* Bugfix: Fix serializer potentially returning `None` object for models that define `__bool__` or `__len__`.
 
 ### 2.2.5
 
