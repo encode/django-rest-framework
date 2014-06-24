@@ -38,7 +38,28 @@ You can determine your currently installed version using `pip freeze`:
 
 ---
 
+### 2.4.0
+
+* Added compatibility with Django 1.7's native migrations.
+
+  **IMPORTANT**: In order to continue to use south with Django <1.7 you **must** provide
+  the `SOUTH_MIGRATION_MODULES` option in your `settings.py`:
+
+        SOUTH_MIGRATION_MODULES = {
+                'authtoken': 'rest_framework.authtoken.south_migrations',
+        }
+* Use py.test
+* `@detail_route` and `@list_route` decorators replace `@action` and `@link`.
+* `six` no longer bundled.  For Django <= 1.4.1, install `six` package.
+* Support customizable view name and description functions, using the `VIEW_NAME_FUNCTION` and `VIEW_DESCRIPTION_FUNCTION` settings.
+* Added `NUM_PROXIES` setting for smarter client IP identification.
+* Added `MAX_PAGINATE_BY` setting and `max_paginate_by` generic view attribute.
+* Added `cache` attribute to throttles to allow overriding of default cache.
+* Bugfix: `?page_size=0` query parameter now falls back to default page size for view, instead of always turning pagination off.
+
+
 ## 2.3.x series
+
 
 ### 2.3.14
 
@@ -169,9 +190,9 @@ You can determine your currently installed version using `pip freeze`:
 * Added `trailing_slash` option to routers.
 * Include support for `HttpStreamingResponse`.
 * Support wider range of default serializer validation when used with custom model fields.
-* UTF-8 Support for browsable API descriptions.  
+* UTF-8 Support for browsable API descriptions.
 * OAuth2 provider uses timezone aware datetimes when supported.
-* Bugfix: Return error correctly when OAuth non-existent consumer occurs. 
+* Bugfix: Return error correctly when OAuth non-existent consumer occurs.
 * Bugfix: Allow `FileUploadParser` to correctly filename if provided as URL kwarg.
 * Bugfix: Fix `ScopedRateThrottle`.
 
@@ -212,7 +233,7 @@ You can determine your currently installed version using `pip freeze`:
 * Added SearchFilter
 * Added OrderingFilter
 * Added GenericViewSet
-* Bugfix: Multiple `@action` and `@link` methods now allowed on viewsets. 
+* Bugfix: Multiple `@action` and `@link` methods now allowed on viewsets.
 * Bugfix: Fix API Root view issue with DjangoModelPermissions
 
 ### 2.3.2
@@ -265,7 +286,7 @@ You can determine your currently installed version using `pip freeze`:
 * Long HTTP headers in browsable API are broken in multiple lines when possible.
 * Bugfix: Fix regression with DjangoFilterBackend not worthing correctly with single object views.
 * Bugfix: OAuth should fail hard when invalid token used.
-* Bugfix: Fix serializer potentially returning `None` object for models that define `__bool__` or `__len__`. 
+* Bugfix: Fix serializer potentially returning `None` object for models that define `__bool__` or `__len__`.
 
 ### 2.2.5
 

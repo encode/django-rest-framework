@@ -164,11 +164,12 @@ Corresponds to `django.db.models.fields.BooleanField`.
 ## CharField
 
 A text representation, optionally validates the text to be shorter than `max_length` and longer than `min_length`.
+If `allow_none` is `False` (default), `None` values will be converted to an empty string.
 
 Corresponds to `django.db.models.fields.CharField`
 or `django.db.models.fields.TextField`.
 
-**Signature:** `CharField(max_length=None, min_length=None)`
+**Signature:** `CharField(max_length=None, min_length=None, allow_none=False)`
 
 ## URLField
 

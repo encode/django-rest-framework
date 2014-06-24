@@ -63,6 +63,7 @@ DEFAULTS = {
         'user': None,
         'anon': None,
     },
+    'NUM_PROXIES': None,
 
     # Pagination
     'PAGINATE_BY': None,
@@ -119,6 +120,7 @@ DEFAULTS = {
 
     # Pending deprecation
     'FILTER_BACKEND': None,
+
 }
 
 

@@ -377,5 +377,11 @@ The name of a parameter in the URL conf that may be used to provide a format suf
 
 Default: `'format'`
 
+#### NUM_PROXIES
+
+An integer of 0 or more, that may be used to specify the number of application proxies that the API runs behind.  This allows throttling to more accurately identify client IP addresses.  If set to `None` then less strict IP matching will be used by the throttle classes.
+
+Default: `None`
+
 [cite]: http://www.python.org/dev/peps/pep-0020/
 [strftime]: http://docs.python.org/2/library/time.html#time.strftime
