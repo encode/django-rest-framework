@@ -474,8 +474,12 @@ class CharField(WritableField):
             self.validators.append(validators.MaxLengthValidator(max_length))
 
     def from_native(self, value):
-        if isinstance(value, six.string_types) or value is None:
+        if isinstance(value, six.string_types):
             return value
+
+        if value is None:
+            return ''
+
         return smart_text(value)
 
 
