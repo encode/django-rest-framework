@@ -62,7 +62,7 @@ def get_component(obj, attr_name):
 
 def readable_datetime_formats(formats):
     format = ', '.join(formats).replace(ISO_8601,
-             'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]')
+             'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]')
     return humanize_strptime(format)
 
 
@@ -154,7 +154,12 @@ class Field(object):
     def widget_html(self):
         if not self.widget:
             return ''
-        return self.widget.render(self._name, self._value)
+
+        attrs = {}
+        if 'id' not in self.widget.attrs:
+            attrs['id'] = self._name
+
+        return self.widget.render(self._name, self._value, attrs=attrs)
 
     def label_tag(self):
         return '<label for="%s">%s:</label>' % (self._name, self.label)
@@ -182,7 +187,7 @@ class Field(object):
 
     def field_to_native(self, obj, field_name):
         """
-        Given and object and a field name, returns the value that should be
+        Given an object and a field name, returns the value that should be
         serialized for that field.
         """
         if obj is None:
@@ -505,7 +510,7 @@ class SlugField(CharField):
 
 class ChoiceField(WritableField):
     type_name = 'ChoiceField'
-    type_label = 'multiple choice'
+    type_label = 'choice'
     form_field_class = forms.ChoiceField
     widget = widgets.Select
     default_error_messages = {
@@ -513,12 +518,16 @@ class ChoiceField(WritableField):
                             'the available choices.'),
     }
 
-    def __init__(self, choices=(), *args, **kwargs):
+    def __init__(self, choices=(), blank_display_value=None, *args, **kwargs):
         self.empty = kwargs.pop('empty', '')
         super(ChoiceField, self).__init__(*args, **kwargs)
         self.choices = choices
         if not self.required:
-            self.choices = BLANK_CHOICE_DASH + self.choices
+            if blank_display_value is None:
+                blank_choice = BLANK_CHOICE_DASH
+            else:
+                blank_choice = [('', blank_display_value)]
+            self.choices = blank_choice + self.choices
 
     def _get_choices(self):
         return self._choices
@@ -1022,9 +1031,9 @@ class SerializerMethodField(Field):
     A field that gets its value by calling a method on the serializer it's attached to.
     """
 
-    def __init__(self, method_name):
+    def __init__(self, method_name, *args, **kwargs):
         self.method_name = method_name
-        super(SerializerMethodField, self).__init__()
+        super(SerializerMethodField, self).__init__(*args, **kwargs)
 
     def field_to_native(self, obj, field_name):
         value = getattr(self.parent, self.method_name)(obj)
