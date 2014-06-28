@@ -429,6 +429,11 @@ class ModelField(WritableField):
             "type": self.model_field.get_internal_type()
         }
 
+    def validate(self, value):
+        super(ModelField, self).validate(value)
+        if value is None and not self.model_field.null:
+            raise ValidationError(self.error_messages['invalid'])
+
 
 ##### Typed Fields #####
 
