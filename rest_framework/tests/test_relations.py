@@ -3,6 +3,7 @@ General tests for relational fields.
 """
 from __future__ import unicode_literals
 from django import get_version
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.test import TestCase
 from django.utils import unittest
@@ -43,11 +44,27 @@ class TestManyRelatedMixin(TestCase):
 
         https://github.com/tomchristie/django-rest-framework/pull/632
         '''
-        field = serializers.RelatedField(many=True, read_only=False)
+        field = serializers.RelatedField(many=True, read_only=False, required=False)
 
         into = {}
         field.field_from_native({}, None, 'field_name', into)
         self.assertEqual(into['field_name'], [])
+
+    def test_missing_required_many_to_many_related_field(self):
+        '''
+        Missing but required many-to-many relationship should cause
+        ValidationError
+        '''
+        field = serializers.RelatedField(many=True, read_only=False)
+
+        into = {}
+        self.assertRaisesMessage(
+            ValidationError,
+            "This field is required.",
+            field.field_from_native,
+            {}, None, 'field_name', into
+        )
+        self.assertDictEqual(into, {})
 
 
 # Regression tests for #694 (`source` attribute on related fields)
