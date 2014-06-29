@@ -58,9 +58,8 @@ class TestManyRelatedMixin(TestCase):
         field = serializers.RelatedField(many=True, read_only=False)
 
         into = {}
-        self.assertRaisesMessage(
+        self.assertRaises(
             ValidationError,
-            "This field is required.",
             field.field_from_native,
             {}, None, 'field_name', into
         )
