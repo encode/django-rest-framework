@@ -182,7 +182,7 @@ class RelatedField(WritableField):
         if value in self.null_values:
             if self.required:
                 raise ValidationError(self.error_messages['required'])
-            into[(self.source or field_name)] = [] if self.many else None
+            into[(self.source or field_name)] = None
         elif self.many:
             into[(self.source or field_name)] = [self.from_native(item) for item in value]
         else:
