@@ -45,7 +45,7 @@ def get_view_description(view_cls, html=False):
     return description
 
 
-def exception_handler(exc):
+def exception_handler(exc, request=None):
     """
     Returns the response that should be used for any given exception.
 
@@ -362,7 +362,12 @@ class APIView(View):
             else:
                 exc.status_code = status.HTTP_403_FORBIDDEN
 
-        response = self.settings.EXCEPTION_HANDLER(exc)
+        # backward compat
+        handler = self.settings.EXCEPTION_HANDLER
+        if handler.func_code.co_argcount == 1:
+            response = handler(exc)
+        else:
+            response = handler(exc, self.request)
 
         if response is None:
             raise
