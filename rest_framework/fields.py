@@ -1004,7 +1004,8 @@ class ImageField(FileField):
         if hasattr(data, 'temporary_file_path'):
             file = data.temporary_file_path()
         else:
-            if hasattr(data, 'read'):
+            if hasattr(data, 'read') and hasattr(data, 'seek'):
+                data.seek(0)
                 file = BytesIO(data.read())
             else:
                 file = BytesIO(data['content'])
