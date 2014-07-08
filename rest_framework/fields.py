@@ -24,7 +24,7 @@ from django.utils.datastructures import SortedDict
 from rest_framework import ISO_8601
 from rest_framework.compat import (
     timezone, parse_date, parse_datetime, parse_time, BytesIO, six, smart_text,
-    force_text, is_non_str_iterable
+    force_text, is_non_str_iterable, Mapping
 )
 from rest_framework.settings import api_settings
 
@@ -50,7 +50,7 @@ def get_component(obj, attr_name):
     Given an object, and an attribute name,
     return that attribute on the object.
     """
-    if isinstance(obj, dict):
+    if isinstance(obj, Mapping):
         val = obj.get(attr_name)
     else:
         val = getattr(obj, attr_name)
