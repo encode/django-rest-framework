@@ -24,6 +24,7 @@ from rest_framework.compat import oauth2_provider, oauth2_provider_scope
 from rest_framework.compat import oauth, oauth_provider
 from rest_framework.test import APIRequestFactory, APIClient
 from rest_framework.views import APIView
+from rest_framework.settings import api_settings
 import base64
 import time
 import datetime
@@ -230,6 +231,28 @@ class TokenAuthTests(TestCase):
                                {'username': self.username, 'password': self.password})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['token'], self.key)
+
+    def test_token_expired(self):
+        """ Ensure token login view using expired token """
+        api_settings.DEFAULT_TOKEN_EXPIRE['is_expired'] = True
+        client = APIClient(enforce_csrf_checks=True)
+        self.token.created = self.token.created - datetime.timedelta(days=40)
+        self.token.save()
+        response = client.post('/token/', {'example': 'example'},
+                               HTTP_AUTHORIZATION='Token %s' % self.token.key,
+                               format='json')
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_token_expire_after_renewal(self):
+        """ Ensure token renewes on next login after expiration """
+        api_settings.DEFAULT_TOKEN_EXPIRE['is_expired'] = True
+        self.token.created = self.token.created - datetime.timedelta(days=40)
+        self.token.save()
+        client = APIClient(enforce_csrf_checks=True)
+        response = client.post('/auth-token/', {'username': self.username,
+                                                'password': self.password})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotEqual(response.data['token'], self.key)
 
 
 class IncorrectCredentialsTests(TestCase):
