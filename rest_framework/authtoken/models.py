@@ -1,8 +1,10 @@
 import binascii
 import os
+import datetime
 from hashlib import sha1
 from django.conf import settings
 from django.db import models
+from rest_framework.settings import api_settings
 
 
 # Prior to Django 1.5, the AUTH_USER_MODEL setting does not exist.
@@ -35,6 +37,14 @@ class Token(models.Model):
 
     def generate_key(self):
         return binascii.hexlify(os.urandom(20)).decode()
+
+    def check_for_expiration(self):
+        token_settings = api_settings.DEFAULT_TOKEN_EXPIRE
+        if token_settings['is_expired']:
+            now = datetime.datetime.now()
+            difference = datetime.timedelta(days=token_settings['expiration_time'])
+            return self.created < (now - difference)
+        return False
 
     def __unicode__(self):
         return self.key

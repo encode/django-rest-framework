@@ -50,6 +50,11 @@ DEFAULTS = {
     ),
     'DEFAULT_CONTENT_NEGOTIATION_CLASS':
         'rest_framework.negotiation.DefaultContentNegotiation',
+    'DEFAULT_TOKEN_EXPIRE': {
+        'is_expired': False,
+        # in days
+        'expiration_time': 30
+    },
 
     # Genric view behavior
     'DEFAULT_MODEL_SERIALIZER_CLASS':
@@ -139,7 +144,8 @@ IMPORT_STRINGS = (
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN',
     'VIEW_NAME_FUNCTION',
-    'VIEW_DESCRIPTION_FUNCTION'
+    'VIEW_DESCRIPTION_FUNCTION',
+    'DEFAULT_TOKEN_EXPIRE'
 )
 
 

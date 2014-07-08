@@ -7,6 +7,7 @@ import base64
 from django.contrib.auth import authenticate
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
+from rest_framework.settings import api_settings
 from rest_framework import exceptions, HTTP_HEADER_ENCODING
 from rest_framework.compat import CsrfViewMiddleware
 from rest_framework.compat import oauth, oauth_provider, oauth_provider_store
@@ -173,6 +174,10 @@ class TokenAuthentication(BaseAuthentication):
 
         if not token.user.is_active:
             raise exceptions.AuthenticationFailed('User inactive or deleted')
+
+        token_settings = api_settings.DEFAULT_TOKEN_EXPIRE
+        if token_settings['is_expired'] and token.check_for_expiration():
+            raise exceptions.AuthenticationFailed('Token has expired')
 
         return (token.user, token)
 
