@@ -79,12 +79,6 @@ except ImportError:
     from collections import UserDict
     from collections import MutableMapping as DictMixin
 
-# Mapping is new in python 2.6
-try:
-    from collections import Mapping
-except ImportError:
-    Mapping = dict
-
 # Try to import PIL in either of the two ways it can end up installed.
 try:
     from PIL import Image
