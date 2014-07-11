@@ -179,6 +179,43 @@ When using `SlugRelatedField` as a read-write field, you will normally want to e
 * `required` - If set to `False`, the field will accept values of `None` or the empty-string for nullable relationships.
 * `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
 
+## MultiSlugRelatedField
+
+`MultiSlugRelatedField` may be used to represent the target of the relationship using a set of fields on the target.
+
+For example, the following serializer:
+ 
+    class AddressSerializer(serializers.ModelSerializer):
+        postal_code = serializers.SlugRelatedField(many=True, read_only=True,
+                                                   slug_fields=('code', 'country'))
+        
+        class Meta:
+            model = Address
+            fields = ('street', 'city', 'state', 'postal_code')
+
+Would serialize to a representation like this:
+
+    {
+        'street': '123 Main St.',
+        'city': 'Boulder',
+        'state': 'CO',
+        'postal_code': {
+            'code': '80305',
+            'country': 'USA',
+        }
+    }
+
+By default this field is read-write, although you can change this behavior using the `read_only` flag.
+
+When using `MultiSlugRelatedField` as a read-write field, you will normally want to ensure that the slug fields corresponds to a set of model field declared as `unique_together`.
+
+**Arguments**:
+
+* `slug_fields` - The fields on the target that should be used to represent it.  This should be a set of fields that uniquely identifies any given instance.  For example, `('postal_code', 'country')`.  **required**
+* `many` - If applied to a to-many relationship, you should set this argument to `True`.
+* `required` - If set to `False`, the field will accept values of `None` or the empty-string for nullable relationships.
+* `queryset` - By default `ModelSerializer` classes will use the default queryset for the relationship.  `Serializer` classes must either set a queryset explicitly, or set `read_only=True`.
+
 ## HyperlinkedIdentityField
 
 This field can be applied as an identity relationship, such as the `'url'` field on  a HyperlinkedModelSerializer.  It can also be used for an attribute on the object.  For example, the following serializer:
