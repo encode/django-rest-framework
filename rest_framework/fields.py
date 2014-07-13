@@ -10,6 +10,7 @@ import datetime
 import inspect
 import re
 import warnings
+import collections
 from decimal import Decimal, DecimalException
 from django import forms
 from django.core import validators
@@ -50,7 +51,7 @@ def get_component(obj, attr_name):
     Given an object, and an attribute name,
     return that attribute on the object.
     """
-    if hasattr(obj, '__getitem__'):
+    if isinstance(obj, collections.Mapping):
         val = obj[attr_name]
     else:
         val = getattr(obj, attr_name)
