@@ -33,6 +33,21 @@
   })();
 
     </script>
+    <style>
+span.fusion-wrap a {
+  display: block;
+  margin-top: 10px;
+  color: black;
+}
+
+a.fusion-poweredby {
+  display: block;
+  margin-top: 10px;
+}
+@media (max-width: 767px) {
+  div.promo {display: none;}
+}
+</style>
   </head>
   <body onload="prettyPrint()" class="permissions-page">
 
@@ -187,11 +202,9 @@
 <li><a href="#composed-permissions">Composed Permissions</a></li>
 <li><a href="#rest-condition">REST Condition</a></li>
 
-              <div>
-
-
-
-</div>
+              <div class="promo">
+              
+              </div>
 </ul>
 
             </div>
@@ -223,6 +236,9 @@ or if you override the <code>get_object</code> method on a generic view, then yo
     self.check_object_permissions(self.request, obj)
     return obj
 </code></pre>
+<h4 id="limitations-of-object-level-permissions">Limitations of object level permissions</h4>
+<p>For performance reasons the generic views will not automatically apply object level permissions to each instance in a queryset when returning a list of objects.</p>
+<p>Often when you're using object level permissions you'll also want to <a href="filtering">filter the queryset</a> appropriately, to ensure that users only have visibility onto instances that they are permitted to view.</p>
 <h2 id="setting-the-permission-policy">Setting the permission policy</h2>
 <p>The default permission policy may be set globally, using the <code>DEFAULT_PERMISSION_CLASSES</code> setting.  For example.</p>
 <pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
@@ -383,6 +399,7 @@ class BlacklistPermission(permissions.BasePermission):
     <script src="http://www.django-rest-framework.org/js/jquery-1.8.1-min.js"></script>
     <script src="http://www.django-rest-framework.org/js/prettify-1.0.js"></script>
     <script src="http://www.django-rest-framework.org/js/bootstrap-2.1.1-min.js"></script>
+
     <script>
       //$('.side-nav').scrollspy()
       var shiftWindow = function() { scrollBy(0, -50) };

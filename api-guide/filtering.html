@@ -33,6 +33,21 @@
   })();
 
     </script>
+    <style>
+span.fusion-wrap a {
+  display: block;
+  margin-top: 10px;
+  color: black;
+}
+
+a.fusion-poweredby {
+  display: block;
+  margin-top: 10px;
+}
+@media (max-width: 767px) {
+  div.promo {display: none;}
+}
+</style>
   </head>
   <body onload="prettyPrint()" class="filtering-page">
 
@@ -186,11 +201,9 @@
 <li class="main"><a href="#third-party-packages">Third party packages</a></li>
 <li><a href="#django-rest-framework-chain">Django REST framework chain</a></li>
 
-              <div>
-
-
-
-</div>
+              <div class="promo">
+              
+              </div>
 </ul>
 
             </div>
@@ -355,15 +368,13 @@ class ProductFilter(django_filters.FilterSet):
 <p>This enables us to make queries like:</p>
 <pre class="prettyprint lang-py"><code>http://example.com/api/products?manufacturer__name=foo
 </code></pre>
-<p>This is nice, but it shows underlying model structure in REST API, which may
-be undesired, but you can use:</p>
+<p>This is nice, but it exposes the Django's double underscore convention as part of the API.  If you instead want to explicitly name the filter argument you can instead explicitly include it on the <code>FilterSet</code> class:</p>
 <pre class="prettyprint lang-py"><code>import django_filters
 from myapp.models import Product
 from myapp.serializers import ProductSerializer
 from rest_framework import generics
 
 class ProductFilter(django_filters.FilterSet):
-
     manufacturer = django_filters.CharFilter(name="manufacturer__name")
 
     class Meta:
@@ -520,6 +531,7 @@ class ProductFilter(django_filters.FilterSet):
     <script src="http://www.django-rest-framework.org/js/jquery-1.8.1-min.js"></script>
     <script src="http://www.django-rest-framework.org/js/prettify-1.0.js"></script>
     <script src="http://www.django-rest-framework.org/js/bootstrap-2.1.1-min.js"></script>
+
     <script>
       //$('.side-nav').scrollspy()
       var shiftWindow = function() { scrollBy(0, -50) };

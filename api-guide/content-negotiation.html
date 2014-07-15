@@ -33,6 +33,21 @@
   })();
 
     </script>
+    <style>
+span.fusion-wrap a {
+  display: block;
+  margin-top: 10px;
+  color: black;
+}
+
+a.fusion-poweredby {
+  display: block;
+  margin-top: 10px;
+}
+@media (max-width: 767px) {
+  div.promo {display: none;}
+}
+</style>
   </head>
   <body onload="prettyPrint()" class="content-negotiation-page">
 
@@ -174,11 +189,9 @@
 <li><a href="#example">Example</a></li>
 <li><a href="#setting-the-content-negotiation">Setting the content negotiation</a></li>
 
-              <div>
-
-
-
-</div>
+              <div class="promo">
+              
+              </div>
 </ul>
 
             </div>
@@ -276,6 +289,7 @@ class NoNegotiationView(APIView):
     <script src="http://www.django-rest-framework.org/js/jquery-1.8.1-min.js"></script>
     <script src="http://www.django-rest-framework.org/js/prettify-1.0.js"></script>
     <script src="http://www.django-rest-framework.org/js/bootstrap-2.1.1-min.js"></script>
+
     <script>
       //$('.side-nav').scrollspy()
       var shiftWindow = function() { scrollBy(0, -50) };

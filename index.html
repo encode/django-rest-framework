@@ -33,6 +33,21 @@
   })();
 
     </script>
+    <style>
+span.fusion-wrap a {
+  display: block;
+  margin-top: 10px;
+  color: black;
+}
+
+a.fusion-poweredby {
+  display: block;
+  margin-top: 10px;
+}
+@media (max-width: 767px) {
+  div.promo {display: none;}
+}
+</style>
   </head>
   <body onload="prettyPrint()" class="index-page">
 
@@ -181,12 +196,10 @@
 <li><a href="#security">Security</a></li>
 <li><a href="#license">License</a></li>
 
-              <div>
-
-<hr><p><strong>The team behind REST framework is launching a new API service.</strong></p>
-<p>If you want to be first in line when we start issuing invitations, please <a href="http://brightapi.com">sign up here</a>.</p>
-
-</div>
+              <div class="promo">
+              <hr/>
+              <script type="text/javascript" src="//cdn.fusionads.net/fusion.js?zoneid=1332&serve=C6SDP2Y&placement=djangorestframework" id="_fusionads_js"></script>
+              </div>
 </ul>
 
             </div>
@@ -227,7 +240,7 @@
 <li><a href="api-guide/authentication">Authentication policies</a> including <a href="api-guide/authentication#oauthauthentication">OAuth1a</a> and <a href="api-guide/authentication#oauth2authentication">OAuth2</a> out of the box.</li>
 <li><a href="api-guide/serializers">Serialization</a> that supports both <a href="api-guide/serializers#modelserializer">ORM</a> and <a href="api-guide/serializers#serializers">non-ORM</a> data sources.</li>
 <li>Customizable all the way down - just use <a href="api-guide/views#function-based-views">regular function-based views</a> if you don't need the <a href="api-guide/generic-views">more</a> <a href="api-guide/viewsets">powerful</a> <a href="api-guide/routers">features</a>.</li>
-<li><a href=".">Extensive documentation</a>, <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">great community support</a>, and a growing <a href="https://www.djangopackages.com/grids/g/django-rest-framework/">package ecosystem</a>.</li>
+<li><a href=".">Extensive documentation</a>, and <a href="https://groups.google.com/forum/?fromgroups#!forum/django-rest-framework">great community support</a>.</li>
 <li>Used and trusted by large companies such as <a href="http://www.mozilla.org/en-US/about/">Mozilla</a> and <a href="https://www.eventbrite.co.uk/about/">Eventbrite</a>.</li>
 </ul>
 <hr />
@@ -431,6 +444,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
     <script src="http://www.django-rest-framework.org/js/jquery-1.8.1-min.js"></script>
     <script src="http://www.django-rest-framework.org/js/prettify-1.0.js"></script>
     <script src="http://www.django-rest-framework.org/js/bootstrap-2.1.1-min.js"></script>
+
     <script>
       //$('.side-nav').scrollspy()
       var shiftWindow = function() { scrollBy(0, -50) };

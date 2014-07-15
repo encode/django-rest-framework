@@ -33,6 +33,21 @@
   })();
 
     </script>
+    <style>
+span.fusion-wrap a {
+  display: block;
+  margin-top: 10px;
+  color: black;
+}
+
+a.fusion-poweredby {
+  display: block;
+  margin-top: 10px;
+}
+@media (max-width: 767px) {
+  div.promo {display: none;}
+}
+</style>
   </head>
   <body onload="prettyPrint()" class="2-requests-and-responses-page">
 
@@ -178,11 +193,9 @@
 <li><a href="#hows-it-looking">How's it looking?</a></li>
 <li><a href="#whats-next">What's next?</a></li>
 
-              <div>
-
-
-
-</div>
+              <div class="promo">
+              
+              </div>
 </ul>
 
             </div>
@@ -338,6 +351,7 @@ curl -X POST http://127.0.0.1:8000/snippets/ -d '{"code": "print 456"}' -H "Cont
     <script src="http://www.django-rest-framework.org/js/jquery-1.8.1-min.js"></script>
     <script src="http://www.django-rest-framework.org/js/prettify-1.0.js"></script>
     <script src="http://www.django-rest-framework.org/js/bootstrap-2.1.1-min.js"></script>
+
     <script>
       //$('.side-nav').scrollspy()
       var shiftWindow = function() { scrollBy(0, -50) };
