@@ -5,19 +5,25 @@ They are very similar to Django's form fields.
 """
 from __future__ import unicode_literals
 
+import base64
 import copy
 import datetime
+import imghdr
 import inspect
 import re
+import uuid
 import warnings
 from decimal import Decimal, DecimalException
 from django import forms
+
+from django.core.files.base import ContentFile
 from django.core import validators
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.http import QueryDict
 from django.forms import widgets
+
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
 from django.utils.datastructures import SortedDict
@@ -1038,3 +1044,49 @@ class SerializerMethodField(Field):
     def field_to_native(self, obj, field_name):
         value = getattr(self.parent, self.method_name)(obj)
         return self.to_native(value)
+
+
+DEFAULT_CONTENT_TYPE = "application/octet-stream"
+ALLOWED_IMAGE_TYPES = (
+    "jpeg",
+    "jpg",
+    "png",
+    "gif"
+    )
+
+
+class Base64ImageField(ImageField):
+    """
+    A django-rest-framework field for handling image-uploads through raw post data.
+    It uses base64 for en-/decoding the contents of the file.
+    """
+    def from_native(self, base64_data):
+        # Check if this is a base64 string
+        if base64_data in validators.EMPTY_VALUES:
+            return None
+
+        if isinstance(base64_data, basestring):
+            # Try to decode the file. Return validation error if it fails.
+            try:
+                decoded_file = base64.b64decode(base64_data)
+            except TypeError:
+                raise ValidationError(_("Please upload a valid image."))
+            # Generate file name:
+            file_name = str(uuid.uuid4())[:12] # 12 characters are more than enough.
+            # Get the file name extension:
+            file_extension = self.get_file_extension(file_name, decoded_file)
+            if file_extension not in ALLOWED_IMAGE_TYPES:
+                raise ValidationError(_("The type of the image couldn't been determined."))
+            complete_file_name = file_name + "." + file_extension
+            data = ContentFile(decoded_file, name=complete_file_name)
+            return super(Base64ImageField, self).from_native(data)
+        raise ValidationError(_('This is not an base64 string'))
+
+    def to_native(self, value):
+        # Return url including domain name.
+        return value.name
+
+    def get_file_extension(self, filename, decoded_file):
+        extension = imghdr.what(filename, decoded_file)
+        extension = "jpg" if extension == "jpeg" else extension
+        return extension

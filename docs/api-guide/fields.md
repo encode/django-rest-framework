@@ -306,6 +306,32 @@ Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
 
 ---
 
+
+## Base64ImageField
+
+An image representation for Base64ImageField
+
+Intherited by `ImageField`
+
+**Signature:** `Base64ImageField()`
+
+ - It takes a base64 image as a string.
+ - a base64 image:  `data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7`
+ - Base64ImageField accepts only the part after base64, `R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7`
+
+ **Example:**
+
+    #serializer
+    class UploadedBase64ImageSerializer(serializers.Serializer):
+        file = serializers.Base64ImageField(required=False)
+        created = serializers.DateTimeField()
+
+    #use the serializer
+    file = 'R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+    serializer = UploadedBase64ImageSerializer(data={'created': now, 'file': file})
+
+
+
 # Custom fields
 
 If you want to create a custom field, you'll probably want to override either one or both of the `.to_native()` and `.from_native()` methods.  These two methods are used to convert between the initial datatype, and a primitive, serializable datatype.  Primitive datatypes may be any of a number, string, date/time/datetime or None.  They may also be any list or dictionary like object that only contains other primitive objects.
