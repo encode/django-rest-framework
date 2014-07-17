@@ -299,12 +299,39 @@ Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is 
 
 Signature and validation is the same as with `FileField`.
 
+
 ---
 
 **Note:** `FileFields` and `ImageFields` are only suitable for use with MultiPartParser, since e.g. json doesn't support file uploads.
 Django's regular [FILE_UPLOAD_HANDLERS] are used for handling uploaded files.
 
 ---
+
+
+## Base64ImageField
+
+An image representation for Base64ImageField
+
+Intherited by `ImageField`
+
+**Signature:** `Base64ImageField()`
+
+ - It takes a base64 image as a string.
+ - a base64 image:  `data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7`
+ - Base64ImageField accepts only the part after base64, `R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7`
+
+ **Example:**
+
+    #serializer
+    class UploadedBase64ImageSerializer(serializers.Serializer):
+        file = serializers.Base64ImageField(required=False)
+        created = serializers.DateTimeField()
+
+    #use the serializer
+    file = 'R0lGODlhAQABAIAAAP///////yH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='
+    serializer = UploadedBase64ImageSerializer(data={'created': now, 'file': file})
+
+
 
 # Custom fields
 

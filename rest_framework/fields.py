@@ -1062,6 +1062,9 @@ class Base64ImageField(ImageField):
     """
     def from_native(self, base64_data):
         # Check if this is a base64 string
+        if base64_data in validators.EMPTY_VALUES:
+            return None
+
         if isinstance(base64_data, basestring):
             # Try to decode the file. Return validation error if it fails.
             try:
@@ -1081,7 +1084,7 @@ class Base64ImageField(ImageField):
 
     def to_native(self, value):
         # Return url including domain name.
-        return ""
+        return value.name
 
     def get_file_extension(self, filename, decoded_file):
         extension = imghdr.what(filename, decoded_file)
