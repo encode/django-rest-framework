@@ -9,7 +9,7 @@
 
 ---
 
-**Project announcement:** We are currently running a Kickstart campaign to help fund the development of Django REST framework 3. If you want to help make sustainable open source development please [check out the Kickstarter project](https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3), and consider funding us!
+**Project announcement:** We are currently running a Kickstarter campaign to help fund the development of Django REST framework 3. If you want to help make sustainable open source development please [check out the Kickstarter project](https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3), and consider funding us!
 
 ---
 
@@ -205,6 +205,7 @@ General guides to using REST framework.
 * [2.0 Announcement][rest-framework-2-announcement]
 * [2.2 Announcement][2.2-announcement]
 * [2.3 Announcement][2.3-announcement]
+* [Kickstarter Announcement][kickstarter-announcement]
 * [Release Notes][release-notes]
 * [Credits][credits]
 
@@ -329,6 +330,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [rest-framework-2-announcement]: topics/rest-framework-2-announcement.md
 [2.2-announcement]: topics/2.2-announcement.md
 [2.3-announcement]: topics/2.3-announcement.md
+[kickstarter-announcement]: topics/kickstarter-announcement.md 
 [release-notes]: topics/release-notes.md
 [credits]: topics/credits.md
 
