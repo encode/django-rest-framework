@@ -347,7 +347,7 @@ As an example, let's create a field that can be used represent the class name of
             """
             Serialize the object's class name.
             """
-            return obj.__class__
+            return obj.__class__.__name__
 
 # Third party packages
 
