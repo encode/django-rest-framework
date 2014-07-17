@@ -2,11 +2,11 @@
 <html lang="en">
 <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
-    <title>Status Codes - Django REST framework</title>
+    <title>Kickstarting Django REST framework 3 - Django REST framework</title>
     <link href="http://www.django-rest-framework.org/img/favicon.ico" rel="icon" type="image/x-icon">
-    <link rel="canonical" href="http://www.django-rest-framework.org/api-guide/status-codes"/>
+    <link rel="canonical" href="http://www.django-rest-framework.org/topics/kickstarter-announcement"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Django, API, REST, Status Codes">
+    <meta name="description" content="Django, API, REST, Kickstarting Django REST framework 3">
     <meta name="author" content="Tom Christie">
 
     <!-- Le styles -->
@@ -49,7 +49,7 @@ a.fusion-poweredby {
 }
 </style>
   </head>
-  <body onload="prettyPrint()" class="status-codes-page">
+  <body onload="prettyPrint()" class="kickstarter-announcement-page">
 
   <div class="wrapper">
 
@@ -57,8 +57,8 @@ a.fusion-poweredby {
       <div class="navbar-inner">
         <div class="container-fluid">
             <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
-            <a class="repo-link btn btn-inverse btn-small " href="../api-guide/testing">Next <i class="icon-arrow-right icon-white"></i></a>
-            <a class="repo-link btn btn-inverse btn-small " href="../api-guide/exceptions"><i class="icon-arrow-left icon-white"></i> Previous</a>
+            <a class="repo-link btn btn-inverse btn-small disabled" href="#">Next <i class="icon-arrow-right icon-white"></i></a>
+            <a class="repo-link btn btn-inverse btn-small disabled" href="#"><i class="icon-arrow-left icon-white"></i> Previous</a>
             <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
@@ -184,13 +184,8 @@ a.fusion-poweredby {
           -->
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
-                <li class="main"><a href="#status-codes">Status Codes</a></li>
-<li><a href="#informational---1xx">Informational - 1xx</a></li>
-<li><a href="#successful---2xx">Successful - 2xx</a></li>
-<li><a href="#redirection---3xx">Redirection - 3xx</a></li>
-<li><a href="#client-error---4xx">Client Error - 4xx</a></li>
-<li><a href="#server-error---5xx">Server Error - 5xx</a></li>
-<li><a href="#helper-functions">Helper functions</a></li>
+                <li class="main"><a href="#kickstarting-django-rest-framework-3">Kickstarting Django REST framework 3</a></li>
+<li><a href="#project-details">Project details</a></li>
 
               <div class="promo">
               
@@ -201,101 +196,27 @@ a.fusion-poweredby {
           </div>
 
           <div id="main-content" class="span9">
-            <p><a class="github" href="https://github.com/tomchristie/django-rest-framework/tree/master/rest_framework/status.py"><span class="label label-info">status.py</span></a></p>
-<h1 id="status-codes">Status Codes</h1>
-<blockquote>
-<p>418 I'm a teapot - Any attempt to brew coffee with a teapot should result in the error code "418 I'm a teapot".  The resulting entity body MAY be short and stout.</p>
-<p>&mdash; <a href="http://www.ietf.org/rfc/rfc2324.txt">RFC 2324</a>, Hyper Text Coffee Pot Control Protocol</p>
-</blockquote>
-<p>Using bare status codes in your responses isn't recommended.  REST framework includes a set of named constants that you can use to make more code more obvious and readable.</p>
-<pre class="prettyprint lang-py"><code>from rest_framework import status
-from rest_framework.response import Response
+            <h1 id="kickstarting-django-rest-framework-3">Kickstarting Django REST framework 3</h1>
+<hr />
+<iframe width="480" height="360" src="https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3/widget/video.html" frameborder="0" scrolling="no"> </iframe>
 
-def empty_view(self):
-    content = {'please move along': 'nothing to see here'}
-    return Response(content, status=status.HTTP_404_NOT_FOUND)
-</code></pre>
-<p>The full set of HTTP status codes included in the <code>status</code> module is listed below.</p>
-<p>The module also includes a set of helper functions for testing if a status code is in a given range.</p>
-<pre class="prettyprint lang-py"><code>from rest_framework import status
-from rest_framework.test import APITestCase
-
-class ExampleTestCase(APITestCase):
-    def test_url_root(self):
-        url = reverse('index')
-        response = self.client.get(url)
-        self.assertTrue(status.is_success(response.status_code))
-</code></pre>
-<p>For more information on proper usage of HTTP status codes see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html">RFC 2616</a>
-and <a href="http://tools.ietf.org/html/rfc6585">RFC 6585</a>.</p>
-<h2 id="informational-1xx">Informational - 1xx</h2>
-<p>This class of status code indicates a provisional response.  There are no 1xx status codes used in REST framework by default.</p>
-<pre class="prettyprint lang-py"><code>HTTP_100_CONTINUE
-HTTP_101_SWITCHING_PROTOCOLS
-</code></pre>
-<h2 id="successful-2xx">Successful - 2xx</h2>
-<p>This class of status code indicates that the client's request was successfully received, understood, and accepted.</p>
-<pre class="prettyprint lang-py"><code>HTTP_200_OK
-HTTP_201_CREATED
-HTTP_202_ACCEPTED
-HTTP_203_NON_AUTHORITATIVE_INFORMATION
-HTTP_204_NO_CONTENT
-HTTP_205_RESET_CONTENT
-HTTP_206_PARTIAL_CONTENT
-</code></pre>
-<h2 id="redirection-3xx">Redirection - 3xx</h2>
-<p>This class of status code indicates that further action needs to be taken by the user agent in order to fulfill the request.</p>
-<pre class="prettyprint lang-py"><code>HTTP_300_MULTIPLE_CHOICES
-HTTP_301_MOVED_PERMANENTLY
-HTTP_302_FOUND
-HTTP_303_SEE_OTHER
-HTTP_304_NOT_MODIFIED
-HTTP_305_USE_PROXY
-HTTP_306_RESERVED
-HTTP_307_TEMPORARY_REDIRECT
-</code></pre>
-<h2 id="client-error-4xx">Client Error - 4xx</h2>
-<p>The 4xx class of status code is intended for cases in which the client seems to have erred.  Except when responding to a HEAD request, the server SHOULD include an entity containing an explanation of the error situation, and whether it is a temporary or permanent condition.</p>
-<pre class="prettyprint lang-py"><code>HTTP_400_BAD_REQUEST
-HTTP_401_UNAUTHORIZED
-HTTP_402_PAYMENT_REQUIRED
-HTTP_403_FORBIDDEN
-HTTP_404_NOT_FOUND
-HTTP_405_METHOD_NOT_ALLOWED
-HTTP_406_NOT_ACCEPTABLE
-HTTP_407_PROXY_AUTHENTICATION_REQUIRED
-HTTP_408_REQUEST_TIMEOUT
-HTTP_409_CONFLICT
-HTTP_410_GONE
-HTTP_411_LENGTH_REQUIRED
-HTTP_412_PRECONDITION_FAILED
-HTTP_413_REQUEST_ENTITY_TOO_LARGE
-HTTP_414_REQUEST_URI_TOO_LONG
-HTTP_415_UNSUPPORTED_MEDIA_TYPE
-HTTP_416_REQUESTED_RANGE_NOT_SATISFIABLE
-HTTP_417_EXPECTATION_FAILED
-HTTP_428_PRECONDITION_REQUIRED
-HTTP_429_TOO_MANY_REQUESTS
-HTTP_431_REQUEST_HEADER_FIELDS_TOO_LARGE
-</code></pre>
-<h2 id="server-error-5xx">Server Error - 5xx</h2>
-<p>Response status codes beginning with the digit "5" indicate cases in which the server is aware that it has erred or is incapable of performing the request.  Except when responding to a HEAD request, the server SHOULD include an entity containing an explanation of the error situation, and whether it is a temporary or permanent condition.</p>
-<pre class="prettyprint lang-py"><code>HTTP_500_INTERNAL_SERVER_ERROR
-HTTP_501_NOT_IMPLEMENTED
-HTTP_502_BAD_GATEWAY
-HTTP_503_SERVICE_UNAVAILABLE
-HTTP_504_GATEWAY_TIMEOUT
-HTTP_505_HTTP_VERSION_NOT_SUPPORTED
-HTTP_511_NETWORK_AUTHENTICATION_REQUIRED
-</code></pre>
-<h2 id="helper-functions">Helper functions</h2>
-<p>The following helper functions are available for identifying the category of the response code.</p>
-<pre class="prettyprint lang-py"><code>is_informational()  # 1xx
-is_success()        # 2xx
-is_redirect()       # 3xx
-is_client_error()   # 4xx
-is_server_error()   # 5xx
-</code></pre>
+<hr />
+<p>In order to continue to drive the project forward, I'm launching a Kickstarter campaign to help fund the development of a major new release - Django REST framework 3.</p>
+<h2 id="project-details">Project details</h2>
+<p>This new release will allow us to comprehensively address some of the shortcomings of the framework, and will aim to include the following:</p>
+<ul>
+<li>Faster, simpler and easier-to-use serializers.</li>
+<li>An alternative admin-style interface for the browsable API.</li>
+<li>Search and filtering controls made accessible in the browsable API.</li>
+<li>Alternative API pagination styles.</li>
+<li>Documentation around API versioning.</li>
+<li>Triage of outstanding tickets.</li>
+<li>Improving the ongoing quality and maintainability of the project.</li>
+</ul>
+<p>Full details are available now on the <a href="https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3">project page</a>.</p>
+<p>If you're interested in helping make sustainable open source development a reality please <a href="https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3">visit the Kickstarter page</a> and consider funding the project.</p>
+<p>Many thanks to everyone for your support so far,</p>
+<p>Tom Christie</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->
