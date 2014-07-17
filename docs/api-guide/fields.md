@@ -299,7 +299,6 @@ Requires either the `Pillow` package or `PIL` package.  The `Pillow` package is 
 
 Signature and validation is the same as with `FileField`.
 
-
 ---
 
 **Note:** `FileFields` and `ImageFields` are only suitable for use with MultiPartParser, since e.g. json doesn't support file uploads.
