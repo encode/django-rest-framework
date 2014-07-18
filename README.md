@@ -1,11 +1,3 @@
-# Django REST framework
-
-[![build-status-image]][travis]
-
-**Awesome web-browseable Web APIs.**
-
-**Note**: Full documentation for the project is available at [http://www.django-rest-framework.org][docs].
-
 ---
 
 #### Django REST framework 3 - Kickstarter announcement!
@@ -15,6 +7,14 @@ We are currently running a Kickstarter campaign to help fund the development of 
 If you want to help drive sustainable open-source development **please [check out the Kickstarter project](https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3) and consider funding us.**
 
 ---
+
+# Django REST framework
+
+[![build-status-image]][travis]
+
+**Awesome web-browseable Web APIs.**
+
+**Note**: Full documentation for the project is available at [http://www.django-rest-framework.org][docs].
 
 # Overview
 
