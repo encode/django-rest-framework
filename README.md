@@ -4,7 +4,7 @@
 
 We are currently running a Kickstarter campaign to help fund the development of Django REST framework 3.
 
-If you want to help drive sustainable open-source development **please [check out the Kickstarter project](https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3) and consider funding us.**
+If you want to help drive sustainable open-source development forward **please [cconsider funding the Kickstarter project](https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3).**
 
 ---
 
