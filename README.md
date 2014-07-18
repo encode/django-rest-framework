@@ -6,6 +6,16 @@
 
 **Note**: Full documentation for the project is available at [http://www.django-rest-framework.org][docs].
 
+---
+
+#### Django REST framework 3 - Kickstarter announcement!
+
+We are currently running a Kickstarter campaign to help fund the development of Django REST framework 3.
+
+If you want to help drive sustainable open-source development **please [check out the Kickstarter project](https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3) and consider funding us.**
+
+---
+
 # Overview
 
 Django REST framework is a powerful and flexible toolkit that makes it easy to build Web APIs.
