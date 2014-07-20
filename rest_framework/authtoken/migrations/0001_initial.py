@@ -13,6 +13,15 @@ except ImportError: # django < 1.5
     from django.contrib.auth.models import User
 else:
     User = get_user_model()
+    
+
+def get_user_pk_field_fully_qualified_name():
+    pk_field = User._meta.pk
+    module = pk_field.__class__.__module__
+    if module is None:
+        return pk_field.__class__.__name__
+    return module + '.' + pk_field.__class__.__name__
+
 
 
 class Migration(SchemaMigration):
@@ -48,6 +57,11 @@ class Migration(SchemaMigration):
         },
         "%s.%s" % (User._meta.app_label, User._meta.module_name): {
             'Meta': {'object_name': User._meta.module_name},
+            User._meta.pk.attname: (
+                get_user_pk_field_fully_qualified_name(), [],
+                {'primary_key': 'True',
+                'db_column': "'%s'" % User._meta.pk.column}
+            ),
         },
         'authtoken.token': {
             'Meta': {'object_name': 'Token'},
