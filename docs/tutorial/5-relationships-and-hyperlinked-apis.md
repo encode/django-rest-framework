@@ -4,22 +4,21 @@ At the moment relationships within our API are represented by using primary keys
 
 ## Creating an endpoint for the root of our API
 
-Right now we have endpoints for 'snippets' and 'users', but we don't have a single entry point to our API.  To create one, we'll use a regular function-based view and the `@api_view` decorator we introduced earlier.
+Right now we have endpoints for 'snippets' and 'users', but we don't have a single entry point to our API.  To create one, we'll use a class-based view:
 
-    from rest_framework import renderers
-    from rest_framework.decorators import api_view
+    from rest_framework.views import APIView
     from rest_framework.response import Response
     from rest_framework.reverse import reverse
 
 
-    @api_view(('GET',))
-    def api_root(request, format=None):
-        return Response({
-            'users': reverse('user-list', request=request, format=format),
-            'snippets': reverse('snippet-list', request=request, format=format)
-        })
+    class APIRootView(APIView):
+        def get(self, request, format=None):
+            return Response({
+                'users': reverse('user-list', request=request, format=format),
+                'snippets': reverse('snippet-list', request=request, format=format)
+            })
 
-Notice that we're using REST framework's `reverse` function in order to return fully-qualified URLs.
+Notice that we're using REST framework's `reverse` function in order to return fully-qualified URLs for 'user-list' and 'snippet-list' from urls.py.
 
 ## Creating an endpoint for the highlighted snippets
 
@@ -45,7 +44,7 @@ Instead of using a concrete generic view, we'll use the base class for represent
 As usual we need to add the new views that we've created in to our URLconf.
 We'll add a url pattern for our new API root:
 
-    url(r'^$', 'api_root'),
+    url(r'^$', views.APIRootView.as_view()),
 
 And then add a url pattern for the snippet highlights:
 
@@ -109,7 +108,7 @@ After adding all those names into our URLconf, our final `'urls.py'` file should
 
     # API endpoints
     urlpatterns = format_suffix_patterns(patterns('snippets.views',
-        url(r'^$', 'api_root'),
+        url(r'^$', views.APIRootView.as_view()),
         url(r'^snippets/$',
             views.SnippetList.as_view(),
             name='snippet-list'),
