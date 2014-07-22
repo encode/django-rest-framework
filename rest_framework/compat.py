@@ -51,6 +51,7 @@ except ImportError:
 # guardian is optional
 try:
     import guardian
+    import guardian.shortcuts  # Fixes #1624
 except ImportError:
     guardian = None
 

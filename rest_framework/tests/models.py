@@ -105,6 +105,7 @@ class Album(RESTFrameworkModel):
     title = models.CharField(max_length=100, unique=True)
     ref = models.CharField(max_length=10, unique=True, null=True, blank=True)
 
+
 class Photo(RESTFrameworkModel):
     description = models.TextField()
     album = models.ForeignKey(Album)
@@ -112,7 +113,8 @@ class Photo(RESTFrameworkModel):
 
 # Model for issue #324
 class BlankFieldModel(RESTFrameworkModel):
-    title = models.CharField(max_length=100, blank=True, null=False)
+    title = models.CharField(max_length=100, blank=True, null=False,
+                             default="title")
 
 
 # Model for issue #380

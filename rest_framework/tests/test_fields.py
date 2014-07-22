@@ -717,6 +717,15 @@ class ChoiceFieldTests(TestCase):
         f = serializers.ChoiceField(required=False, choices=SAMPLE_CHOICES)
         self.assertEqual(f.choices, models.fields.BLANK_CHOICE_DASH + SAMPLE_CHOICES)
 
+    def test_blank_choice_display(self):
+        blank = 'No Preference'
+        f = serializers.ChoiceField(
+            required=False,
+            choices=SAMPLE_CHOICES,
+            blank_display_value=blank,
+        )
+        self.assertEqual(f.choices, [('', blank)] + SAMPLE_CHOICES)
+
     def test_invalid_choice_model(self):
         s = ChoiceFieldModelSerializer(data={'choice': 'wrong_value'})
         self.assertFalse(s.is_valid())

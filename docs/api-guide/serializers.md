@@ -73,8 +73,8 @@ Sometimes when serializing objects, you may not want to represent everything exa
 
 If you need to customize the serialized value of a particular field, you can do this by creating a `transform_<fieldname>` method. For example if you needed to render some markdown from a text field:
 
-    description = serializers.TextField()
-    description_html = serializers.TextField(source='description', read_only=True)
+    description = serializers.CharField()
+    description_html = serializers.CharField(source='description', read_only=True)
 
     def transform_description_html(self, obj, value):
         from django.contrib.markup.templatetags.markup import markdown
