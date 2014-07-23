@@ -603,7 +603,7 @@ except ImportError:
 
 
 from django.template.response import SimpleTemplateResponse as _SimpleTemplateResponse
-if django.VERSION > (1, 4):
+if django.VERSION >= (1, 4):
     SimpleTemplateResponse = _SimpleTemplateResponse
 else:
     class SimpleTemplateResponse(_SimpleTemplateResponse):
@@ -611,7 +611,7 @@ else:
 
         def __getstate__(self):
             state = super(SimpleTemplateResponse, self).__getstate__()
-            #apply the same logic django > 1.4 implements
+            #apply the same logic django >= 1.4 implements
             for key in self.rendering_attrs:
                 if key in state:
                     del state[key]
