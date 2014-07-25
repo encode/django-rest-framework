@@ -189,7 +189,7 @@ class Field(object):
 
     def field_to_native(self, obj, field_name):
         """
-        Given and object and a field name, returns the value that should be
+        Given an object and a field name, returns the value that should be
         serialized for that field.
         """
         if obj is None:
@@ -470,10 +470,12 @@ class CharField(WritableField):
             self.validators.append(validators.MaxLengthValidator(max_length))
 
     def from_native(self, value):
-        if value is None and not self.allow_none:
-            return ''
         if isinstance(value, six.string_types):
             return value
+
+        if value is None and not self.allow_none:
+            return ''
+
         return smart_text(value)
 
 

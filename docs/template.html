@@ -33,6 +33,21 @@
   })();
 
     </script>
+    <style>
+span.fusion-wrap a {
+  display: block;
+  margin-top: 10px;
+  color: black;
+}
+
+a.fusion-poweredby {
+  display: block;
+  margin-top: 10px;
+}
+@media (max-width: 767px) {
+  div.promo {display: none;}
+}
+</style>
   </head>
   <body onload="prettyPrint()" class="{{ page_id }}-page">
 
@@ -106,6 +121,7 @@
                   <li><a href="{{ base_url }}/topics/rest-framework-2-announcement{{ suffix }}">2.0 Announcement</a></li>
                   <li><a href="{{ base_url }}/topics/2.2-announcement{{ suffix }}">2.2 Announcement</a></li>
                   <li><a href="{{ base_url }}/topics/2.3-announcement{{ suffix }}">2.3 Announcement</a></li>
+                  <li><a href="{{ base_url }}/topics/kickstarter-announcement{{ suffix }}">Kickstarter Announcement</a></li>
                   <li><a href="{{ base_url }}/topics/release-notes{{ suffix }}">Release Notes</a></li>
                   <li><a href="{{ base_url }}/topics/credits{{ suffix }}">Credits</a></li>
                 </ul>
@@ -169,11 +185,9 @@
             <div id="table-of-contents">
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
                 {{ toc }}
-              <div>
-
-{{ ad_block }}
-
-</div>
+              <div class="promo">
+              {{ ad_block }}
+              </div>
 </ul>
 
             </div>
@@ -199,6 +213,7 @@
     <script src="{{ base_url }}/js/jquery-1.8.1-min.js"></script>
     <script src="{{ base_url }}/js/prettify-1.0.js"></script>
     <script src="{{ base_url }}/js/bootstrap-2.1.1-min.js"></script>
+
     <script>
       //$('.side-nav').scrollspy()
       var shiftWindow = function() { scrollBy(0, -50) };

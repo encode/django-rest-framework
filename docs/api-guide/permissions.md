@@ -36,6 +36,12 @@ For example:
         self.check_object_permissions(self.request, obj)
         return obj
 
+#### Limitations of object level permissions
+
+For performance reasons the generic views will not automatically apply object level permissions to each instance in a queryset when returning a list of objects.
+
+Often when you're using object level permissions you'll also want to [filter the queryset][filtering] appropriately, to ensure that users only have visibility onto instances that they are permitted to view.
+
 ## Setting the permission policy
 
 The default permission policy may be set globally, using the `DEFAULT_PERMISSION_CLASSES` setting.  For example.
@@ -237,6 +243,7 @@ The [REST Condition][rest-condition] package is another extension for building c
 [cite]: https://developer.apple.com/library/mac/#documentation/security/Conceptual/AuthenticationAndAuthorizationGuide/Authorization/Authorization.html
 [authentication]: authentication.md
 [throttling]: throttling.md
+[filtering]: filtering.md
 [contribauth]: https://docs.djangoproject.com/en/1.0/topics/auth/#permissions
 [objectpermissions]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#handling-object-permissions
 [guardian]: https://github.com/lukaszb/django-guardian
