@@ -50,7 +50,13 @@ class CreateModelMixin(object):
         serializer = self.get_serializer(data=request.DATA, files=request.FILES)
 
         if serializer.is_valid():
-            self.pre_save(serializer.object)
+            try:
+                self.pre_save(serializer.object)
+            except ValidationError as err:
+                # full_clean on model instance may be called in pre_save,
+                # so we have to handle eventual errors.
+                return Response(err.message_dict, status=status.HTTP_400_BAD_REQUEST)
+
             self.object = serializer.save(force_insert=True)
             self.post_save(self.object, created=True)
             headers = self.get_success_headers(serializer.data)
