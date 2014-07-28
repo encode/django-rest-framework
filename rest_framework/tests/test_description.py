@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals
 from django.test import TestCase
+from django.utils.encoding import python_2_unicode_compatible
 from rest_framework.compat import apply_markdown, smart_text
 from rest_framework.views import APIView
 from rest_framework.tests.description import ViewWithNonASCIICharactersInDocstring
@@ -97,6 +98,27 @@ class TestViewNamesAndDescriptions(TestCase):
         class MockView(APIView):
             pass
         self.assertEqual(MockView().get_view_description(), '')
+
+    def test_view_description_can_be_promise(self):
+        """
+        Ensure a view may have a docstring that is actually a lazily evaluated
+        class that can be converted to a string.
+
+        See: https://github.com/tomchristie/django-rest-framework/issues/1708
+        """
+        # use a mock object instead of gettext_lazy to ensure that we can't end
+        # up with a test case string in our l10n catalog
+        @python_2_unicode_compatible
+        class MockLazyStr(object):
+            def __init__(self, string):
+                self.s = string
+            def __str__(self):
+                return self.s
+
+        class MockView(APIView):
+            __doc__ = MockLazyStr("a gettext string")
+
+        self.assertEqual(MockView().get_view_description(), 'a gettext string')
 
     def test_markdown(self):
         """

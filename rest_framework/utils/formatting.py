@@ -6,8 +6,6 @@ from __future__ import unicode_literals
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from rest_framework.compat import apply_markdown
-from rest_framework.settings import api_settings
-from textwrap import dedent
 import re
 
 
@@ -36,7 +34,7 @@ def dedent(content):
     # unindent the content if needed
     if whitespace_counts:
         whitespace_pattern = '^' + (' ' * min(whitespace_counts))
-        content = re.sub(re.compile(whitespace_pattern, re.MULTILINE), '', content)
+        content = re.sub(re.compile(whitespace_pattern, re.MULTILINE), '', unicode(content))
 
     return content.strip()
 
