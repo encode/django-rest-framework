@@ -518,3 +518,35 @@ class TestNonIntegerPagination(TestCase):
             'objects': objects[2:]
         }
         self.assertEqual(serializer.data, expected)
+
+
+# Tests for many=True in pagination.BasePaginationSerializer
+
+class BasicSerializer(serializers.Serializer):
+    id = serializers.Field()
+    text = serializers.Field()
+
+
+class BasicPaginationSerializer(pagination.BasePaginationSerializer):
+
+    class Meta:
+        object_serializer_class = BasicSerializer
+
+
+class TestNonQuerySetPagination(TestCase):
+    """
+    Tests for generic data structures which is not a django queryset
+    """
+
+    def setUp(self):
+        self.data = [
+            {'id': i, 'text': i}
+            for i in range(13)
+        ]
+        self.paginator = Paginator(self.data, 10)
+
+    def test_unpaginated(self):
+        first_page = self.paginator.page(1)
+        serializer = BasicPaginationSerializer(instance=first_page)
+        serializer.data
+        self.assertEqual(serializer.data['results'], self.data[:self.paginator.per_page])
