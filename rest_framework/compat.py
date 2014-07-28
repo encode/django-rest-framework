@@ -603,3 +603,20 @@ except ImportError:
         klass.__unicode__ = klass.__str__
         klass.__str__ = lambda self: self.__unicode__().encode('utf-8')
         return klass
+
+
+from django.template.response import SimpleTemplateResponse as _SimpleTemplateResponse
+if django.VERSION >= (1, 4):
+    SimpleTemplateResponse = _SimpleTemplateResponse
+else:
+    class SimpleTemplateResponse(_SimpleTemplateResponse):
+        rendering_attrs = []
+
+        def __getstate__(self):
+            state = super(SimpleTemplateResponse, self).__getstate__()
+            #apply the same logic django >= 1.4 implements
+            for key in self.rendering_attrs:
+                if key in state:
+                    del state[key]
+
+            return state
