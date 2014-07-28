@@ -973,6 +973,8 @@ class FileField(WritableField):
         return data
 
     def to_native(self, value):
+        if api_settings.PREPEND_MEDIA_URL:
+            return api_settings.MEDIA_URL + value.name
         return value.name
 
 

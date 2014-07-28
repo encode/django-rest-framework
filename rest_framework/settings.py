@@ -119,6 +119,10 @@ DEFAULTS = {
 
     # Pending deprecation
     'FILTER_BACKEND': None,
+    
+    # Prepending MEDIA_URL to FileField
+    'PREPEND_MEDIA_URL': False,
+    'MEDIA_URL': '/',
 }
 
 
