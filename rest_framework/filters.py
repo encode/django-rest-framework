@@ -127,7 +127,7 @@ class OrderingFilter(BaseFilterBackend):
             return (ordering,)
         return ordering
 
-    def remove_invalid_fields(self, queryset, ordering, view):
+    def get_valid_fields(self, queryset, view):
         valid_fields = getattr(view, 'ordering_fields', self.ordering_fields)
 
         if valid_fields is None:
@@ -147,6 +147,10 @@ class OrderingFilter(BaseFilterBackend):
             valid_fields = [field.name for field in queryset.model._meta.fields]
             valid_fields += queryset.query.aggregates.keys()
 
+        return valid_fields
+
+    def remove_invalid_fields(self, queryset, ordering, view):
+        valid_fields = self.get_valid_fields(queryset, view)
         return [term for term in ordering if term.lstrip('-') in valid_fields]
 
     def filter_queryset(self, request, queryset, view):
