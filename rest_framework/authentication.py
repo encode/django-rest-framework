@@ -310,6 +310,13 @@ class OAuth2Authentication(BaseAuthentication):
 
         auth = get_authorization_header(request).split()
 
+        if len(auth) == 1:
+            msg = 'Invalid bearer header. No credentials provided.'
+            raise exceptions.AuthenticationFailed(msg)
+        elif len(auth) > 2:
+            msg = 'Invalid bearer header. Token string should not contain spaces.'
+            raise exceptions.AuthenticationFailed(msg)
+
         if auth and auth[0].lower() == b'bearer':
             access_token = auth[1]
         elif 'access_token' in request.POST:
@@ -318,13 +325,6 @@ class OAuth2Authentication(BaseAuthentication):
             access_token = request.GET['access_token']
         else:
             return None
-
-        if len(auth) == 1:
-            msg = 'Invalid bearer header. No credentials provided.'
-            raise exceptions.AuthenticationFailed(msg)
-        elif len(auth) > 2:
-            msg = 'Invalid bearer header. Token string should not contain spaces.'
-            raise exceptions.AuthenticationFailed(msg)
 
         return self.authenticate_credentials(request, access_token)
 
