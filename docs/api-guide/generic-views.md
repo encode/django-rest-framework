@@ -99,6 +99,8 @@ The following attributes are used to control pagination when used with list view
 
 Returns the queryset that should be used for list views, and that should be used as the base for lookups in detail views.  Defaults to returning the queryset specified by the `queryset` attribute, or the default queryset for the model if the `model` shortcut is being used.
 
+This method should always be used rather than accessing `self.queryset` directly, as `self.queryset` gets evaluated only once, and those results are cached for all subsequent requests.
+
 May be overridden to provide dynamic behavior such as returning a queryset that is specific to the user making the request.
 
 For example:
