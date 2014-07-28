@@ -14,8 +14,8 @@ class Response(SimpleTemplateResponse):
     An HttpResponse that allows its data to be rendered into
     arbitrary media types.
     """
-    #SimpleTemplateResponse use this property in __getstate__ to remove attrs
-    #from being pickled so we inherit and use it as well
+    # SimpleTemplateResponse use this property in __getstate__ to remove attrs
+    # from being pickled so we inherit and use it as well
     rendering_attrs = SimpleTemplateResponse.rendering_attrs + \
         ['accepted_renderer', 'renderer_context', 'data']
 
