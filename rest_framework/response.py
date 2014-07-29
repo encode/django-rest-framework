@@ -15,6 +15,7 @@ class Response(SimpleTemplateResponse):
     An HttpResponse that allows its data to be rendered into
     arbitrary media types.
     """
+    rendering_attrs = SimpleTemplateResponse.rendering_attrs + ['_closable_objects']
 
     def __init__(self, data=None, status=200,
                  template_name=None, headers=None,
