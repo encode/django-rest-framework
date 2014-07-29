@@ -17,7 +17,7 @@ class Response(SimpleTemplateResponse):
     arbitrary media types.
     """
     # TODO: remove that once Django 1.3 isn't supported
-    if django.VERSION > (1, 3):
+    if django.VERSION >= (1, 4):
         rendering_attrs = SimpleTemplateResponse.rendering_attrs + ['_closable_objects']
 
     def __init__(self, data=None, status=200,
