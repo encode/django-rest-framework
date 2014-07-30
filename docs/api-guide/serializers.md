@@ -580,7 +580,16 @@ The following custom model serializer could be used as a base class for model se
         def get_pk_field(self, model_field):
             return None
 
+---
 
+# Third party packages
+
+The following third party packages are also available.
+
+## MongoengineModelSerializer
+
+The [django-rest-framework-mongoengine][mongoengine] package provides a `MongoEngineModelSerializer` serializer class that supports using MongoDB as the storage layer for Django REST framework.
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
+[mongoengine]: https://github.com/umutbozkurt/django-rest-framework-mongoengine
