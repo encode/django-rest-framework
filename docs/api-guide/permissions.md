@@ -244,7 +244,7 @@ The [REST Condition][rest-condition] package is another extension for building c
 [authentication]: authentication.md
 [throttling]: throttling.md
 [filtering]: filtering.md
-[contribauth]: https://docs.djangoproject.com/en/1.0/topics/auth/#permissions
+[contribauth]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#custom-permissions
 [objectpermissions]: https://docs.djangoproject.com/en/dev/topics/auth/customizing/#handling-object-permissions
 [guardian]: https://github.com/lukaszb/django-guardian
 [get_objects_for_user]: http://pythonhosted.org/django-guardian/api/guardian.shortcuts.html#get-objects-for-user
