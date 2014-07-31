@@ -314,12 +314,27 @@ ul.sponsor.diamond li a {
     width: 600px;
     height: 20px;
     text-align: center;
-    margin: 10px 40px;
+    margin: 10px 70px;
     padding: 300px 0 0 0;
     background-position: 0 50%;
     background-size: 600px auto;
     background-repeat: no-repeat;
-    font-size: 150%;
+    font-size: 200%;
+}
+
+@media (max-width: 1000px) {
+    ul.sponsor.diamond li a {
+        float: left;
+        width: 300px;
+        height: 20px;
+        text-align: center;
+        margin: 10px 40px;
+        padding: 300px 0 0 0;
+        background-position: 0 50%;
+        background-size: 280px auto;
+        background-repeat: no-repeat;
+        font-size: 150%;
+    }
 }
 
 ul.sponsor.platinum li a {
@@ -335,6 +350,33 @@ ul.sponsor.platinum li a {
     font-size: 150%;
 }
 
+ul.sponsor.gold li a {
+    float: left;
+    width: 130px;
+    height: 20px;
+    text-align: center;
+    margin: 10px 30px;
+    padding: 150px 0 0 0;
+    background-position: 0 50%;
+    background-size: 130px auto;
+    background-repeat: no-repeat;
+    font-size: 120%;
+}
+
+ul.sponsor.silver li a {
+    float: left;
+    width: 130px;
+    height: 20px;
+    text-align: center;
+    margin: 10px 30px;
+    padding: 150px 0 0 0;
+    background-position: 0 50%;
+    background-size: 130px auto;
+    background-repeat: no-repeat;
+    font-size: 120%;
+}
+
 ul.sponsor {
     list-style: none;
+    display: block;
 }

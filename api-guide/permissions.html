@@ -292,7 +292,7 @@ def example_view(request, format=None):
 <p>The <code>IsAuthenticatedOrReadOnly</code> will allow authenticated users to perform any request.  Requests for unauthorised users will only be permitted if the request method is one of the "safe" methods; <code>GET</code>, <code>HEAD</code> or <code>OPTIONS</code>.</p>
 <p>This permission is suitable if you want to your API to allow read permissions to anonymous users, and only allow write permissions to authenticated users.</p>
 <h2 id="djangomodelpermissions">DjangoModelPermissions</h2>
-<p>This permission class ties into Django's standard <code>django.contrib.auth</code> <a href="https://docs.djangoproject.com/en/1.0/topics/auth/#permissions">model permissions</a>.  When applied to a view that has a <code>.model</code> property, authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant model permissions</em> assigned.</p>
+<p>This permission class ties into Django's standard <code>django.contrib.auth</code> <a href="https://docs.djangoproject.com/en/dev/topics/auth/customizing/#custom-permissions">model permissions</a>.  When applied to a view that has a <code>.model</code> property, authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant model permissions</em> assigned.</p>
 <ul>
 <li><code>POST</code> requests require the user to have the <code>add</code> permission on the model.</li>
 <li><code>PUT</code> and <code>PATCH</code> requests require the user to have the <code>change</code> permission on the model.</li>
