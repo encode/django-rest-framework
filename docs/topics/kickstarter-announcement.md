@@ -58,3 +58,78 @@ Our platinum sponsors have each made a hugely substantial contribution to the fu
 <li><a href="http://www.purplebit.com/" rel="nofollow" style="background-image:url(../img/sponsors/1-purplebit.png);">Purple Bit</a></li>
 <li><a href="http://www.kuwaitnet.net/" rel="nofollow" style="background-image:url(../img/sponsors/1-kuwaitnet.png);">KuwaitNET</a></li>
 </ul>
+
+<div style="clear: both"></div>
+
+---
+
+### Gold sponsors
+
+Our gold sponsors include companies large and small. Many thanks for their significant funding of the project and their commitment to sustainable open-source development.
+
+<ul class="sponsor gold">
+<li><a href="https://laterpay-net/" rel="nofollow" style="background-image:url(../img/sponsors/2-laterpay.png);">LaterPay</a></li>
+<li><a href="https://www.schubergphilis.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-schuberg_philis.png);">Schuberg Philis</a></li>
+<!--Jens-->
+<!--Silvio-->
+<li><a href="http://www.sirono.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-sirono.png);">Sirono</a></li>
+<li><a href="http://www.vinta.com.br/" rel="nofollow" style="background-image:url(../img/sponsors/2-vinta.png);">Vinta Software Studio</a></li>
+<!--Henk-->
+<li><a href="https://mirusresearch.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-mirus_research.png);">Mirus Research</a></li>
+<li><a href="http://hipolabs.com" rel="nofollow" style="background-image:url(../img/sponsors/2-hipo.png);">Hipo</a></li>
+<li><a href="http://www.byte.nl" rel="nofollow" style="background-image:url(../img/sponsors/2-byte.png);">Byte</a></li>
+<li><a href="http://lightningkite.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-lightning_kite.png);">Lightning Kite</a></li>
+<li><a href="https://opbeat.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-opbeat.png);">Opbeat</a></li>
+<li><a href="https://koordinates.com" rel="nofollow" style="background-image:url(../img/sponsors/2-koordinates.png);">Koordinates</a></li>
+<!--Xitij-->
+<!--Howard-->
+<li><a href="https://www.heroku.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-heroku.png);">Heroku</a></li>
+<li><a href="https://www.galileo-press.de/" rel="nofollow" style="background-image:url(../img/sponsors/2-galileo_press.png);">Galileo Press</a></li>
+<li><a href="http://www.securitycompass.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-security_compass.png);">Security Compass</a></li>
+<li><a href="https://www.djangoproject.com/foundation/" rel="nofollow" style="background-image:url(../img/sponsors/2-django.png);">Django Software Foundation</a></li>
+<li><a href="http://www.hipflaskapp.com" rel="nofollow" style="background-image:url(../img/sponsors/2-hipflask.png);">Hipflask</a></li>
+<li><a href="http://www.crate.io/" rel="nofollow" style="background-image:url(../img/sponsors/2-crate.png);">Crate</a></li>
+<li><a href="http://crypticocorp.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-cryptico.png);">Cryptico Corp</a></li>
+<li><a href="http://envisionlinux.org/blog" rel="nofollow">Envision Linux</a></li>
+</ul>
+
+<!--Name: Envision Linux text-->
+
+<div style="clear: both;"></div>
+
+---
+
+### Silver sponsors
+
+The serious financial contribution that our silver sponsors have made is very much appreciated. I'd like to say a particular thank&nbsp;you to individuals who have choosen to privately support the project at this level.
+
+<ul class="sponsor silver">
+<li><a href="http://www.imtapps.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-imt_computer_services.png);">IMT Computer Services</a></li>
+<li><a href="http://wildfish.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-wildfish.png);">Wildfish</a></li>
+<li><a href="http://www.thermondo.de/" rel="nofollow" style="background-image:url(../img/sponsors/3-thermondo-gmbh.png);">Thermondo GmbH</a></li>
+<li><a href="http://providenz.fr/" rel="nofollow" style="background-image:url(../img/sponsors/3-providenz.png);">Providenz</a></li>
+<!--alwaysdata-->
+<li><a href="http://www.triggeredmessaging.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-triggered_messaging.png);">Triggered Messaging</a></li>
+<!--Markus-->
+<!--Carlos-->
+<li><a href="https://goshippo.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-shippo.png);">Shippo</a></li>
+<!--Dylan-->
+<li><a href="http://www.gizmag.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-gizmag.png);">Gizmag</a></li>
+<li><a href="http://www.tivix.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-tivix.png);">Tivix</a></li>
+<!--Liza-->
+<li><a href="http://brightloop.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-brightloop.png);">Bright Loop</a></li>
+<!--Aidan-->
+<!--Max-->
+<!--Vzzual-->
+<!--Linovia-->
+<li><a href="http://infinite-code.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-infinite_code.png);">Infinate Code</a></li>
+<!--Jon-->
+<li><a href="https://www.pkgfarm.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-pkgfarm.png);">PkgFarm</a></li>
+<li><a href="http://life.tl/" rel="nofollow" style="background-image:url(../img/sponsors/3-life_the_game.png);">Life. The Game.</a></li>
+<li><a href="http://blimp.io/" rel="nofollow" style="background-image:url(../img/sponsors/3-blimp.png);">Blimp</a></li>
+</ul>
+
+<div style="clear: both; padding-bottom: 20px;"></div>
+
+**Individual contributions**: Paul Hallet, <a href="http://www.paulwhippconsulting.com/">Paul Whipp Consulting</a>, Jannis Leidel.
+
