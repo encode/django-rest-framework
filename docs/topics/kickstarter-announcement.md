@@ -119,17 +119,23 @@ The serious financial contribution that our silver sponsors have made is very mu
 <!--Liza-->
 <li><a href="http://brightloop.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-brightloop.png);">Bright Loop</a></li>
 <!--Aidan-->
-<!--Max-->
+<li><a href="http://beefarm.ru/" rel="nofollow" style="background-image:url(../img/sponsors/3-beefarm.png);">beefarm.ru</a></li>
 <!--Vzzual-->
 <!--Linovia-->
-<li><a href="http://infinite-code.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-infinite_code.png);">Infinate Code</a></li>
+<li><a href="http://infinite-code.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-infinite_code.png);">Infinite Code</a></li>
 <!--Jon-->
 <li><a href="https://www.pkgfarm.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-pkgfarm.png);">PkgFarm</a></li>
 <li><a href="http://life.tl/" rel="nofollow" style="background-image:url(../img/sponsors/3-life_the_game.png);">Life. The Game.</a></li>
 <li><a href="http://blimp.io/" rel="nofollow" style="background-image:url(../img/sponsors/3-blimp.png);">Blimp</a></li>
+<!--Pathwright-->
+<li><a href="http://fluxility.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-fluxility.png);">Fluxility</a></li>
+<li><a href="http://trackmaven.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-trackmaven.png);">TrackMaven</a></li>
+<li><a href="http://www.nephila.it/en/" rel="nofollow" style="background-image:url(../img/sponsors/3-nephila.png);">Nephila</a></li>
+
+
 </ul>
 
 <div style="clear: both; padding-bottom: 20px;"></div>
 
-**Individual contributions**: Paul Hallet, <a href="http://www.paulwhippconsulting.com/">Paul Whipp Consulting</a>, Jannis Leidel.
+**Individual contributions**: Paul Hallet, <a href="http://www.paulwhippconsulting.com/">Paul Whipp</a>, Jannis Leidel, <a href="http://spielmannsolutions.com/">Johannes Spielmann</a>,  <a href="http://chrisheisel.com/">Chris Heisel</a>.
 
