@@ -102,5 +102,7 @@ class FileSerializerTests(TestCase):
         file = BytesIO(six.b('stuff'))
         file.name = 'stuff.txt'
         file.size = len(file.getvalue())
+        uploaded_file = UploadedFile(file=file, created=now)
 
-        self.assertEqual(serializer.to_native(file), file.name)
+        serializer = UploadedFileSerializer(files={'file': file})
+        self.assertEqual(serializer.to_native(uploaded_file), uploaded_file.name)
