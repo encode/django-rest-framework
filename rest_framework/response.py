@@ -20,7 +20,7 @@ class Response(SimpleTemplateResponse):
     if django.VERSION >= (1, 4):
         rendering_attrs = SimpleTemplateResponse.rendering_attrs + ['_closable_objects']
 
-    def __init__(self, data=None, status=200,
+    def __init__(self, data=None, status=None,
                  template_name=None, headers=None,
                  exception=False, content_type=None):
         """
