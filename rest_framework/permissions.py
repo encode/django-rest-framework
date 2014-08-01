@@ -80,7 +80,8 @@ class IsAuthenticatedOrReadOnly(BasePermission):
 class DjangoModelPermissions(BasePermission):
     """
     The request is authenticated using `django.contrib.auth` permissions.
-    See: https://docs.djangoproject.com/en/dev/topics/auth/#permissions
+    See: 
+    https://docs.djangoproject.com/en/dev/topics/auth/customizing/#custom-permissions
 
     It ensures that the user is authenticated, and has the appropriate
     `add`/`change`/`delete` permissions on the model.
