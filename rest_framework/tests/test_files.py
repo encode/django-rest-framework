@@ -93,16 +93,3 @@ class FileSerializerTests(TestCase):
 
         serializer = UploadedFileSerializer(files={'file': file})
         self.assertFalse(serializer.is_valid())
-
-    def test_to_native_without_media_url(self):
-        """
-        By default serializer should return the file name without MEDIA_URL.
-        """
-        now = datetime.datetime.now()
-        file = BytesIO(six.b('stuff'))
-        file.name = 'stuff.txt'
-        file.size = len(file.getvalue())
-        uploaded_file = UploadedFile(file=file, created=now)
-
-        serializer = UploadedFileSerializer(files={'file': file})
-        self.assertEqual(serializer.to_native(uploaded_file), uploaded_file.name)
