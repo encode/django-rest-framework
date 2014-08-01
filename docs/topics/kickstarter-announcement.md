@@ -68,7 +68,7 @@ Our platinum sponsors have each made a hugely substantial contribution to the fu
 Our gold sponsors include companies large and small. Many thanks for their significant funding of the project and their commitment to sustainable open-source development.
 
 <ul class="sponsor gold">
-<li><a href="https://laterpay-net/" rel="nofollow" style="background-image:url(../img/sponsors/2-laterpay.png);">LaterPay</a></li>
+<li><a href="https://laterpay.net/" rel="nofollow" style="background-image:url(../img/sponsors/2-laterpay.png);">LaterPay</a></li>
 <li><a href="https://www.schubergphilis.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-schuberg_philis.png);">Schuberg Philis</a></li>
 <!--Jens-->
 <!--Silvio-->
