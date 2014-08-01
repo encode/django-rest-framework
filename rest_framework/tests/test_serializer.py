@@ -562,6 +562,7 @@ class ValidationTests(TestCase):
 
 class CustomValidationTests(TestCase):
     class CommentSerializerWithFieldValidator(CommentSerializer):
+        name = serializers.CharField(max_length=255, required=False)
 
         def validate_email(self, attrs, source):
             attrs[source]
@@ -571,6 +572,12 @@ class CustomValidationTests(TestCase):
             value = attrs[source]
             if "test" not in value:
                 raise serializers.ValidationError("Test not in value")
+            return attrs
+
+        def validate_name(self, attrs, source):
+            value = attrs[source]
+            if value.isupper():
+                raise serializers.ValidationError("Uppercase names not allowed")
             return attrs
 
     def test_field_validation(self):
@@ -600,6 +607,35 @@ class CustomValidationTests(TestCase):
         serializer = self.CommentSerializerWithFieldValidator(data=incomplete_data)
         self.assertFalse(serializer.is_valid())
         self.assertEqual(serializer.errors, {'content': ['This field is required.']})
+
+    def test_not_required_missing_data(self):
+        """
+        Make sure that `validate_<fieldname>()` is not called if the field is not required and
+        the field is missing.
+        """
+        data = {
+            'email': 'tom@example.com',
+            'content': 'A test comment',
+            'created': datetime.datetime(2012, 1, 1)
+        }
+        serializer = self.CommentSerializerWithFieldValidator(data=data)
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.errors, {'content': ['This field is required.']})
+
+    def test_not_required_invalid_data(self):
+        """
+        Make sure that `validate_<fieldname>()` is called if the field is present, even if the
+        field is not required.
+        """
+        data = {
+            'name': 'TOM',
+            'email': 'tom@example.com',
+            'content': 'A test comment',
+            'created': datetime.datetime(2012, 1, 1)
+        }
+        serializer = self.CommentSerializerWithFieldValidator(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors, {'name': ['Uppercase names not allowed']})
 
     def test_wrong_data(self):
         """
