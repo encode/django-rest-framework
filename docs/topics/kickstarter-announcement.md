@@ -70,7 +70,7 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 <ul class="sponsor gold">
 <li><a href="https://laterpay.net/" rel="nofollow" style="background-image:url(../img/sponsors/2-laterpay.png);">LaterPay</a></li>
 <li><a href="https://www.schubergphilis.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-schuberg_philis.png);">Schuberg Philis</a></li>
-<!--Jens-->
+<li><a href="http://prorenata.se/" rel="nofollow" style="background-image:url(../img/sponsors/2-prorenata.png);">ProReNata AB</a></li>
 <!--Silvio-->
 <li><a href="http://www.sirono.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-sirono.png);">Sirono</a></li>
 <li><a href="http://www.vinta.com.br/" rel="nofollow" style="background-image:url(../img/sponsors/2-vinta.png);">Vinta Software Studio</a></li>
