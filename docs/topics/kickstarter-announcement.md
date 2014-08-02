@@ -127,7 +127,7 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="https://www.pkgfarm.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-pkgfarm.png);">PkgFarm</a></li>
 <li><a href="http://life.tl/" rel="nofollow" style="background-image:url(../img/sponsors/3-life_the_game.png);">Life. The Game.</a></li>
 <li><a href="http://blimp.io/" rel="nofollow" style="background-image:url(../img/sponsors/3-blimp.png);">Blimp</a></li>
-<!--Pathwright-->
+<li><a href="http://pathwright.com" rel="nofollow" style="background-image:url(../img/sponsors/3-pathwright.png);">Pathwright</a></li>
 <li><a href="http://fluxility.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-fluxility.png);">Fluxility</a></li>
 <li><a href="http://trackmaven.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-trackmaven.png);">TrackMaven</a></li>
 <li><a href="http://www.nephila.co.uk/" rel="nofollow" style="background-image:url(../img/sponsors/3-nephila.png);">Nephila</a></li>
