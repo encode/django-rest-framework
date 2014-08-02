@@ -118,7 +118,7 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="http://www.tivix.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-tivix.png);">Tivix</a></li>
 <!--Liza-->
 <li><a href="http://brightloop.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-brightloop.png);">Bright Loop</a></li>
-<!--Aidan-->
+<li><a href="http://www.aba-systems.com.au/" rel="nofollow" style="background-image:url(../img/sponsors/3-aba.png);">ABA Systems</a></li>
 <li><a href="http://beefarm.ru/" rel="nofollow" style="background-image:url(../img/sponsors/3-beefarm.png);">beefarm.ru</a></li>
 <!--Vzzual-->
 <!--Linovia-->
