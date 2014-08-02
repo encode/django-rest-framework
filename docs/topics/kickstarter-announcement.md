@@ -71,7 +71,7 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 <li><a href="https://laterpay.net/" rel="nofollow" style="background-image:url(../img/sponsors/2-laterpay.png);">LaterPay</a></li>
 <li><a href="https://www.schubergphilis.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-schuberg_philis.png);">Schuberg Philis</a></li>
 <li><a href="http://prorenata.se/" rel="nofollow" style="background-image:url(../img/sponsors/2-prorenata.png);">ProReNata AB</a></li>
-<!--Silvio-->
+<li><a href="https://www.sgawebsites.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-sga.png);">SGA Websites</a></li>
 <li><a href="http://www.sirono.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-sirono.png);">Sirono</a></li>
 <li><a href="http://www.vinta.com.br/" rel="nofollow" style="background-image:url(../img/sponsors/2-vinta.png);">Vinta Software Studio</a></li>
 <!--Henk-->
@@ -111,12 +111,12 @@ The serious financial contribution that our silver sponsors have made is very mu
 <!--alwaysdata-->
 <li><a href="http://www.triggeredmessaging.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-triggered_messaging.png);">Triggered Messaging</a></li>
 <!--Markus-->
-<!--Carlos-->
+<li><a href="https://garfo.io/" rel="nofollow" style="background-image:url(../img/sponsors/3-garfo.png);">Garfo</a></li>
 <li><a href="https://goshippo.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-shippo.png);">Shippo</a></li>
 <!--Dylan-->
 <li><a href="http://www.gizmag.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-gizmag.png);">Gizmag</a></li>
 <li><a href="http://www.tivix.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-tivix.png);">Tivix</a></li>
-<!--Liza-->
+<li><a href="http://www.safaribooksonline.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-safari.png);">Safari</a></li>
 <li><a href="http://brightloop.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-brightloop.png);">Bright Loop</a></li>
 <li><a href="http://www.aba-systems.com.au/" rel="nofollow" style="background-image:url(../img/sponsors/3-aba.png);">ABA Systems</a></li>
 <li><a href="http://beefarm.ru/" rel="nofollow" style="background-image:url(../img/sponsors/3-beefarm.png);">beefarm.ru</a></li>
