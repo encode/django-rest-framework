@@ -130,7 +130,7 @@ The serious financial contribution that our silver sponsors have made is very mu
 <!--Pathwright-->
 <li><a href="http://fluxility.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-fluxility.png);">Fluxility</a></li>
 <li><a href="http://trackmaven.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-trackmaven.png);">TrackMaven</a></li>
-<li><a href="http://www.nephila.it/en/" rel="nofollow" style="background-image:url(../img/sponsors/3-nephila.png);">Nephila</a></li>
+<li><a href="http://www.nephila.co.uk/" rel="nofollow" style="background-image:url(../img/sponsors/3-nephila.png);">Nephila</a></li>
 
 
 </ul>
