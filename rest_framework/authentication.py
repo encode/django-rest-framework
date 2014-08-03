@@ -140,15 +140,17 @@ class TokenAuthentication(BaseAuthentication):
     HTTP header, prepended with the string "Token ".  For example:
 
         Authorization: Token 401f7ac837da42b97f613d789819ff93537bee6a
+        
+    You can override this class to use a different Token model by specifying
+     
+     * model -- Your Token Model
+     * user_field_name -- the name field that hold the user
+     * key_field_name -- the name of field that hold an authentification key
     """
 
     model = Token
-    """
-    A custom token model may be used, but must have the following properties.
-
-    * key -- The string identifying the token
-    * user -- The user to which the token belongs
-    """
+    user_field_name = 'user'
+    key_field_name = 'key'
 
     def authenticate(self, request):
         auth = get_authorization_header(request).split()
@@ -167,14 +169,16 @@ class TokenAuthentication(BaseAuthentication):
 
     def authenticate_credentials(self, key):
         try:
-            token = self.model.objects.get(key=key)
+            token = self.model.objects.get(**{self.key_field_name: key})
         except self.model.DoesNotExist:
             raise exceptions.AuthenticationFailed('Invalid token')
 
-        if not token.user.is_active:
+        user = getattr(token, self.user_field_name)
+
+        if not user.is_active:
             raise exceptions.AuthenticationFailed('User inactive or deleted')
 
-        return (token.user, token)
+        return (user, token)
 
     def authenticate_header(self, request):
         return 'Token'
