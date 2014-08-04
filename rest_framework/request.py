@@ -116,6 +116,7 @@ class Request(object):
     _METHOD_PARAM = api_settings.FORM_METHOD_OVERRIDE
     _CONTENT_PARAM = api_settings.FORM_CONTENT_OVERRIDE
     _CONTENTTYPE_PARAM = api_settings.FORM_CONTENTTYPE_OVERRIDE
+    _URL_CONTENTTYPE_PARAM = api_settings.URL_CONTENTTYPE_OVERRIDE
 
     def __init__(self, request, parsers=None, authenticators=None,
                  negotiator=None, parser_context=None):
@@ -271,8 +272,9 @@ class Request(object):
         Sets the method and content_type, and then check if they've
         been overridden.
         """
-        self._content_type = self.META.get('HTTP_CONTENT_TYPE',
-                                           self.META.get('CONTENT_TYPE', ''))
+        self._content_type = self.QUERY_PARAMS.get(
+            self._URL_CONTENTTYPE_PARAM, self.META.get('HTTP_CONTENT_TYPE',
+                self.META.get('CONTENT_TYPE', '')))
 
         self._perform_form_overloading()
 
@@ -334,6 +336,13 @@ class Request(object):
             self._CONTENTTYPE_PARAM in self._data):
             self._content_type = self._data[self._CONTENTTYPE_PARAM]
             self._stream = BytesIO(self._data[self._CONTENT_PARAM].encode(self.parser_context['encoding']))
+            self._data, self._files = (Empty, Empty)
+
+        if 'content_type' in self.QUERY_PARAMS and \
+            self.QUERY_PARAMS.get('content_type').startswith(
+                'application/x-www-form-urlencoded'):
+            self._stream = BytesIO(self._request.body.encode(
+                self.parser_context['encoding']))
             self._data, self._files = (Empty, Empty)
 
     def _parse(self):

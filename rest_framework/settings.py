@@ -97,6 +97,7 @@ DEFAULTS = {
     'FORM_CONTENTTYPE_OVERRIDE': '_content_type',
     'URL_ACCEPT_OVERRIDE': 'accept',
     'URL_FORMAT_OVERRIDE': 'format',
+    'URL_CONTENTTYPE_OVERRIDE': 'content_type',
 
     'FORMAT_SUFFIX_KWARG': 'format',
     'URL_FIELD_NAME': 'url',
