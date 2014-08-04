@@ -71,6 +71,10 @@ class TestMethodOverloading(TestCase):
         request = Request(factory.get('/', {'foo': 'bar'}, HTTP_X_HTTP_METHOD_OVERRIDE='DELETE'))
         self.assertEqual(request.method, 'DELETE')
 
+    def test_content_type_override_query(self):
+        request = Request(factory.post('/?content_type=application/x-www-form-urlencoded', HTTP_CONTENT_TYPE='text/plain'), {'email': 'mmmmmm@test.com'})
+        self.assertEqual(request.content_type, 'application/x-www-form-urlencoded')
+
 
 class TestContentParsing(TestCase):
     def test_standard_behaviour_determines_no_content_GET(self):
