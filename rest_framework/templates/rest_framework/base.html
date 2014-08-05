@@ -93,7 +93,7 @@
         {% endif %}
 
         {% if options_form %}
-            <form class="button-form" action="{{ request.get_full_path }}" method="POST" class="pull-right">
+            <form class="button-form" action="{{ request.get_full_path }}" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
                 <button class="btn btn-primary js-tooltip" title="Make an OPTIONS request on the {{ name }} resource">OPTIONS</button>
@@ -101,7 +101,7 @@
         {% endif %}
 
         {% if delete_form %}
-            <form class="button-form" action="{{ request.get_full_path }}" method="POST" class="pull-right">
+            <form class="button-form" action="{{ request.get_full_path }}" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
                 <button class="btn btn-danger js-tooltip" title="Make a DELETE request on the {{ name }} resource">DELETE</button>
