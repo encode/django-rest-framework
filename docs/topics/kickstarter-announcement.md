@@ -74,7 +74,7 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 <li><a href="https://www.sgawebsites.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-sga.png);">SGA Websites</a></li>
 <li><a href="http://www.sirono.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-sirono.png);">Sirono</a></li>
 <li><a href="http://www.vinta.com.br/" rel="nofollow" style="background-image:url(../img/sponsors/2-vinta.png);">Vinta Software Studio</a></li>
-<!--Henk-->
+<li><a href="http://www.rapasso.nl/index.php/en" rel="nofollow" style="background-image:url(../img/sponsors/2-rapasso.png);">Rapasso</a></li>
 <li><a href="https://mirusresearch.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-mirus_research.png);">Mirus Research</a></li>
 <li><a href="http://hipolabs.com" rel="nofollow" style="background-image:url(../img/sponsors/2-hipo.png);">Hipo</a></li>
 <li><a href="http://www.byte.nl" rel="nofollow" style="background-image:url(../img/sponsors/2-byte.png);">Byte</a></li>
@@ -108,7 +108,7 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="http://wildfish.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-wildfish.png);">Wildfish</a></li>
 <li><a href="http://www.thermondo.de/" rel="nofollow" style="background-image:url(../img/sponsors/3-thermondo-gmbh.png);">Thermondo GmbH</a></li>
 <li><a href="http://providenz.fr/" rel="nofollow" style="background-image:url(../img/sponsors/3-providenz.png);">Providenz</a></li>
-<!--alwaysdata-->
+<li><a href="https://www.alwaysdata.com" rel="nofollow" style="background-image:url(../img/sponsors/3-alwaysdata.png);">alwaysdata.com</a></li>
 <li><a href="http://www.triggeredmessaging.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-triggered_messaging.png);">Triggered Messaging</a></li>
 <!--Markus-->
 <li><a href="https://garfo.io/" rel="nofollow" style="background-image:url(../img/sponsors/3-garfo.png);">Garfo</a></li>
@@ -120,6 +120,7 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="http://brightloop.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-brightloop.png);">Bright Loop</a></li>
 <li><a href="http://www.aba-systems.com.au/" rel="nofollow" style="background-image:url(../img/sponsors/3-aba.png);">ABA Systems</a></li>
 <li><a href="http://beefarm.ru/" rel="nofollow" style="background-image:url(../img/sponsors/3-beefarm.png);">beefarm.ru</a></li>
+<li><a href="http://www.vzzual.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-vzzual.png);">Vzzual.com</a></li>
 <!--Vzzual-->
 <!--Linovia-->
 <li><a href="http://infinite-code.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-infinite_code.png);">Infinite Code</a></li>
@@ -131,8 +132,9 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="http://fluxility.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-fluxility.png);">Fluxility</a></li>
 <li><a href="http://trackmaven.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-trackmaven.png);">TrackMaven</a></li>
 <li><a href="http://www.nephila.co.uk/" rel="nofollow" style="background-image:url(../img/sponsors/3-nephila.png);">Nephila</a></li>
-
-
+<!--Haris-->
+<li><a href="http://www.aditium.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-aditium.png);">Aditium</a></li>
+<!--Craig-->
 </ul>
 
 <div style="clear: both; padding-bottom: 20px;"></div>
