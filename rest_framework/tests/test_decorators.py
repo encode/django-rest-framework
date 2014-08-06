@@ -16,6 +16,7 @@ from rest_framework.decorators import (
     authentication_classes,
     throttle_classes,
     permission_classes,
+    content_negotiation_class,
 )
 
 
@@ -155,3 +156,28 @@ class DecoratorTestCase(TestCase):
 
         response = view(request)
         self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+
+    def test_content_negotiation_class(self):
+        from rest_framework.renderers import BaseRenderer
+        from rest_framework.negotiation import BaseContentNegotiation
+
+        class TestRenderer(BaseRenderer):
+            media_type = 'test'
+            format = 'test'
+
+        class TestContentNegotiation(BaseContentNegotiation):
+            def select_parser(self, request, parsers):
+                return parsers[0]
+
+            def select_renderer(self, request, renderers, format_suffix):
+                return (TestRenderer(), TestRenderer.media_type)
+
+        @api_view(['GET'])
+        @content_negotiation_class(TestContentNegotiation)
+        def view(request):
+            self.assertIsInstance(request.accepted_renderer, TestRenderer) 
+            return Response({})
+
+        request = self.factory.get('/')
+        view(request)
+

@@ -163,6 +163,7 @@ The available decorators are:
 * `@authentication_classes(...)`
 * `@throttle_classes(...)`
 * `@permission_classes(...)`
+* `@content_negotiation_class(...)`
 
 Each of these decorators takes a single argument which must be a list or tuple of classes.
 

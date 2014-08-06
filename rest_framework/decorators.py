@@ -68,6 +68,9 @@ def api_view(http_method_names):
         WrappedAPIView.permission_classes = getattr(func, 'permission_classes',
                                                     APIView.permission_classes)
 
+        WrappedAPIView.content_negotiation_class = getattr(func, 'content_negotiation_class',
+                                                           APIView.content_negotiation_class)
+
         return WrappedAPIView.as_view()
     return decorator
 
@@ -103,6 +106,13 @@ def throttle_classes(throttle_classes):
 def permission_classes(permission_classes):
     def decorator(func):
         func.permission_classes = permission_classes
+        return func
+    return decorator
+
+
+def content_negotiation_class(content_negotiation_class):
+    def decorator(func):
+        func.content_negotiation_class = content_negotiation_class
         return func
     return decorator
 
