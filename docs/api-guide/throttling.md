@@ -58,7 +58,7 @@ using the `APIView` class based views.
 
 Or, if you're using the `@api_view` decorator with function based views.
 
-    @api_view('GET')
+    @api_view(['GET'])
     @throttle_classes([UserRateThrottle])
     def example_view(request, format=None):
         content = {
