@@ -286,6 +286,12 @@ class BaseSerializer(WritableField):
 
         return reverted_data
 
+    def skip_field_validation(self, field, attrs, source):
+        """
+        Checks if a field validation should be skipped.
+        """
+        return source not in attrs and (field.partial or not field.required)
+
     def perform_validation(self, attrs):
         """
         Run `validate_<fieldname>()` and `validate()` methods on the serializer
@@ -295,8 +301,9 @@ class BaseSerializer(WritableField):
                 continue
 
             source = field.source or field_name
-            if self.partial and source not in attrs:
+            if self.skip_field_validation(field_name, field, attrs):
                 continue
+
             try:
                 validate_method = getattr(self, 'validate_%s' % field_name, None)
                 if validate_method:
