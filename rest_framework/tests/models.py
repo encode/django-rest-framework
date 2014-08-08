@@ -75,6 +75,16 @@ class ActionItem(RESTFrameworkModel):
     info = CustomField(default='---', max_length=12)
 
 
+# Models for testing #1604 regression
+class UntouchablePerson(models.Model):
+    name = models.CharField(max_length=64)
+
+
+class UntouchablePersonLog(models.Model):
+    person = models.ForeignKey(UntouchablePerson, editable=False)
+    date = models.DateField(null=False)
+
+
 # Models for reverse relations
 class Person(RESTFrameworkModel):
     name = models.CharField(max_length=10)
