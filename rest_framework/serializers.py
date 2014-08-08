@@ -681,7 +681,15 @@ class ModelSerializer(Serializer):
         forward_rels = [field for field in opts.fields if field.serialize]
         forward_rels += [field for field in opts.many_to_many if field.serialize]
 
+        if hasattr(self.Meta, 'exclude'):
+            exclude_fields = self.Meta.exclude
+        else:
+            exclude_fields = []
+
         for model_field in forward_rels:
+            if model_field.name in exclude_fields:
+                continue
+
             has_through_model = False
 
             if model_field.rel:
