@@ -55,6 +55,7 @@ class JSONRenderer(BaseRenderer):
     encoder_class = encoders.JSONEncoder
     ensure_ascii = True
     charset = None
+    separators = None
     # JSON is a binary encoding, that can be encoded as utf-8, utf-16 or utf-32.
     # See: http://www.ietf.org/rfc/rfc4627.txt
     # Also: http://lucumr.pocoo.org/2013/7/19/application-mimetypes-and-encodings/
@@ -70,6 +71,7 @@ class JSONRenderer(BaseRenderer):
         # E.g. If we're being called by the BrowsableAPIRenderer.
         renderer_context = renderer_context or {}
         indent = renderer_context.get('indent', None)
+        separators = renderer_context.get('separators', self.separators)
 
         if accepted_media_type:
             # If the media type looks like 'application/json; indent=4',
@@ -80,9 +82,11 @@ class JSONRenderer(BaseRenderer):
                 indent = max(min(int(indent), 8), 0)
             except (ValueError, TypeError):
                 indent = None
+            if indent:
+                separators = None
 
         ret = json.dumps(data, cls=self.encoder_class,
-            indent=indent, ensure_ascii=self.ensure_ascii)
+            indent=indent, separators=separators, ensure_ascii=self.ensure_ascii)
 
         # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
         # but if ensure_ascii=False, the return type is underspecified,
@@ -395,6 +399,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             return '[No renderers were found]'
 
         renderer_context['indent'] = 4
+        renderer_context['separators'] = None
         content = renderer.render(data, accepted_media_type, renderer_context)
 
         render_style = getattr(renderer, 'render_style', 'text')
@@ -498,6 +503,7 @@ class BrowsableAPIRenderer(BaseRenderer):
                 accepted = self.accepted_media_type
                 context = self.renderer_context.copy()
                 context['indent'] = 4
+                context['separators'] = None
                 content = renderer.render(serializer.data, accepted, context)
             else:
                 content = None

@@ -370,6 +370,20 @@ class JSONRendererTests(TestCase):
         content = renderer.render(obj, 'application/json')
         self.assertEqual(content, '{"countries": ["United Kingdom", "France", "Espa\\u00f1a"]}'.encode('utf-8'))
 
+    def test_separators(self):
+        obj = {'countries': ['United Kingdom', 'France', 'España']}
+        class CompactJSONRenderer(JSONRenderer):
+            separators = (',', ':')
+        renderer = CompactJSONRenderer()
+        content = renderer.render(obj, 'application/json')
+        self.assertEqual(content, '{"countries":["United Kingdom","France","Espa\\u00f1a"]}'.encode('utf-8'))
+
+    def test_separators_context(self):
+        obj = {'countries': ['United Kingdom', 'France', 'España']}
+        renderer = JSONRenderer()
+        content = renderer.render(obj, 'application/json', renderer_context={'separators': (',', ':')})
+        self.assertEqual(content, '{"countries":["United Kingdom","France","Espa\\u00f1a"]}'.encode('utf-8'))
+
 
 class UnicodeJSONRendererTests(TestCase):
     """
