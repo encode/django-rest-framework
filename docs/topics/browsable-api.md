@@ -167,10 +167,10 @@ You can now add the `autocomplete_light.ChoiceWidget` widget to the serializer f
 [bootstrap]: http://getbootstrap.com
 [cerulean]: ../img/cerulean.png
 [slate]: ../img/slate.png
-[bcustomize]: http://twitter.github.com/bootstrap/customize.html#variables
+[bcustomize]: http://getbootstrap.com/2.3.2/customize.html
 [bswatch]: http://bootswatch.com/
-[bcomponents]: http://twitter.github.com/bootstrap/components.html
-[bcomponentsnav]: http://twitter.github.com/bootstrap/components.html#navbar
+[bcomponents]: http://getbootstrap.com/2.3.2/components.html
+[bcomponentsnav]: http://getbootstrap.com/2.3.2/components.html#navbar
 [autocomplete-packages]: https://www.djangopackages.com/grids/g/auto-complete/
 [django-autocomplete-light]: https://github.com/yourlabs/django-autocomplete-light
 [django-autocomplete-light-install]: http://django-autocomplete-light.readthedocs.org/en/latest/#install

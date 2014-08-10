@@ -179,7 +179,16 @@ The [wq.db package][wq.db] provides an advanced [Router][wq.db-router] class (an
 
     app.router.register_model(MyModel)
 
+## DRF-extensions
+
+The [`DRF-extensions` package][drf-extensions] provides [routers][drf-extensions-routers] for creating [nested viewsets][drf-extensions-nested-viewsets], [collection level controllers][drf-extensions-collection-level-controllers] with [customizable endpoint names][drf-extensions-customizable-endpoint-names].
+
 [cite]: http://guides.rubyonrails.org/routing.html
 [drf-nested-routers]: https://github.com/alanjds/drf-nested-routers
 [wq.db]: http://wq.io/wq.db
 [wq.db-router]: http://wq.io/docs/app.py
+[drf-extensions]: http://chibisov.github.io/drf-extensions/docs/
+[drf-extensions-routers]: http://chibisov.github.io/drf-extensions/docs/#routers
+[drf-extensions-nested-viewsets]: http://chibisov.github.io/drf-extensions/docs/#nested-routes
+[drf-extensions-collection-level-controllers]: http://chibisov.github.io/drf-extensions/docs/#collection-level-controllers
+[drf-extensions-customizable-endpoint-names]: http://chibisov.github.io/drf-extensions/docs/#controller-endpoint-name

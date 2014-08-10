@@ -29,7 +29,7 @@ Unlike all our other API endpoints, we don't want to use JSON, but instead just 
 
 The other thing we need to consider when creating the code highlight view is that there's no existing concrete generic view that we can use.  We're not returning an object instance, but instead a property of an object instance.
 
-Instead of using a concrete generic view, we'll use the base class for representing instances, and create our own `.get()` method.  In your snippets.views add:
+Instead of using a concrete generic view, we'll use the base class for representing instances, and create our own `.get()` method.  In your `snippets.views` add:
 
     from rest_framework import renderers
     from rest_framework.response import Response

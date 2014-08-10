@@ -1,3 +1,13 @@
+---
+
+#### Django REST framework 3 - Kickstarter announcement!
+
+We are currently running a Kickstarter campaign to help fund the development of Django REST framework 3.
+
+If you want to help drive sustainable open-source development forward, then **please check out [the Kickstarter project](https://www.kickstarter.com/projects/tomchristie/django-rest-framework-3) and consider funding us.**
+
+---
+
 # Django REST framework
 
 [![build-status-image]][travis]
@@ -135,6 +145,7 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 
 [build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
