@@ -55,6 +55,7 @@ class JSONRenderer(BaseRenderer):
     encoder_class = encoders.JSONEncoder
     ensure_ascii = True
     charset = None
+    dumps_function = json.dumps
     # JSON is a binary encoding, that can be encoded as utf-8, utf-16 or utf-32.
     # See: http://www.ietf.org/rfc/rfc4627.txt
     # Also: http://lucumr.pocoo.org/2013/7/19/application-mimetypes-and-encodings/
@@ -81,7 +82,7 @@ class JSONRenderer(BaseRenderer):
             except (ValueError, TypeError):
                 indent = None
 
-        ret = json.dumps(data, cls=self.encoder_class,
+        ret = self.dumps_function(data, cls=self.encoder_class,
             indent=indent, ensure_ascii=self.ensure_ascii)
 
         # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
