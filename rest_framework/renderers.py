@@ -9,7 +9,7 @@ REST framework also provides an HTML renderer the renders the browsable API.
 from __future__ import unicode_literals
 
 import copy
-import json
+# import json
 import django
 from django import forms
 from django.core.exceptions import ImproperlyConfigured
@@ -55,6 +55,7 @@ class JSONRenderer(BaseRenderer):
     encoder_class = encoders.JSONEncoder
     ensure_ascii = True
     charset = None
+    dumps_function = 'json.dumps'
     # JSON is a binary encoding, that can be encoded as utf-8, utf-16 or utf-32.
     # See: http://www.ietf.org/rfc/rfc4627.txt
     # Also: http://lucumr.pocoo.org/2013/7/19/application-mimetypes-and-encodings/
@@ -81,7 +82,12 @@ class JSONRenderer(BaseRenderer):
             except (ValueError, TypeError):
                 indent = None
 
-        ret = json.dumps(data, cls=self.encoder_class,
+        components = self.dumps_function.split('.')
+        dumps = __import__(components[0])
+        for comp in components[1:]:
+            dumps = getattr(dumps, comp)
+
+        ret = dumps(data, cls=self.encoder_class,
             indent=indent, ensure_ascii=self.ensure_ascii)
 
         # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,

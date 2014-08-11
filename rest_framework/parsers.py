@@ -13,7 +13,7 @@ from django.http.multipartparser import MultiPartParserError, parse_header, Chun
 from rest_framework.compat import etree, six, yaml, force_text
 from rest_framework.exceptions import ParseError
 from rest_framework import renderers
-import json
+# import json
 import datetime
 import decimal
 
@@ -48,6 +48,7 @@ class JSONParser(BaseParser):
 
     media_type = 'application/json'
     renderer_class = renderers.UnicodeJSONRenderer
+    loads_function = 'json.loads'
 
     def parse(self, stream, media_type=None, parser_context=None):
         """
@@ -58,7 +59,12 @@ class JSONParser(BaseParser):
 
         try:
             data = stream.read().decode(encoding)
-            return json.loads(data)
+
+            components = self.loads_function.split('.')
+            loads = __import__(components[0])
+            for comp in components[1:]:
+                loads = getattr(loads, comp)
+            return loads(data)
         except ValueError as exc:
             raise ParseError('JSON parse error - %s' % six.text_type(exc))
 
