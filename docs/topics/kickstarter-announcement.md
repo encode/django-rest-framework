@@ -138,7 +138,7 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="http://cantemo.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-cantemo.gif);">Cantemo</a></li>
 </ul>
 
-<div style="clear: both; padding-bottom: 20px;"></div>
+<div style="clear: both; padding-bottom: 40px;"></div>
 
 **Individual contributions**: Paul Hallet, <a href="http://www.paulwhippconsulting.com/">Paul Whipp</a>, Jannis Leidel, <a href="http://spielmannsolutions.com/">Johannes Spielmann</a>, <a href="http://brooklynhacker.com/">Rob Spectre</a>, <a href="http://chrisheisel.com/">Chris Heisel</a>, Marwan Alsabbagh.
 
