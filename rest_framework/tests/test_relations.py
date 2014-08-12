@@ -50,6 +50,19 @@ class TestManyRelatedMixin(TestCase):
         self.assertEqual(into['field_name'], [])
 
 
+class TestManyRequired(TestCase):
+    def test_related_field_many_and_required(self):
+        """
+        `RelatedField`s with `many=True` should also support `required=True`.
+        """
+        field = serializers.RelatedField(many=True, read_only=False, required=True)
+
+        into = {}
+        with self.assertRaises(serializers.ValidationError) as cm:
+            field.field_from_native({}, None, 'field_name', into)
+        self.assertEqual(cm.exception.messages, ['This field is required.'])
+
+
 # Regression tests for #694 (`source` attribute on related fields)
 
 class RelatedFieldSourceTests(TestCase):
