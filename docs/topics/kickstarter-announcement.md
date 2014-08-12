@@ -121,7 +121,6 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="http://www.aba-systems.com.au/" rel="nofollow" style="background-image:url(../img/sponsors/3-aba.png);">ABA Systems</a></li>
 <li><a href="http://beefarm.ru/" rel="nofollow" style="background-image:url(../img/sponsors/3-beefarm.png);">beefarm.ru</a></li>
 <li><a href="http://www.vzzual.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-vzzual.png);">Vzzual.com</a></li>
-<!--Vzzual-->
 <!--Linovia-->
 <li><a href="http://infinite-code.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-infinite_code.png);">Infinite Code</a></li>
 <!--Jon-->
@@ -130,11 +129,13 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="http://blimp.io/" rel="nofollow" style="background-image:url(../img/sponsors/3-blimp.png);">Blimp</a></li>
 <li><a href="http://pathwright.com" rel="nofollow" style="background-image:url(../img/sponsors/3-pathwright.png);">Pathwright</a></li>
 <li><a href="http://fluxility.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-fluxility.png);">Fluxility</a></li>
+<li><a href="http://teonite.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-teonite.png);">Teonite</a></li>
 <li><a href="http://trackmaven.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-trackmaven.png);">TrackMaven</a></li>
 <li><a href="http://www.nephila.co.uk/" rel="nofollow" style="background-image:url(../img/sponsors/3-nephila.png);">Nephila</a></li>
 <!--Haris-->
 <li><a href="http://www.aditium.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-aditium.png);">Aditium</a></li>
 <li><a href="http://www.eyesopen.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-openeye.png);">OpenEye Scientific Software</a></li>
+<li><a href="http://cantemo.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-cantemo.gif);">Cantemo</a></li>
 </ul>
 
 <div style="clear: both; padding-bottom: 20px;"></div>
