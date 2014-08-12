@@ -134,7 +134,7 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="http://www.nephila.co.uk/" rel="nofollow" style="background-image:url(../img/sponsors/3-nephila.png);">Nephila</a></li>
 <!--Haris-->
 <li><a href="http://www.aditium.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-aditium.png);">Aditium</a></li>
-<!--Craig-->
+<li><a href="http://www.eyesopen.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-openeye.png);">OpenEye Scientific Software</a></li>
 </ul>
 
 <div style="clear: both; padding-bottom: 20px;"></div>
