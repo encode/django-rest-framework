@@ -222,7 +222,7 @@ a.fusion-poweredby {
     &lt;link rel="stylesheet" href="/path/to/my/bootstrap.css" type="text/css"&gt;
 {% endblock %}
 </code></pre>
-<p>A suitable replacement theme can be generated using Bootstrap's <a href="http://twitter.github.com/bootstrap/customize.html#variables">Customize Tool</a>.  There are also pre-made themes available at <a href="http://bootswatch.com/">Bootswatch</a>.  To use any of the Bootswatch themes, simply download the theme's <code>bootstrap.min.css</code> file, add it to your project, and replace the default one as described above.</p>
+<p>A suitable replacement theme can be generated using Bootstrap's <a href="http://getbootstrap.com/2.3.2/customize.html">Customize Tool</a>.  There are also pre-made themes available at <a href="http://bootswatch.com/">Bootswatch</a>.  To use any of the Bootswatch themes, simply download the theme's <code>bootstrap.min.css</code> file, add it to your project, and replace the default one as described above.</p>
 <p>You can also change the navbar variant, which by default is <code>navbar-inverse</code>, using the <code>bootstrap_navbar_variant</code> block.  The empty <code>{% block bootstrap_navbar_variant %}{% endblock %}</code> will use the original Bootstrap navbar style.</p>
 <p>Full example:</p>
 <pre class="prettyprint lang-py"><code>{% extends "rest_framework/base.html" %}
@@ -247,7 +247,7 @@ a.fusion-poweredby {
 <li><code>bodyclass</code>                  - Class attribute for the <code>&lt;body&gt;</code> tag, empty by default.</li>
 <li><code>bootstrap_theme</code>            - CSS for the Bootstrap theme.</li>
 <li><code>bootstrap_navbar_variant</code>   - CSS class for the navbar.</li>
-<li><code>branding</code>                   - Branding section of the navbar, see <a href="http://twitter.github.com/bootstrap/components.html#navbar">Bootstrap components</a>.</li>
+<li><code>branding</code>                   - Branding section of the navbar, see <a href="http://getbootstrap.com/2.3.2/components.html#navbar">Bootstrap components</a>.</li>
 <li><code>breadcrumbs</code>                - Links showing resource nesting, allowing the user to go back up the resources.  It's recommended to preserve these, but they can be overridden using the breadcrumbs block.</li>
 <li><code>footer</code>                     - Any copyright notices or similar footer materials can go here (by default right-aligned).</li>
 <li><code>script</code>                     - JavaScript files for the page.</li>
@@ -256,7 +256,7 @@ a.fusion-poweredby {
 <li><code>userlinks</code>                  - This is a list of links on the right of the header, by default containing login/logout links.  To add links instead of replace, use <code>{{ block.super }}</code> to preserve the authentication links.</li>
 </ul>
 <h4 id="components">Components</h4>
-<p>All of the standard <a href="http://twitter.github.com/bootstrap/components.html">Bootstrap components</a> are available.</p>
+<p>All of the standard <a href="http://getbootstrap.com/2.3.2/components.html">Bootstrap components</a> are available.</p>
 <h4 id="tooltips">Tooltips</h4>
 <p>The browsable API makes use of the Bootstrap tooltips component.  Any element with the <code>js-tooltip</code> class and a <code>title</code> attribute has that title content will display a tooltip on hover events.</p>
 <h3 id="login-template">Login Template</h3>

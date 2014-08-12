@@ -249,7 +249,7 @@ class ExampleView(APIView):
         return Response(content)
 </code></pre>
 <p>Or, if you're using the <code>@api_view</code> decorator with function based views.</p>
-<pre class="prettyprint lang-py"><code>@api_view('GET')
+<pre class="prettyprint lang-py"><code>@api_view(['GET'])
 @throttle_classes([UserRateThrottle])
 def example_view(request, format=None):
     content = {
