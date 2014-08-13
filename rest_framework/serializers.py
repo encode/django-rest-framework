@@ -977,7 +977,7 @@ class ModelSerializer(Serializer):
             try:
                 setattr(instance, key, val)
             except ValueError:
-                self._errors[key] = self.error_messages['required']
+                self._errors[key] = [self.error_messages['required']]
 
         # Any relations that cannot be set until we've
         # saved the model get hidden away on these
