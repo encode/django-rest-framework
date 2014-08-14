@@ -685,7 +685,7 @@ class ModelValidationTests(TestCase):
         photo_serializer = PhotoSerializer(instance=photo, data={'album': ''}, partial=True)
         self.assertFalse(photo_serializer.is_valid())
         self.assertTrue('album' in photo_serializer.errors)
-        self.assertEqual(photo_serializer.errors['album'], photo_serializer.error_messages['required'])
+        self.assertEqual(photo_serializer.errors['album'], [photo_serializer.error_messages['required']])
 
     def test_foreign_key_with_partial(self):
         """
