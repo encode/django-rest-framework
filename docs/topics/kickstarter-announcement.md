@@ -81,8 +81,6 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 <li><a href="http://lightningkite.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-lightning_kite.png);">Lightning Kite</a></li>
 <li><a href="https://opbeat.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-opbeat.png);">Opbeat</a></li>
 <li><a href="https://koordinates.com" rel="nofollow" style="background-image:url(../img/sponsors/2-koordinates.png);">Koordinates</a></li>
-<!--Xitij-->
-<!--Howard-->
 <li><a href="https://www.heroku.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-heroku.png);">Heroku</a></li>
 <li><a href="https://www.galileo-press.de/" rel="nofollow" style="background-image:url(../img/sponsors/2-galileo_press.png);">Galileo Press</a></li>
 <li><a href="http://www.securitycompass.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-security_compass.png);">Security Compass</a></li>
@@ -97,7 +95,7 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 
 <div style="clear: both; padding-bottom: 40px;"></div>
 
-**Individual backers**: Xitij Ritesh Patel, Howard Sandford.
+**Individual backers**: Xitij Ritesh Patel, Howard Sandford, Simon Haugk.
 
 ---
 
@@ -116,7 +114,6 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="http://www.transcode.de/" rel="nofollow" style="background-image:url(../img/sponsors/3-transcode.png);">Transcode</a></li>
 <li><a href="https://garfo.io/" rel="nofollow" style="background-image:url(../img/sponsors/3-garfo.png);">Garfo</a></li>
 <li><a href="https://goshippo.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-shippo.png);">Shippo</a></li>
-<!--Dylan-->
 <li><a href="http://www.gizmag.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-gizmag.png);">Gizmag</a></li>
 <li><a href="http://www.tivix.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-tivix.png);">Tivix</a></li>
 <li><a href="http://www.safaribooksonline.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-safari.png);">Safari</a></li>
@@ -124,7 +121,6 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="http://www.aba-systems.com.au/" rel="nofollow" style="background-image:url(../img/sponsors/3-aba.png);">ABA Systems</a></li>
 <li><a href="http://beefarm.ru/" rel="nofollow" style="background-image:url(../img/sponsors/3-beefarm.png);">beefarm.ru</a></li>
 <li><a href="http://www.vzzual.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-vzzual.png);">Vzzual.com</a></li>
-<!--Linovia-->
 <li><a href="http://infinite-code.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-infinite_code.png);">Infinite Code</a></li>
 <li><a href="http://crosswordtracker.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-crosswordtracker.png);">Crossword Tracker</a></li>
 <li><a href="https://www.pkgfarm.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-pkgfarm.png);">PkgFarm</a></li>
@@ -136,7 +132,6 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="http://trackmaven.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-trackmaven.png);">TrackMaven</a></li>
 <li><a href="http://www.phurba.net/" rel="nofollow" style="background-image:url(../img/sponsors/3-phurba.png);">Phurba</a></li>
 <li><a href="http://www.nephila.co.uk/" rel="nofollow" style="background-image:url(../img/sponsors/3-nephila.png);">Nephila</a></li>
-<!--Haris-->
 <li><a href="http://www.aditium.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-aditium.png);">Aditium</a></li>
 <li><a href="http://www.eyesopen.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-openeye.png);">OpenEye Scientific Software</a></li>
 <li><a href="https://holvi.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-holvi.png);">Holvi</a></li>
@@ -148,7 +143,7 @@ The serious financial contribution that our silver sponsors have made is very mu
 
 <div style="clear: both; padding-bottom: 40px;"></div>
 
-**Individual backers**: Paul Hallet, <a href="http://www.paulwhippconsulting.com/">Paul Whipp</a>, Dylan Roy, Jannis Leidel, <a href="https://linovia.com/en/">Xavier Ordoquy</a>, <a href="http://spielmannsolutions.com/">Johannes Spielmann</a>, <a href="http://brooklynhacker.com/">Rob Spectre</a>, <a href="http://chrisheisel.com/">Chris Heisel</a>, Marwan Alsabbagh, Haris Ali, Tuomas Toivonen, Simon Haugk.
+**Individual backers**: Paul Hallet, <a href="http://www.paulwhippconsulting.com/">Paul Whipp</a>, Dylan Roy, Jannis Leidel, <a href="https://linovia.com/en/">Xavier Ordoquy</a>, <a href="http://spielmannsolutions.com/">Johannes Spielmann</a>, <a href="http://brooklynhacker.com/">Rob Spectre</a>, <a href="http://chrisheisel.com/">Chris Heisel</a>, Marwan Alsabbagh, Haris Ali, Tuomas Toivonen.
 
 ---
 
