@@ -94,9 +94,9 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 <li><a href="http://envisionlinux.org/blog" rel="nofollow">Envision Linux</a></li>
 </ul>
 
-<!--Name: Envision Linux text-->
+<div style="clear: both; padding-bottom: 40px;"></div>
 
-<div style="clear: both;"></div>
+**Individual backers**: Xitij Ritesh Patel, Howard Sandford.
 
 ---
 
@@ -111,6 +111,7 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="http://providenz.fr/" rel="nofollow" style="background-image:url(../img/sponsors/3-providenz.png);">Providenz</a></li>
 <li><a href="https://www.alwaysdata.com" rel="nofollow" style="background-image:url(../img/sponsors/3-alwaysdata.png);">alwaysdata.com</a></li>
 <li><a href="http://www.triggeredmessaging.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-triggered_messaging.png);">Triggered Messaging</a></li>
+<li><a href="https://www.ipushpull.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-ipushpull.png);">PushPull Technology Ltd</a></li>
 <li><a href="http://www.transcode.de/" rel="nofollow" style="background-image:url(../img/sponsors/3-transcode.png);">Transcode</a></li>
 <li><a href="https://garfo.io/" rel="nofollow" style="background-image:url(../img/sponsors/3-garfo.png);">Garfo</a></li>
 <li><a href="https://goshippo.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-shippo.png);">Shippo</a></li>
@@ -139,9 +140,26 @@ The serious financial contribution that our silver sponsors have made is very mu
 <li><a href="http://www.eyesopen.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-openeye.png);">OpenEye Scientific Software</a></li>
 <li><a href="http://cantemo.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-cantemo.gif);">Cantemo</a></li>
 <li><a href="https://www.makespace.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-makespace.png);">MakeSpace</a></li>
+<li><a href="https://www.ax-semantics.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-ax_semantics.png);">AX Semantics</a></li>
+<li><a href="http://istrategylabs.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-isl.png);">ISL</a></li>
 </ul>
 
 <div style="clear: both; padding-bottom: 40px;"></div>
 
-**Individual contributions**: Paul Hallet, <a href="http://www.paulwhippconsulting.com/">Paul Whipp</a>, Jannis Leidel, <a href="http://spielmannsolutions.com/">Johannes Spielmann</a>, <a href="http://brooklynhacker.com/">Rob Spectre</a>, <a href="http://chrisheisel.com/">Chris Heisel</a>, Marwan Alsabbagh.
+**Individual backers**: Paul Hallet, <a href="http://www.paulwhippconsulting.com/">Paul Whipp</a>, Dylan Roy, Jannis Leidel, <a href="https://linovia.com/en/">Xavier Ordoquy</a>, <a href="http://spielmannsolutions.com/">Johannes Spielmann</a>, <a href="http://brooklynhacker.com/">Rob Spectre</a>, <a href="http://chrisheisel.com/">Chris Heisel</a>, Marwan Alsabbagh, Haris Ali, Tuomas Toivonen, Simon Haugk.
 
+---
+
+### Advocates
+
+The following individuals made a significant financial contribution to the development of Django REST framework 3, for which I can only offer a huge, warm and sincere thank you!
+
+**Individual backers**: Jure Cuhalev, Kevin Brolly, Ferenc Szalai, Dougal Matthews, Stefan Foulis, Carlos Hernando, Alen Mujezinovic, Ross Crawford-d'Heureuse, George Kappel, Alasdair Nicol, John Carr, Steve Winton, Trey, Manuel Miranda, David Horn, Vince Mi, Daniel Sears, Jamie Matthews, Ryan Currah, Marty Kemka, Scott Nixon, Moshin Elahi, Kevin Campbell, Jose Antonio Leiva Izquierdo, Kevin Stone, Andrew Godwin, Tijs Teulings, Roger Boardman, Xavier Antoviaque, Darian Moody, Lujeni, Jon Dugan, Wiley Kestner, Daniel C. Silverstein, Daniel Hahler, Subodh Nijsure, Philipp Weidenhiller, Yusuke Muraoka, Danny Roa, Reto Aebersold, Kyle Getrost, Décébal Hormuz, James Dacosta, Matt Long, Mauro Rocco, Tyrel Souza, Ryan Campbell, Ville Jyrkkä, Charalampos Papaloizou, Nikolai Røed Kristiansen, Antoni Aloy López, Celia Oakley, Michał Krawczak, Ivan VenOsdel, Tim Watts, Martin Warne.
+
+**Corporate backers**: Savannah Informatics, Prism Skylabs.
+
+---
+
+### Supporters
+
+There were also almost 300 further individuals choosing to help fund the project at other levels or choosing to give anonymously. Again, thank you, thank you, thank you!
