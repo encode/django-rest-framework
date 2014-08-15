@@ -1038,3 +1038,17 @@ class SerializerMethodField(Field):
     def field_to_native(self, obj, field_name):
         value = getattr(self.parent, self.method_name)(obj)
         return self.to_native(value)
+
+
+class SerializerLambdaField(Field):
+    """
+    A field that gets its value by calling a lambda.
+    """
+
+    def __init__(self, func, *args, **kwargs):
+        self.func = func
+        super(SerializerLambdaField, self).__init__(*args, **kwargs)
+
+    def field_to_native(self, obj, field_name):
+        value = self.func(obj)
+        return self.to_native(value)
