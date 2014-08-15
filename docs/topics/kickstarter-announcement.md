@@ -138,6 +138,7 @@ The serious financial contribution that our silver sponsors have made is very mu
 <!--Haris-->
 <li><a href="http://www.aditium.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-aditium.png);">Aditium</a></li>
 <li><a href="http://www.eyesopen.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-openeye.png);">OpenEye Scientific Software</a></li>
+<li><a href="https://holvi.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-holvi.png);">Holvi</a></li>
 <li><a href="http://cantemo.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-cantemo.gif);">Cantemo</a></li>
 <li><a href="https://www.makespace.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-makespace.png);">MakeSpace</a></li>
 <li><a href="https://www.ax-semantics.com/" rel="nofollow" style="background-image:url(../img/sponsors/3-ax_semantics.png);">AX Semantics</a></li>
