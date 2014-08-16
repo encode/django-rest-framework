@@ -1,6 +1,6 @@
 # Tutorial 5: Relationships & Hyperlinked APIs
 
-At the moment relationships within our API are represented by using primary keys.  In this part of the tutorial we'll improve the cohesion and discoverability of our API, by instead using hyperlinking for relationships. 
+At the moment relationships within our API are represented by using primary keys.  In this part of the tutorial we'll improve the cohesion and discoverability of our API, by instead using hyperlinking for relationships.
 
 ## Creating an endpoint for the root of our API
 
@@ -37,7 +37,7 @@ Instead of using a concrete generic view, we'll use the base class for represent
     class SnippetHighlight(generics.GenericAPIView):
         queryset = Snippet.objects.all()
         renderer_classes = (renderers.StaticHTMLRenderer,)
-    
+
         def get(self, request, *args, **kwargs):
             snippet = self.get_object()
             return Response(snippet.highlighted)
@@ -78,16 +78,16 @@ We can easily re-write our existing serializers to use hyperlinking. In your `sn
     class SnippetSerializer(serializers.HyperlinkedModelSerializer):
         owner = serializers.Field(source='owner.username')
         highlight = serializers.HyperlinkedIdentityField(view_name='snippet-highlight', format='html')
-    
+
         class Meta:
             model = Snippet
             fields = ('url', 'highlight', 'owner',
                       'title', 'code', 'linenos', 'language', 'style')
-    
-    
+
+
     class UserSerializer(serializers.HyperlinkedModelSerializer):
         snippets = serializers.HyperlinkedRelatedField(many=True, view_name='snippet-detail')
-    
+
         class Meta:
             model = User
             fields = ('url', 'username', 'snippets')
@@ -126,9 +126,9 @@ After adding all those names into our URLconf, our final `snippets/urls.py` file
             views.UserDetail.as_view(),
             name='user-detail')
     ))
-    
+
     # Login and logout views for the browsable API
-    urlpatterns += patterns('',    
+    urlpatterns += patterns('',
         url(r'^api-auth/', include('rest_framework.urls',
                                    namespace='rest_framework')),
     )
