@@ -42,12 +42,16 @@ class override_method(object):
         self.view = view
         self.request = request
         self.method = method
+        self.action = getattr(view, 'action', None)
 
     def __enter__(self):
         self.view.request = clone_request(self.request, self.method)
+        action_map = getattr(self, 'action_map', {})
+        self.view.action = action_map.get(self.method.lower())
         return self.view.request
 
     def __exit__(self, *args, **kwarg):
+        self.view.action = self.action
         self.view.request = self.request
 
 
