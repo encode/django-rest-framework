@@ -4,7 +4,7 @@ At the moment relationships within our API are represented by using primary keys
 
 ## Creating an endpoint for the root of our API
 
-Right now we have endpoints for 'snippets' and 'users', but we don't have a single entry point to our API.  To create one, we'll use a regular function-based view and the `@api_view` decorator we introduced earlier.
+Right now we have endpoints for 'snippets' and 'users', but we don't have a single entry point to our API.  To create one, we'll use a regular function-based view and the `@api_view` decorator we introduced earlier. In your `snippets/views.py` add:
 
     from rest_framework import renderers
     from rest_framework.decorators import api_view
@@ -29,7 +29,7 @@ Unlike all our other API endpoints, we don't want to use JSON, but instead just 
 
 The other thing we need to consider when creating the code highlight view is that there's no existing concrete generic view that we can use.  We're not returning an object instance, but instead a property of an object instance.
 
-Instead of using a concrete generic view, we'll use the base class for representing instances, and create our own `.get()` method.  In your `snippets.views` add:
+Instead of using a concrete generic view, we'll use the base class for representing instances, and create our own `.get()` method.  In your `snippets/views.py` add:
 
     from rest_framework import renderers
     from rest_framework.response import Response
@@ -43,7 +43,7 @@ Instead of using a concrete generic view, we'll use the base class for represent
             return Response(snippet.highlighted)
 
 As usual we need to add the new views that we've created in to our URLconf.
-We'll add a url pattern for our new API root:
+We'll add a url pattern for our new API root in `snippets/urls.py`:
 
     url(r'^$', 'api_root'),
 
@@ -73,7 +73,7 @@ The `HyperlinkedModelSerializer` has the following differences from `ModelSerial
 * Relationships use `HyperlinkedRelatedField`,
   instead of `PrimaryKeyRelatedField`.
 
-We can easily re-write our existing serializers to use hyperlinking.
+We can easily re-write our existing serializers to use hyperlinking. In your `snippets/serializers.py` add:
 
     class SnippetSerializer(serializers.HyperlinkedModelSerializer):
         owner = serializers.Field(source='owner.username')
@@ -105,7 +105,7 @@ If we're going to have a hyperlinked API, we need to make sure we name our URL p
 * Our user serializer includes a field that refers to `'snippet-detail'`.
 * Our snippet and user serializers include `'url'` fields that by default will refer to `'{model_name}-detail'`, which in this case will be `'snippet-detail'` and `'user-detail'`.
 
-After adding all those names into our URLconf, our final `'urls.py'` file should look something like this:
+After adding all those names into our URLconf, our final `snippets/urls.py` file should look something like this:
 
     # API endpoints
     urlpatterns = format_suffix_patterns(patterns('snippets.views',

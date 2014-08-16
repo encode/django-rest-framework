@@ -129,7 +129,7 @@ Then, add the following property to **both** the `SnippetList` and `SnippetDetai
 
 If you open a browser and navigate to the browsable API at the moment, you'll find that you're no longer able to create new code snippets.  In order to do so we'd need to be able to login as a user.
 
-We can add a login view for use with the browsable API, by editing the URLconf in our project-level urls.py file.
+We can add a login view for use with the browsable API, by editing the URLconf in our project-level `urls.py` file.
 
 Add the following import at the top of the file:
 
