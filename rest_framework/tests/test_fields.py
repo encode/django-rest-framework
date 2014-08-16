@@ -1002,3 +1002,16 @@ class BooleanField(TestCase):
             bool_field = serializers.BooleanField(required=True)
 
         self.assertFalse(BooleanRequiredSerializer(data={}).is_valid())
+
+
+class SerializerLambdaFieldTest(TestCase):
+    """
+        Tests for the SerializerLambdaField field_to_native() behavior
+    """
+    class Example():
+        my_test = 'Hey, this is a test !'
+
+    def test_field_to_native(self):
+        s = serializers.SerializerLambdaField(lambda obj: obj.my_test)
+        result = s.field_to_native(self.Example(), None)
+        self.assertEqual(result, 'Hey, this is a test !')
