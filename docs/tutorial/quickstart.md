@@ -17,8 +17,12 @@ Create a new Django project named `tutorial`, then start a new app called `quick
     # Install Django and Django REST framework into the virtualenv
     pip install django
     pip install djangorestframework
-
-    # Create a new app
+    
+    # Create a new project
+    django-admin.py tutorial
+    
+    # Create a new app within the project
+    cd tutorial
     python manage.py startapp quickstart
 
 Next you'll need to get a database set up and synced.  If you just want to use SQLite for now, then you'll want to edit your `tutorial/settings.py` module to include something like this:
@@ -125,6 +129,7 @@ We'd also like to set a few global settings.  We'd like to turn on pagination, a
     INSTALLED_APPS = (
         ...
         'rest_framework',
+        'quickstart',
     )
 
     REST_FRAMEWORK = {
