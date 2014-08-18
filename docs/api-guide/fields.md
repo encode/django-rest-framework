@@ -62,7 +62,7 @@ A dictionary of error codes to error messages.
 ### `widget`
 
 Used only if rendering the field to HTML.
-This argument sets the widget that should be used to render the field.
+This argument sets the widget that should be used to render the field. For more details, and a list of available widgets, see [the Django documentation on form widgets][django-widgets]. 
 
 ### `label`
 
@@ -370,6 +370,7 @@ The [django-rest-framework-gis][django-rest-framework-gis] package provides geog
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
 [ecma262]: http://ecma-international.org/ecma-262/5.1/#sec-15.9.1.15
 [strftime]: http://docs.python.org/2/library/datetime.html#strftime-and-strptime-behavior
+[django-widgets]: https://docs.djangoproject.com/en/dev/ref/forms/widgets/
 [iso8601]: http://www.w3.org/TR/NOTE-datetime
 [drf-compound-fields]: http://drf-compound-fields.readthedocs.org
 [drf-extra-fields]: https://github.com/Hipo/drf-extra-fields
