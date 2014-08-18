@@ -446,7 +446,7 @@ class BaseSerializer(WritableField):
                 if not self._errors:
                     into.update(reverted_data)
         else:
-            if value in (None, ''):
+            if value in (None, '') and not self.many:
                 into[(self.source or field_name)] = None
             else:
                 # Set the serializer object if it exists
