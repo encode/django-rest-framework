@@ -18,6 +18,7 @@ import types
 from decimal import Decimal
 from django.contrib.contenttypes.generic import GenericForeignKey
 from django.core.paginator import Page
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
@@ -912,9 +913,19 @@ class ModelSerializer(Serializer):
 
         for field_name, field in self.fields.items():
             field_name = field.source or field_name
+
+            # PY3 compat problem with ManyToManyField & OneToOneField
+            # hasattr in PY2 catches all exceptions, but in PY3 it only looks
+            # for AttributeError
+            # @see: https://code.djangoproject.com/ticket/22839
+            try:
+                field_exists = hasattr(instance, field_name)
+            except (AttributeError, ValueError, ObjectDoesNotExist):
+                field_exists = False
+
             if field_name in exclusions \
                 and not field.read_only \
-                and (field.required or hasattr(instance, field_name)) \
+                and (field.required or field_exists) \
                 and not isinstance(field, Serializer):
                 exclusions.remove(field_name)
         return exclusions
