@@ -345,3 +345,23 @@ class NestedModelSerializerUpdateTests(TestCase):
         result = deserialize.object
         result.save()
         self.assertEqual(result.id, john.id)
+        
+class NestedModelSerializerTests(TestCase):
+    def test_nested_with_different_source_field_name(self):
+        class PersonSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = models.Person
+                fields = ('id', 'name', 'age')
+
+        class BlogPostSerializer(serializers.ModelSerializer):
+            author = PersonSerializer(source='writer')
+            class Meta:
+                model = models.BlogPost
+                fields = ('id', 'title', 'author')
+
+        data = {'title':'Test blog post', 'author': {'name': 'Person', 'age': 10}}
+
+        serializer = BlogPostSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        serializer.save()
+        self.assertIsNotNone(serializer.object.writer.id, 'Writer has not been saved')        
