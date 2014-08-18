@@ -345,3 +345,30 @@ class NestedModelSerializerUpdateTests(TestCase):
         result = deserialize.object
         result.save()
         self.assertEqual(result.id, john.id)
+
+
+class OneToOneNestedSerializerUpdateTests(TestCase):
+    def test_set_one_to_one_field(self):
+
+        class NullableOneToOneSourceSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = models.NullableOneToOneSource
+
+        class OneToOneTargetSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = models.OneToOneTarget
+
+            nullable_source = NullableOneToOneSourceSerializer()
+
+
+        target = models.OneToOneTarget.objects.create(name='foo')
+        data = {
+            'name': 'Discovery',
+            'nullable_source': {'name': 'Daft Punk'},
+        }
+
+        # create
+        serializer = OneToOneTargetSerializer(data=data, instance=target)
+        self.assertEqual(serializer.is_valid(), True)
+        target = serializer.save()
+        self.assertEqual(target.nullable_source.name, 'Daft Punk')
