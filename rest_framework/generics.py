@@ -189,7 +189,13 @@ class GenericAPIView(views.APIView):
         """
         Returns the list of filter backends that this view requires.
         """
-        filter_backends = self.filter_backends or []
+        if self.filter_backends is None:
+            filter_backends = []
+        else:
+            # Note that we are returning a *copy* of the class attribute,
+            # so that it is safe for the view to mutate it if needed.
+            filter_backends = list(self.filter_backends)
+
         if not filter_backends and self.filter_backend:
             warnings.warn(
                 'The `filter_backend` attribute and `FILTER_BACKEND` setting '
@@ -199,6 +205,7 @@ class GenericAPIView(views.APIView):
                 PendingDeprecationWarning, stacklevel=2
             )
             filter_backends = [self.filter_backend]
+
         return filter_backends
 
 
