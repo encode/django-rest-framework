@@ -73,12 +73,12 @@ We'll also add a couple of views to `views.py`.  We'd like to just use read-only
     class UserList(generics.ListAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
-    
-    
+
+
     class UserDetail(generics.RetrieveAPIView):
         queryset = User.objects.all()
         serializer_class = UserSerializer
-        
+
 Make sure to also import the `UserSerializer` class
 
 	from snippets.serializers import UserSerializer
@@ -129,7 +129,7 @@ Then, add the following property to **both** the `SnippetList` and `SnippetDetai
 
 If you open a browser and navigate to the browsable API at the moment, you'll find that you're no longer able to create new code snippets.  In order to do so we'd need to be able to login as a user.
 
-We can add a login view for use with the browsable API, by editing the URLconf in our project-level urls.py file.
+We can add a login view for use with the browsable API, by editing the URLconf in our project-level `urls.py` file.
 
 Add the following import at the top of the file:
 
@@ -157,8 +157,8 @@ To do that we're going to need to create a custom permission.
 In the snippets app, create a new file, `permissions.py`
 
     from rest_framework import permissions
-    
-    
+
+
     class IsOwnerOrReadOnly(permissions.BasePermission):
         """
         Custom permission to only allow owners of an object to edit it.
@@ -201,7 +201,7 @@ If we try to create a snippet without authenticating, we'll get an error:
 We can make a successful request by including the username and password of one of the users we created earlier.
 
     curl -X POST http://127.0.0.1:8000/snippets/ -d "code=print 789" -u tom:password
-    
+
     {"id": 5, "owner": "tom", "title": "foo", "code": "print 789", "linenos": false, "language": "python", "style": "friendly"}
 
 ## Summary
