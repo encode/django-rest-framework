@@ -345,3 +345,74 @@ class NestedModelSerializerUpdateTests(TestCase):
         result = deserialize.object
         result.save()
         self.assertEqual(result.id, john.id)
+
+    def test_creation_with_nested_many_to_many_relation(self):
+        class ManyToManyTargetSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = models.ManyToManyTarget
+
+        class ManyToManySourceSerializer(serializers.ModelSerializer):
+            targets = ManyToManyTargetSerializer(many=True, allow_add_remove=True)
+            class Meta:
+                model = models.ManyToManySource
+
+        data = {
+            'name': 'source',
+            'targets': [{
+                'name': 'target1'
+            }, {
+                'name': 'another target'
+            }]
+        }
+
+        source_count = models.ManyToManySource.objects.count()
+        target_count = models.ManyToManyTarget.objects.count()
+
+        deserialize = ManyToManySourceSerializer(data=data)
+        self.assertTrue(deserialize.is_valid(), deserialize.errors)
+        deserialize.save()
+        self.assertEqual(models.ManyToManySource.objects.count(), source_count + 1)
+        self.assertEqual(models.ManyToManyTarget.objects.count(), target_count + 2)
+
+    def test_update_with_nested_many_to_many_relation(self):
+        class ManyToManyTargetSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = models.ManyToManyTarget
+
+        class ManyToManySourceSerializer(serializers.ModelSerializer):
+            targets = ManyToManyTargetSerializer(many=True, allow_add_remove=True)
+            class Meta:
+                model = models.ManyToManySource
+
+        source = models.ManyToManySource.objects.create(name='source')
+        target1 = models.ManyToManyTarget.objects.create(name='target1')
+        target2 = models.ManyToManyTarget.objects.create(name='target2')
+        source.targets = [target1]
+
+        data = {
+            'id': source.id,
+            'name': source.name + '0',
+            'targets': [{
+                'id': target1.id,
+                'name': target1.name + '1',
+            }, {
+                'id': target2.id,
+                'name': target2.name + '2',
+            }]
+        }
+
+        source_count = models.ManyToManySource.objects.count()
+        target_count = models.ManyToManyTarget.objects.count()
+
+        deserialize = ManyToManySourceSerializer(data=data, instance=source)
+        self.assertTrue(deserialize.is_valid(), deserialize.errors)
+        deserialize.save()
+        self.assertEqual(models.ManyToManySource.objects.count(), source_count)
+        self.assertEqual(models.ManyToManyTarget.objects.count(), target_count)
+
+        # Were the models updated ?
+        self.assertEqual(source.name, 'source0')
+        alt_target1 = models.ManyToManyTarget.objects.get(id=target1.id)
+        self.assertEqual(alt_target1.name, target1.name + '1')
+        alt_target2 = models.ManyToManyTarget.objects.get(id=target2.id)
+        self.assertEqual(alt_target2.name, target2.name + '2')
