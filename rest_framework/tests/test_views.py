@@ -121,7 +121,7 @@ class TestCustomExceptionHandler(TestCase):
     def setUp(self):
         self.DEFAULT_HANDLER = api_settings.EXCEPTION_HANDLER
 
-        def exception_handler(exc):
+        def exception_handler(exc, request=None):
             return Response('Error!', status=status.HTTP_400_BAD_REQUEST)
 
         api_settings.EXCEPTION_HANDLER = exception_handler
