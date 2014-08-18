@@ -43,6 +43,10 @@ class GenericAPIView(views.APIView):
 
     # You'll need to either set these attributes,
     # or override `get_queryset()`/`get_serializer_class()`.
+    # If you are overriding a view method, it is important that you call
+    # `get_queryset()` instead of accessing the `queryset` property directly,
+    # as `queryset` will get evaluated only once, and those results are cached
+    # for all subsequent requests.
     queryset = None
     serializer_class = None
 
@@ -257,6 +261,10 @@ class GenericAPIView(views.APIView):
         Get the list of items for this view.
         This must be an iterable, and may be a queryset.
         Defaults to using `self.queryset`.
+
+        This method should always be used rather than accessing `self.queryset`
+        directly, as `self.queryset` gets evaluated only once, and those results
+        are cached for all subsequent requests.
 
         You may want to override this if you need to provide different
         querysets depending on the incoming request.
