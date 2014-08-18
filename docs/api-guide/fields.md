@@ -62,7 +62,7 @@ A dictionary of error codes to error messages.
 ### `widget`
 
 Used only if rendering the field to HTML.
-This argument sets the widget that should be used to render the field.
+This argument sets the widget that should be used to render the field. For a list of available widgets, see https://docs.djangoproject.com/en/dev/ref/forms/widgets/ or `django.forms.widgets`.
 
 ### `label`
 
