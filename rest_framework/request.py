@@ -280,8 +280,8 @@ class Request(object):
             self._method = self._request.method
 
             # Allow X-HTTP-METHOD-OVERRIDE header
-            self._method = self.META.get('HTTP_X_HTTP_METHOD_OVERRIDE',
-                                         self._method)
+            if 'HTTP_X_HTTP_METHOD_OVERRIDE' in self.META:
+                self._method = self.META['HTTP_X_HTTP_METHOD_OVERRIDE'].upper()
 
     def _load_stream(self):
         """
