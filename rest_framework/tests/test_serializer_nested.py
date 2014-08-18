@@ -247,6 +247,136 @@ class WritableNestedSerializerObjectTests(TestCase):
         self.assertEqual(serializer.object, expected_object)
 
 
+class WritableNestedSerializerWithDefaultValueTests(TestCase):
+    """
+    Tests for deserializing nested entities with default values.
+    These tests use serializers that restore to concrete objects.
+    """
+
+    def setUp(self):
+        # Couple of concrete objects that we're going to deserialize into
+        class Artist(object):
+            def __init__(self, name):
+                self.name = name
+
+            def __eq__(self, other):
+                return self.name == other.name
+
+        class Track(object):
+            def __init__(self, order, title, duration):
+                self.order, self.title, self.duration = order, title, duration
+
+            def __eq__(self, other):
+                return (
+                    self.order == other.order and
+                    self.title == other.title and
+                    self.duration == other.duration
+                )
+
+        class Album(object):
+            def __init__(self, album_name, artist, tracks):
+                self.album_name, self.artist, self.tracks = album_name, artist, tracks
+
+            def __eq__(self, other):
+                return (
+                    self.album_name == other.album_name and
+                    self.artist == other.artist and
+                    self.tracks == other.tracks
+                )
+
+        # And their corresponding serializers
+        class ArtistSerializer(serializers.Serializer):
+            name = serializers.CharField(max_length=100)
+
+            def restore_object(self, attrs, instance=None):
+                return Artist(attrs['name'])
+
+        class TrackSerializer(serializers.Serializer):
+            order = serializers.IntegerField()
+            title = serializers.CharField(max_length=100)
+            duration = serializers.IntegerField()
+
+            def restore_object(self, attrs, instance=None):
+                return Track(attrs['order'], attrs['title'], attrs['duration'])
+
+        class AlbumSerializer(serializers.Serializer):
+            album_name = serializers.CharField(max_length=100)
+            artist = ArtistSerializer(
+                required=False,
+                default={'name': 'Unknown'}
+            )
+            tracks = TrackSerializer(
+                many=True,
+                required=False,
+                default=lambda: [{'order': 1, 'title': 'Untitled', 'duration': 0}]
+            )
+
+            def restore_object(self, attrs, instance=None):
+                return Album(attrs['album_name'], attrs['artist'], attrs['tracks'])
+
+        self.Album, self.Track, self.Artist = Album, Track, Artist
+        self.AlbumSerializer = AlbumSerializer
+
+    def test_nested_serializer_with_non_callable_default_value(self):
+        """
+        Correct nested serialization should return a restored object
+        that corresponds to the input data, with default values used
+        when no input value is supplied.
+        """
+
+        data = {
+            'album_name': 'Discovery',
+            'tracks': [
+                {'order': 1, 'title': 'One More Time', 'duration': 235},
+                {'order': 2, 'title': 'Aerodynamic', 'duration': 184},
+                {'order': 3, 'title': 'Digital Love', 'duration': 239}
+            ]
+        }
+        expected_object = self.Album(
+            album_name='Discovery',
+            artist=self.Artist(name='Unknown'),
+            tracks=[
+                self.Track(order=1, title='One More Time', duration=235),
+                self.Track(order=2, title='Aerodynamic', duration=184),
+                self.Track(order=3, title='Digital Love', duration=239),
+            ]
+        )
+
+        serializer = self.AlbumSerializer(data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, expected_object)
+
+    def test_nested_serializer_with_callable_default_value(self):
+        """
+        Correct nested serialization should return a restored object
+        that corresponds to the input data, with default values used
+        when no input value is supplied. If the default value is callable,
+        it should be evaluated each time the serializer is used.
+        """
+
+        data = {
+            'album_name': 'Discovery',
+            'artist': {'name': 'Daft Punk'}
+        }
+        expected_object = self.Album(
+            album_name='Discovery',
+            artist=self.Artist(name='Daft Punk'),
+            tracks=[
+                self.Track(order=1, title='Untitled', duration=0),
+            ]
+        )
+
+        serializer = self.AlbumSerializer(data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, expected_object)
+
+        # Using the serializer again should re-evaluate the default value
+        serializer = self.AlbumSerializer(data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        self.assertEqual(serializer.object, expected_object)
+        self.assertIsNot(serializer.object.tracks, expected_object.tracks)
+
+
 class ForeignKeyNestedSerializerUpdateTests(TestCase):
     def setUp(self):
         class Artist(object):

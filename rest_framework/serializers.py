@@ -434,7 +434,7 @@ class BaseSerializer(WritableField):
         except KeyError:
             if self.default is not None and not self.partial:
                 # Note: partial updates shouldn't set defaults
-                value = copy.deepcopy(self.default)
+                value = copy.deepcopy(self.get_default_value())
             else:
                 if self.required:
                     raise ValidationError(self.error_messages['required'])
