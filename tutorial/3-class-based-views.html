@@ -226,7 +226,7 @@ class SnippetList(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 </code></pre>
-<p>So far, so good.  It looks pretty similar to the previous case, but we've got better separation between the different HTTP methods.  We'll also need to update the instance view in <code>views.py</code>. </p>
+<p>So far, so good.  It looks pretty similar to the previous case, but we've got better separation between the different HTTP methods.  We'll also need to update the instance view in <code>views.py</code>.</p>
 <pre class="prettyprint lang-py"><code>class SnippetDetail(APIView):
     """
     Retrieve, update or delete a snippet instance.

@@ -304,7 +304,7 @@ url(r'^users/(?P&lt;pk&gt;[0-9]+)/$', views.UserDetail.as_view()),
 </code></pre>
 <h2 id="adding-login-to-the-browsable-api">Adding login to the Browsable API</h2>
 <p>If you open a browser and navigate to the browsable API at the moment, you'll find that you're no longer able to create new code snippets.  In order to do so we'd need to be able to login as a user.</p>
-<p>We can add a login view for use with the browsable API, by editing the URLconf in our project-level urls.py file.</p>
+<p>We can add a login view for use with the browsable API, by editing the URLconf in our project-level <code>urls.py</code> file.</p>
 <p>Add the following import at the top of the file:</p>
 <pre class="prettyprint lang-py"><code>from django.conf.urls import include
 </code></pre>

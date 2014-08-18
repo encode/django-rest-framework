@@ -226,7 +226,7 @@ request.DATA  # Handles arbitrary data.  Works for 'POST', 'PUT' and 'PATCH' met
 <p>These wrappers provide a few bits of functionality such as making sure you receive <code>Request</code> instances in your view, and adding context to <code>Response</code> objects so that content negotiation can be performed.</p>
 <p>The wrappers also provide behaviour such as returning <code>405 Method Not Allowed</code> responses when appropriate, and handling any <code>ParseError</code> exception that occurs when accessing <code>request.DATA</code> with malformed input.</p>
 <h2 id="pulling-it-all-together">Pulling it all together</h2>
-<p>Okay, let's go ahead and start using these new components to write a few views. </p>
+<p>Okay, let's go ahead and start using these new components to write a few views.</p>
 <p>We don't need our <code>JSONResponse</code> class in <code>views.py</code> anymore, so go ahead and delete that.  Once that's done we can start refactoring our views slightly.</p>
 <pre class="prettyprint lang-py"><code>from rest_framework import status
 from rest_framework.decorators import api_view
@@ -258,7 +258,7 @@ def snippet_list(request):
 def snippet_detail(request, pk):
     """
     Retrieve, update or delete a snippet instance.
-    """              
+    """
     try:
         snippet = Snippet.objects.get(pk=pk)
     except Snippet.DoesNotExist:

@@ -202,9 +202,9 @@ a.fusion-poweredby {
 
           <div id="main-content" class="span9">
             <h1 id="tutorial-5-relationships-hyperlinked-apis">Tutorial 5: Relationships &amp; Hyperlinked APIs</h1>
-<p>At the moment relationships within our API are represented by using primary keys.  In this part of the tutorial we'll improve the cohesion and discoverability of our API, by instead using hyperlinking for relationships. </p>
+<p>At the moment relationships within our API are represented by using primary keys.  In this part of the tutorial we'll improve the cohesion and discoverability of our API, by instead using hyperlinking for relationships.</p>
 <h2 id="creating-an-endpoint-for-the-root-of-our-api">Creating an endpoint for the root of our API</h2>
-<p>Right now we have endpoints for 'snippets' and 'users', but we don't have a single entry point to our API.  To create one, we'll use a regular function-based view and the <code>@api_view</code> decorator we introduced earlier.</p>
+<p>Right now we have endpoints for 'snippets' and 'users', but we don't have a single entry point to our API.  To create one, we'll use a regular function-based view and the <code>@api_view</code> decorator we introduced earlier. In your <code>snippets/views.py</code> add:</p>
 <pre class="prettyprint lang-py"><code>from rest_framework import renderers
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -223,7 +223,7 @@ def api_root(request, format=None):
 <p>The other obvious thing that's still missing from our pastebin API is the code highlighting endpoints.</p>
 <p>Unlike all our other API endpoints, we don't want to use JSON, but instead just present an HTML representation.  There are two styles of HTML renderer provided by REST framework, one for dealing with HTML rendered using templates, the other for dealing with pre-rendered HTML.  The second renderer is the one we'd like to use for this endpoint.</p>
 <p>The other thing we need to consider when creating the code highlight view is that there's no existing concrete generic view that we can use.  We're not returning an object instance, but instead a property of an object instance.</p>
-<p>Instead of using a concrete generic view, we'll use the base class for representing instances, and create our own <code>.get()</code> method.  In your <code>snippets.views</code> add:</p>
+<p>Instead of using a concrete generic view, we'll use the base class for representing instances, and create our own <code>.get()</code> method.  In your <code>snippets/views.py</code> add:</p>
 <pre class="prettyprint lang-py"><code>from rest_framework import renderers
 from rest_framework.response import Response
 
@@ -236,7 +236,7 @@ class SnippetHighlight(generics.GenericAPIView):
         return Response(snippet.highlighted)
 </code></pre>
 <p>As usual we need to add the new views that we've created in to our URLconf.
-We'll add a url pattern for our new API root:</p>
+We'll add a url pattern for our new API root in <code>snippets/urls.py</code>:</p>
 <pre class="prettyprint lang-py"><code>url(r'^$', 'api_root'),
 </code></pre>
 <p>And then add a url pattern for the snippet highlights:</p>
@@ -261,7 +261,7 @@ We'll add a url pattern for our new API root:</p>
 <li>Relationships use <code>HyperlinkedRelatedField</code>,
   instead of <code>PrimaryKeyRelatedField</code>.</li>
 </ul>
-<p>We can easily re-write our existing serializers to use hyperlinking.</p>
+<p>We can easily re-write our existing serializers to use hyperlinking. In your <code>snippets/serializers.py</code> add:</p>
 <pre class="prettyprint lang-py"><code>class SnippetSerializer(serializers.HyperlinkedModelSerializer):
     owner = serializers.Field(source='owner.username')
     highlight = serializers.HyperlinkedIdentityField(view_name='snippet-highlight', format='html')
@@ -289,7 +289,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 <li>Our user serializer includes a field that refers to <code>'snippet-detail'</code>.</li>
 <li>Our snippet and user serializers include <code>'url'</code> fields that by default will refer to <code>'{model_name}-detail'</code>, which in this case will be <code>'snippet-detail'</code> and <code>'user-detail'</code>.</li>
 </ul>
-<p>After adding all those names into our URLconf, our final <code>'urls.py'</code> file should look something like this:</p>
+<p>After adding all those names into our URLconf, our final <code>snippets/urls.py</code> file should look something like this:</p>
 <pre class="prettyprint lang-py"><code># API endpoints
 urlpatterns = format_suffix_patterns(patterns('snippets.views',
     url(r'^$', 'api_root'),
@@ -311,7 +311,7 @@ urlpatterns = format_suffix_patterns(patterns('snippets.views',
 ))
 
 # Login and logout views for the browsable API
-urlpatterns += patterns('',    
+urlpatterns += patterns('',
     url(r'^api-auth/', include('rest_framework.urls',
                                namespace='rest_framework')),
 )
