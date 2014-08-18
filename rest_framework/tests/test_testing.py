@@ -99,6 +99,17 @@ class TestAPITestClient(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.data, expected)
 
+    def test_can_logout(self):
+        """
+        `logout()` reset stored credentials
+        """
+        self.client.credentials(HTTP_AUTHORIZATION='example')
+        response = self.client.get('/view/')
+        self.assertEqual(response.data['auth'], 'example')
+        self.client.logout()
+        response = self.client.get('/view/')
+        self.assertEqual(response.data['auth'], b'')
+
 
 class TestAPIRequestFactory(TestCase):
     def test_csrf_exempt_by_default(self):
