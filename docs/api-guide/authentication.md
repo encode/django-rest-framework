@@ -129,7 +129,7 @@ To use the `TokenAuthentication` scheme you'll need to [configure the authentica
 
 ---
 
-**Note:** Make sure to run `manage.py syncdb` after changing your settings. Both Django native (from v1.7) and South migrations for the `authtoken` database tables are provided. See [Schema migrations](#schema-migrations) below.
+**Note:** Make sure to run `manage.py syncdb` after changing your settings. The 'rest_framework.authtoken' provides both Django (from v1.7) and South database migrations. See [Schema migrations](#schema-migrations) below.
 
 ---
 
