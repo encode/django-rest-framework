@@ -1974,3 +1974,68 @@ class BoolenFieldTypeTest(TestCase):
         '''
         bfield = self.serializer.get_fields()['started']
         self.assertEqual(type(bfield), fields.BooleanField)
+
+
+class RelationSpanningSerializerTest(TestCase):
+    def test_model_traversal_creation(self):
+        """Update a field through a foreign key during a creation."""
+        class TicketSerializer(serializers.ModelSerializer):
+            username = fields.CharField(source='assigned.name')
+
+            class Meta:
+                model = Ticket
+                fields = ('username',)
+
+        serializer = TicketSerializer(data={'username': 'doe'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors, {'username': 'You can not set dotted sources during creation.'})
+
+    def test_model_traversal_update(self):
+        """Update a field through a foreign key during an update."""
+        class TicketSerializer(serializers.ModelSerializer):
+            username = fields.CharField(source='assigned.name')
+
+            class Meta:
+                model = Ticket
+                fields = ('username',)
+
+        owner = Person.objects.create(name='john')
+        reviewer = Person.objects.create(name='reviewer')
+        ticket = Ticket.objects.create(assigned=owner, reviewer=reviewer)
+        serializer = TicketSerializer(ticket, data={'username': 'doe'})
+        self.assertTrue(serializer.is_valid())
+        self.assertEqual(serializer.object.assigned.name, 'doe')
+        serializer.save()
+        self.assertEqual(Person.objects.get(id=owner.id).name, 'doe')
+
+    def test_failing_model_traversal(self):
+        """Update a field through an unknown relation."""
+        class TicketSerializer(serializers.ModelSerializer):
+            username = fields.CharField(source='demo.name')
+
+            class Meta:
+                model = Ticket
+                fields = ('username',)
+
+        owner = Person(name='john')
+        reviewer = Person(name='reviewer')
+        ticket = Ticket(assigned=owner, reviewer=reviewer)
+        serializer = TicketSerializer(ticket, data={'username': 'doe'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors, {'username': 'Related object does not exist.'})
+
+    def test_multiple_model_traversal_update(self):
+        """Update a field through a foreign key during an update."""
+        class TicketSerializer(serializers.ModelSerializer):
+            username = fields.CharField(source='assigned.demo.name')
+
+            class Meta:
+                model = Ticket
+                fields = ('username',)
+
+        owner = Person.objects.create(name='john')
+        reviewer = Person.objects.create(name='reviewer')
+        ticket = Ticket.objects.create(assigned=owner, reviewer=reviewer)
+        serializer = TicketSerializer(ticket, data={'username': 'doe'})
+        self.assertFalse(serializer.is_valid())
+        self.assertEqual(serializer.errors, {'username': 'Can not span more than a relation.'})

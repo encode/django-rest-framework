@@ -21,6 +21,7 @@ from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
 from django.utils.datastructures import SortedDict
+from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.compat import get_concrete_model, six
 from rest_framework.settings import api_settings
@@ -941,6 +942,7 @@ class ModelSerializer(Serializer):
         """
         m2m_data = {}
         related_data = {}
+        related_models_to_save = {}
         nested_forward_relations = {}
         meta = self.opts.model._meta
 
@@ -969,13 +971,33 @@ class ModelSerializer(Serializer):
             if isinstance(self.fields.get(field_name, None), Serializer):
                 nested_forward_relations[field_name] = attrs[field_name]
 
-        # Create an empty instance of the model
+        # Update an existing instance...
         if instance is None:
             instance = self.opts.model()
 
         for key, val in attrs.items():
+            keys = key.split('.')
+
+            # Work on the current instance for this attribute
+            attr_instance = instance
+
+            # Raise an error if we span more than one relation
+            if len(keys) > 2:
+                self._errors[key] = 'Can not span more than a relation.'
+                continue
+
+            # Mark the related instance as the one to save
+            if len(keys) == 2:
+                try:
+                    attr_instance = getattr(instance, keys[0])
+                    related_models_to_save[key] = attr_instance
+                except (AttributeError, ObjectDoesNotExist):
+                    self._errors[key] = self.error_messages['missing']
+                    continue
+
+            # Assign the value
             try:
-                setattr(instance, key, val)
+                setattr(attr_instance, keys[-1], val)
             except ValueError:
                 self._errors[key] = [self.error_messages['required']]
 
@@ -986,6 +1008,7 @@ class ModelSerializer(Serializer):
         instance._related_data = related_data
         instance._m2m_data = m2m_data
         instance._nested_forward_relations = nested_forward_relations
+        instance._related_models_to_save = related_models_to_save
 
         return instance
 
@@ -1043,6 +1066,10 @@ class ModelSerializer(Serializer):
                     # Reverse FK or reverse one-one
                     setattr(obj, accessor_name, related)
             del(obj._related_data)
+
+        if getattr(obj, '_related_models_to_save', None):
+            for related in obj._related_models_to_save.values():
+                self.save_object(related)
 
 
 class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
