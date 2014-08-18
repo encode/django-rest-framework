@@ -718,6 +718,20 @@ class ModelValidationTests(TestCase):
         self.assertTrue(photo_serializer.is_valid())
         self.assertTrue(photo_serializer.save())
 
+    def test_foreign_key_with_dot_notation_fields(self):
+        album = Album(title='test')
+        album.save()
+
+        class PhotoSerializer(serializers.ModelSerializer):
+            album_title = serializers.CharField(source="album.title")
+
+            class Meta:
+                model = Photo
+                fields = ["description", "album_title"]
+
+        photo_serializer = PhotoSerializer(data={'description': 'test', 'album_title': "some-title"})
+        self.assertTrue(photo_serializer.is_valid())
+
 
 class RegexValidationTest(TestCase):
     def test_create_failed(self):
