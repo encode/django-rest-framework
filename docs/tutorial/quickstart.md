@@ -6,8 +6,8 @@ We're going to create a simple API to allow admin users to view and edit the use
 
 Create a new Django project named `tutorial`, then start a new app called `quickstart`.
 
-	# Create the project directory
-	mkdir tutorial
+    # Create the project directory
+    mkdir tutorial
     cd tutorial
 
     # Create a virtualenv to isolate our package dependencies locally
