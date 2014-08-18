@@ -122,7 +122,6 @@ DEFAULTS = {
     
     # Prepending MEDIA_URL to FileField
     'PREPEND_MEDIA_URL': False,
-    'MEDIA_URL': '/',
 }
 
 
