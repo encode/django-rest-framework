@@ -1974,3 +1974,53 @@ class BoolenFieldTypeTest(TestCase):
         '''
         bfield = self.serializer.get_fields()['started']
         self.assertEqual(type(bfield), fields.BooleanField)
+
+
+class ModelErrorMessagesFieldsTests(TestCase):
+
+    def setUp(self):
+        class ErrorMessageModel(RESTFrameworkModel):
+            char_field = models.CharField(blank=False, max_length=5, error_messages={
+                'max_length': 'max_length %(limit_value)d',
+            })
+            int_field = models.IntegerField({
+                'required': 'int required model',
+                'invalid': 'int invalid',
+            })
+
+        class ErrorMessageSerializer(serializers.ModelSerializer):
+            int_field = serializers.IntegerField(error_messages={
+                'required': 'int required',
+            })
+
+            class Meta:
+                model = ErrorMessageModel
+
+        self.serializer_class = ErrorMessageSerializer
+
+    def error_test(self, data, expected_error_field, expected_message, enabled=False):
+        self.serializer_class.Meta.use_model_error_messages = enabled
+
+        serializer = self.serializer_class(data=data)
+        self.assertEqual(serializer.is_valid(), False)
+        self.assertEqual(len(serializer.errors), 1)
+
+        for (field_name, message) in serializer.errors.items():
+            self.assertEqual(expected_error_field, field_name)
+            self.assertEqual(expected_message, message[0])
+
+    def test_model_field_required(self):
+        self.error_test({'int_field': 10, 'char_field': None}, 'char_field', 'This field is required.', enabled=True)
+        self.error_test({'int_field': 10, 'char_field': None}, 'char_field', 'This field is required.', enabled=False)
+
+    def test_model_field_validation_failure(self):
+        self.error_test({'int_field': 10, 'char_field': 'abcdef'}, 'char_field', 'max_length 5', enabled=True)
+        self.error_test({'int_field': 10, 'char_field': 'abcdef'}, 'char_field', 'Ensure this value has at most 5 characters (it has 6).', enabled=False)
+
+    def test_serializer_field_required(self):
+        self.error_test({'char_field': 'abcde'}, 'int_field', 'int required', enabled=True)
+        self.error_test({'char_field': 'abcde'}, 'int_field', 'int required', enabled=False)
+
+    def test_serializer_field_validation_failure(self):
+        self.error_test({'int_field': 'abc', 'char_field': 'abcde'}, 'int_field', 'Enter a whole number.', enabled=True)
+        self.error_test({'int_field': 'abc', 'char_field': 'abcde'}, 'int_field', 'Enter a whole number.', enabled=False)
