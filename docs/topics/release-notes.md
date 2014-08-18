@@ -42,12 +42,9 @@ You can determine your currently installed version using `pip freeze`:
 
 * Added compatibility with Django 1.7's native migrations.
 
-  **IMPORTANT**: In order to continue to use south with Django <1.7 you **must** provide
-  the `SOUTH_MIGRATION_MODULES` option in your `settings.py`:
+  **IMPORTANT**: In order to continue to use South with Django <1.7 you **must** upgrade to
+  South v1.0.
 
-        SOUTH_MIGRATION_MODULES = {
-                'authtoken': 'rest_framework.authtoken.south_migrations',
-        }
 * Use py.test
 * `@detail_route` and `@list_route` decorators replace `@action` and `@link`.
 * `six` no longer bundled.  For Django <= 1.4.1, install `six` package.

@@ -204,18 +204,11 @@ Note that the default `obtain_auth_token` view explicitly uses JSON requests and
 
 #### Schema migrations
 
-The `rest_framework.authtoken` app includes both a Django native migration (for Django versions >1.7) and a south migration that will create the authtoken table.
+The `rest_framework.authtoken` app includes both Django native migrations (for Django versions >1.7) and South migrations (for Django versions <1.7) that will create the authtoken table.
 
 ----
 
-**Note** By default both Django (>1.7) and South will look for a module named `migrations`. To avoid a collision here, in order to use South you **must** provide the `SOUTH_MIGRATION_MODULES` option in your `settings.py`:
-
-
-    SOUTH_MIGRATION_MODULES = {
-            'authtoken': 'rest_framework.authtoken.south_migrations',
-    }
-
-This tells South to look in the `south_migrations` module for the `authtoken` app.
+**Note**: From REST Framework v2.4.0 using South with Django <1.7 requires upgrading South v1.0+
 
 ----
 
