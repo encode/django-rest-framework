@@ -247,6 +247,42 @@ class WritableNestedSerializerObjectTests(TestCase):
         self.assertEqual(serializer.object, expected_object)
 
 
+class WritableNestedSerializerFieldTests(TestCase):
+    """
+    Nested serializers should not be assumed to reference nested models.
+
+    In this case, MilestoneSerializer is used to control the data going into
+    a JSON field, "milestones".
+    """
+    def setUp(self):
+        class MilestoneSerializer(serializers.Serializer):
+            name = serializers.CharField()
+
+        class ProjectSerializer(serializers.ModelSerializer):
+            name = serializers.CharField()
+            milestones = MilestoneSerializer(many=True)
+
+            class Meta:
+                model = models.Project
+
+        self.ProjectSerializer = ProjectSerializer
+
+    def test_deserialize(self):
+        data = {
+            'name': 'The Awesome API Project',
+            'milestones': [
+                {'name': 'Prototype'},
+                {'name': 'Minumum viable product'},
+                {'name': 'World domination'},
+            ],
+        }
+        expected_object = models.Project(**data)
+        serializer = self.ProjectSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        obj = serializer.save()
+        self.assertEqual(obj.milestones, expected_object.milestones)
+
+
 class ForeignKeyNestedSerializerUpdateTests(TestCase):
     def setUp(self):
         class Artist(object):
