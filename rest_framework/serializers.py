@@ -1024,15 +1024,15 @@ class ModelSerializer(Serializer):
             ])
             for accessor_name, related in obj._related_data.items():
                 if isinstance(related, RelationsList):
+                    # Delete any removed objects
+                    if related._deleted:
+                        [self.delete_object(item) for item in related._deleted]
+
                     # Nested reverse fk relationship
                     for related_item in related:
                         fk_field = related_fields[accessor_name].field.name
                         setattr(related_item, fk_field, obj)
                         self.save_object(related_item)
-
-                    # Delete any removed objects
-                    if related._deleted:
-                        [self.delete_object(item) for item in related._deleted]
 
                 elif isinstance(related, models.Model):
                     # Nested reverse one-one relationship
