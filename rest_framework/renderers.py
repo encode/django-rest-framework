@@ -360,6 +360,7 @@ class HTMLFormRenderer(BaseRenderer):
         request = renderer_context['request']
 
         template = loader.get_template(self.template)
+        data = None if data.empty else data
         context = RequestContext(request, {'form': data})
         return template.render(context)
 

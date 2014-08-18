@@ -342,6 +342,7 @@ class BaseSerializer(WritableField):
         """
         ret = self._dict_class()
         ret.fields = self._dict_class()
+        ret.empty = obj is None
 
         for field_name, field in self.fields.items():
             if field.read_only and obj is None:
