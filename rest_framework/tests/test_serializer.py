@@ -10,7 +10,7 @@ from rest_framework import serializers, fields, relations
 from rest_framework.tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel, DefaultValueModel,
     ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo, RESTFrameworkModel,
-    ForeignKeySource, ManyToManySource)
+    ForeignKeySource, ManyToManySource, UntouchablePerson, UntouchablePersonLog)
 from rest_framework.tests.models import BasicModelSerializer
 import datetime
 import pickle
@@ -98,6 +98,7 @@ class ActionItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ActionItem
 
+
 class ActionItemSerializerOptionalFields(serializers.ModelSerializer):
     """
     Intended to test that fields with `required=False` are excluded from validation.
@@ -107,6 +108,20 @@ class ActionItemSerializerOptionalFields(serializers.ModelSerializer):
     class Meta:
         model = ActionItem
         fields = ('title',)
+
+
+class UntouchablePersonLogSerializerExcludedFields(serializers.ModelSerializer):
+    """
+    Intended to test that fields with `editable=False` and that are included
+    in Meta.exclude are actually excluded from validation.
+    Tests regression for #1604
+    """
+
+    class Meta:
+        model = UntouchablePersonLog
+        fields = ('date',)
+        exclude = ('person',)
+
 
 class ActionItemSerializerCustomRestore(serializers.ModelSerializer):
 
@@ -978,6 +993,33 @@ class WritableFieldDefaultValueTests(TestCase):
             field = self.create_field(default=expected)
             got = field.get_default_value()
             self.assertEqual(got, expected)
+
+
+class ExcludedFieldTests(TestCase):
+
+    def setUp(self):
+        self.serializer_class = UntouchablePersonLogSerializerExcludedFields
+
+        # An UntouchablePerson instance to use for the relationship
+        self.person = UntouchablePerson(name='MC Hammer')
+        self.person.save()
+
+        # A log entry with non-editable relationship to the person
+        self.instance = UntouchablePersonLog(
+            person=self.person,
+            date=datetime.date(1990, 1, 13)
+        )
+        self.instance.save()
+
+    def test_excluded_noneditable_field_is_excluded(self):
+        # test for #1604
+        data = {
+            'date': datetime.date(1990, 1, 13)
+        }
+        serializer = UntouchablePersonLogSerializerExcludedFields(
+            instance=self.instance
+        )
+        self.assertEqual(serializer.data, data)
 
 
 class RelatedFieldDefaultValueTests(WritableFieldDefaultValueTests):
