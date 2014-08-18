@@ -380,6 +380,8 @@ class WritableField(Field):
         """
         return value
 
+    def save_serializer_data(self, instance, field_name, data):
+        setattr(instance, field_name, data)
 
 class ModelField(WritableField):
     """
