@@ -120,6 +120,7 @@ DEFAULTS = {
 
     # Pending deprecation
     'FILTER_BACKEND': None,
+
 }
 
 
