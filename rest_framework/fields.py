@@ -878,6 +878,10 @@ class DecimalField(WritableField):
     def __init__(self, max_value=None, min_value=None, max_digits=None, decimal_places=None, *args, **kwargs):
         self.max_value, self.min_value = max_value, min_value
         self.max_digits, self.decimal_places = max_digits, decimal_places
+        
+        if self.decimal_places:
+            self.empty = Decimal('0').quantize(Decimal('.%s1' % ('0' * (self.decimal_places - 1))))
+        
         super(DecimalField, self).__init__(*args, **kwargs)
 
         if max_value is not None:
