@@ -551,6 +551,15 @@ class OAuth2Tests(TestCase):
         self.assertEqual(response.status_code, 401)
 
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
+    def test_get_form_with_wrong_authorization_header_token_missing(self):
+        """Ensure that a missing token lead to the correct HTTP error status code"""
+        auth = "Bearer"
+        response = self.csrf_client.get('/oauth2-test/', {}, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 401)
+        response = self.csrf_client.get('/oauth2-test/', HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, 401)
+
+    @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
     def test_get_form_passing_auth(self):
         """Ensure GETing form over OAuth with correct client credentials succeed"""
         auth = self._create_authorization_header()

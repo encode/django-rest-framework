@@ -54,32 +54,37 @@ class JSONRenderer(BaseRenderer):
     format = 'json'
     encoder_class = encoders.JSONEncoder
     ensure_ascii = True
-    charset = None
-    # JSON is a binary encoding, that can be encoded as utf-8, utf-16 or utf-32.
+
+    # We don't set a charset because JSON is a binary encoding,
+    # that can be encoded as utf-8, utf-16 or utf-32.
     # See: http://www.ietf.org/rfc/rfc4627.txt
     # Also: http://lucumr.pocoo.org/2013/7/19/application-mimetypes-and-encodings/
+    charset = None
 
-    def render(self, data, accepted_media_type=None, renderer_context=None):
-        """
-        Render `data` into JSON.
-        """
-        if data is None:
-            return bytes()
-
-        # If 'indent' is provided in the context, then pretty print the result.
-        # E.g. If we're being called by the BrowsableAPIRenderer.
-        renderer_context = renderer_context or {}
-        indent = renderer_context.get('indent', None)
-
+    def get_indent(self, accepted_media_type, renderer_context):
         if accepted_media_type:
             # If the media type looks like 'application/json; indent=4',
             # then pretty print the result.
             base_media_type, params = parse_header(accepted_media_type.encode('ascii'))
-            indent = params.get('indent', indent)
             try:
-                indent = max(min(int(indent), 8), 0)
-            except (ValueError, TypeError):
-                indent = None
+                return max(min(int(params['indent']), 8), 0)
+            except (KeyError, ValueError, TypeError):
+                pass
+
+        # If 'indent' is provided in the context, then pretty print the result.
+        # E.g. If we're being called by the BrowsableAPIRenderer.
+        return renderer_context.get('indent', None)
+
+
+    def render(self, data, accepted_media_type=None, renderer_context=None):
+        """
+        Render `data` into JSON, returning a bytestring.
+        """
+        if data is None:
+            return bytes()
+
+        renderer_context = renderer_context or {}
+        indent = self.get_indent(accepted_media_type, renderer_context)
 
         ret = json.dumps(data, cls=self.encoder_class,
             indent=indent, ensure_ascii=self.ensure_ascii)

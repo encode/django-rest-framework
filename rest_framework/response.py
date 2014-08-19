@@ -5,6 +5,7 @@ it is initialized with unrendered data, instead of a pre-rendered string.
 The appropriate renderer is called during Django's template response rendering.
 """
 from __future__ import unicode_literals
+import django
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
 from django.template.response import SimpleTemplateResponse
 from rest_framework.compat import six
@@ -15,8 +16,11 @@ class Response(SimpleTemplateResponse):
     An HttpResponse that allows its data to be rendered into
     arbitrary media types.
     """
+    # TODO: remove that once Django 1.3 isn't supported
+    if django.VERSION >= (1, 4):
+        rendering_attrs = SimpleTemplateResponse.rendering_attrs + ['_closable_objects']
 
-    def __init__(self, data=None, status=200,
+    def __init__(self, data=None, status=None,
                  template_name=None, headers=None,
                  exception=False, content_type=None):
         """

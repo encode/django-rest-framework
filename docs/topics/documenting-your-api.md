@@ -95,7 +95,7 @@ You can modify the response behavior to `OPTIONS` requests by overriding the `me
 
 To be fully RESTful an API should present its available actions as hypermedia controls in the responses that it sends.
 
-In this approach, rather than documenting the available API endpoints up front, the description instead concentrates on the *media types* that are used.  The available actions take may be taken on any given URL are not strictly fixed, but are instead made available by the presence of link and form controls in the returned document.
+In this approach, rather than documenting the available API endpoints up front, the description instead concentrates on the *media types* that are used.  The available actions that may be taken on any given URL are not strictly fixed, but are instead made available by the presence of link and form controls in the returned document.
 
 To implement a hypermedia API you'll need to decide on an appropriate media type for the API, and implement a custom renderer and parser for that media type.  The [REST, Hypermedia & HATEOAS][hypermedia-docs] section of the documentation includes pointers to background reading, as well as links to various hypermedia formats.
 

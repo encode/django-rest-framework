@@ -142,7 +142,7 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
             toc += template + '\n'
 
         if filename == 'index.md':
-            main_title = 'Django REST framework - APIs made easy'
+            main_title = 'Django REST framework - Web APIs for Django'
         else:
             main_title = main_title + ' - Django REST framework'
 

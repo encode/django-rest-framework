@@ -116,6 +116,10 @@ class OrderingFilter(BaseFilterBackend):
     def get_ordering(self, request):
         """
         Ordering is set by a comma delimited ?ordering=... query parameter.
+        
+        The `ordering` query parameter can be overridden by setting
+        the `ordering_param` value on the OrderingFilter or by
+        specifying an `ORDERING_PARAM` value in the API settings.
         """
         params = request.QUERY_PARAMS.get(self.ordering_param)
         if params:

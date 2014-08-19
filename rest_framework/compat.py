@@ -44,12 +44,15 @@ except ImportError:
     django_filters = None
 
 
-# django-guardian is optional
-try:
-    import guardian
-    import guardian.shortcuts  # Fixes #1624
-except ImportError:
-    guardian = None
+# Django-guardian is optional. Import only if guardian is in INSTALLED_APPS
+# Fixes (#1712). We keep the try/except for the test suite.
+guardian = None
+if 'guardian' in settings.INSTALLED_APPS:
+    try:
+        import guardian
+        import guardian.shortcuts  # Fixes #1624
+    except ImportError:
+        pass
 
 
 # cStringIO only if it's available, otherwise StringIO
