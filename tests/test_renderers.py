@@ -101,6 +101,14 @@ class HTMLView1(APIView):
     def get(self, request, **kwargs):
         return Response('text')
 
+
+class HTMLView2(APIView):
+    renderer_classes = (BrowsableAPIRenderer, JSONRenderer)
+
+    def get(self, request, **kwargs):
+        return Response({'url': 'http://domain.com/?param=Yes+%26+No'})
+
+
 urlpatterns = patterns(
     '',
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
@@ -111,6 +119,7 @@ urlpatterns = patterns(
     url(r'^parseerror$', MockPOSTView.as_view(renderer_classes=[JSONRenderer, BrowsableAPIRenderer])),
     url(r'^html$', HTMLView.as_view()),
     url(r'^html1$', HTMLView1.as_view()),
+    url(r'^html2$', HTMLView2.as_view()),
     url(r'^empty$', EmptyGETView.as_view()),
     url(r'^api', include('rest_framework.urls', namespace='rest_framework'))
 )
@@ -268,6 +277,16 @@ class RendererEndToEndTests(TestCase):
         self.assertContains(resp, '>GET, HEAD, OPTIONS<')
         self.assertContains(resp, '>application/json<')
         self.assertNotContains(resp, '>text/html; charset=utf-8<')
+
+    def test_browsable_api_urls(self):
+        """
+        Issue #1649
+
+        Test that URLs have properly escaped GET parameters.
+        """
+        resp = self.client.get('/html2')
+        # GET parameter should be escaped as Yes+%26+No, not Yes+&amp;+No
+        self.assertEqual(resp.rendered_content.find('Yes+&amp;+No'), -1)
 
 
 _flat_repr = '{"foo":["bar","baz"]}'
