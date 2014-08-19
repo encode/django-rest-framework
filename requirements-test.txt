@@ -2,6 +2,7 @@
 pytest-django==2.6
 pytest==2.5.2
 pytest-cov==1.6
+flake8==2.2.2
 
 # Optional packages
 markdown>=2.1.0
