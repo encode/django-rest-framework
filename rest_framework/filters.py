@@ -44,7 +44,7 @@ class DjangoFilterBackend(BaseFilterBackend):
         if filter_class:
             filter_model = filter_class.Meta.model
 
-            assert issubclass(filter_model, queryset.model), \
+            assert issubclass(queryset.model, filter_model), \
                 'FilterSet model %s does not match queryset model %s' % \
                 (filter_model, queryset.model)
 
