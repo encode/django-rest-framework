@@ -79,7 +79,7 @@ class _MediaType(object):
         return 3
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return self.__unicode__().encode('utf-8')
 
     def __unicode__(self):
         ret = "%s/%s" % (self.main_type, self.sub_type)
