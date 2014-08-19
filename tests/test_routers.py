@@ -93,7 +93,8 @@ class TestCustomLookupFields(TestCase):
 
         from tests import test_routers
         urls = getattr(test_routers, 'urlpatterns')
-        urls += patterns('',
+        urls += patterns(
+            '',
             url(r'^', include(self.router.urls)),
         )
 
@@ -104,7 +105,8 @@ class TestCustomLookupFields(TestCase):
 
     def test_retrieve_lookup_field_list_view(self):
         response = self.client.get('/notes/')
-        self.assertEqual(response.data,
+        self.assertEqual(
+            response.data,
             [{
                 "url": "http://testserver/notes/123/",
                 "uuid": "123", "text": "foo bar"
@@ -113,7 +115,8 @@ class TestCustomLookupFields(TestCase):
 
     def test_retrieve_lookup_field_detail_view(self):
         response = self.client.get('/notes/123/')
-        self.assertEqual(response.data,
+        self.assertEqual(
+            response.data,
             {
                 "url": "http://testserver/notes/123/",
                 "uuid": "123", "text": "foo bar"

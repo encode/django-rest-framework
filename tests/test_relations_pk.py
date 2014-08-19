@@ -65,9 +65,9 @@ class PKManyToManyTests(TestCase):
         queryset = ManyToManySource.objects.all()
         serializer = ManyToManySourceSerializer(queryset, many=True)
         expected = [
-                {'id': 1, 'name': 'source-1', 'targets': [1]},
-                {'id': 2, 'name': 'source-2', 'targets': [1, 2]},
-                {'id': 3, 'name': 'source-3', 'targets': [1, 2, 3]}
+            {'id': 1, 'name': 'source-1', 'targets': [1]},
+            {'id': 2, 'name': 'source-2', 'targets': [1, 2]},
+            {'id': 3, 'name': 'source-3', 'targets': [1, 2, 3]}
         ]
         self.assertEqual(serializer.data, expected)
 
@@ -93,9 +93,9 @@ class PKManyToManyTests(TestCase):
         queryset = ManyToManySource.objects.all()
         serializer = ManyToManySourceSerializer(queryset, many=True)
         expected = [
-                {'id': 1, 'name': 'source-1', 'targets': [1, 2, 3]},
-                {'id': 2, 'name': 'source-2', 'targets': [1, 2]},
-                {'id': 3, 'name': 'source-3', 'targets': [1, 2, 3]}
+            {'id': 1, 'name': 'source-1', 'targets': [1, 2, 3]},
+            {'id': 2, 'name': 'source-2', 'targets': [1, 2]},
+            {'id': 3, 'name': 'source-3', 'targets': [1, 2, 3]}
         ]
         self.assertEqual(serializer.data, expected)
 

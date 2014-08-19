@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 import datetime
 from decimal import Decimal
-from django.db import models
 from django.core.paginator import Paginator
 from django.test import TestCase
 from django.utils import unittest
@@ -11,6 +10,7 @@ from rest_framework.test import APIRequestFactory
 from .models import BasicModel, FilterableItem
 
 factory = APIRequestFactory()
+
 
 # Helper function to split arguments out of an url
 def split_arguments_from_url(url):
@@ -274,8 +274,8 @@ class TestUnpaginated(TestCase):
             BasicModel(text=i).save()
         self.objects = BasicModel.objects
         self.data = [
-        {'id': obj.id, 'text': obj.text}
-        for obj in self.objects.all()
+            {'id': obj.id, 'text': obj.text}
+            for obj in self.objects.all()
         ]
         self.view = DefaultPageSizeKwargView.as_view()
 
@@ -302,8 +302,8 @@ class TestCustomPaginateByParam(TestCase):
             BasicModel(text=i).save()
         self.objects = BasicModel.objects
         self.data = [
-        {'id': obj.id, 'text': obj.text}
-        for obj in self.objects.all()
+            {'id': obj.id, 'text': obj.text}
+            for obj in self.objects.all()
         ]
         self.view = PaginateByParamView.as_view()
 
@@ -363,11 +363,11 @@ class TestMaxPaginateByParam(TestCase):
         self.assertEqual(response.data['results'], self.data[:3])
 
 
-### Tests for context in pagination serializers
+# Tests for context in pagination serializers
 
 class CustomField(serializers.Field):
     def to_native(self, value):
-        if not 'view' in self.context:
+        if 'view' not in self.context:
             raise RuntimeError("context isn't getting passed into custom field")
         return "value"
 
@@ -377,7 +377,7 @@ class BasicModelSerializer(serializers.Serializer):
 
     def __init__(self, *args, **kwargs):
         super(BasicModelSerializer, self).__init__(*args, **kwargs)
-        if not 'view' in self.context:
+        if 'view' not in self.context:
             raise RuntimeError("context isn't getting passed into serializer init")
 
 
@@ -398,7 +398,7 @@ class TestContextPassedToCustomField(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-### Tests for custom pagination serializers
+# Tests for custom pagination serializers
 
 class LinksSerializer(serializers.Serializer):
     next = pagination.NextPageField(source='*')
@@ -483,8 +483,6 @@ class NonIntegerPaginator(object):
 
 
 class TestNonIntegerPagination(TestCase):
-
-
     def test_custom_pagination_serializer(self):
         objects = ['john', 'paul', 'george', 'ringo']
         paginator = NonIntegerPaginator(objects, 2)

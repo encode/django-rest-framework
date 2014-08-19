@@ -85,11 +85,8 @@ class FileSerializerTests(TestCase):
         """
         Validation should still function when no data dictionary is provided.
         """
-        now = datetime.datetime.now()
-        file = BytesIO(six.b('stuff'))
-        file.name = 'stuff.txt'
-        file.size = len(file.getvalue())
-        uploaded_file = UploadedFile(file=file, created=now)
-
-        serializer = UploadedFileSerializer(files={'file': file})
+        uploaded_file = BytesIO(six.b('stuff'))
+        uploaded_file.name = 'stuff.txt'
+        uploaded_file.size = len(uploaded_file.getvalue())
+        serializer = UploadedFileSerializer(files={'file': uploaded_file})
         self.assertFalse(serializer.is_valid())

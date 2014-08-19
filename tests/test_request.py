@@ -272,7 +272,8 @@ class MockView(APIView):
 
         return Response(status=status.INTERNAL_SERVER_ERROR)
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     (r'^$', MockView.as_view()),
 )
 

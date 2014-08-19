@@ -46,16 +46,12 @@ DEFAULTS = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
     ),
-    'DEFAULT_THROTTLE_CLASSES': (
-    ),
-    'DEFAULT_CONTENT_NEGOTIATION_CLASS':
-        'rest_framework.negotiation.DefaultContentNegotiation',
+    'DEFAULT_THROTTLE_CLASSES': (),
+    'DEFAULT_CONTENT_NEGOTIATION_CLASS': 'rest_framework.negotiation.DefaultContentNegotiation',
 
     # Genric view behavior
-    'DEFAULT_MODEL_SERIALIZER_CLASS':
-        'rest_framework.serializers.ModelSerializer',
-    'DEFAULT_PAGINATION_SERIALIZER_CLASS':
-        'rest_framework.pagination.PaginationSerializer',
+    'DEFAULT_MODEL_SERIALIZER_CLASS': 'rest_framework.serializers.ModelSerializer',
+    'DEFAULT_PAGINATION_SERIALIZER_CLASS': 'rest_framework.pagination.PaginationSerializer',
     'DEFAULT_FILTER_BACKENDS': (),
 
     # Throttling

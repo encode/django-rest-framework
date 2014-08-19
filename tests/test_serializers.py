@@ -1,9 +1,7 @@
-from django.db import models
 from django.test import TestCase
-
+from rest_framework.compat import six
 from rest_framework.serializers import _resolve_model
 from tests.models import BasicModel
-from rest_framework.compat import six
 
 
 class ResolveModelTests(TestCase):

@@ -11,7 +11,7 @@ class TemplateTagTests(TestCase):
 
     def test_add_query_param_with_non_latin_charactor(self):
         # Ensure we don't double-escape non-latin characters
-        # that are present in the querystring.
+        # that are present in the querystring.
         # See #1314.
         request = factory.get("/", {'q': '查询'})
         json_url = add_query_param(request, "format", "json")
@@ -48,4 +48,4 @@ class Issue1386Tests(TestCase):
             self.assertEqual(i, res)
 
         # example from issue #1386, this shouldn't raise an exception
-        _ = urlize_quoted_links("asdf:[/p]zxcv.com")
+        urlize_quoted_links("asdf:[/p]zxcv.com")

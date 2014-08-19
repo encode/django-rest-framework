@@ -328,12 +328,14 @@ class NestedModelSerializerUpdateTests(TestCase):
 
         class BlogPostSerializer(serializers.ModelSerializer):
             comments = BlogPostCommentSerializer(many=True, source='blogpostcomment_set')
+
             class Meta:
                 model = models.BlogPost
                 fields = ('id', 'title', 'comments')
 
         class PersonSerializer(serializers.ModelSerializer):
             posts = BlogPostSerializer(many=True, source='blogpost_set')
+
             class Meta:
                 model = models.Person
                 fields = ('id', 'name', 'age', 'posts')

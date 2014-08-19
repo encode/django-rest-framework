@@ -152,8 +152,10 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
                     middle = middle[len(opening):]
                     lead = lead + opening
                 # Keep parentheses at the end only if they're balanced.
-                if (middle.endswith(closing)
-                    and middle.count(closing) == middle.count(opening) + 1):
+                if (
+                    middle.endswith(closing)
+                    and middle.count(closing) == middle.count(opening) + 1
+                ):
                     middle = middle[:-len(closing)]
                     trail = closing + trail
 
@@ -164,7 +166,7 @@ def urlize_quoted_links(text, trim_url_limit=None, nofollow=True, autoescape=Tru
                 url = smart_urlquote_wrapper(middle)
             elif simple_url_2_re.match(middle):
                 url = smart_urlquote_wrapper('http://%s' % middle)
-            elif not ':' in middle and simple_email_re.match(middle):
+            elif ':' not in middle and simple_email_re.match(middle):
                 local, domain = middle.rsplit('@', 1)
                 try:
                     domain = domain.encode('idna').decode('ascii')

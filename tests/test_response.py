@@ -100,7 +100,8 @@ new_model_viewset_router = routers.DefaultRouter()
 new_model_viewset_router.register(r'', HTMLNewModelViewSet)
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^setbyview$', MockViewSettingContentType.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),
     url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB, RendererC])),

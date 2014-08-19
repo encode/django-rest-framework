@@ -94,7 +94,8 @@ class OptionalRelationDetail(generics.RetrieveUpdateDestroyAPIView):
     model_serializer_class = serializers.HyperlinkedModelSerializer
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^basic/$', BasicList.as_view(), name='basicmodel-list'),
     url(r'^basic/(?P<pk>\d+)/$', BasicDetail.as_view(), name='basicmodel-detail'),
     url(r'^anchor/(?P<pk>\d+)/$', AnchorDetail.as_view(), name='anchor-detail'),

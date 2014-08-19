@@ -131,6 +131,7 @@ def list_route(methods=['get'], **kwargs):
         return func
     return decorator
 
+
 # These are now pending deprecation, in favor of `detail_route` and `list_route`.
 
 def link(**kwargs):
@@ -139,11 +140,13 @@ def link(**kwargs):
     """
     msg = 'link is pending deprecation. Use detail_route instead.'
     warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+
     def decorator(func):
         func.bind_to_methods = ['get']
         func.detail = True
         func.kwargs = kwargs
         return func
+
     return decorator
 
 
@@ -153,9 +156,11 @@ def action(methods=['post'], **kwargs):
     """
     msg = 'action is pending deprecation. Use detail_route instead.'
     warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+
     def decorator(func):
         func.bind_to_methods = methods
         func.detail = True
         func.kwargs = kwargs
         return func
+
     return decorator

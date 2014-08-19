@@ -98,14 +98,23 @@ else:
                     node.flow_style = best_style
             return node
 
-    SafeDumper.add_representer(decimal.Decimal,
-            SafeDumper.represent_decimal)
-
-    SafeDumper.add_representer(SortedDict,
-            yaml.representer.SafeRepresenter.represent_dict)
-    SafeDumper.add_representer(DictWithMetadata,
-            yaml.representer.SafeRepresenter.represent_dict)
-    SafeDumper.add_representer(SortedDictWithMetadata,
-            yaml.representer.SafeRepresenter.represent_dict)
-    SafeDumper.add_representer(types.GeneratorType,
-            yaml.representer.SafeRepresenter.represent_list)
+    SafeDumper.add_representer(
+        decimal.Decimal,
+        SafeDumper.represent_decimal
+    )
+    SafeDumper.add_representer(
+        SortedDict,
+        yaml.representer.SafeRepresenter.represent_dict
+    )
+    SafeDumper.add_representer(
+        DictWithMetadata,
+        yaml.representer.SafeRepresenter.represent_dict
+    )
+    SafeDumper.add_representer(
+        SortedDictWithMetadata,
+        yaml.representer.SafeRepresenter.represent_dict
+    )
+    SafeDumper.add_representer(
+        types.GeneratorType,
+        yaml.representer.SafeRepresenter.represent_list
+    )

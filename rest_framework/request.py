@@ -295,8 +295,11 @@ class Request(object):
         Return the content body of the request, as a stream.
         """
         try:
-            content_length = int(self.META.get('CONTENT_LENGTH',
-                                    self.META.get('HTTP_CONTENT_LENGTH')))
+            content_length = int(
+                self.META.get(
+                    'CONTENT_LENGTH', self.META.get('HTTP_CONTENT_LENGTH')
+                )
+            )
         except (ValueError, TypeError):
             content_length = 0
 
@@ -320,9 +323,11 @@ class Request(object):
         )
 
         # We only need to use form overloading on form POST requests.
-        if (not USE_FORM_OVERLOADING
+        if (
+            not USE_FORM_OVERLOADING
             or self._request.method != 'POST'
-            or not is_form_media_type(self._content_type)):
+            or not is_form_media_type(self._content_type)
+        ):
             return
 
         # At this point we're committed to parsing the request as form data.
@@ -330,15 +335,19 @@ class Request(object):
         self._files = self._request.FILES
 
         # Method overloading - change the method and remove the param from the content.
-        if (self._METHOD_PARAM and
-            self._METHOD_PARAM in self._data):
+        if (
+            self._METHOD_PARAM and
+            self._METHOD_PARAM in self._data
+        ):
             self._method = self._data[self._METHOD_PARAM].upper()
 
         # Content overloading - modify the content type, and force re-parse.
-        if (self._CONTENT_PARAM and
+        if (
+            self._CONTENT_PARAM and
             self._CONTENTTYPE_PARAM and
             self._CONTENT_PARAM in self._data and
-            self._CONTENTTYPE_PARAM in self._data):
+            self._CONTENTTYPE_PARAM in self._data
+        ):
             self._content_type = self._data[self._CONTENTTYPE_PARAM]
             self._stream = BytesIO(self._data[self._CONTENT_PARAM].encode(self.parser_context['encoding']))
             self._data, self._files = (Empty, Empty)
@@ -394,7 +403,7 @@ class Request(object):
                 self._not_authenticated()
                 raise
 
-            if not user_auth_tuple is None:
+            if user_auth_tuple is not None:
                 self._authenticator = authenticator
                 self._user, self._auth = user_auth_tuple
                 return

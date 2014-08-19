@@ -74,7 +74,8 @@ if django_filters:
         def get_queryset(self):
             return FilterableItem.objects.all()
 
-    urlpatterns = patterns('',
+    urlpatterns = patterns(
+        '',
         url(r'^(?P<pk>\d+)/$', FilterClassDetailView.as_view(), name='detail-view'),
         url(r'^$', FilterClassRootView.as_view(), name='root-view'),
         url(r'^get-queryset/$', GetQuerysetView.as_view(),
@@ -653,8 +654,8 @@ class SensitiveOrderingFilterTests(TestCase):
             self.assertEqual(
                 response.data,
                 [
-                    {'id': 1, username_field: 'userA'}, # PassB
-                    {'id': 2, username_field: 'userB'}, # PassC
-                    {'id': 3, username_field: 'userC'}, # PassA
+                    {'id': 1, username_field: 'userA'},  # PassB
+                    {'id': 2, username_field: 'userB'},  # PassC
+                    {'id': 3, username_field: 'userC'},  # PassA
                 ]
             )
