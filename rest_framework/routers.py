@@ -17,15 +17,17 @@ from __future__ import unicode_literals
 
 import itertools
 from collections import namedtuple
+from django.conf.urls import patterns, url
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import views
-from rest_framework.compat import patterns, url
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.urlpatterns import format_suffix_patterns
 
 
 Route = namedtuple('Route', ['url', 'mapping', 'name', 'initkwargs'])
+DynamicDetailRoute = namedtuple('DynamicDetailRoute', ['url', 'name', 'initkwargs'])
+DynamicListRoute = namedtuple('DynamicListRoute', ['url', 'name', 'initkwargs'])
 
 
 def replace_methodname(format_string, methodname):
@@ -88,6 +90,14 @@ class SimpleRouter(BaseRouter):
             name='{basename}-list',
             initkwargs={'suffix': 'List'}
         ),
+        # Dynamically generated list routes.
+        # Generated using @list_route decorator
+        # on methods of the viewset.
+        DynamicListRoute(
+            url=r'^{prefix}/{methodname}{trailing_slash}$',
+            name='{basename}-{methodnamehyphen}',
+            initkwargs={}
+        ),
         # Detail route.
         Route(
             url=r'^{prefix}/{lookup}{trailing_slash}$',
@@ -100,13 +110,10 @@ class SimpleRouter(BaseRouter):
             name='{basename}-detail',
             initkwargs={'suffix': 'Instance'}
         ),
-        # Dynamically generated routes.
-        # Generated using @action or @link decorators on methods of the viewset.
-        Route(
+        # Dynamically generated detail routes.
+        # Generated using @detail_route decorator on methods of the viewset.
+        DynamicDetailRoute(
             url=r'^{prefix}/{lookup}/{methodname}{trailing_slash}$',
-            mapping={
-                '{httpmethod}': '{methodname}',
-            },
             name='{basename}-{methodnamehyphen}',
             initkwargs={}
         ),
@@ -139,25 +146,42 @@ class SimpleRouter(BaseRouter):
         Returns a list of the Route namedtuple.
         """
 
-        known_actions = flatten([route.mapping.values() for route in self.routes])
+        known_actions = flatten([route.mapping.values() for route in self.routes if isinstance(route, Route)])
 
-        # Determine any `@action` or `@link` decorated methods on the viewset
-        dynamic_routes = []
+        # Determine any `@detail_route` or `@list_route` decorated methods on the viewset
+        detail_routes = []
+        list_routes = []
         for methodname in dir(viewset):
             attr = getattr(viewset, methodname)
             httpmethods = getattr(attr, 'bind_to_methods', None)
+            detail = getattr(attr, 'detail', True)
             if httpmethods:
                 if methodname in known_actions:
-                    raise ImproperlyConfigured('Cannot use @action or @link decorator on '
-                                               'method "%s" as it is an existing route' % methodname)
+                    raise ImproperlyConfigured('Cannot use @detail_route or @list_route '
+                                               'decorators on method "%s" '
+                                               'as it is an existing route' % methodname)
                 httpmethods = [method.lower() for method in httpmethods]
-                dynamic_routes.append((httpmethods, methodname))
+                if detail:
+                    detail_routes.append((httpmethods, methodname))
+                else:
+                    list_routes.append((httpmethods, methodname))
 
         ret = []
         for route in self.routes:
-            if route.mapping == {'{httpmethod}': '{methodname}'}:
-                # Dynamic routes (@link or @action decorator)
-                for httpmethods, methodname in dynamic_routes:
+            if isinstance(route, DynamicDetailRoute):
+                # Dynamic detail routes (@detail_route decorator)
+                for httpmethods, methodname in detail_routes:
+                    initkwargs = route.initkwargs.copy()
+                    initkwargs.update(getattr(viewset, methodname).kwargs)
+                    ret.append(Route(
+                        url=replace_methodname(route.url, methodname),
+                        mapping=dict((httpmethod, methodname) for httpmethod in httpmethods),
+                        name=replace_methodname(route.name, methodname),
+                        initkwargs=initkwargs,
+                    ))
+            elif isinstance(route, DynamicListRoute):
+                # Dynamic list routes (@list_route decorator)
+                for httpmethods, methodname in list_routes:
                     initkwargs = route.initkwargs.copy()
                     initkwargs.update(getattr(viewset, methodname).kwargs)
                     ret.append(Route(
@@ -195,13 +219,16 @@ class SimpleRouter(BaseRouter):
 
         https://github.com/alanjds/drf-nested-routers
         """
-        if self.trailing_slash:
-            base_regex = '(?P<{lookup_prefix}{lookup_field}>[^/]+)'
-        else:
-            # Don't consume `.json` style suffixes
-            base_regex = '(?P<{lookup_prefix}{lookup_field}>[^/.]+)'
+        base_regex = '(?P<{lookup_prefix}{lookup_field}>{lookup_value})'
+        # Use `pk` as default field, unset set.  Default regex should not
+        # consume `.json` style suffixes and should break at '/' boundaries.
         lookup_field = getattr(viewset, 'lookup_field', 'pk')
-        return base_regex.format(lookup_field=lookup_field, lookup_prefix=lookup_prefix)
+        lookup_value = getattr(viewset, 'lookup_value_regex', '[^/.]+')
+        return base_regex.format(
+            lookup_prefix=lookup_prefix,
+            lookup_field=lookup_field,
+            lookup_value=lookup_value
+        )
 
     def get_urls(self):
         """
