@@ -9,7 +9,7 @@ from django.conf.urls import patterns, url
 from rest_framework import generics, serializers, status, filters
 from rest_framework.compat import django_filters
 from rest_framework.test import APIRequestFactory
-from .models import FilterableItem, BasicModel
+from .models import BaseFilterableItem, FilterableItem, BasicModel
 from .utils import temporary_setting
 
 factory = APIRequestFactory()
@@ -53,6 +53,18 @@ if django_filters:
     class FilterClassDetailView(generics.RetrieveAPIView):
         model = FilterableItem
         filter_class = SeveralFieldsFilter
+        filter_backends = (filters.DjangoFilterBackend,)
+
+    # These classes are used to test base model filter support
+    class BaseFilterableItemFilter(django_filters.FilterSet):
+        text = django_filters.CharFilter()
+
+        class Meta:
+            model = BaseFilterableItem
+
+    class BaseFilterableItemFilterRootView(generics.ListCreateAPIView):
+        model = FilterableItem
+        filter_class = BaseFilterableItemFilter
         filter_backends = (filters.DjangoFilterBackend,)
 
     # Regression test for #814
@@ -225,6 +237,18 @@ class IntegrationTestFiltering(CommonFilteringTestCase):
 
         request = factory.get('/')
         self.assertRaises(AssertionError, view, request)
+
+    @unittest.skipUnless(django_filters, 'django-filter not installed')
+    def test_base_model_filter(self):
+        """
+        The `get_filter_class` model checks should allow base model filters.
+        """
+        view = BaseFilterableItemFilterRootView.as_view()
+
+        request = factory.get('/?text=aaa')
+        response = view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
 
     @unittest.skipUnless(django_filters, 'django-filter not installed')
     def test_unknown_filter(self):
