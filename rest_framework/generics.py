@@ -210,9 +210,8 @@ class GenericAPIView(views.APIView):
 
         return filter_backends
 
-    ########################
-    ### The following methods provide default implementations
-    ### that you may want to override for more complex cases.
+    # The following methods provide default implementations
+    # that you may want to override for more complex cases.
 
     def get_paginate_by(self, queryset=None):
         """
@@ -340,12 +339,11 @@ class GenericAPIView(views.APIView):
 
         return obj
 
-    ########################
-    ### The following are placeholder methods,
-    ### and are intended to be overridden.
-    ###
-    ### The are not called by GenericAPIView directly,
-    ### but are used by the mixin methods.
+    # The following are placeholder methods,
+    # and are intended to be overridden.
+    #
+    # The are not called by GenericAPIView directly,
+    # but are used by the mixin methods.
 
     def pre_save(self, obj):
         """
@@ -417,10 +415,8 @@ class GenericAPIView(views.APIView):
         return ret
 
 
-##########################################################
-### Concrete view classes that provide method handlers ###
-### by composing the mixin classes with the base view. ###
-##########################################################
+# Concrete view classes that provide method handlers
+# by composing the mixin classes with the base view.
 
 class CreateAPIView(mixins.CreateModelMixin,
                     GenericAPIView):
@@ -535,9 +531,7 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
         return self.destroy(request, *args, **kwargs)
 
 
-##########################
-### Deprecated classes ###
-##########################
+# Deprecated classes
 
 class MultipleObjectAPIView(GenericAPIView):
     def __init__(self, *args, **kwargs):

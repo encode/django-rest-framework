@@ -11,7 +11,7 @@ class TemplateTagTests(TestCase):
 
     def test_add_query_param_with_non_latin_charactor(self):
         # Ensure we don't double-escape non-latin characters
-        # that are present in the querystring.
+        # that are present in the querystring.
         # See #1314.
         request = factory.get("/", {'q': '查询'})
         json_url = add_query_param(request, "format", "json")

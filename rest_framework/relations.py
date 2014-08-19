@@ -19,8 +19,7 @@ from rest_framework.compat import smart_text
 import warnings
 
 
-##### Relational fields #####
-
+# Relational fields
 
 # Not actually Writable, but subclasses may need to be.
 class RelatedField(WritableField):
@@ -66,7 +65,7 @@ class RelatedField(WritableField):
             else:  # Reverse
                 self.queryset = manager.field.rel.to._default_manager.all()
 
-    ### We need this stuff to make form choices work...
+    # We need this stuff to make form choices work...
 
     def prepare_value(self, obj):
         return self.to_native(obj)
@@ -113,7 +112,7 @@ class RelatedField(WritableField):
 
     choices = property(_get_choices, _set_choices)
 
-    ### Default value handling
+    # Default value handling
 
     def get_default_value(self):
         default = super(RelatedField, self).get_default_value()
@@ -121,7 +120,7 @@ class RelatedField(WritableField):
             return []
         return default
 
-    ### Regular serializer stuff...
+    # Regular serializer stuff...
 
     def field_to_native(self, obj, field_name):
         try:
@@ -181,7 +180,7 @@ class RelatedField(WritableField):
             into[(self.source or field_name)] = self.from_native(value)
 
 
-### PrimaryKey relationships
+# PrimaryKey relationships
 
 class PrimaryKeyRelatedField(RelatedField):
     """
@@ -269,8 +268,7 @@ class PrimaryKeyRelatedField(RelatedField):
         return self.to_native(pk)
 
 
-### Slug relationships
-
+# Slug relationships
 
 class SlugRelatedField(RelatedField):
     """
@@ -305,7 +303,7 @@ class SlugRelatedField(RelatedField):
             raise ValidationError(msg)
 
 
-### Hyperlinked relationships
+# Hyperlinked relationships
 
 class HyperlinkedRelatedField(RelatedField):
     """

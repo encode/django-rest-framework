@@ -403,7 +403,7 @@ class Request(object):
                 self._not_authenticated()
                 raise
 
-            if not user_auth_tuple is None:
+            if user_auth_tuple is not None:
                 self._authenticator = authenticator
                 self._user, self._auth = user_auth_tuple
                 return

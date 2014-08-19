@@ -63,8 +63,10 @@ def get_component(obj, attr_name):
 
 
 def readable_datetime_formats(formats):
-    format = ', '.join(formats).replace(ISO_8601,
-             'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]')
+    format = ', '.join(formats).replace(
+        ISO_8601,
+        'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]'
+    )
     return humanize_strptime(format)
 
 
@@ -425,7 +427,7 @@ class ModelField(WritableField):
         }
 
 
-##### Typed Fields #####
+# Typed Fields
 
 class BooleanField(WritableField):
     type_name = 'BooleanField'
@@ -484,7 +486,7 @@ class URLField(CharField):
     type_label = 'url'
 
     def __init__(self, **kwargs):
-        if not 'validators' in kwargs:
+        if 'validators' not in kwargs:
             kwargs['validators'] = [validators.URLValidator()]
         super(URLField, self).__init__(**kwargs)
 

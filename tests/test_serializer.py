@@ -415,7 +415,7 @@ class ValidationTests(TestCase):
         mistaken for not having a default."""
         data = {
             'title': 'Some action item',
-            #No 'done' value.
+            # No 'done' value.
         }
         serializer = ActionItemSerializer(self.actionitem, data=data)
         self.assertEqual(serializer.is_valid(), True)
@@ -1282,7 +1282,7 @@ class BlankFieldTests(TestCase):
             self.fail('Exception raised on save() after validation passes')
 
 
-#test for issue #460
+# Test for issue #460
 class SerializerPickleTests(TestCase):
     """
     Test pickleability of the output of Serializers
@@ -1506,7 +1506,7 @@ class NestedSerializerContextTests(TestCase):
             callable = serializers.SerializerMethodField('_callable')
 
             def _callable(self, instance):
-                if not 'context_item' in self.context:
+                if 'context_item' not in self.context:
                     raise RuntimeError("context isn't getting passed into 2nd level nested serializer")
                 return "success"
 
@@ -1519,7 +1519,7 @@ class NestedSerializerContextTests(TestCase):
             callable = serializers.SerializerMethodField("_callable")
 
             def _callable(self, instance):
-                if not 'context_item' in self.context:
+                if 'context_item' not in self.context:
                     raise RuntimeError("context isn't getting passed into 1st level nested serializer")
                 return "success"
 
@@ -1822,7 +1822,7 @@ class MetadataSerializerTestCase(TestCase):
         self.assertEqual(expected, metadata)
 
 
-### Regression test for #840
+# Regression test for #840
 
 class SimpleModel(models.Model):
     text = models.CharField(max_length=100)
@@ -1856,7 +1856,7 @@ class FieldValidationRemovingAttr(TestCase):
         self.assertEqual(serializer.object.text, 'foo')
 
 
-### Regression test for #878
+# Regression test for #878
 
 class SimpleTargetModel(models.Model):
     text = models.CharField(max_length=100)

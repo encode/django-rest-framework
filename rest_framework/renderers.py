@@ -414,7 +414,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         """
         Returns True if a form should be shown for this method.
         """
-        if not method in view.allowed_methods:
+        if method not in view.allowed_methods:
             return  # Not a valid method
 
         if not api_settings.FORM_METHOD_OVERRIDE:

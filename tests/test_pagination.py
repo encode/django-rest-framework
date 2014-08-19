@@ -363,11 +363,11 @@ class TestMaxPaginateByParam(TestCase):
         self.assertEqual(response.data['results'], self.data[:3])
 
 
-### Tests for context in pagination serializers
+# Tests for context in pagination serializers
 
 class CustomField(serializers.Field):
     def to_native(self, value):
-        if not 'view' in self.context:
+        if 'view' not in self.context:
             raise RuntimeError("context isn't getting passed into custom field")
         return "value"
 
@@ -377,7 +377,7 @@ class BasicModelSerializer(serializers.Serializer):
 
     def __init__(self, *args, **kwargs):
         super(BasicModelSerializer, self).__init__(*args, **kwargs)
-        if not 'view' in self.context:
+        if 'view' not in self.context:
             raise RuntimeError("context isn't getting passed into serializer init")
 
 
@@ -398,7 +398,7 @@ class TestContextPassedToCustomField(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-### Tests for custom pagination serializers
+# Tests for custom pagination serializers
 
 class LinksSerializer(serializers.Serializer):
     next = pagination.NextPageField(source='*')

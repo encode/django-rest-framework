@@ -47,8 +47,8 @@ def pytest_configure():
     )
 
     try:
-        import oauth_provider
-        import oauth2
+        import oauth_provider  # NOQA
+        import oauth2  # NOQA
     except ImportError:
         pass
     else:
@@ -57,7 +57,7 @@ def pytest_configure():
         )
 
     try:
-        import provider
+        import provider  # NOQA
     except ImportError:
         pass
     else:
@@ -68,13 +68,13 @@ def pytest_configure():
 
     # guardian is optional
     try:
-        import guardian
+        import guardian  # NOQA
     except ImportError:
         pass
     else:
         settings.ANONYMOUS_USER_ID = -1
         settings.AUTHENTICATION_BACKENDS = (
-            'django.contrib.auth.backends.ModelBackend', # default
+            'django.contrib.auth.backends.ModelBackend',
             'guardian.backends.ObjectPermissionBackend',
         )
         settings.INSTALLED_APPS += (
