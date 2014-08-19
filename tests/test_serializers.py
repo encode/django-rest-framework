@@ -1,5 +1,5 @@
 from django.test import TestCase
-from rest_framework.compat import six
+from django.utils import six
 from rest_framework.serializers import _resolve_model
 from tests.models import BasicModel
 

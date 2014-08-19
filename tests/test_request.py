@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.handlers.wsgi import WSGIRequest
 from django.test import TestCase
+from django.utils import six
 from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.parsers import (
@@ -21,7 +22,6 @@ from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.test import APIRequestFactory, APIClient
 from rest_framework.views import APIView
-from rest_framework.compat import six
 from io import BytesIO
 import json
 

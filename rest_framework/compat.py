@@ -9,13 +9,8 @@ import django
 import inspect
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
+from django.utils import six
 
-
-# Try to import six from Django, fallback to external `six` package.
-try:
-    from django.utils import six
-except ImportError:
-    import six
 
 # Handle django.utils.encoding rename in 1.5 onwards.
 # smart_unicode -> smart_text

@@ -18,14 +18,14 @@ from django.conf import settings
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.http import QueryDict
 from django.forms import widgets
-from django.utils import timezone
+from django.utils import six, timezone
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
 from django.utils.datastructures import SortedDict
 from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    BytesIO, six, smart_text,
+    BytesIO, smart_text,
     force_text, is_non_str_iterable
 )
 from rest_framework.settings import api_settings

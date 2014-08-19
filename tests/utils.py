@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from rest_framework.compat import six
+from django.utils import six
 from rest_framework.settings import api_settings
 
 

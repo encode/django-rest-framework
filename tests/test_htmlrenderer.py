@@ -4,12 +4,12 @@ from django.conf.urls import patterns, url
 from django.http import Http404
 from django.test import TestCase
 from django.template import TemplateDoesNotExist, Template
-import django.template.loader
+from django.utils import six
 from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes
 from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
-from rest_framework.compat import six
+import django.template.loader
 
 
 @api_view(('GET',))

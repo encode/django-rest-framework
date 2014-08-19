@@ -20,9 +20,9 @@ from django.contrib.contenttypes.generic import GenericForeignKey
 from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
+from django.utils import six
 from django.utils.datastructures import SortedDict
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.compat import six
 from rest_framework.settings import api_settings
 
 

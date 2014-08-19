@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 from django.conf.urls import patterns, url, include
 from django.test import TestCase
+from django.utils import six
 from tests.models import BasicModel, BasicModelSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -14,7 +15,6 @@ from rest_framework.renderers import (
 )
 from rest_framework import viewsets
 from rest_framework.settings import api_settings
-from rest_framework.compat import six
 
 
 class MockPickleRenderer(BaseRenderer):
