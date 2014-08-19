@@ -51,7 +51,9 @@ urlpatterns = patterns('',
     (r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
     (r'^oauth/$', MockView.as_view(authentication_classes=[OAuthAuthentication])),
     (r'^oauth-with-scope/$', MockView.as_view(authentication_classes=[OAuthAuthentication],
-        permission_classes=[permissions.TokenHasReadWriteScope]))
+        permission_classes=[permissions.TokenHasReadWriteScope])),
+    (r'^session-and-basic/$', MockView.as_view(
+        authentication_classes=[SessionAuthentication, BasicAuthentication])),
 )
 
 class OAuth2AuthenticationDebug(OAuth2Authentication):
@@ -639,6 +641,37 @@ class OAuth2Tests(TestCase):
         auth = self._create_authorization_header(token=read_write_access_token.token)
         response = self.csrf_client.post('/oauth2-with-scope-test/', HTTP_AUTHORIZATION=auth)
         self.assertEqual(response.status_code, 200)
+
+
+class SessionAndBasicAuthTests(TestCase):
+    """Session + basic authentication"""
+    urls = 'rest_framework.tests.test_authentication'
+
+    def setUp(self):
+        self.csrf_client = APIClient(enforce_csrf_checks=True)
+        self.non_csrf_client = APIClient(enforce_csrf_checks=False)
+        self.username = 'john'
+        self.email = 'lennon@thebeatles.com'
+        self.password = 'password'
+        self.user = User.objects.create_user(self.username, self.email, self.password)
+
+    def test_post_form_basic_auth_passing(self):
+        credentials = ('%s:%s' % (self.username, self.password))
+        base64_credentials = base64.b64encode(credentials.encode(HTTP_HEADER_ENCODING)).decode(HTTP_HEADER_ENCODING)
+        auth = 'Basic %s' % base64_credentials
+        response = self.csrf_client.post('/session-and-basic/', {'example': 'example'}, HTTP_AUTHORIZATION=auth)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_post_form_session_auth_passing(self):
+        self.non_csrf_client.login(username=self.username, password=self.password)
+        response = self.non_csrf_client.post('/session-and-basic/', {'example': 'example'})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_post_form_no_auth_failing(self):
+        response = self.non_csrf_client.post('/session-and-basic/', {'example': 'example'})
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        response_headers = dict(response.items())
+        self.assertEqual(response_headers.get('WWW-Authenticate'), 'Basic realm="api"')
 
 
 class FailingAuthAccessedInRenderer(TestCase):

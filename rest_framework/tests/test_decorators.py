@@ -1,9 +1,9 @@
 from __future__ import unicode_literals
 from django.test import TestCase
 from rest_framework import status
-from rest_framework.authentication import BasicAuthentication
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.parsers import JSONParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 from rest_framework.test import APIRequestFactory
@@ -132,8 +132,13 @@ class DecoratorTestCase(TestCase):
     def test_permission_classes(self):
 
         @api_view(['GET'])
-        @permission_classes([IsAuthenticated])
+        @authentication_classes([SessionAuthentication])
+        @permission_classes([IsAdminUser])
         def view(request):
+            self.assertEqual(len(request.permission_classes), 1)
+            self.assertTrue(isinstance(request.permission_classes[0],
+                                       IsAdminUser))
+
             return Response({})
 
         request = self.factory.get('/')
