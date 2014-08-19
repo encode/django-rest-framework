@@ -1,3 +1,9 @@
+# Test requirements
+pytest-django==2.6
+pytest==2.5.2
+pytest-cov==1.6
+
+# Optional packages
 markdown>=2.1.0
 PyYAML>=3.10
 defusedxml>=0.3

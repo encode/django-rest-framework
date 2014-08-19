@@ -49,9 +49,10 @@ class APIRequestFactory(DjangoRequestFactory):
         else:
             format = format or self.default_format
 
-            assert format in self.renderer_classes, ("Invalid format '{0}'. "
-                "Available formats are {1}.  Set TEST_REQUEST_RENDERER_CLASSES "
-                "to enable extra request formats.".format(
+            assert format in self.renderer_classes, (
+                "Invalid format '{0}'. Available formats are {1}. "
+                "Set TEST_REQUEST_RENDERER_CLASSES to enable "
+                "extra request formats.".format(
                     format,
                     ', '.join(["'" + fmt + "'" for fmt in self.renderer_classes.keys()])
                 )

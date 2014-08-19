@@ -1,6 +1,5 @@
 import binascii
 import os
-from hashlib import sha1
 from django.conf import settings
 from django.db import models
 

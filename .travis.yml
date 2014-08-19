@@ -28,7 +28,7 @@ install:
   - export PYTHONPATH=.
 
 script:
-  - py.test
+  - ./runtests.py
 
 matrix:
   exclude:

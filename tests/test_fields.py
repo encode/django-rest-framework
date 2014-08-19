@@ -648,7 +648,7 @@ class DecimalFieldTest(TestCase):
         s = DecimalSerializer(data={'decimal_field': '123'})
 
         self.assertFalse(s.is_valid())
-        self.assertEqual(s.errors,  {'decimal_field': ['Ensure this value is less than or equal to 100.']})
+        self.assertEqual(s.errors, {'decimal_field': ['Ensure this value is less than or equal to 100.']})
 
     def test_raise_min_value(self):
         """
@@ -660,7 +660,7 @@ class DecimalFieldTest(TestCase):
         s = DecimalSerializer(data={'decimal_field': '99'})
 
         self.assertFalse(s.is_valid())
-        self.assertEqual(s.errors,  {'decimal_field': ['Ensure this value is greater than or equal to 100.']})
+        self.assertEqual(s.errors, {'decimal_field': ['Ensure this value is greater than or equal to 100.']})
 
     def test_raise_max_digits(self):
         """
@@ -672,7 +672,7 @@ class DecimalFieldTest(TestCase):
         s = DecimalSerializer(data={'decimal_field': '123.456'})
 
         self.assertFalse(s.is_valid())
-        self.assertEqual(s.errors,  {'decimal_field': ['Ensure that there are no more than 5 digits in total.']})
+        self.assertEqual(s.errors, {'decimal_field': ['Ensure that there are no more than 5 digits in total.']})
 
     def test_raise_max_decimal_places(self):
         """
@@ -684,7 +684,7 @@ class DecimalFieldTest(TestCase):
         s = DecimalSerializer(data={'decimal_field': '123.4567'})
 
         self.assertFalse(s.is_valid())
-        self.assertEqual(s.errors,  {'decimal_field': ['Ensure that there are no more than 3 decimal places.']})
+        self.assertEqual(s.errors, {'decimal_field': ['Ensure that there are no more than 3 decimal places.']})
 
     def test_raise_max_whole_digits(self):
         """
@@ -696,7 +696,7 @@ class DecimalFieldTest(TestCase):
         s = DecimalSerializer(data={'decimal_field': '12345.6'})
 
         self.assertFalse(s.is_valid())
-        self.assertEqual(s.errors,  {'decimal_field': ['Ensure that there are no more than 4 digits in total.']})
+        self.assertEqual(s.errors, {'decimal_field': ['Ensure that there are no more than 4 digits in total.']})
 
 
 class ChoiceFieldTests(TestCase):
@@ -729,7 +729,7 @@ class ChoiceFieldTests(TestCase):
     def test_invalid_choice_model(self):
         s = ChoiceFieldModelSerializer(data={'choice': 'wrong_value'})
         self.assertFalse(s.is_valid())
-        self.assertEqual(s.errors,  {'choice': ['Select a valid choice. wrong_value is not one of the available choices.']})
+        self.assertEqual(s.errors, {'choice': ['Select a valid choice. wrong_value is not one of the available choices.']})
         self.assertEqual(s.data['choice'], '')
 
     def test_empty_choice_model(self):
@@ -875,7 +875,7 @@ class SlugFieldTests(TestCase):
         s = SlugFieldSerializer(data={'slug_field': 'a b'})
 
         self.assertEqual(s.is_valid(), False)
-        self.assertEqual(s.errors,  {'slug_field': ["Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."]})
+        self.assertEqual(s.errors, {'slug_field': ["Enter a valid 'slug' consisting of letters, numbers, underscores or hyphens."]})
 
 
 class URLFieldTests(TestCase):

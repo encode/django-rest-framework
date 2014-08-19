@@ -12,6 +12,7 @@ import base64
 
 factory = APIRequestFactory()
 
+
 class RootView(generics.ListCreateAPIView):
     model = BasicModel
     authentication_classes = [authentication.BasicAuthentication]
@@ -101,42 +102,54 @@ class ModelPermissionsIntegrationTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_options_permitted(self):
-        request = factory.options('/',
-                               HTTP_AUTHORIZATION=self.permitted_credentials)
+        request = factory.options(
+            '/',
+            HTTP_AUTHORIZATION=self.permitted_credentials
+        )
         response = root_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('actions', response.data)
         self.assertEqual(list(response.data['actions'].keys()), ['POST'])
 
-        request = factory.options('/1',
-                               HTTP_AUTHORIZATION=self.permitted_credentials)
+        request = factory.options(
+            '/1',
+            HTTP_AUTHORIZATION=self.permitted_credentials
+        )
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('actions', response.data)
         self.assertEqual(list(response.data['actions'].keys()), ['PUT'])
 
     def test_options_disallowed(self):
-        request = factory.options('/',
-                               HTTP_AUTHORIZATION=self.disallowed_credentials)
+        request = factory.options(
+            '/',
+            HTTP_AUTHORIZATION=self.disallowed_credentials
+        )
         response = root_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn('actions', response.data)
 
-        request = factory.options('/1',
-                               HTTP_AUTHORIZATION=self.disallowed_credentials)
+        request = factory.options(
+            '/1',
+            HTTP_AUTHORIZATION=self.disallowed_credentials
+        )
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn('actions', response.data)
 
     def test_options_updateonly(self):
-        request = factory.options('/',
-                               HTTP_AUTHORIZATION=self.updateonly_credentials)
+        request = factory.options(
+            '/',
+            HTTP_AUTHORIZATION=self.updateonly_credentials
+        )
         response = root_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertNotIn('actions', response.data)
 
-        request = factory.options('/1',
-                               HTTP_AUTHORIZATION=self.updateonly_credentials)
+        request = factory.options(
+            '/1',
+            HTTP_AUTHORIZATION=self.updateonly_credentials
+        )
         response = instance_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn('actions', response.data)
@@ -152,6 +165,7 @@ class BasicPermModel(models.Model):
             ('view_basicpermmodel', 'Can view basic perm model'),
             # add, change, delete built in to django
         )
+
 
 # Custom object-level permission, that includes 'view' permissions
 class ViewObjectPermissions(permissions.DjangoObjectPermissions):
@@ -205,7 +219,7 @@ class ObjectPermissionsIntegrationTests(TestCase):
         app_label = BasicPermModel._meta.app_label
         f = '{0}_{1}'.format
         perms = {
-            'view':   f('view', model_name),
+            'view': f('view', model_name),
             'change': f('change', model_name),
             'delete': f('delete', model_name)
         }
@@ -246,21 +260,27 @@ class ObjectPermissionsIntegrationTests(TestCase):
 
     # Update
     def test_can_update_permissions(self):
-        request = factory.patch('/1', {'text': 'foobar'}, format='json',
-            HTTP_AUTHORIZATION=self.credentials['writeonly'])
+        request = factory.patch(
+            '/1', {'text': 'foobar'}, format='json',
+            HTTP_AUTHORIZATION=self.credentials['writeonly']
+        )
         response = object_permissions_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data.get('text'), 'foobar')
 
     def test_cannot_update_permissions(self):
-        request = factory.patch('/1', {'text': 'foobar'}, format='json',
-            HTTP_AUTHORIZATION=self.credentials['deleteonly'])
+        request = factory.patch(
+            '/1', {'text': 'foobar'}, format='json',
+            HTTP_AUTHORIZATION=self.credentials['deleteonly']
+        )
         response = object_permissions_view(request, pk='1')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_cannot_update_permissions_non_existing(self):
-        request = factory.patch('/999', {'text': 'foobar'}, format='json',
-            HTTP_AUTHORIZATION=self.credentials['deleteonly'])
+        request = factory.patch(
+            '/999', {'text': 'foobar'}, format='json',
+            HTTP_AUTHORIZATION=self.credentials['deleteonly']
+        )
         response = object_permissions_view(request, pk='999')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 

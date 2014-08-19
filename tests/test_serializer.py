@@ -7,10 +7,12 @@ from django.utils import unittest
 from django.utils.datastructures import MultiValueDict
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import serializers, fields, relations
-from tests.models import (HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
-    BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel, DefaultValueModel,
-    ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo, RESTFrameworkModel,
-    ForeignKeySource, ManyToManySource)
+from tests.models import (
+    HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
+    BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel,
+    DefaultValueModel, ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo,
+    RESTFrameworkModel, ForeignKeySource
+)
 from tests.models import BasicModelSerializer
 import datetime
 import pickle
@@ -99,6 +101,7 @@ class ActionItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = ActionItem
 
+
 class ActionItemSerializerOptionalFields(serializers.ModelSerializer):
     """
     Intended to test that fields with `required=False` are excluded from validation.
@@ -108,6 +111,7 @@ class ActionItemSerializerOptionalFields(serializers.ModelSerializer):
     class Meta:
         model = ActionItem
         fields = ('title',)
+
 
 class ActionItemSerializerCustomRestore(serializers.ModelSerializer):
 
@@ -295,8 +299,10 @@ class BasicTests(TestCase):
         in the Meta data
         """
         serializer = PersonSerializer(self.person)
-        self.assertEqual(set(serializer.data.keys()),
-                          set(['name', 'age', 'info']))
+        self.assertEqual(
+            set(serializer.data.keys()),
+            set(['name', 'age', 'info'])
+        )
 
     def test_field_with_dictionary(self):
         """
@@ -331,9 +337,9 @@ class BasicTests(TestCase):
             — id field is not populated if `data` is accessed prior to `save()`
         """
         serializer = ActionItemSerializer(self.actionitem)
-        self.assertIsNone(serializer.data.get('id',None), 'New instance. `id` should not be set.')
+        self.assertIsNone(serializer.data.get('id', None), 'New instance. `id` should not be set.')
         serializer.save()
-        self.assertIsNotNone(serializer.data.get('id',None), 'Model is saved. `id` should be set.')
+        self.assertIsNotNone(serializer.data.get('id', None), 'Model is saved. `id` should be set.')
 
     def test_fields_marked_as_not_required_are_excluded_from_validation(self):
         """
@@ -660,10 +666,10 @@ class ModelValidationTests(TestCase):
         serializer.save()
         second_serializer = AlbumsSerializer(data={'title': 'a'})
         self.assertFalse(second_serializer.is_valid())
-        self.assertEqual(second_serializer.errors,  {'title': ['Album with this Title already exists.'],})
+        self.assertEqual(second_serializer.errors, {'title': ['Album with this Title already exists.']})
         third_serializer = AlbumsSerializer(data=[{'title': 'b', 'ref': '1'}, {'title': 'c'}], many=True)
         self.assertFalse(third_serializer.is_valid())
-        self.assertEqual(third_serializer.errors,  [{'ref': ['Album with this Ref already exists.']}, {}])
+        self.assertEqual(third_serializer.errors, [{'ref': ['Album with this Ref already exists.']}, {}])
 
     def test_foreign_key_is_null_with_partial(self):
         """
@@ -959,7 +965,7 @@ class WritableFieldDefaultValueTests(TestCase):
         self.assertEqual(got, self.expected)
 
     def test_get_default_value_with_callable(self):
-        field = self.create_field(default=lambda : self.expected)
+        field = self.create_field(default=lambda: self.expected)
         got = field.get_default_value()
         self.assertEqual(got, self.expected)
 
@@ -974,7 +980,7 @@ class WritableFieldDefaultValueTests(TestCase):
         self.assertIsNone(got)
 
     def test_get_default_value_returns_non_True_values(self):
-        values = [None, '', False, 0, [], (), {}] # values that assumed as 'False' in the 'if' clause
+        values = [None, '', False, 0, [], (), {}]  # values that assumed as 'False' in the 'if' clause
         for expected in values:
             field = self.create_field(default=expected)
             got = field.get_default_value()

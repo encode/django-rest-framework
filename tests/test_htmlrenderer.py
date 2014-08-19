@@ -34,7 +34,8 @@ def not_found(request):
     raise Http404()
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^$', example),
     url(r'^permission_denied$', permission_denied),
     url(r'^not_found$', not_found),

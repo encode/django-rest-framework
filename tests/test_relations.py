@@ -108,18 +108,24 @@ class RelatedFieldSourceTests(TestCase):
         doesn't exist.
         """
         from tests.models import ManyToManySource
+
         class Meta:
             model = ManyToManySource
+
         attrs = {
             'name': serializers.SlugRelatedField(
                 slug_field='name', source='banzai'),
             'Meta': Meta,
         }
 
-        TestSerializer = type(str('TestSerializer'),
-            (serializers.ModelSerializer,), attrs)
+        TestSerializer = type(
+            str('TestSerializer'),
+            (serializers.ModelSerializer,),
+            attrs
+        )
         with self.assertRaises(AttributeError):
             TestSerializer(data={'name': 'foo'})
+
 
 @unittest.skipIf(get_version() < '1.6.0', 'Upstream behaviour changed in v1.6')
 class RelatedFieldChoicesTests(TestCase):
@@ -141,4 +147,3 @@ class RelatedFieldChoicesTests(TestCase):
         widget_count = len(field.widget.choices)
 
         self.assertEqual(widget_count, choice_count + 1, 'BLANK_CHOICE_DASH option should have been added')
-

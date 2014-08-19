@@ -117,18 +117,18 @@ class TestGenericRelations(TestCase):
 
         serializer = TagSerializer(Tag.objects.all(), many=True)
         expected = [
-        {
-            'tag': 'django',
-            'tagged_item': 'Bookmark: https://www.djangoproject.com/'
-        },
-        {
-            'tag': 'python',
-            'tagged_item': 'Bookmark: https://www.djangoproject.com/'
-        },
-        {
-            'tag': 'reminder',
-            'tagged_item': 'Note: Remember the milk'
-        }
+            {
+                'tag': 'django',
+                'tagged_item': 'Bookmark: https://www.djangoproject.com/'
+            },
+            {
+                'tag': 'python',
+                'tagged_item': 'Bookmark: https://www.djangoproject.com/'
+            },
+            {
+                'tag': 'reminder',
+                'tagged_item': 'Note: Remember the milk'
+            }
         ]
         self.assertEqual(serializer.data, expected)
 

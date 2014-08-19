@@ -25,6 +25,7 @@ def strict_positive_int(integer_string, cutoff=None):
         ret = min(ret, cutoff)
     return ret
 
+
 def get_object_or_404(queryset, *filter_args, **filter_kwargs):
     """
     Same as Django's standard shortcut, but make sure to raise 404
@@ -162,10 +163,11 @@ class GenericAPIView(views.APIView):
                 raise Http404(_("Page is not 'last', nor can it be converted to an int."))
         try:
             page = paginator.page(page_number)
-        except InvalidPage as e:
-            raise Http404(_('Invalid page (%(page_number)s): %(message)s') % {
-                                'page_number': page_number,
-                                'message': str(e)
+        except InvalidPage as exc:
+            error_format = _('Invalid page (%(page_number)s): %(message)s')
+            raise Http404(error_format % {
+                'page_number': page_number,
+                'message': str(exc)
             })
 
         if deprecated_style:
@@ -207,7 +209,6 @@ class GenericAPIView(views.APIView):
             filter_backends = [self.filter_backend]
 
         return filter_backends
-
 
     ########################
     ### The following methods provide default implementations
@@ -284,8 +285,8 @@ class GenericAPIView(views.APIView):
         if self.model is not None:
             return self.model._default_manager.all()
 
-        raise ImproperlyConfigured("'%s' must define 'queryset' or 'model'"
-                                    % self.__class__.__name__)
+        error_format = "'%s' must define 'queryset' or 'model'"
+        raise ImproperlyConfigured(error_format % self.__class__.__name__)
 
     def get_object(self, queryset=None):
         """

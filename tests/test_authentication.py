@@ -45,26 +45,39 @@ class MockView(APIView):
         return HttpResponse({'a': 1, 'b': 2, 'c': 3})
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     (r'^session/$', MockView.as_view(authentication_classes=[SessionAuthentication])),
     (r'^basic/$', MockView.as_view(authentication_classes=[BasicAuthentication])),
     (r'^token/$', MockView.as_view(authentication_classes=[TokenAuthentication])),
     (r'^auth-token/$', 'rest_framework.authtoken.views.obtain_auth_token'),
     (r'^oauth/$', MockView.as_view(authentication_classes=[OAuthAuthentication])),
-    (r'^oauth-with-scope/$', MockView.as_view(authentication_classes=[OAuthAuthentication],
-        permission_classes=[permissions.TokenHasReadWriteScope]))
+    (
+        r'^oauth-with-scope/$',
+        MockView.as_view(
+            authentication_classes=[OAuthAuthentication],
+            permission_classes=[permissions.TokenHasReadWriteScope]
+        )
+    )
 )
+
 
 class OAuth2AuthenticationDebug(OAuth2Authentication):
     allow_query_params_token = True
 
 if oauth2_provider is not None:
-    urlpatterns += patterns('',
+    urlpatterns += patterns(
+        '',
         url(r'^oauth2/', include('provider.oauth2.urls', namespace='oauth2')),
         url(r'^oauth2-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication])),
         url(r'^oauth2-test-debug/$', MockView.as_view(authentication_classes=[OAuth2AuthenticationDebug])),
-        url(r'^oauth2-with-scope-test/$', MockView.as_view(authentication_classes=[OAuth2Authentication],
-            permission_classes=[permissions.TokenHasReadWriteScope])),
+        url(
+            r'^oauth2-with-scope-test/$',
+            MockView.as_view(
+                authentication_classes=[OAuth2Authentication],
+                permission_classes=[permissions.TokenHasReadWriteScope]
+            )
+        )
     )
 
 
@@ -278,12 +291,16 @@ class OAuthTests(TestCase):
         self.TOKEN_KEY = "token_key"
         self.TOKEN_SECRET = "token_secret"
 
-        self.consumer = Consumer.objects.create(key=self.CONSUMER_KEY, secret=self.CONSUMER_SECRET,
-            name='example', user=self.user, status=self.consts.ACCEPTED)
+        self.consumer = Consumer.objects.create(
+            key=self.CONSUMER_KEY, secret=self.CONSUMER_SECRET,
+            name='example', user=self.user, status=self.consts.ACCEPTED
+        )
 
         self.scope = Scope.objects.create(name="resource name", url="api/")
-        self.token = OAuthToken.objects.create(user=self.user, consumer=self.consumer, scope=self.scope,
-            token_type=OAuthToken.ACCESS, key=self.TOKEN_KEY, secret=self.TOKEN_SECRET, is_approved=True
+        self.token = OAuthToken.objects.create(
+            user=self.user, consumer=self.consumer, scope=self.scope,
+            token_type=OAuthToken.ACCESS, key=self.TOKEN_KEY, secret=self.TOKEN_SECRET,
+            is_approved=True
         )
 
     def _create_authorization_header(self):
@@ -501,24 +518,24 @@ class OAuth2Tests(TestCase):
         self.REFRESH_TOKEN = "refresh_token"
 
         self.oauth2_client = oauth2_provider.oauth2.models.Client.objects.create(
-                client_id=self.CLIENT_ID,
-                client_secret=self.CLIENT_SECRET,
-                redirect_uri='',
-                client_type=0,
-                name='example',
-                user=None,
-            )
+            client_id=self.CLIENT_ID,
+            client_secret=self.CLIENT_SECRET,
+            redirect_uri='',
+            client_type=0,
+            name='example',
+            user=None,
+        )
 
         self.access_token = oauth2_provider.oauth2.models.AccessToken.objects.create(
-                token=self.ACCESS_TOKEN,
-                client=self.oauth2_client,
-                user=self.user,
-            )
+            token=self.ACCESS_TOKEN,
+            client=self.oauth2_client,
+            user=self.user,
+        )
         self.refresh_token = oauth2_provider.oauth2.models.RefreshToken.objects.create(
-                user=self.user,
-                access_token=self.access_token,
-                client=self.oauth2_client
-            )
+            user=self.user,
+            access_token=self.access_token,
+            client=self.oauth2_client
+        )
 
     def _create_authorization_header(self, token=None):
         return "Bearer {0}".format(token or self.access_token.token)
@@ -569,8 +586,10 @@ class OAuth2Tests(TestCase):
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')
     def test_post_form_passing_auth_url_transport(self):
         """Ensure GETing form over OAuth with correct client credentials in form data succeed"""
-        response = self.csrf_client.post('/oauth2-test/',
-                data={'access_token': self.access_token.token})
+        response = self.csrf_client.post(
+            '/oauth2-test/',
+            data={'access_token': self.access_token.token}
+        )
         self.assertEqual(response.status_code, 200)
 
     @unittest.skipUnless(oauth2_provider, 'django-oauth2-provider not installed')

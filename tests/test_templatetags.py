@@ -48,4 +48,4 @@ class Issue1386Tests(TestCase):
             self.assertEqual(i, res)
 
         # example from issue #1386, this shouldn't raise an exception
-        _ = urlize_quoted_links("asdf:[/p]zxcv.com")
+        urlize_quoted_links("asdf:[/p]zxcv.com")

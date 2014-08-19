@@ -449,9 +449,11 @@ class BaseSerializer(WritableField):
 
                 # If we have a model manager or similar object then we need
                 # to iterate through each instance.
-                if (self.many and
+                if (
+                    self.many and
                     not hasattr(obj, '__iter__') and
-                    is_simple_callable(getattr(obj, 'all', None))):
+                    is_simple_callable(getattr(obj, 'all', None))
+                ):
                     obj = obj.all()
 
                 kwargs = {
@@ -601,8 +603,10 @@ class BaseSerializer(WritableField):
         API schemas for auto-documentation.
         """
         return SortedDict(
-            [(field_name, field.metadata())
-            for field_name, field in six.iteritems(self.fields)]
+            [
+                (field_name, field.metadata())
+                for field_name, field in six.iteritems(self.fields)
+            ]
         )
 
 
@@ -656,8 +660,10 @@ class ModelSerializer(Serializer):
         """
 
         cls = self.opts.model
-        assert cls is not None, \
-                "Serializer class '%s' is missing 'model' Meta option" % self.__class__.__name__
+        assert cls is not None, (
+            "Serializer class '%s' is missing 'model' Meta option" %
+            self.__class__.__name__
+        )
         opts = cls._meta.concrete_model._meta
         ret = SortedDict()
         nested = bool(self.opts.depth)
@@ -668,9 +674,9 @@ class ModelSerializer(Serializer):
             # If model is a child via multitable inheritance, use parent's pk
             pk_field = pk_field.rel.to._meta.pk
 
-        field = self.get_pk_field(pk_field)
-        if field:
-            ret[pk_field.name] = field
+        serializer_pk_field = self.get_pk_field(pk_field)
+        if serializer_pk_field:
+            ret[pk_field.name] = serializer_pk_field
 
         # Deal with forward relationships
         forward_rels = [field for field in opts.fields if field.serialize]
@@ -739,9 +745,11 @@ class ModelSerializer(Serializer):
             is_m2m = isinstance(relation.field,
                                 models.fields.related.ManyToManyField)
 
-            if (is_m2m and
+            if (
+                is_m2m and
                 hasattr(relation.field.rel, 'through') and
-                not relation.field.rel.through._meta.auto_created):
+                not relation.field.rel.through._meta.auto_created
+            ):
                 has_through_model = True
 
             if nested:
@@ -911,10 +919,12 @@ class ModelSerializer(Serializer):
 
         for field_name, field in self.fields.items():
             field_name = field.source or field_name
-            if field_name in exclusions \
-                and not field.read_only \
-                and (field.required or hasattr(instance, field_name)) \
-                and not isinstance(field, Serializer):
+            if (
+                field_name in exclusions
+                and not field.read_only
+                and (field.required or hasattr(instance, field_name))
+                and not isinstance(field, Serializer)
+            ):
                 exclusions.remove(field_name)
         return exclusions
 

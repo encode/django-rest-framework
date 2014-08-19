@@ -62,9 +62,11 @@ class IsAuthenticatedOrReadOnly(BasePermission):
     """
 
     def has_permission(self, request, view):
-        return (request.method in SAFE_METHODS or 
-            request.user and 
-            request.user.is_authenticated())
+        return (
+            request.method in SAFE_METHODS or
+            request.user and
+            request.user.is_authenticated()
+        )
 
 
 class DjangoModelPermissions(BasePermission):
@@ -122,9 +124,11 @@ class DjangoModelPermissions(BasePermission):
 
         perms = self.get_required_permissions(request.method, model_cls)
 
-        return (request.user and
+        return (
+            request.user and
             (request.user.is_authenticated() or not self.authenticated_users_only) and
-            request.user.has_perms(perms))
+            request.user.has_perms(perms)
+        )
 
 
 class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
@@ -212,6 +216,8 @@ class TokenHasReadWriteScope(BasePermission):
             required = oauth2_constants.READ if read_only else oauth2_constants.WRITE
             return oauth2_provider_scope.check(required, request.auth.scope)
 
-        assert False, ('TokenHasReadWriteScope requires either the'
-        '`OAuthAuthentication` or `OAuth2Authentication` authentication '
-        'class to be used.')
+        assert False, (
+            'TokenHasReadWriteScope requires either the'
+            '`OAuthAuthentication` or `OAuth2Authentication` authentication '
+            'class to be used.'
+        )

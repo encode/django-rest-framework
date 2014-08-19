@@ -68,7 +68,6 @@ SECRET_KEY = 'u@x-aj9(hoh#rb-^ymf#g2jx_hp0vj7u5#b@ag1n^seu9e!%cy'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -104,8 +103,8 @@ INSTALLED_APPS = (
 
 # OAuth is optional and won't work if there is no oauth_provider & oauth2
 try:
-    import oauth_provider
-    import oauth2
+    import oauth_provider  # NOQA
+    import oauth2  # NOQA
 except ImportError:
     pass
 else:
@@ -114,7 +113,7 @@ else:
     )
 
 try:
-    import provider
+    import provider  # NOQA
 except ImportError:
     pass
 else:
@@ -125,13 +124,13 @@ else:
 
 # guardian is optional
 try:
-    import guardian
+    import guardian  # NOQA
 except ImportError:
     pass
 else:
     ANONYMOUS_USER_ID = -1
     AUTHENTICATION_BACKENDS = (
-        'django.contrib.auth.backends.ModelBackend', # default
+        'django.contrib.auth.backends.ModelBackend',  # default
         'guardian.backends.ObjectPermissionBackend',
     )
     INSTALLED_APPS += (

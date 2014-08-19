@@ -1,7 +1,6 @@
 from __future__ import unicode_literals
 import datetime
 from decimal import Decimal
-from django.db import models
 from django.core.paginator import Paginator
 from django.test import TestCase
 from django.utils import unittest
@@ -11,6 +10,7 @@ from rest_framework.test import APIRequestFactory
 from .models import BasicModel, FilterableItem
 
 factory = APIRequestFactory()
+
 
 # Helper function to split arguments out of an url
 def split_arguments_from_url(url):
@@ -274,8 +274,8 @@ class TestUnpaginated(TestCase):
             BasicModel(text=i).save()
         self.objects = BasicModel.objects
         self.data = [
-        {'id': obj.id, 'text': obj.text}
-        for obj in self.objects.all()
+            {'id': obj.id, 'text': obj.text}
+            for obj in self.objects.all()
         ]
         self.view = DefaultPageSizeKwargView.as_view()
 
@@ -302,8 +302,8 @@ class TestCustomPaginateByParam(TestCase):
             BasicModel(text=i).save()
         self.objects = BasicModel.objects
         self.data = [
-        {'id': obj.id, 'text': obj.text}
-        for obj in self.objects.all()
+            {'id': obj.id, 'text': obj.text}
+            for obj in self.objects.all()
         ]
         self.view = PaginateByParamView.as_view()
 
@@ -483,8 +483,6 @@ class NonIntegerPaginator(object):
 
 
 class TestNonIntegerPagination(TestCase):
-
-
     def test_custom_pagination_serializer(self):
         objects = ['john', 'paul', 'george', 'ringo']
         paginator = NonIntegerPaginator(objects, 2)

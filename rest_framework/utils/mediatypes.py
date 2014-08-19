@@ -57,7 +57,7 @@ class _MediaType(object):
             if key != 'q' and other.params.get(key, None) != self.params.get(key, None):
                 return False
 
-        if self.sub_type != '*' and other.sub_type != '*'  and other.sub_type != self.sub_type:
+        if self.sub_type != '*' and other.sub_type != '*' and other.sub_type != self.sub_type:
             return False
 
         if self.main_type != '*' and other.main_type != '*' and other.main_type != self.main_type:

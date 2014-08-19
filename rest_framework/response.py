@@ -62,8 +62,10 @@ class Response(SimpleTemplateResponse):
 
         ret = renderer.render(self.data, media_type, context)
         if isinstance(ret, six.text_type):
-            assert charset, 'renderer returned unicode, and did not specify ' \
-            'a charset value.'
+            assert charset, (
+                'renderer returned unicode, and did not specify '
+                'a charset value.'
+            )
             return bytes(ret.encode(charset))
 
         if not ret:

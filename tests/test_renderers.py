@@ -76,7 +76,6 @@ class MockGETView(APIView):
         return Response({'foo': ['bar', 'baz']})
 
 
-
 class MockPOSTView(APIView):
     def post(self, request, **kwargs):
         return Response({'foo': request.DATA})
@@ -102,7 +101,8 @@ class HTMLView1(APIView):
     def get(self, request, **kwargs):
         return Response('text')
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^.*\.(?P<format>.+)$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
     url(r'^$', MockView.as_view(renderer_classes=[RendererA, RendererB])),
     url(r'^cache$', MockGETView.as_view()),
@@ -312,16 +312,22 @@ class JSONRendererTests(TestCase):
         class Dict(MutableMapping):
             def __init__(self):
                 self._dict = dict()
+
             def __getitem__(self, key):
                 return self._dict.__getitem__(key)
+
             def __setitem__(self, key, value):
                 return self._dict.__setitem__(key, value)
+
             def __delitem__(self, key):
                 return self._dict.__delitem__(key)
+
             def __iter__(self):
                 return self._dict.__iter__()
+
             def __len__(self):
                 return self._dict.__len__()
+
             def keys(self):
                 return self._dict.keys()
 
@@ -330,22 +336,24 @@ class JSONRendererTests(TestCase):
         x[2] = 3
         ret = JSONRenderer().render(x)
         data = json.loads(ret.decode('utf-8'))
-        self.assertEquals(data, {'key': 'string value', '2': 3})    
+        self.assertEquals(data, {'key': 'string value', '2': 3})
 
     def test_render_obj_with_getitem(self):
         class DictLike(object):
             def __init__(self):
                 self._dict = {}
+
             def set(self, value):
                 self._dict = dict(value)
+
             def __getitem__(self, key):
                 return self._dict[key]
-            
+
         x = DictLike()
         x.set({'a': 1, 'b': 'string'})
         with self.assertRaises(TypeError):
             JSONRenderer().render(x)
-        
+
     def test_without_content_type_args(self):
         """
         Test basic JSON rendering.
@@ -394,35 +402,47 @@ class JSONPRendererTests(TestCase):
         """
         Test JSONP rendering with View JSON Renderer.
         """
-        resp = self.client.get('/jsonp/jsonrenderer',
-                               HTTP_ACCEPT='application/javascript')
+        resp = self.client.get(
+            '/jsonp/jsonrenderer',
+            HTTP_ACCEPT='application/javascript'
+        )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(resp['Content-Type'], 'application/javascript; charset=utf-8')
-        self.assertEqual(resp.content,
-            ('callback(%s);' % _flat_repr).encode('ascii'))
+        self.assertEqual(
+            resp.content,
+            ('callback(%s);' % _flat_repr).encode('ascii')
+        )
 
     def test_without_callback_without_json_renderer(self):
         """
         Test JSONP rendering without View JSON Renderer.
         """
-        resp = self.client.get('/jsonp/nojsonrenderer',
-                               HTTP_ACCEPT='application/javascript')
+        resp = self.client.get(
+            '/jsonp/nojsonrenderer',
+            HTTP_ACCEPT='application/javascript'
+        )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(resp['Content-Type'], 'application/javascript; charset=utf-8')
-        self.assertEqual(resp.content,
-            ('callback(%s);' % _flat_repr).encode('ascii'))
+        self.assertEqual(
+            resp.content,
+            ('callback(%s);' % _flat_repr).encode('ascii')
+        )
 
     def test_with_callback(self):
         """
         Test JSONP rendering with callback function name.
         """
         callback_func = 'myjsonpcallback'
-        resp = self.client.get('/jsonp/nojsonrenderer?callback=' + callback_func,
-                               HTTP_ACCEPT='application/javascript')
+        resp = self.client.get(
+            '/jsonp/nojsonrenderer?callback=' + callback_func,
+            HTTP_ACCEPT='application/javascript'
+        )
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         self.assertEqual(resp['Content-Type'], 'application/javascript; charset=utf-8')
-        self.assertEqual(resp.content,
-            ('%s(%s);' % (callback_func, _flat_repr)).encode('ascii'))
+        self.assertEqual(
+            resp.content,
+            ('%s(%s);' % (callback_func, _flat_repr)).encode('ascii')
+        )
 
 
 if yaml:
@@ -466,7 +486,6 @@ if yaml:
 
         def assertYAMLContains(self, content, string):
             self.assertTrue(string in content, '%r not in %r' % (string, content))
-
 
     class UnicodeYAMLRendererTests(TestCase):
         """
@@ -592,13 +611,13 @@ class CacheRenderTest(TestCase):
         """ Return any errors that would be raised if `obj' is pickled
         Courtesy of koffie @ http://stackoverflow.com/a/7218986/109897
         """
-        if seen == None:
+        if seen is None:
             seen = []
         try:
             state = obj.__getstate__()
         except AttributeError:
             return
-        if state == None:
+        if state is None:
             return
         if isinstance(state, tuple):
             if not isinstance(state[0], dict):

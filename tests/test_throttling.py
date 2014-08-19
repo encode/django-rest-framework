@@ -27,7 +27,7 @@ class NonTimeThrottle(BaseThrottle):
         if not hasattr(self.__class__, 'called'):
             self.__class__.called = True
             return True
-        return False 
+        return False
 
 
 class MockView(APIView):
@@ -125,36 +125,42 @@ class ThrottlingTests(TestCase):
         """
         Ensure for second based throttles.
         """
-        self.ensure_response_header_contains_proper_throttle_field(MockView,
-         ((0, None),
-          (0, None),
-          (0, None),
-          (0, '1')
-         ))
+        self.ensure_response_header_contains_proper_throttle_field(
+            MockView, (
+                (0, None),
+                (0, None),
+                (0, None),
+                (0, '1')
+            )
+        )
 
     def test_minutes_fields(self):
         """
         Ensure for minute based throttles.
         """
-        self.ensure_response_header_contains_proper_throttle_field(MockView_MinuteThrottling,
-         ((0, None),
-          (0, None),
-          (0, None),
-          (0, '60')
-         ))
+        self.ensure_response_header_contains_proper_throttle_field(
+            MockView_MinuteThrottling, (
+                (0, None),
+                (0, None),
+                (0, None),
+                (0, '60')
+            )
+        )
 
     def test_next_rate_remains_constant_if_followed(self):
         """
         If a client follows the recommended next request rate,
         the throttling rate should stay constant.
         """
-        self.ensure_response_header_contains_proper_throttle_field(MockView_MinuteThrottling,
-         ((0, None),
-          (20, None),
-          (40, None),
-          (60, None),
-          (80, None)
-         ))
+        self.ensure_response_header_contains_proper_throttle_field(
+            MockView_MinuteThrottling, (
+                (0, None),
+                (20, None),
+                (40, None),
+                (60, None),
+                (80, None)
+            )
+        )
 
     def test_non_time_throttle(self):
         """
@@ -170,7 +176,7 @@ class ThrottlingTests(TestCase):
         self.assertTrue(MockView_NonTimeThrottling.throttle_classes[0].called)
 
         response = MockView_NonTimeThrottling.as_view()(request)
-        self.assertFalse('X-Throttle-Wait-Seconds' in response) 
+        self.assertFalse('X-Throttle-Wait-Seconds' in response)
 
 
 class ScopedRateThrottleTests(TestCase):

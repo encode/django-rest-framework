@@ -10,7 +10,8 @@ factory = APIRequestFactory()
 def null_view(request):
     pass
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^view$', null_view, name='view'),
 )
 

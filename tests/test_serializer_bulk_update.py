@@ -83,9 +83,9 @@ class BulkCreateSerializerTests(TestCase):
         self.assertEqual(serializer.is_valid(), False)
 
         expected_errors = [
-                {'non_field_errors': ['Invalid data']},
-                {'non_field_errors': ['Invalid data']},
-                {'non_field_errors': ['Invalid data']}
+            {'non_field_errors': ['Invalid data']},
+            {'non_field_errors': ['Invalid data']},
+            {'non_field_errors': ['Invalid data']}
         ]
 
         self.assertEqual(serializer.errors, expected_errors)

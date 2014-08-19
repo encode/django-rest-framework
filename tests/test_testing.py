@@ -28,7 +28,8 @@ def session_view(request):
     })
 
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^view/$', view),
     url(r'^session-view/$', session_view),
 )
@@ -142,7 +143,8 @@ class TestAPIRequestFactory(TestCase):
         assertion error.
         """
         factory = APIRequestFactory()
-        self.assertRaises(AssertionError, factory.post,
+        self.assertRaises(
+            AssertionError, factory.post,
             path='/view/', data={'example': 1}, format='xml'
         )
 

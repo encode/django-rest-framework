@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*-
-import datetime
 from south.db import db
 from south.v2 import SchemaMigration
-from django.db import models
-
-from rest_framework.settings import api_settings
-
 
 try:
     from django.contrib.auth import get_user_model
-except ImportError: # django < 1.5
+except ImportError:  # django < 1.5
     from django.contrib.auth.models import User
 else:
     User = get_user_model()
@@ -26,11 +21,9 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('authtoken', ['Token'])
 
-
     def backwards(self, orm):
         # Deleting model 'Token'
         db.delete_table('authtoken_token')
-
 
     models = {
         'auth.group': {
