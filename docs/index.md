@@ -96,16 +96,11 @@ Note that the URL path can be whatever you want, but you must include `'rest_fra
 
 Let's take a look at a quick example of using REST framework to build a simple model-backed API.
 
-We'll create a read-write API for accessing users and groups.
+We'll create a read-write API for accessing information on the users of our project.
 
 Any global settings for a REST framework API are kept in a single configuration dictionary named `REST_FRAMEWORK`.  Start off by adding the following to your `settings.py` module:
 
     REST_FRAMEWORK = {
-        # Use hyperlinked styles by default.
-        # Only used if the `serializer_class` attribute is not set on a view.
-        'DEFAULT_MODEL_SERIALIZER_CLASS':
-            'rest_framework.serializers.HyperlinkedModelSerializer',
-
         # Use Django's standard `django.contrib.auth` permissions,
         # or allow read-only access for unauthenticated users.
         'DEFAULT_PERMISSION_CLASSES': [
@@ -118,34 +113,37 @@ Don't forget to make sure you've also added `rest_framework` to your `INSTALLED_
 We're ready to create our API now.
 Here's our project's root `urls.py` module:
 
-    from django.conf.urls import url, patterns, include
-    from django.contrib.auth.models import User, Group
-    from rest_framework import viewsets, routers
+    from django.conf.urls import url, include
+    from django.contrib.auth.models import User
+    from rest_framework import routers, serializers, viewsets
+
+	# Serializers define the API representation.
+	class UserSerializer(serializers.HyperlinkedModelSerializer):
+	    class Meta:
+	        model = User
+	        fields = ('url', 'username', 'email', 'is_staff')
 
     # ViewSets define the view behavior.
     class UserViewSet(viewsets.ModelViewSet):
-        model = User
-
-    class GroupViewSet(viewsets.ModelViewSet):
-        model = Group
-
+        queryset = User.objects.all()
+        serializer_class = UserSerializer
 
     # Routers provide an easy way of automatically determining the URL conf.
     router = routers.DefaultRouter()
     router.register(r'users', UserViewSet)
-    router.register(r'groups', GroupViewSet)
-
 
     # Wire up our API using automatic URL routing.
     # Additionally, we include login URLs for the browseable API.
-    urlpatterns = patterns('',
+    urlpatterns = [
         url(r'^', include(router.urls)),
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-    )
+    ]
+
+You can now open the API in your browser at [http://127.0.0.1:8000/](http://127.0.0.1:8000/), and view your new 'users' API. If you use the Login control in the top right corner you'll also be able to add, create and delete users from the system.
 
 ## Quickstart
 
-Can't wait to get started?  The [quickstart guide][quickstart] is the fastest way to get up and running, and building APIs with REST framework.
+Can't wait to get started? The [quickstart guide][quickstart] is the fastest way to get up and running, and building APIs with REST framework.
 
 ## Tutorial
 

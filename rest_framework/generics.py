@@ -252,6 +252,12 @@ class GenericAPIView(views.APIView):
         if serializer_class is not None:
             return serializer_class
 
+        warnings.warn(
+            'The `.model` attribute on view classes is now deprecated in favor '
+            'of the more explicit `serializer_class` and `queryset` attributes.',
+            DeprecationWarning, stacklevel=2
+        )
+
         assert self.model is not None, \
             "'%s' should either include a 'serializer_class' attribute, " \
             "or use the 'model' attribute as a shortcut for " \
@@ -282,6 +288,11 @@ class GenericAPIView(views.APIView):
             return self.queryset._clone()
 
         if self.model is not None:
+            warnings.warn(
+                'The `.model` attribute on view classes is now deprecated in favor '
+                'of the more explicit `serializer_class` and `queryset` attributes.',
+                DeprecationWarning, stacklevel=2
+            )
             return self.model._default_manager.all()
 
         error_format = "'%s' must define 'queryset' or 'model'"
