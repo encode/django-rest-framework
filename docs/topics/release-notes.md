@@ -62,6 +62,7 @@ You can determine your currently installed version using `pip freeze`:
 * Bugfix: Copy `filter_backends` list before returning it, in order to prevent view code from mutating the class attribute itself.
 * Bugfix: Set the `.action` attribute on viewsets when introspected by `OPTIONS` for testing permissions on the view.
 * Bugfix: Ensure `ValueError` raised during deserialization results in a error list rather than a single error. This is now consistent with other validation errors.
+* Bugfix: Fix `cache_format` typo on throttle classes, was `"throtte_%(scope)s_%(ident)s"`. Note that this will invalidate existing throttle caches.
 
 ---
 

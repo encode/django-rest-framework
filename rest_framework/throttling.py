@@ -60,7 +60,7 @@ class SimpleRateThrottle(BaseThrottle):
 
     cache = default_cache
     timer = time.time
-    cache_format = 'throtte_%(scope)s_%(ident)s'
+    cache_format = 'throttle_%(scope)s_%(ident)s'
     scope = None
     THROTTLE_RATES = api_settings.DEFAULT_THROTTLE_RATES
 
