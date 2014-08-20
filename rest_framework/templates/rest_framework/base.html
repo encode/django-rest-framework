@@ -1,4 +1,5 @@
 {% load url from future %}
+{% load staticfiles %}
 {% load rest_framework %}
 <!DOCTYPE html>
 <html>
@@ -24,6 +25,7 @@
     {% endblock %}
     </head>
 
+  {% block body %}
   <body class="{% block bodyclass %}{% endblock %} container">
 
     <div class="wrapper">
@@ -93,7 +95,7 @@
         {% endif %}
 
         {% if options_form %}
-            <form class="button-form" action="{{ request.get_full_path }}" method="POST" class="pull-right">
+            <form class="button-form" action="{{ request.get_full_path }}" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
                 <button class="btn btn-primary js-tooltip" title="Make an OPTIONS request on the {{ name }} resource">OPTIONS</button>
@@ -101,7 +103,7 @@
         {% endif %}
 
         {% if delete_form %}
-            <form class="button-form" action="{{ request.get_full_path }}" method="POST" class="pull-right">
+            <form class="button-form" action="{{ request.get_full_path }}" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
                 <button class="btn btn-danger js-tooltip" title="Make a DELETE request on the {{ name }} resource">DELETE</button>
@@ -230,4 +232,5 @@
     <script src="{% static "rest_framework/js/default.js" %}"></script>
     {% endblock %}
   </body>
+  {% endblock %}
 </html>

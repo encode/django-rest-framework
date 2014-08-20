@@ -50,7 +50,7 @@ Some reasons you might want to use REST framework:
 REST framework requires the following:
 
 * Python (2.6.5+, 2.7, 3.2, 3.3)
-* Django (1.3, 1.4, 1.5, 1.6)
+* Django (1.4.2+, 1.5, 1.6, 1.7)
 
 The following packages are optional:
 
@@ -201,24 +201,15 @@ General guides to using REST framework.
 * [2.0 Announcement][rest-framework-2-announcement]
 * [2.2 Announcement][2.2-announcement]
 * [2.3 Announcement][2.3-announcement]
+* [Kickstarter Announcement][kickstarter-announcement]
 * [Release Notes][release-notes]
 * [Credits][credits]
 
 ## Development
 
-If you want to work on REST framework itself, clone the repository, then...
-
-Build the docs:
-
-    ./mkdocs.py
-
-Run the tests:
-
-    ./rest_framework/runtests/runtests.py
-
-To run the tests against all supported configurations, first install [the tox testing tool][tox] globally, using `pip install tox`, then simply run `tox`:
-
-    tox
+See the [Contribution guidelines][contributing] for information on how to clone
+the repository, run the test suite and contribute changes back to REST
+Framework.
 
 ## Support
 
@@ -325,6 +316,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [rest-framework-2-announcement]: topics/rest-framework-2-announcement.md
 [2.2-announcement]: topics/2.2-announcement.md
 [2.3-announcement]: topics/2.3-announcement.md
+[kickstarter-announcement]: topics/kickstarter-announcement.md 
 [release-notes]: topics/release-notes.md
 [credits]: topics/credits.md
 

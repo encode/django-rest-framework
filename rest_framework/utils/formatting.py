@@ -6,8 +6,6 @@ from __future__ import unicode_literals
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from rest_framework.compat import apply_markdown
-from rest_framework.settings import api_settings
-from textwrap import dedent
 import re
 
 
@@ -40,6 +38,7 @@ def dedent(content):
 
     return content.strip()
 
+
 def camelcase_to_spaces(content):
     """
     Translate 'CamelCaseNames' to 'Camel Case Names'.
@@ -48,6 +47,7 @@ def camelcase_to_spaces(content):
     camelcase_boundry = '(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))'
     content = re.sub(camelcase_boundry, ' \\1', content).strip()
     return ' '.join(content.split('_')).title()
+
 
 def markup_description(description):
     """

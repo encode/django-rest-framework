@@ -6,8 +6,8 @@ We're going to create a simple API to allow admin users to view and edit the use
 
 Create a new Django project named `tutorial`, then start a new app called `quickstart`.
 
-    # Set up a new project
-    django-admin.py startproject tutorial
+    # Create the project directory
+    mkdir tutorial
     cd tutorial
 
     # Create a virtualenv to isolate our package dependencies locally
@@ -17,6 +17,9 @@ Create a new Django project named `tutorial`, then start a new app called `quick
     # Install Django and Django REST framework into the virtualenv
     pip install django
     pip install djangorestframework
+
+    # Set up a new project
+    django-admin.py startproject tutorial
 
     # Create a new app
     python manage.py startapp quickstart
@@ -46,14 +49,14 @@ First up we're going to define some serializers in `quickstart/serializers.py` t
 
     from django.contrib.auth.models import User, Group
     from rest_framework import serializers
-    
-    
+
+
     class UserSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = User
             fields = ('url', 'username', 'email', 'groups')
-    
-    
+
+
     class GroupSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
             model = Group
@@ -68,16 +71,16 @@ Right, we'd better write some views then.  Open `quickstart/views.py` and get ty
     from django.contrib.auth.models import User, Group
     from rest_framework import viewsets
     from quickstart.serializers import UserSerializer, GroupSerializer
-    
-    
+
+
     class UserViewSet(viewsets.ModelViewSet):
         """
         API endpoint that allows users to be viewed or edited.
         """
         queryset = User.objects.all()
         serializer_class = UserSerializer
-    
-    
+
+
     class GroupViewSet(viewsets.ModelViewSet):
         """
         API endpoint that allows groups to be viewed or edited.
@@ -144,22 +147,22 @@ We're now ready to test the API we've built.  Let's fire up the server from the 
 
 We can now access our API, both from the command-line, using tools like `curl`...
 
-    bash: curl -H 'Accept: application/json; indent=4' -u admin:password http://127.0.0.1:8000/users/ 
+    bash: curl -H 'Accept: application/json; indent=4' -u admin:password http://127.0.0.1:8000/users/
     {
-        "count": 2, 
-        "next": null, 
-        "previous": null, 
+        "count": 2,
+        "next": null,
+        "previous": null,
         "results": [
             {
-                "email": "admin@example.com", 
-                "groups": [], 
-                "url": "http://127.0.0.1:8000/users/1/", 
+                "email": "admin@example.com",
+                "groups": [],
+                "url": "http://127.0.0.1:8000/users/1/",
                 "username": "admin"
-            }, 
+            },
             {
-                "email": "tom@example.com", 
-                "groups": [                ], 
-                "url": "http://127.0.0.1:8000/users/2/", 
+                "email": "tom@example.com",
+                "groups": [                ],
+                "url": "http://127.0.0.1:8000/users/2/",
                 "username": "tom"
             }
         ]

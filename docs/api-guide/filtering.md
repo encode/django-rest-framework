@@ -24,7 +24,7 @@ For example:
     from myapp.serializers import PurchaseSerializer
     from rest_framework import generics
 
-    class PurchaseList(generics.ListAPIView)
+    class PurchaseList(generics.ListAPIView):
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -46,7 +46,7 @@ For example if your URL config contained an entry like this:
 
 You could then write a view that returned a purchase queryset filtered by the username portion of the URL:
 
-    class PurchaseList(generics.ListAPIView)
+    class PurchaseList(generics.ListAPIView):
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -63,7 +63,7 @@ A final example of filtering the initial queryset would be to determine the init
 
 We can override `.get_queryset()` to deal with URLs such as `http://example.com/api/purchases?username=denvercoder9`, and filter the queryset only if the `username` parameter is included in the URL:
 
-    class PurchaseList(generics.ListAPIView)
+    class PurchaseList(generics.ListAPIView):
         serializer_class = PurchaseSerializer
  
         def get_queryset(self):
@@ -199,8 +199,7 @@ This enables us to make queries like:
 
     http://example.com/api/products?manufacturer__name=foo
 
-This is nice, but it shows underlying model structure in REST API, which may
-be undesired, but you can use:
+This is nice, but it exposes the Django's double underscore convention as part of the API.  If you instead want to explicitly name the filter argument you can instead explicitly include it on the `FilterSet` class:
 
     import django_filters
     from myapp.models import Product
@@ -208,7 +207,6 @@ be undesired, but you can use:
     from rest_framework import generics
 
     class ProductFilter(django_filters.FilterSet):
-
         manufacturer = django_filters.CharFilter(name="manufacturer__name")
 
         class Meta:

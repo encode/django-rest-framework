@@ -142,7 +142,7 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
             toc += template + '\n'
 
         if filename == 'index.md':
-            main_title = 'Django REST framework - APIs made easy'
+            main_title = 'Django REST framework - Web APIs for Django'
         else:
             main_title = main_title + ' - Django REST framework'
 
@@ -162,8 +162,8 @@ for (dirpath, dirnames, filenames) in os.walk(docs_dir):
         output = output.replace('{{ canonical_url }}', canonical_url)
 
         if filename =='index.md':
-            output = output.replace('{{ ad_block }}', """<hr><p><strong>The team behind REST framework is launching a new API service.</strong></p>
-<p>If you want to be first in line when we start issuing invitations, please <a href="http://brightapi.com">sign up here</a>.</p>""")
+            output = output.replace('{{ ad_block }}', """<hr/>
+              <script type="text/javascript" src="//cdn.fusionads.net/fusion.js?zoneid=1332&serve=C6SDP2Y&placement=djangorestframework" id="_fusionads_js"></script>""")
         else:
             output = output.replace('{{ ad_block }}', '')
 

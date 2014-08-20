@@ -8,7 +8,7 @@
 
 # Overview
 
-Django REST framework is a powerful and flexible toolkit that makes it easy to build Web APIs.
+Django REST framework is a powerful and flexible toolkit for building Web APIs.
 
 Some reasons you might want to use REST framework:
 
@@ -27,7 +27,7 @@ There is a live example API for testing purposes, [available here][sandbox].
 # Requirements
 
 * Python (2.6.5+, 2.7, 3.2, 3.3)
-* Django (1.3, 1.4, 1.5, 1.6)
+* Django (1.4.2+, 1.5, 1.6, 1.7)
 
 # Installation
 
@@ -135,6 +135,7 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, 
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 
 [build-status-image]: https://secure.travis-ci.org/tomchristie/django-rest-framework.png?branch=master
 [travis]: http://travis-ci.org/tomchristie/django-rest-framework?branch=master
