@@ -831,7 +831,7 @@ class ModelSerializer(Serializer):
         }
 
         if model_field:
-            kwargs['required'] = not(model_field.null or model_field.blank)
+            kwargs['required'] = not(model_field.null or model_field.blank) and model_field.editable
             if model_field.help_text is not None:
                 kwargs['help_text'] = model_field.help_text
             if model_field.verbose_name is not None:
@@ -854,7 +854,7 @@ class ModelSerializer(Serializer):
         """
         kwargs = {}
 
-        if model_field.null or model_field.blank:
+        if model_field.null or model_field.blank and model_field.editable:
             kwargs['required'] = False
 
         if isinstance(model_field, models.AutoField) or not model_field.editable:
@@ -1110,7 +1110,7 @@ class HyperlinkedModelSerializer(ModelSerializer):
         }
 
         if model_field:
-            kwargs['required'] = not(model_field.null or model_field.blank)
+            kwargs['required'] = not(model_field.null or model_field.blank) and model_field.editable
             if model_field.help_text is not None:
                 kwargs['help_text'] = model_field.help_text
             if model_field.verbose_name is not None:
