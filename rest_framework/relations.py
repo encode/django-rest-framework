@@ -19,8 +19,7 @@ from rest_framework.compat import smart_text
 import warnings
 
 
-##### Relational fields #####
-
+# Relational fields
 
 # Not actually Writable, but subclasses may need to be.
 class RelatedField(WritableField):
@@ -41,14 +40,6 @@ class RelatedField(WritableField):
     many = False
 
     def __init__(self, *args, **kwargs):
-
-        # 'null' is to be deprecated in favor of 'required'
-        if 'null' in kwargs:
-            warnings.warn('The `null` keyword argument is deprecated. '
-                          'Use the `required` keyword argument instead.',
-                          DeprecationWarning, stacklevel=2)
-            kwargs['required'] = not kwargs.pop('null')
-
         queryset = kwargs.pop('queryset', None)
         self.many = kwargs.pop('many', self.many)
         if self.many:
@@ -74,7 +65,7 @@ class RelatedField(WritableField):
             else:  # Reverse
                 self.queryset = manager.field.rel.to._default_manager.all()
 
-    ### We need this stuff to make form choices work...
+    # We need this stuff to make form choices work...
 
     def prepare_value(self, obj):
         return self.to_native(obj)
@@ -121,7 +112,7 @@ class RelatedField(WritableField):
 
     choices = property(_get_choices, _set_choices)
 
-    ### Default value handling
+    # Default value handling
 
     def get_default_value(self):
         default = super(RelatedField, self).get_default_value()
@@ -129,7 +120,7 @@ class RelatedField(WritableField):
             return []
         return default
 
-    ### Regular serializer stuff...
+    # Regular serializer stuff...
 
     def field_to_native(self, obj, field_name):
         try:
@@ -189,7 +180,7 @@ class RelatedField(WritableField):
             into[(self.source or field_name)] = self.from_native(value)
 
 
-### PrimaryKey relationships
+# PrimaryKey relationships
 
 class PrimaryKeyRelatedField(RelatedField):
     """
@@ -277,8 +268,7 @@ class PrimaryKeyRelatedField(RelatedField):
         return self.to_native(pk)
 
 
-### Slug relationships
-
+# Slug relationships
 
 class SlugRelatedField(RelatedField):
     """
@@ -313,7 +303,7 @@ class SlugRelatedField(RelatedField):
             raise ValidationError(msg)
 
 
-### Hyperlinked relationships
+# Hyperlinked relationships
 
 class HyperlinkedRelatedField(RelatedField):
     """
@@ -330,7 +320,7 @@ class HyperlinkedRelatedField(RelatedField):
         'incorrect_type': _('Incorrect type.  Expected url string, received %s.'),
     }
 
-    # These are all pending deprecation
+    # These are all deprecated
     pk_url_kwarg = 'pk'
     slug_field = 'slug'
     slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
@@ -344,16 +334,16 @@ class HyperlinkedRelatedField(RelatedField):
         self.lookup_field = kwargs.pop('lookup_field', self.lookup_field)
         self.format = kwargs.pop('format', None)
 
-        # These are pending deprecation
+        # These are deprecated
         if 'pk_url_kwarg' in kwargs:
-            msg = 'pk_url_kwarg is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+            msg = 'pk_url_kwarg is deprecated. Use lookup_field instead.'
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
         if 'slug_url_kwarg' in kwargs:
-            msg = 'slug_url_kwarg is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+            msg = 'slug_url_kwarg is deprecated. Use lookup_field instead.'
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
         if 'slug_field' in kwargs:
-            msg = 'slug_field is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+            msg = 'slug_field is deprecated. Use lookup_field instead.'
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
         self.pk_url_kwarg = kwargs.pop('pk_url_kwarg', self.pk_url_kwarg)
         self.slug_field = kwargs.pop('slug_field', self.slug_field)
@@ -396,9 +386,9 @@ class HyperlinkedRelatedField(RelatedField):
                     # If the lookup succeeds using the default slug params,
                     # then `slug_field` is being used implicitly, and we
                     # we need to warn about the pending deprecation.
-                    msg = 'Implicit slug field hyperlinked fields are pending deprecation.' \
+                    msg = 'Implicit slug field hyperlinked fields are deprecated.' \
                           'You should set `lookup_field=slug` on the HyperlinkedRelatedField.'
-                    warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+                    warnings.warn(msg, DeprecationWarning, stacklevel=2)
                 return ret
             except NoReverseMatch:
                 pass
@@ -432,14 +422,11 @@ class HyperlinkedRelatedField(RelatedField):
         request = self.context.get('request', None)
         format = self.format or self.context.get('format', None)
 
-        if request is None:
-            msg = (
-                "Using `HyperlinkedRelatedField` without including the request "
-                "in the serializer context is deprecated. "
-                "Add `context={'request': request}` when instantiating "
-                "the serializer."
-            )
-            warnings.warn(msg, DeprecationWarning, stacklevel=4)
+        assert request is not None, (
+            "`HyperlinkedRelatedField` requires the request in the serializer "
+            "context. Add `context={'request': request}` when instantiating "
+            "the serializer."
+        )
 
         # If the object has not yet been saved then we cannot hyperlink to it.
         if getattr(obj, 'pk', None) is None:
@@ -499,7 +486,7 @@ class HyperlinkedIdentityField(Field):
     lookup_field = 'pk'
     read_only = True
 
-    # These are all pending deprecation
+    # These are all deprecated
     pk_url_kwarg = 'pk'
     slug_field = 'slug'
     slug_url_kwarg = None  # Defaults to same as `slug_field` unless overridden
@@ -515,16 +502,16 @@ class HyperlinkedIdentityField(Field):
         lookup_field = kwargs.pop('lookup_field', None)
         self.lookup_field = lookup_field or self.lookup_field
 
-        # These are pending deprecation
+        # These are deprecated
         if 'pk_url_kwarg' in kwargs:
-            msg = 'pk_url_kwarg is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+            msg = 'pk_url_kwarg is deprecated. Use lookup_field instead.'
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
         if 'slug_url_kwarg' in kwargs:
-            msg = 'slug_url_kwarg is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+            msg = 'slug_url_kwarg is deprecated. Use lookup_field instead.'
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
         if 'slug_field' in kwargs:
-            msg = 'slug_field is pending deprecation. Use lookup_field instead.'
-            warnings.warn(msg, PendingDeprecationWarning, stacklevel=2)
+            msg = 'slug_field is deprecated. Use lookup_field instead.'
+            warnings.warn(msg, DeprecationWarning, stacklevel=2)
 
         self.slug_field = kwargs.pop('slug_field', self.slug_field)
         default_slug_kwarg = self.slug_url_kwarg or self.slug_field
@@ -538,11 +525,11 @@ class HyperlinkedIdentityField(Field):
         format = self.context.get('format', None)
         view_name = self.view_name
 
-        if request is None:
-            warnings.warn("Using `HyperlinkedIdentityField` without including the "
-                          "request in the serializer context is deprecated. "
-                          "Add `context={'request': request}` when instantiating the serializer.",
-                          DeprecationWarning, stacklevel=4)
+        assert request is not None, (
+            "`HyperlinkedIdentityField` requires the request in the serializer"
+            " context. Add `context={'request': request}` when instantiating "
+            "the serializer."
+        )
 
         # By default use whatever format is given for the current context
         # unless the target is a different type to the source.
@@ -606,41 +593,3 @@ class HyperlinkedIdentityField(Field):
                 pass
 
         raise NoReverseMatch()
-
-
-### Old-style many classes for backwards compat
-
-class ManyRelatedField(RelatedField):
-    def __init__(self, *args, **kwargs):
-        warnings.warn('`ManyRelatedField()` is deprecated. '
-                      'Use `RelatedField(many=True)` instead.',
-                       DeprecationWarning, stacklevel=2)
-        kwargs['many'] = True
-        super(ManyRelatedField, self).__init__(*args, **kwargs)
-
-
-class ManyPrimaryKeyRelatedField(PrimaryKeyRelatedField):
-    def __init__(self, *args, **kwargs):
-        warnings.warn('`ManyPrimaryKeyRelatedField()` is deprecated. '
-                      'Use `PrimaryKeyRelatedField(many=True)` instead.',
-                       DeprecationWarning, stacklevel=2)
-        kwargs['many'] = True
-        super(ManyPrimaryKeyRelatedField, self).__init__(*args, **kwargs)
-
-
-class ManySlugRelatedField(SlugRelatedField):
-    def __init__(self, *args, **kwargs):
-        warnings.warn('`ManySlugRelatedField()` is deprecated. '
-                      'Use `SlugRelatedField(many=True)` instead.',
-                       DeprecationWarning, stacklevel=2)
-        kwargs['many'] = True
-        super(ManySlugRelatedField, self).__init__(*args, **kwargs)
-
-
-class ManyHyperlinkedRelatedField(HyperlinkedRelatedField):
-    def __init__(self, *args, **kwargs):
-        warnings.warn('`ManyHyperlinkedRelatedField()` is deprecated. '
-                      'Use `HyperlinkedRelatedField(many=True)` instead.',
-                       DeprecationWarning, stacklevel=2)
-        kwargs['many'] = True
-        super(ManyHyperlinkedRelatedField, self).__init__(*args, **kwargs)

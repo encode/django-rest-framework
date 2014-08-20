@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 import django
 from django.core.handlers.wsgi import STATUS_CODE_TEXT
 from django.template.response import SimpleTemplateResponse
-from rest_framework.compat import six
+from django.utils import six
 
 
 class Response(SimpleTemplateResponse):
@@ -62,8 +62,10 @@ class Response(SimpleTemplateResponse):
 
         ret = renderer.render(self.data, media_type, context)
         if isinstance(ret, six.text_type):
-            assert charset, 'renderer returned unicode, and did not specify ' \
-            'a charset value.'
+            assert charset, (
+                'renderer returned unicode, and did not specify '
+                'a charset value.'
+            )
             return bytes(ret.encode(charset))
 
         if not ret:

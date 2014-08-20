@@ -38,6 +38,33 @@ You can determine your currently installed version using `pip freeze`:
 
 ---
 
+## 2.4.x series
+
+### 2.4.0
+
+**Django version requirements**: The lowest supported version of Django is now 1.4.2.
+
+**South version requirements**: This note applies to any users using the optional `authtoken` application, which includes an associated database migration. You must now *either* upgrade your `south` package to version 1.0, *or* instead use the built-in migration support available with Django 1.7.
+
+* Added compatibility with Django 1.7's database migration support.
+* New test runner, using `py.test`.
+* `@detail_route` and `@list_route` decorators replace `@action` and `@link`.
+* Support customizable view name and description functions, using the `VIEW_NAME_FUNCTION` and `VIEW_DESCRIPTION_FUNCTION` settings.
+* Added `NUM_PROXIES` setting for smarter client IP identification.
+* Added `MAX_PAGINATE_BY` setting and `max_paginate_by` generic view attribute.
+* Added `cache` attribute to throttles to allow overriding of default cache.
+* Added `lookup_value_regex` attribute to routers, to allow the URL argument matching to be constrainted by the user.
+* Added `allow_none` option to `CharField`.
+* Support Django's standard `status_code` class attribute on responses.
+* More intuitive behavior on the test client, as `client.logout()` now also removes any credentials that have been set.
+* Bugfix: `?page_size=0` query parameter now falls back to default page size for view, instead of always turning pagination off.
+* Bugfix: Always uppercase `X-Http-Method-Override` methods.
+* Bugfix: Copy `filter_backends` list before returning it, in order to prevent view code from mutating the class attribute itself.
+* Bugfix: Set the `.action` attribute on viewsets when introspected by `OPTIONS` for testing permissions on the view.
+* Bugfix: Ensure `ValueError` raised during deserialization results in a error list rather than a single error. This is now consistent with other validation errors.
+
+---
+
 ## 2.3.x series
 
 ### 2.3.14
@@ -169,9 +196,9 @@ You can determine your currently installed version using `pip freeze`:
 * Added `trailing_slash` option to routers.
 * Include support for `HttpStreamingResponse`.
 * Support wider range of default serializer validation when used with custom model fields.
-* UTF-8 Support for browsable API descriptions.  
+* UTF-8 Support for browsable API descriptions.
 * OAuth2 provider uses timezone aware datetimes when supported.
-* Bugfix: Return error correctly when OAuth non-existent consumer occurs. 
+* Bugfix: Return error correctly when OAuth non-existent consumer occurs.
 * Bugfix: Allow `FileUploadParser` to correctly filename if provided as URL kwarg.
 * Bugfix: Fix `ScopedRateThrottle`.
 
@@ -212,7 +239,7 @@ You can determine your currently installed version using `pip freeze`:
 * Added SearchFilter
 * Added OrderingFilter
 * Added GenericViewSet
-* Bugfix: Multiple `@action` and `@link` methods now allowed on viewsets. 
+* Bugfix: Multiple `@action` and `@link` methods now allowed on viewsets.
 * Bugfix: Fix API Root view issue with DjangoModelPermissions
 
 ### 2.3.2
@@ -265,7 +292,7 @@ You can determine your currently installed version using `pip freeze`:
 * Long HTTP headers in browsable API are broken in multiple lines when possible.
 * Bugfix: Fix regression with DjangoFilterBackend not worthing correctly with single object views.
 * Bugfix: OAuth should fail hard when invalid token used.
-* Bugfix: Fix serializer potentially returning `None` object for models that define `__bool__` or `__len__`. 
+* Bugfix: Fix serializer potentially returning `None` object for models that define `__bool__` or `__len__`.
 
 ### 2.2.5
 

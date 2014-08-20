@@ -8,10 +8,11 @@ from django.conf import settings
 from django.test.client import Client as DjangoClient
 from django.test.client import ClientHandler
 from django.test import testcases
+from django.utils import six
 from django.utils.http import urlencode
 from rest_framework.settings import api_settings
 from rest_framework.compat import RequestFactory as DjangoRequestFactory
-from rest_framework.compat import force_bytes_or_smart_bytes, six
+from rest_framework.compat import force_bytes_or_smart_bytes
 
 
 def force_authenticate(request, user=None, token=None):
@@ -49,9 +50,10 @@ class APIRequestFactory(DjangoRequestFactory):
         else:
             format = format or self.default_format
 
-            assert format in self.renderer_classes, ("Invalid format '{0}'. "
-                "Available formats are {1}.  Set TEST_REQUEST_RENDERER_CLASSES "
-                "to enable extra request formats.".format(
+            assert format in self.renderer_classes, (
+                "Invalid format '{0}'. Available formats are {1}. "
+                "Set TEST_REQUEST_RENDERER_CLASSES to enable "
+                "extra request formats.".format(
                     format,
                     ', '.join(["'" + fmt + "'" for fmt in self.renderer_classes.keys()])
                 )
