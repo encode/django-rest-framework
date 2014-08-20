@@ -114,7 +114,7 @@ This permission is suitable if you want to your API to allow read permissions to
 
 ## DjangoModelPermissions
 
-This permission class ties into Django's standard `django.contrib.auth` [model permissions][contribauth].  When applied to a view that has a `.model` property, authorization will only be granted if the user *is authenticated* and has the *relevant model permissions* assigned.
+This permission class ties into Django's standard `django.contrib.auth` [model permissions][contribauth].  This permission must only be applied to views that has a `.queryset` property set. Authorization will only be granted if the user *is authenticated* and has the *relevant model permissions* assigned.
 
 * `POST` requests require the user to have the `add` permission on the model.
 * `PUT` and `PATCH` requests require the user to have the `change` permission on the model.
@@ -124,6 +124,12 @@ The default behaviour can also be overridden to support custom model permissions
 
 To use custom model permissions, override `DjangoModelPermissions` and set the `.perms_map` property.  Refer to the source code for details.
 
+#### Using with views that do not include a `queryset` attribute.
+
+If you're using this permission with a view that uses an overridden `get_queryset()` method there may not be a `queryset` attribute on the view. In this case we suggest also marking the view with a sential queryset, so that this class can determine the required permissions. For example:
+
+    queryset = User.objects.none()  # Required for DjangoModelPermissions
+
 ## DjangoModelPermissionsOrAnonReadOnly
 
 Similar to `DjangoModelPermissions`, but also allows unauthenticated users to have read-only access to the API.
@@ -132,7 +138,7 @@ Similar to `DjangoModelPermissions`, but also allows unauthenticated users to ha
 
 This permission class ties into Django's standard [object permissions framework][objectpermissions] that allows per-object permissions on models.  In order to use this permission class, you'll also need to add a permission backend that supports object-level permissions, such as [django-guardian][guardian].
 
-When applied to a view that has a `.model` property, authorization will only be granted if the user *is authenticated* and has the *relevant per-object permissions* and *relevant model permissions* assigned.
+As with `DjangoModelPermissions`, this permission must only be applied to views that have a `.queryset` property. Authorization will only be granted if the user *is authenticated* and has the *relevant per-object permissions* and *relevant model permissions* assigned.
 
 * `POST` requests require the user to have the `add` permission on the model instance.
 * `PUT` and `PATCH` requests require the user to have the `change` permission on the model instance.

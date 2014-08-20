@@ -108,6 +108,9 @@ class DjangoModelPermissions(BasePermission):
         return [perm % kwargs for perm in self.perms_map[method]]
 
     def has_permission(self, request, view):
+        # Note that `.model` attribute on views is deprecated, although we
+        # enforce the deprecation on the view `get_serializer_class()` and
+        # `get_queryset()` methods, rather than here.
         model_cls = getattr(view, 'model', None)
         queryset = getattr(view, 'queryset', None)
 
