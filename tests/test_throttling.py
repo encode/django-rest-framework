@@ -118,8 +118,10 @@ class ThrottlingTests(TestCase):
             response = view.as_view()(request)
             if expect is not None:
                 self.assertEqual(response['X-Throttle-Wait-Seconds'], expect)
+                self.assertEqual(response['Retry-After'], expect)
             else:
                 self.assertFalse('X-Throttle-Wait-Seconds' in response)
+                self.assertFalse('Retry-After' in response)
 
     def test_seconds_fields(self):
         """
@@ -172,11 +174,13 @@ class ThrottlingTests(TestCase):
 
         response = MockView_NonTimeThrottling.as_view()(request)
         self.assertFalse('X-Throttle-Wait-Seconds' in response)
+        self.assertFalse('Retry-After' in response)
 
         self.assertTrue(MockView_NonTimeThrottling.throttle_classes[0].called)
 
         response = MockView_NonTimeThrottling.as_view()(request)
         self.assertFalse('X-Throttle-Wait-Seconds' in response)
+        self.assertFalse('Retry-After' in response)
 
 
 class ScopedRateThrottleTests(TestCase):
