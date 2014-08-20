@@ -7,6 +7,8 @@ from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.utils.datastructures import SortedDict
 from django.views.decorators.csrf import csrf_exempt
+from django.db import transaction
+
 from rest_framework import status, exceptions
 from rest_framework.compat import smart_text, HttpResponseBase, View
 from rest_framework.request import Request
@@ -367,6 +369,14 @@ class APIView(View):
 
         if response is None:
             raise
+
+        # We've suppressed the exception but still need to rollback any transaction.
+        if hasattr(transaction, 'set_rollback'):
+            # If running in >=1.6 then mark a rollback as required and let Django deal with it.
+            transaction.set_rollback(True)  # Django 1.6+
+        elif transaction.is_managed():
+            # If running <=1.5 and TransactionMiddleware is installed then force it's rollback behavior.
+            TransactionMiddleware().process_exception(request, None)
 
         response.exception = True
         return response
