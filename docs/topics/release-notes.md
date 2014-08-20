@@ -52,6 +52,7 @@ You can determine your currently installed version using `pip freeze`:
 * Support customizable view name and description functions, using the `VIEW_NAME_FUNCTION` and `VIEW_DESCRIPTION_FUNCTION` settings.
 * Added `NUM_PROXIES` setting for smarter client IP identification.
 * Added `MAX_PAGINATE_BY` setting and `max_paginate_by` generic view attribute.
+* Added `Retry-After` header to throttled responses, as per [RFC 6585](http://tools.ietf.org/html/rfc6585). This should now be used in preference to the custom `X-Trottle-Wait-Seconds` header which will be fully deprecated in 3.0.
 * Added `cache` attribute to throttles to allow overriding of default cache.
 * Added `lookup_value_regex` attribute to routers, to allow the URL argument matching to be constrainted by the user.
 * Added `allow_none` option to `CharField`.
