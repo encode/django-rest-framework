@@ -205,8 +205,8 @@ a.fusion-poweredby {
 <p>We're going to create a simple API to allow admin users to view and edit the users and groups in the system.</p>
 <h2 id="project-setup">Project setup</h2>
 <p>Create a new Django project named <code>tutorial</code>, then start a new app called <code>quickstart</code>.</p>
-<pre class="prettyprint lang-py"><code># Set up a new project
-django-admin.py startproject tutorial
+<pre class="prettyprint lang-py"><code># Create the project directory
+mkdir tutorial
 cd tutorial
 
 # Create a virtualenv to isolate our package dependencies locally
@@ -216,6 +216,9 @@ source env/bin/activate  # On Windows use `env\Scripts\activate`
 # Install Django and Django REST framework into the virtualenv
 pip install django
 pip install djangorestframework
+
+# Set up a new project
+django-admin.py startproject tutorial
 
 # Create a new app
 python manage.py startapp quickstart
