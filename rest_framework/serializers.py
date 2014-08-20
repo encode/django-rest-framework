@@ -20,9 +20,8 @@ from django.contrib.contenttypes.generic import GenericForeignKey
 from django.core.paginator import Page
 from django.db import models
 from django.forms import widgets
-from django.utils.datastructures import SortedDict
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework.compat import get_concrete_model, six
+from rest_framework.compat import get_concrete_model, OrderedDict, six
 from rest_framework.settings import api_settings
 
 
@@ -105,9 +104,9 @@ class DictWithMetadata(dict):
         return dict(self)
 
 
-class SortedDictWithMetadata(SortedDict):
+class OrderedDictWithMetadata(OrderedDict):
     """
-    A sorted dict-like object, that can have additional properties attached.
+    An ordered dict-like object, that can have additional properties attached.
     """
     def __getstate__(self):
         """
@@ -115,7 +114,7 @@ class SortedDictWithMetadata(SortedDict):
         Overriden to remove the metadata from the dict, since it shouldn't be
         pickle and may in some instances be unpickleable.
         """
-        return SortedDict(self).__dict__
+        return OrderedDict(self).__dict__
 
 
 def _is_protected_type(obj):
@@ -151,7 +150,7 @@ def _get_declared_fields(bases, attrs):
         if hasattr(base, 'base_fields'):
             fields = list(base.base_fields.items()) + fields
 
-    return SortedDict(fields)
+    return OrderedDict(fields)
 
 
 class SerializerMetaclass(type):
@@ -179,7 +178,7 @@ class BaseSerializer(WritableField):
         pass
 
     _options_class = SerializerOptions
-    _dict_class = SortedDictWithMetadata
+    _dict_class = OrderedDictWithMetadata
 
     def __init__(self, instance=None, data=None, files=None,
                  context=None, partial=False, many=None,
@@ -225,7 +224,7 @@ class BaseSerializer(WritableField):
         This will be the set of any explicitly declared fields,
         plus the set of fields returned by get_default_fields().
         """
-        ret = SortedDict()
+        ret = OrderedDict()
 
         # Get the explicitly declared fields
         base_fields = copy.deepcopy(self.base_fields)
@@ -241,7 +240,7 @@ class BaseSerializer(WritableField):
         # If 'fields' is specified, use those fields, in that order.
         if self.opts.fields:
             assert isinstance(self.opts.fields, (list, tuple)), '`fields` must be a list or tuple'
-            new = SortedDict()
+            new = OrderedDict()
             for key in self.opts.fields:
                 new[key] = ret[key]
             ret = new
@@ -605,7 +604,7 @@ class BaseSerializer(WritableField):
         Useful for things like responding to OPTIONS requests, or generating
         API schemas for auto-documentation.
         """
-        return SortedDict(
+        return OrderedDict(
             [(field_name, field.metadata())
             for field_name, field in six.iteritems(self.fields)]
         )
@@ -664,7 +663,7 @@ class ModelSerializer(Serializer):
         assert cls is not None, \
                 "Serializer class '%s' is missing 'model' Meta option" % self.__class__.__name__
         opts = get_concrete_model(cls)._meta
-        ret = SortedDict()
+        ret = OrderedDict()
         nested = bool(self.opts.depth)
 
         # Deal with adding the primary key field

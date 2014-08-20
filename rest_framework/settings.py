@@ -20,7 +20,11 @@ back to the defaults.
 from __future__ import unicode_literals
 
 from django.conf import settings
-from django.utils import importlib
+try:
+    # Available in Python 2.7+
+    import importlib
+except ImportError:
+    from django.utils import importlib
 
 from rest_framework import ISO_8601
 from rest_framework.compat import six
@@ -51,7 +55,7 @@ DEFAULTS = {
     'DEFAULT_CONTENT_NEGOTIATION_CLASS':
         'rest_framework.negotiation.DefaultContentNegotiation',
 
-    # Genric view behavior
+    # Generic view behavior
     'DEFAULT_MODEL_SERIALIZER_CLASS':
         'rest_framework.serializers.ModelSerializer',
     'DEFAULT_PAGINATION_SERIALIZER_CLASS':
