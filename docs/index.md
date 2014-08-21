@@ -139,7 +139,7 @@ Here's our project's root `urls.py` module:
         url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
     ]
 
-You can now open the API in your browser at [http://127.0.0.1:8000/](http://127.0.0.1:8000/), and view your new 'users' API. If you use the Login control in the top right corner you'll also be able to add, create and delete users from the system.
+You can now open the API in your browser at [http://127.0.0.1:8000/](http://127.0.0.1:8000/), and view your new 'users' API. If you use the login control in the top right corner you'll also be able to add, create and delete users from the system.
 
 ## Quickstart
 

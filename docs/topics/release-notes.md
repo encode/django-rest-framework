@@ -48,6 +48,7 @@ You can determine your currently installed version using `pip freeze`:
 
 * Added compatibility with Django 1.7's database migration support.
 * New test runner, using `py.test`.
+* Deprecated `.model` view attribute in favor of explict `.queryset` and `.serializer_class` attributes. The `DEFAULT_MODEL_SERIALIZER_CLASS` setting is also deprecated.
 * `@detail_route` and `@list_route` decorators replace `@action` and `@link`.
 * Support customizable view name and description functions, using the `VIEW_NAME_FUNCTION` and `VIEW_DESCRIPTION_FUNCTION` settings.
 * Added `NUM_PROXIES` setting for smarter client IP identification.

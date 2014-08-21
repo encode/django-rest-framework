@@ -74,10 +74,6 @@ The following attributes control the basic view behavior.
 * `lookup_field` - The model field that should be used to for performing object lookup of individual model instances.  Defaults to `'pk'`.  Note that when using hyperlinked APIs you'll need to ensure that *both* the API views *and* the serializer classes set the lookup fields if you need to use a custom value.
 * `lookup_url_kwarg` - The URL keyword argument that should be used for object lookup.  The URL conf should include a keyword argument corresponding to this value.  If unset this defaults to using the same value as `lookup_field`.
 
-**Shortcuts**:
-
-* `model` - This shortcut may be used instead of setting either (or both) of the `queryset`/`serializer_class` attributes, although using the explicit style is generally preferred.  If used instead of `serializer_class`, then `DEFAULT_MODEL_SERIALIZER_CLASS` setting will determine the base serializer class.  Note that `model` is only ever used for generating a default queryset or serializer class - the `queryset` and `serializer_class` attributes are always preferred if provided.
-
 **Pagination**:
 
 The following attributes are used to control pagination when used with list views.
@@ -90,6 +86,10 @@ The following attributes are used to control pagination when used with list view
 **Filtering**:
 
 * `filter_backends` - A list of filter backend classes that should be used for filtering the queryset.  Defaults to the same value as the `DEFAULT_FILTER_BACKENDS` setting.
+
+**Deprecated attributes**:
+
+* `model` - This shortcut may be used instead of setting either (or both) of the `queryset`/`serializer_class` attributes. The explicit style is preferred over the `.model` shortcut, and usage of this attribute is now deprecated.
 
 ### Methods
 
