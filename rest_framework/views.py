@@ -4,11 +4,12 @@ Provides an APIView class that is the base of all views in REST framework.
 from __future__ import unicode_literals
 
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.http import Http404
 from django.utils.datastructures import SortedDict
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status, exceptions
-from rest_framework.compat import smart_text, HttpResponseBase, View
+from rest_framework.compat import set_rollback, smart_text, HttpResponseBase, View
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
@@ -368,6 +369,8 @@ class APIView(View):
         if response is None:
             raise
 
+        # We've swallowed the exception, but we should mark it for rollback.
+        set_rollback(transaction)
         response.exception = True
         return response
 
