@@ -42,7 +42,7 @@ a single block in the template.
 }
 
 .nav-list > .active > a, .nav-list > .active > a:hover {
-  background: #2c2c2c;
+  background: #2C2C2C;
 }
 
 .navbar .navbar-inner .dropdown-menu li a, .navbar .navbar-inner .dropdown-menu li {
@@ -50,8 +50,8 @@ a single block in the template.
 }
 
 .navbar .navbar-inner .dropdown-menu li a:hover {
-  background: #eeeeee;
-  color: #c20000;
+  background: #EEEEEE;
+  color: #C20000;
 }
 
 /*=== dabapps bootstrap styles ====*/
@@ -151,7 +151,7 @@ footer {
 footer p {
   text-align: center;
   color: gray;
-  border-top: 1px solid #DDD;
+  border-top: 1px solid #DDDDDD;
   padding-top: 10px;
 }
 
