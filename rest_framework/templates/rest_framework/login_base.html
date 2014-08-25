@@ -1,17 +1,9 @@
+{% extends "rest_framework/base.html" %}
 {% load url from future %}
+{% load staticfiles %}
 {% load rest_framework %}
-<html>
 
-    <head>
-        {% block style %}
-        {% block bootstrap_theme %}
-            <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap.min.css" %}"/>
-            <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/bootstrap-tweaks.css" %}"/>
-        {% endblock %}
-        <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
-        {% endblock %}
-    </head>
-
+    {% block body %}
     <body class="container">
 
         <div class="container-fluid" style="margin-top: 30px">
@@ -50,4 +42,4 @@
             </div><!-- /.row-fluid -->
         </div><!-- /.container-fluid -->
     </body>
-</html>
+    {% endblock %}

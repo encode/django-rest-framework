@@ -5,7 +5,8 @@ returned by list views.
 from __future__ import unicode_literals
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
-from rest_framework.compat import django_filters, six, guardian, get_model_name
+from django.utils import six
+from rest_framework.compat import django_filters, guardian, get_model_name
 from rest_framework.settings import api_settings
 from functools import reduce
 import operator
@@ -44,7 +45,7 @@ class DjangoFilterBackend(BaseFilterBackend):
         if filter_class:
             filter_model = filter_class.Meta.model
 
-            assert issubclass(filter_model, queryset.model), \
+            assert issubclass(queryset.model, filter_model), \
                 'FilterSet model %s does not match queryset model %s' % \
                 (filter_model, queryset.model)
 
@@ -116,7 +117,7 @@ class OrderingFilter(BaseFilterBackend):
     def get_ordering(self, request):
         """
         Ordering is set by a comma delimited ?ordering=... query parameter.
-        
+
         The `ordering` query parameter can be overridden by setting
         the `ordering_param` value on the OrderingFilter or by
         specifying an `ORDERING_PARAM` value in the API settings.

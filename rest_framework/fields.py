@@ -18,12 +18,14 @@ from django.conf import settings
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.http import QueryDict
 from django.forms import widgets
+from django.utils import six, timezone
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
 from django.utils.datastructures import SortedDict
+from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    timezone, parse_date, parse_datetime, parse_time, BytesIO, six, smart_text,
+    BytesIO, smart_text,
     force_text, is_non_str_iterable
 )
 from rest_framework.settings import api_settings
@@ -61,8 +63,10 @@ def get_component(obj, attr_name):
 
 
 def readable_datetime_formats(formats):
-    format = ', '.join(formats).replace(ISO_8601,
-             'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]')
+    format = ', '.join(formats).replace(
+        ISO_8601,
+        'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]'
+    )
     return humanize_strptime(format)
 
 
@@ -265,13 +269,6 @@ class WritableField(Field):
                  validators=[], error_messages=None, widget=None,
                  default=None, blank=None):
 
-        # 'blank' is to be deprecated in favor of 'required'
-        if blank is not None:
-            warnings.warn('The `blank` keyword argument is deprecated. '
-                          'Use the `required` keyword argument instead.',
-                          DeprecationWarning, stacklevel=2)
-            required = not(blank)
-
         super(WritableField, self).__init__(source=source, label=label, help_text=help_text)
 
         self.read_only = read_only
@@ -430,7 +427,7 @@ class ModelField(WritableField):
         }
 
 
-##### Typed Fields #####
+# Typed Fields
 
 class BooleanField(WritableField):
     type_name = 'BooleanField'
@@ -465,8 +462,9 @@ class CharField(WritableField):
     type_label = 'string'
     form_field_class = forms.CharField
 
-    def __init__(self, max_length=None, min_length=None, *args, **kwargs):
+    def __init__(self, max_length=None, min_length=None, allow_none=False, *args, **kwargs):
         self.max_length, self.min_length = max_length, min_length
+        self.allow_none = allow_none
         super(CharField, self).__init__(*args, **kwargs)
         if min_length is not None:
             self.validators.append(validators.MinLengthValidator(min_length))
@@ -477,7 +475,7 @@ class CharField(WritableField):
         if isinstance(value, six.string_types):
             return value
 
-        if value is None:
+        if value is None and not self.allow_none:
             return ''
 
         return smart_text(value)
@@ -488,7 +486,7 @@ class URLField(CharField):
     type_label = 'url'
 
     def __init__(self, **kwargs):
-        if not 'validators' in kwargs:
+        if 'validators' not in kwargs:
             kwargs['validators'] = [validators.URLValidator()]
         super(URLField, self).__init__(**kwargs)
 

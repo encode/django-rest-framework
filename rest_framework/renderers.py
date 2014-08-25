@@ -8,7 +8,6 @@ REST framework also provides an HTML renderer the renders the browsable API.
 """
 from __future__ import unicode_literals
 
-import copy
 import json
 import django
 from django import forms
@@ -16,11 +15,9 @@ from django.core.exceptions import ImproperlyConfigured
 from django.http.multipartparser import parse_header
 from django.template import RequestContext, loader, Template
 from django.test.client import encode_multipart
+from django.utils import six
 from django.utils.xmlutils import SimplerXMLGenerator
-from rest_framework.compat import StringIO
-from rest_framework.compat import six
-from rest_framework.compat import smart_text
-from rest_framework.compat import yaml
+from rest_framework.compat import StringIO, smart_text, yaml
 from rest_framework.exceptions import ParseError
 from rest_framework.settings import api_settings
 from rest_framework.request import is_form_media_type, override_method
@@ -75,7 +72,6 @@ class JSONRenderer(BaseRenderer):
         # E.g. If we're being called by the BrowsableAPIRenderer.
         return renderer_context.get('indent', None)
 
-
     def render(self, data, accepted_media_type=None, renderer_context=None):
         """
         Render `data` into JSON, returning a bytestring.
@@ -86,8 +82,10 @@ class JSONRenderer(BaseRenderer):
         renderer_context = renderer_context or {}
         indent = self.get_indent(accepted_media_type, renderer_context)
 
-        ret = json.dumps(data, cls=self.encoder_class,
-            indent=indent, ensure_ascii=self.ensure_ascii)
+        ret = json.dumps(
+            data, cls=self.encoder_class,
+            indent=indent, ensure_ascii=self.ensure_ascii
+        )
 
         # On python 2.x json.dumps() returns bytestrings if ensure_ascii=True,
         # but if ensure_ascii=False, the return type is underspecified,
@@ -414,7 +412,7 @@ class BrowsableAPIRenderer(BaseRenderer):
         """
         Returns True if a form should be shown for this method.
         """
-        if not method in view.allowed_methods:
+        if method not in view.allowed_methods:
             return  # Not a valid method
 
         if not api_settings.FORM_METHOD_OVERRIDE:
@@ -454,8 +452,10 @@ class BrowsableAPIRenderer(BaseRenderer):
             if method in ('DELETE', 'OPTIONS'):
                 return True  # Don't actually need to return a form
 
-            if (not getattr(view, 'get_serializer', None)
-                or not any(is_form_media_type(parser.media_type) for parser in view.parser_classes)):
+            if (
+                not getattr(view, 'get_serializer', None)
+                or not any(is_form_media_type(parser.media_type) for parser in view.parser_classes)
+            ):
                 return
 
             serializer = view.get_serializer(instance=obj, data=data, files=files)
@@ -576,7 +576,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             'version': VERSION,
             'breadcrumblist': self.get_breadcrumbs(request),
             'allowed_methods': view.allowed_methods,
-            'available_formats': [renderer.format for renderer in view.renderer_classes],
+            'available_formats': [renderer_cls.format for renderer_cls in view.renderer_classes],
             'response_headers': response_headers,
 
             'put_form': self.get_rendered_html_form(view, 'PUT', request),
@@ -625,4 +625,3 @@ class MultiPartRenderer(BaseRenderer):
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         return encode_multipart(self.BOUNDARY, data)
-

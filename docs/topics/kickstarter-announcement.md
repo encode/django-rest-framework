@@ -81,6 +81,8 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 <li><a href="http://lightningkite.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-lightning_kite.png);">Lightning Kite</a></li>
 <li><a href="https://opbeat.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-opbeat.png);">Opbeat</a></li>
 <li><a href="https://koordinates.com" rel="nofollow" style="background-image:url(../img/sponsors/2-koordinates.png);">Koordinates</a></li>
+<li><a href="http://pulsecode.ca" rel="nofollow" style="background-image:url(../img/sponsors/2-pulsecode.png);">Pulsecode Inc.</a></li>
+<li><a href="http://singinghorsestudio.com" rel="nofollow" style="background-image:url(../img/sponsors/2-singing-horse.png);">Singing Horse Studio. Ltd.</a></li>
 <li><a href="https://www.heroku.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-heroku.png);">Heroku</a></li>
 <li><a href="https://www.galileo-press.de/" rel="nofollow" style="background-image:url(../img/sponsors/2-galileo_press.png);">Galileo Press</a></li>
 <li><a href="http://www.securitycompass.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-security_compass.png);">Security Compass</a></li>
@@ -95,7 +97,7 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 
 <div style="clear: both; padding-bottom: 40px;"></div>
 
-**Individual backers**: Xitij Ritesh Patel, Howard Sandford, Simon Haugk.
+**Individual backers**: Simon Haugk.
 
 ---
 

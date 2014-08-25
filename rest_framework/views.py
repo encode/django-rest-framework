@@ -31,6 +31,7 @@ def get_view_name(view_cls, suffix=None):
 
     return name
 
+
 def get_view_description(view_cls, html=False):
     """
     Given a view class, return a textual description to represent the view.
@@ -61,6 +62,7 @@ def exception_handler(exc):
             headers['WWW-Authenticate'] = exc.auth_header
         if getattr(exc, 'wait', None):
             headers['X-Throttle-Wait-Seconds'] = '%d' % exc.wait
+            headers['Retry-After'] = '%d' % exc.wait
 
         return Response({'detail': exc.detail},
                         status=exc.status_code,
@@ -118,7 +120,6 @@ class APIView(View):
         if len(self.renderer_classes) > 1:
             headers['Vary'] = 'Accept'
         return headers
-
 
     def http_method_not_allowed(self, request, *args, **kwargs):
         """
