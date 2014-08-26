@@ -366,6 +366,9 @@ The [drf-extra-fields][drf-extra-fields] package provides extra serializer field
 
 The [django-rest-framework-gis][django-rest-framework-gis] package provides geographic addons for django rest framework like a  `GeometryField` field and a GeoJSON serializer.
 
+## django-rest-framework-hstore
+
+The [django-rest-framework-hstore][django-rest-framework-hstore] package provides an `HStoreField` to support [django-hstore][django-hstore] `DictionaryField` model field.
 
 [cite]: https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.Form.cleaned_data
 [FILE_UPLOAD_HANDLERS]: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-FILE_UPLOAD_HANDLERS
@@ -376,3 +379,5 @@ The [django-rest-framework-gis][django-rest-framework-gis] package provides geog
 [drf-compound-fields]: http://drf-compound-fields.readthedocs.org
 [drf-extra-fields]: https://github.com/Hipo/drf-extra-fields
 [django-rest-framework-gis]: https://github.com/djangonauts/django-rest-framework-gis
+[django-rest-framework-hstore]: https://github.com/djangonauts/django-rest-framework-hstore
+[django-hstore]: https://github.com/djangonauts/django-hstore
