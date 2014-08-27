@@ -83,9 +83,7 @@
                         <fieldset>
                             <div class="btn-group format-selection">
                                 <a class="btn btn-primary js-tooltip" href='{{ request.get_full_path }}'
-                                     rel="nofollow" title="Make a GET request on the {{ name }} resource">
-                                    GET
-                                </a>
+                                     rel="nofollow" title="Make a GET request on the {{ name }} resource">GET</a>
         
                                 <button class="btn btn-primary dropdown-toggle js-tooltip" data-toggle="dropdown"
                                         title="Specify a format for the GET request">
@@ -113,9 +111,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="OPTIONS" />
                         <button class="btn btn-primary js-tooltip"
-                                title="Make an OPTIONS request on the {{ name }} resource">
-                            OPTIONS
-                        </button>
+                                title="Make an OPTIONS request on the {{ name }} resource">OPTIONS</button>
                     </form>
                 {% endif %}
 
@@ -124,9 +120,7 @@
                         {% csrf_token %}
                         <input type="hidden" name="{{ api_settings.FORM_METHOD_OVERRIDE }}" value="DELETE" />
                         <button class="btn btn-danger js-tooltip"
-                                title="Make a DELETE request on the {{ name }} resource">
-                            DELETE
-                        </button>
+                                title="Make a DELETE request on the {{ name }} resource">DELETE</button>
                     </form>
                 {% endif %}
 
@@ -172,9 +166,7 @@
                                                     {{ post_form }}
                                                     <div class="form-actions">
                                                         <button class="btn btn-primary"
-                                                                title="Make a POST request on the {{ name }} resource">
-                                                            POST
-                                                        </button>
+                                                                title="Make a POST request on the {{ name }} resource">POST</button>
                                                     </div>
                                                 </fieldset>
                                             </form>
@@ -188,9 +180,7 @@
                                                 {% include "rest_framework/raw_data_form.html" %}
                                                 <div class="form-actions">
                                                     <button class="btn btn-primary"
-                                                            title="Make a POST request on the {{ name }} resource">
-                                                        POST
-                                                    </button>
+                                                            title="Make a POST request on the {{ name }} resource">POST</button>
                                                 </div>
                                             </fieldset>
                                         </form>
@@ -222,9 +212,7 @@
                                                 <div class="form-actions">
                                                     <button class="btn btn-primary js-tooltip"
                                                              name="{{ api_settings.FORM_METHOD_OVERRIDE }}"
-                                                            value="PUT" title="Make a PUT request on the {{ name }} resource">
-                                                        PUT
-                                                    </button>
+                                                            value="PUT" title="Make a PUT request on the {{ name }} resource">PUT</button>
                                                 </div>
                                             </fieldset>
                                         </form>
@@ -239,16 +227,12 @@
                                                     {% if raw_data_put_form %}
                                                         <button class="btn btn-primary js-tooltip"
                                                                  name="{{ api_settings.FORM_METHOD_OVERRIDE }}"
-                                                                value="PUT" title="Make a PUT request on the {{ name }} resource">
-                                                            PUT
-                                                        </button>
+                                                                value="PUT" title="Make a PUT request on the {{ name }} resource">PUT</button>
                                                     {% endif %}
                                                     {% if raw_data_patch_form %}
                                                         <button class="btn btn-primary js-tooltip"
                                                                  name="{{ api_settings.FORM_METHOD_OVERRIDE }}"
-                                                                value="PATCH" title="Make a PATCH request on the {{ name }} resource">
-                                                            PATCH
-                                                        </button>
+                                                                value="PATCH" title="Make a PATCH request on the {{ name }} resource">PATCH</button>
                                                     {% endif %}
                                                 </div>
                                             </fieldset>
