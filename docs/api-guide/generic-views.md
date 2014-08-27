@@ -49,7 +49,7 @@ For more complex cases you might also want to override various methods on the vi
             serializer = UserSerializer(queryset, many=True)
             return Response(serializer.data)
 
-For very simple cases you might want to pass through any class attributes using the `.as_view()` method.  For example, your URLconf might include something the following entry.
+For very simple cases you might want to pass through any class attributes using the `.as_view()` method.  For example, your URLconf might include something like the following entry:
 
     url(r'^/users/', ListCreateAPIView.as_view(model=User), name='user-list')
 
