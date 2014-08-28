@@ -92,7 +92,7 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 <li><a href="http://crypticocorp.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-cryptico.png);">Cryptico Corp</a></li>
 <li><a href="http://www.nexthub.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-nexthub.png);">NextHub</a></li>
 <li><a href="https://www.compile.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-compile.png);">Compile</a></li>
-<li><a href="http://wusawork.org" rel="nofollow" style="background-image:url(../img/sponsors/2-wusawork.png);>WusaWork</a></li>
+<li><a href="http://wusawork.org" rel="nofollow" style="background-image:url(../img/sponsors/2-wusawork.png);">WusaWork</a></li>
 <li><a href="http://envisionlinux.org/blog" rel="nofollow">Envision Linux</a></li>
 </ul>
 
