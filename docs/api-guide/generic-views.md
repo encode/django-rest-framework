@@ -101,7 +101,7 @@ Returns the queryset that should be used for list views, and that should be used
 
 This method should always be used rather than accessing `self.queryset` directly, as `self.queryset` gets evaluated only once, and those results are cached for all subsequent requests.
 
-May be overridden to provide dynamic behavior such as returning a queryset that is specific to the user making the request.
+May be overridden to provide dynamic behavior, such as returning a queryset, that is specific to the user making the request.
 
 For example:
 
@@ -113,7 +113,7 @@ For example:
 
 Returns an object instance that should be used for detail views.  Defaults to using the `lookup_field` parameter to filter the base queryset.
 
-May be overridden to provide more complex behavior such as object lookups based on more than one URL kwarg.
+May be overridden to provide more complex behavior, such as object lookups based on more than one URL kwarg.
 
 For example:
 
@@ -133,7 +133,7 @@ Note that if your API doesn't include any object level permissions, you may opti
 
 Returns the classes that should be used to filter the queryset. Defaults to returning the `filter_backends` attribute.
 
-May be override to provide more complex behavior with filters, as using different (or even exlusive) lists of filter_backends depending on different criteria.
+May be overridden to provide more complex behavior with filters, such as using different (or even exlusive) lists of filter_backends depending on different criteria.
 
 For example:
 
@@ -149,7 +149,7 @@ For example:
 
 Returns the class that should be used for the serializer.  Defaults to returning the `serializer_class` attribute, or dynamically generating a serializer class if the `model` shortcut is being used.
 
-May be override to provide dynamic behavior such as using different serializers for read and write operations, or providing different serializers to different types of users.
+May be overridden to provide dynamic behavior, such as using different serializers for read and write operations, or providing different serializers to different types of users.
 
 For example:
 
@@ -162,7 +162,7 @@ For example:
 
 Returns the page size to use with pagination.  By default this uses the `paginate_by` attribute, and may be overridden by the client if the `paginate_by_param` attribute is set.
 
-You may want to override this method to provide more complex behavior such as modifying page sizes based on the media type of the response.
+You may want to override this method to provide more complex behavior, such as modifying page sizes based on the media type of the response.
 
 For example:
 
@@ -204,7 +204,7 @@ You won't typically need to override the following methods, although you might n
 
 # Mixins
 
-The mixin classes provide the actions that are used to provide the basic view behavior.  Note that the mixin classes provide action methods rather than defining the handler methods such as `.get()` and `.post()` directly.  This allows for more flexible composition of behavior.
+The mixin classes provide the actions that are used to provide the basic view behavior.  Note that the mixin classes provide action methods rather than defining the handler methods, such as `.get()` and `.post()`, directly.  This allows for more flexible composition of behavior.
 
 ## ListModelMixin
 
