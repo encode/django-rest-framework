@@ -219,7 +219,7 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 </code></pre>
 <p>Here we've used the <code>ReadOnlyModelViewSet</code> class to automatically provide the default 'read-only' operations.  We're still setting the <code>queryset</code> and <code>serializer_class</code> attributes exactly as we did when we were using regular views, but we no longer need to provide the same information to two separate classes.</p>
 <p>Next we're going to replace the <code>SnippetList</code>, <code>SnippetDetail</code> and <code>SnippetHighlight</code> view classes.  We can remove the three views, and again replace them with a single class.</p>
-<pre class="prettyprint lang-py"><code>from rest_framework.decorators import link
+<pre class="prettyprint lang-py"><code>from rest_framework.decorators import detail_route
 
 class SnippetViewSet(viewsets.ModelViewSet):
     """
@@ -233,7 +233,7 @@ class SnippetViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,
                           IsOwnerOrReadOnly,)
 
-    @link(renderer_classes=[renderers.StaticHTMLRenderer])
+    @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
     def highlight(self, request, *args, **kwargs):
         snippet = self.get_object()
         return Response(snippet.highlighted)
@@ -242,8 +242,8 @@ class SnippetViewSet(viewsets.ModelViewSet):
         obj.owner = self.request.user
 </code></pre>
 <p>This time we've used the <code>ModelViewSet</code> class in order to get the complete set of default read and write operations.</p>
-<p>Notice that we've also used the <code>@link</code> decorator to create a custom action, named <code>highlight</code>.  This decorator can be used to add any custom endpoints that don't fit into the standard <code>create</code>/<code>update</code>/<code>delete</code> style.</p>
-<p>Custom actions which use the <code>@link</code> decorator will respond to <code>GET</code> requests.  We could have instead used the <code>@action</code> decorator if we wanted an action that responded to <code>POST</code> requests.</p>
+<p>Notice that we've also used the <code>@detail_route</code> decorator to create a custom action, named <code>highlight</code>.  This decorator can be used to add any custom endpoints that don't fit into the standard <code>create</code>/<code>update</code>/<code>delete</code> style.</p>
+<p>Custom actions which use the <code>@detail_route</code> decorator will respond to <code>GET</code> requests.  We can use the <code>methods</code> argument if we wanted an action that responded to <code>POST</code> requests.</p>
 <h2 id="binding-viewsets-to-urls-explicitly">Binding ViewSets to URLs explicitly</h2>
 <p>The handler methods only get bound to the actions when we define the URLConf.
 To see what's going on under the hood let's first explicitly create a set of views from our ViewSets.</p>

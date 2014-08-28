@@ -188,6 +188,7 @@ a.fusion-poweredby {
 <li><a href="#versioning">Versioning</a></li>
 <li><a href="#deprecation-policy">Deprecation policy</a></li>
 <li><a href="#upgrading">Upgrading</a></li>
+<li><a href="#24x-series">2.4.x series</a></li>
 <li><a href="#23x-series">2.3.x series</a></li>
 <li><a href="#22x-series">2.2.x series</a></li>
 <li><a href="#21x-series">2.1.x series</a></li>
@@ -237,6 +238,31 @@ a.fusion-poweredby {
 <p>You can determine your currently installed version using <code>pip freeze</code>:</p>
 <pre class="prettyprint lang-py"><code>pip freeze | grep djangorestframework
 </code></pre>
+<hr />
+<h2 id="24x-series">2.4.x series</h2>
+<h3 id="240">2.4.0</h3>
+<p><strong>Django version requirements</strong>: The lowest supported version of Django is now 1.4.2.</p>
+<p><strong>South version requirements</strong>: This note applies to any users using the optional <code>authtoken</code> application, which includes an associated database migration. You must now <em>either</em> upgrade your <code>south</code> package to version 1.0, <em>or</em> instead use the built-in migration support available with Django 1.7.</p>
+<ul>
+<li>Added compatibility with Django 1.7's database migration support.</li>
+<li>New test runner, using <code>py.test</code>.</li>
+<li><code>@detail_route</code> and <code>@list_route</code> decorators replace <code>@action</code> and <code>@link</code>.</li>
+<li>Support customizable view name and description functions, using the <code>VIEW_NAME_FUNCTION</code> and <code>VIEW_DESCRIPTION_FUNCTION</code> settings.</li>
+<li>Added <code>NUM_PROXIES</code> setting for smarter client IP identification.</li>
+<li>Added <code>MAX_PAGINATE_BY</code> setting and <code>max_paginate_by</code> generic view attribute.</li>
+<li>Added <code>Retry-After</code> header to throttled responses, as per <a href="http://tools.ietf.org/html/rfc6585">RFC 6585</a>. This should now be used in preference to the custom <code>X-Trottle-Wait-Seconds</code> header which will be fully deprecated in 3.0.</li>
+<li>Added <code>cache</code> attribute to throttles to allow overriding of default cache.</li>
+<li>Added <code>lookup_value_regex</code> attribute to routers, to allow the URL argument matching to be constrainted by the user.</li>
+<li>Added <code>allow_none</code> option to <code>CharField</code>.</li>
+<li>Support Django's standard <code>status_code</code> class attribute on responses.</li>
+<li>More intuitive behavior on the test client, as <code>client.logout()</code> now also removes any credentials that have been set.</li>
+<li>Bugfix: <code>?page_size=0</code> query parameter now falls back to default page size for view, instead of always turning pagination off.</li>
+<li>Bugfix: Always uppercase <code>X-Http-Method-Override</code> methods.</li>
+<li>Bugfix: Copy <code>filter_backends</code> list before returning it, in order to prevent view code from mutating the class attribute itself.</li>
+<li>Bugfix: Set the <code>.action</code> attribute on viewsets when introspected by <code>OPTIONS</code> for testing permissions on the view.</li>
+<li>Bugfix: Ensure <code>ValueError</code> raised during deserialization results in a error list rather than a single error. This is now consistent with other validation errors.</li>
+<li>Bugfix: Fix <code>cache_format</code> typo on throttle classes, was <code>"throtte_%(scope)s_%(ident)s"</code>. Note that this will invalidate existing throttle caches.</li>
+</ul>
 <hr />
 <h2 id="23x-series">2.3.x series</h2>
 <h3 id="2314">2.3.14</h3>
@@ -356,9 +382,9 @@ a.fusion-poweredby {
 <li>Added <code>trailing_slash</code> option to routers.</li>
 <li>Include support for <code>HttpStreamingResponse</code>.</li>
 <li>Support wider range of default serializer validation when used with custom model fields.</li>
-<li>UTF-8 Support for browsable API descriptions.  </li>
+<li>UTF-8 Support for browsable API descriptions.</li>
 <li>OAuth2 provider uses timezone aware datetimes when supported.</li>
-<li>Bugfix: Return error correctly when OAuth non-existent consumer occurs. </li>
+<li>Bugfix: Return error correctly when OAuth non-existent consumer occurs.</li>
 <li>Bugfix: Allow <code>FileUploadParser</code> to correctly filename if provided as URL kwarg.</li>
 <li>Bugfix: Fix <code>ScopedRateThrottle</code>.</li>
 </ul>
@@ -395,7 +421,7 @@ a.fusion-poweredby {
 <li>Added SearchFilter</li>
 <li>Added OrderingFilter</li>
 <li>Added GenericViewSet</li>
-<li>Bugfix: Multiple <code>@action</code> and <code>@link</code> methods now allowed on viewsets. </li>
+<li>Bugfix: Multiple <code>@action</code> and <code>@link</code> methods now allowed on viewsets.</li>
 <li>Bugfix: Fix API Root view issue with DjangoModelPermissions</li>
 </ul>
 <h3 id="232">2.3.2</h3>
@@ -440,7 +466,7 @@ a.fusion-poweredby {
 <li>Long HTTP headers in browsable API are broken in multiple lines when possible.</li>
 <li>Bugfix: Fix regression with DjangoFilterBackend not worthing correctly with single object views.</li>
 <li>Bugfix: OAuth should fail hard when invalid token used.</li>
-<li>Bugfix: Fix serializer potentially returning <code>None</code> object for models that define <code>__bool__</code> or <code>__len__</code>. </li>
+<li>Bugfix: Fix serializer potentially returning <code>None</code> object for models that define <code>__bool__</code> or <code>__len__</code>.</li>
 </ul>
 <h3 id="225">2.2.5</h3>
 <p><strong>Date</strong>: 26th March 2013</p>

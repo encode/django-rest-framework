@@ -213,6 +213,7 @@ a.fusion-poweredby {
 <li><a href="#drf-compound-fields">DRF Compound Fields</a></li>
 <li><a href="#drf-extra-fields">DRF Extra Fields</a></li>
 <li><a href="#django-rest-framework-gis">django-rest-framework-gis</a></li>
+<li><a href="#django-rest-framework-hstore">django-rest-framework-hstore</a></li>
 
               <div class="promo">
               
@@ -329,10 +330,11 @@ class UserSerializer(serializers.ModelSerializer):
 <p>A Boolean representation.</p>
 <p>Corresponds to <code>django.db.models.fields.BooleanField</code>.</p>
 <h2 id="charfield">CharField</h2>
-<p>A text representation, optionally validates the text to be shorter than <code>max_length</code> and longer than <code>min_length</code>.</p>
+<p>A text representation, optionally validates the text to be shorter than <code>max_length</code> and longer than <code>min_length</code>.
+If <code>allow_none</code> is <code>False</code> (default), <code>None</code> values will be converted to an empty string.</p>
 <p>Corresponds to <code>django.db.models.fields.CharField</code>
 or <code>django.db.models.fields.TextField</code>.</p>
-<p><strong>Signature:</strong> <code>CharField(max_length=None, min_length=None)</code></p>
+<p><strong>Signature:</strong> <code>CharField(max_length=None, min_length=None, allow_none=False)</code></p>
 <h2 id="urlfield">URLField</h2>
 <p>Corresponds to <code>django.db.models.fields.URLField</code>.  Uses Django's <code>django.core.validators.URLValidator</code> for validation.</p>
 <p><strong>Signature:</strong> <code>URLField(max_length=200, min_length=None)</code></p>
@@ -461,6 +463,8 @@ class ColourField(serializers.WritableField):
 <p>The <a href="https://github.com/Hipo/drf-extra-fields">drf-extra-fields</a> package provides extra serializer fields for REST framework, including <code>Base64ImageField</code> and <code>PointField</code> classes.</p>
 <h2 id="django-rest-framework-gis">django-rest-framework-gis</h2>
 <p>The <a href="https://github.com/djangonauts/django-rest-framework-gis">django-rest-framework-gis</a> package provides geographic addons for django rest framework like a  <code>GeometryField</code> field and a GeoJSON serializer.</p>
+<h2 id="django-rest-framework-hstore">django-rest-framework-hstore</h2>
+<p>The <a href="https://github.com/djangonauts/django-rest-framework-hstore">django-rest-framework-hstore</a> package provides an <code>HStoreField</code> to support <a href="https://github.com/djangonauts/django-hstore">django-hstore</a> <code>DictionaryField</code> model field.</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->

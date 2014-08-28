@@ -262,7 +262,7 @@ class UserList(generics.ListCreateAPIView):
         serializer = UserSerializer(queryset, many=True)
         return Response(serializer.data)
 </code></pre>
-<p>For very simple cases you might want to pass through any class attributes using the <code>.as_view()</code> method.  For example, your URLconf might include something the following entry.</p>
+<p>For very simple cases you might want to pass through any class attributes using the <code>.as_view()</code> method.  For example, your URLconf might include something like the following entry:</p>
 <pre class="prettyprint lang-py"><code>url(r'^/users/', ListCreateAPIView.as_view(model=User), name='user-list')
 </code></pre>
 <hr />
@@ -300,7 +300,7 @@ class UserList(generics.ListCreateAPIView):
 <h4 id="get_querysetself"><code>get_queryset(self)</code></h4>
 <p>Returns the queryset that should be used for list views, and that should be used as the base for lookups in detail views.  Defaults to returning the queryset specified by the <code>queryset</code> attribute, or the default queryset for the model if the <code>model</code> shortcut is being used.</p>
 <p>This method should always be used rather than accessing <code>self.queryset</code> directly, as <code>self.queryset</code> gets evaluated only once, and those results are cached for all subsequent requests.</p>
-<p>May be overridden to provide dynamic behavior such as returning a queryset that is specific to the user making the request.</p>
+<p>May be overridden to provide dynamic behavior, such as returning a queryset, that is specific to the user making the request.</p>
 <p>For example:</p>
 <pre class="prettyprint lang-py"><code>def get_queryset(self):
     user = self.request.user
@@ -308,7 +308,7 @@ class UserList(generics.ListCreateAPIView):
 </code></pre>
 <h4 id="get_objectself"><code>get_object(self)</code></h4>
 <p>Returns an object instance that should be used for detail views.  Defaults to using the <code>lookup_field</code> parameter to filter the base queryset.</p>
-<p>May be overridden to provide more complex behavior such as object lookups based on more than one URL kwarg.</p>
+<p>May be overridden to provide more complex behavior, such as object lookups based on more than one URL kwarg.</p>
 <p>For example:</p>
 <pre class="prettyprint lang-py"><code>def get_object(self):
     queryset = self.get_queryset()
@@ -323,7 +323,7 @@ class UserList(generics.ListCreateAPIView):
 <p>Note that if your API doesn't include any object level permissions, you may optionally exclude the <code>self.check_object_permissions</code>, and simply return the object from the <code>get_object_or_404</code> lookup.</p>
 <h4 id="get_filter_backendsself"><code>get_filter_backends(self)</code></h4>
 <p>Returns the classes that should be used to filter the queryset. Defaults to returning the <code>filter_backends</code> attribute.</p>
-<p>May be override to provide more complex behavior with filters, as using different (or even exlusive) lists of filter_backends depending on different criteria.</p>
+<p>May be overridden to provide more complex behavior with filters, such as using different (or even exlusive) lists of filter_backends depending on different criteria.</p>
 <p>For example:</p>
 <pre class="prettyprint lang-py"><code>def get_filter_backends(self):
     if "geo_route" in self.request.QUERY_PARAMS:
@@ -335,7 +335,7 @@ class UserList(generics.ListCreateAPIView):
 </code></pre>
 <h4 id="get_serializer_classself"><code>get_serializer_class(self)</code></h4>
 <p>Returns the class that should be used for the serializer.  Defaults to returning the <code>serializer_class</code> attribute, or dynamically generating a serializer class if the <code>model</code> shortcut is being used.</p>
-<p>May be override to provide dynamic behavior such as using different serializers for read and write operations, or providing different serializers to different types of users.</p>
+<p>May be overridden to provide dynamic behavior, such as using different serializers for read and write operations, or providing different serializers to different types of users.</p>
 <p>For example:</p>
 <pre class="prettyprint lang-py"><code>def get_serializer_class(self):
     if self.request.user.is_staff:
@@ -344,7 +344,7 @@ class UserList(generics.ListCreateAPIView):
 </code></pre>
 <h4 id="get_paginate_byself"><code>get_paginate_by(self)</code></h4>
 <p>Returns the page size to use with pagination.  By default this uses the <code>paginate_by</code> attribute, and may be overridden by the client if the <code>paginate_by_param</code> attribute is set.</p>
-<p>You may want to override this method to provide more complex behavior such as modifying page sizes based on the media type of the response.</p>
+<p>You may want to override this method to provide more complex behavior, such as modifying page sizes based on the media type of the response.</p>
 <p>For example:</p>
 <pre class="prettyprint lang-py"><code>def get_paginate_by(self):
     if self.request.accepted_renderer.format == 'html':
@@ -378,7 +378,7 @@ class UserList(generics.ListCreateAPIView):
 </ul>
 <hr />
 <h1 id="mixins">Mixins</h1>
-<p>The mixin classes provide the actions that are used to provide the basic view behavior.  Note that the mixin classes provide action methods rather than defining the handler methods such as <code>.get()</code> and <code>.post()</code> directly.  This allows for more flexible composition of behavior.</p>
+<p>The mixin classes provide the actions that are used to provide the basic view behavior.  Note that the mixin classes provide action methods rather than defining the handler methods, such as <code>.get()</code> and <code>.post()</code>, directly.  This allows for more flexible composition of behavior.</p>
 <h2 id="listmodelmixin">ListModelMixin</h2>
 <p>Provides a <code>.list(request, *args, **kwargs)</code> method, that implements listing a queryset.</p>
 <p>If the queryset is populated, this returns a <code>200 OK</code> response, with a serialized representation of the queryset as the body of the response.  The response data may optionally be paginated.</p>

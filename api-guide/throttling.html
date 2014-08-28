@@ -229,7 +229,7 @@ If any throttle check fails an <code>exceptions.Throttled</code> exception will 
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/day',
         'user': '1000/day'
-    }        
+    }
 }
 </code></pre>
 <p>The rate descriptions used in <code>DEFAULT_THROTTLE_RATES</code> may include <code>second</code>, <code>minute</code>, <code>hour</code> or <code>day</code> as the throttle period.</p>
@@ -257,6 +257,11 @@ def example_view(request, format=None):
     }
     return Response(content)
 </code></pre>
+<h2 id="how-clients-are-identified">How clients are identified</h2>
+<p>The <code>X-Forwarded-For</code> and <code>Remote-Addr</code> HTTP headers are used to uniquely identify client IP addresses for throttling.  If the <code>X-Forwarded-For</code> header is present then it will be used, otherwise the value of the <code>Remote-Addr</code> header will be used.</p>
+<p>If you need to strictly identify unique client IP addresses, you'll need to first configure the number of application proxies that the API runs behind by setting the <code>NUM_PROXIES</code> setting.  This setting should be an integer of zero or more.  If set to non-zero then the client IP will be identified as being the last IP address in the <code>X-Forwarded-For</code> header, once any application proxy IP addresses have first been excluded.  If set to zero, then the <code>Remote-Addr</code> header will always be used as the identifying IP address.</p>
+<p>It is important to understand that if you configure the <code>NUM_PROXIES</code> setting, then all clients behind a unique <a href="http://en.wikipedia.org/wiki/Network_address_translation">NAT'd</a> gateway will be treated as a single client.</p>
+<p>Further context on how the <code>X-Forwarded-For</code> header works, and identifing a remote client IP can be <a href="http://oxpedia.org/wiki/index.php?title=AppSuite:Grizzly#Multiple_Proxies_in_front_of_the_cluster">found here</a>.</p>
 <h2 id="setting-up-the-cache">Setting up the cache</h2>
 <p>The throttle classes provided by REST framework use Django's cache backend.  You should make sure that you've set appropriate <a href="https://docs.djangoproject.com/en/dev/ref/settings/#caches">cache settings</a>.  The default value of <code>LocMemCache</code> backend should be okay for simple setups.  See Django's <a href="https://docs.djangoproject.com/en/dev/topics/cache/#setting-up-the-cache">cache documentation</a> for more details.</p>
 <p>If you need to use a cache other than <code>'default'</code>, you can do so by creating a custom throttle class and setting the <code>cache</code> attribute.  For example:</p>

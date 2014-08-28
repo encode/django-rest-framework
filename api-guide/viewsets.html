@@ -186,7 +186,7 @@ a.fusion-poweredby {
               <ul class="nav nav-list side-nav well sidebar-nav-fixed">
                 <li class="main"><a href="#viewsets">ViewSets</a></li>
 <li><a href="#example">Example</a></li>
-<li><a href="#marking-extra-methods-for-routing">Marking extra methods for routing</a></li>
+<li><a href="#marking-extra-actions-for-routing">Marking extra actions for routing</a></li>
 <li class="main"><a href="#api-reference">API Reference</a></li>
 <li><a href="#viewset">ViewSet</a></li>
 <li><a href="#genericviewset">GenericViewSet</a></li>
@@ -263,7 +263,7 @@ urlpatterns = router.urls
 <li>By using routers, we no longer need to deal with wiring up the URL conf ourselves.</li>
 </ul>
 <p>Both of these come with a trade-off.  Using regular views and URL confs is more explicit and gives you more control.  ViewSets are helpful if you want to get up and running quickly, or when you have a large API and you want to enforce a consistent URL configuration throughout.</p>
-<h2 id="marking-extra-methods-for-routing">Marking extra methods for routing</h2>
+<h2 id="marking-extra-actions-for-routing">Marking extra actions for routing</h2>
 <p>The default routers included with REST framework will provide routes for a standard set of create/retrieve/update/destroy style operations, as shown below:</p>
 <pre class="prettyprint lang-py"><code>class UserViewSet(viewsets.ViewSet):
     """
@@ -292,12 +292,13 @@ urlpatterns = router.urls
     def destroy(self, request, pk=None):
         pass
 </code></pre>
-<p>If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the <code>@link</code> or <code>@action</code> decorators.  The <code>@link</code> decorator will route <code>GET</code> requests, and the <code>@action</code> decorator will route <code>POST</code> requests.</p>
+<p>If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the <code>@detail_route</code> or <code>@list_route</code> decorators.</p>
+<p>The <code>@detail_route</code> decorator contains <code>pk</code> in its URL pattern and is intended for methods which require a single instance. The <code>@list_route</code> decorator is intended for methods which operate on a list of objects.</p>
 <p>For example:</p>
 <pre class="prettyprint lang-py"><code>from django.contrib.auth.models import User
-from rest_framework import viewsets
 from rest_framework import status
-from rest_framework.decorators import action
+from rest_framework import viewsets
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from myapp.serializers import UserSerializer, PasswordSerializer
 
@@ -308,7 +309,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    @action()
+    @detail_route(methods=['post'])
     def set_password(self, request, pk=None):
         user = self.get_object()
         serializer = PasswordSerializer(data=request.DATA)
@@ -319,14 +320,21 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
+
+    @list_route()
+    def recent_users(self, request):
+        recent_users = User.objects.all().order('-last_login')
+        page = self.paginate_queryset(recent_users)
+        serializer = self.get_pagination_serializer(page)
+        return Response(serializer.data)
 </code></pre>
-<p>The <code>@action</code> and <code>@link</code> decorators can additionally take extra arguments that will be set for the routed view only.  For example...</p>
-<pre class="prettyprint lang-py"><code>    @action(permission_classes=[IsAdminOrIsSelf])
+<p>The decorators can additionally take extra arguments that will be set for the routed view only.  For example...</p>
+<pre class="prettyprint lang-py"><code>    @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf])
     def set_password(self, request, pk=None):
        ...
 </code></pre>
-<p>The <code>@action</code> decorator will route <code>POST</code> requests by default, but may also accept other HTTP methods, by using the <code>methods</code> argument.  For example:</p>
-<pre class="prettyprint lang-py"><code>    @action(methods=['POST', 'DELETE'])
+<p>Theses decorators will route <code>GET</code> requests by default, but may also accept other HTTP methods, by using the <code>methods</code> argument.  For example:</p>
+<pre class="prettyprint lang-py"><code>    @detail_route(methods=['post', 'delete'])
     def unset_password(self, request, pk=None):
        ...
 </code></pre>

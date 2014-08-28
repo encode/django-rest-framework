@@ -434,6 +434,9 @@ If set to <code>None</code> then generic filtering is disabled.</p>
 <h4 id="format_suffix_kwarg">FORMAT_SUFFIX_KWARG</h4>
 <p>The name of a parameter in the URL conf that may be used to provide a format suffix.</p>
 <p>Default: <code>'format'</code></p>
+<h4 id="num_proxies">NUM_PROXIES</h4>
+<p>An integer of 0 or more, that may be used to specify the number of application proxies that the API runs behind.  This allows throttling to more accurately identify client IP addresses.  If set to <code>None</code> then less strict IP matching will be used by the throttle classes.</p>
+<p>Default: <code>None</code></p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->
