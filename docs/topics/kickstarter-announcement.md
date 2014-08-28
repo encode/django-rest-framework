@@ -82,7 +82,7 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 <li><a href="https://opbeat.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-opbeat.png);">Opbeat</a></li>
 <li><a href="https://koordinates.com" rel="nofollow" style="background-image:url(../img/sponsors/2-koordinates.png);">Koordinates</a></li>
 <li><a href="http://pulsecode.ca" rel="nofollow" style="background-image:url(../img/sponsors/2-pulsecode.png);">Pulsecode Inc.</a></li>
-<li><a href="http://singinghorsestudio.com" rel="nofollow" style="background-image:url(../img/sponsors/2-singing-horse.png);">Singing Horse Studio. Ltd.</a></li>
+<li><a href="http://singinghorsestudio.com" rel="nofollow" style="background-image:url(../img/sponsors/2-singing-horse.png);">Singing Horse Studio Ltd.</a></li>
 <li><a href="https://www.heroku.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-heroku.png);">Heroku</a></li>
 <li><a href="https://www.galileo-press.de/" rel="nofollow" style="background-image:url(../img/sponsors/2-galileo_press.png);">Galileo Press</a></li>
 <li><a href="http://www.securitycompass.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-security_compass.png);">Security Compass</a></li>
@@ -92,12 +92,9 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 <li><a href="http://crypticocorp.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-cryptico.png);">Cryptico Corp</a></li>
 <li><a href="http://www.nexthub.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-nexthub.png);">NextHub</a></li>
 <li><a href="https://www.compile.com/" rel="nofollow" style="background-image:url(../img/sponsors/2-compile.png);">Compile</a></li>
+<li><a href="http://wusawork.org" rel="nofollow" style="background-image:url(../img/sponsors/2-wusawork.png);>WusaWork</a></li>
 <li><a href="http://envisionlinux.org/blog" rel="nofollow">Envision Linux</a></li>
 </ul>
-
-<div style="clear: both; padding-bottom: 40px;"></div>
-
-**Individual backers**: Simon Haugk.
 
 ---
 
@@ -145,7 +142,7 @@ The serious financial contribution that our silver sponsors have made is very mu
 
 <div style="clear: both; padding-bottom: 40px;"></div>
 
-**Individual backers**: Paul Hallet, <a href="http://www.paulwhippconsulting.com/">Paul Whipp</a>, Dylan Roy, Jannis Leidel, <a href="https://linovia.com/en/">Xavier Ordoquy</a>, <a href="http://spielmannsolutions.com/">Johannes Spielmann</a>, <a href="http://brooklynhacker.com/">Rob Spectre</a>, <a href="http://chrisheisel.com/">Chris Heisel</a>, Marwan Alsabbagh, Haris Ali, Tuomas Toivonen.
+**Individual backers**: Paul Hallett, <a href="http://www.paulwhippconsulting.com/">Paul Whipp</a>, Dylan Roy, Jannis Leidel, <a href="https://linovia.com/en/">Xavier Ordoquy</a>, <a href="http://spielmannsolutions.com/">Johannes Spielmann</a>, <a href="http://brooklynhacker.com/">Rob Spectre</a>, <a href="http://chrisheisel.com/">Chris Heisel</a>, Marwan Alsabbagh, Haris Ali, Tuomas Toivonen.
 
 ---
 
