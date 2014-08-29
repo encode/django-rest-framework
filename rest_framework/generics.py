@@ -158,7 +158,7 @@ class GenericAPIView(views.APIView):
     # The following methods provide default implementations
     # that you may want to override for more complex cases.
 
-    def get_paginate_by(self, queryset=None):
+    def get_paginate_by(self):
         """
         Return the size of pages to use with pagination.
 
@@ -167,11 +167,6 @@ class GenericAPIView(views.APIView):
 
         Otherwise defaults to using `self.paginate_by`.
         """
-        if queryset is not None:
-            warnings.warn('The `queryset` parameter to `get_paginate_by()` '
-                          'is deprecated.',
-                          DeprecationWarning, stacklevel=2)
-
         if self.paginate_by_param:
             try:
                 return strict_positive_int(
