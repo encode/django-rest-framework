@@ -48,17 +48,17 @@ class DefaultObjectSerializer(serializers.Field):
         super(DefaultObjectSerializer, self).__init__(source=source)
 
 
-class PaginationSerializerOptions(serializers.SerializerOptions):
-    """
-    An object that stores the options that may be provided to a
-    pagination serializer by using the inner `Meta` class.
+# class PaginationSerializerOptions(serializers.SerializerOptions):
+#     """
+#     An object that stores the options that may be provided to a
+#     pagination serializer by using the inner `Meta` class.
 
-    Accessible on the instance as `serializer.opts`.
-    """
-    def __init__(self, meta):
-        super(PaginationSerializerOptions, self).__init__(meta)
-        self.object_serializer_class = getattr(meta, 'object_serializer_class',
-                                               DefaultObjectSerializer)
+#     Accessible on the instance as `serializer.opts`.
+#     """
+#     def __init__(self, meta):
+#         super(PaginationSerializerOptions, self).__init__(meta)
+#         self.object_serializer_class = getattr(meta, 'object_serializer_class',
+#                                                DefaultObjectSerializer)
 
 
 class BasePaginationSerializer(serializers.Serializer):
@@ -66,7 +66,7 @@ class BasePaginationSerializer(serializers.Serializer):
     A base class for pagination serializers to inherit from,
     to make implementing custom serializers more easy.
     """
-    _options_class = PaginationSerializerOptions
+    # _options_class = PaginationSerializerOptions
     results_field = 'results'
 
     def __init__(self, *args, **kwargs):

@@ -36,12 +36,10 @@ class CreateModelMixin(object):
     Create a model instance.
     """
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        serializer = self.get_serializer(data=request.DATA)
 
         if serializer.is_valid():
-            self.pre_save(serializer.object)
-            self.object = serializer.save(force_insert=True)
-            self.post_save(self.object, created=True)
+            self.object = serializer.save()
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED,
                             headers=headers)
@@ -90,26 +88,20 @@ class UpdateModelMixin(object):
         partial = kwargs.pop('partial', False)
         self.object = self.get_object_or_none()
 
-        serializer = self.get_serializer(self.object, data=request.DATA,
-                                         files=request.FILES, partial=partial)
+        serializer = self.get_serializer(self.object, data=request.DATA, partial=partial)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            self.pre_save(serializer.object)
-        except ValidationError as err:
-            # full_clean on model instance may be called in pre_save,
-            # so we have to handle eventual errors.
-            return Response(err.message_dict, status=status.HTTP_400_BAD_REQUEST)
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        lookup_value = self.kwargs[lookup_url_kwarg]
+        extras = {self.lookup_field: lookup_value}
 
         if self.object is None:
-            self.object = serializer.save(force_insert=True)
-            self.post_save(self.object, created=True)
+            self.object = serializer.save(extras=extras)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        self.object = serializer.save(force_update=True)
-        self.post_save(self.object, created=False)
+        self.object = serializer.save(extras=extras)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def partial_update(self, request, *args, **kwargs):

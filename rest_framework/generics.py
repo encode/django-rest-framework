@@ -79,18 +79,16 @@ class GenericAPIView(views.APIView):
             'view': self
         }
 
-    def get_serializer(self, instance=None, data=None, files=None, many=False,
-                       partial=False, allow_add_remove=False):
+    def get_serializer(self, instance=None, data=None, many=False, partial=False):
         """
         Return the serializer instance that should be used for validating and
         deserializing input, and for serializing output.
         """
         serializer_class = self.get_serializer_class()
         context = self.get_serializer_context()
-        return serializer_class(instance, data=data, files=files,
-                                many=many, partial=partial,
-                                allow_add_remove=allow_add_remove,
-                                context=context)
+        return serializer_class(
+            instance, data=data, many=many, partial=partial, context=context
+        )
 
     def get_pagination_serializer(self, page):
         """
