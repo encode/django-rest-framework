@@ -121,6 +121,7 @@ a.fusion-poweredby {
                   <li><a href="http://www.django-rest-framework.org/topics/rest-framework-2-announcement">2.0 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.2-announcement">2.2 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.3-announcement">2.3 Announcement</a></li>
+                  <li><a href="http://www.django-rest-framework.org/topics/2.4-announcement">2.4 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/kickstarter-announcement">Kickstarter Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/release-notes">Release Notes</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/credits">Credits</a></li>
@@ -187,6 +188,7 @@ a.fusion-poweredby {
                 <li class="main"><a href="#rest-framework-24-announcement">REST framework 2.4 announcement</a></li>
 <li><a href="#version-requirements">Version requirements</a></li>
 <li><a href="#django-17-support">Django 1.7 support</a></li>
+<li><a href="#deprecation-of-`model`-view-attribute">Deprecation of `.model` view attribute</a></li>
 <li><a href="#updated-test-runner">Updated test runner</a></li>
 <li><a href="#improved-viewset-routing">Improved viewset routing</a></li>
 <li><a href="#throttle-behavior">Throttle behavior</a></li>
@@ -213,6 +215,12 @@ The lowest supported version of Django is now 1.4.2.</p>
 <h2 id="django-17-support">Django 1.7 support</h2>
 <p>The optional authtoken application now includes support for <em>both</em> Django 1.7 schema migrations, <em>and</em> for old-style <code>south</code> migrations.</p>
 <p><strong>If you are using authtoken, and you want to continue using <code>south</code>, you must upgrade your <code>south</code> package to version 1.0.</strong></p>
+<h2 id="deprecation-of-model-view-attribute">Deprecation of <code>.model</code> view attribute</h2>
+<p>The <code>.model</code> attribute on view classes is an optional shortcut for either or both of <code>.serializer_class</code> and <code>.queryset</code>. It's usage results in more implicit, less obvious behavior.</p>
+<p>The documentation has previously stated that usage of the more explicit style is prefered, and we're now taking that one step further and deprecating the usage of the <code>.model</code> shortcut.</p>
+<p>Doing so will mean that there are cases of API code where you'll now need to include a serializer class where you previously were just using the <code>.model</code> shortcut. However we firmly believe that it is the right trade-off to make.</p>
+<p>Removing the shortcut takes away an unneccessary layer of abstraction, and makes your codebase more explicit without any significant extra complexity. It also results in better consistency, as there's now only one way to set the serializer class and queryset attributes for the view, instead of two.</p>
+<p>The <code>DEFAULT_MODEL_SERIALIZER_CLASS</code> API setting is now also deprecated.</p>
 <h2 id="updated-test-runner">Updated test runner</h2>
 <p>We now have a new test runner for developing against the project,, that uses the excellent <a href="http://pytest.org">py.test</a> library.</p>
 <p>To use it make sure you have first installed the test requirements.</p>

@@ -121,6 +121,7 @@ a.fusion-poweredby {
                   <li><a href="http://www.django-rest-framework.org/topics/rest-framework-2-announcement">2.0 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.2-announcement">2.2 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.3-announcement">2.3 Announcement</a></li>
+                  <li><a href="http://www.django-rest-framework.org/topics/2.4-announcement">2.4 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/kickstarter-announcement">Kickstarter Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/release-notes">Release Notes</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/credits">Credits</a></li>
@@ -242,8 +243,8 @@ urlpatterns = router.urls
 </ul>
 <hr />
 <p><strong>Note</strong>: The <code>base_name</code> argument is used to specify the initial part of the view name pattern.  In the example above, that's the <code>user</code> or <code>account</code> part.</p>
-<p>Typically you won't <em>need</em> to specify the <code>base-name</code> argument, but if you have a viewset where you've defined a custom <code>get_queryset</code> method, then the viewset may not have any <code>.model</code> or <code>.queryset</code> attribute set.  If you try to register that viewset you'll see an error like this:</p>
-<pre class="prettyprint lang-py"><code>'base_name' argument not specified, and could not automatically determine the name from the viewset, as it does not have a '.model' or '.queryset' attribute.
+<p>Typically you won't <em>need</em> to specify the <code>base-name</code> argument, but if you have a viewset where you've defined a custom <code>get_queryset</code> method, then the viewset may not have a <code>.queryset</code> attribute set.  If you try to register that viewset you'll see an error like this:</p>
+<pre class="prettyprint lang-py"><code>'base_name' argument not specified, and could not automatically determine the name from the viewset, as it does not have a '.queryset' attribute.
 </code></pre>
 <p>This means you'll need to explicitly set the <code>base_name</code> argument when registering the viewset, as it could not be automatically determined from the model name.</p>
 <hr />

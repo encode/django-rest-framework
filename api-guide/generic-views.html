@@ -121,6 +121,7 @@ a.fusion-poweredby {
                   <li><a href="http://www.django-rest-framework.org/topics/rest-framework-2-announcement">2.0 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.2-announcement">2.2 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.3-announcement">2.3 Announcement</a></li>
+                  <li><a href="http://www.django-rest-framework.org/topics/2.4-announcement">2.4 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/kickstarter-announcement">Kickstarter Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/release-notes">Release Notes</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/credits">Credits</a></li>
@@ -279,10 +280,6 @@ class UserList(generics.ListCreateAPIView):
 <li><code>lookup_field</code> - The model field that should be used to for performing object lookup of individual model instances.  Defaults to <code>'pk'</code>.  Note that when using hyperlinked APIs you'll need to ensure that <em>both</em> the API views <em>and</em> the serializer classes set the lookup fields if you need to use a custom value.</li>
 <li><code>lookup_url_kwarg</code> - The URL keyword argument that should be used for object lookup.  The URL conf should include a keyword argument corresponding to this value.  If unset this defaults to using the same value as <code>lookup_field</code>.</li>
 </ul>
-<p><strong>Shortcuts</strong>:</p>
-<ul>
-<li><code>model</code> - This shortcut may be used instead of setting either (or both) of the <code>queryset</code>/<code>serializer_class</code> attributes, although using the explicit style is generally preferred.  If used instead of <code>serializer_class</code>, then <code>DEFAULT_MODEL_SERIALIZER_CLASS</code> setting will determine the base serializer class.  Note that <code>model</code> is only ever used for generating a default queryset or serializer class - the <code>queryset</code> and <code>serializer_class</code> attributes are always preferred if provided.</li>
-</ul>
 <p><strong>Pagination</strong>:</p>
 <p>The following attributes are used to control pagination when used with list views.</p>
 <ul>
@@ -294,6 +291,10 @@ class UserList(generics.ListCreateAPIView):
 <p><strong>Filtering</strong>:</p>
 <ul>
 <li><code>filter_backends</code> - A list of filter backend classes that should be used for filtering the queryset.  Defaults to the same value as the <code>DEFAULT_FILTER_BACKENDS</code> setting.</li>
+</ul>
+<p><strong>Deprecated attributes</strong>:</p>
+<ul>
+<li><code>model</code> - This shortcut may be used instead of setting either (or both) of the <code>queryset</code>/<code>serializer_class</code> attributes. The explicit style is preferred over the <code>.model</code> shortcut, and usage of this attribute is now deprecated.</li>
 </ul>
 <h3 id="methods">Methods</h3>
 <p><strong>Base methods</strong>:</p>

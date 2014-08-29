@@ -121,6 +121,7 @@ a.fusion-poweredby {
                   <li><a href="http://www.django-rest-framework.org/topics/rest-framework-2-announcement">2.0 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.2-announcement">2.2 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.3-announcement">2.3 Announcement</a></li>
+                  <li><a href="http://www.django-rest-framework.org/topics/2.4-announcement">2.4 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/kickstarter-announcement">Kickstarter Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/release-notes">Release Notes</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/credits">Credits</a></li>
@@ -289,14 +290,9 @@ pip install django-filter  # Filtering support
 <p>Note that the URL path can be whatever you want, but you must include <code>'rest_framework.urls'</code> with the <code>'rest_framework'</code> namespace.</p>
 <h2 id="example">Example</h2>
 <p>Let's take a look at a quick example of using REST framework to build a simple model-backed API.</p>
-<p>We'll create a read-write API for accessing users and groups.</p>
+<p>We'll create a read-write API for accessing information on the users of our project.</p>
 <p>Any global settings for a REST framework API are kept in a single configuration dictionary named <code>REST_FRAMEWORK</code>.  Start off by adding the following to your <code>settings.py</code> module:</p>
 <pre class="prettyprint lang-py"><code>REST_FRAMEWORK = {
-    # Use hyperlinked styles by default.
-    # Only used if the `serializer_class` attribute is not set on a view.
-    'DEFAULT_MODEL_SERIALIZER_CLASS':
-        'rest_framework.serializers.HyperlinkedModelSerializer',
-
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
@@ -307,33 +303,35 @@ pip install django-filter  # Filtering support
 <p>Don't forget to make sure you've also added <code>rest_framework</code> to your <code>INSTALLED_APPS</code>.</p>
 <p>We're ready to create our API now.
 Here's our project's root <code>urls.py</code> module:</p>
-<pre class="prettyprint lang-py"><code>from django.conf.urls import url, patterns, include
-from django.contrib.auth.models import User, Group
-from rest_framework import viewsets, routers
+<pre class="prettyprint lang-py"><code>from django.conf.urls import url, include
+from django.contrib.auth.models import User
+from rest_framework import routers, serializers, viewsets
+
+# Serializers define the API representation.
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ('url', 'username', 'email', 'is_staff')
 
 # ViewSets define the view behavior.
 class UserViewSet(viewsets.ModelViewSet):
-    model = User
-
-class GroupViewSet(viewsets.ModelViewSet):
-    model = Group
-
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'users', UserViewSet)
-router.register(r'groups', GroupViewSet)
-
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browseable API.
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-)
+]
 </code></pre>
+<p>You can now open the API in your browser at <a href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a>, and view your new 'users' API. If you use the login control in the top right corner you'll also be able to add, create and delete users from the system.</p>
 <h2 id="quickstart">Quickstart</h2>
-<p>Can't wait to get started?  The <a href="tutorial/quickstart">quickstart guide</a> is the fastest way to get up and running, and building APIs with REST framework.</p>
+<p>Can't wait to get started? The <a href="tutorial/quickstart">quickstart guide</a> is the fastest way to get up and running, and building APIs with REST framework.</p>
 <h2 id="tutorial">Tutorial</h2>
 <p>The tutorial will walk you through the building blocks that make up REST framework.   It'll take a little while to get through, but it'll give you a comprehensive understanding of how everything fits together, and is highly recommended reading.</p>
 <ul>
@@ -384,6 +382,7 @@ urlpatterns = patterns('',
 <li><a href="topics/rest-framework-2-announcement">2.0 Announcement</a></li>
 <li><a href="topics/2.2-announcement">2.2 Announcement</a></li>
 <li><a href="topics/2.3-announcement">2.3 Announcement</a></li>
+<li><a href="topics/2.4-announcement">2.4 Announcement</a></li>
 <li><a href="topics/kickstarter-announcement">Kickstarter Announcement</a></li>
 <li><a href="topics/release-notes">Release Notes</a></li>
 <li><a href="topics/credits">Credits</a></li>

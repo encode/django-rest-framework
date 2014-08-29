@@ -121,6 +121,7 @@ a.fusion-poweredby {
                   <li><a href="http://www.django-rest-framework.org/topics/rest-framework-2-announcement">2.0 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.2-announcement">2.2 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.3-announcement">2.3 Announcement</a></li>
+                  <li><a href="http://www.django-rest-framework.org/topics/2.4-announcement">2.4 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/kickstarter-announcement">Kickstarter Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/release-notes">Release Notes</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/credits">Credits</a></li>
@@ -217,30 +218,19 @@ source env/bin/activate  # On Windows use `env\Scripts\activate`
 pip install django
 pip install djangorestframework
 
-# Set up a new project
-django-admin.py startproject tutorial
-
-# Create a new app
-python manage.py startapp quickstart
+# Set up a new project with a single application
+django-admin.py startproject tutorial .
+cd tutorial
+django-admin.py startapp quickstart
+cd ..
 </code></pre>
-<p>Next you'll need to get a database set up and synced.  If you just want to use SQLite for now, then you'll want to edit your <code>tutorial/settings.py</code> module to include something like this:</p>
-<pre class="prettyprint lang-py"><code>DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'database.sql',
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': ''
-    }
-}
-</code></pre>
-<p>The run <code>syncdb</code> like so:</p>
+<p>Now sync your database for the first time:</p>
 <pre class="prettyprint lang-py"><code>python manage.py syncdb
 </code></pre>
+<p>Make sure to create an initial user named <code>admin</code> with a password of <code>password</code>. We'll authenticate as that user later in our example.</p>
 <p>Once you've set up a database and got everything synced and ready to go, open up the app's directory and we'll get coding...</p>
 <h2 id="serializers">Serializers</h2>
-<p>First up we're going to define some serializers in <code>quickstart/serializers.py</code> that we'll use for our data representations.</p>
+<p>First up we're going to define some serializers. Let's create a new module named <code>tutorial/quickstart/serializers.py</code> that we'll use for our data representations.</p>
 <pre class="prettyprint lang-py"><code>from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 
@@ -258,10 +248,10 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 </code></pre>
 <p>Notice that we're using hyperlinked relations in this case, with <code>HyperlinkedModelSerializer</code>.  You can also use primary key and various other relationships, but hyperlinking is good RESTful design.</p>
 <h2 id="views">Views</h2>
-<p>Right, we'd better write some views then.  Open <code>quickstart/views.py</code> and get typing.</p>
+<p>Right, we'd better write some views then.  Open <code>tutorial/quickstart/views.py</code> and get typing.</p>
 <pre class="prettyprint lang-py"><code>from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
-from quickstart.serializers import UserSerializer, GroupSerializer
+from tutorial.quickstart.serializers import UserSerializer, GroupSerializer
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -285,9 +275,9 @@ class GroupViewSet(viewsets.ModelViewSet):
 <p>For trivial cases you can simply set a <code>model</code> attribute on the <code>ViewSet</code> class and the serializer and queryset will be automatically generated for you.  Setting the <code>queryset</code> and/or <code>serializer_class</code> attributes gives you more explicit control of the API behaviour, and is the recommended style for most applications.</p>
 <h2 id="urls">URLs</h2>
 <p>Okay, now let's wire up the API URLs.  On to <code>tutorial/urls.py</code>...</p>
-<pre class="prettyprint lang-py"><code>from django.conf.urls import patterns, url, include
+<pre class="prettyprint lang-py"><code>from django.conf.urls import url, include
 from rest_framework import routers
-from quickstart import views
+from tutorial.quickstart import views
 
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
@@ -295,10 +285,10 @@ router.register(r'groups', views.GroupViewSet)
 
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browseable API.
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
-)
+]
 </code></pre>
 <p>Because we're using viewsets instead of views, we can automatically generate the URL conf for our API, by simply registering the viewsets with a router class.</p>
 <p>Again, if we need more control over the API URLs we can simply drop down to using regular class based views, and writing the URL conf explicitly.</p>
@@ -345,6 +335,7 @@ REST_FRAMEWORK = {
 </code></pre>
 <p>Or directly through the browser...</p>
 <p><img alt="Quick start image" src="../img/quickstart.png" /></p>
+<p>If you're working through the browser, make sure to login using the control in the top right corner.</p>
 <p>Great, that was easy!</p>
 <p>If you want to get a more in depth understanding of how REST framework fits together head on over to <a href="1-serialization">the tutorial</a>, or start browsing the <a href="../#api-guide">API guide</a>.</p>
           </div><!--/span-->

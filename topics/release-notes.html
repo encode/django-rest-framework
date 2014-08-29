@@ -58,7 +58,7 @@ a.fusion-poweredby {
         <div class="container-fluid">
             <a class="repo-link btn btn-primary btn-small" href="https://github.com/tomchristie/django-rest-framework/tree/master">GitHub</a>
             <a class="repo-link btn btn-inverse btn-small " href="../topics/credits">Next <i class="icon-arrow-right icon-white"></i></a>
-            <a class="repo-link btn btn-inverse btn-small " href="../topics/2.3-announcement"><i class="icon-arrow-left icon-white"></i> Previous</a>
+            <a class="repo-link btn btn-inverse btn-small " href="../topics/2.4-announcement"><i class="icon-arrow-left icon-white"></i> Previous</a>
             <a class="repo-link btn btn-inverse btn-small" href="#searchModal" data-toggle="modal"><i class="icon-search icon-white"></i> Search</a>
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
@@ -121,6 +121,7 @@ a.fusion-poweredby {
                   <li><a href="http://www.django-rest-framework.org/topics/rest-framework-2-announcement">2.0 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.2-announcement">2.2 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.3-announcement">2.3 Announcement</a></li>
+                  <li><a href="http://www.django-rest-framework.org/topics/2.4-announcement">2.4 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/kickstarter-announcement">Kickstarter Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/release-notes">Release Notes</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/credits">Credits</a></li>
@@ -241,11 +242,13 @@ a.fusion-poweredby {
 <hr />
 <h2 id="24x-series">2.4.x series</h2>
 <h3 id="240">2.4.0</h3>
+<p><strong>Date</strong>: 29th August 2014</p>
 <p><strong>Django version requirements</strong>: The lowest supported version of Django is now 1.4.2.</p>
 <p><strong>South version requirements</strong>: This note applies to any users using the optional <code>authtoken</code> application, which includes an associated database migration. You must now <em>either</em> upgrade your <code>south</code> package to version 1.0, <em>or</em> instead use the built-in migration support available with Django 1.7.</p>
 <ul>
 <li>Added compatibility with Django 1.7's database migration support.</li>
 <li>New test runner, using <code>py.test</code>.</li>
+<li>Deprecated <code>.model</code> view attribute in favor of explicit <code>.queryset</code> and <code>.serializer_class</code> attributes. The <code>DEFAULT_MODEL_SERIALIZER_CLASS</code> setting is also deprecated.</li>
 <li><code>@detail_route</code> and <code>@list_route</code> decorators replace <code>@action</code> and <code>@link</code>.</li>
 <li>Support customizable view name and description functions, using the <code>VIEW_NAME_FUNCTION</code> and <code>VIEW_DESCRIPTION_FUNCTION</code> settings.</li>
 <li>Added <code>NUM_PROXIES</code> setting for smarter client IP identification.</li>

@@ -121,6 +121,7 @@ a.fusion-poweredby {
                   <li><a href="http://www.django-rest-framework.org/topics/rest-framework-2-announcement">2.0 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.2-announcement">2.2 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/2.3-announcement">2.3 Announcement</a></li>
+                  <li><a href="http://www.django-rest-framework.org/topics/2.4-announcement">2.4 Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/kickstarter-announcement">Kickstarter Announcement</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/release-notes">Release Notes</a></li>
                   <li><a href="http://www.django-rest-framework.org/topics/credits">Credits</a></li>
@@ -292,7 +293,7 @@ def example_view(request, format=None):
 <p>The <code>IsAuthenticatedOrReadOnly</code> will allow authenticated users to perform any request.  Requests for unauthorised users will only be permitted if the request method is one of the "safe" methods; <code>GET</code>, <code>HEAD</code> or <code>OPTIONS</code>.</p>
 <p>This permission is suitable if you want to your API to allow read permissions to anonymous users, and only allow write permissions to authenticated users.</p>
 <h2 id="djangomodelpermissions">DjangoModelPermissions</h2>
-<p>This permission class ties into Django's standard <code>django.contrib.auth</code> <a href="https://docs.djangoproject.com/en/dev/topics/auth/customizing/#custom-permissions">model permissions</a>.  When applied to a view that has a <code>.model</code> property, authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant model permissions</em> assigned.</p>
+<p>This permission class ties into Django's standard <code>django.contrib.auth</code> <a href="https://docs.djangoproject.com/en/dev/topics/auth/customizing/#custom-permissions">model permissions</a>.  This permission must only be applied to views that has a <code>.queryset</code> property set. Authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant model permissions</em> assigned.</p>
 <ul>
 <li><code>POST</code> requests require the user to have the <code>add</code> permission on the model.</li>
 <li><code>PUT</code> and <code>PATCH</code> requests require the user to have the <code>change</code> permission on the model.</li>
@@ -300,11 +301,15 @@ def example_view(request, format=None):
 </ul>
 <p>The default behaviour can also be overridden to support custom model permissions.  For example, you might want to include a <code>view</code> model permission for <code>GET</code> requests.</p>
 <p>To use custom model permissions, override <code>DjangoModelPermissions</code> and set the <code>.perms_map</code> property.  Refer to the source code for details.</p>
+<h4 id="using-with-views-that-do-not-include-a-queryset-attribute">Using with views that do not include a <code>queryset</code> attribute.</h4>
+<p>If you're using this permission with a view that uses an overridden <code>get_queryset()</code> method there may not be a <code>queryset</code> attribute on the view. In this case we suggest also marking the view with a sential queryset, so that this class can determine the required permissions. For example:</p>
+<pre class="prettyprint lang-py"><code>queryset = User.objects.none()  # Required for DjangoModelPermissions
+</code></pre>
 <h2 id="djangomodelpermissionsoranonreadonly">DjangoModelPermissionsOrAnonReadOnly</h2>
 <p>Similar to <code>DjangoModelPermissions</code>, but also allows unauthenticated users to have read-only access to the API.</p>
 <h2 id="djangoobjectpermissions">DjangoObjectPermissions</h2>
 <p>This permission class ties into Django's standard <a href="https://docs.djangoproject.com/en/dev/topics/auth/customizing/#handling-object-permissions">object permissions framework</a> that allows per-object permissions on models.  In order to use this permission class, you'll also need to add a permission backend that supports object-level permissions, such as <a href="https://github.com/lukaszb/django-guardian">django-guardian</a>.</p>
-<p>When applied to a view that has a <code>.model</code> property, authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant per-object permissions</em> and <em>relevant model permissions</em> assigned.</p>
+<p>As with <code>DjangoModelPermissions</code>, this permission must only be applied to views that have a <code>.queryset</code> property. Authorization will only be granted if the user <em>is authenticated</em> and has the <em>relevant per-object permissions</em> and <em>relevant model permissions</em> assigned.</p>
 <ul>
 <li><code>POST</code> requests require the user to have the <code>add</code> permission on the model instance.</li>
 <li><code>PUT</code> and <code>PATCH</code> requests require the user to have the <code>change</code> permission on the model instance.</li>
