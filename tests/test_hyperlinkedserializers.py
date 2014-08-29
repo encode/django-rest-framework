@@ -39,59 +39,85 @@ class AlbumSerializer(serializers.ModelSerializer):
         fields = ('title', 'url')
 
 
+class BasicSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = BasicModel
+
+
+class AnchorSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Anchor
+
+
+class ManyToManySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ManyToManyModel
+
+
+class BlogPostSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlogPost
+
+
+class OptionalRelationSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = OptionalRelationModel
+
+
 class BasicList(generics.ListCreateAPIView):
-    model = BasicModel
-    model_serializer_class = serializers.HyperlinkedModelSerializer
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
 
 
 class BasicDetail(generics.RetrieveUpdateDestroyAPIView):
-    model = BasicModel
-    model_serializer_class = serializers.HyperlinkedModelSerializer
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
 
 
 class AnchorDetail(generics.RetrieveAPIView):
-    model = Anchor
-    model_serializer_class = serializers.HyperlinkedModelSerializer
+    queryset = Anchor.objects.all()
+    serializer_class = AnchorSerializer
 
 
 class ManyToManyList(generics.ListAPIView):
-    model = ManyToManyModel
-    model_serializer_class = serializers.HyperlinkedModelSerializer
+    queryset = ManyToManyModel.objects.all()
+    serializer_class = ManyToManySerializer
 
 
 class ManyToManyDetail(generics.RetrieveAPIView):
-    model = ManyToManyModel
-    model_serializer_class = serializers.HyperlinkedModelSerializer
+    queryset = ManyToManyModel.objects.all()
+    serializer_class = ManyToManySerializer
 
 
 class BlogPostCommentListCreate(generics.ListCreateAPIView):
-    model = BlogPostComment
+    queryset = BlogPostComment.objects.all()
     serializer_class = BlogPostCommentSerializer
 
 
 class BlogPostCommentDetail(generics.RetrieveAPIView):
-    model = BlogPostComment
+    queryset = BlogPostComment.objects.all()
     serializer_class = BlogPostCommentSerializer
 
 
 class BlogPostDetail(generics.RetrieveAPIView):
-    model = BlogPost
+    queryset = BlogPost.objects.all()
+    serializer_class = BlogPostSerializer
 
 
 class PhotoListCreate(generics.ListCreateAPIView):
-    model = Photo
-    model_serializer_class = PhotoSerializer
+    queryset = Photo.objects.all()
+    serializer_class = PhotoSerializer
 
 
 class AlbumDetail(generics.RetrieveAPIView):
-    model = Album
+    queryset = Album.objects.all()
     serializer_class = AlbumSerializer
     lookup_field = 'title'
 
 
 class OptionalRelationDetail(generics.RetrieveUpdateDestroyAPIView):
-    model = OptionalRelationModel
-    model_serializer_class = serializers.HyperlinkedModelSerializer
+    queryset = OptionalRelationModel.objects.all()
+    serializer_class = OptionalRelationSerializer
 
 
 urlpatterns = patterns(

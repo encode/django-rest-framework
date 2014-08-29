@@ -86,14 +86,15 @@ class HTMLView1(APIView):
 
 
 class HTMLNewModelViewSet(viewsets.ModelViewSet):
-    model = BasicModel
+    serializer_class = BasicModelSerializer
+    queryset = BasicModel.objects.all()
 
 
 class HTMLNewModelView(generics.ListCreateAPIView):
     renderer_classes = (BrowsableAPIRenderer,)
     permission_classes = []
     serializer_class = BasicModelSerializer
-    model = BasicModel
+    queryset = BasicModel.objects.all()
 
 
 new_model_viewset_router = routers.DefaultRouter()

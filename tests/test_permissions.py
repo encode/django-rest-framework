@@ -3,7 +3,7 @@ from django.contrib.auth.models import User, Permission, Group
 from django.db import models
 from django.test import TestCase
 from django.utils import unittest
-from rest_framework import generics, status, permissions, authentication, HTTP_HEADER_ENCODING
+from rest_framework import generics, serializers, status, permissions, authentication, HTTP_HEADER_ENCODING
 from rest_framework.compat import guardian, get_model_name
 from rest_framework.filters import DjangoObjectPermissionsFilter
 from rest_framework.test import APIRequestFactory
@@ -13,14 +13,21 @@ import base64
 factory = APIRequestFactory()
 
 
+class BasicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicModel
+
+
 class RootView(generics.ListCreateAPIView):
-    model = BasicModel
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [permissions.DjangoModelPermissions]
 
 
 class InstanceView(generics.RetrieveUpdateDestroyAPIView):
-    model = BasicModel
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [permissions.DjangoModelPermissions]
 
@@ -167,6 +174,11 @@ class BasicPermModel(models.Model):
         )
 
 
+class BasicPermSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicPermModel
+
+
 # Custom object-level permission, that includes 'view' permissions
 class ViewObjectPermissions(permissions.DjangoObjectPermissions):
     perms_map = {
@@ -181,7 +193,8 @@ class ViewObjectPermissions(permissions.DjangoObjectPermissions):
 
 
 class ObjectPermissionInstanceView(generics.RetrieveUpdateDestroyAPIView):
-    model = BasicPermModel
+    queryset = BasicPermModel.objects.all()
+    serializer_class = BasicPermSerializer
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [ViewObjectPermissions]
 
@@ -189,7 +202,8 @@ object_permissions_view = ObjectPermissionInstanceView.as_view()
 
 
 class ObjectPermissionListView(generics.ListAPIView):
-    model = BasicPermModel
+    queryset = BasicPermModel.objects.all()
+    serializer_class = BasicPermSerializer
     authentication_classes = [authentication.BasicAuthentication]
     permission_classes = [ViewObjectPermissions]
 

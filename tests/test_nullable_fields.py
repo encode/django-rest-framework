@@ -1,10 +1,19 @@
 from django.core.urlresolvers import reverse
 
 from django.conf.urls import patterns, url
+from rest_framework import serializers, generics
 from rest_framework.test import APITestCase
 from tests.models import NullableForeignKeySource
-from tests.serializers import NullableFKSourceSerializer
-from tests.views import NullableFKSourceDetail
+
+
+class NullableFKSourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NullableForeignKeySource
+
+
+class NullableFKSourceDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = NullableForeignKeySource.objects.all()
+    serializer_class = NullableFKSourceSerializer
 
 
 urlpatterns = patterns(

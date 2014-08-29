@@ -16,9 +16,14 @@ factory = APIRequestFactory()
 
 
 if django_filters:
+    class FilterableItemSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = FilterableItem
+
     # Basic filter on a list view.
     class FilterFieldsRootView(generics.ListCreateAPIView):
-        model = FilterableItem
+        queryset = FilterableItem.objects.all()
+        serializer_class = FilterableItemSerializer
         filter_fields = ['decimal', 'date']
         filter_backends = (filters.DjangoFilterBackend,)
 
@@ -33,7 +38,8 @@ if django_filters:
             fields = ['text', 'decimal', 'date']
 
     class FilterClassRootView(generics.ListCreateAPIView):
-        model = FilterableItem
+        queryset = FilterableItem.objects.all()
+        serializer_class = FilterableItemSerializer
         filter_class = SeveralFieldsFilter
         filter_backends = (filters.DjangoFilterBackend,)
 
@@ -46,12 +52,14 @@ if django_filters:
             fields = ['text']
 
     class IncorrectlyConfiguredRootView(generics.ListCreateAPIView):
-        model = FilterableItem
+        queryset = FilterableItem.objects.all()
+        serializer_class = FilterableItemSerializer
         filter_class = MisconfiguredFilter
         filter_backends = (filters.DjangoFilterBackend,)
 
     class FilterClassDetailView(generics.RetrieveAPIView):
-        model = FilterableItem
+        queryset = FilterableItem.objects.all()
+        serializer_class = FilterableItemSerializer
         filter_class = SeveralFieldsFilter
         filter_backends = (filters.DjangoFilterBackend,)
 
@@ -63,15 +71,12 @@ if django_filters:
             model = BaseFilterableItem
 
     class BaseFilterableItemFilterRootView(generics.ListCreateAPIView):
-        model = FilterableItem
+        queryset = FilterableItem.objects.all()
+        serializer_class = FilterableItemSerializer
         filter_class = BaseFilterableItemFilter
         filter_backends = (filters.DjangoFilterBackend,)
 
     # Regression test for #814
-    class FilterableItemSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = FilterableItem
-
     class FilterFieldsQuerysetView(generics.ListCreateAPIView):
         queryset = FilterableItem.objects.all()
         serializer_class = FilterableItemSerializer
@@ -323,6 +328,11 @@ class SearchFilterModel(models.Model):
     text = models.CharField(max_length=100)
 
 
+class SearchFilterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SearchFilterModel
+
+
 class SearchFilterTests(TestCase):
     def setUp(self):
         # Sequence of title/text is:
@@ -342,7 +352,8 @@ class SearchFilterTests(TestCase):
 
     def test_search(self):
         class SearchListView(generics.ListAPIView):
-            model = SearchFilterModel
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
             filter_backends = (filters.SearchFilter,)
             search_fields = ('title', 'text')
 
@@ -359,7 +370,8 @@ class SearchFilterTests(TestCase):
 
     def test_exact_search(self):
         class SearchListView(generics.ListAPIView):
-            model = SearchFilterModel
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
             filter_backends = (filters.SearchFilter,)
             search_fields = ('=title', 'text')
 
@@ -375,7 +387,8 @@ class SearchFilterTests(TestCase):
 
     def test_startswith_search(self):
         class SearchListView(generics.ListAPIView):
-            model = SearchFilterModel
+            queryset = SearchFilterModel.objects.all()
+            serializer_class = SearchFilterSerializer
             filter_backends = (filters.SearchFilter,)
             search_fields = ('title', '^text')
 
@@ -392,7 +405,8 @@ class SearchFilterTests(TestCase):
     def test_search_with_nonstandard_search_param(self):
         with temporary_setting('SEARCH_PARAM', 'query', module=filters):
             class SearchListView(generics.ListAPIView):
-                model = SearchFilterModel
+                queryset = SearchFilterModel.objects.all()
+                serializer_class = SearchFilterSerializer
                 filter_backends = (filters.SearchFilter,)
                 search_fields = ('title', 'text')
 
@@ -418,6 +432,11 @@ class OrderingFilterRelatedModel(models.Model):
                                        related_name="relateds")
 
 
+class OrderingFilterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrdringFilterModel
+
+
 class OrderingFilterTests(TestCase):
     def setUp(self):
         # Sequence of title/text is:
@@ -440,7 +459,8 @@ class OrderingFilterTests(TestCase):
 
     def test_ordering(self):
         class OrderingListView(generics.ListAPIView):
-            model = OrdringFilterModel
+            queryset = OrdringFilterModel.objects.all()
+            serializer_class = OrderingFilterSerializer
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
             ordering_fields = ('text',)
@@ -459,7 +479,8 @@ class OrderingFilterTests(TestCase):
 
     def test_reverse_ordering(self):
         class OrderingListView(generics.ListAPIView):
-            model = OrdringFilterModel
+            queryset = OrdringFilterModel.objects.all()
+            serializer_class = OrderingFilterSerializer
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
             ordering_fields = ('text',)
@@ -478,7 +499,8 @@ class OrderingFilterTests(TestCase):
 
     def test_incorrectfield_ordering(self):
         class OrderingListView(generics.ListAPIView):
-            model = OrdringFilterModel
+            queryset = OrdringFilterModel.objects.all()
+            serializer_class = OrderingFilterSerializer
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
             ordering_fields = ('text',)
@@ -497,7 +519,8 @@ class OrderingFilterTests(TestCase):
 
     def test_default_ordering(self):
         class OrderingListView(generics.ListAPIView):
-            model = OrdringFilterModel
+            queryset = OrdringFilterModel.objects.all()
+            serializer_class = OrderingFilterSerializer
             filter_backends = (filters.OrderingFilter,)
             ordering = ('title',)
             oredering_fields = ('text',)
@@ -516,7 +539,8 @@ class OrderingFilterTests(TestCase):
 
     def test_default_ordering_using_string(self):
         class OrderingListView(generics.ListAPIView):
-            model = OrdringFilterModel
+            queryset = OrdringFilterModel.objects.all()
+            serializer_class = OrderingFilterSerializer
             filter_backends = (filters.OrderingFilter,)
             ordering = 'title'
             ordering_fields = ('text',)
@@ -545,7 +569,7 @@ class OrderingFilterTests(TestCase):
                 new_related.save()
 
         class OrderingListView(generics.ListAPIView):
-            model = OrdringFilterModel
+            serializer_class = OrderingFilterSerializer
             filter_backends = (filters.OrderingFilter,)
             ordering = 'title'
             ordering_fields = '__all__'
@@ -567,7 +591,8 @@ class OrderingFilterTests(TestCase):
     def test_ordering_with_nonstandard_ordering_param(self):
         with temporary_setting('ORDERING_PARAM', 'order', filters):
             class OrderingListView(generics.ListAPIView):
-                model = OrdringFilterModel
+                queryset = OrdringFilterModel.objects.all()
+                serializer_class = OrderingFilterSerializer
                 filter_backends = (filters.OrderingFilter,)
                 ordering = ('title',)
                 ordering_fields = ('text',)

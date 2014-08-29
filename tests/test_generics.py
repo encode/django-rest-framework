@@ -11,18 +11,30 @@ from tests.models import ForeignKeySource, ForeignKeyTarget
 factory = APIRequestFactory()
 
 
+class BasicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicModel
+
+
+class ForeignKeySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ForeignKeySource
+
+
 class RootView(generics.ListCreateAPIView):
     """
     Example description for OPTIONS.
     """
-    model = BasicModel
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
 
 
 class InstanceView(generics.RetrieveUpdateDestroyAPIView):
     """
     Example description for OPTIONS.
     """
-    model = BasicModel
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
 
     def get_queryset(self):
         queryset = super(InstanceView, self).get_queryset()
@@ -33,7 +45,8 @@ class FKInstanceView(generics.RetrieveUpdateDestroyAPIView):
     """
     FK: example description for OPTIONS.
     """
-    model = ForeignKeySource
+    queryset = ForeignKeySource.objects.all()
+    serializer_class = ForeignKeySerializer
 
 
 class SlugSerializer(serializers.ModelSerializer):
@@ -48,7 +61,7 @@ class SlugBasedInstanceView(InstanceView):
     """
     A model with a slug-field.
     """
-    model = SlugBasedModel
+    queryset = SlugBasedModel.objects.all()
     serializer_class = SlugSerializer
     lookup_field = 'slug'
 
@@ -503,7 +516,7 @@ class TestOverriddenGetObject(TestCase):
             """
             Example detail view for override of get_object().
             """
-            model = BasicModel
+            serializer_class = BasicSerializer
 
             def get_object(self):
                 pk = int(self.kwargs['pk'])
@@ -573,7 +586,7 @@ class ClassASerializer(serializers.ModelSerializer):
 
 class ExampleView(generics.ListCreateAPIView):
     serializer_class = ClassASerializer
-    model = ClassA
+    queryset = ClassA.objects.all()
 
 
 class TestM2MBrowseableAPI(TestCase):
@@ -603,7 +616,7 @@ class TwoFieldModel(models.Model):
 
 
 class DynamicSerializerView(generics.ListCreateAPIView):
-    model = TwoFieldModel
+    queryset = TwoFieldModel.objects.all()
     renderer_classes = (renderers.BrowsableAPIRenderer, renderers.JSONRenderer)
 
     def get_serializer_class(self):
@@ -612,8 +625,11 @@ class DynamicSerializerView(generics.ListCreateAPIView):
                 class Meta:
                     model = TwoFieldModel
                     fields = ('field_b',)
-            return DynamicSerializer
-        return super(DynamicSerializerView, self).get_serializer_class()
+        else:
+            class DynamicSerializer(serializers.ModelSerializer):
+                class Meta:
+                    model = TwoFieldModel
+        return DynamicSerializer
 
 
 class TestFilterBackendAppliedToViews(TestCase):

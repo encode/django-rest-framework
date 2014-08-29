@@ -51,11 +51,6 @@ class GenericAPIView(views.APIView):
     queryset = None
     serializer_class = None
 
-    # This shortcut may be used instead of setting either or both
-    # of the `queryset`/`serializer_class` attributes, although using
-    # the explicit style is generally preferred.
-    model = None
-
     # If you want to use object lookups other than pk, set this attribute.
     # For more complex lookup requirements override `get_object()`.
     lookup_field = 'pk'
@@ -71,9 +66,8 @@ class GenericAPIView(views.APIView):
     # The filter backend classes to use for queryset filtering
     filter_backends = api_settings.DEFAULT_FILTER_BACKENDS
 
-    # The following attributes may be subject to change,
+    # The following attribute may be subject to change,
     # and should be considered private API.
-    model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
     paginator_class = Paginator
 
     def get_serializer_context(self):
@@ -199,26 +193,13 @@ class GenericAPIView(views.APIView):
 
         (Eg. admins get full serialization, others get basic serialization)
         """
-        serializer_class = self.serializer_class
-        if serializer_class is not None:
-            return serializer_class
-
-        warnings.warn(
-            'The `.model` attribute on view classes is now deprecated in favor '
-            'of the more explicit `serializer_class` and `queryset` attributes.',
-            DeprecationWarning, stacklevel=2
+        assert self.serializer_class is not None, (
+            "'%s' should either include a `serializer_class` attribute, "
+            "or override the `get_serializer_class()` method."
+            % self.__class__.__name__
         )
 
-        assert self.model is not None, \
-            "'%s' should either include a 'serializer_class' attribute, " \
-            "or use the 'model' attribute as a shortcut for " \
-            "automatically generating a serializer class." \
-            % self.__class__.__name__
-
-        class DefaultSerializer(self.model_serializer_class):
-            class Meta:
-                model = self.model
-        return DefaultSerializer
+        return self.serializer_class
 
     def get_queryset(self):
         """
@@ -235,19 +216,13 @@ class GenericAPIView(views.APIView):
 
         (Eg. return a list of items that is specific to the user)
         """
-        if self.queryset is not None:
-            return self.queryset._clone()
+        assert self.queryset is not None, (
+            "'%s' should either include a `queryset` attribute, "
+            "or override the `get_queryset()` method."
+            % self.__class__.__name__
+        )
 
-        if self.model is not None:
-            warnings.warn(
-                'The `.model` attribute on view classes is now deprecated in favor '
-                'of the more explicit `serializer_class` and `queryset` attributes.',
-                DeprecationWarning, stacklevel=2
-            )
-            return self.model._default_manager.all()
-
-        error_format = "'%s' must define 'queryset' or 'model'"
-        raise ImproperlyConfigured(error_format % self.__class__.__name__)
+        return self.queryset._clone()
 
     def get_object(self):
         """
