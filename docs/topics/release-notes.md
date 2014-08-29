@@ -42,13 +42,15 @@ You can determine your currently installed version using `pip freeze`:
 
 ### 2.4.0
 
+**Date**: 29th August 2014
+
 **Django version requirements**: The lowest supported version of Django is now 1.4.2.
 
 **South version requirements**: This note applies to any users using the optional `authtoken` application, which includes an associated database migration. You must now *either* upgrade your `south` package to version 1.0, *or* instead use the built-in migration support available with Django 1.7.
 
 * Added compatibility with Django 1.7's database migration support.
 * New test runner, using `py.test`.
-* Deprecated `.model` view attribute in favor of explict `.queryset` and `.serializer_class` attributes. The `DEFAULT_MODEL_SERIALIZER_CLASS` setting is also deprecated.
+* Deprecated `.model` view attribute in favor of explicit `.queryset` and `.serializer_class` attributes. The `DEFAULT_MODEL_SERIALIZER_CLASS` setting is also deprecated.
 * `@detail_route` and `@list_route` decorators replace `@action` and `@link`.
 * Support customizable view name and description functions, using the `VIEW_NAME_FUNCTION` and `VIEW_DESCRIPTION_FUNCTION` settings.
 * Added `NUM_PROXIES` setting for smarter client IP identification.

@@ -199,6 +199,7 @@ General guides to using REST framework.
 * [2.0 Announcement][rest-framework-2-announcement]
 * [2.2 Announcement][2.2-announcement]
 * [2.3 Announcement][2.3-announcement]
+* [2.4 Announcement][2.4-announcement]
 * [Kickstarter Announcement][kickstarter-announcement]
 * [Release Notes][release-notes]
 * [Credits][credits]
@@ -314,6 +315,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 [rest-framework-2-announcement]: topics/rest-framework-2-announcement.md
 [2.2-announcement]: topics/2.2-announcement.md
 [2.3-announcement]: topics/2.3-announcement.md
+[2.4-announcement]: topics/2.4-announcement.md
 [kickstarter-announcement]: topics/kickstarter-announcement.md 
 [release-notes]: topics/release-notes.md
 [credits]: topics/credits.md

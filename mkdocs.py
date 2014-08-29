@@ -80,6 +80,7 @@ path_list = [
     'topics/rest-framework-2-announcement.md',
     'topics/2.2-announcement.md',
     'topics/2.3-announcement.md',
+    'topics/2.4-announcement.md',
     'topics/release-notes.md',
     'topics/credits.md',
 ]
