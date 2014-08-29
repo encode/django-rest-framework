@@ -19,8 +19,8 @@ Typically when using the generic views, you'll override the view, and set severa
 
     from django.contrib.auth.models import User
     from myapp.serializers import UserSerializer
-	from rest_framework import generics
-	from rest_framework.permissions import IsAdminUser
+    from rest_framework import generics
+    from rest_framework.permissions import IsAdminUser
 
     class UserList(generics.ListCreateAPIView):
         queryset = User.objects.all()
