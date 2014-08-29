@@ -100,12 +100,6 @@ Default: `'rest_framework.negotiation.DefaultContentNegotiation'`
 
 *The following settings control the behavior of the generic class based views.*
 
-#### DEFAULT_MODEL_SERIALIZER_CLASS
-
-A class that determines the default type of model serializer that should be used by a generic view if `model` is specified, but `serializer_class` is not provided.
-
-Default: `'rest_framework.serializers.ModelSerializer'`
-
 #### DEFAULT_PAGINATION_SERIALIZER_CLASS
 
 A class the determines the default serialization style for paginated responses.
