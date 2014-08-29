@@ -96,6 +96,8 @@ Our gold sponsors include companies large and small. Many thanks for their signi
 <li><a href="http://envisionlinux.org/blog" rel="nofollow">Envision Linux</a></li>
 </ul>
 
+<div style="clear: both; padding-bottom: 40px;"></div>
+
 ---
 
 ### Silver sponsors
