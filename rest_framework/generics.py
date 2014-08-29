@@ -111,26 +111,14 @@ class GenericAPIView(views.APIView):
         context = self.get_serializer_context()
         return pagination_serializer_class(instance=page, context=context)
 
-    def paginate_queryset(self, queryset, page_size=None):
+    def paginate_queryset(self, queryset):
         """
         Paginate a queryset if required, either returning a page object,
         or `None` if pagination is not configured for this view.
         """
-        deprecated_style = False
-        if page_size is not None:
-            warnings.warn('The `page_size` parameter to `paginate_queryset()` '
-                          'is deprecated. '
-                          'Note that the return style of this method is also '
-                          'changed, and will simply return a page object '
-                          'when called without a `page_size` argument.',
-                          DeprecationWarning, stacklevel=2)
-            deprecated_style = True
-        else:
-            # Determine the required page size.
-            # If pagination is not configured, simply return None.
-            page_size = self.get_paginate_by()
-            if not page_size:
-                return None
+        page_size = self.get_paginate_by()
+        if not page_size:
+            return None
 
         paginator = self.paginator_class(queryset, page_size)
         page_kwarg = self.kwargs.get(self.page_kwarg)
@@ -152,8 +140,6 @@ class GenericAPIView(views.APIView):
                 'message': str(exc)
             })
 
-        if deprecated_style:
-            return (paginator, page, page.object_list, page.has_other_pages())
         return page
 
     def filter_queryset(self, queryset):
