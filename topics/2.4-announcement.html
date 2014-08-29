@@ -216,7 +216,7 @@ The lowest supported version of Django is now 1.4.2.</p>
 <p>The optional authtoken application now includes support for <em>both</em> Django 1.7 schema migrations, <em>and</em> for old-style <code>south</code> migrations.</p>
 <p><strong>If you are using authtoken, and you want to continue using <code>south</code>, you must upgrade your <code>south</code> package to version 1.0.</strong></p>
 <h2 id="deprecation-of-model-view-attribute">Deprecation of <code>.model</code> view attribute</h2>
-<p>The <code>.model</code> attribute on view classes is an optional shortcut for either or both of <code>.serializer_class</code> and <code>.queryset</code>. It's usage results in more implicit, less obvious behavior.</p>
+<p>The <code>.model</code> attribute on view classes is an optional shortcut for either or both of <code>.serializer_class</code> and <code>.queryset</code>. Its usage results in more implicit, less obvious behavior.</p>
 <p>The documentation has previously stated that usage of the more explicit style is prefered, and we're now taking that one step further and deprecating the usage of the <code>.model</code> shortcut.</p>
 <p>Doing so will mean that there are cases of API code where you'll now need to include a serializer class where you previously were just using the <code>.model</code> shortcut. However we firmly believe that it is the right trade-off to make.</p>
 <p>Removing the shortcut takes away an unneccessary layer of abstraction, and makes your codebase more explicit without any significant extra complexity. It also results in better consistency, as there's now only one way to set the serializer class and queryset attributes for the view, instead of two.</p>
@@ -293,14 +293,14 @@ The lowest supported version of Django is now 1.4.2.</p>
 <li>Set the <code>cache_format</code> attribute on your throttle class in order to retain the previous incorrect spelling.</li>
 </ul>
 <h2 id="other-features">Other features</h2>
-<p>There are also a number of other features and bugfixes as <a href="./topics/release-notes/#240">listed in the release notes</a>. In particular these include:</p>
+<p>There are also a number of other features and bugfixes as <a href="release-notes#240">listed in the release notes</a>. In particular these include:</p>
 <p><a href="../api-guide/settings/#view-names-and-descriptions">Customizable view name and description functions</a> for use with the browsable API, by using the <code>VIEW_NAME_FUNCTION</code> and <code>VIEW_DESCRIPTION_FUNCTION</code> settings.</p>
 <p>Smarter <a href="../api-guide/throttling/#how-clients-are-identified">client IP identification for throttling</a>, with the addition of the <code>NUM_PROXIES</code> setting.</p>
-<p>Added the standardized <code>Retry-After</code> header to throttled responses, as per <a href="http://tools.ietf.org/html/rfc6585">RFC 6585</a>. This should now be used in preference to the custom <code>X-Trottle-Wait-Seconds</code> header which will be fully deprecated in 3.0.</p>
+<p>Added the standardized <code>Retry-After</code> header to throttled responses, as per <a href="http://tools.ietf.org/html/rfc6585">RFC 6585</a>. This should now be used in preference to the custom <code>X-Throttle-Wait-Seconds</code> header which will be fully deprecated in 3.0.</p>
 <h2 id="deprecations">Deprecations</h2>
 <p>All API changes in 2.3 that previously raised <code>PendingDeprecationWarning</code> will now raise a <code>DeprecationWarning</code>, which is loud by default.</p>
 <p>All API changes in 2.3 that previously raised <code>DeprecationWarning</code> have now been removed entirely.</p>
-<p>Furter details on these deprecations is available in the <a href="./topics/2.3-announcement">2.3 announcement</a>.</p>
+<p>Furter details on these deprecations is available in the <a href="2.3-announcement">2.3 announcement</a>.</p>
 <h2 id="labels-and-milestones">Labels and milestones</h2>
 <p>Although not strictly part of the 2.4 release it's also worth noting here that we've been working hard towards improving our triage process.</p>
 <p>The <a href="https://github.com/tomchristie/django-rest-framework/issues">labels that we use in GitHub</a> have been cleaned up, and all existing tickets triaged. Any given ticket should have one and only one label, indicating its current state.</p>
@@ -312,7 +312,7 @@ The lowest supported version of Django is now 1.4.2.</p>
 <p>We hope both of these changes will help make the management process more clear and obvious and help keep tickets well-organised and relevant.</p>
 <h2 id="next-steps">Next steps</h2>
 <p>The next planned release will be 3.0, featuring an improved and simplified serializer implementation.</p>
-<p>Once again, many thanks to all the generous <a href="./topics/kickstarter-announcement/#sponsors">backers and sponsors</a> who've helped make this possible!</p>
+<p>Once again, many thanks to all the generous <a href="kickstarter-announcement#sponsors">backers and sponsors</a> who've helped make this possible!</p>
           </div><!--/span-->
         </div><!--/row-->
       </div><!--/.fluid-container-->
