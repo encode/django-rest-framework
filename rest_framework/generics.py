@@ -82,7 +82,6 @@ class GenericAPIView(views.APIView):
     pk_url_kwarg = 'pk'
     slug_url_kwarg = 'slug'
     slug_field = 'slug'
-    allow_empty = True
 
     def get_serializer_context(self):
         """
@@ -140,16 +139,7 @@ class GenericAPIView(views.APIView):
             if not page_size:
                 return None
 
-        if not self.allow_empty:
-            warnings.warn(
-                'The `allow_empty` parameter is deprecated. '
-                'To use `allow_empty=False` style behavior, You should override '
-                '`get_queryset()` and explicitly raise a 404 on empty querysets.',
-                DeprecationWarning, stacklevel=2
-            )
-
-        paginator = self.paginator_class(queryset, page_size,
-                                         allow_empty_first_page=self.allow_empty)
+        paginator = self.paginator_class(queryset, page_size)
         page_kwarg = self.kwargs.get(self.page_kwarg)
         page_query_param = self.request.QUERY_PARAMS.get(self.page_kwarg)
         page = page_kwarg or page_query_param or 1
