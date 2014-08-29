@@ -22,7 +22,7 @@ class ValidationModelSerializer(serializers.ModelSerializer):
 
 
 class UpdateValidationModel(generics.RetrieveUpdateDestroyAPIView):
-    model = ValidationModel
+    queryset = ValidationModel.objects.all()
     serializer_class = ValidationModelSerializer
 
 
@@ -117,7 +117,7 @@ class ValidationMaxValueValidatorModelSerializer(serializers.ModelSerializer):
 
 
 class UpdateMaxValueValidationModel(generics.RetrieveUpdateDestroyAPIView):
-    model = ValidationMaxValueValidatorModel
+    queryset = ValidationMaxValueValidatorModel.objects.all()
     serializer_class = ValidationMaxValueValidatorModelSerializer
 
 

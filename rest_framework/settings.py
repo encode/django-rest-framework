@@ -111,9 +111,6 @@ DEFAULTS = {
     ),
     'TIME_FORMAT': None,
 
-    # Pending deprecation
-    'FILTER_BACKEND': None,
-
 }
 
 
@@ -129,7 +126,6 @@ IMPORT_STRINGS = (
     'DEFAULT_PAGINATION_SERIALIZER_CLASS',
     'DEFAULT_FILTER_BACKENDS',
     'EXCEPTION_HANDLER',
-    'FILTER_BACKEND',
     'TEST_REQUEST_RENDERER_CLASSES',
     'UNAUTHENTICATED_USER',
     'UNAUTHENTICATED_TOKEN',
@@ -196,15 +192,9 @@ class APISettings(object):
         if val and attr in self.import_strings:
             val = perform_import(val, attr)
 
-        self.validate_setting(attr, val)
-
         # Cache the result
         setattr(self, attr, val)
         return val
 
-    def validate_setting(self, attr, val):
-        if attr == 'FILTER_BACKEND' and val is not None:
-            # Make sure we can initialize the class
-            val()
 
 api_settings = APISettings(USER_SETTINGS, DEFAULTS, IMPORT_STRINGS)

@@ -7,7 +7,7 @@ from django.db.models.query import QuerySet
 from django.utils.datastructures import SortedDict
 from django.utils.functional import Promise
 from rest_framework.compat import force_text
-from rest_framework.serializers import DictWithMetadata, SortedDictWithMetadata
+# from rest_framework.serializers import DictWithMetadata, SortedDictWithMetadata
 import datetime
 import decimal
 import types
@@ -106,14 +106,14 @@ else:
         SortedDict,
         yaml.representer.SafeRepresenter.represent_dict
     )
-    SafeDumper.add_representer(
-        DictWithMetadata,
-        yaml.representer.SafeRepresenter.represent_dict
-    )
-    SafeDumper.add_representer(
-        SortedDictWithMetadata,
-        yaml.representer.SafeRepresenter.represent_dict
-    )
+    # SafeDumper.add_representer(
+    #     DictWithMetadata,
+    #     yaml.representer.SafeRepresenter.represent_dict
+    # )
+    # SafeDumper.add_representer(
+    #     SortedDictWithMetadata,
+    #     yaml.representer.SafeRepresenter.represent_dict
+    # )
     SafeDumper.add_representer(
         types.GeneratorType,
         yaml.representer.SafeRepresenter.represent_list

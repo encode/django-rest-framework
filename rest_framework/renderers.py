@@ -458,7 +458,7 @@ class BrowsableAPIRenderer(BaseRenderer):
             ):
                 return
 
-            serializer = view.get_serializer(instance=obj, data=data, files=files)
+            serializer = view.get_serializer(instance=obj, data=data)
             serializer.is_valid()
             data = serializer.data
 
@@ -579,10 +579,10 @@ class BrowsableAPIRenderer(BaseRenderer):
             'available_formats': [renderer_cls.format for renderer_cls in view.renderer_classes],
             'response_headers': response_headers,
 
-            'put_form': self.get_rendered_html_form(view, 'PUT', request),
-            'post_form': self.get_rendered_html_form(view, 'POST', request),
-            'delete_form': self.get_rendered_html_form(view, 'DELETE', request),
-            'options_form': self.get_rendered_html_form(view, 'OPTIONS', request),
+            #'put_form': self.get_rendered_html_form(view, 'PUT', request),
+            #'post_form': self.get_rendered_html_form(view, 'POST', request),
+            #'delete_form': self.get_rendered_html_form(view, 'DELETE', request),
+            #'options_form': self.get_rendered_html_form(view, 'OPTIONS', request),
 
             'raw_data_put_form': raw_data_put_form,
             'raw_data_post_form': raw_data_post_form,

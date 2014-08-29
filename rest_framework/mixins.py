@@ -12,10 +12,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.request import clone_request
 from rest_framework.settings import api_settings
-import warnings
 
 
-def _get_validation_exclusions(obj, pk=None, slug_field=None, lookup_field=None):
+def _get_validation_exclusions(obj, lookup_field=None):
     """
     Given a model instance, and an optional pk and slug field,
     return the full list of all other field names on that model.
@@ -23,23 +22,13 @@ def _get_validation_exclusions(obj, pk=None, slug_field=None, lookup_field=None)
     For use when performing full_clean on a model instance,
     so we only clean the required fields.
     """
-    include = []
-
-    if pk:
-        # Deprecated
+    if lookup_field == 'pk':
         pk_field = obj._meta.pk
         while pk_field.rel:
             pk_field = pk_field.rel.to._meta.pk
-        include.append(pk_field.name)
+        lookup_field = pk_field.name
 
-    if slug_field:
-        # Deprecated
-        include.append(slug_field)
-
-    if lookup_field and lookup_field != 'pk':
-        include.append(lookup_field)
-
-    return [field.name for field in obj._meta.fields if field.name not in include]
+    return [field.name for field in obj._meta.fields if field.name != lookup_field]
 
 
 class CreateModelMixin(object):
@@ -47,12 +36,10 @@ class CreateModelMixin(object):
     Create a model instance.
     """
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.DATA, files=request.FILES)
+        serializer = self.get_serializer(data=request.DATA)
 
         if serializer.is_valid():
-            self.pre_save(serializer.object)
-            self.object = serializer.save(force_insert=True)
-            self.post_save(self.object, created=True)
+            self.object = serializer.save()
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED,
                             headers=headers)
@@ -70,23 +57,8 @@ class ListModelMixin(object):
     """
     List a queryset.
     """
-    empty_error = "Empty list and '%(class_name)s.allow_empty' is False."
-
     def list(self, request, *args, **kwargs):
         self.object_list = self.filter_queryset(self.get_queryset())
-
-        # Default is to allow empty querysets.  This can be altered by setting
-        # `.allow_empty = False`, to raise 404 errors on empty querysets.
-        if not self.allow_empty and not self.object_list:
-            warnings.warn(
-                'The `allow_empty` parameter is deprecated. '
-                'To use `allow_empty=False` style behavior, You should override '
-                '`get_queryset()` and explicitly raise a 404 on empty querysets.',
-                DeprecationWarning
-            )
-            class_name = self.__class__.__name__
-            error_msg = self.empty_error % {'class_name': class_name}
-            raise Http404(error_msg)
 
         # Switch between paginated or standard style responses
         page = self.paginate_queryset(self.object_list)
@@ -116,26 +88,20 @@ class UpdateModelMixin(object):
         partial = kwargs.pop('partial', False)
         self.object = self.get_object_or_none()
 
-        serializer = self.get_serializer(self.object, data=request.DATA,
-                                         files=request.FILES, partial=partial)
+        serializer = self.get_serializer(self.object, data=request.DATA, partial=partial)
 
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            self.pre_save(serializer.object)
-        except ValidationError as err:
-            # full_clean on model instance may be called in pre_save,
-            # so we have to handle eventual errors.
-            return Response(err.message_dict, status=status.HTTP_400_BAD_REQUEST)
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        lookup_value = self.kwargs[lookup_url_kwarg]
+        extras = {self.lookup_field: lookup_value}
 
         if self.object is None:
-            self.object = serializer.save(force_insert=True)
-            self.post_save(self.object, created=True)
+            self.object = serializer.save(extras=extras)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        self.object = serializer.save(force_update=True)
-        self.post_save(self.object, created=False)
+        self.object = serializer.save(extras=extras)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def partial_update(self, request, *args, **kwargs):
@@ -161,26 +127,15 @@ class UpdateModelMixin(object):
         """
         Set any attributes on the object that are implicit in the request.
         """
-        # pk and/or slug attributes are implicit in the URL.
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
-        lookup = self.kwargs.get(lookup_url_kwarg, None)
-        pk = self.kwargs.get(self.pk_url_kwarg, None)
-        slug = self.kwargs.get(self.slug_url_kwarg, None)
-        slug_field = slug and self.slug_field or None
+        lookup_value = self.kwargs[lookup_url_kwarg]
 
-        if lookup:
-            setattr(obj, self.lookup_field, lookup)
-
-        if pk:
-            setattr(obj, 'pk', pk)
-
-        if slug:
-            setattr(obj, slug_field, slug)
+        setattr(obj, self.lookup_field, lookup_value)
 
         # Ensure we clean the attributes so that we don't eg return integer
         # pk using a string representation, as provided by the url conf kwarg.
         if hasattr(obj, 'full_clean'):
-            exclude = _get_validation_exclusions(obj, pk, slug_field, self.lookup_field)
+            exclude = _get_validation_exclusions(obj, self.lookup_field)
             obj.full_clean(exclude)
 
 

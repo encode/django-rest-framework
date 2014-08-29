@@ -4,7 +4,7 @@ from decimal import Decimal
 from django.core.paginator import Paginator
 from django.test import TestCase
 from django.utils import unittest
-from rest_framework import generics, status, pagination, filters, serializers
+from rest_framework import generics, serializers, status, pagination, filters
 from rest_framework.compat import django_filters
 from rest_framework.test import APIRequestFactory
 from .models import BasicModel, FilterableItem
@@ -22,11 +22,22 @@ def split_arguments_from_url(url):
     return path, args
 
 
+class BasicSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BasicModel
+
+
+class FilterableItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FilterableItem
+
+
 class RootView(generics.ListCreateAPIView):
     """
     Example description for OPTIONS.
     """
-    model = BasicModel
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
     paginate_by = 10
 
 
@@ -34,14 +45,16 @@ class DefaultPageSizeKwargView(generics.ListAPIView):
     """
     View for testing default paginate_by_param usage
     """
-    model = BasicModel
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
 
 
 class PaginateByParamView(generics.ListAPIView):
     """
     View for testing custom paginate_by_param usage
     """
-    model = BasicModel
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
     paginate_by_param = 'page_size'
 
 
@@ -49,7 +62,8 @@ class MaxPaginateByView(generics.ListAPIView):
     """
     View for testing custom max_paginate_by usage
     """
-    model = BasicModel
+    queryset = BasicModel.objects.all()
+    serializer_class = BasicSerializer
     paginate_by = 3
     max_paginate_by = 5
     paginate_by_param = 'page_size'
@@ -140,7 +154,8 @@ class IntegrationTestPaginationAndFiltering(TestCase):
                 fields = ['text', 'decimal', 'date']
 
         class FilterFieldsRootView(generics.ListCreateAPIView):
-            model = FilterableItem
+            queryset = FilterableItem.objects.all()
+            serializer_class = FilterableItemSerializer
             paginate_by = 10
             filter_class = DecimalFilter
             filter_backends = (filters.DjangoFilterBackend,)
@@ -188,7 +203,8 @@ class IntegrationTestPaginationAndFiltering(TestCase):
                 return queryset.filter(decimal__lt=Decimal(request.GET['decimal']))
 
         class BasicFilterFieldsRootView(generics.ListCreateAPIView):
-            model = FilterableItem
+            queryset = FilterableItem.objects.all()
+            serializer_class = FilterableItemSerializer
             paginate_by = 10
             filter_backends = (DecimalFilterBackend,)
 
@@ -387,7 +403,7 @@ class TestContextPassedToCustomField(TestCase):
 
     def test_with_pagination(self):
         class ListView(generics.ListCreateAPIView):
-            model = BasicModel
+            queryset = BasicModel.objects.all()
             serializer_class = BasicModelSerializer
             paginate_by = 1
 

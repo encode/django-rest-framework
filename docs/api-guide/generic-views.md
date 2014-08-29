@@ -19,8 +19,8 @@ Typically when using the generic views, you'll override the view, and set severa
 
     from django.contrib.auth.models import User
     from myapp.serializers import UserSerializer
-	from rest_framework import generics
-	from rest_framework.permissions import IsAdminUser
+    from rest_framework import generics
+    from rest_framework.permissions import IsAdminUser
 
     class UserList(generics.ListCreateAPIView):
         queryset = User.objects.all()
@@ -211,8 +211,6 @@ The mixin classes provide the actions that are used to provide the basic view be
 Provides a `.list(request, *args, **kwargs)` method, that implements listing a queryset.
 
 If the queryset is populated, this returns a `200 OK` response, with a serialized representation of the queryset as the body of the response.  The response data may optionally be paginated.
-
-If the queryset is empty this returns a `200 OK` response, unless the `.allow_empty` attribute on the view is set to `False`, in which case it will return a `404 Not Found`.
 
 ## CreateModelMixin
 
