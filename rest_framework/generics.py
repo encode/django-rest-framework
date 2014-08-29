@@ -76,13 +76,6 @@ class GenericAPIView(views.APIView):
     model_serializer_class = api_settings.DEFAULT_MODEL_SERIALIZER_CLASS
     paginator_class = Paginator
 
-    ######################################
-    # These are pending deprecation...
-
-    pk_url_kwarg = 'pk'
-    slug_url_kwarg = 'slug'
-    slug_field = 'slug'
-
     def get_serializer_context(self):
         """
         Extra context provided to the serializer class.
@@ -270,7 +263,7 @@ class GenericAPIView(views.APIView):
         error_format = "'%s' must define 'queryset' or 'model'"
         raise ImproperlyConfigured(error_format % self.__class__.__name__)
 
-    def get_object(self, queryset=None):
+    def get_object(self):
         """
         Returns the object the view is displaying.
 
@@ -278,36 +271,14 @@ class GenericAPIView(views.APIView):
         queryset lookups.  Eg if objects are referenced using multiple
         keyword arguments in the url conf.
         """
-        # Determine the base queryset to use.
-        if queryset is None:
-            queryset = self.filter_queryset(self.get_queryset())
-        else:
-            pass  # Deprecation warning
+        queryset = self.filter_queryset(self.get_queryset())
 
         # Perform the lookup filtering.
         # Note that `pk` and `slug` are deprecated styles of lookup filtering.
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
         lookup = self.kwargs.get(lookup_url_kwarg, None)
-        pk = self.kwargs.get(self.pk_url_kwarg, None)
-        slug = self.kwargs.get(self.slug_url_kwarg, None)
 
-        if lookup is not None:
-            filter_kwargs = {self.lookup_field: lookup}
-        elif pk is not None and self.lookup_field == 'pk':
-            warnings.warn(
-                'The `pk_url_kwarg` attribute is deprecated. '
-                'Use the `lookup_field` attribute instead',
-                DeprecationWarning
-            )
-            filter_kwargs = {'pk': pk}
-        elif slug is not None and self.lookup_field == 'pk':
-            warnings.warn(
-                'The `slug_url_kwarg` attribute is deprecated. '
-                'Use the `lookup_field` attribute instead',
-                DeprecationWarning
-            )
-            filter_kwargs = {self.slug_field: slug}
-        else:
+        if lookup is None:
             raise ImproperlyConfigured(
                 'Expected view %s to be called with a URL keyword argument '
                 'named "%s". Fix your URL conf, or set the `.lookup_field` '
@@ -315,6 +286,7 @@ class GenericAPIView(views.APIView):
                 (self.__class__.__name__, self.lookup_field)
             )
 
+        filter_kwargs = {self.lookup_field: lookup}
         obj = get_object_or_404(queryset, **filter_kwargs)
 
         # May raise a permission denied
