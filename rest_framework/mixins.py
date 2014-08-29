@@ -70,23 +70,8 @@ class ListModelMixin(object):
     """
     List a queryset.
     """
-    empty_error = "Empty list and '%(class_name)s.allow_empty' is False."
-
     def list(self, request, *args, **kwargs):
         self.object_list = self.filter_queryset(self.get_queryset())
-
-        # Default is to allow empty querysets.  This can be altered by setting
-        # `.allow_empty = False`, to raise 404 errors on empty querysets.
-        if not self.allow_empty and not self.object_list:
-            warnings.warn(
-                'The `allow_empty` parameter is deprecated. '
-                'To use `allow_empty=False` style behavior, You should override '
-                '`get_queryset()` and explicitly raise a 404 on empty querysets.',
-                DeprecationWarning
-            )
-            class_name = self.__class__.__name__
-            error_msg = self.empty_error % {'class_name': class_name}
-            raise Http404(error_msg)
 
         # Switch between paginated or standard style responses
         page = self.paginate_queryset(self.object_list)
