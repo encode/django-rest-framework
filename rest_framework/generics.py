@@ -11,7 +11,6 @@ from django.utils.translation import ugettext as _
 from rest_framework import views, mixins, exceptions
 from rest_framework.request import clone_request
 from rest_framework.settings import api_settings
-import warnings
 
 
 def strict_positive_int(integer_string, cutoff=None):

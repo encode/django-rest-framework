@@ -10,7 +10,6 @@ from __future__ import unicode_literals
 from django.utils import six
 from rest_framework.views import APIView
 import types
-import warnings
 
 
 def api_view(http_method_names):
