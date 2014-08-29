@@ -3,7 +3,7 @@ Generic views that provide commonly needed behaviour.
 """
 from __future__ import unicode_literals
 
-from django.core.exceptions import ImproperlyConfigured, PermissionDenied
+from django.core.exceptions import PermissionDenied
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 from django.shortcuts import get_object_or_404 as _get_object_or_404
@@ -235,19 +235,16 @@ class GenericAPIView(views.APIView):
         queryset = self.filter_queryset(self.get_queryset())
 
         # Perform the lookup filtering.
-        # Note that `pk` and `slug` are deprecated styles of lookup filtering.
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
-        lookup = self.kwargs.get(lookup_url_kwarg, None)
 
-        if lookup is None:
-            raise ImproperlyConfigured(
-                'Expected view %s to be called with a URL keyword argument '
-                'named "%s". Fix your URL conf, or set the `.lookup_field` '
-                'attribute on the view correctly.' %
-                (self.__class__.__name__, self.lookup_field)
-            )
+        assert lookup_url_kwarg in self.kwargs, (
+            'Expected view %s to be called with a URL keyword argument '
+            'named "%s". Fix your URL conf, or set the `.lookup_field` '
+            'attribute on the view correctly.' %
+            (self.__class__.__name__, lookup_url_kwarg)
+        )
 
-        filter_kwargs = {self.lookup_field: lookup}
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
         obj = get_object_or_404(queryset, **filter_kwargs)
 
         # May raise a permission denied
