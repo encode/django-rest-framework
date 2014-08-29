@@ -442,25 +442,3 @@ class RetrieveUpdateDestroyAPIView(mixins.RetrieveModelMixin,
 
     def delete(self, request, *args, **kwargs):
         return self.destroy(request, *args, **kwargs)
-
-
-# Deprecated classes
-
-class MultipleObjectAPIView(GenericAPIView):
-    def __init__(self, *args, **kwargs):
-        warnings.warn(
-            'Subclassing `MultipleObjectAPIView` is deprecated. '
-            'You should simply subclass `GenericAPIView` instead.',
-            DeprecationWarning, stacklevel=2
-        )
-        super(MultipleObjectAPIView, self).__init__(*args, **kwargs)
-
-
-class SingleObjectAPIView(GenericAPIView):
-    def __init__(self, *args, **kwargs):
-        warnings.warn(
-            'Subclassing `SingleObjectAPIView` is deprecated. '
-            'You should simply subclass `GenericAPIView` instead.',
-            DeprecationWarning, stacklevel=2
-        )
-        super(SingleObjectAPIView, self).__init__(*args, **kwargs)
