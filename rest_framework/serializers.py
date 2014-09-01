@@ -907,6 +907,9 @@ class ModelSerializer(Serializer):
         try:
             return self.field_mapping[model_field.__class__](**kwargs)
         except KeyError:
+            for model_field_class, serializer_field_class in self.field_mapping.items():
+                if isinstance(model_field, model_field_class):
+                    return serializer_field_class(**kwargs)
             return ModelField(model_field=model_field, **kwargs)
 
     def get_validation_exclusions(self, instance=None):
