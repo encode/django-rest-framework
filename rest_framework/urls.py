@@ -6,7 +6,7 @@ your API requires authentication:
 
     urlpatterns = patterns('',
         ...
-        url(r'^auth', include('rest_framework.urls', namespace='rest_framework'))
+        url(r'^auth/', include('rest_framework.urls', namespace='rest_framework'))
     )
 
 The urls must be namespaced as 'rest_framework', and you should make sure
