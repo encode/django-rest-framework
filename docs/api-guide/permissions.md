@@ -174,6 +174,12 @@ To implement a custom permission, override `BasePermission` and implement either
 
 The methods should return `True` if the request should be granted access, and `False` otherwise.
 
+---
+
+**Note**: If `has_permission()` doesn't return True and grants access `has_object_permission()` will never be called.
+
+---
+
 If you need to test if a request is a read operation or a write operation, you should check the request method against the constant `SAFE_METHODS`, which is a tuple containing `'GET'`, `'OPTIONS'` and `'HEAD'`.  For example:
 
     if request.method in permissions.SAFE_METHODS:
