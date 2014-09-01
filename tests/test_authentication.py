@@ -57,7 +57,8 @@ urlpatterns = patterns(
             authentication_classes=[OAuthAuthentication],
             permission_classes=[permissions.TokenHasReadWriteScope]
         )
-    )
+    ),
+    url(r'^auth/', include('rest_framework.urls', namespace='rest_framework'))
 )
 
 
@@ -133,6 +134,16 @@ class SessionAuthTests(TestCase):
 
     def tearDown(self):
         self.csrf_client.logout()
+
+    def test_login_view_renders_on_get(self):
+        """
+        Ensure the login template renders for a basic GET.
+
+        cf. [#1810](https://github.com/tomchristie/django-rest-framework/pull/1810)
+        """
+        response = self.csrf_client.get('/auth/login/')
+        self.assertContains(response, '<Label class="span4">Username:</label>')
+
 
     def test_post_form_session_auth_failing_csrf(self):
         """
