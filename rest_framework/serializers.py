@@ -625,6 +625,21 @@ class ModelSerializerOptions(SerializerOptions):
         self.write_only_fields = getattr(meta, 'write_only_fields', ())
 
 
+def _get_class_mapping(mapping, obj):
+    """
+    Takes a dictionary with classes as keys, and an object.
+    Traverses the object's inheritance hierarchy in method
+    resolution order, and returns the first matching value
+    from the dictionary or None.
+
+    """
+    for baseclass in inspect.getmro(obj.__class__):
+        val = mapping.get(baseclass)
+        if val:
+            return val
+    return None
+
+
 class ModelSerializer(Serializer):
     """
     A serializer that deals with model instances and querysets.
@@ -899,15 +914,16 @@ class ModelSerializer(Serializer):
             models.URLField: ['max_length'],
         }
 
-        if model_field.__class__ in attribute_dict:
-            attributes = attribute_dict[model_field.__class__]
+        attributes = _get_class_mapping(attribute_dict, model_field)
+        if attributes:
             for attribute in attributes:
                 kwargs.update({attribute: getattr(model_field, attribute)})
 
-        for model_field_baseclass in inspect.getmro(model_field.__class__):
-            serializer_field_class = self.field_mapping.get(model_field_baseclass)
-            if serializer_field_class:
-                return serializer_field_class(**kwargs)
+        serializer_field_class = _get_class_mapping(
+            self.field_mapping, model_field)
+
+        if serializer_field_class:
+            return serializer_field_class(**kwargs)
         return ModelField(model_field=model_field, **kwargs)
 
     def get_validation_exclusions(self, instance=None):
