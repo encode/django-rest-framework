@@ -144,7 +144,6 @@ class SessionAuthTests(TestCase):
         response = self.csrf_client.get('/auth/login/')
         self.assertContains(response, '<Label class="span4">Username:</label>')
 
-
     def test_post_form_session_auth_failing_csrf(self):
         """
         Ensure POSTing form over session authentication without CSRF token fails.
