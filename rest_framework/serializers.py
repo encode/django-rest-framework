@@ -633,11 +633,10 @@ def _get_class_mapping(mapping, obj):
     from the dictionary or None.
 
     """
-    for baseclass in inspect.getmro(obj.__class__):
-        val = mapping.get(baseclass)
-        if val:
-            return val
-    return None
+    return next(
+        (mapping[cls] for cls in inspect.getmro(obj.__class__) if cls in mapping),
+        None
+    )
 
 
 class ModelSerializer(Serializer):
