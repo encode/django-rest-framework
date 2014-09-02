@@ -36,7 +36,7 @@ class DropdownWithAuthTests(TestCase):
 
 
 class NoDropdownWithoutAuthTests(TestCase):
-    """Tests correct dropdown behaviour with Auth views enabled."""
+    """Tests correct dropdown behaviour with Auth views NOT enabled."""
 
     urls = 'tests.browsable_api.no_auth_urls'
 
