@@ -142,7 +142,7 @@ class Serializer(BaseSerializer):
         return super(Serializer, cls).__new__(cls)
 
     def __init__(self, *args, **kwargs):
-        kwargs.pop('context', None)
+        self.context = kwargs.pop('context', {})
         kwargs.pop('partial', None)
         kwargs.pop('many', False)
 
@@ -202,7 +202,7 @@ class Serializer(BaseSerializer):
         if errors:
             raise ValidationError(errors)
 
-        return ret
+        return self.validate(ret)
 
     def to_primative(self, instance):
         """
@@ -216,6 +216,9 @@ class Serializer(BaseSerializer):
             ret[field.field_name] = field.to_primative(native_value)
 
         return ret
+
+    def validate(self, attrs):
+        return attrs
 
     def __iter__(self):
         errors = self.errors if hasattr(self, '_errors') else {}
@@ -232,8 +235,7 @@ class ListSerializer(BaseSerializer):
     def __init__(self, *args, **kwargs):
         self.child = kwargs.pop('child', copy.deepcopy(self.child))
         assert self.child is not None, '`child` is a required argument.'
-
-        kwargs.pop('context', None)
+        self.context = kwargs.pop('context', {})
         kwargs.pop('partial', None)
 
         super(ListSerializer, self).__init__(*args, **kwargs)
@@ -316,19 +318,19 @@ class ModelSerializer(Serializer):
         models.PositiveIntegerField: IntegerField,
         models.SmallIntegerField: IntegerField,
         models.PositiveSmallIntegerField: IntegerField,
-        # models.DateTimeField: DateTimeField,
-        # models.DateField: DateField,
-        # models.TimeField: TimeField,
+        models.DateTimeField: DateTimeField,
+        models.DateField: DateField,
+        models.TimeField: TimeField,
         # models.DecimalField: DecimalField,
-        # models.EmailField: EmailField,
+        models.EmailField: EmailField,
         models.CharField: CharField,
-        # models.URLField: URLField,
+        models.URLField: URLField,
         # models.SlugField: SlugField,
         models.TextField: CharField,
         models.CommaSeparatedIntegerField: CharField,
         models.BooleanField: BooleanField,
         models.NullBooleanField: BooleanField,
-        # models.FileField: FileField,
+        models.FileField: FileField,
         # models.ImageField: ImageField,
     }
 
@@ -337,6 +339,15 @@ class ModelSerializer(Serializer):
     def __init__(self, *args, **kwargs):
         self.opts = self._options_class(self.Meta)
         super(ModelSerializer, self).__init__(*args, **kwargs)
+
+    def create(self):
+        ModelClass = self.opts.model
+        return ModelClass.objects.create(**self.validated_data)
+
+    def update(self, obj):
+        for attr, value in self.validated_data.items():
+            setattr(obj, attr, value)
+        obj.save()
 
     def get_fields(self):
         # Get the explicitly declared fields.
@@ -566,8 +577,8 @@ class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
 class HyperlinkedModelSerializer(ModelSerializer):
     _options_class = HyperlinkedModelSerializerOptions
     _default_view_name = '%(model_name)s-detail'
-    # _hyperlink_field_class = HyperlinkedRelatedField
-    # _hyperlink_identify_field_class = HyperlinkedIdentityField
+    _hyperlink_field_class = HyperlinkedRelatedField
+    _hyperlink_identify_field_class = HyperlinkedIdentityField
 
     def get_default_fields(self):
         fields = super(HyperlinkedModelSerializer, self).get_default_fields()
@@ -575,15 +586,15 @@ class HyperlinkedModelSerializer(ModelSerializer):
         if self.opts.view_name is None:
             self.opts.view_name = self._get_default_view_name(self.opts.model)
 
-        # if self.opts.url_field_name not in fields:
-        #     url_field = self._hyperlink_identify_field_class(
-        #         view_name=self.opts.view_name,
-        #         lookup_field=self.opts.lookup_field
-        #     )
-        #     ret = self._dict_class()
-        #     ret[self.opts.url_field_name] = url_field
-        #     ret.update(fields)
-        #     fields = ret
+        if self.opts.url_field_name not in fields:
+            url_field = self._hyperlink_identify_field_class(
+                view_name=self.opts.view_name,
+                lookup_field=self.opts.lookup_field
+            )
+            ret = fields.__class__()
+            ret[self.opts.url_field_name] = url_field
+            ret.update(fields)
+            fields = ret
 
         return fields
 

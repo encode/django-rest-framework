@@ -391,10 +391,10 @@ class CustomField(serializers.Field):
 class BasicModelSerializer(serializers.Serializer):
     text = CustomField()
 
-    def __init__(self, *args, **kwargs):
-        super(BasicModelSerializer, self).__init__(*args, **kwargs)
+    def to_native(self, value):
         if 'view' not in self.context:
-            raise RuntimeError("context isn't getting passed into serializer init")
+            raise RuntimeError("context isn't getting passed into serializer")
+        return super(BasicSerializer, self).to_native(value)
 
 
 class TestContextPassedToCustomField(TestCase):
@@ -423,7 +423,7 @@ class LinksSerializer(serializers.Serializer):
 
 class CustomPaginationSerializer(pagination.BasePaginationSerializer):
     links = LinksSerializer(source='*')  # Takes the page object as the source
-    total_results = serializers.Field(source='paginator.count')
+    total_results = serializers.ReadOnlyField(source='paginator.count')
 
     results_field = 'objects'
 

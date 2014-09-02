@@ -73,7 +73,7 @@ class HyperlinkedRelatedField(RelatedField):
         try:
             http_prefix = value.startswith(('http:', 'https:'))
         except AttributeError:
-            self.fail('incorrect_type', type(value).__name__)
+            self.fail('incorrect_type', data_type=type(value).__name__)
 
         if http_prefix:
             # If needed convert absolute URLs to relative path

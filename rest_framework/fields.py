@@ -1,4 +1,5 @@
 from rest_framework.utils import html
+import inspect
 
 
 class empty:
@@ -9,6 +10,22 @@ class empty:
     It is required because `None` may be a valid input or output value.
     """
     pass
+
+
+def is_simple_callable(obj):
+    """
+    True if the object is a callable that takes no arguments.
+    """
+    function = inspect.isfunction(obj)
+    method = inspect.ismethod(obj)
+
+    if not (function or method):
+        return False
+
+    args, _, _, defaults = inspect.getargspec(obj)
+    len_args = len(args) if function else len(args) - 1
+    len_defaults = len(defaults) if defaults else 0
+    return len_args <= len_defaults
 
 
 def get_attribute(instance, attrs):
@@ -98,6 +115,7 @@ class Field(object):
         self.field_name = field_name
         self.parent = parent
         self.root = root
+        self.context = parent.context
 
         # `self.label` should deafult to being based on the field name.
         if self.label is None:
@@ -297,8 +315,17 @@ class IntegerField(Field):
             self.fail('invalid_integer')
         return data
 
+    def to_primative(self, value):
+        if value is None:
+            return None
+        return int(value)
+
 
 class EmailField(CharField):
+    pass  # TODO
+
+
+class URLField(CharField):
     pass  # TODO
 
 
@@ -308,12 +335,33 @@ class RegexField(CharField):
         super(CharField, self).__init__(**kwargs)
 
 
+class DateField(CharField):
+    def __init__(self, **kwargs):
+        self.input_formats = kwargs.pop('input_formats', None)
+        super(DateField, self).__init__(**kwargs)
+
+
+class TimeField(CharField):
+    def __init__(self, **kwargs):
+        self.input_formats = kwargs.pop('input_formats', None)
+        super(TimeField, self).__init__(**kwargs)
+
+
 class DateTimeField(CharField):
-    pass  # TODO
+    def __init__(self, **kwargs):
+        self.input_formats = kwargs.pop('input_formats', None)
+        super(DateTimeField, self).__init__(**kwargs)
 
 
 class FileField(Field):
     pass  # TODO
+
+
+class ReadOnlyField(Field):
+    def to_primative(self, value):
+        if is_simple_callable(value):
+            return value()
+        return value
 
 
 class MethodField(Field):

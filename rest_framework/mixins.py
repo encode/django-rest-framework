@@ -13,23 +13,6 @@ from rest_framework.request import clone_request
 from rest_framework.settings import api_settings
 
 
-def _get_validation_exclusions(obj, lookup_field=None):
-    """
-    Given a model instance, and an optional pk and slug field,
-    return the full list of all other field names on that model.
-
-    For use when performing full_clean on a model instance,
-    so we only clean the required fields.
-    """
-    if lookup_field == 'pk':
-        pk_field = obj._meta.pk
-        while pk_field.rel:
-            pk_field = pk_field.rel.to._meta.pk
-        lookup_field = pk_field.name
-
-    return [field.name for field in obj._meta.fields if field.name != lookup_field]
-
-
 class CreateModelMixin(object):
     """
     Create a model instance.
@@ -92,15 +75,14 @@ class UpdateModelMixin(object):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
-        lookup_value = self.kwargs[lookup_url_kwarg]
-        extras = {self.lookup_field: lookup_value}
-
         if self.object is None:
+            lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+            lookup_value = self.kwargs[lookup_url_kwarg]
+            extras = {self.lookup_field: lookup_value}
             self.object = serializer.save(extras=extras)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        self.object = serializer.save(extras=extras)
+        self.object = serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def partial_update(self, request, *args, **kwargs):
@@ -121,21 +103,6 @@ class UpdateModelMixin(object):
                 # PATCH requests where the object does not exist should still
                 # return a 404 response.
                 raise
-
-    def pre_save(self, obj):
-        """
-        Set any attributes on the object that are implicit in the request.
-        """
-        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
-        lookup_value = self.kwargs[lookup_url_kwarg]
-
-        setattr(obj, self.lookup_field, lookup_value)
-
-        # Ensure we clean the attributes so that we don't eg return integer
-        # pk using a string representation, as provided by the url conf kwarg.
-        if hasattr(obj, 'full_clean'):
-            exclude = _get_validation_exclusions(obj, self.lookup_field)
-            obj.full_clean(exclude)
 
 
 class DestroyModelMixin(object):
