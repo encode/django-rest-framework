@@ -55,6 +55,10 @@ class ManyToManyModel(RESTFrameworkModel):
     rel = models.ManyToManyField(Anchor, help_text='Some help text.')
 
 
+class ManyToManyModelTwo(RESTFrameworkModel):
+    rel = models.ManyToManyField(Anchor, null=True, blank=True, help_text='Some other help text.')
+
+
 class ReadOnlyManyToManyModel(RESTFrameworkModel):
     text = models.CharField(max_length=100, default='anchor')
     rel = models.ManyToManyField(Anchor)

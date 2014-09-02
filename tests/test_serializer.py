@@ -10,7 +10,7 @@ from rest_framework import serializers, fields, relations
 from tests.models import (
     HasPositiveIntegerAsChoice, Album, ActionItem, Anchor, BasicModel,
     BlankFieldModel, BlogPost, BlogPostComment, Book, CallableDefaultValueModel,
-    DefaultValueModel, ManyToManyModel, Person, ReadOnlyManyToManyModel, Photo,
+    DefaultValueModel, ManyToManyModel, ManyToManyModelTwo, Person, ReadOnlyManyToManyModel, Photo,
     RESTFrameworkModel, ForeignKeySource
 )
 from tests.models import BasicModelSerializer
@@ -755,6 +755,35 @@ class MetadataTests(TestCase):
         }
         for field_name, field in expected.items():
             self.assertTrue(isinstance(serializer.data.fields[field_name], field))
+
+
+class ManyToManyTwoTests(TestCase):
+    """
+    Tests model with a ManyToMany relationship with field attributes
+    null==True and blank==True.
+    """
+    def setUp(self):
+        class ManyToManySerializer(serializers.ModelSerializer):
+            class Meta:
+                model = ManyToManyModelTwo
+
+        self.serializer_class = ManyToManySerializer
+
+        # An anchor instance to use for the relationship
+        self.anchor = Anchor()
+        self.anchor.save()
+
+    def test_create(self):
+        """
+        Create an instance of a model with a ManyToMany relationship.
+        """
+        data = {'rel': [self.anchor.id]}
+        serializer = self.serializer_class(data=data)
+        self.assertEqual(serializer.is_valid(), True)
+        instance = serializer.save()
+        self.assertEqual(len(ManyToManyModelTwo.objects.all()), 2)
+        self.assertEqual(instance.pk, 2)
+        self.assertEqual(list(instance.rel.all()), [self.anchor])
 
 
 class ManyToManyTests(TestCase):
