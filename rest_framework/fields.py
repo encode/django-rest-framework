@@ -68,7 +68,7 @@ class Field(object):
 
     def __init__(self, read_only=False, write_only=False,
                  required=None, default=empty, initial=None, source=None,
-                 label=None, style=None):
+                 label=None, style=None, error_messages=None):
         self._creation_counter = Field._creation_counter
         Field._creation_counter += 1
 
@@ -216,9 +216,11 @@ class CharField(Field):
         'blank': 'This field may not be blank.'
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         self.allow_blank = kwargs.pop('allow_blank', False)
-        super(CharField, self).__init__(*args, **kwargs)
+        self.max_length = kwargs.pop('max_length', None)
+        self.min_length = kwargs.pop('min_length', None)
+        super(CharField, self).__init__(**kwargs)
 
     def to_native(self, data):
         if data == '' and not self.allow_blank:
@@ -233,7 +235,7 @@ class ChoiceField(Field):
     }
     coerce_to_type = str
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         choices = kwargs.pop('choices')
 
         assert choices, '`choices` argument is required and may not be empty'
@@ -257,7 +259,7 @@ class ChoiceField(Field):
             str(key): key for key in self.choices.keys()
         }
 
-        super(ChoiceField, self).__init__(*args, **kwargs)
+        super(ChoiceField, self).__init__(**kwargs)
 
     def to_native(self, data):
         try:
@@ -294,6 +296,24 @@ class IntegerField(Field):
         except (ValueError, TypeError):
             self.fail('invalid_integer')
         return data
+
+
+class EmailField(CharField):
+    pass  # TODO
+
+
+class RegexField(CharField):
+    def __init__(self, **kwargs):
+        self.regex = kwargs.pop('regex')
+        super(CharField, self).__init__(**kwargs)
+
+
+class DateTimeField(CharField):
+    pass  # TODO
+
+
+class FileField(Field):
+    pass  # TODO
 
 
 class MethodField(Field):

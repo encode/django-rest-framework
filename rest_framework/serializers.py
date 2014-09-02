@@ -477,8 +477,8 @@ class ModelSerializer(Serializer):
 
         if model_field:
             kwargs['required'] = not(model_field.null or model_field.blank)
-            # if model_field.help_text is not None:
-            #     kwargs['help_text'] = model_field.help_text
+            #  if model_field.help_text is not None:
+            #      kwargs['help_text'] = model_field.help_text
             if model_field.verbose_name is not None:
                 kwargs['label'] = model_field.verbose_name
             if not model_field.editable:
@@ -566,8 +566,8 @@ class HyperlinkedModelSerializerOptions(ModelSerializerOptions):
 class HyperlinkedModelSerializer(ModelSerializer):
     _options_class = HyperlinkedModelSerializerOptions
     _default_view_name = '%(model_name)s-detail'
-    #_hyperlink_field_class = HyperlinkedRelatedField
-    #_hyperlink_identify_field_class = HyperlinkedIdentityField
+    # _hyperlink_field_class = HyperlinkedRelatedField
+    # _hyperlink_identify_field_class = HyperlinkedIdentityField
 
     def get_default_fields(self):
         fields = super(HyperlinkedModelSerializer, self).get_default_fields()

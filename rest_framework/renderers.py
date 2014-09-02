@@ -436,13 +436,13 @@ class BrowsableAPIRenderer(BaseRenderer):
         if request.method == method:
             try:
                 data = request.DATA
-                files = request.FILES
+                # files = request.FILES
             except ParseError:
                 data = None
-                files = None
+                # files = None
         else:
             data = None
-            files = None
+            # files = None
 
         with override_method(view, request, method) as request:
             obj = getattr(view, 'object', None)
@@ -579,10 +579,10 @@ class BrowsableAPIRenderer(BaseRenderer):
             'available_formats': [renderer_cls.format for renderer_cls in view.renderer_classes],
             'response_headers': response_headers,
 
-            #'put_form': self.get_rendered_html_form(view, 'PUT', request),
-            #'post_form': self.get_rendered_html_form(view, 'POST', request),
-            #'delete_form': self.get_rendered_html_form(view, 'DELETE', request),
-            #'options_form': self.get_rendered_html_form(view, 'OPTIONS', request),
+            # 'put_form': self.get_rendered_html_form(view, 'PUT', request),
+            # 'post_form': self.get_rendered_html_form(view, 'POST', request),
+            # 'delete_form': self.get_rendered_html_form(view, 'DELETE', request),
+            # 'options_form': self.get_rendered_html_form(view, 'OPTIONS', request),
 
             'raw_data_put_form': raw_data_put_form,
             'raw_data_post_form': raw_data_post_form,
