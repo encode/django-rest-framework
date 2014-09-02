@@ -46,17 +46,26 @@ def optional_login(request):
 
 
 @register.simple_tag
-def optional_logout(request):
+def optional_logout(request, user):
     """
     Include a logout snippet if REST framework's logout view is in the URLconf.
     """
     try:
         logout_url = reverse('rest_framework:logout')
     except NoReverseMatch:
-        return ''
+        return '<li class="navbar-text">{0}</li>'.format(user)
 
-    snippet = "<a href='%s?next=%s'>Log out</a>" % (logout_url, escape(request.path))
-    return snippet
+    snippet = """<li class="dropdown">
+        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+            {0}
+            <b class="caret"></b>
+        </a>
+        <ul class="dropdown-menu">
+            <li><a href='{1}?next={2}'>Log out</a></li>
+        </ul>
+    </li>"""
+
+    return snippet.format(user, logout_url, escape(request.path))
 
 
 @register.simple_tag
