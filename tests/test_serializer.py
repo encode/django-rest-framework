@@ -781,8 +781,8 @@ class ManyToManyTwoTests(TestCase):
         serializer = self.serializer_class(data=data)
         self.assertEqual(serializer.is_valid(), True)
         instance = serializer.save()
-        self.assertEqual(len(ManyToManyModelTwo.objects.all()), 2)
-        self.assertEqual(instance.pk, 2)
+        self.assertEqual(len(ManyToManyModelTwo.objects.all()), 1)
+        self.assertEqual(instance.pk, 1)
         self.assertEqual(list(instance.rel.all()), [self.anchor])
 
 
