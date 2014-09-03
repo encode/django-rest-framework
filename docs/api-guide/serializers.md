@@ -73,8 +73,8 @@ Sometimes when serializing objects, you may not want to represent everything exa
 
 If you need to customize the serialized value of a particular field, you can do this by creating a `transform_<fieldname>` method. For example if you needed to render some markdown from a text field:
 
-    description = serializers.TextField()
-    description_html = serializers.TextField(source='description', read_only=True)
+    description = serializers.CharField()
+    description_html = serializers.CharField(source='description', read_only=True)
 
     def transform_description_html(self, obj, value):
         from django.contrib.markup.templatetags.markup import markdown
@@ -464,7 +464,7 @@ For more specific requirements such as specifying a different lookup for each fi
             model = Account
             fields = ('url', 'account_name', 'users', 'created')
 
-## Overiding the URL field behavior
+## Overriding the URL field behavior
 
 The name of the URL field defaults to 'url'.  You can override this globally, by using the `URL_FIELD_NAME` setting.
 
@@ -478,7 +478,7 @@ You can also override this on a per-serializer basis by using the `url_field_nam
 
 **Note**: The generic view implementations normally generate a `Location` header in response to successful `POST` requests.  Serializers using `url_field_name` option will not have this header automatically included by the view.  If you need to do so you will ned to also override the view's `get_success_headers()` method.
 
-You can also overide the URL field's view name and lookup field without overriding the field explicitly, by using the `view_name` and `lookup_field` options, like so:
+You can also override the URL field's view name and lookup field without overriding the field explicitly, by using the `view_name` and `lookup_field` options, like so:
 
     class AccountSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
@@ -580,7 +580,27 @@ The following custom model serializer could be used as a base class for model se
         def get_pk_field(self, model_field):
             return None
 
+---
 
+# Third party packages
+
+The following third party packages are also available.
+
+## MongoengineModelSerializer
+
+The [django-rest-framework-mongoengine][mongoengine] package provides a `MongoEngineModelSerializer` serializer class that supports using MongoDB as the storage layer for Django REST framework.
+
+## GeoFeatureModelSerializer
+
+The [django-rest-framework-gis][django-rest-framework-gis] package provides a `GeoFeatureModelSerializer` serializer class that supports GeoJSON both for read and write operations.
+
+## HStoreSerializer
+
+The [django-rest-framework-hstore][django-rest-framework-hstore] package provides an `HStoreSerializer` to support [django-hstore][django-hstore] `DictionaryField` model field and its `schema-mode` feature.
 
 [cite]: https://groups.google.com/d/topic/django-users/sVFaOfQi4wY/discussion
 [relations]: relations.md
+[mongoengine]: https://github.com/umutbozkurt/django-rest-framework-mongoengine
+[django-rest-framework-gis]: https://github.com/djangonauts/django-rest-framework-gis
+[django-rest-framework-hstore]: https://github.com/djangonauts/django-rest-framework-hstore
+[django-hstore]: https://github.com/djangonauts/django-hstore

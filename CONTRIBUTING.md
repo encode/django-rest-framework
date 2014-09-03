@@ -62,10 +62,10 @@ To run the tests, clone the repository, and then:
     virtualenv env
     env/bin/activate
     pip install -r requirements.txt
-    pip install -r optionals.txt
+    pip install -r requirements-test.txt
 
     # Run the tests
-    rest_framework/runtests/runtests.py
+    ./runtests.py
 
 You can also use the excellent [`tox`][tox] testing tool to run the tests against all supported versions of Python and Django.  Install `tox` globally, and then simply run:
 

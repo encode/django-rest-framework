@@ -81,8 +81,8 @@ For the purposes of this tutorial we're going to start by creating a simple `Sni
     LEXERS = [item for item in get_all_lexers() if item[1]]
     LANGUAGE_CHOICES = sorted([(item[1][0], item[0]) for item in LEXERS])
     STYLE_CHOICES = sorted((item, item) for item in get_all_styles())
-    
-    
+
+
     class Snippet(models.Model):
         created = models.DateTimeField(auto_now_add=True)
         title = models.CharField(max_length=100, blank=True, default='')
@@ -94,7 +94,7 @@ For the purposes of this tutorial we're going to start by creating a simple `Sni
         style = models.CharField(choices=STYLE_CHOICES,
                                  default='friendly',
                                  max_length=100)
-       
+
         class Meta:
             ordering = ('created',)
 
@@ -104,7 +104,7 @@ Don't forget to sync the database for the first time.
 
 ## Creating a Serializer class
 
-The first thing we need to get started on our Web API is provide a way of serializing and deserializing the snippet instances into representations such as `json`.  We can do this by declaring serializers that work very similar to Django's forms.  Create a file in the `snippets` directory named `serializers.py` and add the following.
+The first thing we need to get started on our Web API is to provide a way of serializing and deserializing the snippet instances into representations such as `json`.  We can do this by declaring serializers that work very similar to Django's forms.  Create a file in the `snippets` directory named `serializers.py` and add the following.
 
     from django.forms import widgets
     from rest_framework import serializers
@@ -122,12 +122,12 @@ The first thing we need to get started on our Web API is provide a way of serial
                                            default='python')
         style = serializers.ChoiceField(choices=STYLE_CHOICES,
                                         default='friendly')
-    
+
         def restore_object(self, attrs, instance=None):
             """
             Create or update a new snippet instance, given a dictionary
             of deserialized field values.
-            
+
             Note that if we don't define this method, then deserializing
             data will simply return a dictionary of items.
             """
@@ -143,7 +143,7 @@ The first thing we need to get started on our Web API is provide a way of serial
             # Create new instance
             return Snippet(**attrs)
 
-The first part of serializer class defines the fields that get serialized/deserialized.  The `restore_object` method defines how fully fledged instances get created when deserializing data.
+The first part of the serializer class defines the fields that get serialized/deserialized.  The `restore_object` method defines how fully fledged instances get created when deserializing data.
 
 Notice that we can also use various attributes that would typically be used on form fields, such as `widget=widgets.Textarea`.  These can be used to control how the serializer should render when displayed as an HTML form.  This is particularly useful for controlling how the browsable API should be displayed, as we'll see later in the tutorial.
 
@@ -180,7 +180,7 @@ At this point we've translated the model instance into Python native datatypes. 
     content
     # '{"pk": 2, "title": "", "code": "print \\"hello, world\\"\\n", "linenos": false, "language": "python", "style": "friendly"}'
 
-Deserialization is similar.  First we parse a stream into Python native datatypes... 
+Deserialization is similar.  First we parse a stream into Python native datatypes...
 
     # This import will use either `StringIO.StringIO` or `io.BytesIO`
     # as appropriate, depending on if we're running Python 2 or Python 3.
@@ -196,7 +196,7 @@ Deserialization is similar.  First we parse a stream into Python native datatype
     # True
     serializer.object
     # <Snippet: Snippet object>
-    
+
 Notice how similar the API is to working with forms.  The similarity should become even more apparent when we start writing views that use our serializer.
 
 We can also serialize querysets instead of model instances.  To do so we simply add a `many=True` flag to the serializer arguments.
@@ -264,7 +264,7 @@ The root of our API is going to be a view that supports listing all the existing
                 return JSONResponse(serializer.data, status=201)
             return JSONResponse(serializer.errors, status=400)
 
-Note that because we want to be able to POST to this view from clients that won't have a CSRF token we need to mark the view as `csrf_exempt`.  This isn't something that you'd normally want to do, and REST framework views actually use more sensible behavior than this, but it'll do for our purposes right now. 
+Note that because we want to be able to POST to this view from clients that won't have a CSRF token we need to mark the view as `csrf_exempt`.  This isn't something that you'd normally want to do, and REST framework views actually use more sensible behavior than this, but it'll do for our purposes right now.
 
 We'll also need a view which corresponds to an individual snippet, and can be used to retrieve, update or delete the snippet.
 
@@ -277,11 +277,11 @@ We'll also need a view which corresponds to an individual snippet, and can be us
             snippet = Snippet.objects.get(pk=pk)
         except Snippet.DoesNotExist:
             return HttpResponse(status=404)
- 
+
         if request.method == 'GET':
             serializer = SnippetSerializer(snippet)
             return JSONResponse(serializer.data)
-    
+
         elif request.method == 'PUT':
             data = JSONParser().parse(request)
             serializer = SnippetSerializer(snippet, data=data)

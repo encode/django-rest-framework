@@ -70,7 +70,7 @@ There are two main advantages of using a `ViewSet` class over using a `View` cla
 
 Both of these come with a trade-off.  Using regular views and URL confs is more explicit and gives you more control.  ViewSets are helpful if you want to get up and running quickly, or when you have a large API and you want to enforce a consistent URL configuration throughout.
 
-## Marking extra methods for routing
+## Marking extra actions for routing
 
 The default routers included with REST framework will provide routes for a standard set of create/retrieve/update/destroy style operations, as shown below:
 
@@ -101,14 +101,16 @@ The default routers included with REST framework will provide routes for a stand
         def destroy(self, request, pk=None):
             pass
 
-If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@link` or `@action` decorators.  The `@link` decorator will route `GET` requests, and the `@action` decorator will route `POST` requests.
+If you have ad-hoc methods that you need to be routed to, you can mark them as requiring routing using the `@detail_route` or `@list_route` decorators.
+
+The `@detail_route` decorator contains `pk` in its URL pattern and is intended for methods which require a single instance. The `@list_route` decorator is intended for methods which operate on a list of objects.
 
 For example:
 
     from django.contrib.auth.models import User
-    from rest_framework import viewsets
     from rest_framework import status
-    from rest_framework.decorators import action
+    from rest_framework import viewsets
+    from rest_framework.decorators import detail_route, list_route
     from rest_framework.response import Response
     from myapp.serializers import UserSerializer, PasswordSerializer
 
@@ -119,7 +121,7 @@ For example:
         queryset = User.objects.all()
         serializer_class = UserSerializer
 
-        @action()
+        @detail_route(methods=['post'])
         def set_password(self, request, pk=None):
             user = self.get_object()
             serializer = PasswordSerializer(data=request.DATA)
@@ -131,20 +133,26 @@ For example:
                 return Response(serializer.errors,
                                 status=status.HTTP_400_BAD_REQUEST)
 
-The `@action` and `@link` decorators can additionally take extra arguments that will be set for the routed view only.  For example...
+        @list_route()
+        def recent_users(self, request):
+            recent_users = User.objects.all().order('-last_login')
+            page = self.paginate_queryset(recent_users)
+            serializer = self.get_pagination_serializer(page)
+            return Response(serializer.data)
 
-        @action(permission_classes=[IsAdminOrIsSelf])
+The decorators can additionally take extra arguments that will be set for the routed view only.  For example...
+
+        @detail_route(methods=['post'], permission_classes=[IsAdminOrIsSelf])
         def set_password(self, request, pk=None):
            ...
 
-The `@action` decorator will route `POST` requests by default, but may also accept other HTTP methods, by using the `method` argument.  For example:
+Theses decorators will route `GET` requests by default, but may also accept other HTTP methods, by using the `methods` argument.  For example:
 
-        @action(methods=['POST', 'DELETE'])
+        @detail_route(methods=['post', 'delete'])
         def unset_password(self, request, pk=None):
            ...
-           
-The two new actions will then be available at the urls `^users/{pk}/set_password/$` and `^users/{pk}/unset_password/$`
 
+The two new actions will then be available at the urls `^users/{pk}/set_password/$` and `^users/{pk}/unset_password/$`
 
 ---
 

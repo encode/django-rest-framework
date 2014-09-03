@@ -2,14 +2,11 @@
 Provides a set of pluggable permission policies.
 """
 from __future__ import unicode_literals
-import inspect
-import warnings
-
-SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
-
 from django.http import Http404
 from rest_framework.compat import (get_model_name, oauth2_provider_scope,
                                    oauth2_constants)
+
+SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
 
 
 class BasePermission(object):
@@ -27,13 +24,6 @@ class BasePermission(object):
         """
         Return `True` if permission is granted, `False` otherwise.
         """
-        if len(inspect.getargspec(self.has_permission).args) == 4:
-            warnings.warn(
-                'The `obj` argument in `has_permission` is deprecated. '
-                'Use `has_object_permission()` instead for object permissions.',
-                DeprecationWarning, stacklevel=2
-            )
-            return self.has_permission(request, view, obj)
         return True
 
 
@@ -72,9 +62,11 @@ class IsAuthenticatedOrReadOnly(BasePermission):
     """
 
     def has_permission(self, request, view):
-        return (request.method in SAFE_METHODS or 
-            request.user and 
-            request.user.is_authenticated())
+        return (
+            request.method in SAFE_METHODS or
+            request.user and
+            request.user.is_authenticated()
+        )
 
 
 class DjangoModelPermissions(BasePermission):
@@ -116,6 +108,9 @@ class DjangoModelPermissions(BasePermission):
         return [perm % kwargs for perm in self.perms_map[method]]
 
     def has_permission(self, request, view):
+        # Note that `.model` attribute on views is deprecated, although we
+        # enforce the deprecation on the view `get_serializer_class()` and
+        # `get_queryset()` methods, rather than here.
         model_cls = getattr(view, 'model', None)
         queryset = getattr(view, 'queryset', None)
 
@@ -132,9 +127,11 @@ class DjangoModelPermissions(BasePermission):
 
         perms = self.get_required_permissions(request.method, model_cls)
 
-        return (request.user and
+        return (
+            request.user and
             (request.user.is_authenticated() or not self.authenticated_users_only) and
-            request.user.has_perms(perms))
+            request.user.has_perms(perms)
+        )
 
 
 class DjangoModelPermissionsOrAnonReadOnly(DjangoModelPermissions):
@@ -222,6 +219,8 @@ class TokenHasReadWriteScope(BasePermission):
             required = oauth2_constants.READ if read_only else oauth2_constants.WRITE
             return oauth2_provider_scope.check(required, request.auth.scope)
 
-        assert False, ('TokenHasReadWriteScope requires either the'
-        '`OAuthAuthentication` or `OAuth2Authentication` authentication '
-        'class to be used.')
+        assert False, (
+            'TokenHasReadWriteScope requires either the'
+            '`OAuthAuthentication` or `OAuth2Authentication` authentication '
+            'class to be used.'
+        )

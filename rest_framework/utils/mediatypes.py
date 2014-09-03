@@ -57,7 +57,7 @@ class _MediaType(object):
             if key != 'q' and other.params.get(key, None) != self.params.get(key, None):
                 return False
 
-        if self.sub_type != '*' and other.sub_type != '*'  and other.sub_type != self.sub_type:
+        if self.sub_type != '*' and other.sub_type != '*' and other.sub_type != self.sub_type:
             return False
 
         if self.main_type != '*' and other.main_type != '*' and other.main_type != self.main_type:
@@ -74,12 +74,12 @@ class _MediaType(object):
             return 0
         elif self.sub_type == '*':
             return 1
-        elif not self.params or self.params.keys() == ['q']:
+        elif not self.params or list(self.params.keys()) == ['q']:
             return 2
         return 3
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return self.__unicode__().encode('utf-8')
 
     def __unicode__(self):
         ret = "%s/%s" % (self.main_type, self.sub_type)

@@ -18,12 +18,14 @@ from django.conf import settings
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.http import QueryDict
 from django.forms import widgets
+from django.utils import six, timezone
 from django.utils.encoding import is_protected_type
 from django.utils.translation import ugettext_lazy as _
 from django.utils.datastructures import SortedDict
+from django.utils.dateparse import parse_date, parse_datetime, parse_time
 from rest_framework import ISO_8601
 from rest_framework.compat import (
-    timezone, parse_date, parse_datetime, parse_time, BytesIO, six, smart_text,
+    BytesIO, smart_text,
     force_text, is_non_str_iterable
 )
 from rest_framework.settings import api_settings
@@ -61,8 +63,10 @@ def get_component(obj, attr_name):
 
 
 def readable_datetime_formats(formats):
-    format = ', '.join(formats).replace(ISO_8601,
-             'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HHMM|-HHMM|Z]')
+    format = ', '.join(formats).replace(
+        ISO_8601,
+        'YYYY-MM-DDThh:mm[:ss[.uuuuuu]][+HH:MM|-HH:MM|Z]'
+    )
     return humanize_strptime(format)
 
 
@@ -154,7 +158,12 @@ class Field(object):
     def widget_html(self):
         if not self.widget:
             return ''
-        return self.widget.render(self._name, self._value)
+
+        attrs = {}
+        if 'id' not in self.widget.attrs:
+            attrs['id'] = self._name
+
+        return self.widget.render(self._name, self._value, attrs=attrs)
 
     def label_tag(self):
         return '<label for="%s">%s:</label>' % (self._name, self.label)
@@ -164,7 +173,7 @@ class Field(object):
         Called to set up a field prior to field_to_native or field_from_native.
 
         parent - The parent serializer.
-        model_field - The model field this field corresponds to, if one exists.
+        field_name - The name of the field being initialized.
         """
         self.parent = parent
         self.root = parent.root or parent
@@ -182,7 +191,7 @@ class Field(object):
 
     def field_to_native(self, obj, field_name):
         """
-        Given and object and a field name, returns the value that should be
+        Given an object and a field name, returns the value that should be
         serialized for that field.
         """
         if obj is None:
@@ -260,13 +269,6 @@ class WritableField(Field):
                  validators=[], error_messages=None, widget=None,
                  default=None, blank=None):
 
-        # 'blank' is to be deprecated in favor of 'required'
-        if blank is not None:
-            warnings.warn('The `blank` keyword argument is deprecated. '
-                          'Use the `required` keyword argument instead.',
-                          DeprecationWarning, stacklevel=2)
-            required = not(blank)
-
         super(WritableField, self).__init__(source=source, label=label, help_text=help_text)
 
         self.read_only = read_only
@@ -289,7 +291,7 @@ class WritableField(Field):
         self.validators = self.default_validators + validators
         self.default = default if default is not None else self.default
 
-        # Widgets are ony used for HTML forms.
+        # Widgets are only used for HTML forms.
         widget = widget or self.widget
         if isinstance(widget, type):
             widget = widget()
@@ -425,7 +427,7 @@ class ModelField(WritableField):
         }
 
 
-##### Typed Fields #####
+# Typed Fields
 
 class BooleanField(WritableField):
     type_name = 'BooleanField'
@@ -460,8 +462,9 @@ class CharField(WritableField):
     type_label = 'string'
     form_field_class = forms.CharField
 
-    def __init__(self, max_length=None, min_length=None, *args, **kwargs):
+    def __init__(self, max_length=None, min_length=None, allow_none=False, *args, **kwargs):
         self.max_length, self.min_length = max_length, min_length
+        self.allow_none = allow_none
         super(CharField, self).__init__(*args, **kwargs)
         if min_length is not None:
             self.validators.append(validators.MinLengthValidator(min_length))
@@ -469,8 +472,12 @@ class CharField(WritableField):
             self.validators.append(validators.MaxLengthValidator(max_length))
 
     def from_native(self, value):
-        if isinstance(value, six.string_types) or value is None:
+        if isinstance(value, six.string_types):
             return value
+
+        if value is None and not self.allow_none:
+            return ''
+
         return smart_text(value)
 
 
@@ -479,7 +486,7 @@ class URLField(CharField):
     type_label = 'url'
 
     def __init__(self, **kwargs):
-        if not 'validators' in kwargs:
+        if 'validators' not in kwargs:
             kwargs['validators'] = [validators.URLValidator()]
         super(URLField, self).__init__(**kwargs)
 
@@ -501,7 +508,7 @@ class SlugField(CharField):
 
 class ChoiceField(WritableField):
     type_name = 'ChoiceField'
-    type_label = 'multiple choice'
+    type_label = 'choice'
     form_field_class = forms.ChoiceField
     widget = widgets.Select
     default_error_messages = {
@@ -509,12 +516,16 @@ class ChoiceField(WritableField):
                             'the available choices.'),
     }
 
-    def __init__(self, choices=(), *args, **kwargs):
+    def __init__(self, choices=(), blank_display_value=None, *args, **kwargs):
         self.empty = kwargs.pop('empty', '')
         super(ChoiceField, self).__init__(*args, **kwargs)
         self.choices = choices
         if not self.required:
-            self.choices = BLANK_CHOICE_DASH + self.choices
+            if blank_display_value is None:
+                blank_choice = BLANK_CHOICE_DASH
+            else:
+                blank_choice = [('', blank_display_value)]
+            self.choices = blank_choice + self.choices
 
     def _get_choices(self):
         return self._choices
@@ -1018,9 +1029,9 @@ class SerializerMethodField(Field):
     A field that gets its value by calling a method on the serializer it's attached to.
     """
 
-    def __init__(self, method_name):
+    def __init__(self, method_name, *args, **kwargs):
         self.method_name = method_name
-        super(SerializerMethodField, self).__init__()
+        super(SerializerMethodField, self).__init__(*args, **kwargs)
 
     def field_to_native(self, obj, field_name):
         value = getattr(self.parent, self.method_name)(obj)

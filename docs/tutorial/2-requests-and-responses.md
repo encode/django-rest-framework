@@ -33,7 +33,7 @@ The wrappers also provide behaviour such as returning `405 Method Not Allowed` r
 
 ## Pulling it all together
 
-Okay, let's go ahead and start using these new components to write a few views. 
+Okay, let's go ahead and start using these new components to write a few views.
 
 We don't need our `JSONResponse` class in `views.py` anymore, so go ahead and delete that.  Once that's done we can start refactoring our views slightly.
 
@@ -69,7 +69,7 @@ Here is the view for an individual snippet, in the `views.py` module.
     def snippet_detail(request, pk):
         """
         Retrieve, update or delete a snippet instance.
-        """              
+        """
         try:
             snippet = Snippet.objects.get(pk=pk)
         except Snippet.DoesNotExist:
@@ -115,7 +115,7 @@ Now update the `urls.py` file slightly, to append a set of `format_suffix_patter
         url(r'^snippets/$', 'snippet_list'),
         url(r'^snippets/(?P<pk>[0-9]+)$', 'snippet_detail'),
     )
-    
+
     urlpatterns = format_suffix_patterns(urlpatterns)
 
 We don't necessarily need to add these extra url patterns in, but it gives us a simple, clean way of referring to a specific format.
@@ -146,7 +146,7 @@ Similarly, we can control the format of the request that we send, using the `Con
     curl -X POST http://127.0.0.1:8000/snippets/ -d "code=print 123"
 
     {"id": 3, "title": "", "code": "print 123", "linenos": false, "language": "python", "style": "friendly"}
-    
+
     # POST using JSON
     curl -X POST http://127.0.0.1:8000/snippets/ -d '{"code": "print 456"}' -H "Content-Type: application/json"
 

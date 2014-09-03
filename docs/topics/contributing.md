@@ -62,10 +62,44 @@ To run the tests, clone the repository, and then:
     virtualenv env
     source env/bin/activate
     pip install -r requirements.txt
-    pip install -r optionals.txt
+    pip install -r requirements-test.txt
 
     # Run the tests
-    rest_framework/runtests/runtests.py
+    ./runtests.py
+
+### Test options
+
+Run using a more concise output style.
+
+    ./runtests -q
+
+Run the tests using a more concise output style, no coverage, no flake8.
+
+    ./runtests --fast
+
+Don't run the flake8 code linting.
+
+    ./runtests --nolint
+
+Only run the flake8 code linting, don't run the tests.
+
+    ./runtests --lintonly
+
+Run the tests for a given test case.
+
+    ./runtests MyTestCase
+
+Run the tests for a given test method.
+
+    ./runtests MyTestCase.test_this_method
+
+Shorter form to run the tests for a given test method.
+
+    ./runtests test_this_method
+
+Note: The test case and test method matching is fuzzy and will sometimes run other tests that contain a partial string match to the given  command line input.
+
+### Running against multiple environments
 
 You can also use the excellent [tox][tox] testing tool to run the tests against all supported versions of Python and Django.  Install `tox` globally, and then simply run:
 

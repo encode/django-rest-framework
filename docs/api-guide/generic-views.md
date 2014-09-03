@@ -43,7 +43,13 @@ For more complex cases you might also want to override various methods on the vi
                 return 20
             return 100
 
-For very simple cases you might want to pass through any class attributes using the `.as_view()` method.  For example, your URLconf might include something the following entry.
+        def list(self, request):
+            # Note the use of `get_queryset()` instead of `self.queryset`
+            queryset = self.get_queryset()
+            serializer = UserSerializer(queryset, many=True)
+            return Response(serializer.data)
+
+For very simple cases you might want to pass through any class attributes using the `.as_view()` method.  For example, your URLconf might include something like the following entry:
 
     url(r'^/users/', ListCreateAPIView.as_view(model=User), name='user-list')
 
@@ -63,14 +69,10 @@ Each of the concrete generic views provided is built by combining `GenericAPIVie
 
 The following attributes control the basic view behavior.
 
-* `queryset` - The queryset that should be used for returning objects from this view.  Typically, you must either set this attribute, or override the `get_queryset()` method.
+* `queryset` - The queryset that should be used for returning objects from this view.  Typically, you must either set this attribute, or override the `get_queryset()` method. If you are overriding a view method, it is important that you call `get_queryset()` instead of accessing this property directly, as `queryset` will get evaluated once, and those results will be cached for all subsequent requests.
 * `serializer_class` - The serializer class that should be used for validating and deserializing input, and for serializing output.  Typically, you must either set this attribute, or override the `get_serializer_class()` method.
 * `lookup_field` - The model field that should be used to for performing object lookup of individual model instances.  Defaults to `'pk'`.  Note that when using hyperlinked APIs you'll need to ensure that *both* the API views *and* the serializer classes set the lookup fields if you need to use a custom value.
 * `lookup_url_kwarg` - The URL keyword argument that should be used for object lookup.  The URL conf should include a keyword argument corresponding to this value.  If unset this defaults to using the same value as `lookup_field`.
-
-**Shortcuts**:
-
-* `model` - This shortcut may be used instead of setting either (or both) of the `queryset`/`serializer_class` attributes, although using the explicit style is generally preferred.  If used instead of `serializer_class`, then then `DEFAULT_MODEL_SERIALIZER_CLASS` setting will determine the base serializer class.  Note that `model` is only ever used for generating a default queryset or serializer class - the `queryset` and `serializer_class` attributes are always preferred if provided.
 
 **Pagination**:
 
@@ -85,6 +87,10 @@ The following attributes are used to control pagination when used with list view
 
 * `filter_backends` - A list of filter backend classes that should be used for filtering the queryset.  Defaults to the same value as the `DEFAULT_FILTER_BACKENDS` setting.
 
+**Deprecated attributes**:
+
+* `model` - This shortcut may be used instead of setting either (or both) of the `queryset`/`serializer_class` attributes. The explicit style is preferred over the `.model` shortcut, and usage of this attribute is now deprecated.
+
 ### Methods
 
 **Base methods**:
@@ -93,7 +99,9 @@ The following attributes are used to control pagination when used with list view
 
 Returns the queryset that should be used for list views, and that should be used as the base for lookups in detail views.  Defaults to returning the queryset specified by the `queryset` attribute, or the default queryset for the model if the `model` shortcut is being used.
 
-May be overridden to provide dynamic behavior such as returning a queryset that is specific to the user making the request.
+This method should always be used rather than accessing `self.queryset` directly, as `self.queryset` gets evaluated only once, and those results are cached for all subsequent requests.
+
+May be overridden to provide dynamic behavior, such as returning a queryset, that is specific to the user making the request.
 
 For example:
 
@@ -105,7 +113,7 @@ For example:
 
 Returns an object instance that should be used for detail views.  Defaults to using the `lookup_field` parameter to filter the base queryset.
 
-May be overridden to provide more complex behavior such as object lookups based on more than one URL kwarg.
+May be overridden to provide more complex behavior, such as object lookups based on more than one URL kwarg.
 
 For example:
 
@@ -125,7 +133,7 @@ Note that if your API doesn't include any object level permissions, you may opti
 
 Returns the classes that should be used to filter the queryset. Defaults to returning the `filter_backends` attribute.
 
-May be override to provide more complex behavior with filters, as using different (or even exlusive) lists of filter_backends depending on different criteria.
+May be overridden to provide more complex behavior with filters, such as using different (or even exlusive) lists of filter_backends depending on different criteria.
 
 For example:
 
@@ -141,7 +149,7 @@ For example:
 
 Returns the class that should be used for the serializer.  Defaults to returning the `serializer_class` attribute, or dynamically generating a serializer class if the `model` shortcut is being used.
 
-May be override to provide dynamic behavior such as using different serializers for read and write operations, or providing different serializers to different types of users.
+May be overridden to provide dynamic behavior, such as using different serializers for read and write operations, or providing different serializers to different types of users.
 
 For example:
 
@@ -154,7 +162,7 @@ For example:
 
 Returns the page size to use with pagination.  By default this uses the `paginate_by` attribute, and may be overridden by the client if the `paginate_by_param` attribute is set.
 
-You may want to override this method to provide more complex behavior such as modifying page sizes based on the media type of the response.
+You may want to override this method to provide more complex behavior, such as modifying page sizes based on the media type of the response.
 
 For example:
 
@@ -187,7 +195,7 @@ Remember that the `pre_save()` method is not called by `GenericAPIView` itself, 
 You won't typically need to override the following methods, although you might need to call into them if you're writing custom views using `GenericAPIView`.
 
 * `get_serializer_context(self)` - Returns a dictionary containing any extra context that should be supplied to the serializer.  Defaults to including `'request'`, `'view'` and `'format'` keys.
-* `get_serializer(self, instance=None, data=None, files=None, many=False, partial=False)` - Returns a serializer instance.
+* `get_serializer(self, instance=None, data=None, files=None, many=False, partial=False, allow_add_remove=False)` - Returns a serializer instance.
 * `get_pagination_serializer(self, page)` - Returns a serializer instance to use with paginated data.
 * `paginate_queryset(self, queryset)` - Paginate a queryset if required, either returning a page object, or `None` if pagination is not configured for this view.
 * `filter_queryset(self, queryset)` - Given a queryset, filter it with whichever filter backends are in use, returning a new queryset.
@@ -196,7 +204,7 @@ You won't typically need to override the following methods, although you might n
 
 # Mixins
 
-The mixin classes provide the actions that are used to provide the basic view behavior.  Note that the mixin classes provide action methods rather than defining the handler methods such as `.get()` and `.post()` directly.  This allows for more flexible composition of behavior.
+The mixin classes provide the actions that are used to provide the basic view behavior.  Note that the mixin classes provide action methods rather than defining the handler methods, such as `.get()` and `.post()`, directly.  This allows for more flexible composition of behavior.
 
 ## ListModelMixin
 

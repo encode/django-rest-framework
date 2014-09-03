@@ -20,6 +20,9 @@ class APIException(Exception):
     def __init__(self, detail=None):
         self.detail = detail or self.default_detail
 
+    def __str__(self):
+        return self.detail
+
 
 class ParseError(APIException):
     status_code = status.HTTP_400_BAD_REQUEST
@@ -69,7 +72,7 @@ class UnsupportedMediaType(APIException):
 class Throttled(APIException):
     status_code = status.HTTP_429_TOO_MANY_REQUESTS
     default_detail = 'Request was throttled.'
-    extra_detail = "Expected available in %d second%s."
+    extra_detail = " Expected available in %d second%s."
 
     def __init__(self, wait=None, detail=None):
         if wait is None:
