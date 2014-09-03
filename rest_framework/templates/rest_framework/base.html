@@ -46,7 +46,7 @@
                                     {% if user.is_authenticated %}
                                         {% optional_logout request user %}
                                     {% else %}
-                                        <li>{% optional_login request %}</li>
+                                        {% optional_login request %}
                                     {% endif %}
                                 {% endblock %}
                             </ul>

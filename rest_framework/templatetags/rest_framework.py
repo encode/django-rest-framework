@@ -41,7 +41,7 @@ def optional_login(request):
     except NoReverseMatch:
         return ''
 
-    snippet = "<a href='%s?next=%s'>Log in</a>" % (login_url, escape(request.path))
+    snippet = "<li><a href='%s?next=%s'>Log in</a></li>" % (login_url, escape(request.path))
     return snippet
 
 
