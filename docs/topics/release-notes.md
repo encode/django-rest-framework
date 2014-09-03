@@ -40,6 +40,12 @@ You can determine your currently installed version using `pip freeze`:
 
 ## 2.4.x series
 
+### 2.4.2
+
+**Date**: 3rd September 2014
+
+* Bugfix: Fix broken pagination for 2.4.x series.
+
 ### 2.4.1
 
 **Date**: 1st September 2014
