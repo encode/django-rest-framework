@@ -83,7 +83,6 @@ class BasePaginationSerializer(serializers.Serializer):
         else:
             context_kwarg = {}
 
-        print object_serializer
         self.fields[results_field] = object_serializer(source='object_list',
                                                        many=True,
                                                        **context_kwarg)
