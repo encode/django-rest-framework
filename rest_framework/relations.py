@@ -1,6 +1,7 @@
 from rest_framework.fields import Field
+from rest_framework.reverse import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import resolve, get_script_prefix
+from django.core.urlresolvers import resolve, get_script_prefix, NoReverseMatch
 from rest_framework.compat import urlparse
 
 
@@ -100,10 +101,63 @@ class HyperlinkedIdentityField(RelatedField):
     lookup_field = 'pk'
 
     def __init__(self, **kwargs):
+        kwargs['read_only'] = True
         self.view_name = kwargs.pop('view_name')
         self.lookup_field = kwargs.pop('lookup_field', self.lookup_field)
         self.lookup_url_kwarg = kwargs.pop('lookup_url_kwarg', self.lookup_field)
         super(HyperlinkedIdentityField, self).__init__(**kwargs)
+
+    def get_attribute(self, instance):
+        return instance
+
+    def to_primative(self, value):
+        request = self.context.get('request', None)
+        format = self.context.get('format', None)
+
+        assert request is not None, (
+            "`HyperlinkedIdentityField` requires the request in the serializer"
+            " context. Add `context={'request': request}` when instantiating "
+            "the serializer."
+        )
+
+        # By default use whatever format is given for the current context
+        # unless the target is a different type to the source.
+        #
+        # Eg. Consider a HyperlinkedIdentityField pointing from a json
+        # representation to an html property of that representation...
+        #
+        # '/snippets/1/' should link to '/snippets/1/highlight/'
+        # ...but...
+        # '/snippets/1/.json' should link to '/snippets/1/highlight/.html'
+        if format and self.format and self.format != format:
+            format = self.format
+
+        # Return the hyperlink, or error if incorrectly configured.
+        try:
+            return self.get_url(value, self.view_name, request, format)
+        except NoReverseMatch:
+            msg = (
+                'Could not resolve URL for hyperlinked relationship using '
+                'view name "%s". You may have failed to include the related '
+                'model in your API, or incorrectly configured the '
+                '`lookup_field` attribute on this field.'
+            )
+            raise Exception(msg % self.view_name)
+
+    def get_url(self, obj, view_name, request, format):
+        """
+        Given an object, return the URL that hyperlinks to the object.
+
+        May raise a `NoReverseMatch` if the `view_name` and `lookup_field`
+        attributes are not configured to correctly match the URL conf.
+        """
+        # Unsaved objects will not yet have a valid URL.
+        if obj.pk is None:
+            return None
+
+        lookup_value = getattr(obj, self.lookup_field)
+        kwargs = {self.lookup_url_kwarg: lookup_value}
+        return reverse(view_name, kwargs=kwargs, request=request, format=format)
 
 
 class SlugRelatedField(RelatedField):
