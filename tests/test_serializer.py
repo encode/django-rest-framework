@@ -763,11 +763,11 @@ class ManyToManyTwoTests(TestCase):
     null==True and blank==True.
     """
     def setUp(self):
-        class ManyToManySerializer(serializers.ModelSerializer):
+        class ManyToManySerializerTwo(serializers.ModelSerializer):
             class Meta:
                 model = ManyToManyModelTwo
 
-        self.serializer_class = ManyToManySerializer
+        self.serializer_class = ManyToManySerializerTwo
 
         # An anchor instance to use for the relationship
         self.anchor = Anchor()
@@ -781,8 +781,7 @@ class ManyToManyTwoTests(TestCase):
         serializer = self.serializer_class(data=data)
         self.assertEqual(serializer.is_valid(), True)
         instance = serializer.save()
-        self.assertEqual(len(ManyToManyModelTwo.objects.all()), 1)
-        self.assertEqual(instance.pk, 1)
+        self.assertEqual(ManyToManyModelTwo.objects.count(), 1)
         self.assertEqual(list(instance.rel.all()), [self.anchor])
 
 
