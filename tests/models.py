@@ -185,6 +185,7 @@ class BasicModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasicModel
 
+
 class PartialUpdateModel(RESTFrameworkModel):
     text = models.CharField(max_length=100)
     extra = models.CharField(max_length=100)
