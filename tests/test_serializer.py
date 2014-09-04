@@ -358,7 +358,8 @@ class BasicTests(TestCase):
     def test_partial_update(self):
         serializer = PartialUpdateSerializer(data={'text': 'blah', 'extra': 'blah blah', 'textra': 'blargh',
                                                    'text_extra': 'blarghal'})
-        serializer.save()
+        if serializer.is_valid():
+            serializer.save()
         entry = PartialUpdateModel.objects.get(text='blah')
         second_serializer = PartialUpdateSerializer(entry, data={'textra': 'something different'}, partial=True)
         self.assertEquals(True, second_serializer.is_valid())
