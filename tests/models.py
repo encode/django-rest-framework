@@ -184,3 +184,9 @@ class NullableOneToOneSource(RESTFrameworkModel):
 class BasicModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = BasicModel
+
+class PartialUpdateModel(RESTFrameworkModel):
+    text = models.CharField(max_length=100)
+    extra = models.CharField(max_length=100)
+    textra = models.CharField(max_length=100)
+    text_extra = models.CharField(max_length=100)
