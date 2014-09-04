@@ -42,14 +42,14 @@
                                     </div>
                                 </div>
                                 <input type="hidden" name="next" value="{{ next }}" />
-                                <div class="form-actions-no-box">
-                                    <input type="submit" name="submit" value="Log in" class="btn btn-primary" id="submit-id-submit">
-                                </div>
                                 {% if form.non_field_errors %}
                                     {% for error in form.non_field_errors %}
                                         <div class="alert" style="margin-top: 10px">{{ error }}</div>
                                     {% endfor %}
                                 {% endif %}
+                                <div class="form-actions-no-box">
+                                    <input type="submit" name="submit" value="Log in" class="btn btn-primary" id="submit-id-submit">
+                                </div>
                             </form>
                         </div>
                     </div><!-- /.row-fluid -->
