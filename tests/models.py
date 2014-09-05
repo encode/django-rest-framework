@@ -71,6 +71,13 @@ class FilterableItem(BaseFilterableItem):
     decimal = models.DecimalField(max_digits=4, decimal_places=2)
     date = models.DateField()
 
+#Model of test for #1338
+
+
+class FilterableISO8601Item(BaseFilterableItem):
+    decimal = models.DecimalField(max_digits=4, decimal_places=2)
+    date = models.DateTimeField()
+
 
 # Model for regression test for #285
 

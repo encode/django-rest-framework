@@ -9,7 +9,7 @@ from django.conf.urls import patterns, url
 from rest_framework import generics, serializers, status, filters
 from rest_framework.compat import django_filters
 from rest_framework.test import APIRequestFactory
-from .models import BaseFilterableItem, FilterableItem, BasicModel
+from .models import BaseFilterableItem, FilterableItem, FilterableISO8601Item, BasicModel
 from .utils import temporary_setting
 
 factory = APIRequestFactory()
@@ -683,3 +683,85 @@ class SensitiveOrderingFilterTests(TestCase):
                     {'id': 3, username_field: 'userC'},  # PassA
                 ]
             )
+
+
+class Iso8601DateFilter(TestCase):
+    """
+    Test cases around the filtering of Iso8601 formated dates
+    """
+
+    def _serialize_object(self, obj):
+        return {'id': obj.id, 'text': obj.text, 'decimal': obj.decimal, 'date': obj.date}
+
+    def setUp(self):
+        """
+        Set up 2 filterable ISO8601 format dates
+        """
+        base_data = ('a', Decimal('0.25'), datetime.date(2012, 10, 8))
+        for i in range(2):
+            text = chr(i + ord(base_data[0])) * 3  # Produces string 'aaa', 'bbb', etc.decimal = base_data[1] + i
+            date = base_data[2] - datetime.timedelta(days=i * 2)
+            decimal = base_data[1] + i
+            FilterableItem(text=text, decimal=decimal, date=date.isoformat()).save()
+
+            self.objects = FilterableItem.objects
+            self.data = [
+                    self._serialize_object(obj)
+            for obj in self.objects.all()
+        ]
+
+    def test_filter_isoformat_date(self):
+        view = FilterFieldsRootView.as_view()
+        # Tests that the date filter works with ISO8601 format.
+        search_date = datetime.date(2012, 9, 22)
+        request = factory.get('/', {'date': '%s' % search_date.isoformat()})  # search_date str: '2012-09-22'
+        response = view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected_data = [f for f in self.data if f['date'] == search_date]
+        self.assertEqual(response.data, expected_data)
+
+    def test_filter_isoformat_datetime_against_date_fails(self):
+        view = FilterFieldsRootView.as_view()
+        # Tests that the date filter fails with an ISO8601 datetime format.
+        search_date = datetime.datetime(2012, 9, 22, 12, 00, 00)
+        request = factory.get('/', {'date': '%s' % search_date.isoformat()}) # search_date str: '2012-09-22T12:00:00'
+        response = view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected_data = [f for f in self.data if f['date'] == search_date]
+        self.assertEqual(response.data, expected_data)
+
+
+class Iso8601DateTimeFilter(TestCase):
+    """
+    Test cases around the filtering of Iso8601 formated datetimes
+    """
+
+    def _serialize_object(self, obj):
+        return {'id': obj.id, 'text': obj.text, 'decimal': obj.decimal, 'date': obj.date}
+
+    def setUp(self):
+        """
+        Set up 2 filterable ISO8601 format datetimes
+        """
+        base_data = ('a', Decimal('0.25'), datetime.datetime(2012, 10, 8, 12, 00, 00))
+        for i in range(2):
+            text = chr(i + ord(base_data[0])) * 3  # Produces string 'aaa', 'bbb', etc.
+            decimal = base_data[1] + i
+            date = base_data[2] - datetime.timedelta(days=i * 2)
+            FilterableISO8601Item(text=text, decimal=decimal, date=date.isoformat()).save()
+
+        self.objects = FilterableISO8601Item.objects
+        self.data = [
+            self._serialize_object(obj)
+            for obj in self.objects.all()
+        ]
+
+    def test_filter_isoformat_datetime(self):
+        view = FilterFieldsRootView.as_view()
+        # Tests that the date filter works with ISO8601 format.
+        search_date = datetime.datetime(2012, 9, 22, 12, 00, 00)
+        request = factory.get('/', {'date': '%s' % search_date.isoformat()})  # search_date str: '2012-09-22'
+        response = view(request).render()
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected_data = [f for f in self.data if f['date'] == search_date]
+        self.assertEqual(response.data, expected_data)
