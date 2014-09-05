@@ -24,8 +24,9 @@
                                     <div class="controls">
                                         <Label class="span4">Username:</label>
                                         <input style="height: 25px" type="text" name="username" maxlength="100"
-                                            autocapitalize="off" autocorrect="off" class="textinput textInput"
-                                            id="id_username"
+                                            autocapitalize="off"
+                                            autocorrect="off" class="span12 textinput textInput"
+                                            id="id_username" required
                                             {% if form.username.value %}value="{{ form.username.value }}"{% endif %}>
                                         {% if form.username.errors %}
                                             <p class="text-error">
@@ -39,8 +40,8 @@
                                         <div class="controls">
                                         <Label class="span4">Password:</label>
                                         <input style="height: 25px" type="password" name="password" maxlength="100"
-                                            autocapitalize="off" autocorrect="off" class="textinput textInput"
-                                            id="id_password">
+                                            autocapitalize="off" autocorrect="off" class="span12 textinput textInput"
+                                            id="id_password" required>
                                         {% if form.password.errors %}
                                             <p class="text-error">
                                                 {{ form.password.errors|striptags }}
@@ -51,7 +52,7 @@
                                 <input type="hidden" name="next" value="{{ next }}" />
                                 {% if form.non_field_errors %}
                                     {% for error in form.non_field_errors %}
-                                        <div class="text-error" style="margin: 10px 0">{{ error }}</div>
+                                        <div class="well well-small text-error">{{ error }}</div>
                                     {% endfor %}
                                 {% endif %}
                                 <div class="form-actions-no-box">
