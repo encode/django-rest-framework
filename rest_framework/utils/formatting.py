@@ -2,13 +2,12 @@
 Utility functions to return a formatted name and description for a given view.
 """
 from __future__ import unicode_literals
+import re
 
 from django.utils.html import escape
 from django.utils.safestring import mark_safe
-from django.utils.encoding import force_text
 
-from rest_framework.compat import apply_markdown
-import re
+from rest_framework.compat import apply_markdown, force_text
 
 
 def remove_trailing_string(content, trailing):
