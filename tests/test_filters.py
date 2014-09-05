@@ -769,8 +769,8 @@ class Iso8601DateTimeFilter(TestCase):
         # This shows that the you cannot filter via an isoformatted datetime
         self.assertNotEqual(response.data, expected_data)
         # This shows that the issues is not Django filters itself but how the filters are built via iexact
-        should_find_something = FilterableISO8601Item.objects.filter(date__iexact=search_date.isoformat())
-        should_find_something_2 = FilterableISO8601Item.objects.filter(date=search_date.isoformat())
-        self.assertEqual(should_find_something.count(), 0)
+        should_not_find_something = FilterableISO8601Item.objects.filter(date__iexact=search_date.isoformat())
+        should_find_something = FilterableISO8601Item.objects.filter(date=search_date.isoformat())
+        self.assertEqual(should_not_find_something.count(), 0)
         # The issue is that dates are being filtered via an iexact filter which does date comparision
-        self.assertNotEqual(should_find_something.query.__str__(), should_find_something_2.query.__str__())
+        self.assertNotEqual(should_find_something.count(), should_not_find_something.count())
