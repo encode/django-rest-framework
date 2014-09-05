@@ -127,6 +127,10 @@ class TestFileUploadParser(TestCase):
         filename = parser.get_filename(self.stream, None, self.parser_context)
         self.assertEqual(filename, 'ÀĥƦ.txt')
 
+        self.__replace_content_disposition('inline; filename=fallback.txt; filename*=utf-8\'en-us\'ÀĥƦ.txt')
+        filename = parser.get_filename(self.stream, None, self.parser_context)
+        self.assertEqual(filename, 'ÀĥƦ.txt')
+
         self.__replace_content_disposition('inline; filename=fallback.txt; filename*=utf-8--ÀĥƦ.txt')
         filename = parser.get_filename(self.stream, None, self.parser_context)
         self.assertEqual(filename, 'fallback.txt')

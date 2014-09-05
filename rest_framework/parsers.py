@@ -303,7 +303,7 @@ class FileUploadParser(BaseParser):
         """
         encoded_filename = force_text(disposition['filename*'])
         try:
-            charset, filename = encoded_filename.split('\'\'', 1)
+            charset, lang, filename = encoded_filename.split('\'', 2)
             filename = urlparse.unquote(filename)
         except (ValueError, LookupError):
             filename = force_text(disposition['filename'])
