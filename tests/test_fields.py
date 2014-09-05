@@ -54,10 +54,6 @@ class ChoiceFieldModel(models.Model):
     choice = models.CharField(choices=SAMPLE_CHOICES, blank=True, max_length=255)
 
 
-class NullableCharFieldModel(models.Model):
-    char = models.CharField(null=True, blank=True, max_length=4)
-
-
 class ChoiceFieldModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChoiceFieldModel
@@ -1013,13 +1009,12 @@ class ModelCharField(TestCase):
         Tests for CharField
     """
     def test_none_serializing(self):
-        class CharFieldSerializer(serializers.ModelSerializer):
-            class Meta:
-                model = NullableCharFieldModel
+        class CharFieldSerializer(serializers.Serializer):
+            char = serializers.CharField(allow_none=True, required=False)
         serializer = CharFieldSerializer(data={'char': None})
         self.assertTrue(serializer.fields['char'].allow_none)
         self.assertTrue(serializer.is_valid())
-        self.assertIsNone(serializer.object.char)
+        self.assertIsNone(serializer.object['char'])
 
 
 class SerializerMethodFieldTest(TestCase):
