@@ -52,7 +52,7 @@
                                 <input type="hidden" name="next" value="{{ next }}" />
                                 {% if form.non_field_errors %}
                                     {% for error in form.non_field_errors %}
-                                        <div class="well well-small text-error">{{ error }}</div>
+                                        <div class="well well-small text-error" style="border: none">{{ error }}</div>
                                     {% endfor %}
                                 {% endif %}
                                 <div class="form-actions-no-box">
