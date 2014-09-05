@@ -1019,7 +1019,7 @@ class ModelCharField(TestCase):
         serializer = CharFieldSerializer(data={'char': None})
         self.assertTrue(serializer.fields['char'].allow_none)
         self.assertTrue(serializer.is_valid())
-        self.assertIsNone(serializer.data['char'])
+        self.assertIsNone(serializer.object.char)
 
 
 class SerializerMethodFieldTest(TestCase):
